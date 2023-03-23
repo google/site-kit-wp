@@ -31,9 +31,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/Button';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import {
-	SETUP_FLOW_MODE_LEGACY,
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
@@ -44,10 +43,13 @@ import {
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { isPermissionScopeError } from '../../../../util/errors';
-import SetupFormLegacy from './SetupFormLegacy';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
 import SetupFormGA4Transitional from './SetupFormGA4Transitional';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { ExistingGTMPropertyNotice } from '../common';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -81,6 +83,18 @@ export default function SetupForm( { finishSetup } ) {
 		[ finishSetup, setValues, submitChanges ]
 	);
 
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+	);
+	const gtmAnalyticsPropertyID = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
+	const gtmContainersResolved = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
+	);
+
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
@@ -89,12 +103,22 @@ export default function SetupForm( { finishSetup } ) {
 		}
 	}, [ hasEditScope, autoSubmit, submitForm ] );
 
+	if ( ! gtmContainersResolved ) {
+		return <ProgressBar />;
+	}
+
 	return (
 		<form
 			className="googlesitekit-analytics-setup__form"
 			onSubmit={ submitForm }
 		>
-			{ setupFlowMode === SETUP_FLOW_MODE_LEGACY && <SetupFormLegacy /> }
+			<StoreErrorNotices
+				moduleSlug="analytics"
+				storeName={ MODULES_ANALYTICS }
+			/>
+			<ExistingGTMPropertyNotice
+				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && (

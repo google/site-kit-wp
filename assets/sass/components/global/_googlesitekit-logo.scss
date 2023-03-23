@@ -45,21 +45,25 @@
 			margin-left: $grid-gap-phone;
 			width: 99px;
 		}
+
+		@media (max-width: $bp-xsmallOnly) {
+			display: none;
+		}
+	}
+}
+
+.googlesitekit-logo--mini {
+
+	.googlesitekit-logo__logo-g,
+	.googlesitekit-svg-logo-g {
+		height: 19px;
+		width: 19px;
 	}
 
-	&--mini {
-
-		.googlesitekit-logo__logo-g,
-		.googlesitekit-svg-logo-g {
-			height: 19px;
-			width: 19px;
-		}
-
-		.googlesitekit-logo__logo-sitekit,
-		.googlesitekit-svg-logo-sitekit {
-			height: 17px;
-			margin-left: $grid-gap-phone / 4;
-			width: 78px;
-		}
+	.googlesitekit-logo__logo-sitekit,
+	.googlesitekit-svg-logo-sitekit {
+		height: 17px;
+		margin-left: $grid-gap-phone / 4;
+		width: 78px;
 	}
 }

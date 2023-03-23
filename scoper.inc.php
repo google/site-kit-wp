@@ -8,17 +8,17 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-use Isolated\Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\Finder;
 
 // Google API services to include classes for.
 $google_services = implode(
 	'|',
 	array(
-		'Analytics',
-		'AnalyticsReporting',
 		'Adsense',
+		'Analytics',
+		'AnalyticsData',
+		'AnalyticsReporting',
 		'GoogleAnalyticsAdmin',
-		'Ideahub',
 		'PagespeedInsights',
 		'PeopleService',
 		'SearchConsole',
@@ -46,7 +46,6 @@ return array(
 					'vendor-bin',
 				)
 			)
-			->path( '#^firebase/#' )
 			->path( '#^google/apiclient/#' )
 			->path( '#^google/auth/#' )
 			->path( '#^guzzlehttp/#' )

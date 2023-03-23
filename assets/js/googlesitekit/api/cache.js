@@ -24,12 +24,24 @@ import { HOUR_IN_SECONDS } from '../../util';
 /**
  * Prefix used for all Site Kit keys.
  *
+ * Anything not using this prefix should not be touched by this library.
+ *
+ * @since 1.96.0
+ * @private
+ */
+export const STORAGE_KEY_PREFIX_ROOT = 'googlesitekit_';
+
+/**
+ * Prefix used for all Site Kit keys for the current Site Kit version.
+ *
  * Anything not using this key should not be touched by this library.
  *
  * @since 1.5.0
+ * @since 1.92.0 Updated to include a user, session, and blog-specific hash.
+ * @since 1.96.0 Updated to make use of the new STORAGE_KEY_ABSOLUTE_PREFIX constant.
  * @private
  */
-export const STORAGE_KEY_PREFIX = `googlesitekit_${ global.GOOGLESITEKIT_VERSION }_`;
+export const STORAGE_KEY_PREFIX = `${ STORAGE_KEY_PREFIX_ROOT }${ global.GOOGLESITEKIT_VERSION }_${ global._googlesitekitBaseData.storagePrefix }_`;
 
 const defaultOrder = [ 'sessionStorage', 'localStorage' ];
 let storageBackend;
@@ -90,6 +102,7 @@ export const resetDefaultStorageOrder = () => {
  * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
  * @return {boolean} True if the given storage is available, false otherwise.
  */
+// eslint-disable-next-line require-await
 export const isStorageAvailable = async ( type ) => {
 	const storage = global[ type ];
 
@@ -262,7 +275,11 @@ export const deleteItem = async ( key ) => {
 
 	if ( storage ) {
 		try {
-			storage.removeItem( `${ STORAGE_KEY_PREFIX }${ key }` );
+			const fullKey = key.startsWith( STORAGE_KEY_PREFIX_ROOT )
+				? key
+				: `${ STORAGE_KEY_PREFIX }${ key }`;
+
+			storage.removeItem( fullKey );
 
 			return true;
 		} catch ( error ) {
@@ -292,8 +309,8 @@ export const getKeys = async () => {
 			const keys = [];
 			for ( let i = 0; i < storage.length; i++ ) {
 				const itemKey = storage.key( i );
-				if ( itemKey.indexOf( STORAGE_KEY_PREFIX ) === 0 ) {
-					keys.push( itemKey.substring( STORAGE_KEY_PREFIX.length ) );
+				if ( itemKey.indexOf( STORAGE_KEY_PREFIX_ROOT ) === 0 ) {
+					keys.push( itemKey );
 				}
 			}
 

@@ -36,8 +36,12 @@ global._googlesitekitUserData = {
 	user: {},
 };
 
-global._googlesitekitBaseData = {};
+global._googlesitekitBaseData = {
+	storagePrefix: 'abc123',
+};
 global._googlesitekitEntityData = {};
+
+global.GOOGLESITEKIT_VERSION = '1.23.0';
 
 // eslint-disable-next-line no-undef
 global.gtag = function ( type, name, sendto, category, label, value ) {
@@ -61,3 +65,21 @@ global._googlesitekitAPIFetchData.nonceEndpoint =
 
 // Instantiate global to which we'll assign to the value imported from fetch-mock-jest during Jest's setupFilesAfterEnv execution.
 global.fetchMock = undefined;
+
+if ( global.document ) {
+	// Provide a stub for createRange (needed for rendering Joyride components)
+	global.document.createRange = () => ( {
+		setStart: () => {},
+		setEnd: () => {},
+		commonAncestorContainer: {
+			nodeName: 'BODY',
+			ownerDocument: document,
+		},
+	} );
+}
+
+// Added to provide support for testing `@material/web` components.
+global.PointerEvent = function () {};
+
+// Provide a stub for scrollTo, as it's not implemented by JSDOM. See https://github.com/jsdom/jsdom/pull/2626.
+global.scrollTo = () => {};

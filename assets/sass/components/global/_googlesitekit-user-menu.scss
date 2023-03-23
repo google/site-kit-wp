@@ -1,0 +1,126 @@
+/**
+ * UserMenu styles.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-header {
+
+		.googlesitekit-user-selector {
+
+			.mdc-button__label {
+
+				@media (max-width: $bp-wpAdminBarTablet) {
+
+					@include screen-reader-only;
+				}
+			}
+
+			.mdc-button__icon {
+
+				@media (max-width: $bp-wpAdminBarTablet) {
+					margin-right: 0;
+				}
+			}
+
+			// align the dropdown with it's button
+			margin-right: -4px;
+
+			button {
+				padding: 4px;
+			}
+		}
+	}
+
+	.googlesitekit-user-menu {
+		background-color: $c-surfaces-background;
+		border-radius: $br-md;
+		max-width: 335px;
+		width: calc(100vw - 32px);
+
+		.mdc-list {
+			padding-bottom: 0;
+		}
+
+		li {
+			margin: 0;
+			padding: 0 8px;
+		}
+
+		.mdc-list-item {
+			padding: 0 7.16% 0 14.33%;
+		}
+	}
+
+	.googlesitekit-user-menu__item {
+		align-items: center;
+		column-gap: 30px;
+		display: flex;
+		width: 100%;
+	}
+
+	.googlesitekit-user-menu__item-icon {
+		display: flex;
+	}
+
+	.googlesitekit-user-menu__item-label {
+		color: $c-surfaces-on-surface;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.googlesitekit-user-menu__details {
+		align-items: center;
+		background-color: $c-surfaces-surface;
+		border-radius: $br-md;
+		column-gap: 14px;
+		display: flex;
+		padding: 16px;
+		width: 100%;
+	}
+
+	.googlesitekit-user-menu__details-avatar {
+		border: 1px solid rgba($c-grey-g-900, 0.13);
+		border-radius: 50%;
+		height: 64px;
+		width: 64px;
+	}
+
+	.googlesitekit-user-menu__details-info {
+		overflow: hidden;
+
+		p {
+			margin: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+
+	.googlesitekit-user-menu__details-info__name {
+		color: $c-surfaces-on-surface;
+		font-weight: $fw-medium;
+		line-height: $lh-label-md;
+	}
+
+	.googlesitekit-user-menu__details-info__email {
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
+	}
+}

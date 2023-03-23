@@ -18,34 +18,12 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-user-input__buttons {
-		display: flex;
-		justify-content: flex-end;
-		margin: 42px 0 0;
-
-		button {
-			border: 2px solid $c-mercury;
-			height: auto;
-			letter-spacing: normal;
-			margin-left: 20px;
-			padding: 10px 33px;
-			text-transform: none;
-
-			@include responsive-text("body1", "body3");
-
-			&.mdc-button--raised {
-				border: none;
-			}
-		}
-	}
-
 	.googlesitekit-user-input__select-options {
 		margin: 0 0 20px;
 	}
 
 	.googlesitekit-user-input__select-option {
 		align-items: center;
-		border-bottom: 1px solid $c-mercury;
 		display: flex;
 		padding: 20px 0;
 
@@ -53,32 +31,20 @@
 			padding: 3px 0;
 		}
 
-		.mdc-text-field {
-			background-color: transparent;
-			height: 36px;
-			margin-left: 1rem;
-
-			input {
-				border: none;
-				padding: 0;
-			}
-		}
-
 		label {
-			color: $c-user-input-options;
-
-			@include responsive-text("body1", "body3");
+			color: $c-surfaces-on-background;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 
 			@media (min-width: $bp-tablet) {
 				padding: 10px 0;
 			}
 		}
+	}
 
-		.mdc-text-field--disabled,
-		.mdc-checkbox--disabled,
-		.mdc-checkbox--disabled + label {
-			opacity: 0.25;
-		}
+	.googlesitekit-user-input__select-option:not(:last-child) {
+		border-bottom: 1px solid $c-mercury;
 	}
 
 	.googlesitekit-user-input__text-options {
@@ -127,11 +93,14 @@
 
 	.googlesitekit-user-input__text-option {
 		align-items: center;
-		background-color: $c-solitude;
-		border-radius: 100px;
-		color: $c-denim;
+		background-color: $c-content-primary-container;
+		border-radius: $br-xs;
+		color: $c-content-on-primary-container;
 		display: inline-flex;
-		font-weight: 500;
+		font-size: $fs-body-md;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
 		padding: 3px 3px 3px 12px;
 		white-space: nowrap;
 
@@ -165,5 +134,21 @@
 
 	.googlesitekit-user-input__text-options > div:last-child {
 		margin-right: 0;
+	}
+
+	.googlesitekit-user-input__buttons {
+
+		button {
+			letter-spacing: $ls-s;
+
+			&.mdc-button {
+				border: none;
+				padding: 10px 16px;
+			}
+
+			&.googlesitekit-cta-link {
+				color: $c-surfaces-on-background-variant;
+			}
+		}
 	}
 }

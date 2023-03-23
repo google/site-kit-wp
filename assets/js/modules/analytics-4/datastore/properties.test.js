@@ -17,29 +17,53 @@
  */
 
 /**
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
 
-	const createPropertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-property/;
-	const propertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
-	const propertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/property/;
+	const createPropertyEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
+	);
+	const propertiesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/properties'
+	);
+	const propertyEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/property'
+	);
+	const googleTagSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+	);
+	const ga4SettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
+	const containerLookupEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -241,7 +265,9 @@ describe( 'modules/analytics-4 properties', () => {
 					resolveResponse = () => resolve( fixtures.webDataStreams );
 				} );
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
+					),
 					responsePromise
 				);
 
@@ -270,7 +296,9 @@ describe( 'modules/analytics-4 properties', () => {
 				await promise;
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
+					)
 				);
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
@@ -497,6 +525,433 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( matchedProperty ).toBeNull();
 			} );
 		} );
+		describe( 'updateSettingsForMeasurementID', () => {
+			it( 'should update the settings with the measurement ID.', () => {
+				const measurementID = 'G-1A2BCD346E';
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( measurementID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getSettings()
+				).toMatchObject( {
+					measurementID,
+				} );
+			} );
+
+			it( 'dispatches a request to get and populate Google Tag settings', async () => {
+				enabledFeatures.add( 'gteSupport' );
+
+				fetchMock.getOnce( googleTagSettingsEndpoint, {
+					body: fixtures.googleTagSettings,
+					status: 200,
+				} );
+
+				const measurementID = 'G-1A2BCD346E';
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( measurementID );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
+					query: {
+						measurementID,
+					},
+					body: fixtures.googleTagSettings,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagAccountID()
+				).toEqual( fixtures.googleTagSettings.googleTagAccountID );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerID()
+				).toEqual( fixtures.googleTagSettings.googleTagContainerID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( fixtures.googleTagSettings.googleTagID );
+			} );
+
+			it( 'empties the Google Tag Settings if measurement ID is an empty string', () => {
+				enabledFeatures.add( 'gteSupport' );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setGoogleTagAccountID( '123456' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setGoogleTagContainerID( '321654' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setGoogleTagID( 'GT-123456' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagAccountID()
+				).toEqual( '123456' );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerID()
+				).toEqual( '321654' );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( 'GT-123456' );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagAccountID()
+				).toEqual( '' );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerID()
+				).toEqual( '' );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+			} );
+		} );
+
+		describe( 'setHasMismatchedGoogleTagID', () => {
+			it( 'sets the value of hasMismatchedGoogleTagID', async () => {
+				const hasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				// It is false by default.
+				expect( hasMismatchedGoogleTagID ).toBe( false );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setHasMismatchedGoogleTagID( true );
+
+				const updatedHasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+			} );
+		} );
+
+		describe( 'syncGoogleTagSettings', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'gteSupport' );
+			} );
+
+			it( 'should not execute if the Tag Manager readonly scope is not granted', async () => {
+				provideUserAuthentication( registry );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID: 'G-1A2BCD346E',
+					googleTagID: '',
+					googleTagLastSyncedAtMs: 0,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( 0 );
+			} );
+
+			it( 'should not execute if GA4 is not connected', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID: 'G-1A2BCD346E',
+					googleTagID: '',
+					googleTagLastSyncedAtMs: 0,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( 0 );
+			} );
+
+			it( 'should not execute if measurement ID is not set', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					googleTagID: '',
+					googleTagLastSyncedAtMs: 0,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( 0 );
+			} );
+
+			it( 'should not execute if settings were synced less than an hour ago', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID: 'G-1A2BCD346E',
+					googleTagID: '',
+					googleTagLastSyncedAtMs: Date.now() - 1800000, // 30 minutes ago.
+				} );
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( googleTagLastSyncedAtMs );
+			} );
+
+			it( 'dispatches a request to get and populate Google Tag settings', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-1A2BCD346E';
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID: '',
+					googleTagLastSyncedAtMs: 0,
+				} );
+
+				fetchMock.getOnce( googleTagSettingsEndpoint, {
+					body: cloneDeep( fixtures.googleTagSettings ),
+					status: 200,
+				} );
+
+				const {
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				} = fixtures.googleTagSettings;
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
+					query: {
+						measurementID,
+					},
+					body: fixtures.googleTagSettings,
+				} );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagAccountID()
+				).toEqual( googleTagAccountID );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerID()
+				).toEqual( googleTagContainerID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( googleTagID );
+			} );
+
+			it( 'should check for mismatched Google Tag ID if Google Tag settings already exist', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const googleTagID = 'GT-NBQN9V3';
+				const containerMock = fixtures.container[ measurementID ];
+
+				const { googleTagAccountID, googleTagContainerID } =
+					fixtures.googleTagSettings;
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.getOnce( containerLookupEndpoint, {
+					body: containerMock,
+					status: 200,
+				} );
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
+					query: {
+						destinationID: measurementID,
+					},
+					body: containerMock,
+				} );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasMismatchedGoogleTagID()
+				).toBe( true );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -683,6 +1138,27 @@ describe( 'modules/analytics-4 properties', () => {
 					.getProperty( propertyID );
 				expect( property ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'hasMismatchedGoogleTagID', () => {
+			it( 'returns a specific key in state', () => {
+				const hasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				// It is false by default.
+				expect( hasMismatchedGoogleTagID ).toBe( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setHasMismatchedGoogleTagID( true );
+
+				const updatedHasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
 			} );
 		} );
 	} );

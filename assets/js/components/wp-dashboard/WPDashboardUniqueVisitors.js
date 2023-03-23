@@ -34,16 +34,9 @@ import PreviewBlock from '../PreviewBlock';
 import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
-import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardUniqueVisitors = ( {
-	WidgetReportZero,
-	WidgetReportError,
-} ) => {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-
+const WPDashboardUniqueVisitors = ( { WidgetReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -87,22 +80,16 @@ const WPDashboardUniqueVisitors = ( {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! zeroDataStatesEnabled && isGatheringData && isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
-	}
-
 	const { totals } = data[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const totalUsers = lastMonth[ 0 ];
 	const previousTotalUsers = previousMonth[ 0 ];
 
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
+	const gatheringDataProps = {
+		gatheringData: isGatheringData,
+		gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+	};
 
 	return (
 		<DataBlock

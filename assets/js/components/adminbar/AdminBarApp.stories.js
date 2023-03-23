@@ -46,9 +46,6 @@ Ready.scenario = {
 	delay: 250,
 };
 
-export const GatheringDataLegacy = Template.bind( {} );
-GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
-
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
@@ -57,17 +54,11 @@ GatheringData.args = {
 		setupAnalyticsGatheringData( registry );
 	},
 };
-GatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
-};
-ZeroData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export default {

@@ -147,11 +147,6 @@ class Context {
 	/**
 	 * Determines whether the plugin is running in network mode.
 	 *
-	 * Network mode is active under the following conditions:
-	 * * Multisite is enabled.
-	 * * The plugin is network-active.
-	 * * The site's domain matches the network's domain (which means it is a subdirectory site).
-	 *
 	 * @since 1.0.0
 	 *
 	 * @return bool True if the plugin is in network mode, false otherwise.
@@ -162,11 +157,16 @@ class Context {
 			return false;
 		}
 
-		$site    = get_site( get_current_blog_id() );
-		$network = get_network( $site->network_id );
-
-		// Use network mode when the site's domain is the same as the network's domain.
-		return $network && $site->domain === $network->domain;
+		/**
+		 * Filters whether network mode is active in Site Kit.
+		 *
+		 * This is always false by default since Site Kit does not support a network mode yet.
+		 *
+		 * @since 1.86.0
+		 *
+		 * @param bool $active Whether network mode is active.
+		 */
+		return (bool) apply_filters( 'googlesitekit_is_network_mode', false );
 	}
 
 	/**

@@ -34,8 +34,8 @@ import { useDebounce } from '../hooks/useDebounce';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { clearWebStorage } from '../util';
-import Dialog from './Dialog';
+import { Dialog } from 'googlesitekit-components';
+import { clearCache } from '../googlesitekit/api/cache';
 import Portal from './Portal';
 import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
@@ -103,7 +103,7 @@ function ResetButton( { children } ) {
 
 	const handleUnlinkConfirm = useCallback( async () => {
 		await reset();
-		clearWebStorage();
+		await clearCache();
 		await trackEvent( viewContext, 'reset_plugin' );
 		navigateTo( postResetURL );
 	}, [ navigateTo, postResetURL, reset, viewContext ] );
@@ -118,11 +118,7 @@ function ResetButton( { children } ) {
 
 	return (
 		<Fragment>
-			<Link
-				className="googlesitekit-reset-button"
-				onClick={ openDialog }
-				inherit
-			>
+			<Link className="googlesitekit-reset-button" onClick={ openDialog }>
 				{ children || __( 'Reset Site Kit', 'google-site-kit' ) }
 			</Link>
 			<Portal>

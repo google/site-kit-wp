@@ -33,10 +33,8 @@ import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
 const { useSelect, useDispatch } = Data;
 
 export default function Ready( { site, finishSetup } ) {
-	const [
-		acknowledgedDisabledAutoAds,
-		setAcknowledgedDisabledAutoAds,
-	] = useState( false );
+	const [ acknowledgedDisabledAutoAds, setAcknowledgedDisabledAutoAds ] =
+		useState( false );
 
 	const viewContext = useContext( ViewContextContext );
 
@@ -52,9 +50,8 @@ export default function Ready( { site, finishSetup } ) {
 		select( MODULES_ADSENSE ).isDoingSubmitChanges()
 	);
 
-	const { completeSiteSetup, completeAccountSetup } = useDispatch(
-		MODULES_ADSENSE
-	);
+	const { completeSiteSetup, completeAccountSetup } =
+		useDispatch( MODULES_ADSENSE );
 
 	const enableAutoAdsHandler = useCallback(
 		( event ) => {

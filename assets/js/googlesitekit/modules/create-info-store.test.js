@@ -47,7 +47,7 @@ describe( 'createInfoStore store', () => {
 	} );
 
 	describe( 'storeName', () => {
-		it( 'throws an error if storeName is not passed', async () => {
+		it( 'throws an error if storeName is not passed', () => {
 			expect( () => {
 				createInfoStore( MODULE_SLUG );
 			} ).toThrow();
@@ -84,30 +84,6 @@ describe( 'createInfoStore store', () => {
 				);
 				expect( adminSreenURL ).toMatchQueryParameters( {
 					page: 'googlesitekit-dashboard',
-				} );
-			} );
-
-			// It uses `adminPage` when provided.
-			it( 'returns adminPage url when `adminPage` is provided', () => {
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-					adminURL: 'http://example.com/wp-admin/',
-				} );
-				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, {
-					storeName: TEST_STORE_NAME,
-					adminPage: 'test-admin-page',
-				} );
-				registry.registerStore( STORE_NAME, store );
-
-				const adminSreenURL = registry
-					.select( STORE_NAME )
-					.getAdminScreenURL();
-
-				const { origin, pathname } = new URL( adminSreenURL );
-				expect( origin + pathname ).toEqual(
-					'http://example.com/wp-admin/admin.php'
-				);
-				expect( adminSreenURL ).toMatchQueryParameters( {
-					page: 'test-admin-page',
 				} );
 			} );
 

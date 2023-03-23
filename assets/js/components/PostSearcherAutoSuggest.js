@@ -41,7 +41,6 @@ import { END, ENTER, ESCAPE, HOME } from '@wordpress/keycodes';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { useDebouncedState } from '../hooks/useDebouncedState';
-import { useFeature } from '../hooks/useFeature';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
@@ -83,8 +82,6 @@ export default function PostSearcherAutoSuggest( {
 
 	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
-
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
 	const currentEntityTitle = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityTitle()
@@ -226,10 +223,6 @@ export default function PostSearcherAutoSuggest( {
 					break;
 			}
 
-			if ( ! unifiedDashboardEnabled ) {
-				return;
-			}
-
 			switch ( e.keyCode ) {
 				case ESCAPE:
 					return onClose();
@@ -239,7 +232,7 @@ export default function PostSearcherAutoSuggest( {
 					break;
 			}
 		},
-		[ onClose, onSelectCallback, searchTerm, unifiedDashboardEnabled ]
+		[ onClose, onSelectCallback, searchTerm ]
 	);
 
 	return (
@@ -262,7 +255,7 @@ export default function PostSearcherAutoSuggest( {
 				autoFocus={ autoFocus }
 			/>
 
-			{ ( ! unifiedDashboardEnabled || ! isLoading ) &&
+			{ ! isLoading &&
 				showDropdown &&
 				debouncedValue !== currentEntityTitle &&
 				debouncedValue !== '' &&

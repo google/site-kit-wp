@@ -17,6 +17,12 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
@@ -26,12 +32,32 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import AdSenseConnectCTA from '../common/AdSenseConnectCTA';
-import { ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
+import {
+	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
+	ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY,
+} from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+
+import {
+	useShowTooltip,
+	useTooltipState,
+	AdminMenuTooltip,
+} from '../../../../components/AdminMenuTooltip';
+
+const { useDispatch, useSelect } = Data;
 
 function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const { isTooltipVisible } = useTooltipState(
+		ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY
+	);
+
+	const viewContext = useViewContext();
+
 	const adSenseModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
@@ -41,15 +67,48 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
-	if ( adSenseModuleConnected || hasDismissedWidget ) {
-		return <WidgetNull />;
+	const showTooltip = useShowTooltip( ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY );
+
+	const handleDismissTooltip = useCallback( async () => {
+		await trackEvent(
+			`${ viewContext }_adsense-cta-widget`,
+			'dismiss_tooltip'
+		);
+		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
+	}, [ dismissItem, viewContext ] );
+
+	if ( isTooltipVisible ) {
+		return (
+			<Fragment>
+				<WidgetNull />
+				<AdminMenuTooltip
+					title={ __(
+						'You can always connect AdSense from here later',
+						'google-site-kit'
+					) }
+					content={ __(
+						'The Monetization section will be added back to your dashboard if you connect AdSense in Settings later.',
+						'google-site-kit'
+					) }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					onDismiss={ handleDismissTooltip }
+					tooltipStateKey={ ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY }
+				/>
+			</Fragment>
+		);
 	}
 
-	return (
-		<Widget noPadding>
-			<AdSenseConnectCTA />
-		</Widget>
-	);
+	// Check for `false` explicitly, as these variables will be `undefined`
+	// while loading.
+	if ( adSenseModuleConnected === false && hasDismissedWidget === false ) {
+		return (
+			<Widget noPadding>
+				<AdSenseConnectCTA onDismissModule={ showTooltip } />
+			</Widget>
+		);
+	}
+
+	return <WidgetNull />;
 }
 
 AdSenseConnectCTAWidget.propTypes = {

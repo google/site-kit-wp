@@ -18,16 +18,30 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-subheader {
+		background-color: $c-base;
+		position: relative;
+		z-index: 11;
+
+		@media (min-width: $bp-tablet) {
+			padding: 0 10px;
+		}
+
+		&:not(:empty) {
+			border-bottom: 1px solid $c-utility-divider;
+		}
+	}
+
 	.googlesitekit-header {
 
 		@include googlesitekit-inner-padding;
-		@include shadow;
 		background-color: $c-base;
 		left: 0;
 		position: sticky;
 		right: 0;
 		top: 0;
-		z-index: 12;
+		transition: box-shadow $t-default ease-in-out;
+		z-index: 10000;
 
 		.wp-responsive-open & {
 			margin-left: -18px;
@@ -58,12 +72,17 @@
 			}
 		}
 
+		.googlesitekit-header__logo-link {
+			display: inline-block;
+		}
+
 		.googlesitekit-header__button {
 			align-items: center;
 			background-color: transparent;
 			cursor: pointer;
 			display: flex;
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			margin-right: -8px;
 			padding: 8px;
 			transition: background-color $t-default ease-in-out, color $t-default ease-in-out;
@@ -99,7 +118,7 @@
 			}
 
 			.mdc-button__label {
-				font-weight: $fw-primary-normal;
+				font-weight: $fw-normal;
 			}
 		}
 
@@ -119,30 +138,19 @@
 			}
 
 			.mdc-button--dropdown {
+				color: $c-surfaces-on-surface-variant;
 				padding-right: $grid-gap-desktop;
 
 				@media (max-width: $bp-mobileOnly) {
-					min-width: 36px;
+					background: none;
+					margin-right: 0;
 					padding-right: 8px;
 				}
-			}
 
-			.googlesitekit-header__date-range-selector-menu--has-unified-dashboard {
-
-				&.mdc-button--dropdown {
+				svg {
 
 					@media (max-width: $bp-mobileOnly) {
-
-						background: none;
 						margin-right: 0;
-						padding-right: 8px;
-					}
-
-					svg {
-
-						@media (max-width: $bp-mobileOnly) {
-							margin-right: 0;
-						}
 					}
 				}
 			}
@@ -152,64 +160,23 @@
 			}
 		}
 
-		.googlesitekit-user-selector {
+		.googlesitekit-header__children {
+			align-items: center;
+			display: flex;
+			gap: $grid-gap-phone;
+			justify-content: flex-end;
 
-			.mdc-button__label {
+			@media (min-width: $bp-desktop) {
+				gap: $grid-gap-desktop;
+			}
 
-				@media (max-width: $bp-wpAdminBarTablet) {
+			div > button > .mdc-button__label {
+				display: none;
 
-					@include screen-reader-only;
+				@media (min-width: $width-wpAdminBarTablet + 1 + px) {
+					display: inline-block;
 				}
 			}
-
-			.mdc-button__icon {
-
-				@media (max-width: $bp-wpAdminBarTablet) {
-					margin-right: 0;
-				}
-			}
-
-			// align the dropdown with it's button
-			margin-right: -4px;
-
-			button {
-				padding: 4px;
-			}
-		}
-
-	}
-
-	.googlesitekit-header--has-unified-dashboard {
-		box-shadow: none;
-		transition: box-shadow $t-default ease-in-out;
-
-		&.googlesitekit-header--has-subheader {
-
-			.googlesitekit-plugin--has-scrolled & {
-
-				@include shadow;
-			}
-		}
-	}
-
-	.googlesitekit-subheader {
-		background-color: $c-base;
-		position: relative;
-		z-index: 11;
-
-		@media (min-width: $bp-tablet) {
-			padding: 0 10px;
-		}
-	}
-
-	.googlesitekit-header__children {
-		align-items: center;
-		display: flex;
-		gap: $grid-gap-phone;
-		justify-content: flex-end;
-
-		@media (min-width: $bp-desktop) {
-			gap: $grid-gap-desktop;
 		}
 	}
 }

@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Switch from '../assets/js/components/Switch';
+import { Switch } from 'googlesitekit-components';
 
 storiesOf( 'Global', module ).add( 'Switches', () => (
 	<div>

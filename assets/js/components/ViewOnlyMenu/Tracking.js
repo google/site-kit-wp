@@ -26,8 +26,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import OptIn from '../OptIn';
+import useViewContext from '../../hooks/useViewContext';
 
 export default function Tracking() {
+	const viewContext = useViewContext();
+
 	return (
 		<li className="googlesitekit-view-only-menu__list-item">
 			<p>
@@ -41,7 +44,9 @@ export default function Tracking() {
 					}
 				) }
 			</p>
-			<OptIn />
+			<OptIn
+				trackEventCategory={ `${ viewContext }_headerbar_viewonly` }
+			/>
 		</li>
 	);
 }

@@ -13,12 +13,10 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\Optimize\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -28,7 +26,6 @@ use Google\Site_Kit\Tests\TestCase;
 class OptimizeTest extends TestCase {
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
-	use Module_With_Service_Entity_ContractTests;
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_gtag_opt' );
@@ -85,20 +82,5 @@ class OptimizeTest extends TestCase {
 	 */
 	protected function get_module_with_owner() {
 		return new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-	}
-
-	/**
-	 * @return Module_With_Service_Entity
-	 */
-	protected function get_module_with_service_entity() {
-		return new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-	}
-
-	public function test_check_service_entity_access_no_access() {
-		$this->markTestSkipped( '`check_service_entity_access` always returns `true` for Optimize module.' );
-	}
-
-	public function test_check_service_entity_access_error() {
-		$this->markTestSkipped( '`check_service_entity_access` always returns `true` for Optimize module.' );
 	}
 }

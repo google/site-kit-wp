@@ -44,17 +44,12 @@ const { createRegistrySelector } = Data;
  * @param {string}  slug                 Slug of the module that the store is for.
  * @param {Object}  args                 Arguments to configure the store.
  * @param {number}  args.storeName       Store name to use.
- * @param {string}  [args.adminPage]     Optional. Store admin page. Default is 'googlesitekit-dashboard'.
  * @param {boolean} [args.requiresSetup] Optional. Store flag, for requires setup. Default is 'true'.
  * @return {Object} The info store object.
  */
 export const createInfoStore = (
 	slug,
-	{
-		storeName = undefined,
-		adminPage = 'googlesitekit-dashboard',
-		requiresSetup = true,
-	} = {}
+	{ storeName = undefined, requiresSetup = true } = {}
 ) => {
 	invariant( storeName, 'storeName is required.' );
 
@@ -76,7 +71,10 @@ export const createInfoStore = (
 		 */
 		getAdminScreenURL: createRegistrySelector(
 			( select ) => ( state, queryArgs ) => {
-				return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
+				return select( CORE_SITE ).getAdminURL(
+					'googlesitekit-dashboard',
+					queryArgs
+				);
 			}
 		),
 
@@ -90,39 +88,40 @@ export const createInfoStore = (
 		 *                              undefined if not loaded yet.
 		 */
 		getAdminReauthURL: createRegistrySelector(
-			( select ) => ( state, reAuth = true ) => {
-				const needsReauthentication = select(
-					CORE_USER
-				).needsReauthentication();
-				if ( needsReauthentication === undefined ) {
-					return undefined;
+			( select ) =>
+				( state, reAuth = true ) => {
+					const needsReauthentication =
+						select( CORE_USER ).needsReauthentication();
+					if ( needsReauthentication === undefined ) {
+						return undefined;
+					}
+
+					const noSetupQueryArgs = {};
+					if ( ! requiresSetup && reAuth === true ) {
+						noSetupQueryArgs.notification =
+							'authentication_success';
+						noSetupQueryArgs.reAuth = undefined;
+					}
+
+					const redirectURL = select( storeName ).getAdminScreenURL( {
+						slug,
+						reAuth,
+						...noSetupQueryArgs,
+					} );
+					if ( redirectURL === undefined ) {
+						return undefined;
+					}
+
+					if ( ! needsReauthentication ) {
+						return redirectURL;
+					}
+
+					const connectURL = select( CORE_USER ).getConnectURL( {
+						redirectURL,
+					} );
+
+					return addQueryArgs( connectURL, { status: reAuth } );
 				}
-
-				const noSetupQueryArgs = {};
-				if ( ! requiresSetup && reAuth === true ) {
-					noSetupQueryArgs.notification = 'authentication_success';
-					noSetupQueryArgs.reAuth = undefined;
-				}
-
-				const redirectURL = select( storeName ).getAdminScreenURL( {
-					slug,
-					reAuth,
-					...noSetupQueryArgs,
-				} );
-				if ( redirectURL === undefined ) {
-					return undefined;
-				}
-
-				if ( ! needsReauthentication ) {
-					return redirectURL;
-				}
-
-				const connectURL = select( CORE_USER ).getConnectURL( {
-					redirectURL,
-				} );
-
-				return addQueryArgs( connectURL, { status: reAuth } );
-			}
 		),
 	};
 

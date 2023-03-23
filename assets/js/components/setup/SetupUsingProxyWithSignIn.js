@@ -24,7 +24,11 @@ import punycode from 'punycode';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg, addQueryArgs } from '@wordpress/url';
 
@@ -32,11 +36,11 @@ import { getQueryArg, addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import WelcomeSVG from '../../../svg/graphics/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
 import { trackEvent, untrailingslashit } from '../../util';
 import Header from '../Header';
-import Button from '../Button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/Layout';
 import BannerNotification from '../notifications/BannerNotification';
@@ -46,7 +50,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-	PERMISSION_VIEW_SHARED_DASHBOARD,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -69,6 +72,9 @@ export default function SetupUsingProxyWithSignIn() {
 
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
@@ -78,37 +84,52 @@ export default function SetupUsingProxyWithSignIn() {
 			ANALYTICS_NOTICE_CHECKBOX
 		)
 	);
-	const {
-		isSecondAdmin,
-		isResettable,
-		siteURL,
-		proxySetupURL,
-		disconnectedReason,
-		isConnected,
-		connectedProxyURL,
-		homeURL,
-	} = useSelect( ( select ) => {
-		const site = select( CORE_SITE );
-		const user = select( CORE_USER );
 
-		return {
-			isSecondAdmin: site.hasConnectedAdmins(),
-			isResettable: site.isResettable(),
-			siteURL: site.getReferenceSiteURL(),
-			proxySetupURL: site.getProxySetupURL(),
-			disconnectedReason: user.getDisconnectedReason(),
-			connectedProxyURL: untrailingslashit( user.getConnectedProxyURL() ),
-			homeURL: untrailingslashit( site.getHomeURL() ),
-			isConnected: site.isConnected(),
-		};
-	} );
-
+	const isSecondAdmin = useSelect( ( select ) =>
+		select( CORE_SITE ).hasConnectedAdmins()
+	);
+	const isResettable = useSelect( ( select ) =>
+		select( CORE_SITE ).isResettable()
+	);
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+	const proxySetupURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getProxySetupURL()
+	);
+	const homeURL = useSelect( ( select ) =>
+		untrailingslashit( select( CORE_SITE ).getHomeURL() )
+	);
+	const isConnected = useSelect( ( select ) =>
+		select( CORE_SITE ).isConnected()
+	);
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const secondAdminLearnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'already-configured' )
+	);
+	const disconnectedReason = useSelect( ( select ) =>
+		select( CORE_USER ).getDisconnectedReason()
+	);
+	const connectedProxyURL = useSelect( ( select ) =>
+		untrailingslashit( select( CORE_USER ).getConnectedProxyURL() )
+	);
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-
-	const canViewSharedDashboard = useSelect( ( select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_VIEW_SHARED_DASHBOARD )
+	const changedURLHelpLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'url-has-changed' )
+	);
+	const hasViewableModules = useSelect(
+		( select ) => !! select( CORE_USER ).getViewableModules()?.length
+	);
+	// These will be `null` if no errors exist.
+	const setupErrorMessage = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorMessage()
+	);
+	const setupErrorRedoURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorRedoURL()
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -116,10 +137,13 @@ export default function SetupUsingProxyWithSignIn() {
 	const { activateModule } = useDispatch( CORE_MODULES );
 
 	const goToSharedDashboard = useCallback( () => {
-		dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY );
-
-		navigateTo( dashboardURL );
-	}, [ dashboardURL, dismissItem, navigateTo ] );
+		Promise.all( [
+			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
+			trackEvent( viewContext, 'skip_setup_to_viewonly' ),
+		] ).finally( () => {
+			navigateTo( dashboardURL );
+		} );
+	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
 
 	const onButtonClick = useCallback(
 		async ( event ) => {
@@ -166,11 +190,9 @@ export default function SetupUsingProxyWithSignIn() {
 		]
 	);
 
-	// @TODO: this needs to be migrated to the core/site datastore in the future
-	const { errorMessage } = global._googlesitekitLegacyData.setup;
-
 	let title;
 	let description;
+	let showLearnMoreLink = false;
 	let cellDetailsProp = {
 		smSize: 4,
 		mdSize: 8,
@@ -185,9 +207,11 @@ export default function SetupUsingProxyWithSignIn() {
 		};
 	}
 
+	let getHelpURL = null;
+
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
-			/* translators: %s is the site's hostname. (e.g. example.com) */
+			/* translators: %s: is the site's hostname. (e.g. example.com) */
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
 			punycode.toUnicode( new URL( siteURL ).hostname )
 		);
@@ -203,6 +227,8 @@ export default function SetupUsingProxyWithSignIn() {
 			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
 			'google-site-kit'
 		);
+
+		getHelpURL = changedURLHelpLink;
 	} else if ( isSecondAdmin ) {
 		title = __(
 			'Connect your Google account to Site Kit',
@@ -212,6 +238,7 @@ export default function SetupUsingProxyWithSignIn() {
 			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.',
 			'google-site-kit'
 		);
+		showLearnMoreLink = true;
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
 		description = __(
@@ -225,7 +252,7 @@ export default function SetupUsingProxyWithSignIn() {
 			<Header>
 				<HelpMenu />
 			</Header>
-			{ errorMessage && (
+			{ setupErrorMessage && (
 				<BannerNotification
 					id="setup_error"
 					type="win-error"
@@ -233,8 +260,13 @@ export default function SetupUsingProxyWithSignIn() {
 						'Oops! There was a problem during set up. Please try again.',
 						'google-site-kit'
 					) }
-					description={ errorMessage }
+					description={ setupErrorMessage }
 					isDismissible={ false }
+					ctaLabel={ __(
+						'Redo the plugin setup',
+						'google-site-kit'
+					) }
+					ctaLink={ setupErrorRedoURL }
 				/>
 			) }
 			{ getQueryArg( location.href, 'notification' ) ===
@@ -252,7 +284,7 @@ export default function SetupUsingProxyWithSignIn() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<Layout>
+							<Layout rounded>
 								<section className="googlesitekit-setup__splash">
 									<Grid>
 										<Row className="googlesitekit-setup__content">
@@ -287,8 +319,46 @@ export default function SetupUsingProxyWithSignIn() {
 												</h1>
 
 												<p className="googlesitekit-setup__description">
-													{ description }
+													{ ! showLearnMoreLink &&
+														description }
+
+													{ showLearnMoreLink &&
+														createInterpolateElement(
+															sprintf(
+																/* translators: 1: The description. 2: The learn more link. */
+																__(
+																	'%1$s <Link>%2$s</Link>',
+																	'google-site-kit'
+																),
+																description,
+																__(
+																	'Learn more',
+																	'google-site-kit'
+																)
+															),
+															{
+																Link: (
+																	<Link
+																		href={
+																			secondAdminLearnMoreLink
+																		}
+																		external
+																	/>
+																),
+															}
+														) }
 												</p>
+												{ getHelpURL && (
+													<Link
+														href={ getHelpURL }
+														external
+													>
+														{ __(
+															'Get help',
+															'google-site-kit'
+														) }
+													</Link>
+												) }
 												{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
 													disconnectedReason &&
 													connectedProxyURL !==
@@ -314,9 +384,10 @@ export default function SetupUsingProxyWithSignIn() {
 														</p>
 													) }
 
-												{ ! analyticsModuleActive && (
-													<ActivateAnalyticsNotice />
-												) }
+												{ analyticsModuleAvailable &&
+													! analyticsModuleActive && (
+														<ActivateAnalyticsNotice />
+													) }
 
 												<CompatibilityChecks>
 													{ ( {
@@ -350,15 +421,18 @@ export default function SetupUsingProxyWithSignIn() {
 																{
 																	inProgressFeedback
 																}
-																{ dashboardSharingEnabled &&
-																	canViewSharedDashboard && (
+																{ hasMultipleAdmins &&
+																	isSecondAdmin &&
+																	dashboardSharingEnabled &&
+																	hasViewableModules &&
+																	complete && (
 																		<Link
 																			onClick={
 																				goToSharedDashboard
 																			}
 																		>
 																			{ __(
-																				'Go to dashboard',
+																				'Skip sign-in and view limited dashboard',
 																				'google-site-kit'
 																			) }
 																		</Link>

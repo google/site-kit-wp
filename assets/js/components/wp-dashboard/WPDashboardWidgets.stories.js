@@ -21,10 +21,13 @@
  */
 import WPDashboardWidgets from './WPDashboardWidgets';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
 	provideUserAuthentication,
+	provideUserCapabilities,
+	provideSiteInfo,
 } from '../../../../tests/js/utils';
 import {
 	setupSearchConsoleAnalyticsMockReports,
@@ -33,17 +36,39 @@ import {
 	setupSearchConsoleAnalyticsGatheringData,
 	widgetDecorators,
 } from './common.stories';
+import {
+	setupAnalytics4GatheringData,
+	setupAnalytics4MockReports,
+	setupAnalytics4ZeroData,
+} from './common-GA4.stories';
+import FeaturesProvider from '../FeaturesProvider';
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WPDashboardWidgets />
-	</WithRegistrySetup>
-);
+const Template = ( { setupRegistry, features = [] } ) => {
+	const enabledFeatures = new Set( features );
+
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<FeaturesProvider value={ enabledFeatures }>
+				<WPDashboardWidgets />
+			</FeaturesProvider>
+		</WithRegistrySetup>
+	);
+};
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
+};
+
+export const ReadyGA4 = Template.bind( {} );
+ReadyGA4.storyName = 'Ready - GA4';
+ReadyGA4.args = {
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleAnalyticsMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	features: [ 'ga4Reporting' ],
 };
 
 export const ReadyWithActivateModuleCTA = Template.bind( {} );
@@ -57,6 +82,12 @@ ReadyWithActivateModuleCTA.args = {
 				slug: 'analytics',
 			},
 		] );
+		provideSiteInfo( registry );
+		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 		setupSearchConsoleMockReports( registry );
 	},
 };
@@ -72,15 +103,18 @@ ReadyWithActivateAnalyticsCTA.args = {
 				slug: 'analytics',
 			},
 		] );
+		provideSiteInfo( registry );
+		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 		setupSearchConsoleMockReports( registry );
 	},
 };
-ReadyWithActivateAnalyticsCTA.parameters = {
-	features: [ 'zeroDataStates' ],
-};
+
 ReadyWithActivateAnalyticsCTA.scenario = {
-	label:
-		'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithActivateAnalyticsCTA',
+	label: 'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithActivateAnalyticsCTA',
 	delay: 3000,
 };
 
@@ -96,13 +130,12 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 				slug: 'analytics',
 			},
 		] );
+		provideSiteInfo( registry );
+		provideUserCapabilities( registry );
 		provideModuleRegistrations( registry );
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
 	},
-};
-ReadyWithCompleteAnalyticsActivationCTA.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export const GatheringData = Template.bind( {} );
@@ -110,8 +143,15 @@ GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
 };
-GatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
+
+export const GatheringDataGA4 = Template.bind( {} );
+GatheringDataGA4.storyName = 'Gathering Data - GA4';
+GatheringDataGA4.args = {
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleAnalyticsGatheringData( registry );
+		setupAnalytics4GatheringData( registry );
+	},
+	features: [ 'ga4Reporting' ],
 };
 
 export const ZeroData = Template.bind( {} );
@@ -119,8 +159,15 @@ ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
 };
-ZeroData.parameters = {
-	features: [ 'zeroDataStates' ],
+
+export const ZeroDataGA4 = Template.bind( {} );
+ZeroDataGA4.storyName = 'Zero Data - GA4';
+ZeroDataGA4.args = {
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleAnalyticsZeroData( registry );
+		setupAnalytics4ZeroData( registry );
+	},
+	features: [ 'ga4Reporting' ],
 };
 
 export default {

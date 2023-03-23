@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import memoize from 'lodash/memoize';
+import { memoize } from 'lodash';
 
 /**
  * WordPress dependencies

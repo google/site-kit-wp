@@ -35,47 +35,78 @@ import BannerNotification from './BannerNotification';
 import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import UserInputPromptSVG from '../../../svg/graphics/user-input-prompt.svg';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import Link from '../Link';
 const { useSelect } = Data;
 
 export default function UserInputSettings( {
 	onCTAClick,
+	onView,
 	onDismiss,
 	isDismissible,
+	rounded = false,
 } ) {
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const userInputState = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputState()
+	const isUserInputCompleted = useSelect( ( select ) =>
+		select( CORE_USER ).isUserInputCompleted()
+	);
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+	const searchConsoleModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'search-console' )
 	);
 
-	if ( userInputState === 'completed' ) {
+	// TODO: Re-implement the Gathering Data check once Issue #5933 is merged
+	// and this data is available on page load.
+	// const searchConsoleIsGatheringData = useSelect( ( select ) =>
+	// 	select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	// );
+	// const analyticsIsGatheringData = useSelect(
+	// 	( select ) =>
+	// 		analyticsModuleConnected &&
+	// 		select( MODULES_ANALYTICS ).isGatheringData()
+	// );
+
+	if ( isUserInputCompleted === undefined || isUserInputCompleted ) {
 		return null;
 	}
+
+	if ( ! analyticsModuleConnected || ! searchConsoleModuleConnected ) {
+		return null;
+	}
+
+	// if (
+	// 	analyticsIsGatheringData !== false ||
+	// 	searchConsoleIsGatheringData !== false
+	// ) {
+	// 	return null;
+	// }
 
 	return (
 		<BannerNotification
 			id={ `user-input-settings-notification-${ instanceID }` }
 			className="googlesitekit-user-input__notification"
-			title={ __(
-				'Customize Site Kit to match your goals',
-				'google-site-kit'
-			) }
+			title={ __( 'Key metrics', 'google-site-kit' ) }
 			description={ __(
-				'Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site’s goals',
+				'Answer 3 quick questions to help us show the most relevant data for your site',
 				'google-site-kit'
 			) }
 			format="large"
 			dismissExpires={ getTimeInSeconds( 'hour' ) * 3 }
-			ctaLink={ ctaLink }
-			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
-			onCTAClick={ onCTAClick }
+			ctaComponent={
+				<Link href={ ctaLink } onClick={ onCTAClick }>
+					{ __( 'Personalize your metrics', 'google-site-kit' ) }
+				</Link>
+			}
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			WinImageSVG={ UserInputPromptSVG }
 			isDismissible={ isDismissible }
+			onView={ onView }
 			onDismiss={ onDismiss }
+			rounded={ rounded }
 		/>
 	);
 }
@@ -83,6 +114,8 @@ export default function UserInputSettings( {
 UserInputSettings.propTypes = {
 	// Used to bypass link functionality within Storybook to avoid breakage.
 	onCTAClick: PropTypes.func,
+	onView: PropTypes.func,
 	onDismiss: PropTypes.func,
 	isDismissible: PropTypes.bool,
+	rounded: PropTypes.bool,
 };

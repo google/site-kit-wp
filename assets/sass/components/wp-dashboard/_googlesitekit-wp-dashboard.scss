@@ -27,18 +27,18 @@
 
 		.googlesitekit-wp-dashboard__cta {
 			border-bottom: 1px solid $c-border-light;
-			margin: 0 -12px 0 -12px;
-			padding: 0 12px 12px 12px;
+			margin: 0 -12px;
+			padding: 0 12px 12px;
 		}
+	}
 
-		// Match WP Dashboard colors for all links
-		a {
-			color: $c-link-wpdb;
+	.googlesitekit-data-block .googlesitekit-data-block__datapoint,
+	.googlesitekit-data-block .googlesitekit-data-block__title,
+	.googlesitekit-table .googlesitekit-table__head-item {
+		font-family: inherit;
+	}
 
-			&:hover {
-				color: $c-link-wpdb-hover;
-			}
-		}
-
+	.googlesitekit-table .googlesitekit-table__head-item {
+		font-size: inherit;
 	}
 }

@@ -5,26 +5,6 @@
   "loadingExperience": {
     "id": "https://example.com/",
     "metrics": {
-      "FIRST_INPUT_DELAY_MS": {
-        "percentile": 98,
-        "distributions": [
-          {
-            "min": 0,
-            "max": 100,
-            "proportion": 0.9816648331499817
-          },
-          {
-            "min": 100,
-            "max": 300,
-            "proportion": 0.010267693436010267
-          },
-          {
-            "min": 300,
-            "proportion": 0.008067473414008064
-          }
-        ],
-        "category": "FAST"
-      },
       "CUMULATIVE_LAYOUT_SHIFT_SCORE": {
         "percentile": 13,
         "distributions": [
@@ -45,6 +25,86 @@
         ],
         "category": "AVERAGE"
       },
+      "EXPERIMENTAL_INTERACTION_TO_NEXT_PAINT": {
+        "percentile": 51,
+        "distributions": [
+          {
+            "min": 0,
+            "max": 200,
+            "proportion": 0.96328810853950508
+          },
+          {
+            "min": 200,
+            "max": 500,
+            "proportion": 0.019473264166001595
+          },
+          {
+            "min": 500,
+            "proportion": 0.017238627294493387
+          }
+        ],
+        "category": "FAST"
+      },
+      "EXPERIMENTAL_TIME_TO_FIRST_BYTE": {
+        "percentile": 407,
+        "distributions": [
+          {
+            "min": 0,
+            "max": 800,
+            "proportion": 0.91014946124435181
+          },
+          {
+            "min": 800,
+            "max": 1800,
+            "proportion": 0.072123740006951681
+          },
+          {
+            "min": 1800,
+            "proportion": 0.017726798748696558
+          }
+        ],
+        "category": "AVERAGE"
+      },
+      "FIRST_CONTENTFUL_PAINT_MS": {
+        "percentile": 1964,
+        "distributions": [
+          {
+            "min": 0,
+            "max": 1800,
+            "proportion": 0.4968394437420986
+          },
+          {
+            "min": 1800,
+            "max": 3000,
+            "proportion": 0.36886564762670954
+          },
+          {
+            "min": 3000,
+            "proportion": 0.13429490863119178
+          }
+        ],
+        "category": "AVERAGE"
+      },
+      "FIRST_INPUT_DELAY_MS": {
+        "percentile": 98,
+        "distributions": [
+          {
+            "min": 0,
+            "max": 100,
+            "proportion": 0.9816648331499817
+          },
+          {
+            "min": 100,
+            "max": 300,
+            "proportion": 0.010267693436010267
+          },
+          {
+            "min": 300,
+            "proportion": 0.008067473414008064
+          }
+        ],
+        "category": "FAST"
+      },
       "LARGEST_CONTENTFUL_PAINT_MS": {
         "percentile": 4100,
         "distributions": [
@@ -64,26 +124,6 @@
           }
         ],
         "category": "SLOW"
-      },
-      "FIRST_CONTENTFUL_PAINT_MS": {
-        "percentile": 1964,
-        "distributions": [
-          {
-            "min": 0,
-            "max": 1000,
-            "proportion": 0.4968394437420986
-          },
-          {
-            "min": 1000,
-            "max": 3000,
-            "proportion": 0.36886564762670954
-          },
-          {
-            "min": 3000,
-            "proportion": 0.13429490863119178
-          }
-        ],
-        "category": "AVERAGE"
       }
     },
     "overall_category": "AVERAGE",

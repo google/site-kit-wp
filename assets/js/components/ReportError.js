@@ -20,10 +20,12 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { uniqWith } from 'lodash';
 
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -31,46 +33,121 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { isInsufficientPermissionsError } from '../util/errors';
+import {
+	isInsufficientPermissionsError,
+	getReportErrorMessage,
+} from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import { purify } from '../util/purify';
 import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
-
+import ReportErrorActions from './ReportErrorActions';
+import useViewOnly from '../hooks/useViewOnly';
 const { useSelect } = Data;
 
 export default function ReportError( { moduleSlug, error } ) {
+	const isViewOnly = useViewOnly();
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 
-	let title = sprintf(
-		/* translators: %s: module name */
-		__( 'Data error in %s', 'google-site-kit' ),
-		module?.name
-	);
-	let message = error.message;
+	const errors = Array.isArray( error ) ? error : [ error ];
 
-	if ( isInsufficientPermissionsError( error ) ) {
+	let title;
+
+	const getMessage = ( err ) => {
+		if ( isInsufficientPermissionsError( err ) ) {
+			if ( isViewOnly ) {
+				title = sprintf(
+					/* translators: %s: module name */
+					__( 'Access lost to %s', 'google-site-kit' ),
+					module?.name
+				);
+
+				return sprintf(
+					/* translators: %s: module name */
+					__(
+						'The administrator sharing this module with you has lost access to the %s service, so you won’t be able to see stats from it on the Site Kit dashboard. You can contact them or another administrator to restore access.',
+						'google-site-kit'
+					),
+					module?.name
+				);
+			}
+
+			title = sprintf(
+				/* translators: %s: module name */
+				__( 'Insufficient permissions in %s', 'google-site-kit' ),
+				module?.name
+			);
+
+			return getInsufficientPermissionsErrorDescription(
+				err.message,
+				module
+			);
+		}
+
+		return getReportErrorMessage( err );
+	};
+
+	const uniqueErrors = uniqWith(
+		errors.map( ( err ) => ( {
+			...err,
+			message: getMessage( err ),
+			reconnectURL: err.data?.reconnectURL,
+		} ) ),
+		( errorA, errorB ) =>
+			errorA.message === errorB.message &&
+			errorA.reconnectURL === errorB.reconnectURL
+	);
+
+	const hasInsufficientPermissionsError = errors.some( ( err ) =>
+		isInsufficientPermissionsError( err )
+	);
+
+	if ( ! hasInsufficientPermissionsError && uniqueErrors.length === 1 ) {
 		title = sprintf(
 			/* translators: %s: module name */
-			__( 'Insufficient permissions in %s', 'google-site-kit' ),
+			__( 'Data error in %s', 'google-site-kit' ),
 			module?.name
 		);
-		message = getInsufficientPermissionsErrorDescription( message, module );
+	} else if ( ! hasInsufficientPermissionsError && uniqueErrors.length > 1 ) {
+		title = sprintf(
+			/* translators: %s: module name */
+			__( 'Data errors in %s', 'google-site-kit' ),
+			module?.name
+		);
 	}
 
-	const reconnectURL = error?.data?.reconnectURL;
-	const description = reconnectURL ? (
-		<ErrorText message={ message } reconnectURL={ reconnectURL } />
-	) : (
-		purify.sanitize( message, { ALLOWED_TAGS: [] } )
+	const description = (
+		<Fragment>
+			{ uniqueErrors.map( ( err ) => {
+				const reconnectURL = error?.data?.reconnectURL;
+				return reconnectURL ? (
+					<ErrorText
+						key={ err.message }
+						message={ err.message }
+						reconnectURL={ reconnectURL }
+					/>
+				) : (
+					<p key={ err.message }>
+						{ purify.sanitize( err.message, { ALLOWED_TAGS: [] } ) }
+					</p>
+				);
+			} ) }
+		</Fragment>
 	);
 
-	return <CTA title={ title } description={ description } error />;
+	return (
+		<CTA title={ title } description={ description } error>
+			<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
+		</CTA>
+	);
 }
 
 ReportError.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
-	error: PropTypes.object.isRequired,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ).isRequired,
 };

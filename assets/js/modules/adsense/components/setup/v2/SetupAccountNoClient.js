@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import Link from '../../../../../components/Link';
 import { ErrorNotices } from '../../common';
 import { trackEvent } from '../../../../../util';
@@ -73,7 +73,6 @@ export default function SetupAccountNoClient() {
 							<Link
 								href={ supportURL }
 								external
-								inherit
 								aria-label={ __(
 									'Learn more about updating your AdSense account',
 									'google-site-kit'

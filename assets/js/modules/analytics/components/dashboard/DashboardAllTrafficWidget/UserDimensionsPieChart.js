@@ -21,8 +21,7 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import isNull from 'lodash/isNull';
-import cloneDeep from 'lodash/cloneDeep';
+import { isNull, cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -58,20 +57,12 @@ import PieChartZeroData from '../../../../../../svg/icons/pie-chart-zero-data.sv
 import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '../../../../../components/GatheringDataNotice';
-import { useFeature } from '../../../../../hooks/useFeature';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
-	const {
-		dimensionName,
-		dimensionValue,
-		gatheringData,
-		loaded,
-		report,
-	} = props;
-
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+	const { dimensionName, dimensionValue, gatheringData, loaded, report } =
+		props;
 
 	const [ selectable, setSelectable ] = useState( false );
 	const viewContext = useViewContext();
@@ -196,7 +187,7 @@ export default function UserDimensionsPieChart( props ) {
 		`<p>
 			<a
 				href="${ url }"
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link__tooltip"
 				target="_blank"
 				rel="noreferrer noopener"
 				data-row-label="${ rowLabel }"
@@ -531,7 +522,7 @@ export default function UserDimensionsPieChart( props ) {
 		options.tooltip.trigger = 'focus';
 	}
 
-	const showZeroDataChart = zeroDataStatesEnabled && hasZeroData;
+	const showZeroDataChart = hasZeroData;
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
@@ -540,8 +531,10 @@ export default function UserDimensionsPieChart( props ) {
 				className={ classnames(
 					'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
 					{
-						'googlesitekit-widget--analyticsAllTraffic__slice-selected': !! dimensionValue,
-						'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
+						'googlesitekit-widget--analyticsAllTraffic__slice-selected':
+							!! dimensionValue,
+						'googlesitekit-widget--analyticsAllTraffic__selectable':
+							selectable,
 					}
 				) }
 			>
@@ -577,8 +570,10 @@ export default function UserDimensionsPieChart( props ) {
 					>
 						<div
 							className={ classnames( {
-								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data': gatheringData,
-								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title': ! gatheringData,
+								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data':
+									gatheringData,
+								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title':
+									! gatheringData,
 							} ) }
 							dangerouslySetInnerHTML={ title }
 						/>
@@ -597,7 +592,8 @@ export default function UserDimensionsPieChart( props ) {
 					className={ classnames(
 						'googlesitekit-widget--analyticsAllTraffic__legend',
 						{
-							'googlesitekit-widget--analyticsAllTraffic__legend--single': isSingleSliceReport,
+							'googlesitekit-widget--analyticsAllTraffic__legend--single':
+								isSingleSliceReport,
 						}
 					) }
 					role="region"
@@ -617,8 +613,10 @@ export default function UserDimensionsPieChart( props ) {
 									className={ classnames(
 										'googlesitekit-widget--analyticsAllTraffic__legend-slice',
 										{
-											'googlesitekit-widget--analyticsAllTraffic__legend-active': isActive,
-											'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
+											'googlesitekit-widget--analyticsAllTraffic__legend-active':
+												isActive,
+											'googlesitekit-widget--analyticsAllTraffic__legend-others':
+												isOthers,
 										}
 									) }
 									disabled={ gatheringData }
@@ -723,15 +721,15 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	pieHole: 0.6,
 	pieSliceTextStyle: {
-		color: 'black',
+		color: '#131418',
 		fontSize: 12,
 	},
 	slices: {
-		0: { color: '#ffcd33' },
-		1: { color: '#c196ff' },
-		2: { color: '#9de3fe' },
-		3: { color: '#ff7fc6' },
-		4: { color: '#ff886b' },
+		0: { color: '#fece72' },
+		1: { color: '#a983e6' },
+		2: { color: '#bed4ff' },
+		3: { color: '#ee92da' },
+		4: { color: '#ff9b7a' },
 	},
 	title: null,
 	tooltip: {

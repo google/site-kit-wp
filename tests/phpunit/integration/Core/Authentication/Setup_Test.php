@@ -12,6 +12,7 @@ use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Error;
 use WPDieException;
 
 /**
@@ -155,6 +156,123 @@ class Setup_Test extends TestCase {
 			( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ),
 			$http_requests
 		);
+	}
+
+	/**
+	 * @dataProvider data_conditionally_syncs_site_fields
+	 */
+	public function test_handle_action_setup_start__wp_error( $has_credentials ) {
+		$redirect_url = 'https://sitekit.withgoogle.com/test-page';
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$setup->register();
+
+		if ( $has_credentials ) {
+			$this->fake_proxy_site_connection();
+		}
+
+		$_GET['code']  = 'test-code';
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_SETUP_START );
+
+		$proxy_server_requests = array();
+		// Fake a WP_Error IF a request is made to the Google Proxy server.
+		add_filter(
+			'pre_http_request',
+			function( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $has_credentials ) {
+				if ( ( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
+					return $preempt;
+				}
+				// Collect any HTTP requests to the proxy server to register/sync site with the proxy server.
+				$proxy_server_requests[] = $args;
+
+				// Using the two cases for $has_credentials, we can test the error message
+				// and the fallback to an error code when there is no message.
+				$error_message = $has_credentials ? 'Test error message.' : null;
+				return new WP_Error( 'test_error_code', $error_message );
+			},
+			10,
+			3
+		);
+
+		try {
+			do_action( 'admin_action_' . Google_Proxy::ACTION_SETUP_START );
+			$this->fail( 'Expected WPDieException!' );
+		} catch ( RedirectException $redirect ) {
+			$this->fail( 'Expected WPDieException!' );
+		} catch ( WPDieException $exception ) {
+			$error = $has_credentials ? 'Test error message.' : 'test_error_code';
+			$this->assertStringContainsString(
+				sprintf(
+					'The request to the authentication proxy has failed with an error: %s <a href="https://sitekit.withgoogle.com/support?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
+					$error
+				),
+				$exception->getMessage()
+			);
+		}
+
+		$this->assertCount( 1, $proxy_server_requests );
+	}
+
+	/**
+	 * @dataProvider data_conditionally_syncs_site_fields
+	 */
+	public function test_handle_action_setup_start__invalid_url( $has_credentials ) {
+		// An invalid redirect URL (without protocol).
+		$redirect_url = 'sitekit.withgoogle.com/test-page';
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$setup->register();
+
+		if ( $has_credentials ) {
+			$this->fake_proxy_site_connection();
+		}
+
+		$_GET['code']  = 'test-code';
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_SETUP_START );
+
+		$proxy_server_requests = array();
+
+		add_filter(
+			'pre_http_request',
+			function( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $redirect_url ) {
+				if ( ( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
+					return $preempt;
+				}
+
+				// Collect any HTTP requests to the proxy server to register/sync site with the proxy server.
+				$proxy_server_requests[] = $args;
+
+				return array(
+					'response' => array( 'code' => 200 ),
+					'headers'  => array( Google_Proxy::HEADER_REDIRECT_TO => $redirect_url ),
+					'body'     => '{}',
+				);
+			},
+			10,
+			3
+		);
+
+		try {
+			do_action( 'admin_action_' . Google_Proxy::ACTION_SETUP_START );
+			$this->fail( 'Expected WPDieException!' );
+		} catch ( RedirectException $redirect ) {
+			$this->fail( 'Expected WPDieException!' );
+		} catch ( WPDieException $exception ) {
+			$this->assertStringContainsString(
+				'The request to the authentication proxy has failed. Please, try again later. <a href="https://sitekit.withgoogle.com/support?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
+				$exception->getMessage()
+			);
+		}
+
+		$this->assertCount( 1, $proxy_server_requests );
 	}
 
 	public function data_conditionally_syncs_site_fields() {

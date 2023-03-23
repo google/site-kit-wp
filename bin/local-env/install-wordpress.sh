@@ -4,8 +4,6 @@
 set -e
 
 # Common variables.
-WP_DEBUG=${WP_DEBUG-false}
-SCRIPT_DEBUG=${SCRIPT_DEBUG-true}
 WP_VERSION=${WP_VERSION-"latest"}
 
 # Include useful functions
@@ -134,19 +132,3 @@ wp google-site-kit reset
 status_message "Setting permalink structure..."
 wp rewrite structure '%postname%' --hard --quiet
 
-# Configure site constants.
-status_message "Configuring site constants..."
-WP_DEBUG_CURRENT=$(wp config get --type=constant --format=json WP_DEBUG | tr -d '\r')
-
-if [ "$WP_DEBUG" != $WP_DEBUG_CURRENT ]; then
-	wp config set WP_DEBUG $WP_DEBUG --raw --type=constant --quiet
-	WP_DEBUG_RESULT=$(wp config get --type=constant --format=json WP_DEBUG | tr -d '\r')
-	status_message "WP_DEBUG: $WP_DEBUG_RESULT..."
-fi
-
-SCRIPT_DEBUG_CURRENT=$(wp config get --type=constant --format=json SCRIPT_DEBUG | tr -d '\r')
-if [ "$SCRIPT_DEBUG" != $SCRIPT_DEBUG_CURRENT ]; then
-	wp config set SCRIPT_DEBUG $SCRIPT_DEBUG --raw --type=constant --quiet
-	SCRIPT_DEBUG_RESULT=$(wp config get --type=constant --format=json SCRIPT_DEBUG | tr -d '\r')
-	status_message "SCRIPT_DEBUG: $SCRIPT_DEBUG_RESULT..."
-fi

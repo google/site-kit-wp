@@ -1,0 +1,243 @@
+/**
+ * MUI 3 Variables.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Color scheme
+$c-site-kit-sk-0: #fff;
+$c-site-kit-sk-10: #f1fff7;
+$c-site-kit-sk-50: #d0fbe1;
+$c-site-kit-sk-100: #b8e5ca;
+$c-site-kit-sk-200: #93c9a8;
+$c-site-kit-sk-300: #77ad8c;
+$c-site-kit-sk-400: #5c9271;
+$c-site-kit-sk-500: #3c7251;
+$c-site-kit-sk-600: #265c3b;
+$c-site-kit-sk-700: #144a29;
+$c-site-kit-sk-800: #033918;
+$c-site-kit-sk-900: #00220d;
+$c-site-kit-sk-1000: #000;
+$c-neutral-n-0: #fff;
+$c-neutral-n-10: #f3f5f7;
+$c-neutral-n-50: #ebeef0;
+$c-neutral-n-100: #cbd0d3;
+$c-neutral-n-200: #b8bdb9;
+$c-neutral-n-300: #999f9b;
+$c-neutral-n-400: #7b807d;
+$c-neutral-n-500: #6c726e;
+$c-neutral-n-600: #464b48;
+$c-neutral-n-700: #333935;
+$c-neutral-n-800: #232824;
+$c-neutral-n-900: #161b18;
+$c-neutral-n-1000: #000;
+$c-teal-t-0: #fff;
+$c-teal-t-10: #eff;
+$c-teal-t-50: #c1ffff;
+$c-teal-t-100: #9cebeb;
+$c-teal-t-200: #6fd3d3;
+$c-teal-t-300: #4bbbbb;
+$c-teal-t-400: #2f9f9f;
+$c-teal-t-500: #108080;
+$c-teal-t-600: #066;
+$c-teal-t-700: #004c4c;
+$c-teal-t-800: #003434;
+$c-teal-t-900: #001e1e;
+$c-teal-t-1000: #000;
+$c-red-r-0: #fff;
+$c-red-r-10: #fff8f6;
+$c-red-r-50: #ffded3;
+$c-red-r-100: #ffc2ae;
+$c-red-r-200: #ff9b7a;
+$c-red-r-300: #e77d5b;
+$c-red-r-400: #cc6240;
+$c-red-r-500: #ac4220;
+$c-red-r-600: #962c0a;
+$c-red-r-700: #7a1e00;
+$c-red-r-800: #531400;
+$c-red-r-900: #300c00;
+$c-red-r-1000: #000;
+$c-pink-p-0: #fff;
+$c-pink-p-10: #fff7fd;
+$c-pink-p-50: #ffd7f6;
+$c-pink-p-100: #ffb6ef;
+$c-pink-p-200: #ee92da;
+$c-pink-p-300: #d276be;
+$c-pink-p-400: #b75ba2;
+$c-pink-p-500: #973b82;
+$c-pink-p-600: #80256d;
+$c-pink-p-700: #6f135b;
+$c-pink-p-800: #5d0149;
+$c-pink-p-900: #38002c;
+$c-pink-p-1000: #000;
+$c-green-g-0: #fff;
+$c-green-g-10: #f5ffef;
+$c-green-g-50: #d8ffc0;
+$c-green-g-100: #bae79f;
+$c-green-g-200: #9dca82;
+$c-green-g-300: #81ae66;
+$c-green-g-400: #66934b;
+$c-green-g-500: #46732b;
+$c-green-g-600: #305d15;
+$c-green-g-700: #1f4c04;
+$c-green-g-800: #133400;
+$c-green-g-900: #0c1f00;
+$c-green-g-1000: #000;
+$c-blue-b-0: #fff;
+$c-blue-b-10: #f8faff;
+$c-blue-b-50: #dce8ff;
+$c-blue-b-100: #bed4ff;
+$c-blue-b-200: #9bb8f0;
+$c-blue-b-300: #7f9cd4;
+$c-blue-b-400: #6380b8;
+$c-blue-b-500: #446199;
+$c-blue-b-600: #2d4a82;
+$c-blue-b-700: #1b3870;
+$c-blue-b-800: #0a275f;
+$c-blue-b-900: #001745;
+$c-blue-b-1000: #000;
+$c-yellow-y-0: #fff;
+$c-yellow-y-10: #fffaef;
+$c-yellow-y-50: #ffe4b1;
+$c-yellow-y-100: #fece72;
+$c-yellow-y-200: #e1b155;
+$c-yellow-y-300: #c59539;
+$c-yellow-y-400: #aa7a1e;
+$c-yellow-y-500: #895a00;
+$c-yellow-y-600: #684500;
+$c-yellow-y-700: #4e3300;
+$c-yellow-y-800: #352300;
+$c-yellow-y-900: #1f1400;
+$c-yellow-y-1000: #000;
+$c-violet-v-0: #fff;
+$c-violet-v-10: #fbf9ff;
+$c-violet-v-50: #dbc5ff;
+$c-violet-v-100: #c4a0ff;
+$c-violet-v-200: #a983e6;
+$c-violet-v-300: #8e68cb;
+$c-violet-v-400: #6e48ab;
+$c-violet-v-500: #573195;
+$c-violet-v-600: #462083;
+$c-violet-v-700: #340e71;
+$c-violet-v-800: #340e71;
+$c-violet-v-900: #24005f;
+$c-violet-v-1000: #000;
+
+// Color tokens
+$c-surfaces-on-background: $c-neutral-n-900;
+$c-surfaces-on-background-variant: $c-neutral-n-500;
+$c-surfaces-background: $c-neutral-n-10;
+$c-surfaces-on-surface: $c-neutral-n-900;
+$c-surfaces-on-surface-variant: $c-neutral-n-500;
+$c-surfaces-surface: $c-neutral-n-0;
+$c-surfaces-surface-1: $c-neutral-n-50;
+$c-surfaces-surface-2: $c-neutral-n-100;
+$c-surfaces-inverse-on-surface: $c-neutral-n-50;
+$c-surfaces-inverse-surface: $c-neutral-n-900;
+$c-content-on-primary: $c-site-kit-sk-0;
+$c-content-primary: $c-site-kit-sk-500;
+$c-content-on-primary-container: $c-site-kit-sk-600;
+$c-content-primary-container: $c-site-kit-sk-100;
+$c-content-on-secondary: $c-teal-t-0;
+$c-content-secondary: $c-teal-t-500;
+$c-content-on-secondary-container: $c-teal-t-600;
+$c-content-secondary-container: $c-teal-t-50;
+$c-content-on-tertiary-container: #225858;
+$c-content-tertiary-container: #d5f6f6;
+$c-utility-on-error: $c-red-r-0;
+$c-utility-error: $c-red-r-500;
+$c-utility-on-error-container: $c-red-r-700;
+$c-utility-error-container: $c-red-r-50;
+$c-utility-on-success: $c-green-g-0;
+$c-utility-success: $c-green-g-500;
+$c-utility-on-success-container: $c-green-g-700;
+$c-utility-success-container: $c-green-g-100;
+$c-utility-on-warning: $c-yellow-y-0;
+$c-utility-warning: $c-yellow-y-500;
+$c-utility-on-warning-container: $c-yellow-y-700;
+$c-utility-warning-container: $c-yellow-y-50;
+$c-utility-divider: $c-neutral-n-50;
+$c-utility-divider-1: $c-neutral-n-100;
+$c-utility-outline: $c-neutral-n-200;
+$c-interactive-focus: $c-neutral-n-1000;
+$c-interactive-inverse-focus: $c-neutral-n-0;
+$c-interactive-on-disable-container: rgba(3, 14, 7, 0.32);
+$c-interactive-disable-container: rgba(8, 42, 65, 0.08);
+$c-interactive-inverse-on-disable-container: rgba(255, 255, 255, 0.4);
+$c-interactive-inverse-disable-container: rgba(255, 255, 255, 0.12);
+$c-interactive-primary-hover: rgba($c-site-kit-sk-900, 0.24);
+$c-interactive-primary-focus: rgba($c-site-kit-sk-900, 0.48);
+$c-interactive-primary-press: rgba($c-site-kit-sk-900, 0.32);
+$c-interactive-secondary-hover: rgba($c-neutral-n-900, 0.16);
+$c-interactive-secondary-focus: rgba($c-neutral-n-900, 0.36);
+$c-interactive-secondary-press: rgba($c-neutral-n-900, 0.24);
+$c-interactive-tertiary-hover: rgba($c-neutral-n-900, 0.08);
+$c-interactive-tertiary-focus: rgba($c-neutral-n-900, 0.26);
+$c-interactive-tertiary-press: rgba($c-neutral-n-900, 0.16);
+
+// Custom color not from palette.
+$c-content-primary-hover: #2e5f41;
+$c-grey-g-900: #202124;
+
+// Font sizes
+$fs-display-lg: 58px;
+$fs-display-md: 46px;
+$fs-display-sm: 38px;
+$fs-headline-lg: 32px;
+$fs-headline-md: 28px;
+$fs-headline-sm: 22px;
+$fs-title-lg: 18px;
+$fs-title-md: 16px;
+$fs-title-sm: 14px;
+$fs-label-lg: 16px;
+$fs-label-md: 14px;
+$fs-label-sm: 12px;
+$fs-body-lg: 16px;
+$fs-body-md: 14px;
+$fs-body-sm: 12px;
+$fs-link-lg: 16px;
+$fs-link-md: 14px;
+$fs-link-sm: 12px;
+
+// Line heights
+$lh-display-lg: 1.1;
+$lh-display-md: 1.13;
+$lh-display-sm: 1.158;
+$lh-headline-lg: 1.25;
+$lh-headline-md: 1.286;
+$lh-headline-sm: 1.27;
+$lh-title-lg: 1.33;
+$lh-title-md: 1.25;
+$lh-title-sm: 1.14;
+$lh-label-lg: 1.5;
+$lh-label-md: 1.43;
+$lh-label-sm: 1.33;
+$lh-body-lg: 1.5;
+$lh-body-md: 1.43;
+$lh-body-sm: 1.33;
+$lh-link-lg: 1.5;
+$lh-link-md: 1.43;
+$lh-link-sm: 1.33;
+
+// Border radiuses
+$br-xs: 8px;
+$br-sm: 16px;
+$br-md: 24px;
+$br-lg: 100px;
+
+// Letter spacing
+$ls-xs: 0.2px;
+$ls-s: 0.25px;
+$ls-m: 0.5px;

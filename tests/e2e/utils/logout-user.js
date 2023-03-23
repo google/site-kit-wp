@@ -4,13 +4,15 @@
 import { createURL, isCurrentURL } from '@wordpress/e2e-test-utils';
 
 /**
+ * Internal dependencies
+ */
+import { deleteAuthCookie } from './delete-auth-cookie';
+
+/**
  * Deletes authentication cookies to sign out the current user.
  */
 export async function logoutUser() {
-	const cookies = ( await page.cookies() )
-		.filter( ( cookie ) => cookie.name.match( /^wordpress_/ ) )
-		.filter( ( cookie ) => cookie.name !== 'wordpress_test_cookie' );
-	await page.deleteCookie( ...cookies );
+	await deleteAuthCookie();
 
 	if ( ! isCurrentURL( 'wp-login.php' ) ) {
 		await page.goto( createURL( 'wp-login.php' ) );

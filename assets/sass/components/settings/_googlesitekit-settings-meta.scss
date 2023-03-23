@@ -44,15 +44,17 @@
 	}
 
 	.googlesitekit-settings-meta__user-details {
-		font-size: 0.875rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 	}
 
 	.googlesitekit-settings-meta__user {
-		font-weight: $fw-primary-bold;
+		font-weight: $fw-bold;
 		margin: 0;
 	}
 
 	.googlesitekit-settings-meta__unlink {
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 	}
 }

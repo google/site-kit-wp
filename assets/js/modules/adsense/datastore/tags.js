@@ -17,166 +17,17 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidClientID } from '../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
 import tagMatchers from '../util/tag-matchers';
 
-const { commonActions, createRegistrySelector } = Data;
-
-const fetchGetTagPermissionStore = createFetchStore( {
-	baseName: 'getTagPermission',
-	controlCallback: ( { clientID } ) => {
-		return API.get(
-			'modules',
-			'adsense',
-			'tag-permission',
-			{ clientID },
-			{
-				useCache: false,
-			}
-		);
-	},
-	reducerCallback: ( state, { accountID, permission }, { clientID } ) => {
-		return {
-			...state,
-			tagPermissions: {
-				...( state.tagPermissions || {} ),
-				[ clientID ]: { accountID, permission },
-			},
-		};
-	},
-	argsToParams: ( clientID ) => {
-		return { clientID };
-	},
-	validateParams: ( { clientID } = {} ) => {
-		invariant( clientID, 'clientID is required.' );
-	},
-} );
-
-const existingTagStore = createExistingTagStore( {
+const store = createExistingTagStore( {
 	storeName: MODULES_ADSENSE,
 	tagMatchers,
 	isValidTag: isValidClientID,
 } );
-
-const baseInitialState = {
-	tagPermissions: {},
-};
-
-const baseResolvers = {
-	*getTagPermission( clientID ) {
-		if ( undefined === clientID ) {
-			return;
-		}
-
-		const registry = yield commonActions.getRegistry();
-		const existingPermission = registry
-			.select( MODULES_ADSENSE )
-			.getTagPermission( clientID );
-		if ( existingPermission !== undefined ) {
-			return;
-		}
-
-		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission(
-			clientID
-		);
-	},
-};
-
-const baseSelectors = {
-	/**
-	 * Checks whether the user has access to the existing AdSense tag.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @return {(boolean|null|undefined)} `true` or `false` if tag permission is available,
-	 *                                    `null` if no existing tag,
-	 *                                    otherwise `undefined` if resolution is incomplete.
-	 */
-	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
-		const hasExistingTag = select( MODULES_ADSENSE ).hasExistingTag();
-
-		if ( hasExistingTag === undefined ) {
-			return undefined;
-		} else if ( hasExistingTag ) {
-			const clientID = select( MODULES_ADSENSE ).getExistingTag();
-
-			return select( MODULES_ADSENSE ).hasTagPermission( clientID );
-		}
-
-		return null;
-	} ),
-
-	/**
-	 * Checks whether the user has access to an existing Google AdSense tag / client.
-	 *
-	 * This can be an existing tag found on the site, or any Google AdSense client.
-	 * If the account ID is known, it should be specified as well.
-	 *
-	 * Returns `undefined` if the permission check has not yet loaded.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param {Object} state    Data store's state.
-	 * @param {string} clientID The AdSense Client ID to check permissions for.
-	 * @return {(boolean|undefined)} True if the user has access, false if not; `undefined` if not loaded.
-	 */
-	hasTagPermission: createRegistrySelector(
-		( select ) => ( state, clientID ) => {
-			const { permission } =
-				select( MODULES_ADSENSE ).getTagPermission( clientID ) || {};
-
-			return permission;
-		}
-	),
-
-	/**
-	 * Checks permissions for an existing Google AdSense tag / client.
-	 *
-	 * This can be an existing tag found on the site, or any Google AdSense client.
-	 * If the account ID is known, it should be specified as well.
-	 *
-	 * Returns `undefined` if the permission check has not yet loaded.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param {Object} state    Data store's state.
-	 * @param {string} clientID The AdSense Client ID to check permissions for.
-	 * @return {(Object|undefined)} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
-	 */
-	getTagPermission( state, clientID ) {
-		const { tagPermissions } = state;
-
-		return tagPermissions[ clientID ];
-	},
-};
-
-const store = Data.combineStores(
-	existingTagStore,
-	fetchGetTagPermissionStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
-
-export const initialState = store.initialState;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
 
 export default store;

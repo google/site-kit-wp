@@ -21,8 +21,8 @@
  */
 import {
 	render,
-	waitFor,
 	createTestRegistry,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
@@ -32,6 +32,9 @@ import * as fixtures from '../../datastore/__fixtures__';
 import {
 	provideModules,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
+	provideUserInfo,
+	provideModuleRegistrations,
 } from '../../../../../../tests/js/utils';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
@@ -39,8 +42,15 @@ describe( 'SettingsEdit', () => {
 	let registry;
 
 	beforeEach( () => {
+		fetchMock.get( new RegExp( 'analytics/data/settings' ), {
+			body: {
+				ownerID: 1,
+			},
+		} );
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideUserInfo( registry );
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -50,37 +60,108 @@ describe( 'SettingsEdit', () => {
 		] );
 	} );
 
-	it( 'sets the account ID and property ID of an existing tag when present', async () => {
-		fetchMock.get( /tagmanager\/data\/settings/, { body: {} } );
+	it( 'should not make any GTM API request and renders the settings screen without errors if GTM is not available', async () => {
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		fetchMock.get( new RegExp( 'analytics/data/settings' ), {
+			body: {
+				ownerID: 1,
+			},
+		} );
+		fetchMock.get( new RegExp( 'analytics-4/data/settings' ), {
+			body: {},
+		} );
+
+		fetchMock.get( new RegExp( 'example\\.com' ), {
+			body: [],
+			status: 200,
+		} );
+
+		const { accounts, properties, profiles } =
+			fixtures.accountsPropertiesProfiles;
+
+		const existingTag = {
+			/* eslint-disable sitekit/acronym-case */
+			accountID: profiles[ 0 ].accountId,
+			propertyID: profiles[ 0 ].webPropertyId,
+			/* eslint-enable */
+		};
+
+		const { accountID, propertyID } = existingTag;
+
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( properties, { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProfiles( profiles, { accountID, propertyID } );
+
+		const { container, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		// Verify GTM is not available.
+		expect(
+			registry.select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+		).toBe( false );
+
+		// Verify no requests were made to GTM module.
+		expect( fetchMock ).not.toHaveFetched(
+			new RegExp( 'tagmanager/data' )
+		);
+
+		// Verify that the Account select dropdown is rendered in the settings screen.
+		expect(
+			container.querySelector(
+				'.googlesitekit-analytics__select-account'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'does not set the account ID or property ID of an existing tag when present', async () => {
+		provideModuleRegistrations( registry );
+		fetchMock.get( new RegExp( 'tagmanager/data/settings' ), { body: {} } );
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/properties'
+			),
 			{ body: [] }
 		);
 		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+			),
 			{
 				body: ga4Fixtures.accountSummaries,
 				status: 200,
 			}
 		);
 		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+			),
 			{
 				body: ga4Fixtures.webDataStreamsBatch,
 				status: 200,
 			}
 		);
 
-		fetchMock.get( /\example.com/, {
+		fetchMock.get( new RegExp( 'example\\.com' ), {
 			body: [],
 			status: 200,
 		} );
 
-		const {
-			accounts,
-			properties,
-			profiles,
-		} = fixtures.accountsPropertiesProfiles;
+		const { accounts, properties, profiles } =
+			fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			/* eslint-disable sitekit/acronym-case */
 			accountID: profiles[ 0 ].accountId,
@@ -106,24 +187,22 @@ describe( 'SettingsEdit', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-			{
-				accountID: existingTag.accountID,
-				permission: true,
-			},
-			{ propertyID: existingTag.propertyID }
-		);
 
-		await waitFor( () => {
-			render( <SettingsEdit />, { registry } );
+		const { waitForRegistry } = render( <SettingsEdit />, {
+			registry,
 		} );
 
-		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
-			existingTag.accountID
-		);
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
-			existingTag.propertyID
-		);
+		await waitForRegistry();
+
+		// Wait for additional resolvers to run.
+		await act( waitForDefaultTimeouts );
+
+		expect(
+			registry.select( MODULES_ANALYTICS ).getAccountID()
+		).toBeUndefined();
+		expect(
+			registry.select( MODULES_ANALYTICS ).getPropertyID()
+		).toBeUndefined();
 		expect( registry.select( MODULES_ANALYTICS ).hasErrors() ).toBeFalsy();
 	} );
 } );

@@ -26,8 +26,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
-import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	MODULES_ANALYTICS,
@@ -57,9 +57,10 @@ export default function PropertySelectIncludingGA4() {
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 	const isLoading = useSelect( ( select ) => {
-		const isLoadingAccounts = ! select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getAccounts' );
+		const isLoadingAccounts =
+			! select( MODULES_ANALYTICS ).hasFinishedResolution(
+				'getAccounts'
+			);
 		const isLoadingPropertiesGA4 = ! select(
 			MODULES_ANALYTICS_4
 		).hasFinishedResolution( 'getProperties', [ accountID ] );
@@ -125,7 +126,7 @@ export default function PropertySelectIncludingGA4() {
 
 				ga4Dispatch.setPropertyID( ga4Property?._id || '' );
 				ga4Dispatch.setWebDataStreamID( webdatastream?._id || '' );
-				ga4Dispatch.setMeasurementID(
+				ga4Dispatch.updateSettingsForMeasurementID(
 					// eslint-disable-next-line sitekit/acronym-case
 					webdatastream?.webStreamData?.measurementId || ''
 				);
@@ -186,28 +187,30 @@ export default function PropertySelectIncludingGA4() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( (
-					{ id, name, internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
-				) => (
-					<Option
-						key={ id }
-						value={ id }
-						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
-					>
-						{ id === PROPERTY_CREATE
-							? name
-							: sprintf(
-									/* translators: 1: Property name. 2: Property ID. */
-									_x(
-										'%1$s (%2$s)',
-										'Analytics property name and ID',
-										'google-site-kit'
-									),
-									name,
-									id
-							  ) }
-					</Option>
-				) ) }
+				.map(
+					(
+						{ id, name, internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
+					) => (
+						<Option
+							key={ id }
+							value={ id }
+							data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
+						>
+							{ id === PROPERTY_CREATE
+								? name
+								: sprintf(
+										/* translators: 1: Property name. 2: Property ID. */
+										_x(
+											'%1$s (%2$s)',
+											'Analytics property name and ID',
+											'google-site-kit'
+										),
+										name,
+										id
+								  ) }
+						</Option>
+					)
+				) }
 		</Select>
 	);
 }

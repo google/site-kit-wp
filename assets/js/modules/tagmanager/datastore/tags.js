@@ -17,154 +17,18 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from './constants';
 import { isValidContainerID } from '../util/validation';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
 import tagMatchers from '../util/tag-matchers';
 
-const { createRegistrySelector } = Data;
-
-const fetchGetTagPermissionStore = createFetchStore( {
-	baseName: 'getTagPermission',
-	argsToParams: ( containerID ) => {
-		return { containerID };
-	},
-	validateParams: ( { containerID } = {} ) => {
-		invariant(
-			isValidContainerID( containerID ),
-			'A valid containerID is required to for fetching permission.'
-		);
-	},
-	controlCallback: ( { containerID } ) =>
-		API.get(
-			'modules',
-			'tagmanager',
-			'tag-permission',
-			{ containerID },
-			{ useCache: false }
-		),
-	reducerCallback: ( state, { accountID, permission }, { containerID } ) => {
-		return {
-			...state,
-			tagPermission: {
-				...state.tagPermission,
-				[ containerID ]: {
-					accountID,
-					permission,
-				},
-			},
-		};
-	},
-} );
-
-const existingTagStore = createExistingTagStore( {
+const store = createExistingTagStore( {
 	storeName: MODULES_TAGMANAGER,
 	tagMatchers,
 	isValidTag: isValidContainerID,
 } );
-
-const baseInitialState = {
-	tagPermission: {},
-};
-
-const baseResolvers = {
-	*getTagPermission( containerID ) {
-		if ( ! isValidContainerID( containerID ) ) {
-			return;
-		}
-		const { select } = yield Data.commonActions.getRegistry();
-
-		if (
-			select( MODULES_TAGMANAGER ).hasTagPermission( containerID ) ===
-			undefined
-		) {
-			yield fetchGetTagPermissionStore.actions.fetchGetTagPermission(
-				containerID
-			);
-		}
-	},
-};
-
-const baseSelectors = {
-	/**
-	 * Checks permissions for an existing Google Tag Manager container.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @param {Object} state       Data store's state.
-	 * @param {string} containerID Container publicId to check permission for.
-	 * @return {(Object|undefined)} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
-	 */
-	getTagPermission( state, containerID ) {
-		return state.tagPermission[ containerID ];
-	},
-
-	/**
-	 * Checks whether the user has access to the given tag.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @param {Object} state       Data store's state.
-	 * @param {string} containerID Container publicId to check permission for.
-	 * @return {(boolean|undefined)} Boolean: `true` if user has permission; `false` if not.
-	 */
-	hasTagPermission: createRegistrySelector(
-		( select ) => ( state, containerID ) => {
-			const { permission } =
-				select( MODULES_TAGMANAGER ).getTagPermission( containerID ) ||
-				{};
-
-			if ( permission === undefined ) {
-				return undefined;
-			}
-
-			return !! permission;
-		}
-	),
-
-	/**
-	 * Checks whether the user has access to the existing tag, if present.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @return {(boolean|null|undefined)} Boolean: `true` or `false` if tag permission is
-	 * 					                          available; `null` if no existing tag,
-	 *                                    otherwise undefined if resolution is incomplete.
-	 */
-	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
-		const hasExistingTag = select( MODULES_TAGMANAGER ).hasExistingTag();
-
-		if ( hasExistingTag === undefined ) {
-			return undefined;
-		} else if ( hasExistingTag ) {
-			const containerID = select( MODULES_TAGMANAGER ).getExistingTag();
-
-			return select( MODULES_TAGMANAGER ).hasTagPermission( containerID );
-		}
-
-		return null;
-	} ),
-};
-
-const store = Data.combineStores(
-	existingTagStore,
-	fetchGetTagPermissionStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
 
 export const {
 	initialState,

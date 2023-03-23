@@ -121,6 +121,7 @@ class Data_Request implements \ArrayAccess {
 	 *
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists( $key ) {
 		return array_key_exists( $key, $this->data );
 	}
@@ -132,6 +133,7 @@ class Data_Request implements \ArrayAccess {
 	 *
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet( $key ) {
 		if ( $this->offsetExists( $key ) ) {
 			return $this->data[ $key ];
@@ -146,6 +148,7 @@ class Data_Request implements \ArrayAccess {
 	 * @param string|int $key Key to set the value for.
 	 * @param mixed      $value New value for the given key.
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet( $key, $value ) {
 		// Data is immutable.
 	}
@@ -155,7 +158,8 @@ class Data_Request implements \ArrayAccess {
 	 *
 	 * @param string|int $key Key to unset.
 	 */
-	public function offsetUnset( $key ) {
+	#[\ReturnTypeWillChange]
+	public function offsetUnset( $key ) { // phpcs:ignore Squiz.Commenting.FunctionComment
 		// Data is immutable.
 	}
 }

@@ -35,13 +35,8 @@ import { partitionReport } from '../../../../../util/partition-report';
 import GoogleChart from '../../../../../components/GoogleChart';
 
 export default function SearchConsoleStats( props ) {
-	const {
-		data,
-		metrics,
-		selectedStats,
-		dateRangeLength,
-		gatheringData,
-	} = props;
+	const { data, metrics, selectedStats, dateRangeLength, gatheringData } =
+		props;
 
 	const { compareRange, currentRange } = partitionReport( data, {
 		dateRangeLength,

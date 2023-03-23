@@ -25,8 +25,9 @@
 	.googlesitekit-post-searcher__label {
 		background-color: $c-base;
 		color: $c-tertiary;
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
 		left: 12px;
+		letter-spacing: $ls-xs;
 		padding: 0 4px;
 		position: absolute;
 		top: -8px;

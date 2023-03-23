@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -33,7 +34,6 @@ import {
 	PERMISSION_AUTHENTICATE,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util';
-import Button from '../../components/Button';
 import Link from '../../components/Link';
 import useViewContext from '../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
@@ -49,9 +49,11 @@ export default function Description() {
 		select( CORE_SITE ).getProxySetupURL()
 	);
 
-	const isConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isConnected()
-	);
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -59,18 +61,23 @@ export default function Description() {
 		async ( event ) => {
 			event.preventDefault();
 
-			if ( proxySetupURL ) {
-				await trackEvent( viewContext, 'start_user_setup', 'proxy' );
-			}
-
-			if ( proxySetupURL && ! isConnected ) {
-				await trackEvent( viewContext, 'start_site_setup', 'proxy' );
-			}
+			await trackEvent(
+				`${ viewContext }_headerbar_viewonly`,
+				'start_user_setup',
+				proxySetupURL ? 'proxy' : 'custom-oauth'
+			);
 
 			navigateTo( proxySetupURL );
 		},
-		[ proxySetupURL, isConnected, navigateTo, viewContext ]
+		[ proxySetupURL, navigateTo, viewContext ]
 	);
+
+	const onLinkClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_headerbar_viewonly`,
+			'click_learn_more_link'
+		);
+	}, [ viewContext ] );
 
 	const description = canAuthenticate
 		? createInterpolateElement(
@@ -90,9 +97,9 @@ export default function Description() {
 				{
 					a: (
 						<Link
-							href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
-							inherit
+							href={ documentationURL }
 							external
+							onClick={ onLinkClick }
 							aria-label={ __(
 								'Learn more about dashboard sharing',
 								'google-site-kit'

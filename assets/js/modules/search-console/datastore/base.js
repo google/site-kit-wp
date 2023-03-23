@@ -20,16 +20,13 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { isFeatureEnabled } from '../../../features';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
+	ownedSettingsSlugs: [ 'propertyID' ],
 	storeName: MODULES_SEARCH_CONSOLE,
 	settingSlugs: [ 'propertyID', 'ownerID' ],
-	adminPage: isFeatureEnabled( 'unifiedDashboard' )
-		? undefined
-		: 'googlesitekit-module-search-console',
 	requiresSetup: false,
 	submitChanges,
 	validateCanSubmitChanges,

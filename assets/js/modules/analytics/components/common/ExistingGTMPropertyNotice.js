@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { sprintf, __ } from '@wordpress/i18n';
@@ -26,33 +31,51 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
-export default function ExistingGTMPropertyNotice() {
-	const gtmAnalyticsPropertyID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasTagPermission( gtmAnalyticsPropertyID )
+export default function ExistingGTMPropertyNotice( {
+	gtmAnalyticsPropertyID,
+} ) {
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 
-	// Don't display this notice if:
-	if (
-		! gtmAnalyticsPropertyID || // There is no GTM tag.
-		! gtmAnalyticsPropertyIDPermission // The current user doesn't have permissions for the GTM tag.
-	) {
+	if ( ! gtmAnalyticsPropertyID ) {
 		return null;
 	}
 
-	const message = sprintf(
-		/* translators: %s: Analytics tag ID */
-		__(
-			'You’re already using Google Analytics through Google Tag Manager with the property %s. Site Kit will therefore not place an Analytics tag because Tag Manager already covers it.',
-			'google-site-kit'
-		),
-		gtmAnalyticsPropertyID
-	);
+	if ( gtmAnalyticsPropertyID === propertyID ) {
+		return (
+			<p>
+				{ sprintf(
+					/* translators: %s: GTM property ID */
+					__(
+						'A Google Tag Manager container with a tag for the selected property, %s, was found on your site, so Site Kit will not place its own tag. If you would prefer to have Site Kit insert this tag, remove it from your Google Tag Manager container and update later in Settings.',
+						'google-site-kit'
+					),
+					gtmAnalyticsPropertyID
+				) }
+			</p>
+		);
+	}
 
-	return <p>{ message }</p>;
+	return (
+		<p>
+			{ sprintf(
+				/* translators: %s: GTM property ID */
+				__(
+					'An existing Google Analytics property with the ID %s was found on your site, added by Google Tag Manager.',
+					'google-site-kit'
+				),
+				gtmAnalyticsPropertyID
+			) }
+		</p>
+	);
 }
+
+ExistingGTMPropertyNotice.propTypes = {
+	gtmAnalyticsPropertyID: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.bool,
+	] ),
+};

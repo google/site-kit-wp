@@ -118,7 +118,7 @@ describe( 'AMPContainerSelect', () => {
 		);
 	} );
 
-	it( 'can select the "Set up a new container" option', async () => {
+	it( 'can select the "Set up a new container" option', () => {
 		const { account, containers } = factories.buildAccountWithContainers( {
 			container: { usageContext: [ CONTEXT_AMP ] },
 		} );
@@ -205,10 +205,14 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+			)
 		);
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/containers'
+			)
 		);
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
@@ -224,7 +228,9 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should render a loading state while containers are loading', () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/containers'
+			)
 		);
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
@@ -309,5 +315,32 @@ describe( 'AMPContainerSelect', () => {
 			queryByRole( 'menu', { hidden: true } )
 		).not.toBeInTheDocument();
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should disable the AMP container select if the user does not have module access', () => {
+		const { account } = factories.buildAccountWithContainers();
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( [ account ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
+
+		const { container } = render(
+			<AMPContainerSelect hasModuleAccess={ false } />,
+			{
+				registry,
+			}
+		);
+
+		// Verify that the AMP container select dropdown is disabled.
+		[
+			'.googlesitekit-tagmanager__select-container--amp',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
 	} );
 } );

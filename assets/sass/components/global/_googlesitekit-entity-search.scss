@@ -29,8 +29,8 @@
 			transform: translateY(-50%);
 			z-index: 3;
 
-			@media ( min-width: $bp-desktop ) {
-				right: 1px;
+			@media (min-width: $bp-desktop) {
+				right: 2px;
 			}
 
 			svg {
@@ -49,26 +49,29 @@
 		}
 
 		.mdc-button.googlesitekit-entity-search__close {
+			border-radius: 50%;
 			min-width: 36px;
 
-			@media ( min-width: $bp-tablet ) {
-				min-height: 32px;
-				min-width: 32px;
+			@media (min-width: $bp-tablet) {
+				min-height: 31px;
+				min-width: 31px;
 			}
 		}
 
 		.googlesitekit-entity-search__loading {
-			border-radius: 4px 4px 0 0;
+			border-radius: 0 0 $br-sm $br-sm;
 			bottom: -4px;
 			position: absolute;
 			right: 4px;
 			width: calc(100% - 8px);
 			z-index: 4;
 
-			@media ( min-width: $bp-wpAdminBarTablet ) {
-				bottom: -6px;
+			@media (min-width: $bp-wpAdminBarTablet) {
+				bottom: -4px;
+				left: 0;
+				margin: 0 auto;
 				right: 0;
-				width: 100%;
+				width: calc(100% - 25px);
 			}
 		}
 
@@ -78,43 +81,59 @@
 
 		.autocomplete__input {
 			border: none;
-			font-size: 14px;
+			border-radius: $br-lg;
+			font-size: $fs-body-md;
 			height: 34px;
+			letter-spacing: $ls-s;
 			margin: 0;
 			padding: 0 32px 0 0;
 
-			@media ( min-width: $bp-wpAdminBarTablet ) {
+			@media (min-width: $bp-wpAdminBarTablet) {
 				border: 1px solid $c-entity-search-input-border;
 				padding: 0 32px 0 16px;
 			}
 
+			&:hover {
+				border-color: $c-neutral-n-900;
+			}
+
 			&:focus {
-				border-width: 1px;
+				border-color: $c-content-primary;
+				border-width: 2px;
 			}
 		}
 
 		.autocomplete__menu {
-			background-color: $c-base;
-			border-radius: 6px;
-			box-shadow:
-				0 3px 2px rgba(124, 128, 132, 0.3),
-				0 3px 7px rgba(121, 125, 128, 0.3);
+
+			@include elevation-3;
+			background-color: $c-surfaces-surface;
+			border-radius: $br-sm;
 			margin-left: -12px;
+			overflow: hidden;
 			padding: 0;
 			top: calc(100% + 14px);
 			width: calc(100% + 24px);
 
-			@media ( min-width: $bp-wpAdminBarTablet ) {
+			@media (min-width: $bp-wpAdminBarTablet) {
 				margin: 0;
-				top: calc(100% + 2px);
+				top: calc(100% + 1px);
 				width: 100%;
 			}
 		}
 
 		.autocomplete__option {
 			color: $c-entity-search-autocomplete-options;
-			font-size: 14px;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 			line-height: 1;
+
+			&:first-child {
+				border-radius: $br-sm $br-sm 0 0;
+			}
+
+			&:last-child {
+				border-radius: 0 0 $br-sm $br-sm;
+			}
 		}
 
 		.autocomplete__option--focused,
@@ -133,16 +152,14 @@
 		}
 
 		.mdc-button__label {
-			display: none;
 
-			@media ( min-width: $bp-tablet ) {
-				display: inline-block;
+			@media (min-width: $bp-tablet) {
 				line-height: 0;
 			}
 
 			+ svg {
 
-				@media ( min-width: $bp-tablet ) {
+				@media (min-width: $bp-tablet) {
 					margin-left: 8px;
 				}
 			}
@@ -150,7 +167,7 @@
 
 		.mdc-button {
 			color: $c-entity-search-button;
-			font-weight: $fw-primary-normal;
+			font-weight: $fw-normal;
 			letter-spacing: 0.3px;
 			min-width: auto;
 			outline: none;
@@ -174,7 +191,7 @@
 	.googlesitekit-entity-search--is-open {
 		flex: 1;
 
-		@media ( max-width: $bp-wpAdminBarTablet ) {
+		@media (max-width: $bp-wpAdminBarTablet) {
 			align-items: center;
 			display: flex;
 			left: 0;

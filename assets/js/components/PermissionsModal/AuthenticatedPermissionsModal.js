@@ -26,10 +26,10 @@ import { useEffect, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Dialog } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
-import Dialog from '../Dialog';
 import Portal from '../Portal';
 const { useSelect, useDispatch, useRegistry } = Data;
 
@@ -38,10 +38,14 @@ const AuthenticatedPermissionsModal = () => {
 	const permissionsError = useSelect( ( select ) =>
 		select( CORE_USER ).getPermissionScopeError()
 	);
+	const unsatisfiedScopes = useSelect( ( select ) =>
+		select( CORE_USER ).getUnsatisfiedScopes()
+	);
 	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: permissionsError?.data?.scopes,
-			redirectURL: global.location.href,
+			redirectURL:
+				permissionsError?.data?.redirectURL || global.location.href,
 		} )
 	);
 
@@ -89,6 +93,15 @@ const AuthenticatedPermissionsModal = () => {
 	}
 
 	if ( permissionsError?.data?.skipModal ) {
+		return null;
+	}
+
+	if (
+		unsatisfiedScopes &&
+		permissionsError?.data?.scopes.every( ( scope ) =>
+			unsatisfiedScopes.includes( scope )
+		)
+	) {
 		return null;
 	}
 

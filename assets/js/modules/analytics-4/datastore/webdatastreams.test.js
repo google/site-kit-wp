@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import pick from 'lodash/pick';
+import { pick } from 'lodash';
 
 /**
  * Internal dependencies
@@ -31,16 +31,24 @@ import {
 	provideSiteInfo,
 	unsubscribeFromAll,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;
 
-	const createWebDataStreamsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-webdatastream/;
-	const webDataStreamsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/;
-	const webDataStreamsBatchEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/;
+	const createWebDataStreamsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
+	);
+	const webDataStreamsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
+	);
+	const webDataStreamsBatchEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+	);
 	const webDataStreamDotCom = {
 		name: 'properties/1000/dataStreams/2000',
 		webStreamData: {
@@ -114,6 +122,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
+				jest.useFakeTimers();
+
 				const propertyID = '12345';
 				const response = {
 					code: 'internal_server_error',
@@ -217,7 +227,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				);
 			} );
 
-			it( 'should not make a network request if webdatastreams for this account are already present', async () => {
+			it( 'should not make a network request if webdatastreams for this account are already present', () => {
 				const testPropertyID = '12345';
 				const propertyID = testPropertyID;
 
@@ -271,14 +281,71 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 		describe( 'getMatchingWebDataStream', () => {
 			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
+
+			it( 'should return NULL when no datastreams are matched', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.net',
+				} );
+
+				const datastream = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchingWebDataStream( webDataStreams );
+
+				expect( datastream ).toBeNull();
+			} );
+
+			it( 'should return the correct datastream when reference site URL matches exactly', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStream( webDataStreams )
+				).toEqual( webDataStreamDotCom );
+
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.org',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStream( webDataStreams )
+				).toEqual( webDataStreamDotOrg );
+			} );
+
+			it.each( [
+				[ 'protocol differences', 'https://example.org' ],
+				[ '"www." prefix', 'http://www.example.org' ],
+				[ 'trailing slash', 'https://www.example.org/' ],
+			] )(
+				'should return the correct datastream ignoring %s',
+				( _, referenceSiteURL ) => {
+					provideSiteInfo( registry, { referenceSiteURL } );
+
+					const datastream = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStream( webDataStreams );
+
+					expect( datastream ).toEqual( webDataStreamDotOrg );
+				}
+			);
+		} );
+
+		describe( 'getMatchingWebDataStreamByPropertyID', () => {
+			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
 			const propertyID = '12345';
 
 			it( 'should return undefined if web data streams arent loaded yet', () => {
+				jest.useFakeTimers();
+
 				freezeFetch( webDataStreamsEndpoint );
 
 				const datastream = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getMatchingWebDataStream( propertyID );
+					.getMatchingWebDataStreamByPropertyID( propertyID );
 				expect( datastream ).toBeUndefined();
 			} );
 
@@ -292,22 +359,34 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				const datastream = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getMatchingWebDataStream( propertyID );
+					.getMatchingWebDataStreamByPropertyID( propertyID );
 				expect( datastream ).toBeNull();
 			} );
 
 			it( 'should return the correct datastream when reference site URL matches exactly', () => {
-				provideSiteInfo( registry, {
-					referenceSiteURL: 'http://example.com',
-				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreams( webDataStreams, { propertyID } );
 
-				const datastream = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getMatchingWebDataStream( propertyID );
-				expect( datastream ).toEqual( webDataStreamDotCom );
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStreamByPropertyID( propertyID )
+				).toEqual( webDataStreamDotCom );
+
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.org',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStreamByPropertyID( propertyID )
+				).toEqual( webDataStreamDotOrg );
 			} );
 
 			it.each( [
@@ -326,7 +405,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 					const datastream = registry
 						.select( MODULES_ANALYTICS_4 )
-						.getMatchingWebDataStream( propertyID );
+						.getMatchingWebDataStreamByPropertyID( propertyID );
 					expect( datastream ).toEqual( webDataStreamDotOrg );
 				}
 			);
@@ -411,7 +490,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should not make a network request if webdatastreams for the selected properties are already present', async () => {
+			it( 'should not make a network request if webdatastreams for the selected properties are already present', () => {
 				for ( const [ propertyID, webdatastreams ] of Object.entries(
 					fixtures.webDataStreamsBatch
 				) ) {
@@ -481,6 +560,280 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					webDataStreamsBatchEndpoint
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+		} );
+
+		describe( 'getMatchedMeasurementIDsByPropertyIDs', () => {
+			const propertyIDs = fixtures.properties.map( ( { _id } ) => _id );
+
+			it( 'should return an empty object if the properties are not matched', async () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com',
+				} );
+
+				fetchMock.get( webDataStreamsBatchEndpoint, {
+					body: [],
+					status: 200,
+				} );
+
+				const matchedProperties = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchedMeasurementIDsByPropertyIDs( [ '1100' ] );
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetched(
+					webDataStreamsBatchEndpoint
+				);
+
+				expect( matchedProperties ).toEqual( {} );
+			} );
+
+			it( 'should return an object with matched property id as the key and measurement id as the value', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com',
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{ propertyIDs }
+					);
+
+				const matchedProperties = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchedMeasurementIDsByPropertyIDs( propertyIDs );
+
+				expect( matchedProperties ).toEqual( {
+					1000: '1A2BCD345E',
+				} );
+			} );
+		} );
+
+		describe( 'getAnalyticsConfigByMeasurementIDs', () => {
+			const accountSummaries = [
+				{
+					_id: '123456',
+					propertySummaries: [
+						{ _id: '1122334455' },
+						{ _id: '1122334456' },
+						{ _id: '1122334457' },
+					],
+				},
+				{
+					_id: '123457',
+					propertySummaries: [
+						{ _id: '1122334465' },
+						{ _id: '1122334466' },
+					],
+				},
+				{
+					_id: '123458',
+					propertySummaries: [ { _id: '1122334475' } ],
+				},
+			];
+
+			const propertyIDs = accountSummaries
+				.map( ( { propertySummaries } ) =>
+					propertySummaries.map( ( { _id } ) => _id )
+				)
+				.reduce( ( acc, propIDs ) => [ ...acc, ...propIDs ], [] );
+
+			const datastreams = {
+				1122334455: [
+					{
+						_id: '110',
+						webStreamData: {
+							defaultUri: 'http://example-1.test',
+							measurementId: 'G-1101', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+					{
+						_id: '111',
+						webStreamData: {
+							defaultUri: 'http://example-2.test',
+							measurementId: 'G-1102', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+				],
+				1122334465: [
+					{
+						_id: '112',
+						webStreamData: {
+							defaultUri: 'http://example-3.test',
+							measurementId: 'G-1103', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+					{
+						_id: '113',
+						webStreamData: {
+							defaultUri: 'http://example-4.test',
+							measurementId: 'G-1104', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+				],
+				1122334475: [
+					{
+						_id: '114',
+						webStreamData: {
+							defaultUri: 'http://example-5.test',
+							measurementId: 'G-1105', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+					{
+						_id: '115',
+						webStreamData: {
+							defaultUri: 'http://example.com',
+							measurementId: 'G-1106', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+					{
+						_id: '116',
+						webStreamData: {
+							defaultUri: 'http://example-7.test',
+							measurementId: 'G-1107', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+				],
+				1122334456: [],
+				1122334457: [],
+				1122334466: [],
+			};
+
+			beforeEach( () => {
+				provideSiteInfo( registry );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+					accountID: 'UA-abcd',
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+			} );
+
+			it( 'should return NULL when no summaries are returned from the endpoint', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( [] );
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( 'G-012345' );
+
+				expect( config ).toBeNull();
+			} );
+
+			it( 'should return the first config when found configs dont match the current site URL', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( datastreams, {
+						propertyIDs,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( [
+						'G-1107',
+						'G-1103',
+					] );
+
+				expect( config ).toEqual( {
+					accountID: '123457',
+					measurementID: 'G-1103',
+					propertyID: '1122334465',
+					webDataStreamID: '112',
+				} );
+			} );
+
+			it( 'should return the correct config when there is a config that matches the current site URL', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( datastreams, {
+						propertyIDs,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( [
+						'G-1101',
+						'G-1106',
+					] );
+
+				expect( config ).toEqual( {
+					accountID: '123458',
+					measurementID: 'G-1106',
+					propertyID: '1122334475',
+					webDataStreamID: '115',
+				} );
+			} );
+
+			it( 'should return NULL when there are no matching configs', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( datastreams, {
+						propertyIDs,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( [
+						'G-12345',
+						'G-12346',
+					] );
+
+				expect( config ).toBeNull();
+			} );
+
+			it( 'should return the correct config even if it doesnt match the site URL when only one measurement ID is requested', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( datastreams, {
+						propertyIDs,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( 'G-1103' );
+
+				expect( config ).toEqual( {
+					accountID: '123457',
+					measurementID: 'G-1103',
+					propertyID: '1122334465',
+					webDataStreamID: '112',
+				} );
 			} );
 		} );
 	} );

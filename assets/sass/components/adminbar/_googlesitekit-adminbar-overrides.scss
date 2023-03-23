@@ -23,7 +23,6 @@
 #wpadminbar {
 
 	.googlesitekit-adminbar {
-
 		// General
 		* {
 			font-family: $f-primary;
@@ -143,17 +142,6 @@
 			@extend .mdc-layout-grid__cell--span-8-tablet;
 		}
 
-		// Button
-		.mdc-button {
-
-			@extend .mdc-button;
-		}
-
-		.mdc-button--raised {
-
-			@extend .mdc-button--raised;
-		}
-
 		// Data Blocks
 		.googlesitekit-data-block {
 
@@ -190,19 +178,45 @@
 			@extend .googlesitekit-data-block__value;
 		}
 
-		// CTA Link
-		.googlesitekit-cta-link {
-
-			@extend .googlesitekit-cta-link;
-			height: auto;
-		}
-
 		.googlesitekit-adminbar__link {
 
 			@extend .googlesitekit-adminbar__link;
 		}
+	}
 
-		// CTA's
+	&.nojs .googlesitekit-noscript {
+
+		.mdc-layout-grid {
+
+			@extend .mdc-layout-grid;
+		}
+
+		.mdc-layout-grid__inner {
+
+			@extend .mdc-layout-grid__inner;
+		}
+
+		.mdc-layout-grid__cell {
+
+			@extend .mdc-layout-grid__cell;
+			@extend .mdc-layout-grid__cell--span-12-tablet;
+		}
+	}
+
+	// Higher-specificity overrides.
+	.googlesitekit-plugin .googlesitekit-adminbar {
+
+		.mdc-button {
+
+			@extend .mdc-button;
+		}
+
+		.mdc-button--raised {
+
+			@extend .mdc-button--raised;
+		}
+
+		// CTAs
 		.googlesitekit-cta {
 
 			@extend .googlesitekit-cta;
@@ -224,35 +238,20 @@
 			@extend .googlesitekit-cta__description;
 		}
 
-	}
-
-	&.nojs .googlesitekit-noscript {
-
-		.mdc-layout-grid {
-
-			@extend .mdc-layout-grid;
-		}
-
-		.mdc-layout-grid__inner {
-
-			@extend .mdc-layout-grid__inner;
-		}
-
-		.mdc-layout-grid__cell {
-
-			@extend .mdc-layout-grid__cell;
-			@extend .mdc-layout-grid__cell--span-12-tablet;
-		}
-
-	}
-
-	// Higher-specificity overrides.
-	.googlesitekit-plugin .googlesitekit-adminbar {
-
 		.googlesitekit-cta-link {
 
+			@extend .googlesitekit-cta-link;
+
 			background-color: transparent;
-			font-size: 16px;
+			font-size: $fs-body-lg;
+			height: auto;
+			letter-spacing: $ls-m;
+			width: max-content;
+		}
+
+		.googlesitekit-error-cta-wrapper .mdc-button {
+
+			margin-bottom: 24px;
 		}
 
 		// New Analytics CTA Link
@@ -265,9 +264,8 @@
 			}
 
 			.mdc-button__label {
-				font-weight: $fw-primary-normal;
+				font-weight: $fw-normal;
 				letter-spacing: 1.25px;
-				text-transform: uppercase;
 			}
 		}
 	}

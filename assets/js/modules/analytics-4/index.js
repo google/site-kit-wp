@@ -16,4 +16,143 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import {
+	EngagedTrafficSourceWidget,
+	LoyalVisitorsWidget,
+	NewVisitorsWidget,
+	PopularContentWidget,
+	PopularProductsWidget,
+	TopCitiesWidget,
+	TopCountriesWidget,
+	TopTrafficSourceWidget,
+	TopConvertingTrafficSourceWidget,
+} from './components/widgets';
+import { MODULES_ANALYTICS_4 } from './datastore/constants';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+import { isFeatureEnabled } from '../../features';
+
 export { registerStore } from './datastore';
+
+export const registerModule = ( modules ) => {
+	modules.registerModule( 'analytics-4', {
+		storeName: MODULES_ANALYTICS_4,
+	} );
+};
+
+export const registerWidgets = ( widgets ) => {
+	if ( isFeatureEnabled( 'userInput' ) ) {
+		/*
+		 * Key metrics widgets.
+		 */
+		widgets.registerWidget(
+			'kmAnalyticsLoyalVisitors',
+			{
+				Component: LoyalVisitorsWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			'kmAnalyticsNewVisitors',
+			{
+				Component: NewVisitorsWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			'kmAnalyticsTopTrafficSource',
+			{
+				Component: TopTrafficSourceWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			'kmAnalyticsEngagedTrafficSource',
+			{
+				Component: EngagedTrafficSourceWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			'kmAnalyticsPopularContent',
+			{
+				Component: PopularContentWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			'kmAnalyticsPopularProducts',
+			{
+				Component: PopularProductsWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			'kmAnalyticsTopCities',
+			{
+				Component: TopCitiesWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			'kmAnalyticsTopCountries',
+			{
+				Component: TopCountriesWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			'kmTopConvertingTrafficSource',
+			{
+				Component: TopConvertingTrafficSourceWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
+};

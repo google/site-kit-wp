@@ -36,6 +36,7 @@ import {
 	FORM_SETUP,
 } from '../assets/js/modules/tagmanager/datastore/constants';
 import { CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import {
 	createTestRegistry,
 	provideSiteInfo,
@@ -150,7 +151,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		}
 	)
 	.add(
-		'View, open with all settings, with existing tag (with access)',
+		'View, open with all settings, with existing tag',
 		( args, { registry } ) => {
 			const accountID = '123456789';
 			registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
@@ -163,44 +164,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 			registry
 				.dispatch( MODULES_TAGMANAGER )
 				.receiveGetExistingTag( 'GTM-G000GL3' );
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetTagPermission(
-					{ accountID, permission: true },
-					{ containerID: 'GTM-G000GL3' }
-				);
-
-			return (
-				<Settings
-					registry={ registry }
-					route="/connected-services/tagmanager"
-				/>
-			);
-		},
-		{
-			decorators: [ withRegistry ],
-		}
-	)
-	.add(
-		'View, open with all settings, with existing tag (no access)',
-		( args, { registry } ) => {
-			const accountID = '123456789';
-			registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
-				...defaultSettings,
-				accountID,
-				containerID: 'GTM-S1T3K1T',
-				internalContainerID: '54321',
-				useSnippet: true,
-			} );
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetExistingTag( 'GTM-G000GL3' );
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetTagPermission(
-					{ accountID, permission: false },
-					{ containerID: 'GTM-G000GL3' }
-				);
 
 			return (
 				<Settings
@@ -391,7 +354,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		}
 	)
 	.add(
-		'Edit, with all settings, with existing tag (with access)',
+		'Edit, with all settings, with existing tag',
 		( args, { registry } ) => {
 			// eslint-disable-next-line sitekit/acronym-case
 			const accountID = fixtures.accounts[ 0 ].accountId;
@@ -421,12 +384,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 			registry
 				.dispatch( MODULES_TAGMANAGER )
 				.receiveGetExistingTag( 'GTM-G000GL3' );
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetTagPermission(
-					{ accountID, permission: true },
-					{ containerID: 'GTM-G000GL3' }
-				);
 
 			return (
 				<Settings
@@ -440,8 +397,15 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		}
 	)
 	.add(
-		'Edit, with all settings, with existing tag (no access)',
+		'Edit, with all settings, w/o module access',
 		( args, { registry } ) => {
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: false },
+					{ slug: 'tagmanager' }
+				);
+
 			// eslint-disable-next-line sitekit/acronym-case
 			const accountID = fixtures.accounts[ 0 ].accountId;
 			registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
@@ -469,13 +433,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 				.receiveGetSettings( defaultSettings );
 			registry
 				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetExistingTag( 'GTM-GXXXGL3' );
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetTagPermission(
-					{ accountID, permission: false },
-					{ containerID: 'GTM-GXXXGL3' }
-				);
+				.receiveGetExistingTag( 'GTM-G000GL3' );
 
 			return (
 				<Settings
@@ -489,41 +447,88 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		}
 	);
 
-storiesOf( 'Tag Manager Module/Settings/Primary AMP', module ).add(
-	'Edit, with all settings',
-	( args, { registry } ) => {
-		// eslint-disable-next-line sitekit/acronym-case
-		const accountID = fixtures.accounts[ 0 ].accountId;
-		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetAccounts( fixtures.accounts );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetContainers( fixtures.getContainers.all, { accountID } );
-		const [ container ] = registry
-			.select( MODULES_TAGMANAGER )
-			.getAMPContainers( accountID );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
+storiesOf( 'Tag Manager Module/Settings/Primary AMP', module )
+	.add(
+		'Edit, with all settings',
+		( args, { registry } ) => {
 			// eslint-disable-next-line sitekit/acronym-case
-			.setAMPContainerID( container.publicId );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setInternalAMPContainerID( container.containerId );
+			const accountID = fixtures.accounts[ 0 ].accountId;
+			registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					accountID,
+				} );
+			const [ container ] = registry
+				.select( MODULES_TAGMANAGER )
+				.getAMPContainers( accountID );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setAMPContainerID( container.publicId );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setInternalAMPContainerID( container.containerId );
 
-		return (
-			<Settings
-				registry={ registry }
-				route="/connected-services/tagmanager/edit"
-			/>
-		);
-	},
-	{
-		decorators: [ withRegistryPrimaryAMP ],
-	}
-);
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/tagmanager/edit"
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistryPrimaryAMP ],
+		}
+	)
+	.add(
+		'Edit, with all settings, w/o module access',
+		( args, { registry } ) => {
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: false },
+					{ slug: 'tagmanager' }
+				);
+
+			// eslint-disable-next-line sitekit/acronym-case
+			const accountID = fixtures.accounts[ 0 ].accountId;
+			registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					accountID,
+				} );
+			const [ container ] = registry
+				.select( MODULES_TAGMANAGER )
+				.getAMPContainers( accountID );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setAMPContainerID( container.publicId );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setInternalAMPContainerID( container.containerId );
+
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/tagmanager/edit"
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistryPrimaryAMP ],
+		}
+	);
 
 storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 	.add(
@@ -647,6 +652,61 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 				containerName: fixtures.getContainers.web[ 0 ].name,
 				ampContainerName: fixtures.getContainers.amp[ 0 ].name,
 			} );
+
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/tagmanager/edit"
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistrySecondaryAMP ],
+		}
+	)
+	.add(
+		'Edit, with all settings, w/o module access',
+		( args, { registry } ) => {
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: false },
+					{ slug: 'tagmanager' }
+				);
+
+			// eslint-disable-next-line sitekit/acronym-case
+			const accountID = fixtures.accounts[ 0 ].accountId;
+			registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					accountID,
+				} );
+			const [ webContainer ] = registry
+				.select( MODULES_TAGMANAGER )
+				.getWebContainers( accountID );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setContainerID( webContainer.publicId );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setInternalContainerID( webContainer.containerId );
+			const [ ampContainer ] = registry
+				.select( MODULES_TAGMANAGER )
+				.getAMPContainers( accountID );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setAMPContainerID( ampContainer.publicId );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setInternalAMPContainerID( ampContainer.containerId );
 
 			return (
 				<Settings

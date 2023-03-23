@@ -43,8 +43,8 @@ export default function Service( { module } ) {
 		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
 	);
 
-	const { name, owner } = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( module )
+	const { name, owner } = useSelect(
+		( select ) => select( CORE_MODULES ).getModule( module ) || {}
 	);
 
 	const Icon = useSelect( ( select ) =>
@@ -53,7 +53,9 @@ export default function Service( { module } ) {
 
 	return (
 		<li className="googlesitekit-view-only-menu__service">
-			<Icon />
+			<span className="googlesitekit-view-only-menu__service--icon">
+				<Icon height={ 26 } />
+			</span>
 			<span className="googlesitekit-view-only-menu__service--name">
 				{ name }
 			</span>
@@ -69,7 +71,7 @@ export default function Service( { module } ) {
 							owner.login
 						),
 						{
-							strong: <strong />,
+							strong: <strong title={ owner.login } />,
 						}
 					) }
 				</span>

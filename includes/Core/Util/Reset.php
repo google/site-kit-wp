@@ -259,7 +259,8 @@ class Reset {
 	 */
 	private function handle_reset_action( $nonce ) {
 		if ( ! wp_verify_nonce( $nonce, static::ACTION ) ) {
-			Authentication::invalid_nonce_error( static::ACTION );
+			$authentication = new Authentication( $this->context );
+			$authentication->invalid_nonce_error( static::ACTION );
 		}
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );

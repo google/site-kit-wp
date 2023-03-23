@@ -26,13 +26,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { _x } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ProgressBar from '../../../../../components/ProgressBar';
+import { ProgressBar } from 'googlesitekit-components';
 import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 import SetupAccount from './SetupAccount';
 import SetupCreateAccount from './SetupCreateAccount';
@@ -40,12 +40,15 @@ import SetupSelectAccount from './SetupSelectAccount';
 import { trackEvent } from '../../../../../util';
 import { AdBlockerWarning, ErrorNotices } from '../../common';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	ACCOUNT_STATUS_READY,
 	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,
 } from '../../../util/status';
 import useViewContext from '../../../../../hooks/useViewContext';
+import { useRefocus } from '../../../../../hooks/useRefocus';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -63,14 +66,11 @@ export default function SetupMain( { finishSetup } ) {
 		submitChanges,
 	} = useDispatch( MODULES_ADSENSE );
 
-	const [
-		isAwaitingBackgroundSubmit,
-		setIsAwaitingBackgroundSubmit,
-	] = useState( false );
+	const [ isAwaitingBackgroundSubmit, setIsAwaitingBackgroundSubmit ] =
+		useState( false );
 	// Submit changes for determined parameters in the background when they are valid.
-	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState(
-		false
-	);
+	const [ isSubmittingInBackground, setIsSubmittingInBackground ] =
+		useState( false );
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()
 	);
@@ -112,6 +112,13 @@ export default function SetupMain( { finishSetup } ) {
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasFinishedResolution( 'getAccounts' )
 	);
+	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const referenceSiteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingTag()
+	);
 
 	const account = accounts?.find( ( { _id } ) => _id === accountID );
 
@@ -137,11 +144,23 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
+		if ( ! Array.isArray( accounts ) ) {
+			return;
+		}
+
+		let newAccountID;
+
 		if (
-			accounts?.length === 1 &&
+			accounts.length === 1 &&
 			( ! accountID || accounts[ 0 ]._id !== accountID )
 		) {
-			setAccountID( accounts[ 0 ]._id );
+			newAccountID = accounts[ 0 ]._id;
+		} else if ( accounts.length === 0 && !! accountID ) {
+			newAccountID = '';
+		}
+
+		if ( newAccountID !== undefined ) {
+			setAccountID( newAccountID );
 			// Set flag to await background submission.
 			setIsAwaitingBackgroundSubmit( true );
 		}
@@ -188,52 +207,23 @@ export default function SetupMain( { finishSetup } ) {
 		submitChanges,
 	] );
 
-	// Reset all fetched data when user re-focuses tab.
-	useEffect( () => {
-		let timeout;
-		let needReset = false;
+	const reset = useCallback( () => {
+		// Do not reset if account status has not been determined yet, or
+		// if the account is approved.
+		if (
+			undefined === accountStatus ||
+			ACCOUNT_STATUS_READY === accountStatus
+		) {
+			return;
+		}
 
-		// Count 15  seconds once user focuses elsewhere.
-		const countIdleTime = () => {
-			timeout = global.setTimeout( () => {
-				needReset = true;
-			}, 15000 );
-		};
-
-		// Reset when user re-focuses after 15 seconds or more.
-		const reset = () => {
-			global.clearTimeout( timeout );
-
-			// Do not reset if user has been away for less than 15 seconds.
-			if ( ! needReset ) {
-				return;
-			}
-			needReset = false;
-
-			// Do not reset if account status has not been determined yet, or
-			// if the account is approved.
-			if (
-				undefined === accountStatus ||
-				ACCOUNT_STATUS_READY === accountStatus
-			) {
-				return;
-			}
-
-			// Unset any potential error.
-			clearError();
-			// Reset all data to force re-fetch.
-			resetAccounts();
-			resetAlerts();
-			resetClients();
-			resetSites();
-		};
-		global.addEventListener( 'focus', reset );
-		global.addEventListener( 'blur', countIdleTime );
-		return () => {
-			global.removeEventListener( 'focus', reset );
-			global.removeEventListener( 'blur', countIdleTime );
-			global.clearTimeout( timeout );
-		};
+		// Unset any potential error.
+		clearError();
+		// Reset all data to force re-fetch.
+		resetAccounts();
+		resetAlerts();
+		resetClients();
+		resetSites();
 	}, [
 		accountStatus,
 		clearError,
@@ -242,6 +232,9 @@ export default function SetupMain( { finishSetup } ) {
 		resetClients,
 		resetSites,
 	] );
+
+	// Reset all fetched data when user re-focuses window.
+	useRefocus( reset, 15000 );
 
 	useEffect( () => {
 		if ( accountStatus !== undefined ) {
@@ -257,7 +250,13 @@ export default function SetupMain( { finishSetup } ) {
 
 	let viewComponent;
 
-	if ( ! hasResolvedAccounts ) {
+	if (
+		! hasResolvedAccounts ||
+		accountID === undefined ||
+		userEmail === undefined ||
+		referenceSiteURL === undefined ||
+		existingTag === undefined
+	) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasErrors ) {
 		viewComponent = <ErrorNotices />;

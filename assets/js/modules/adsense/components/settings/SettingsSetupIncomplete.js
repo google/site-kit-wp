@@ -66,7 +66,6 @@ export default function SettingsSetupIncomplete() {
 						<Link
 							className="googlesitekit-settings-module__edit-button"
 							href={ adminReauthURL }
-							inherit
 						/>
 					),
 				}

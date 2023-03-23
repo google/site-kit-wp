@@ -134,7 +134,7 @@ export const createDurationFormat = ( durationInSeconds, options = {} ) => {
 		 */
 		formatDecimal() {
 			const formattedSeconds = sprintf(
-				// translators: %s number of seconds with "s" as the abbreviated unit.
+				// translators: %s: number of seconds with "s" as the abbreviated unit.
 				__( '%ds', 'google-site-kit' ),
 				seconds
 			);
@@ -144,12 +144,12 @@ export const createDurationFormat = ( durationInSeconds, options = {} ) => {
 			}
 
 			const formattedMinutes = sprintf(
-				// translators: %s number of minutes with "m" as the abbreviated unit.
+				// translators: %s: number of minutes with "m" as the abbreviated unit.
 				__( '%dm', 'google-site-kit' ),
 				minutes
 			);
 			const formattedHours = sprintf(
-				// translators: %s number of hours with "h" as the abbreviated unit.
+				// translators: %s: number of hours with "h" as the abbreviated unit.
 				__( '%dh', 'google-site-kit' ),
 				hours
 			);

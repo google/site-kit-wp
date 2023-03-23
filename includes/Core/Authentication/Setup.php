@@ -86,11 +86,12 @@ class Setup {
 		User_Options $user_options,
 		Authentication $authentication
 	) {
-		$this->context        = $context;
-		$this->user_options   = $user_options;
-		$this->authentication = $authentication;
-		$this->credentials    = $authentication->credentials();
-		$this->google_proxy   = $authentication->get_google_proxy();
+		$this->context                = $context;
+		$this->user_options           = $user_options;
+		$this->authentication         = $authentication;
+		$this->credentials            = $authentication->credentials();
+		$this->google_proxy           = $authentication->get_google_proxy();
+		$this->proxy_support_link_url = $authentication->get_proxy_support_link_url();
 	}
 
 	/**
@@ -105,13 +106,29 @@ class Setup {
 	}
 
 	/**
+	 * Composes the oAuth proxy get help link.
+	 *
+	 * @since 1.81.0
+	 *
+	 * @return string The get help link.
+	 */
+	private function get_oauth_proxy_failed_help_link() {
+		return sprintf(
+			/* translators: 1: Support link URL. 2: Get help string. */
+			__( '<a href="%1$s" target="_blank">%2$s</a>', 'google-site-kit' ),
+			esc_url( add_query_arg( 'error_id', 'request_to_auth_proxy_failed', $this->proxy_support_link_url ) ),
+			esc_html__( 'Get help', 'google-site-kit' )
+		);
+	}
+
+	/**
 	 * Handles the setup start action, taking the user to the proxy setup screen.
 	 *
 	 * @since 1.48.0
 	 */
 	public function handle_action_setup_start() {
-		$nonce        = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
-		$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
+		$nonce        = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'nonce' ) );
+		$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_DEFAULT );
 
 		$this->verify_nonce( $nonce, Google_Proxy::ACTION_SETUP_START );
 
@@ -130,8 +147,48 @@ class Setup {
 			? $this->google_proxy->sync_site_fields( $this->credentials, 'sync' )
 			: $this->google_proxy->register_site( 'sync' );
 
-		if ( is_wp_error( $oauth_setup_redirect ) || ! filter_var( $oauth_setup_redirect, FILTER_VALIDATE_URL ) ) {
-			wp_die( esc_html__( 'The request to the authentication proxy has failed. Please, try again later.', 'google-site-kit' ) );
+		$oauth_proxy_failed_help_link = $this->get_oauth_proxy_failed_help_link();
+
+		if ( is_wp_error( $oauth_setup_redirect ) ) {
+			$error_message = $oauth_setup_redirect->get_error_message();
+			if ( empty( $error_message ) ) {
+				$error_message = $oauth_setup_redirect->get_error_code();
+			}
+
+			wp_die(
+				sprintf(
+					/* translators: 1: Error message or error code. 2: Get help link. */
+					esc_html__( 'The request to the authentication proxy has failed with an error: %1$s %2$s.', 'google-site-kit' ),
+					esc_html( $error_message ),
+					wp_kses(
+						$oauth_proxy_failed_help_link,
+						array(
+							'a' => array(
+								'href'   => array(),
+								'target' => array(),
+							),
+						)
+					)
+				)
+			);
+		}
+
+		if ( ! filter_var( $oauth_setup_redirect, FILTER_VALIDATE_URL ) ) {
+			wp_die(
+				sprintf(
+					/* translators: %s: Get help link. */
+					esc_html__( 'The request to the authentication proxy has failed. Please, try again later. %s.', 'google-site-kit' ),
+					wp_kses(
+						$oauth_proxy_failed_help_link,
+						array(
+							'a' => array(
+								'href'   => array(),
+								'target' => array(),
+							),
+						)
+					)
+				)
+			);
 		}
 
 		if ( $redirect_url ) {
@@ -150,12 +207,12 @@ class Setup {
 	 */
 	public function handle_action_verify() {
 		$input               = $this->context->input();
-		$step                = $input->filter( INPUT_GET, 'step', FILTER_SANITIZE_STRING );
-		$nonce               = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
-		$code                = $input->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-		$site_code           = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
-		$verification_token  = $input->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
-		$verification_method = $input->filter( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING );
+		$step                = htmlspecialchars( $input->filter( INPUT_GET, 'step' ) );
+		$nonce               = htmlspecialchars( $input->filter( INPUT_GET, 'nonce' ) );
+		$code                = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_code' ) );
+		$site_code           = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_site_code' ) );
+		$verification_token  = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_verification_token' ) );
+		$verification_method = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_verification_token_type' ) );
 
 		$this->verify_nonce( $nonce );
 
@@ -209,10 +266,10 @@ class Setup {
 	 */
 	public function handle_action_exchange_site_code() {
 		$input     = $this->context->input();
-		$step      = $input->filter( INPUT_GET, 'step', FILTER_SANITIZE_STRING );
-		$nonce     = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
-		$code      = $input->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-		$site_code = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+		$step      = htmlspecialchars( $input->filter( INPUT_GET, 'step' ) );
+		$nonce     = htmlspecialchars( $input->filter( INPUT_GET, 'nonce' ) );
+		$code      = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_code' ) );
+		$site_code = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_site_code' ) );
 
 		$this->verify_nonce( $nonce );
 
@@ -251,7 +308,7 @@ class Setup {
 	 */
 	protected function verify_nonce( $nonce, $action = Google_Proxy::NONCE_ACTION ) {
 		if ( ! wp_verify_nonce( $nonce, $action ) ) {
-			Authentication::invalid_nonce_error( $action );
+			$this->authentication->invalid_nonce_error( $action );
 		}
 	}
 

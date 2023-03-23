@@ -11,16 +11,25 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
 
 class FakeModule extends Module
-	implements Module_With_Activation, Module_With_Deactivation {
+	implements Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
+
+	use Module_With_Settings_Trait;
+
+	public $owner_id = 0;
 
 	/**
 	 * Whether or not the module has been registered.
@@ -113,7 +122,11 @@ class FakeModule extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:test-request' => array( 'service' => '' ),
+			'GET:test-request'  => array(
+				'service'   => '',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
+			'POST:test-request' => array( 'service' => '' ),
 		);
 	}
 
@@ -131,7 +144,9 @@ class FakeModule extends Module
 		$datapoint = $data->datapoint;
 
 		switch ( "$method:$datapoint" ) {
+			// Intentional fallthrough.
 			case 'GET:test-request':
+			case 'POST:test-request':
 				return function () use ( $method, $datapoint, $data ) {
 					$data = $data->data;
 					return json_encode( compact( 'method', 'datapoint', 'data' ) );
@@ -157,7 +172,9 @@ class FakeModule extends Module
 		$datapoint = $data->datapoint;
 
 		switch ( "$method:$datapoint" ) {
+			// Intentional fallthrough.
 			case 'GET:test-request':
+			case 'POST:test-request':
 				return json_decode( $response, $data['asArray'] );
 		}
 
@@ -227,5 +244,23 @@ class FakeModule extends Module
 	 */
 	public function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false ) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
 		return parent::parse_date_range( $range, $multiplier, $offset, $previous );
+	}
+
+	/**
+	 * Gets the module's owner ID.
+	 *
+	 * @return int
+	 */
+	public function get_owner_id() {
+		return $this->owner_id;
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new FakeModuleSettings( $this->options );
 	}
 }

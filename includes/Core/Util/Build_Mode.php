@@ -19,7 +19,8 @@ namespace Google\Site_Kit\Core\Util;
  */
 class Build_Mode {
 
-	const MODE_PRODUCTION = 'production';
+	const MODE_PRODUCTION  = 'production';
+	const MODE_DEVELOPMENT = 'development';
 
 	/**
 	 * Build mode.

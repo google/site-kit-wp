@@ -28,6 +28,8 @@ export const CONTEXT_WEB = 'web';
 export const CONTEXT_AMP = 'amp';
 // Form ID for the module setup form.
 export const FORM_SETUP = 'tagmanagerSetup';
+// OAuth scope needed for viewing containers.
+export const READ_SCOPE = 'https://www.googleapis.com/auth/tagmanager.readonly';
 // OAuth scope needed for creating containers.
 export const EDIT_SCOPE =
 	'https://www.googleapis.com/auth/tagmanager.edit.containers';

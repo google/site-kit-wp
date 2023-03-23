@@ -68,8 +68,6 @@ export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS =
 	'containers with Analytics tags must reference a single property ID to submit changes';
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
 	'single GTM Analytics property ID must match Analytics property ID';
-export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION =
-	'existing tag permission is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
 	const accountID = select( MODULES_TAGMANAGER ).getAccountID();
@@ -134,9 +132,8 @@ export async function submitChanges( { select, dispatch } ) {
 
 		// Fetch the latest settings in the Analytics store so that we can update
 		// the filtered value of canUseSnippet.
-		const analyticsModuleConnected = select(
-			CORE_MODULES
-		).isModuleConnected( 'analytics' );
+		const analyticsModuleConnected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics' );
 		if ( analyticsModuleConnected ) {
 			await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
 		}
@@ -161,8 +158,6 @@ export function validateCanSubmitChanges( select ) {
 		getInternalAMPContainerID,
 		getSingleAnalyticsPropertyID,
 		hasAnyAnalyticsPropertyID,
-		hasExistingTag,
-		hasExistingTagPermission,
 		hasMultipleAnalyticsPropertyIDs,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
@@ -190,9 +185,8 @@ export function validateCanSubmitChanges( select ) {
 		);
 
 		const containers = getContainers( accountID );
-		const normalizedContainerName = getNormalizedContainerName(
-			containerName
-		);
+		const normalizedContainerName =
+			getNormalizedContainerName( containerName );
 		invariant(
 			isUniqueContainerName( containerName, containers ),
 			`a container with "${ normalizedContainerName }" name already exists`
@@ -226,9 +220,8 @@ export function validateCanSubmitChanges( select ) {
 			);
 
 			const containers = getContainers( accountID );
-			const normalizedContainerName = getNormalizedContainerName(
-				ampContainerName
-			);
+			const normalizedContainerName =
+				getNormalizedContainerName( ampContainerName );
 			invariant(
 				isUniqueContainerName( ampContainerName, containers ),
 				`an AMP container with "${ normalizedContainerName }" name already exists`
@@ -264,14 +257,6 @@ export function validateCanSubmitChanges( select ) {
 		invariant(
 			getSingleAnalyticsPropertyID() === getPropertyID(),
 			INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH
-		);
-	}
-
-	// Do existing tag check last.
-	if ( hasExistingTag() ) {
-		invariant(
-			hasExistingTagPermission(),
-			INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION
 		);
 	}
 }

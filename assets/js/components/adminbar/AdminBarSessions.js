@@ -35,13 +35,9 @@ import {
 	DATE_RANGE_OFFSET,
 } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
-import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
-const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-
+const AdminBarSessions = ( { WidgetReportError } ) => {
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -89,14 +85,6 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if (
-		! zeroDataStatesEnabled &&
-		isGatheringData &&
-		isZeroReport( analyticsData )
-	) {
-		return <WidgetReportZero moduleSlug="analytics" />;
-	}
-
 	const { totals } = analyticsData[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
@@ -106,12 +94,10 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 		lastMonth[ 0 ]
 	);
 
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
+	const gatheringDataProps = {
+		gatheringData: isGatheringData,
+		gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+	};
 
 	return (
 		<DataBlock

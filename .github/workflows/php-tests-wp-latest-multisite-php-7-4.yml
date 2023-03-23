@@ -59,17 +59,18 @@ jobs:
       WP_VERSION: latest
       WP_MULTISITE: '1'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli, runkit7, uopz
           tools: composer:2.1
           php-version: '7.4'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get Composer Cache Directory
         id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -78,6 +79,6 @@ jobs:
       - name: Composer Install
         run: composer install --no-interaction --no-progress
       - name: Set up PHP test data
-        run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
+        run: tests/phpunit/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests
         run: composer test:multisite -- --verbose

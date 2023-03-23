@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
-import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
@@ -41,13 +41,15 @@ export default function WebStoriesAdUnitSelect() {
 	const webStoriesAdUnit = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getWebStoriesAdUnit()
 	);
-
-	const { adunits, hasResolvedAdUnits } = useSelect( ( select ) => ( {
-		adunits: select( MODULES_ADSENSE ).getAdUnits( accountID, clientID ),
-		hasResolvedAdUnits: select(
-			MODULES_ADSENSE
-		).hasFinishedResolution( 'getAdUnits', [ accountID, clientID ] ),
-	} ) );
+	const adunits = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAdUnits( accountID, clientID )
+	);
+	const hasResolvedAdUnits = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasFinishedResolution( 'getAdUnits', [
+			accountID,
+			clientID,
+		] )
+	);
 
 	const { setWebStoriesAdUnit } = useDispatch( MODULES_ADSENSE );
 	const onChange = useCallback(

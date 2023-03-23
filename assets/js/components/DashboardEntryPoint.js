@@ -20,38 +20,30 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-
-/**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
+import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
  */
-import { useFeature } from '../hooks/useFeature';
+import Data from 'googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import ModuleSetup from './setup/ModuleSetup';
-import DashboardApp from './dashboard/DashboardApp';
 import DashboardMainApp from './DashboardMainApp';
-import NotificationCounter from './legacy-notifications/notification-counter';
+
+const { useDispatch } = Data;
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const { syncGoogleTagSettings } = useDispatch( MODULES_ANALYTICS_4 );
+
+	useMount( () => {
+		syncGoogleTagSettings();
+	} );
 
 	if ( !! setupModuleSlug ) {
 		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
 	}
 
-	if ( unifiedDashboardEnabled ) {
-		return <DashboardMainApp />;
-	}
-
-	return (
-		<Fragment>
-			<NotificationCounter />
-			<DashboardApp />
-		</Fragment>
-	);
+	return <DashboardMainApp />;
 }
 
 DashboardEntryPoint.propTypes = {

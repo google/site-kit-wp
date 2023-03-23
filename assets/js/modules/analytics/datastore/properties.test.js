@@ -28,6 +28,8 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 	provideSiteInfo,
+	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
@@ -35,8 +37,12 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 describe( 'modules/analytics properties', () => {
 	let registry;
 
-	const propertiesProfilesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/;
-	const ga4PropertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
+	const propertiesProfilesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+	);
+	const ga4PropertiesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/properties'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -61,7 +67,9 @@ describe( 'modules/analytics properties', () => {
 			it( 'creates a property and adds it to the store', async () => {
 				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: fixtures.createProperty, status: 200 }
 				);
 
@@ -70,7 +78,9 @@ describe( 'modules/analytics properties', () => {
 					.createProperty( accountID );
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{
 						body: { data: { accountID } },
 					}
@@ -84,10 +94,12 @@ describe( 'modules/analytics properties', () => {
 				] );
 			} );
 
-			it( 'sets isDoingCreateProperty', async () => {
+			it( 'sets isDoingCreateProperty', () => {
 				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: fixtures.createProperty, status: 200 }
 				);
 
@@ -109,7 +121,9 @@ describe( 'modules/analytics properties', () => {
 					data: { status: 500 },
 				};
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -135,6 +149,11 @@ describe( 'modules/analytics properties', () => {
 					.getProperties( accountID );
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getProperties( accountID );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -424,19 +443,17 @@ describe( 'modules/analytics properties', () => {
 					.select( MODULES_ANALYTICS )
 					.getProperties( accountID );
 
+				expect( initialProperties ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getProperties( accountID );
+
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched( propertiesProfilesEndpoint, {
 					query: { accountID },
 				} );
-
-				expect( initialProperties ).toEqual( undefined );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ANALYTICS )
-							.getProperties( accountID ) !== undefined
-				);
 
 				const properties = registry
 					.select( MODULES_ANALYTICS )
@@ -523,12 +540,17 @@ describe( 'modules/analytics properties', () => {
 					.select( MODULES_ANALYTICS )
 					.getProperties( fakeAccountID );
 				expect( properties ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getProperties( fakeAccountID );
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'getPropertiesIncludingGA4', () => {
-			it( 'returns undefined if UA properties are loading', () => {
+			it( 'returns undefined if UA properties are loading', async () => {
 				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
 				freezeFetch( propertiesProfilesEndpoint );
@@ -554,9 +576,17 @@ describe( 'modules/analytics properties', () => {
 						.select( MODULES_ANALYTICS )
 						.getPropertiesIncludingGA4( accountID )
 				).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isDoingGetProperties() === false
+				);
 			} );
 
-			it( 'returns undefined if GA4 properties are loading', () => {
+			it( 'returns undefined if GA4 properties are loading', async () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
@@ -585,9 +615,12 @@ describe( 'modules/analytics properties', () => {
 						.select( MODULES_ANALYTICS )
 						.getPropertiesIncludingGA4( testAccountID )
 				).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 			} );
 
-			it( 'returns undefined if both UA and GA4 properties are loading', () => {
+			it( 'returns undefined if both UA and GA4 properties are loading', async () => {
 				freezeFetch( propertiesProfilesEndpoint );
 				freezeFetch( ga4PropertiesEndpoint );
 
@@ -597,6 +630,14 @@ describe( 'modules/analytics properties', () => {
 						.select( MODULES_ANALYTICS )
 						.getPropertiesIncludingGA4( testAccountID )
 				).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isDoingGetProperties() === false
+				);
 			} );
 
 			it( 'returns a sorted list of ua and ga4 properties ', () => {

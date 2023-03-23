@@ -1,0 +1,34 @@
+[
+	{
+		"slug": "search-console",
+		"shareable": true,
+		"owner": {
+			"id": 1,
+			"login": "Admin 1"
+		}
+	},
+	{
+		"slug": "pagespeed-insights",
+		"shareable": true,
+		"owner": {
+			"id": 1,
+			"login": "Admin 1"
+		}
+	},
+	{
+		"slug": "analytics",
+		"shareable": true,
+		"owner": {
+			"id": 2,
+			"login": "Admin 2"
+		}
+	},
+	{
+		"slug": "adsense",
+		"shareable": true,
+		"owner": {
+			"id": 2,
+			"login": "Admin 2"
+		}
+	}
+]

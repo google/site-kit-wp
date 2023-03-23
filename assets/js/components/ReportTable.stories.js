@@ -91,9 +91,6 @@ ReportTableGatheringData.args = {
 	],
 	gatheringData: true,
 };
-ReportTableGatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export default {
 	title: 'Components/ReportTable',

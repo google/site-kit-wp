@@ -28,53 +28,54 @@ import {
 	activateAMPWithMode,
 	deactivateUtilityPlugins,
 	setupSiteKit,
-	useRequestInterception,
+	useSharedRequestInterception,
 } from '../../utils';
 import * as adminBarMockResponses from '../modules/analytics/fixtures/admin-bar';
 
 let mockBatchResponse;
 
 describe( 'AMP Admin Bar compatibility', () => {
-	beforeAll( async () => {
-		await setupSiteKit();
-		await activateAMPWithMode( 'primary' );
+	let sharedRequestInterception;
 
+	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		useRequestInterception( ( request ) => {
-			if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics?'
-					)
-			) {
-				request.respond( {
+		sharedRequestInterception = useSharedRequestInterception( [
+			{
+				isMatch: ( request ) =>
+					request
+						.url()
+						.match(
+							'google-site-kit/v1/modules/search-console/data/searchanalytics?'
+						),
+				getResponse: () => ( {
 					status: 200,
 					body: JSON.stringify(
 						mockBatchResponse[
 							'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c'
 						]
 					),
-				} );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/analytics/data/report?'
-					)
-			) {
-				request.respond( {
+				} ),
+			},
+			{
+				isMatch: ( request ) =>
+					request
+						.url()
+						.match(
+							'google-site-kit/v1/modules/analytics/data/report?'
+						),
+				getResponse: () => ( {
 					status: 200,
 					body: JSON.stringify(
 						mockBatchResponse[
 							'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c'
 						]
 					),
-				} );
-			} else {
-				request.continue();
-			}
-		} );
+				} ),
+			},
+		] );
+
+		await setupSiteKit();
+		await activateAMPWithMode( 'primary', sharedRequestInterception );
 	} );
 
 	beforeEach( async () => {
@@ -120,9 +121,12 @@ describe( 'AMP Admin Bar compatibility', () => {
 			}
 		);
 		// Ensure Analytics CTA is displayed
-		await expect( adminBarApp ).toMatchElement( '.googlesitekit-cta-link', {
-			text: /Set up analytics/i,
-		} );
+		await expect( adminBarApp ).toMatchElement(
+			'.googlesitekit-analytics-cta button',
+			{
+				text: /Set up google analytics/i,
+			}
+		);
 		// More details link
 		await expect( adminBarApp ).toMatchElement( '.googlesitekit-cta-link', {
 			text: /More details/i,

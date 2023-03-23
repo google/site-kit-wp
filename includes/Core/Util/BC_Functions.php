@@ -45,86 +45,6 @@ class BC_Functions {
 	}
 
 	/**
-	 * Append result of internal request to REST API for purpose of preloading data to be attached to a page.
-	 * Expected to be called in the context of `array_reduce`.
-	 *
-	 * @since 1.7.0
-	 * @since WP 5.0.0
-	 *
-	 * @param  array  $memo Reduce accumulator.
-	 * @param  string $path REST API path to preload.
-	 * @return array        Modified reduce accumulator.
-	 */
-	protected static function rest_preload_api_request( $memo, $path ) {
-		// array_reduce() doesn't support passing an array in PHP 5.2, so we need to make sure we start with one.
-		if ( ! is_array( $memo ) ) {
-			$memo = array();
-		}
-
-		if ( empty( $path ) ) {
-			return $memo;
-		}
-
-		$method = 'GET';
-		if ( is_array( $path ) && 2 === count( $path ) ) {
-			$method = end( $path );
-			$path   = reset( $path );
-
-			if ( ! in_array( $method, array( 'GET', 'OPTIONS' ), true ) ) {
-				$method = 'GET';
-			}
-		}
-
-		$path_parts = parse_url( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
-		if ( false === $path_parts ) {
-			return $memo;
-		}
-
-		$request = new WP_REST_Request( $method, $path_parts['path'] );
-		if ( ! empty( $path_parts['query'] ) ) {
-			parse_str( $path_parts['query'], $query_params );
-			$request->set_query_params( $query_params );
-		}
-
-		$response = rest_do_request( $request );
-		if ( 200 === $response->status ) {
-			$server = rest_get_server();
-			$data   = (array) $response->get_data();
-			$links  = $server::get_compact_response_links( $response );
-			if ( ! empty( $links ) ) {
-				$data['_links'] = $links;
-			}
-
-			if ( 'OPTIONS' === $method ) {
-				$response = rest_send_allow_header( $response, $server, $request );
-
-				$memo[ $method ][ $path ] = array(
-					'body'    => $data,
-					'headers' => $response->headers,
-				);
-			} else {
-				$memo[ $path ] = array(
-					'body'    => $data,
-					'headers' => $response->headers,
-				);
-			}
-		}
-
-		return $memo;
-	}
-
-	/**
-	 * A fallback for the load_script_textdomain function introduced in the WordPress version 5.0.0.
-	 *
-	 * @since 1.21.0
-	 *
-	 * @return boolean Always returns FALSE.
-	 */
-	protected static function load_script_textdomain() {
-		return false;
-	}
-
-	/**
 	 * Basic implementation of the wp_sanitize_script_attributes function introduced in the WordPress version 5.7.0.
 	 *
 	 * @since 1.41.0
@@ -196,4 +116,36 @@ class BC_Functions {
 	protected static function wp_print_inline_script_tag( $javascript, $attributes = array() ) {
 		echo self::wp_get_inline_script_tag( $javascript, $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
+
+	/**
+	 * A fallback for the wp_get_sidebar function introduced in the WordPress version 5.9.0.
+	 *
+	 * Retrieves the registered sidebar with the given ID.
+	 *
+	 * @since 1.86.0
+	 *
+	 * @global array $wp_registered_sidebars The registered sidebars.
+	 *
+	 * @param string $id The sidebar ID.
+	 * @return array|null The discovered sidebar, or null if it is not registered.
+	 */
+	protected static function wp_get_sidebar( $id ) {
+		global $wp_registered_sidebars;
+
+		foreach ( (array) $wp_registered_sidebars as $sidebar ) {
+			if ( $sidebar['id'] === $id ) {
+				return $sidebar;
+			}
+		}
+
+		if ( 'wp_inactive_widgets' === $id ) {
+			return array(
+				'id'   => 'wp_inactive_widgets',
+				'name' => __( 'Inactive widgets', 'default' ),
+			);
+		}
+
+		return null;
+	}
+
 }

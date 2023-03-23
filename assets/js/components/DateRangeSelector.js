@@ -33,21 +33,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Menu, Button } from 'googlesitekit-components';
 import DateRangeIcon from '../../svg/icons/date-range.svg';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 import { getAvailableDateRanges } from '../util/date-range';
-import Menu from './Menu';
-import Button from './Button';
 import { trackEvent } from '../util';
-import { useFeature } from '../hooks/useFeature';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function DateRangeSelector() {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
 	const ranges = getAvailableDateRanges();
 	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
@@ -102,10 +98,7 @@ export default function DateRangeSelector() {
 					'googlesitekit-header__dropdown',
 					'googlesitekit-header__date-range-selector-menu',
 					'googlesitekit-border-radius-round--phone',
-					'googlesitekit-button-icon--phone',
-					{
-						'googlesitekit-header__date-range-selector-menu--has-unified-dashboard': unifiedDashboardEnabled,
-					}
+					'googlesitekit-button-icon--phone'
 				) }
 				text
 				onClick={ handleMenu }

@@ -37,15 +37,20 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../util/tracking';
 import TourTooltip from './TourTooltip';
 import useViewContext from '../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
+const { useSelect, useDispatch, useRegistry } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
-const joyrideStyles = {
+export const joyrideStyles = {
 	options: {
-		arrowColor: '#1A73E8', // $c-royal-blue
-		backgroundColor: '#1A73E8', // $c-royal-blue
+		arrowColor: '#3c7251', // $c-content-primary
+		backgroundColor: '#3c7251', // $c-content-primary
 		overlayColor: 'rgba(0, 0, 0, 0.6)',
-		textColor: '#ffffff', // $c-white
+		textColor: '#fff', // $c-content-on-primary
+		zIndex: 20000,
+	},
+	spotlight: {
+		border: '2px solid #3c7251', // $c-content-primary
+		backgroundColor: '#fff',
 	},
 };
 
@@ -58,7 +63,7 @@ const joyrideLocale = {
 };
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-floater#props}. */
-const floaterProps = {
+export const floaterProps = {
 	disableAnimation: true,
 	styles: {
 		arrow: {
@@ -67,8 +72,7 @@ const floaterProps = {
 			spread: 16,
 		},
 		floater: {
-			filter:
-				'drop-shadow(rgba(60, 64, 67, 0.3) 0px 1px 2px) drop-shadow(rgba(60, 64, 67, 0.15) 0px 2px 6px)',
+			filter: 'drop-shadow(rgba(60, 64, 67, 0.3) 0px 1px 2px) drop-shadow(rgba(60, 64, 67, 0.15) 0px 2px 6px)',
 		},
 	},
 };
@@ -92,6 +96,7 @@ export default function TourTooltips( {
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissTour } = useDispatch( CORE_USER );
+	const registry = useRegistry();
 
 	const viewContext = useViewContext();
 
@@ -110,14 +115,16 @@ export default function TourTooltips( {
 
 	const startTour = () => {
 		global.document.body.classList.add(
-			'googlesitekit-showing-feature-tour'
+			'googlesitekit-showing-feature-tour',
+			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		setValue( runKey, true );
 	};
 
 	const endTour = () => {
 		global.document.body.classList.remove(
-			'googlesitekit-showing-feature-tour'
+			'googlesitekit-showing-feature-tour',
+			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		// Dismiss tour to avoid unwanted repeat viewing.
 		dismissTour( tourID );
@@ -219,7 +226,7 @@ export default function TourTooltips( {
 		}
 
 		if ( callback ) {
-			callback( data );
+			callback( data, registry );
 		}
 	};
 

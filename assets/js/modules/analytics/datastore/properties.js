@@ -142,12 +142,10 @@ const baseActions = {
 			invariant( accountID, 'accountID is required.' );
 		},
 		function* ( accountID ) {
-			const {
-				response,
-				error,
-			} = yield fetchCreatePropertyStore.actions.fetchCreateProperty(
-				accountID
-			);
+			const { response, error } =
+				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
+					accountID
+				);
 			return { response, error };
 		}
 	),
@@ -338,25 +336,26 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_PROPERTIES ]: createRegistryControl(
-		( registry ) => ( { payload: { accountID } } ) => {
-			const arePropertiesLoaded = () =>
-				registry
-					.select( MODULES_ANALYTICS )
-					.getProperties( accountID ) !== undefined;
+		( registry ) =>
+			( { payload: { accountID } } ) => {
+				const arePropertiesLoaded = () =>
+					registry
+						.select( MODULES_ANALYTICS )
+						.getProperties( accountID ) !== undefined;
 
-			if ( arePropertiesLoaded() ) {
-				return true;
-			}
+				if ( arePropertiesLoaded() ) {
+					return true;
+				}
 
-			return new Promise( ( resolve ) => {
-				const unsubscribe = registry.subscribe( () => {
-					if ( arePropertiesLoaded() ) {
-						unsubscribe();
-						resolve();
-					}
+				return new Promise( ( resolve ) => {
+					const unsubscribe = registry.subscribe( () => {
+						if ( arePropertiesLoaded() ) {
+							unsubscribe();
+							resolve();
+						}
+					} );
 				} );
-			} );
-		}
+			}
 	),
 };
 
@@ -424,17 +423,16 @@ const baseResolvers = {
 			.select( MODULES_ANALYTICS )
 			.getProperties( accountID );
 		if ( properties === undefined ) {
-			const {
-				response,
-				error,
-			} = yield fetchGetPropertiesProfilesStore.actions.fetchGetPropertiesProfiles(
-				accountID
-			);
+			const { response, error } =
+				yield fetchGetPropertiesProfilesStore.actions.fetchGetPropertiesProfiles(
+					accountID
+				);
 			const { dispatch } = registry;
 			if ( response ) {
-				dispatch(
-					MODULES_ANALYTICS
-				).receiveGetProperties( response.properties, { accountID } );
+				dispatch( MODULES_ANALYTICS ).receiveGetProperties(
+					response.properties,
+					{ accountID }
+				);
 
 				// eslint-disable-next-line sitekit/acronym-case
 				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
@@ -592,16 +590,14 @@ const baseSelectors = {
 	 */
 	getPropertiesIncludingGA4: createRegistrySelector(
 		( select ) => ( state, accountID ) => {
-			let properties = select( MODULES_ANALYTICS ).getProperties(
-				accountID
-			);
+			let properties =
+				select( MODULES_ANALYTICS ).getProperties( accountID );
 			if ( properties === undefined ) {
 				return undefined;
 			}
 
-			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties(
-				accountID
-			);
+			const propertiesGA4 =
+				select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 			if ( propertiesGA4 === undefined ) {
 				return undefined;
 			}

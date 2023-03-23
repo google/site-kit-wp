@@ -1,0 +1,18 @@
+{
+	"search-console": {
+		"sharedRoles": [ "administrator" ],
+		"management": "owner"
+	},
+	"analytics": {
+		"sharedRoles": [ "editor" ],
+		"management": "owner"
+	},
+	"pagespeed-insights": {
+		"sharedRoles": [ "author" ],
+		"management": "all_admins"
+	},
+	"adsense": {
+		"sharedRoles": [],
+		"management": "all_admins"
+	}
+}

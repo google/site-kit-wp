@@ -36,24 +36,12 @@ describe( 'modules/adsense base data store', () => {
 		provideSiteInfo( registry );
 	} );
 
-	it( 'does not define the admin page when unified dashboard is enabled', () => {
-		const { enabledFeatures } = require( '../../../features' );
-		enabledFeatures.add( 'unifiedDashboard' );
-
+	it( 'does not define the admin page', () => {
 		store = require( './base' ).default;
 		registry.registerStore( MODULES_ADSENSE, store );
 
 		expect( registry.select( MODULES_ADSENSE ).getAdminScreenURL() ).toBe(
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
-		);
-	} );
-
-	it( 'does define the admin page when unified dashboard is not enabled', () => {
-		store = require( './base' ).default;
-		registry.registerStore( MODULES_ADSENSE, store );
-
-		expect( registry.select( MODULES_ADSENSE ).getAdminScreenURL() ).toBe(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-module-adsense'
 		);
 	} );
 } );

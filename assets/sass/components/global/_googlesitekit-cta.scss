@@ -16,9 +16,21 @@
  * limitations under the License.
  */
 
-.googlesitekit-cta {
-	background-color: $c-background-brand;
+// This rule consistently errors regardless of order of selectors because of
+// child selectors using `&`. Disabling this rule as it isn't helpful here and
+// we need overrides to deal with WordPress' very broad
+// `#dashboard-widgets .inside h3` selector.
+/* stylelint-disable no-descending-specificity */
+
+.googlesitekit-plugin .googlesitekit-cta,
+// Override to deal with WordPress dashboard default styles.
+#dashboard-widgets .inside .googlesitekit-plugin .googlesitekit-cta {
+	background-color: $c-surfaces-surface-1;
+	border-radius: $br-sm;
+	font-size: $fs-body-md;
 	height: 100%;
+	letter-spacing: $ls-s;
+	line-height: $lh-body-md;
 	padding: $grid-gap-phone;
 	width: 100%;
 
@@ -26,9 +38,8 @@
 		padding: $grid-gap-desktop;
 	}
 
-	&--error {
+	.googlesitekit-wp-dashboard &--error {
 		background-color: $c-base;
-		border: 3px solid $c-error;
 	}
 
 	.googlesitekit-adminbar-modules & {
@@ -36,15 +47,11 @@
 	}
 
 	.googlesitekit-wp-dashboard & {
-		background-color: $c-link-wpdb;
+		background-color: $c-surfaces-surface-1;
 		box-sizing: border-box;
 		height: auto;
 		margin-top: 12px;
 		padding: 12px;
-	}
-
-	.googlesitekit-wp-dashboard &--error {
-		background-color: $c-base;
 	}
 
 	// Title.
@@ -53,53 +60,49 @@
 	}
 
 	.googlesitekit-cta__title {
-		color: $c-base;
-		margin: 0 0 10px 0;
-	}
-
-	&--error .googlesitekit-cta__title {
-		color: $c-primary;
+		color: $c-surfaces-on-surface;
+		font-size: $fs-body-md;
+		font-weight: $fw-medium;
+		margin: 0 0 5px;
 	}
 
 	.googlesitekit-adminbar-modules .googlesitekit-cta__title {
-		font-size: 1rem;
-		font-weight: $fw-secondary-bold;
+		font-weight: $fw-bold;
+		letter-spacing: $ls-m;
 	}
 
-	#google_dashboard_widget & .googlesitekit-cta__title { // stylelint-disable-line selector-id-pattern
-		color: $c-base;
-		font-weight: 700;
-	}
-
-	#google_dashboard_widget &--error .googlesitekit-cta__title { // stylelint-disable-line selector-id-pattern
-		color: $c-primary;
-	}
-
-	// Description.
 	.googlesitekit-cta__description {
-		color: $c-base;
-		margin: 0 0 20px 0;
-	}
+		color: $c-surfaces-on-surface;
+		margin: 0 0 20px;
 
-	&--error .googlesitekit-cta__description {
-		color: $c-primary;
-		word-break: break-word;
-	}
-
-	/* stylelint-disable selector-id-pattern */
-	// Override WP link color.
-	#google_dashboard_widget .googlesitekit-wp-dashboard & a,
-	#google_dashboard_widget .googlesitekit-wp-dashboard & button {
-		background-color: transparent;
-		border: none;
-		color: $c-base;
-
-		&:hover {
-			color: $c-base;
-			text-decoration: underline;
+		p:first-child {
+			margin-top: 0;
 		}
 	}
-	/* stylelint-enable selector-id-pattern */
+
+	&.googlesitekit-cta--error {
+		background-color: $c-utility-error-container;
+
+		a,
+		.googlesitekit-cta__title {
+			color: $c-utility-on-error-container;
+		}
+
+		.googlesitekit-cta__description {
+			color: $c-utility-on-error-container;
+			word-break: break-word;
+		}
+
+		.mdc-button:not(:disabled) {
+			background-color: $c-utility-error;
+			color: $c-utility-on-error;
+		}
+
+		.googlesitekit-cta-link--external {
+			// This is the external link icon, in the color #7a1e00 ($c-utility-on-error-container).
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M11%2011H2V2h3V0H2a2%202%200%200%200-2%202v9a2%202%200%200%200%202%202h9c1.1%200%202-.9%202-2V8h-2v3z%22%20fill%3D%22%237a1e00%22%20fill-rule%3D%22nonzero%22%2F%3E%3Cpath%20fill%3D%22%237a1e00%22%20d%3D%22M7%200h6v2H7zM11%202h2v4h-2z%22%2F%3E%3Cpath%20d%3D%22M11%202L5%208%22%20stroke%3D%22%237a1e00%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22square%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+		}
+	}
 
 	*:last-child {
 		margin-bottom: 0;

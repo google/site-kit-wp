@@ -45,25 +45,16 @@ Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
 };
 
-export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'Data Unavailable';
-
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'GatheringData';
 GatheringData.args = {
 	setupRegistry: setupAnalyticsGatheringData,
-};
-GatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
-};
-ZeroData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export default {

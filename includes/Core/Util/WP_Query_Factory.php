@@ -71,8 +71,8 @@ final class WP_Query_Factory {
 	private static function normalize_url( $url ) {
 		global $wp_rewrite;
 
-		$url_host      = str_replace( 'www.', '', wp_parse_url( $url, PHP_URL_HOST ) );
-		$home_url_host = str_replace( 'www.', '', wp_parse_url( home_url(), PHP_URL_HOST ) );
+		$url_host      = str_replace( 'www.', '', URL::parse( $url, PHP_URL_HOST ) );
+		$home_url_host = str_replace( 'www.', '', URL::parse( home_url(), PHP_URL_HOST ) );
 
 		// Bail early if the URL does not belong to this site.
 		if ( $url_host && $url_host !== $home_url_host ) {
@@ -104,10 +104,10 @@ final class WP_Query_Factory {
 	private static function get_url_path_vars( $url ) {
 		global $wp_rewrite;
 
-		$url_path = wp_parse_url( $url, PHP_URL_PATH );
+		$url_path = URL::parse( $url, PHP_URL_PATH );
 
 		// Strip potential home URL path segment from URL path.
-		$home_path = untrailingslashit( wp_parse_url( home_url( '/' ), PHP_URL_PATH ) );
+		$home_path = untrailingslashit( URL::parse( home_url( '/' ), PHP_URL_PATH ) );
 		if ( ! empty( $home_path ) ) {
 			$url_path = substr( $url_path, strlen( $home_path ) );
 		}
@@ -180,7 +180,7 @@ final class WP_Query_Factory {
 	 * @return array Associative array of query vars.
 	 */
 	private static function get_url_query_vars( $url ) {
-		$url_query = wp_parse_url( $url, PHP_URL_QUERY );
+		$url_query = URL::parse( $url, PHP_URL_QUERY );
 
 		$url_query_vars = array();
 		if ( $url_query ) {

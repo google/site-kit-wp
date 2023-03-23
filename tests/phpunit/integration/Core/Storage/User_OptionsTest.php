@@ -39,6 +39,10 @@ class User_OptionsTest extends TestCase {
 	 */
 	public function test_network_mode_get() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$user_id = $this->factory()->user->create();
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options = new User_Options( $context, $user_id );
@@ -67,6 +71,10 @@ class User_OptionsTest extends TestCase {
 	 */
 	public function test_network_mode_set() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$user_id = $this->factory()->user->create();
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options = new User_Options( $context, $user_id );
@@ -96,6 +104,10 @@ class User_OptionsTest extends TestCase {
 	 */
 	public function test_network_mode_delete() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$user_id = $this->factory()->user->create();
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options = new User_Options( $context, $user_id );
@@ -106,17 +118,6 @@ class User_OptionsTest extends TestCase {
 		$this->assertTrue( $options->delete( 'test-key' ) );
 
 		$this->assertFalse( metadata_exists( 'user', $user_id, 'test-key' ) );
-	}
-
-	public function test_user_input_state_value() {
-		$user_id = $this->factory()->user->create();
-		wp_set_current_user( $user_id );
-
-		update_user_option( $user_id, 'googlesitekit_user_input_state', 'completed' );
-		$this->assertEquals( 'completed', get_user_option( 'googlesitekit_user_input_state', $user_id ) );
-
-		update_user_option( $user_id, 'googlesitekit_user_input_state', 'invalid' );
-		$this->assertEquals( false, get_user_option( 'googlesitekit_user_input_state', $user_id ) );
 	}
 
 	protected function create_user_aware_instance() {

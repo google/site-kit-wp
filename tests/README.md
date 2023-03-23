@@ -10,20 +10,20 @@ All commands listed below should be run from the root of the repository in your 
     ```
 1. Install WordPress and the WP Unit Test lib using the `install-wp-tests.sh` script  
     ```
-    $ tests/bin/install-wp-tests.sh <db-name> <db-user> <db-pass> [db-host] [wp-version] [skip-database-creation]
+    $ tests/phpunit/bin/install-wp-tests.sh <db-name> <db-user> <db-pass> [db-host] [wp-version] [skip-database-creation]
     ```
 
 ### Example Usage
 
 Install the test library and latest WordPress with a new database, using root credentials
 ```
-$ tests/bin/install-wp-tests.sh googlesitekit_tests root password
+$ tests/phpunit/bin/install-wp-tests.sh googlesitekit_tests root password
 ```
 
 If you don't have `mysqladmin` installed on your host, you'll need to create a database manually and set `skip-database-creation` to `true`.  
 If you're not sure, run `which mysqladmin` which will output the path to the executable if installed, or nothing if not installed.
 ```
-$ tests/bin/install-wp-tests.sh googlesitekit_tests root password localhost latest true
+$ tests/phpunit/bin/install-wp-tests.sh googlesitekit_tests root password localhost latest true
 ```
 
 **Important**: The `<db-name>` database will be created if it doesn't exist and all data will be removed during testing.

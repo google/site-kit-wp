@@ -74,8 +74,8 @@ const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
-// Set default timeout for individual expect-puppeteer assertions. (Default: 500)
-setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 500 } );
+// Set default timeout for individual expect-puppeteer assertions. (Default: 1000)
+setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 
 // Add custom matchers specific to Site Kit.
 expect.extend( customMatchers );
@@ -193,6 +193,16 @@ function observeConsoleLogging() {
 				'No triggers were found in the config. No analytics data will be sent.'
 			)
 		) {
+			return;
+		}
+
+		// Ignore errors thrown by `@wordpress/api-fetch`. These are actual,
+		// legimate request failures, but they can happen during a navigation
+		// (or when actually offline).
+		//
+		// We ignore them as they are not indicative of a problem with the
+		// test and usually make E2E tests fail erroneously.
+		if ( text.includes( 'You are probably offline.' ) ) {
 			return;
 		}
 

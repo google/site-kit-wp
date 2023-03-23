@@ -100,7 +100,9 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 
 		await page.waitForNavigation();
 
-		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
+		await expect( page ).toMatchElement(
+			'#js-googlesitekit-main-dashboard'
+		);
 		await expect( page ).toMatchElement(
 			'.googlesitekit-publisher-win__title',
 			{
@@ -135,7 +137,9 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 
 		await page.waitForNavigation();
 
-		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
+		await expect( page ).toMatchElement(
+			'#js-googlesitekit-main-dashboard'
+		);
 		await expect( page ).toMatchElement(
 			'.googlesitekit-publisher-win__title',
 			{

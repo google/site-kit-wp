@@ -1,0 +1,133 @@
+.googlesitekit-plugin {
+
+	.googlesitekit-image-radio-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 24px;
+	}
+
+	.googlesitekit-image-radio {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+
+		@media (min-width: $bp-tablet) {
+			max-width: 16.5rem;
+		}
+
+		& > label {
+			color: $c-user-input-note;
+			font-size: 0.75rem;
+			margin-top: 0.625rem;
+			padding: 0;
+
+			span {
+				color: $c-neutral-n-900;
+				display: block;
+				font-size: 0.875rem;
+				margin-bottom: 0.125rem;
+			}
+		}
+
+		.image-radio {
+			/**
+			* The material radio button has an inline ripple size property,
+			* that is used for the animation. The !important here is to override this,
+			* and disabling the animation by setting the ripple size to zero.
+			*/
+			--mdc-ripple-fg-size: 0 !important;
+
+			height: unset;
+			padding: 0;
+			width: 100%;
+
+			.mdc-image-radio__background {
+
+				.mdc-image-radio__content {
+					align-items: center;
+					background-color: $c-surfaces-surface;
+					border: 0.375rem solid $c-surfaces-surface;
+					border-radius: 0.5625rem;
+					color: $c-neutral-n-900;
+					display: flex;
+					justify-content: center;
+					min-height: 12.1875rem;
+
+					svg {
+						object-fit: contain;
+						width: 100%;
+					}
+				}
+
+				&::after {
+					border: 0.0625rem solid $c-jumbo;
+					border-radius: 0.5625rem;
+					content: "";
+					height: 100%;
+					left: 0;
+					position: absolute;
+					top: 0;
+					width: 100%;
+				}
+
+				.mdc-image-radio__content--no-image {
+					background-color: $c-surfaces-surface-1;
+					min-height: 5.0625rem;
+					text-align: center;
+				}
+			}
+
+			.mdc-image-radio__background--checked::after {
+				border: 0.1875rem solid $c-content-primary;
+			}
+
+			&:hover .mdc-image-radio__content {
+				position: relative;
+
+				&::after {
+					background-color: $c-surfaces-surface-2;
+					border-radius: 0.5625rem;
+					content: "";
+					height: calc(100% + 0.75rem);
+					left: 50%;
+					opacity: 0.3;
+					position: absolute;
+					top: 50%;
+					transform: translate(-50%, -50%);
+					width: calc(100% + 0.75rem);
+				}
+			}
+
+			&:hover .mdc-image-radio__content--no-image {
+				background-color: $c-surfaces-surface-2;
+
+				&::after {
+					content: unset;
+				}
+			}
+
+			&.mdc-ripple-upgraded--background-focused .mdc-image-radio__content,
+			&.mdc-ripple-upgraded--foreground-activation .mdc-image-radio__content {
+				position: relative;
+
+				&::after {
+					background-color: $c-interactive-primary-press;
+					border-radius: 0.5625rem;
+					content: "";
+					height: 100%;
+					opacity: 1;
+					position: absolute;
+					width: 100%;
+				}
+			}
+
+			&.mdc-ripple-upgraded--foreground-activation .mdc-image-radio__content--no-image {
+				background-color: $c-interactive-primary-press;
+
+				&::after {
+					content: unset;
+				}
+			}
+		}
+	}
+}

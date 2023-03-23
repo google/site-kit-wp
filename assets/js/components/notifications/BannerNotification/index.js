@@ -21,29 +21,37 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import map from 'lodash/map';
-import { useMount } from 'react-use';
+import { map } from 'lodash';
+import { useMount, useMountedState, useIntersection } from 'react-use';
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /*
  * WordPress dependencies
  */
 import {
 	useCallback,
+	useEffect,
+	useRef,
 	useState,
 	Fragment,
 	isValidElement,
 } from '@wordpress/element';
+import { isURL } from '@wordpress/url';
 
 /*
  * Internal dependencies
  */
+import { Button, SpinnerButton } from 'googlesitekit-components';
+import Data from 'googlesitekit-data';
 import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
-import { getContextScrollTop } from '../../../util/scroll';
+import {
+	getContextScrollTop,
+	getHeaderHeightWithoutNav,
+} from '../../../util/scroll';
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
 import DataBlock from '../../DataBlock';
-import Button from '../../Button';
 import Warning from '../../../../svg/icons/warning.svg';
 import ErrorIcon from '../../../../svg/icons/error.svg';
 import Link from '../../Link';
@@ -57,12 +65,16 @@ import {
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
 } from './utils';
+import { stringToDate } from '../../../util/date-range/string-to-date';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 export const LEARN_MORE_TARGET = {
 	EXTERNAL: 'external',
 	INTERNAL: 'internal',
 };
 
+// eslint-disable-next-line complexity
 function BannerNotification( {
 	anchorLink,
 	anchorLinkLabel,
@@ -74,6 +86,7 @@ function BannerNotification( {
 	ctaLink,
 	ctaTarget,
 	description,
+	descriptionIcon,
 	dismiss,
 	dismissExpires,
 	format,
@@ -88,6 +101,7 @@ function BannerNotification( {
 	moduleName,
 	noBottomPadding,
 	onCTAClick,
+	onView,
 	onDismiss,
 	onLearnMoreClick,
 	pageIndex,
@@ -96,18 +110,55 @@ function BannerNotification( {
 	title,
 	type,
 	WinImageSVG,
+	showSmallWinImage = true,
+	smallWinImageSVGWidth = 75,
+	smallWinImageSVGHeight = 75,
+	mediumWinImageSVGWidth = 105,
+	mediumWinImageSVGHeight = 105,
+	rounded = false,
+	footer,
+	secondaryPane,
+	ctaComponent,
 } ) {
 	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
 	// Start with an undefined dismissed state due to async resolution.
 	const [ isDismissed, setIsDismissed ] = useState( false );
+	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
+		useState( false );
 	const cacheKeyDismissed = `notification::dismissed::${ id }`;
 	// Persists the notification dismissal to browser storage.
 	// Dismissed notifications don't expire.
 	const persistDismissal = () =>
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
 
+	const windowWidth = useWindowWidth();
 	const breakpoint = useBreakpoint();
+	const isMounted = useMountedState();
+
+	const [ isViewed, setIsViewed ] = useState( false );
+
+	const bannerNotificationRef = useRef();
+	const intersectionEntry = useIntersection( bannerNotificationRef, {
+		rootMargin: `-${ getHeaderHeightWithoutNav(
+			breakpoint
+		) }px 0px 0px 0px`,
+		threshold: 0,
+	} );
+
+	useEffect( () => {
+		if ( ! isViewed && intersectionEntry?.isIntersecting ) {
+			if ( typeof onView === 'function' ) {
+				onView();
+			}
+
+			setIsViewed( true );
+		}
+	}, [ id, onView, isViewed, intersectionEntry ] );
+
+	// There is a 1px difference between the tablet breakpoint determination in `useBreakpoint` and the `min-width: $bp-tablet` breakpoint the `@mixin googlesitekit-inner-padding` uses,
+	// which in turn is used by the notification. This why we are using `useWindowWidth` here, instead of the breakpoint returned by `useBreakpoint`.
+	const isMinWidthTablet = windowWidth >= 600;
 
 	useMount( async () => {
 		if ( dismissExpires > 0 ) {
@@ -141,7 +192,9 @@ function BannerNotification( {
 		setTimeout( async () => {
 			await persistDismissal();
 
-			setIsDismissed( true );
+			if ( isMounted() ) {
+				setIsDismissed( true );
+			}
 
 			// Emit an event for the notification counter to listen for.
 			const event = new Event( 'notificationDismissed' );
@@ -149,15 +202,34 @@ function BannerNotification( {
 		}, 350 );
 	}
 
+	const isNavigatingToCTALink = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( ctaLink || '' )
+	);
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	async function handleCTAClick( e ) {
 		e.persist();
 
+		let dismissOnCTAClick = true;
 		if ( onCTAClick ) {
-			await onCTAClick( e );
+			setIsAwaitingCTAResponse( true );
+			( { dismissOnCTAClick = true } = ( await onCTAClick( e ) ) || {} );
+			if ( isMounted() ) {
+				setIsAwaitingCTAResponse( false );
+			}
 		}
 
-		if ( isDismissible ) {
+		if ( isDismissible && dismissOnCTAClick ) {
 			dismissNotification();
+		}
+
+		if (
+			isURL( ctaLink ) &&
+			ctaTarget !== '_blank' &&
+			! e.defaultPrevented
+		) {
+			e.preventDefault();
+			navigateTo( ctaLink );
 		}
 	}
 
@@ -177,7 +249,7 @@ function BannerNotification( {
 		[ anchorLink, breakpoint ]
 	);
 
-	async function handleLearnMore( e ) {
+	function handleLearnMore( e ) {
 		e.persist();
 
 		onLearnMoreClick?.();
@@ -187,7 +259,7 @@ function BannerNotification( {
 		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
 		if ( dismissed ) {
-			const expiration = new Date( dismissed );
+			const expiration = stringToDate( dismissed );
 			expiration.setSeconds(
 				expiration.getSeconds() + parseInt( dismissExpires, 10 )
 			);
@@ -199,11 +271,17 @@ function BannerNotification( {
 	}
 
 	// isDismissed will be undefined until resolved from browser storage.
-	if ( isDismissible && ( undefined === isDismissed || isDismissed ) ) {
+	// isNavigating will be true until the navigation is complete.
+	if (
+		! isNavigatingToCTALink &&
+		isDismissible &&
+		( undefined === isDismissed || isDismissed )
+	) {
 		return null;
 	}
 
-	const closedClass = isClosed ? 'is-closed' : 'is-open';
+	const closedClass =
+		! isNavigatingToCTALink && isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
 	const imageCellSizeProperties = getImageCellSizeProperties( format );
@@ -244,14 +322,51 @@ function BannerNotification( {
 		</Fragment>
 	);
 
+	const learnMoreAndPageIndex = (
+		<Fragment>
+			{ learnMoreLabel && (
+				<Fragment>
+					<Link
+						onClick={ handleLearnMore }
+						href={ learnMoreURL }
+						external={
+							learnMoreTarget === LEARN_MORE_TARGET.EXTERNAL
+						}
+					>
+						{ learnMoreLabel }
+					</Link>
+					{ learnMoreDescription }
+				</Fragment>
+			) }
+			{ pageIndex && (
+				<span className="googlesitekit-publisher-win__detect">
+					{ pageIndex }
+				</span>
+			) }
+		</Fragment>
+	);
+
 	const inlineMarkup = (
 		<Fragment>
 			{ title && (
-				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-					{ title }
+				<div className="googlesitekit-publisher-win__title-image-wrapper">
+					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+						{ title }
 
-					{ badgeLabel && <Badge label={ badgeLabel } /> }
-				</h3>
+						{ badgeLabel && <Badge label={ badgeLabel } /> }
+					</h3>
+
+					{ WinImageSVG && ! isMinWidthTablet && showSmallWinImage && (
+						<div
+							className={ `googlesitekit-publisher-win__image-${ format }` }
+						>
+							<WinImageSVG
+								width={ smallWinImageSVGWidth }
+								height={ smallWinImageSVGHeight }
+							/>
+						</div>
+					) }
+				</div>
 			) }
 			{ anchorLink && anchorLinkLabel && (
 				<p className="googlesitekit-publisher-win__link">
@@ -262,10 +377,19 @@ function BannerNotification( {
 			) }
 			{ description && (
 				<div className="googlesitekit-publisher-win__desc">
-					<p>
-						{ isValidElement( description ) ? (
-							description
-						) : (
+					{ descriptionIcon && (
+						<div className="googlesitekit-publisher-win__icon">
+							{ descriptionIcon }
+						</div>
+					) }
+
+					{ isValidElement( description ) ? (
+						<Fragment>
+							{ description }
+							<p>{ learnMoreAndPageIndex }</p>
+						</Fragment>
+					) : (
+						<p>
 							<span
 								dangerouslySetInnerHTML={ sanitizeHTML(
 									description,
@@ -279,32 +403,10 @@ function BannerNotification( {
 										ALLOWED_ATTR: [ 'href' ],
 									}
 								) }
-							/>
-						) }
-
-						{ learnMoreLabel && (
-							<Fragment>
-								{ ' ' }
-								<Link
-									onClick={ handleLearnMore }
-									href={ learnMoreURL }
-									external={
-										learnMoreTarget ===
-										LEARN_MORE_TARGET.EXTERNAL
-									}
-									inherit
-								>
-									{ learnMoreLabel }
-								</Link>
-								{ learnMoreDescription }
-							</Fragment>
-						) }
-						{ pageIndex && (
-							<span className="googlesitekit-publisher-win__detect">
-								{ pageIndex }
-							</span>
-						) }
-					</p>
+							/>{ ' ' }
+							{ learnMoreAndPageIndex }
+						</p>
+					) }
 				</div>
 			) }
 			{ children }
@@ -325,15 +427,23 @@ function BannerNotification( {
 		  }
 		: { size: 12 };
 
+	// ctaLink links are always buttons, in which case the dismiss should be a Link.
+	// If there is only a dismiss however, it should be the primary action with a Button.
+	const DismissComponent = ctaLink || ctaComponent ? Link : Button;
+
 	return (
 		<section
 			id={ id }
 			className={ classnames( className, 'googlesitekit-publisher-win', {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
-				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
-				'googlesitekit-publisher-win--no-bottom-padding': noBottomPadding,
+				[ `googlesitekit-publisher-win--${ closedClass }` ]:
+					closedClass,
+				'googlesitekit-publisher-win--rounded': rounded,
+				'googlesitekit-publisher-win--no-bottom-padding':
+					noBottomPadding,
 			} ) }
+			ref={ bannerNotificationRef }
 		>
 			<Grid
 				className={ classnames( {
@@ -384,37 +494,73 @@ function BannerNotification( {
 							</Fragment>
 						) }
 
-						{ ctaLink && (
-							<Button
-								className="googlesitekit-notification__cta"
-								href={ ctaLink }
-								target={ ctaTarget }
-								onClick={ handleCTAClick }
-							>
-								{ ctaLabel }
-							</Button>
+						{ ( ctaLink ||
+							isDismissible ||
+							dismiss ||
+							ctaComponent ) && (
+							<div className="googlesitekit-publisher-win__actions">
+								{ ctaComponent }
+
+								{ ctaLink && (
+									<SpinnerButton
+										className="googlesitekit-notification__cta"
+										href={ ctaLink }
+										target={ ctaTarget }
+										onClick={ handleCTAClick }
+										disabled={
+											isAwaitingCTAResponse ||
+											isNavigatingToCTALink
+										}
+										isSaving={
+											isAwaitingCTAResponse ||
+											isNavigatingToCTALink
+										}
+									>
+										{ ctaLabel }
+									</SpinnerButton>
+								) }
+
+								{ isDismissible &&
+									dismiss &&
+									! isAwaitingCTAResponse &&
+									! isNavigatingToCTALink && (
+										<DismissComponent
+											onClick={ handleDismiss }
+										>
+											{ dismiss }
+										</DismissComponent>
+									) }
+							</div>
 						) }
 
-						{ isDismissible && dismiss && (
-							<Link onClick={ handleDismiss }>{ dismiss }</Link>
+						{ footer && (
+							<div className="googlesitekit-publisher-win__footer">
+								{ footer }
+							</div>
 						) }
 					</Cell>
 
-					{ WinImageSVG && (
-						<Cell
-							{ ...imageCellSizeProperties }
-							{ ...imageCellOrderProperties }
-							alignBottom={
-								format === 'larger' && noBottomPadding
-							}
-						>
-							<div
-								className={ `googlesitekit-publisher-win__image-${ format }` }
+					{ WinImageSVG &&
+						( isMinWidthTablet || ! showSmallWinImage ) && (
+							<Cell
+								{ ...imageCellSizeProperties }
+								{ ...imageCellOrderProperties }
+								alignBottom={
+									format === 'larger' && noBottomPadding
+								}
 							>
-								<WinImageSVG />
-							</div>
-						</Cell>
-					) }
+								<div
+									className={ `googlesitekit-publisher-win__image-${ format }` }
+								>
+									<WinImageSVG
+										style={ {
+											maxWidth: mediumWinImageSVGWidth,
+											maxHeight: mediumWinImageSVGHeight,
+										} }
+									/>
+								</div>
+							</Cell>
+						) }
 
 					{ ( 'win-error' === type || 'win-warning' === type ) && (
 						<Cell size={ 1 }>
@@ -425,6 +571,21 @@ function BannerNotification( {
 					) }
 				</Row>
 			</Grid>
+			{ secondaryPane && (
+				<Fragment>
+					<div className="googlesitekit-publisher-win__secondary-pane-divider"></div>
+					<Grid className="googlesitekit-publisher-win__secondary-pane">
+						<Row>
+							<Cell
+								className="googlesitekit-publisher-win__secondary-pane"
+								size={ 12 }
+							>
+								{ secondaryPane }
+							</Cell>
+						</Row>
+					</Grid>
+				</Fragment>
+			) }
 		</section>
 	);
 }
@@ -434,6 +595,7 @@ BannerNotification.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
+	descriptionIcon: PropTypes.node,
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
@@ -454,12 +616,21 @@ BannerNotification.propTypes = {
 	dismissExpires: PropTypes.number,
 	showOnce: PropTypes.bool,
 	onCTAClick: PropTypes.func,
+	onView: PropTypes.func,
 	onDismiss: PropTypes.func,
 	onLearnMoreClick: PropTypes.func,
 	anchorLink: PropTypes.string,
 	anchorLinkLabel: PropTypes.string,
 	badgeLabel: PropTypes.string,
 	noBottomPadding: PropTypes.bool,
+	rounded: PropTypes.bool,
+	footer: PropTypes.node,
+	secondaryPane: PropTypes.node,
+	showSmallWinImage: PropTypes.bool,
+	smallWinImageSVGWidth: PropTypes.number,
+	smallWinImageSVGHeight: PropTypes.number,
+	mediumWinImageSVGWidth: PropTypes.number,
+	mediumWinImageSVGHeight: PropTypes.number,
 };
 
 BannerNotification.defaultProps = {

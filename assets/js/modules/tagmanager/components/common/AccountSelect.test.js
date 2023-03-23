@@ -68,7 +68,7 @@ describe( 'AccountSelect', () => {
 		).toBe( true );
 	} );
 
-	it( 'should have a "Set up a new account" item at the end of the list', async () => {
+	it( 'should have a "Set up a new account" item at the end of the list', () => {
 		registry
 			.dispatch( MODULES_TAGMANAGER )
 			.receiveGetAccounts( fixtures.accounts );
@@ -82,9 +82,11 @@ describe( 'AccountSelect', () => {
 		expect( listItems.pop() ).toHaveTextContent( /set up a new account/i );
 	} );
 
-	it( 'should render a loading state when accounts are undefined', async () => {
+	it( 'should render a loading state when accounts are undefined', () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+			)
 		);
 
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {
@@ -98,7 +100,7 @@ describe( 'AccountSelect', () => {
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only the set up option when no accounts exist', async () => {
+	it( 'should render a select box with only the set up option when no accounts exist', () => {
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
 		registry
 			.dispatch( MODULES_TAGMANAGER )
@@ -111,7 +113,7 @@ describe( 'AccountSelect', () => {
 		expect( listItems.pop() ).toHaveTextContent( /set up a new account/i );
 	} );
 
-	it( 'should update accountID in the store when a new item is clicked', async () => {
+	it( 'should update accountID in the store when a new item is clicked', () => {
 		registry
 			.dispatch( MODULES_TAGMANAGER )
 			.receiveGetAccounts( fixtures.accounts );
@@ -138,5 +140,29 @@ describe( 'AccountSelect', () => {
 			.getAccountID();
 		expect( originalAccountID ).not.toEqual( newAccountID );
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
+	} );
+
+	it( 'should disable the account select if the user does not have module access', () => {
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( fixtures.accounts );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
+
+		const { container } = render(
+			<AccountSelect hasModuleAccess={ false } />,
+			{
+				registry,
+			}
+		);
+
+		// Verify that the Account select dropdown is disabled.
+		[
+			'.googlesitekit-tagmanager__select-account',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
 	} );
 } );

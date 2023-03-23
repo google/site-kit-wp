@@ -21,9 +21,9 @@
  */
 import { getWidgetLayout } from './get-widget-layout';
 import ReportZero from '../../../components/ReportZero';
-import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import Null from '../../../components/Null';
+import RecoverableModules from '../../../components/RecoverableModules';
 
 describe( 'getWidgetLayout', () => {
 	const quarter = { width: WIDGET_WIDTHS.QUARTER };
@@ -53,9 +53,9 @@ describe( 'getWidgetLayout', () => {
 		Component: ReportZero,
 		metadata: { moduleSlug },
 	} );
-	const getActivateModuleCTAState = ( moduleSlug ) => ( {
-		Component: ActivateModuleCTA,
-		metadata: { moduleSlug },
+	const getRecoverableModulesState = ( moduleSlugs ) => ( {
+		Component: RecoverableModules,
+		metadata: { moduleSlugs },
 	} );
 	const getNullState = () => ( { Component: Null, metadata: {} } );
 
@@ -76,9 +76,9 @@ describe( 'getWidgetLayout', () => {
 			test1: getRegularState(),
 			test2: getReportZeroState( 'search-console' ),
 			test3: getReportZeroState( 'analytics' ),
-			test4: getActivateModuleCTAState( 'adsense' ),
-			test5: getActivateModuleCTAState( 'adsense' ),
-			test6: getActivateModuleCTAState( 'adsense' ),
+			test4: getRecoverableModulesState( [ 'adsense' ] ),
+			test5: getRecoverableModulesState( [ 'adsense' ] ),
+			test6: getRecoverableModulesState( [ 'adsense' ] ),
 			test7: getNullState(),
 		};
 

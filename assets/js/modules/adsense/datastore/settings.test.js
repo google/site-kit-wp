@@ -73,7 +73,9 @@ describe( 'modules/adsense settings', () => {
 					.dispatch( MODULES_ADSENSE )
 					.setSettings( validSettings );
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/settings'
+					),
 					{ body: validSettings, status: 200 }
 				);
 
@@ -81,7 +83,9 @@ describe( 'modules/adsense settings', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/settings'
+					),
 					{
 						body: {
 							data: validSettings,
@@ -99,7 +103,9 @@ describe( 'modules/adsense settings', () => {
 					.setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/settings'
+					),
 					{ body: wpError, status: 500 }
 				);
 				await registry.dispatch( MODULES_ADSENSE ).submitChanges();
@@ -121,7 +127,9 @@ describe( 'modules/adsense settings', () => {
 					.setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/settings'
+					),
 					{ body: validSettings, status: 200 }
 				);
 
@@ -275,7 +283,9 @@ describe( 'modules/adsense settings', () => {
 			it( 'uses a resolver to make a network request via getSettings', async () => {
 				const response = { accountStatus: 'some-status' };
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/settings'
+					),
 					{ body: response, status: 200 }
 				);
 
@@ -329,7 +339,7 @@ describe( 'modules/adsense settings', () => {
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
-			it( 'does not override original account status when receiving settings again', async () => {
+			it( 'does not override original account status when receiving settings again', () => {
 				// Set original value.
 				const value = 'a-status';
 				registry
@@ -359,7 +369,9 @@ describe( 'modules/adsense settings', () => {
 			it( 'uses a resolver to make a network request via getSettings', async () => {
 				const response = { useSnippet: false };
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/settings'
+					),
 					{ body: response, status: 200 }
 				);
 
@@ -407,7 +419,7 @@ describe( 'modules/adsense settings', () => {
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
-			it( 'does not override original useSnippet when receiving settings again', async () => {
+			it( 'does not override original useSnippet when receiving settings again', () => {
 				// Set original value.
 				const value = true;
 				registry

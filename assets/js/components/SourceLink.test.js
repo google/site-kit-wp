@@ -21,37 +21,38 @@
  */
 import { render } from '../../../tests/js/test-utils';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
-import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import SourceLink from './SourceLink';
 
 describe( 'SourceLink', () => {
-	it( 'should not render the SourceLink when the view context is "view only"', async () => {
+	it( 'should not render the SourceLink when the view context is "view only"', () => {
 		const { container } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
-				<SourceLink
-					name="Analytics"
-					href={ 'https://analytics.google.com/test' }
-					external
-				/>
-			</ViewContextProvider>
+			<SourceLink
+				name="Analytics"
+				href="https://analytics.google.com/test"
+				external
+			/>,
+			{
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
 		);
 
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should render the SourceLink normally when the view context is NOT "view only"', async () => {
+	it( 'should render the SourceLink normally when the view context is NOT "view only"', () => {
 		const { container } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD }>
-				<SourceLink
-					name="Analytics"
-					href={ 'https://analytics.google.com/test' }
-					external
-				/>
-			</ViewContextProvider>
+			<SourceLink
+				name="Analytics"
+				href="https://analytics.google.com/test"
+				external
+			/>,
+			{
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
 		);
 
 		expect( container ).toHaveTextContent( 'Analytics' );

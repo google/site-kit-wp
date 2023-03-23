@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from './constants';
 import { sortByProperty } from '../../../util/sort-by-property';
+import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 
 const { createRegistrySelector } = Data;
 
@@ -118,26 +119,24 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case ASSIGN_WIDGET_AREA: {
 			const { slug, contextSlugs } = payload;
 
-			const { contextAssignments } = state;
 			contextSlugs.forEach( ( contextSlug ) => {
-				if ( contextAssignments[ contextSlug ] === undefined ) {
-					contextAssignments[ contextSlug ] = [];
+				if ( state.contextAssignments[ contextSlug ] === undefined ) {
+					state.contextAssignments[ contextSlug ] = [];
 				}
 
-				if ( ! contextAssignments[ contextSlug ].includes( slug ) ) {
-					contextAssignments[ contextSlug ].push( slug );
+				if (
+					! state.contextAssignments[ contextSlug ].includes( slug )
+				) {
+					state.contextAssignments[ contextSlug ].push( slug );
 				}
 			} );
 
-			return {
-				...state,
-				contextAssignments,
-			};
+			return state;
 		}
 
 		case REGISTER_WIDGET_AREA: {
@@ -151,20 +150,15 @@ export const reducer = ( state, { type, payload } ) => {
 				return state;
 			}
 
-			return {
-				...state,
-				areas: {
-					...state.areas,
-					[ slug ]: { ...settings, slug },
-				},
-			};
+			state.areas[ slug ] = { ...settings, slug };
+			return state;
 		}
 
 		default: {
 			return state;
 		}
 	}
-};
+} );
 
 export const resolvers = {};
 
@@ -176,24 +170,30 @@ export const selectors = {
 	 * Returns `false` if the widget area is NOT active.
 	 *
 	 * @since 1.47.0
+	 * @since 1.77.0 Add options.modules parameter.
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Widget area's slug.
+	 * @param {Object}         state             Data store's state.
+	 * @param {string}         slug              Widget area's slug.
+	 * @param {Object}         [options]         Optional. Options parameter.
+	 * @param {Array.<string>} [options.modules] Optional. List of module slugs, when provided the widgets checked will be restricted to those associated with the specified modules.
 	 * @return {boolean} `true`/`false` based on whether widget area is active.
 	 */
 	isWidgetAreaActive: createRegistrySelector(
-		( select ) => ( state, widgetAreaSlug ) => {
-			invariant(
-				widgetAreaSlug,
-				'widgetAreaSlug is required to check a widget area is active.'
-			);
-
-			return select( CORE_WIDGETS )
-				.getWidgets( widgetAreaSlug )
-				.some( ( widget ) =>
-					select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+		( select ) =>
+			( state, widgetAreaSlug, options = {} ) => {
+				invariant(
+					widgetAreaSlug,
+					'widgetAreaSlug is required to check a widget area is active.'
 				);
-		}
+
+				const { modules } = options;
+
+				return select( CORE_WIDGETS )
+					.getWidgets( widgetAreaSlug, { modules } )
+					.some( ( widget ) =>
+						select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+					);
+			}
 	),
 
 	/**

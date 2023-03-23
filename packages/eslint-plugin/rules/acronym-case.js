@@ -136,9 +136,8 @@ module.exports = {
 						}
 
 						// Only make the check if the first character is uppercase.
-						const startsWithUppercase = acronymMatch.match(
-							/^[A-Z]/
-						);
+						const startsWithUppercase =
+							acronymMatch.match( /^[A-Z]/ );
 						if (
 							! startsWithUppercase ||
 							! startsWithUppercase.length

@@ -16,14 +16,15 @@
  * limitations under the License.
  */
 
-export const VIEW_CONTEXT_DASHBOARD = 'dashboard';
-export const VIEW_CONTEXT_PAGE_DASHBOARD = 'pageDashboard';
-export const VIEW_CONTEXT_DASHBOARD_VIEW_ONLY = 'dashboardViewOnly';
-export const VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY = 'pageDashboardViewOnly';
+export const VIEW_CONTEXT_MAIN_DASHBOARD = 'mainDashboard';
+export const VIEW_CONTEXT_ENTITY_DASHBOARD = 'entityDashboard';
+export const VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY = 'mainDashboardViewOnly';
+export const VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY =
+	'entityDashboardViewOnly';
 export const VIEW_CONTEXT_POSTS_LIST = 'postsList';
 export const VIEW_CONTEXT_USER_INPUT = 'userInput';
 export const VIEW_CONTEXT_ACTIVATION = 'activation';
-export const VIEW_CONTEXT_DASHBOARD_SPLASH = 'splash';
+export const VIEW_CONTEXT_SPLASH = 'splash';
 export const VIEW_CONTEXT_ADMIN_BAR = 'adminBar';
 export const VIEW_CONTEXT_SETTINGS = 'settings';
 export const VIEW_CONTEXT_MODULE = 'module';
@@ -31,7 +32,20 @@ export const VIEW_CONTEXT_WP_DASHBOARD = 'wpDashboard';
 export const VIEW_CONTEXT_MODULE_SETUP = 'moduleSetup';
 
 // Anchor ID Constants
+export const ANCHOR_ID_KEY_METRICS = 'key-metrics';
 export const ANCHOR_ID_TRAFFIC = 'traffic';
 export const ANCHOR_ID_CONTENT = 'content';
 export const ANCHOR_ID_SPEED = 'speed';
 export const ANCHOR_ID_MONETIZATION = 'monetization';
+
+// Site Kit only view contexts
+export const SITE_KIT_VIEW_CONTEXTS = [
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_USER_INPUT,
+	VIEW_CONTEXT_SPLASH,
+	VIEW_CONTEXT_SETTINGS,
+	VIEW_CONTEXT_MODULE_SETUP,
+];

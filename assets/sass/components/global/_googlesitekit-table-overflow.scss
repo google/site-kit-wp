@@ -35,13 +35,6 @@
 		}
 	}
 
-	&--gradient::after {
-
-		@media (max-width: $bp-tablet) {
-			width: 15%;
-		}
-	}
-
 	.googlesitekit-table-overflow__container {
 		overflow-x: auto;
 		white-space: nowrap;
@@ -50,5 +43,11 @@
 			overflow-x: visible;
 			white-space: normal;
 		}
+	}
+}
+
+.googlesitekit-table-overflow--gradient::after {
+	@media (max-width: $bp-tablet) {
+		width: 15%;
 	}
 }

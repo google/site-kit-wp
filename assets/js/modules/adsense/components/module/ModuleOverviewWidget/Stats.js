@@ -29,12 +29,8 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import GoogleChart from '../../../../../components/GoogleChart';
 
 export default function Stats( props ) {
-	const {
-		metrics,
-		currentRangeData,
-		previousRangeData,
-		selectedStats,
-	} = props;
+	const { metrics, currentRangeData, previousRangeData, selectedStats } =
+		props;
 
 	const dataMap = getSiteStatsDataForGoogleChart(
 		currentRangeData,
@@ -45,7 +41,7 @@ export default function Stats( props ) {
 	);
 
 	const dates = dataMap.slice( 1 ).map( ( [ date ] ) => date );
-	const colors = [ '#4285f4', '#27bcd4', '#1b9688', '#673ab7' ];
+	const colors = [ '#6380b8', '#bed4ff', '#5c9271', '#6e48ab' ];
 	const formats = {
 		METRIC_TALLY: undefined,
 		METRIC_CURRENCY: 'currency',
@@ -82,8 +78,9 @@ export default function Stats( props ) {
 			ticks: dates,
 		},
 		vAxis: {
-			format:
-				formats[ currentRangeData.headers[ selectedStats + 1 ].type ],
+			format: formats[
+				currentRangeData.headers[ selectedStats + 1 ].type
+			],
 			gridlines: {
 				color: '#eee',
 			},

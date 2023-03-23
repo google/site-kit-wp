@@ -120,12 +120,11 @@ const baseResolvers = {
 			return;
 		}
 
-		const {
-			error,
-		} = yield fetchGetURLChannelsStore.actions.fetchGetURLChannels(
-			accountID,
-			clientID
-		);
+		const { error } =
+			yield fetchGetURLChannelsStore.actions.fetchGetURLChannels(
+				accountID,
+				clientID
+			);
 		if ( error ) {
 			yield errorStoreActions.receiveError( error, 'getURLChannels', [
 				accountID,

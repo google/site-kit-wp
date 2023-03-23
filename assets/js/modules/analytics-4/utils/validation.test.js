@@ -21,6 +21,9 @@
  */
 import { WEBDATASTREAM_CREATE } from '../datastore/constants';
 import {
+	isValidGoogleTagAccountID,
+	isValidGoogleTagContainerID,
+	isValidGoogleTagID,
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from './validation';
@@ -71,5 +74,45 @@ describe( 'modules/analytics-4 validations', () => {
 				);
 			}
 		);
+	} );
+
+	describe( 'isValidGoogleTagID', () => {
+		it( 'should return TRUE when a valid googleTagId is passed', () => {
+			expect( isValidGoogleTagID( 'G-ABC123' ) ).toBe( true );
+			expect( isValidGoogleTagID( 'GT-THE567' ) ).toBe( true );
+			expect( isValidGoogleTagID( 'AW-WD40' ) ).toBe( true );
+		} );
+
+		it( 'should return FALSE when a invalid googleTagId is passed', () => {
+			expect( isValidGoogleTagID( 'ABC12' ) ).toBe( false );
+			expect( isValidGoogleTagID( 'AB-C12' ) ).toBe( false );
+			expect( isValidGoogleTagID( 'GT-_35' ) ).toBe( false );
+			expect( isValidGoogleTagID( '12GT-THE567' ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'isValidGoogleTagAccountID', () => {
+		it( 'should return TRUE when a valid googleTagAccountId is passed', () => {
+			expect( isValidGoogleTagAccountID( 1 ) ).toBe( true );
+			expect( isValidGoogleTagAccountID( '1' ) ).toBe( true );
+		} );
+
+		it( 'should return FALSE when a invalid googleTagId is passed', () => {
+			expect( isValidGoogleTagAccountID( 1.1 ) ).toBe( false );
+			expect( isValidGoogleTagAccountID( '' ) ).toBe( false );
+			expect( isValidGoogleTagAccountID( 'X' ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'isValidGoogleTagContainerID', () => {
+		it( 'should return TRUE when a valid googleTagAccountId is passed', () => {
+			expect( isValidGoogleTagContainerID( 1 ) ).toBe( true );
+			expect( isValidGoogleTagContainerID( '1' ) ).toBe( true );
+		} );
+
+		it( 'should return FALSE when a invalid googleTagId is passed', () => {
+			expect( isValidGoogleTagContainerID( '' ) ).toBe( false );
+			expect( isValidGoogleTagContainerID( 'X' ) ).toBe( false );
+		} );
 	} );
 } );

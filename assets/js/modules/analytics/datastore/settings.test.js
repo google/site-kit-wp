@@ -28,13 +28,7 @@ import {
 	PROFILE_CREATE,
 } from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import {
-	CORE_SITE,
-	AMP_MODE_SECONDARY,
-} from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
@@ -44,24 +38,27 @@ import {
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
-import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
 import { INVARIANT_INVALID_WEBDATASTREAM_ID } from '../../analytics-4/datastore/settings';
 import { defaultSettings as ga4DefaultSettings } from '../../analytics-4/datastore/__fixtures__';
 import {
-	INVARIANT_INSUFFICIENT_TAG_PERMISSIONS,
-	INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS,
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_PROFILE_NAME,
 	INVARIANT_INVALID_PROFILE_SELECTION,
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
 
-	const gaSettingsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/;
-	const ga4SettingsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/;
+	const gaSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics/data/settings'
+	);
+	const ga4SettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
 
 	const validSettings = {
 		accountID: '12345',
@@ -72,6 +69,8 @@ describe( 'modules/analytics settings', () => {
 		useSnippet: true,
 		trackingDisabled: [],
 		anonymizeIP: true,
+		canUseSnippet: true,
+		dashbaordView: 'universal-analytics',
 	};
 	const tagWithPermission = {
 		accountID: '12345',
@@ -138,7 +137,9 @@ describe( 'modules/analytics settings', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: createdProperty, status: 200 }
 				);
 				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
@@ -150,10 +151,10 @@ describe( 'modules/analytics settings', () => {
 				const result = await registry
 					.dispatch( MODULES_ANALYTICS )
 					.submitChanges();
-				expect(
-					fetchMock
-				).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: { data: { accountID: '12345' } } }
 				);
 
@@ -177,16 +178,18 @@ describe( 'modules/analytics settings', () => {
 				} );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: error, status: 500 }
 				);
 
 				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
-				expect(
-					fetchMock
-				).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: { data: { accountID: '12345' } } }
 				);
 
@@ -217,7 +220,9 @@ describe( 'modules/analytics settings', () => {
 					id: '987654321',
 				};
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{ body: createdProfile, status: 200 }
 				);
 				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
@@ -229,7 +234,9 @@ describe( 'modules/analytics settings', () => {
 				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{
 						body: {
 							data: {
@@ -261,7 +268,9 @@ describe( 'modules/analytics settings', () => {
 				} );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{ body: error, status: 500 }
 				);
 
@@ -270,7 +279,9 @@ describe( 'modules/analytics settings', () => {
 					.submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{
 						body: {
 							data: {
@@ -314,11 +325,15 @@ describe( 'modules/analytics settings', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: createdProperty, status: 200 }
 				);
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{ body: createdProfile, status: 200 }
 				);
 				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
@@ -580,11 +595,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( tagWithPermission.propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetTagPermission( tagWithPermission, {
-						propertyID: tagWithPermission.propertyID,
-					} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
@@ -606,11 +616,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( tagWithPermission.propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetTagPermission( tagWithPermission, {
-						propertyID: tagWithPermission.propertyID,
-					} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
@@ -632,11 +637,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( tagWithPermission.propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetTagPermission( tagWithPermission, {
-						propertyID: tagWithPermission.propertyID,
-					} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
@@ -658,11 +658,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( tagWithPermission.propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetTagPermission( tagWithPermission, {
-						propertyID: tagWithPermission.propertyID,
-					} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
@@ -686,68 +681,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'requires permission for GTM Analytics tag if the tag is present', () => {
-				const data = {
-					accountID: '12345',
-					webPropertyID: 'UA-123456789-1',
-					ampPropertyID: 'UA-123456789-1',
-				};
-
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( withActive( 'tagmanager' ) );
-
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-					homeURL: 'http://example.com/',
-					ampMode: AMP_MODE_SECONDARY,
-				} );
-
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-					{
-						accountID: data.accountID,
-						permission: false,
-					},
-					{ propertyID: data.webPropertyID }
-				);
-
-				const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-					registry
-				);
-				buildAndReceiveWebAndAMP( data );
-
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS );
-
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-					{
-						accountID: data.accountID,
-						permission: true,
-					},
-					{ propertyID: data.webPropertyID }
-				);
-
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					...validSettings,
-					accountID: data.accountID,
-					propertyID: data.webPropertyID,
-				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setPropertyID( PROPERTY_CREATE );
-
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).not.toThrow( INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS );
-				expect( console ).toHaveWarned();
-			} );
-
-			it( 'requires permissions for an existing tag', () => {
+			it( 'does not require permissions for an existing tag', () => {
 				const existingTag = {
 					accountID: '999999',
 					propertyID: 'UA-999999-1',
@@ -759,40 +693,16 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( existingTag.propertyID );
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-					{
-						accountID: existingTag.accountID,
-						permission: true,
-					},
-					{ propertyID: existingTag.propertyID }
-				);
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.hasTagPermission( existingTag.propertyID )
-				).toBe( true );
+
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
 				).toBe( true );
-
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-					{
-						accountID: existingTag.accountID,
-						permission: false,
-					},
-					{ propertyID: existingTag.propertyID }
-				);
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.hasTagPermission( existingTag.propertyID )
-				).toBe( false );
 
 				expect( () =>
 					registry
 						.select( MODULES_ANALYTICS )
 						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
+				).not.toThrow();
 			} );
 
 			it( 'supports creating a property', () => {
@@ -932,6 +842,115 @@ describe( 'modules/analytics settings', () => {
 							.__dangerousCanSubmitChanges()
 					).not.toThrow();
 				} );
+			} );
+		} );
+
+		describe( 'getCanUseSnippet', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setSettings( validSettings );
+			} );
+			it( 'should return the value from analytics settings if tag manager is not available', () => {
+				const { ...modules } = registry
+					.select( CORE_MODULES )
+					.getModules();
+				delete modules.tagmanager;
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( Object.values( modules ) );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
+				).toBe( validSettings.canUseSnippet );
+			} );
+
+			it( 'should return the value from analytics settings if tag manager is not connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'tagmanager',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
+				).toBe( validSettings.canUseSnippet );
+			} );
+
+			it( 'should return the value from analytics settings if tag manager useSnippet is false', () => {
+				provideModules( registry, [
+					{
+						slug: 'tagmanager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setSettings( { useSnippet: false } );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
+				).toBe( validSettings.canUseSnippet );
+			} );
+
+			it( 'should return the value from analytics settings if there is no GA property in tag manager', () => {
+				provideModules( registry, [
+					{
+						slug: 'tagmanager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setSettings( { useSnippet: true } );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
+				).toBe( validSettings.canUseSnippet );
+			} );
+
+			it( 'should return `true` if GA property in tag manager is not the same as analytics', () => {
+				provideModules( registry, [
+					{
+						slug: 'tagmanager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
+					useSnippet: true,
+					gaPropertyID: 'UA-24680-1',
+				} );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
+				).toBe( true );
+			} );
+
+			it( 'should return `false` if GA property in tag manager is the same as analytics', () => {
+				provideModules( registry, [
+					{
+						slug: 'tagmanager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
+					useSnippet: true,
+					gaPropertyID: validSettings.propertyID,
+				} );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
+				).toBe( false );
 			} );
 		} );
 	} );

@@ -19,18 +19,20 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import { useUpdateEffect } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
-import { useState, useCallback } from '@wordpress/element';
+import { Fragment, useState, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_ANALYTICS_4,
@@ -38,16 +40,20 @@ import {
 	WEBDATASTREAM_CREATE,
 } from '../../../analytics-4/datastore/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
-import {
-	PropertySelect,
-	UseSnippetSwitch,
-} from '../../../analytics-4/components/common';
-import ProgressBar from '../../../../components/ProgressBar';
+import { PropertySelect } from '../../../analytics-4/components/common';
+import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
+import JoyrideTooltip from '../../../../components/JoyrideTooltip';
+import GA4SettingsNotice from './GA4SettingsNotice';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function GA4SettingsControls() {
+export default function GA4SettingsControls( {
+	hasAnalyticsAccess,
+	hasAnalytics4Access,
+} ) {
 	const [ matchedProperty, setMatchedProperty ] = useState();
 	const [ matchedWebDataStream, setMatchedWebDataStream ] = useState();
 
@@ -59,25 +65,34 @@ export default function GA4SettingsControls() {
 	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
-
-	const isAdminAPIWorking = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-	);
-
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
+	const enableGA4PropertyTooltip = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4PropertyTooltip' )
+	);
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
+
+	const isModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+
+	const documentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
+	);
+
+	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
 
 	const {
 		matchAccountProperty,
 		matchWebDataStream,
 		setPropertyID,
 		setWebDataStreamID,
-		setMeasurementID,
+		updateSettingsForMeasurementID,
 	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	useUpdateEffect( () => {
@@ -93,17 +108,10 @@ export default function GA4SettingsControls() {
 			}
 		};
 
-		if ( isAdminAPIWorking ) {
-			setMatchedProperty( undefined );
-			setMatchedWebDataStream( undefined );
-			matchGA4Information();
-		}
-	}, [
-		accountID,
-		matchAccountProperty,
-		matchWebDataStream,
-		isAdminAPIWorking,
-	] );
+		setMatchedProperty( undefined );
+		setMatchedWebDataStream( undefined );
+		matchGA4Information();
+	}, [ accountID, matchAccountProperty, matchWebDataStream ] );
 
 	const onActivate = useCallback( () => {
 		const hasProperties = properties?.length > 0;
@@ -116,7 +124,7 @@ export default function GA4SettingsControls() {
 
 		setPropertyID( newPropertyID );
 		setWebDataStreamID( newWebDataStreamID );
-		setMeasurementID(
+		updateSettingsForMeasurementID(
 			// eslint-disable-next-line sitekit/acronym-case
 			matchedWebDataStream?.webStreamData.measurementId || ''
 		);
@@ -126,29 +134,98 @@ export default function GA4SettingsControls() {
 		matchedWebDataStream,
 		setPropertyID,
 		setWebDataStreamID,
-		setMeasurementID,
+		updateSettingsForMeasurementID,
 	] );
 
 	const isDisabled = ! propertyID && ! enableGA4;
 
-	if ( isAdminAPIWorking === undefined ) {
-		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
-	}
+	useEffect( () => {
+		// Ensure preselection of the GA4 property works when navigating from the "Connect Google Analytics 4" CTA button.
+		if (
+			enableGA4 &&
+			! propertyID &&
+			matchedProperty &&
+			matchedWebDataStream
+		) {
+			onActivate();
+		}
+	}, [
+		enableGA4,
+		matchedProperty,
+		matchedWebDataStream,
+		onActivate,
+		propertyID,
+	] );
 
-	if ( ! isAdminAPIWorking ) {
-		return null;
-	}
+	const measurementIDs = useSelect( ( select ) => {
+		if ( ! properties?.length ) {
+			return null;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getMatchedMeasurementIDsByPropertyIDs(
+			( properties || [] ).map( ( { _id } ) => _id )
+		);
+	} );
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
+			<h4 className="googlesitekit-settings-module__fields-group-title">
+				{ __( 'Google Analytics 4', 'google-site-kit' ) }
+			</h4>
 			<div className="googlesitekit-setup-module__inputs">
 				{ ! isDisabled && (
-					<PropertySelect
-						label={ __(
-							'Google Analytics 4 Property',
-							'google-site-kit'
-						) }
-					/>
+					<Fragment>
+						<PropertySelect
+							label={ __(
+								'Google Analytics 4 Property',
+								'google-site-kit'
+							) }
+							hasModuleAccess={ hasModuleAccess }
+							onChange={ () =>
+								enableGA4PropertyTooltip &&
+								setValues( FORM_SETUP, {
+									enableGA4PropertyTooltip: false,
+								} )
+							}
+						/>
+
+						{ ! isModuleConnected &&
+							enableGA4PropertyTooltip &&
+							hasModuleAccess && (
+								<JoyrideTooltip
+									title={ __(
+										'Set up your Google Analytics 4 property here',
+										'google-site-kit'
+									) }
+									styles={ {
+										options: {
+											zIndex: 9999,
+										},
+									} }
+									target=".googlesitekit-analytics-4__select-property"
+									onDismiss={ () =>
+										setValues( FORM_SETUP, {
+											enableGA4PropertyTooltip: false,
+										} )
+									}
+									cta={
+										<Button
+											className="googlesitekit-tooltip-button"
+											href={ documentationURL }
+											target="_blank"
+											text
+										>
+											{ __(
+												'Learn more',
+												'google-site-kit'
+											) }
+										</Button>
+									}
+								/>
+							) }
+					</Fragment>
 				) }
 				{ isDisabled && (
 					<Select
@@ -163,31 +240,52 @@ export default function GA4SettingsControls() {
 						outlined
 					>
 						<Option value={ matchedProperty?._id || '' }>
-							{ ! matchedProperty?._id ||
-							! matchedProperty?.displayName
-								? ''
-								: sprintf(
-										/* translators: 1: Property name. 2: Property ID. */
-										_x(
-											'%1$s (%2$s)',
-											'Analytics property name and ID',
-											'google-site-kit'
-										),
-										matchedProperty.displayName,
-										matchedProperty._id
-								  ) }
+							{ ! matchedProperty?._id && '' }
+
+							{ matchedProperty?._id &&
+								( measurementIDs?.[ matchedProperty._id ]
+									? sprintf(
+											/* translators: 1: Property name. 2: Property ID. */
+											_x(
+												'%1$s (%2$s)',
+												'Analytics property name and ID',
+												'google-site-kit'
+											),
+											matchedProperty.displayName,
+											measurementIDs[
+												matchedProperty._id
+											]
+									  )
+									: matchedProperty.displayName ) }
 						</Option>
 					</Select>
 				) }
 			</div>
 
-			{ isDisabled && <GA4ActivateSwitch onActivate={ onActivate } /> }
+			{ isDisabled && (
+				<GA4ActivateSwitch
+					disabled={ ! hasAnalyticsAccess }
+					onActivate={ onActivate }
+				/>
+			) }
 
 			{ ! isDisabled && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-					<UseSnippetSwitch />
+				<div className="googlesitekit-settings-module__meta-item">
+					<SettingsUseSnippetSwitch />
 				</div>
 			) }
+
+			<GA4SettingsNotice
+				isGA4Connected={ isModuleConnected }
+				hasAnalyticsAccess={ hasAnalyticsAccess }
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
 		</div>
 	);
 }
+
+// eslint-disable-next-line sitekit/acronym-case
+GA4SettingsControls.propTypes = {
+	hasAnalyticsAccess: PropTypes.bool,
+	hasAnalytics4Access: PropTypes.bool,
+};

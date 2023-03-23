@@ -26,6 +26,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
@@ -40,9 +41,7 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
 import { getAccountDefaults } from '../../../util/account';
 import { Cell } from '../../../../../material-components';
-import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
-import ProgressBar from '../../../../../components/ProgressBar';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
 import GA4PropertyNotice from '../GA4PropertyNotice';
 import TimezoneSelect from './TimezoneSelect';
@@ -55,12 +54,12 @@ const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( MODULES_ANALYTICS ).getAccounts(),
-		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getAccounts'
-		),
-	} ) );
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccounts()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+	);
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountTicketTermsOfServiceURL()
 	);
@@ -181,9 +180,10 @@ export default function AccountCreate() {
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
 	const { rollbackSettings } = useDispatch( MODULES_ANALYTICS );
-	const handleBack = useCallback( () => rollbackSettings(), [
-		rollbackSettings,
-	] );
+	const handleBack = useCallback(
+		() => rollbackSettings(),
+		[ rollbackSettings ]
+	);
 
 	if (
 		isDoingCreateAccount ||

@@ -19,10 +19,14 @@
 /**
  * Internal dependencies
  */
-import { provideSiteInfo } from '../../../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserInfo,
+} from '../../../../../../tests/js/utils';
 import {
 	render,
-	waitFor,
 	createTestRegistry,
 } from '../../../../../../tests/js/test-utils';
 import {
@@ -30,7 +34,6 @@ import {
 	AMP_MODE_SECONDARY,
 } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_TAGMANAGER,
@@ -59,22 +62,23 @@ describe( 'SettingsEdit', () => {
 
 		registry = createTestRegistry();
 
-		fetchMock.getOnce( /tagmanager\/data\/accounts/, {
+		fetchMock.getOnce( new RegExp( 'tagmanager/data/accounts' ), {
 			body: [ account ],
 			status: 200,
 		} );
-		fetchMock.getOnce( /analytics\/data\/settings/, {
+		fetchMock.getOnce( new RegExp( 'analytics/data/settings' ), {
 			body: {},
 			status: 200,
 		} );
 
 		provideSiteInfo( registry, { siteName } );
+		provideUserInfo( registry );
 
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'tagmanager' ) );
+		provideModules( registry, [ { slug: 'tagmanager', active: true } ] );
+		provideModuleRegistrations( registry );
 
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 1 );
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
 		registry
@@ -96,19 +100,66 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
-				const { container } = await waitFor( () =>
-					render( <SettingsEdit />, { registry } )
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
 				);
+				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
 			} );
 
+			it( 'should display a warning if the current user does not have access to the module', async () => {
+				// Ensure the module is owned by another user.
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: false },
+						{ slug: 'tagmanager' }
+					);
+
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
+				);
+				await waitForRegistry();
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( siteName );
+
+				// Verify that the select dropdowns are disabled.
+				expect(
+					container.querySelector( '.mdc-select--disabled' )
+				).toBeInTheDocument();
+
+				// Verify that the current user doesn't have access warning is displayed.
+				expect(
+					container.querySelector( '.googlesitekit-settings-notice' )
+				).toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-settings-notice__text'
+					)
+				).toHaveTextContent(
+					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
+				);
+			} );
+
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container } = await waitFor( () =>
-					render( <SettingsEdit />, { registry } )
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
 				);
+				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( 'example.com' );
@@ -119,10 +170,13 @@ describe( 'SettingsEdit', () => {
 					containerName: allContainers[ 0 ].name,
 				} );
 
-				const { container } = await waitFor( () =>
-					render( <SettingsEdit />, { registry } )
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
 				);
-
+				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( allContainers[ 0 ].name );
@@ -150,19 +204,66 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
-				const { container } = await waitFor( () =>
-					render( <SettingsEdit />, { registry } )
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
 				);
+				await waitForRegistry();
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
 			} );
 
+			it( 'should display a warning if the current user does not have access to the module', async () => {
+				// Ensure the module is owned by another user.
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: false },
+						{ slug: 'tagmanager' }
+					);
+
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
+				);
+				await waitForRegistry();
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( `${ siteName } AMP` );
+
+				// Verify that the select dropdowns are disabled.
+				expect(
+					container.querySelector( '.mdc-select--disabled' )
+				).toBeInTheDocument();
+
+				// Verify that the current user doesn't have access warning is displayed.
+				expect(
+					container.querySelector( '.googlesitekit-settings-notice' )
+				).toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-settings-notice__text'
+					)
+				).toHaveTextContent(
+					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
+				);
+			} );
+
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container } = await waitFor( () =>
-					render( <SettingsEdit />, { registry } )
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
 				);
+				await waitForRegistry();
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( 'example.com AMP' );
@@ -173,10 +274,13 @@ describe( 'SettingsEdit', () => {
 					ampContainerName: allContainers[ 0 ].name,
 				} );
 
-				const { container } = await waitFor( () =>
-					render( <SettingsEdit />, { registry } )
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
 				);
-
+				await waitForRegistry();
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( allContainers[ 0 ].name );
@@ -211,9 +315,13 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display default container names when nothing is entered yet', async () => {
-				const { container } = await waitFor( () =>
-					render( <SettingsEdit />, { registry } )
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
 				);
+				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -222,11 +330,57 @@ describe( 'SettingsEdit', () => {
 				).toHaveValue( `${ siteName } AMP` );
 			} );
 
+			it( 'should display a warning if the current user does not have access to the module', async () => {
+				// Ensure the module is owned by another user.
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: false },
+						{ slug: 'tagmanager' }
+					);
+
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
+				);
+				await waitForRegistry();
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( siteName );
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( `${ siteName } AMP` );
+
+				// Verify that the select dropdowns are disabled.
+				expect(
+					container.querySelector( '.mdc-select--disabled' )
+				).toBeInTheDocument();
+
+				// Verify that the current user doesn't have access warning is displayed.
+				expect(
+					container.querySelector( '.googlesitekit-settings-notice' )
+				).toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-settings-notice__text'
+					)
+				).toHaveTextContent(
+					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
+				);
+			} );
+
 			it( 'should use domain name as default values when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container } = await waitFor( () =>
-					render( <SettingsEdit />, { registry } )
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
 				);
+				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( 'example.com' );
@@ -241,10 +395,13 @@ describe( 'SettingsEdit', () => {
 					ampContainerName: allContainers[ 1 ].name,
 				} );
 
-				const { container } = await waitFor( () =>
-					render( <SettingsEdit />, { registry } )
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+					}
 				);
-
+				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( allContainers[ 0 ].name );

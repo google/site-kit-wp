@@ -56,21 +56,12 @@ jobs:
     timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
-      - uses: actions/checkout@v2
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
+      - uses: actions/checkout@v3
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
-      - name: Cache Node - npm
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-cache-
+          node-version-file: '.nvmrc'
+          cache: 'npm'
       - name: npm install
         run: |
           npm ci
@@ -78,7 +69,7 @@ jobs:
         run: |
           npm run build:storybook
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: storybook-files
           path: dist
@@ -88,26 +79,24 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-storybook
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: gh-pages
       - name: Download artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: storybook-files
           path: dist
       - name: Set branch environment variables
         id: branch-target
         if: github.event_name != 'pull_request'
-        run: |
-          echo "::set-output name=dir::${GITHUB_REF##*/}"
+        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
       - name: Set PR environment variables
         id: pr-target
         if: github.event_name == 'pull_request'
         env:
           PULL_REQUEST_NUMBER: ${{ github.event.number }}
-        run: |
-          echo "::set-output name=dir::pull/${PULL_REQUEST_NUMBER}"
+        run: echo "dir=pull/${PULL_REQUEST_NUMBER}" >> $GITHUB_OUTPUT
       - name: Commit updates
         run: |
           mkdir -p storybook/${TARGET_DIR}
@@ -132,7 +121,7 @@ jobs:
     timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: gh-pages
       - name: Remove storybook
@@ -157,26 +146,17 @@ jobs:
     timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: storybook-files
           path: dist
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
-      - name: Cache Node - npm
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-cache-
+          node-version-file: '.nvmrc'
+          cache: 'npm'
       - name: npm install
         run: |
           npm ci

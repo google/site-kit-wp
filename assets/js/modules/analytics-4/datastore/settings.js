@@ -45,6 +45,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -68,7 +69,7 @@ export async function submitChanges( { select, dispatch } ) {
 		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID(
 			WEBDATASTREAM_CREATE
 		);
-		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( '' );
+		dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID( '' );
 	}
 
 	const webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
@@ -85,7 +86,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 
 		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webdatastream._id );
-		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
+		dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID(
 			// eslint-disable-next-line sitekit/acronym-case
 			webdatastream.webStreamData.measurementId
 		);
@@ -95,6 +96,14 @@ export async function submitChanges( { select, dispatch } ) {
 		const { error } = await dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 		if ( error ) {
 			return { error };
+		}
+
+		if (
+			select( CORE_MODULES ).isModuleConnected( 'analytics' ) &&
+			! select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		) {
+			// Refresh modules from server if GA4 was connected after initial setup.
+			await dispatch( CORE_MODULES ).fetchGetModules();
 		}
 	}
 
@@ -112,10 +121,6 @@ export function rollbackChanges( { select, dispatch } ) {
 }
 
 export function validateCanSubmitChanges( select ) {
-	if ( select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() === false ) {
-		return;
-	}
-
 	const {
 		haveSettingsChanged: haveGA4SettingsChanged,
 		isDoingSubmitChanges,
@@ -123,9 +128,8 @@ export function validateCanSubmitChanges( select ) {
 		getWebDataStreamID,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
-	const { haveSettingsChanged: haveUASettingsChanged } = createStrictSelect(
-		select
-	)( MODULES_ANALYTICS );
+	const { haveSettingsChanged: haveUASettingsChanged } =
+		createStrictSelect( select )( MODULES_ANALYTICS );
 
 	// Check if we have GA4 settings changed only if we are sure that there is no UA changes.
 	if ( ! haveUASettingsChanged() ) {

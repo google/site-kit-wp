@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -35,13 +35,16 @@ import {
 	CATEGORY_AVERAGE,
 	CATEGORY_SLOW,
 } from '../../util/constants';
+import Badge from '../../../../components/Badge';
 
 export default function ReportMetric( {
 	title,
 	description,
 	displayValue,
 	category,
+	experimental,
 	isLast,
+	isHidden,
 } ) {
 	// Normalize the category case.
 	category = category.toLowerCase();
@@ -53,12 +56,19 @@ export default function ReportMetric( {
 				'googlesitekit-pagespeed-report-metric',
 				{
 					'googlesitekit-pagespeed-report__row--last': isLast,
+					'googlesitekit-pagespeed-report__row--hidden': isHidden,
 				}
 			) }
 		>
 			<td>
 				<div className="googlesitekit-pagespeed-report-metric__title">
 					{ title }
+					{ !! experimental && (
+						<Badge
+							label={ __( 'Experimental', 'google-site-kit' ) }
+							className="googlesitekit-pagespeed-report-metric__badge"
+						/>
+					) }
 				</div>
 				<div className="googlesitekit-pagespeed-report-metric__description">
 					{ description }
@@ -112,5 +122,7 @@ ReportMetric.propTypes = {
 	description: PropTypes.string.isRequired,
 	displayValue: PropTypes.string.isRequired,
 	category: PropTypes.string.isRequired,
+	experimental: PropTypes.bool,
 	isLast: PropTypes.bool,
+	isHidden: PropTypes.bool,
 };

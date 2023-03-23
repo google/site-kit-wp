@@ -24,6 +24,13 @@ import { MODULES_TAGMANAGER } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
 let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
+	ownedSettingsSlugs: [
+		'accountID',
+		'ampContainerID',
+		'containerID',
+		'internalAMPContainerID',
+		'internalContainerID',
+	],
 	storeName: MODULES_TAGMANAGER,
 	settingSlugs: [
 		'accountID',

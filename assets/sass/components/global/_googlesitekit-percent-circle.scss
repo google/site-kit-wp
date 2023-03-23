@@ -21,23 +21,11 @@ $circle-width: 0.1em;
 .googlesitekit-percentage-circle {
 	background-color: $c-border-light;
 	border-radius: 50%;
-	font-size: 50px;
+	font-size: $fs-headline-md;
 	height: 1em;
 	margin: 0 auto;
 	position: relative;
 	width: 1em;
-
-	&--fast {
-		color: $c-pagespeed-fast;
-	}
-
-	&--average {
-		color: $c-pagespeed-average;
-	}
-
-	&--slow {
-		color: $c-pagespeed-slow;
-	}
 
 	// Background
 	&::after {
@@ -55,8 +43,8 @@ $circle-width: 0.1em;
 
 	.googlesitekit-percentage-circle__text {
 		box-sizing: content-box;
-		font-size: 1.25rem;
-		font-weight: $fw-primary-bold;
+		font-size: $fs-title-lg;
+		font-weight: $fw-bold;
 		left: 0;
 		line-height: 50px;
 		position: absolute;
@@ -92,47 +80,59 @@ $circle-width: 0.1em;
 	.googlesitekit-percentage-circle__fill {
 		box-sizing: content-box;
 	}
+}
 
-	@for $i from 51 through 100 {
+.googlesitekit-percentage-circle--fast {
+	color: $c-pagespeed-fast;
+}
 
-		&--percent-#{$i} .googlesitekit-percentage-circle__slice {
-			clip: rect(auto, auto, auto, auto);
-		}
+.googlesitekit-percentage-circle--average {
+	color: $c-pagespeed-average;
+}
 
-		&--percent-#{$i} .googlesitekit-percentage-circle__bar::after {
-			transform: rotate(180deg);
-		}
+.googlesitekit-percentage-circle--slow {
+	color: $c-pagespeed-slow;
+}
 
-		&--percent-#{$i} .googlesitekit-percentage-circle__fill {
-			border: $circle-width solid transparent;
-			border-radius: 50%;
-			clip: rect(0, 0.5em, 1em, 0);
-			height: 1 - (2 * $circle-width);
-			position: absolute;
-			transform: rotate(180deg);
-			width: 1 - (2 * $circle-width);
-		}
+@for $i from 51 through 100 {
+
+	.googlesitekit-percentage-circle--percent-#{$i} .googlesitekit-percentage-circle__slice {
+		clip: rect(auto, auto, auto, auto);
 	}
 
-	@for $i from 1 through 100 {
-
-		&--percent-#{$i} .googlesitekit-percentage-circle__bar {
-			transform: rotate((360/100*$i) + deg);
-		}
+	.googlesitekit-percentage-circle--percent-#{$i} .googlesitekit-percentage-circle__bar::after {
+		transform: rotate(180deg);
 	}
 
-	&--fast .googlesitekit-percentage-circle__bar,
-	&--fast .googlesitekit-percentage-circle__fill {
-		border-color: $c-pagespeed-fast;
+	.googlesitekit-percentage-circle--percent-#{$i} .googlesitekit-percentage-circle__fill {
+		border: $circle-width solid transparent;
+		border-radius: 50%;
+		clip: rect(0, 0.5em, 1em, 0);
+		height: 1 - (2 * $circle-width);
+		position: absolute;
+		transform: rotate(180deg);
+		width: 1 - (2 * $circle-width);
 	}
+}
 
-	&--average .googlesitekit-percentage-circle__bar,
-	&--average .googlesitekit-percentage-circle__fill {
-		border-color: $c-pagespeed-average;
-	}
+@for $i from 1 through 100 {
 
-	&--slow .googlesitekit-percentage-circle__bar,
-	&--slow .googlesitekit-percentage-circle__fill {
-		border-color: $c-pagespeed-slow;
+	.googlesitekit-percentage-circle--percent-#{$i} .googlesitekit-percentage-circle__bar {
+		transform: rotate((360 / 100 * $i) + deg);
 	}
+}
+
+.googlesitekit-percentage-circle--fast .googlesitekit-percentage-circle__bar,
+.googlesitekit-percentage-circle--fast .googlesitekit-percentage-circle__fill {
+	border-color: $c-pagespeed-fast;
+}
+
+.googlesitekit-percentage-circle--average .googlesitekit-percentage-circle__bar,
+.googlesitekit-percentage-circle--average .googlesitekit-percentage-circle__fill {
+	border-color: $c-pagespeed-average;
+}
+
+.googlesitekit-percentage-circle--slow .googlesitekit-percentage-circle__bar,
+.googlesitekit-percentage-circle--slow .googlesitekit-percentage-circle__fill {
+	border-color: $c-pagespeed-slow;
 }

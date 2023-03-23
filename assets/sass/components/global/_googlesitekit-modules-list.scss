@@ -29,6 +29,7 @@
 
 		.googlesitekit-modules-list__module {
 			border: 1px solid $c-border-light;
+			border-radius: $br-xs;
 			flex: 0 0 auto;
 			margin-bottom: 10px;
 			margin-right: 10px;
@@ -55,8 +56,7 @@
 			}
 		}
 
-		.googlesitekit-modules-list__module--pagespeed
-		.googlesitekit-settings-connect-module__wrapper {
+		.googlesitekit-modules-list__module--pagespeed .googlesitekit-settings-connect-module__wrapper {
 			flex-wrap: wrap;
 		}
 
@@ -74,18 +74,19 @@
 
 		.googlesitekit-settings-connect-module__title {
 			font-family: $f-primary;
-			font-size: 0.9375rem;
+			font-size: $fs-body-lg;
 			font-weight: 500;
-			margin: 0 0 10px 0;
+			letter-spacing: $ls-m;
+			margin: 0 0 10px;
 		}
 
-		.googlesitekit-modules-list__module--disabled
-		.googlesitekit-settings-connect-module__title {
+		.googlesitekit-modules-list__module--disabled .googlesitekit-settings-connect-module__title {
 			color: $c-disabled;
 		}
 
 		.googlesitekit-settings-module__status {
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 		}
 
 		.googlesitekit-settings-module__status-icon {
@@ -102,12 +103,12 @@
 				vertical-align: middle;
 				width: 16px;
 			}
+		}
 
-			&--connected::before {
-				background-color: $c-success;
-				background-image: $icon-checked;
-				background-size: 8px 6px;
-			}
+		.googlesitekit-settings-module__status-icon--connected::before {
+			background-color: $c-success;
+			background-image: $icon-checked;
+			background-size: 8px 6px;
 		}
 	}
 }

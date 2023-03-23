@@ -43,7 +43,6 @@ import {
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import { Select, Option } from '../../../../../material-components';
 import { trackEvent } from '../../../../../util';
-import { useFeature } from '../../../../../hooks/useFeature';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch } = Data;
 
@@ -71,10 +70,8 @@ export default function DimensionTabs( {
 	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_UI );
 
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-
 	const activeTab = tabs.findIndex(
-		( v ) => v.dimensionName === dimensionName
+		( tab ) => tab.dimensionName === dimensionName
 	);
 
 	const handleTabUpdate = useCallback(
@@ -119,10 +116,7 @@ export default function DimensionTabs( {
 							key={ tab.dimensionName }
 							className="mdc-tab--min-width"
 							focusOnActivate={ false }
-							disabled={
-								gatheringData ||
-								( zeroDataStatesEnabled && isZeroData )
-							}
+							disabled={ gatheringData || isZeroData }
 						>
 							<span className="mdc-tab__text-label">
 								{ tab.tabText }
@@ -138,13 +132,11 @@ export default function DimensionTabs( {
 					onEnhancedChange={ handleTabUpdate }
 					outlined
 					value={ `dimension-name-${ activeTab }` }
-					disabled={
-						gatheringData || ( zeroDataStatesEnabled && isZeroData )
-					}
+					disabled={ gatheringData || isZeroData }
 				>
 					{ tabs.map( ( tab, index ) => (
 						<Option
-							key={ index }
+							key={ tab.dimensionName }
 							value={ `dimension-name-${ index }` }
 						>
 							{ tab.tabText }

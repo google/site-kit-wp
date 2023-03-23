@@ -24,6 +24,4 @@ export { default as urlchannels } from './urlchannels.json';
 export { default as adunits } from './adunits.json';
 export { default as alerts } from './alerts.json';
 export { default as alertsGraylisted } from './alerts-graylisted.json';
-export { default as tagPermissionAccess } from './tag-permission-access.json';
-export { default as tagPermissionNoAccess } from './tag-permission-no-access.json';
 export { default as sites } from './sites.json';

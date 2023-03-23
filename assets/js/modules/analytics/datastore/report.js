@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -50,6 +50,7 @@ import {
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
 import { isZeroReport } from '../util';
+import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 
 const { createRegistrySelector } = Data;
 
@@ -85,12 +86,8 @@ const fetchGetReportStore = createFetchStore( {
 			'Either date range or start/end dates must be provided for Analytics report.'
 		);
 
-		const {
-			metrics,
-			dimensions,
-			dimensionFilters,
-			orderby,
-		} = normalizeReportOptions( options );
+		const { metrics, dimensions, dimensionFilters, orderby } =
+			normalizeReportOptions( options );
 
 		invariant(
 			metrics.length,
@@ -124,6 +121,53 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
+const gatheringDataStore = createGatheringDataStore( 'analytics', {
+	storeName: MODULES_ANALYTICS,
+	dataAvailable:
+		global._googlesitekitModulesData?.[ 'data_available_analytics' ],
+	selectDataAvailability: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) ) {
+			return true;
+		}
+
+		if (
+			! Array.isArray( report[ 0 ]?.data?.rows ) ||
+			report[ 0 ]?.data?.rows?.length === 0
+		) {
+			return false;
+		}
+
+		return true;
+	} ),
+} );
+
 const baseInitialState = {
 	reports: {},
 };
@@ -147,10 +191,8 @@ const baseResolvers = {
 
 		// If the report was requested with AdSense metrics, set `adsenseLinked` accordingly.
 		if (
-			normalizeReportOptions(
-				options
-			).metrics.some( ( { expression } ) =>
-				/^ga:adsense/.test( expression )
+			normalizeReportOptions( options ).metrics.some(
+				( { expression } ) => /^ga:adsense/.test( expression )
 			)
 		) {
 			if ( isRestrictedMetricsError( error, 'ga:adsense' ) ) {
@@ -200,140 +242,93 @@ const baseSelectors = {
 	 * @since 1.42.0
 	 *
 	 * @param {Object} state             Data store's state.
-	 * @param {Object} report            A report from getReport selector containing pagePaths.
+	 * @param {Object} report            A report from the getReport selector containing pagePaths.
 	 * @param {Object} options           Options for generating the report.
 	 * @param {string} options.startDate Required, start date to query report data for as YYYY-mm-dd.
 	 * @param {string} options.endDate   Required, end date to query report data for as YYYY-mm-dd.
 	 * @return {(Object|undefined)} A map with url as the key and page title as the value. `undefined` if not loaded.
 	 */
 	getPageTitles: createRegistrySelector(
-		( select ) => ( state, report, { startDate, endDate } = {} ) => {
-			if ( ! Array.isArray( report ) ) {
-				return;
-			}
-
-			const pagePaths = []; // Array of pagePaths.
-			const REQUEST_MULTIPLIER = 5;
-
-			/*
-			 * Iterate the report, finding which dimension contains the
-			 * ga:pagePath metric which we add to the array of pagePaths.
-			 */
-			( report || [] ).forEach( ( { columnHeader, data } ) => {
-				if (
-					Array.isArray( columnHeader?.dimensions ) &&
-					Array.isArray( data?.rows ) &&
-					columnHeader.dimensions.includes( 'ga:pagePath' )
-				) {
-					const pagePathIndex = columnHeader.dimensions.indexOf(
-						'ga:pagePath'
-					);
-					( data?.rows || [] ).forEach( ( { dimensions } ) => {
-						if (
-							! pagePaths.includes( dimensions[ pagePathIndex ] )
-						) {
-							pagePaths.push( dimensions[ pagePathIndex ] );
-						}
-					} );
+		( select ) =>
+			( state, report, { startDate, endDate } = {} ) => {
+				if ( ! Array.isArray( report ) ) {
+					return;
 				}
-			} );
 
-			const urlTitleMap = {};
-			if ( ! pagePaths.length ) {
+				const pagePaths = [];
+				const REQUEST_MULTIPLIER = 5;
+
+				/*
+				 * Iterate over the report, finding which dimension contains the
+				 * ga:pagePath metric which we add to the array of pagePaths.
+				 */
+				( report || [] ).forEach( ( { columnHeader, data } ) => {
+					if (
+						Array.isArray( columnHeader?.dimensions ) &&
+						Array.isArray( data?.rows ) &&
+						columnHeader.dimensions.includes( 'ga:pagePath' )
+					) {
+						const pagePathIndex =
+							columnHeader.dimensions.indexOf( 'ga:pagePath' );
+						( data?.rows || [] ).forEach( ( { dimensions } ) => {
+							if (
+								! pagePaths.includes(
+									dimensions[ pagePathIndex ]
+								)
+							) {
+								pagePaths.push( dimensions[ pagePathIndex ] );
+							}
+						} );
+					}
+				} );
+
+				const urlTitleMap = {};
+				if ( ! pagePaths.length ) {
+					return urlTitleMap;
+				}
+
+				const options = {
+					startDate,
+					endDate,
+					dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+					dimensionFilters: { 'ga:pagePath': pagePaths.sort() },
+					metrics: [
+						{ expression: 'ga:pageviews', alias: 'Pageviews' },
+					],
+					orderby: [
+						{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
+					],
+					limit: REQUEST_MULTIPLIER * pagePaths.length,
+				};
+
+				const pageTitlesReport =
+					select( MODULES_ANALYTICS ).getReport( options );
+				if ( undefined === pageTitlesReport ) {
+					return;
+				}
+
+				( pageTitlesReport?.[ 0 ]?.data?.rows || [] ).forEach(
+					( { dimensions } ) => {
+						if ( ! urlTitleMap[ dimensions[ 0 ] ] ) {
+							// key is the url, value is the page title.
+							urlTitleMap[ dimensions[ 0 ] ] = dimensions[ 1 ];
+						}
+					}
+				);
+
+				pagePaths.forEach( ( pagePath ) => {
+					if ( ! urlTitleMap[ pagePath ] ) {
+						// If we don't have a title for the pagePath, we use '(unknown)'.
+						urlTitleMap[ pagePath ] = __(
+							'(unknown)',
+							'google-site-kit'
+						);
+					}
+				} );
+
 				return urlTitleMap;
 			}
-
-			const options = {
-				startDate,
-				endDate,
-				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
-				dimensionFilters: { 'ga:pagePath': pagePaths.sort() },
-				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
-				orderby: [
-					{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
-				],
-				limit: REQUEST_MULTIPLIER * pagePaths.length,
-			};
-
-			const pageTitlesReport = select( MODULES_ANALYTICS ).getReport(
-				options
-			);
-			if ( undefined === pageTitlesReport ) {
-				return;
-			}
-
-			( pageTitlesReport?.[ 0 ]?.data?.rows || [] ).forEach(
-				( { dimensions } ) => {
-					if ( ! urlTitleMap[ dimensions[ 0 ] ] ) {
-						// key is the url, value is the page title.
-						urlTitleMap[ dimensions[ 0 ] ] = dimensions[ 1 ];
-					}
-				}
-			);
-
-			pagePaths.forEach( ( pagePath ) => {
-				if ( ! urlTitleMap[ pagePath ] ) {
-					// If we don't have a title for the pagePath, we use '(unknown)'.
-					urlTitleMap[ pagePath ] = __(
-						'(unknown)',
-						'google-site-kit'
-					);
-				}
-			} );
-
-			return urlTitleMap;
-		}
 	),
-
-	/**
-	 * Determines whether the Analytics is still gathering data.
-	 *
-	 * @todo Review the name of this selector to a less confusing one.
-	 * @since 1.44.0
-	 *
-	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
-	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_ANALYTICS ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ args ] );
-
-		if ( ! hasResolvedReport ) {
-			return undefined;
-		}
-
-		if ( ! Array.isArray( report ) ) {
-			return false;
-		}
-
-		if (
-			! Array.isArray( report[ 0 ]?.data?.rows ) ||
-			report[ 0 ]?.data?.rows?.length === 0
-		) {
-			return true;
-		}
-
-		return false;
-	} ),
 
 	/**
 	 * Determines whether Analytics has zero data or not.
@@ -343,6 +338,14 @@ const baseSelectors = {
 	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
+		const isGatheringData = select( MODULES_ANALYTICS ).isGatheringData();
+		if ( isGatheringData === undefined ) {
+			return undefined;
+		}
+		if ( isGatheringData === true ) {
+			return true;
+		}
+
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -357,11 +360,6 @@ const baseSelectors = {
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			args.url = url;
-		}
-
-		const isGatheringData = select( MODULES_ANALYTICS ).isGatheringData();
-		if ( isGatheringData === undefined ) {
-			return undefined;
 		}
 
 		// Disable reason: select needs to be called here or it will never run.
@@ -379,16 +377,11 @@ const baseSelectors = {
 			return false;
 		}
 
-		const hasZeroReport = isZeroReport( report );
-		if ( isGatheringData === false && hasZeroReport === false ) {
-			return false;
-		}
-
-		return true;
+		return isZeroReport( report );
 	} ),
 };
 
-const store = Data.combineStores( fetchGetReportStore, {
+const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

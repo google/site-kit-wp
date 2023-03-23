@@ -24,6 +24,7 @@ import { MODULES_OPTIMIZE } from './constants';
 import { validateCanSubmitChanges } from './settings';
 
 let baseModuleStore = Modules.createModuleStore( 'optimize', {
+	ownedSettingsSlugs: [ 'optimizeID' ],
 	storeName: MODULES_OPTIMIZE,
 	settingSlugs: [
 		'ampExperimentJSON',

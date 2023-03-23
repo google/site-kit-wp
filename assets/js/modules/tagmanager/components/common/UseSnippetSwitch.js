@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -26,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Switch } from 'googlesitekit-components';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch() {
+export default function UseSnippetSwitch( { description } ) {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
@@ -64,17 +69,11 @@ export default function UseSnippetSwitch() {
 				onClick={ onChange }
 				hideLabel={ false }
 			/>
-			<p>
-				{ useSnippet
-					? __(
-							'Site Kit will add the code automatically.',
-							'google-site-kit'
-					  )
-					: __(
-							'Site Kit will not add the code to your site.',
-							'google-site-kit'
-					  ) }
-			</p>
+			{ description }
 		</div>
 	);
 }
+
+UseSnippetSwitch.propTypes = {
+	description: PropTypes.node,
+};

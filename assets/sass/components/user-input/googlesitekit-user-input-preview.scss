@@ -19,23 +19,16 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-user-input__preview {
-
-		background-color: $c-white;
-		padding: 50px 23px;
-		position: relative;
-
-		@media (min-width: $bp-tablet) {
-			margin-left: -10px;
-			margin-right: -10px;
-		}
+		@extend .googlesitekit-user-input__question;
 
 		.googlesitekit-user-input__question-instructions--notice {
-			background-color: $c-alabaster;
-			color: $c-cape-cod;
+			background-color: $c-surfaces-surface-2;
+			color: $c-surfaces-on-surface;
 			display: block;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 			width: 100%;
-
-			@include responsive-text("body1", "body3");
 
 			@media (min-width: $bp-tablet) {
 				display: inline-block;
@@ -45,67 +38,198 @@
 		}
 	}
 
+	.googlesitekit-user-input__preview-loading {
+		padding: 50px 23px;
+	}
+
+	.googlesitekit-user-input__preview-contents {
+		padding: 17px 17px 26px;
+
+		@media (min-width: $bp-desktop) {
+			padding: 28px 24px 18px;
+		}
+	}
+
+	p.googlesitekit-user-input__preview-subheader {
+		@extend .googlesitekit-user-input__question-number;
+
+		margin-bottom: 14px;
+
+		@media (min-width: $bp-desktop) {
+			margin-bottom: 37px;
+		}
+	}
+
+	.googlesitekit-user-input__preview-notice {
+		padding: 0 17px;
+
+		@media (min-width: $bp-desktop) {
+			padding: 0 24px;
+		}
+	}
+
 	.googlesitekit-user-input__preview-answers {
 		display: flex;
 		flex-wrap: wrap;
+		gap: 18px 12px;
+		padding-bottom: 8px;
+
+		@media (min-width: $bp-desktop) {
+			padding-bottom: 11px;
+		}
 	}
 
 	.googlesitekit-user-input__preview-answer {
 		align-items: center;
-		background-color: $c-solitude;
-		border-radius: 30px;
-		color: $c-denim;
+		background-color: $c-content-primary-container;
+		border-radius: $br-md;
+		color: $c-surfaces-on-surface;
 		display: flex;
-		font-weight: $fw-secondary-medium;
-		margin-bottom: 12px;
-		margin-right: 12px;
+		font-family: $f-secondary;
+		font-size: $fs-body-md;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
 		padding: 8px 13px;
 		word-break: break-word;
-
-		@include responsive-text("body1", "body3");
 	}
 
 	.googlesitekit-user-input__preview-group {
-		border-bottom: 1px solid $c-mercury;
-		margin-bottom: 12px;
-		padding-bottom: 12px;
+
+		.googlesitekit-user-input__author {
+			margin: 24px 0 28px;
+		}
+
+		.googlesitekit-user-input__select-option {
+
+			.mdc-radio,
+			.mdc-checkbox {
+				margin-left: -10px;
+			}
+
+			&:not(:last-child) {
+				border-bottom: none;
+			}
+		}
+	}
+
+	.googlesitekit-user-input__preview-group + .googlesitekit-user-input__preview-group {
+		border-top: 1px solid $c-utility-divider;
+		margin-top: 12px;
+		padding-top: 12px;
 	}
 
 	.googlesitekit-user-input__preview-group-title {
-		align-items: flex-start;
+		align-items: baseline;
 		display: flex;
+		flex-direction: column-reverse;
 		justify-content: space-between;
+		margin-bottom: 14px;
+
+		@media (min-width: $bp-desktop) {
+			flex-direction: row;
+		}
 
 		p {
-			color: $c-cape-cod;
-			margin-top: 0;
-
-			@include responsive-text("body1", "body3");
+			color: $c-grey-g-900;
+			font-family: $f-primary;
+			font-weight: $fw-medium;
+			margin: 0;
 		}
 
 		button {
-			font-weight: $fw-secondary-normal;
-			letter-spacing: normal;
-			margin-top: -4px;
-			text-transform: none;
+			align-items: center;
+			color: $c-content-secondary;
+			display: flex;
+			font-family: $f-secondary;
+			font-weight: $fw-medium;
+			gap: 4px;
+			margin-left: auto;
 
-			@include responsive-text("body1", "body3");
+			&[disabled] {
+				color: $c-utility-outline;
+			}
+		}
+
+		svg {
+			transition: transform $t-default ease-out;
 		}
 	}
 
-	.googlesitekit-user-input__preview--footer {
+	.googlesitekit-user-input__preview-group--editing {
 
-		@media (min-width: $bp-tablet) {
-			align-items: center;
-			display: flex;
-			justify-content: space-between;
-			margin-top: 50px;
+		.googlesitekit-user-input__preview-group-title {
+
+			svg {
+				transform: rotate(180deg);
+			}
 		}
+	}
 
-		.googlesitekit-user-input__buttons {
+	.googlesitekit-user-input__preview-actions {
+		align-items: center;
+		column-gap: 20px;
+		display: flex;
 
-			@media (min-width: $bp-tablet) {
-				margin: 0;
+		.googlesitekit-cta-link {
+			color: $c-surfaces-on-background-variant;
+		}
+	}
+
+	.googlesitekit-user-input__preview-group--individual-cta {
+		position: relative;
+	}
+
+	.googlesitekit-user-input__preview--editing {
+
+		.googlesitekit-user-input__preview-group--individual-cta {
+
+			&:not(.googlesitekit-user-input__preview-group--editing) {
+				pointer-events: none;
+
+				&::after {
+					background-color: $c-surfaces-surface-2;
+					content: "";
+					height: calc(100% + 13px);
+					opacity: 0.75;
+					position: absolute;
+					top: 0;
+					z-index: 1;
+
+					@each $size in map-keys($mdc-layout-grid-columns) {
+
+						@include mdc-layout-grid-media-query_($size) {
+							$padding: map-get($mdc-layout-grid-default-margin, $size);
+
+							margin-left: -$padding;
+
+							// Use negative value of CSS variable.
+							margin-left: calc(var(--mdc-layout-grid-margin-#{$size}, #{$padding}) * -1);
+
+							width: calc(100% + #{$padding} * 2);
+							width: calc(100% + var(--mdc-layout-grid-margin-#{$size}, #{$padding}) * 2);
+						}
+					}
+				}
+
+				&:first-child::after {
+					height: calc(100% + 26px);
+					top: -13px;
+				}
+
+				&:last-child::after {
+					border-radius: 0 0 24px 24px;
+
+					@each $size in map-keys($mdc-layout-grid-columns) {
+
+						@include mdc-layout-grid-media-query_($size) {
+							$padding: map-get($mdc-layout-grid-default-margin, $size);
+
+							height: calc(100% + #{$padding});
+							height: calc(100% + var(--mdc-layout-grid-margin-#{$size}, #{$padding}));
+						}
+					}
+				}
 			}
 		}
 	}

@@ -25,14 +25,14 @@ class TrackingTest extends TestCase {
 		$tracking_consent_mock->expects( $this->once() )->method( 'register' );
 		$tracking = new Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$this->force_set_property( $tracking, 'consent', $tracking_consent_mock );
-		remove_all_filters( 'googlesitekit_inline_base_data' );
+		remove_all_filters( 'googlesitekit_inline_tracking_data' );
 
 		$tracking->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_inline_base_data' ) );
-		$base_data = apply_filters( 'googlesitekit_inline_base_data', array() );
-		$this->assertArrayHasKey( 'trackingEnabled', $base_data );
-		$this->assertEquals( Tracking::TRACKING_ID, $base_data['trackingID'] );
+		$this->assertTrue( has_filter( 'googlesitekit_inline_tracking_data' ) );
+		$tracking_data = apply_filters( 'googlesitekit_inline_tracking_data', array() );
+		$this->assertArrayHasKey( 'trackingEnabled', $tracking_data );
+		$this->assertEquals( Tracking::TRACKING_ID, $tracking_data['trackingID'] );
 	}
 
 	public function test_is_active() {

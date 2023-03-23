@@ -1,9 +1,9 @@
 [
 	"adsenseSetupV2",
 	"dashboardSharing",
-	"ideaHubModule",
-	"swgModule",
-	"userInput",
-	"unifiedDashboard",
-	"zeroDataStates"
+	"ga4ActivationBanner",
+	"ga4Reporting",
+	"gm3Components",
+	"gteSupport",
+	"userInput"
 ]

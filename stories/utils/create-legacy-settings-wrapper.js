@@ -36,13 +36,8 @@ import { provideModules, WithTestRegistry } from '../../tests/js/utils';
  */
 export default function createLegacySettingsWrapper( moduleSlug ) {
 	return function SettingsLegacy( props ) {
-		const {
-			registry,
-			callback,
-			route,
-			features,
-			skipModulesProvide,
-		} = props;
+		const { registry, callback, route, features, skipModulesProvide } =
+			props;
 
 		if ( ! skipModulesProvide ) {
 			// HACK: This removes Search Console from appearing in stories for

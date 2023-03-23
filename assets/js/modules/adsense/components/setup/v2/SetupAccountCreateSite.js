@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -31,13 +26,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { ErrorNotices } from '../../common';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect } = Data;
-export default function SetupAccountCreateSite( { accountID } ) {
+
+export default function SetupAccountCreateSite() {
 	const viewContext = useViewContext();
 
 	const addSiteURL = useSelect( ( select ) =>
@@ -52,10 +48,6 @@ export default function SetupAccountCreateSite( { accountID } ) {
 		},
 		[ addSiteURL, viewContext ]
 	);
-
-	if ( ! accountID || addSiteURL === undefined ) {
-		return null;
-	}
 
 	return (
 		<Fragment>
@@ -83,7 +75,3 @@ export default function SetupAccountCreateSite( { accountID } ) {
 		</Fragment>
 	);
 }
-
-SetupAccountCreateSite.propTypes = {
-	accountID: PropTypes.string.isRequired,
-};

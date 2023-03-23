@@ -23,8 +23,7 @@ const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const csf = require( '@componentdriven/csf' );
 const glob = require( 'glob' );
-const flatten = require( 'lodash/flatten' );
-const kebabCase = require( 'lodash/kebabCase' );
+const { flatten, kebabCase } = require( 'lodash' );
 
 /**
  * Node dependencies
@@ -37,9 +36,7 @@ const path = require( 'path' );
  */
 const legacyStorybookScenarios = require( '../../.storybook/storybook-data' );
 const storybookConfig = require( '../../.storybook/main' );
-const storybookHost = require( './detect-storybook-host' );
-
-const rootURL = `${ storybookHost }iframe.html?id=`;
+const rootURL = '/dist/iframe.html?id=';
 
 const storybookDir = path.resolve( __dirname, '../../.storybook' );
 const storyFiles = flatten(
@@ -90,9 +87,8 @@ storyFiles.forEach( ( storyFile ) => {
 				stories[ node.left.object.name ] = {};
 			}
 
-			stories[ node.left.object.name ][
-				node.left.property.name
-			] = nodeValue;
+			stories[ node.left.object.name ][ node.left.property.name ] =
+				nodeValue;
 		},
 	} );
 
@@ -133,4 +129,16 @@ const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
 	};
 } );
 
-module.exports = [ ...legacyScenarios, ...csfScenarios ];
+const scenarios = [ ...legacyScenarios, ...csfScenarios ];
+module.exports = scenarios.map( ( scenario ) => {
+	const backstopReadySelector = 'body.backstopjs-ready';
+
+	const readySelector = scenario.readySelector
+		? `${ backstopReadySelector } ${ scenario.readySelector }`
+		: backstopReadySelector;
+
+	return {
+		...scenario,
+		readySelector,
+	};
+} );

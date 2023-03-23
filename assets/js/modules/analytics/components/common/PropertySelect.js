@@ -26,44 +26,41 @@ import { _x, __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
-import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect() {
-	const { accountID, properties, isResolvingProperties } = useSelect(
-		( select ) => {
-			const data = {
-				accountID: select( MODULES_ANALYTICS ).getAccountID(),
-				properties: [],
-				isResolvingProperties: false,
-			};
+export default function PropertySelect( { hasModuleAccess } ) {
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
 
-			if ( data.accountID ) {
-				data.properties = select( MODULES_ANALYTICS ).getProperties(
-					data.accountID
-				);
-				data.isResolvingProperties = select(
-					MODULES_ANALYTICS
-				).isResolving( 'getProperties', [ data.accountID ] );
-			}
-
-			return data;
+	const properties = useSelect( ( select ) => {
+		if ( hasModuleAccess === false ) {
+			return null;
 		}
-	);
 
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-	const hasGTMPropertyID = useSelect(
-		( select ) =>
-			!! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
+		if ( ! accountID ) {
+			return [];
+		}
+
+		return select( MODULES_ANALYTICS ).getProperties( accountID );
+	} );
+
+	const isResolvingProperties = useSelect( ( select ) => {
+		if ( hasModuleAccess === false || ! accountID ) {
+			return false;
+		}
+
+		return select( MODULES_ANALYTICS ).isResolving( 'getProperties', [
+			accountID,
+		] );
+	} );
+
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
@@ -96,13 +93,27 @@ export default function PropertySelect() {
 		return <ProgressBar small />;
 	}
 
+	if ( hasModuleAccess === false ) {
+		return (
+			<Select
+				className="googlesitekit-analytics__select-property"
+				label={ __( 'Property', 'google-site-kit' ) }
+				value={ propertyID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ propertyID }>{ propertyID }</Option>
+			</Select>
+		);
+	}
+
 	return (
 		<Select
 			className="googlesitekit-analytics__select-property"
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMPropertyID }
 			enhanced
 			outlined
 		>
@@ -111,30 +122,32 @@ export default function PropertySelect() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( (
-					// eslint-disable-next-line sitekit/acronym-case
-					{ id, name, internalWebPropertyId },
-					index
-				) => (
-					<Option
-						key={ index }
-						value={ id }
-						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
-					>
-						{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
-							? sprintf(
-									/* translators: %1$s: property name, %2$s: property ID */
-									_x(
-										'%1$s (%2$s)',
-										'Analytics property name and ID',
-										'google-site-kit'
-									),
-									name,
-									id
-							  )
-							: name }
-					</Option>
-				) ) }
+				.map(
+					(
+						// eslint-disable-next-line sitekit/acronym-case
+						{ id, name, internalWebPropertyId },
+						index
+					) => (
+						<Option
+							key={ index }
+							value={ id }
+							data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
+						>
+							{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
+								? sprintf(
+										/* translators: 1: property name, 2: property ID */
+										_x(
+											'%1$s (%2$s)',
+											'Analytics property name and ID',
+											'google-site-kit'
+										),
+										name,
+										id
+								  )
+								: name }
+						</Option>
+					)
+				) }
 		</Select>
 	);
 }

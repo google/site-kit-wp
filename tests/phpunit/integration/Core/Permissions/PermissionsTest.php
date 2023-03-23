@@ -16,10 +16,13 @@ use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
+use WP_REST_Request;
+use WP_REST_Server;
 
 /**
  * @group Permissions
@@ -58,6 +61,7 @@ class PermissionsTest extends TestCase {
 		// Unhook all actions and filters added during Permissions::register
 		// to avoid interference with "main" instance setup during plugin bootstrap.
 		remove_all_filters( 'map_meta_cap' );
+		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'googlesitekit_user_data' );
 		remove_all_filters( 'user_has_cap' );
 
@@ -68,12 +72,19 @@ class PermissionsTest extends TestCase {
 		$this->dismissed_items = new Dismissed_Items( $this->user_options );
 	}
 
+	public function tear_down() {
+		parent::tear_down();
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+	}
+
 	public function test_register() {
 		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 		$this->assertTrue( has_filter( 'user_has_cap' ) );
 	}
 
@@ -87,7 +98,8 @@ class PermissionsTest extends TestCase {
 		$permissions->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 		$this->assertFalse( has_filter( 'user_has_cap' ) );
 	}
 
@@ -107,10 +119,12 @@ class PermissionsTest extends TestCase {
 				Permissions::SETUP                        => false,
 				Permissions::VIEW_POSTS_INSIGHTS          => false,
 				Permissions::VIEW_DASHBOARD               => false,
-				Permissions::VIEW_MODULE_DETAILS          => false,
 				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::UPDATE_PLUGINS               => false,
 				Permissions::VIEW_SPLASH                  => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -137,10 +151,12 @@ class PermissionsTest extends TestCase {
 				Permissions::SETUP                        => true,
 				Permissions::VIEW_POSTS_INSIGHTS          => false,
 				Permissions::VIEW_DASHBOARD               => false,
-				Permissions::VIEW_MODULE_DETAILS          => false,
 				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::UPDATE_PLUGINS               => false,
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -182,10 +198,12 @@ class PermissionsTest extends TestCase {
 				Permissions::SETUP                        => true,
 				Permissions::VIEW_POSTS_INSIGHTS          => true,
 				Permissions::VIEW_DASHBOARD               => true,
-				Permissions::VIEW_MODULE_DETAILS          => true,
 				Permissions::MANAGE_OPTIONS               => true,
+				Permissions::UPDATE_PLUGINS               => true,
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => true,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => true,
+				Permissions::VIEW_ADMIN_BAR_MENU          => true,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -212,10 +230,12 @@ class PermissionsTest extends TestCase {
 				Permissions::SETUP                        => true,
 				Permissions::VIEW_POSTS_INSIGHTS          => false,
 				Permissions::VIEW_DASHBOARD               => false,
-				Permissions::VIEW_MODULE_DETAILS          => false,
 				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::UPDATE_PLUGINS               => false,
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -227,10 +247,12 @@ class PermissionsTest extends TestCase {
 			Permissions::SETUP,
 			Permissions::VIEW_POSTS_INSIGHTS,
 			Permissions::VIEW_DASHBOARD,
-			Permissions::VIEW_MODULE_DETAILS,
 			Permissions::MANAGE_OPTIONS,
+			Permissions::UPDATE_PLUGINS,
 			Permissions::VIEW_SPLASH,
 			Permissions::VIEW_AUTHENTICATED_DASHBOARD,
+			Permissions::VIEW_WP_DASHBOARD_WIDGET,
+			Permissions::VIEW_ADMIN_BAR_MENU,
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
@@ -242,11 +264,13 @@ class PermissionsTest extends TestCase {
 			Permissions::SETUP,
 			Permissions::VIEW_POSTS_INSIGHTS,
 			Permissions::VIEW_DASHBOARD,
-			Permissions::VIEW_MODULE_DETAILS,
 			Permissions::MANAGE_OPTIONS,
+			Permissions::UPDATE_PLUGINS,
 			Permissions::VIEW_SPLASH,
 			Permissions::VIEW_SHARED_DASHBOARD,
 			Permissions::VIEW_AUTHENTICATED_DASHBOARD,
+			Permissions::VIEW_WP_DASHBOARD_WIDGET,
+			Permissions::VIEW_ADMIN_BAR_MENU,
 		);
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
 	}
@@ -386,11 +410,13 @@ class PermissionsTest extends TestCase {
 				Permissions::SETUP                        => false,
 				Permissions::VIEW_POSTS_INSIGHTS          => false,
 				Permissions::VIEW_DASHBOARD               => false,
-				Permissions::VIEW_MODULE_DETAILS          => false,
 				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::UPDATE_PLUGINS               => false,
 				Permissions::VIEW_SPLASH                  => false,
 				Permissions::VIEW_SHARED_DASHBOARD        => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
@@ -418,11 +444,13 @@ class PermissionsTest extends TestCase {
 				Permissions::SETUP                        => true,
 				Permissions::VIEW_POSTS_INSIGHTS          => false,
 				Permissions::VIEW_DASHBOARD               => false,
-				Permissions::VIEW_MODULE_DETAILS          => false,
 				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::UPDATE_PLUGINS               => false,
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_SHARED_DASHBOARD        => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
@@ -472,15 +500,17 @@ class PermissionsTest extends TestCase {
 				Permissions::SETUP                        => true,
 				Permissions::VIEW_POSTS_INSIGHTS          => true,
 				Permissions::VIEW_DASHBOARD               => true,
-				Permissions::VIEW_MODULE_DETAILS          => true,
 				Permissions::MANAGE_OPTIONS               => true,
+				Permissions::UPDATE_PLUGINS               => true,
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_SHARED_DASHBOARD        => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => true,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => true,
+				Permissions::VIEW_ADMIN_BAR_MENU          => true,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
-				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => true,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 			),
@@ -511,15 +541,17 @@ class PermissionsTest extends TestCase {
 				Permissions::SETUP                        => true,
 				Permissions::VIEW_POSTS_INSIGHTS          => false,
 				Permissions::VIEW_DASHBOARD               => false,
-				Permissions::VIEW_MODULE_DETAILS          => false,
 				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::UPDATE_PLUGINS               => false,
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_SHARED_DASHBOARD        => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
-				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => true,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 			),
@@ -576,5 +608,72 @@ class PermissionsTest extends TestCase {
 		// An admin can still see the splash even when this dismissal is present because they can authenticate.
 		$this->dismissed_items->add( 'shared_dashboard_splash' );
 		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
+	}
+
+	public function test_permissions_route__unauthorized_request() {
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/permissions' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertNotEquals( 200, $response->get_status() );
+		$this->assertArrayHasKey( 'code', $data );
+		$this->assertEquals( 'rest_forbidden', $data['code'] );
+	}
+
+	public function test_permissions_route__non_admin() {
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user_id );
+
+		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/permissions' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertNotEquals( 200, $response->get_status() );
+		$this->assertArrayHasKey( 'code', $data );
+		$this->assertEquals( 'rest_forbidden', $data['code'] );
+	}
+
+	public function test_permissions_route__success() {
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/permissions' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEqualSetsWithIndex( $data, $permissions->check_all_for_current_user() );
+	}
+
+	public function test_permissions_route__dashboard_sharing() {
+		$this->enable_feature( 'dashboardSharing' );
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user_id );
+
+		$sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$permissions      = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$sharing_settings->set(
+			array(
+				'pagespeed-insights' => array( 'sharedRoles' => array( 'editor' ) ),
+			)
+		);
+
+		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/permissions' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEqualSetsWithIndex( $data, $permissions->check_all_for_current_user() );
 	}
 }

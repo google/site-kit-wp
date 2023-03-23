@@ -33,7 +33,8 @@ import { compose } from '@wordpress/compose';
  */
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
-import { VIEW_CONTEXT_DASHBOARD_SPLASH } from '../../googlesitekit/constants';
+import { Button } from 'googlesitekit-components';
+import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_SETUP,
@@ -41,9 +42,9 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
-import Button from '../Button';
 import Layout from '../layout/Layout';
-import { trackEvent, clearWebStorage } from '../../util';
+import { trackEvent } from '../../util';
+import { clearCache } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
@@ -63,10 +64,7 @@ class SetupUsingGCP extends Component {
 			needReauthenticate,
 		} = global._googlesitekitLegacyData.setup;
 
-		const { canSetup } = props;
-
 		this.state = {
-			canSetup,
 			isAuthenticated,
 			isVerified,
 			needReauthenticate,
@@ -89,7 +87,7 @@ class SetupUsingGCP extends Component {
 
 	async resetAndRestart() {
 		await API.set( 'core', 'site', 'reset' );
-		clearWebStorage();
+		await clearCache();
 
 		this.setState( {
 			isSiteKitConnected: false,
@@ -196,14 +194,14 @@ class SetupUsingGCP extends Component {
 		const { isSiteKitConnected, connectURL } = this.state;
 
 		await trackEvent(
-			VIEW_CONTEXT_DASHBOARD_SPLASH,
+			VIEW_CONTEXT_SPLASH,
 			'start_user_setup',
 			'custom-oauth'
 		);
 
 		if ( ! isSiteKitConnected ) {
 			await trackEvent(
-				VIEW_CONTEXT_DASHBOARD_SPLASH,
+				VIEW_CONTEXT_SPLASH,
 				'start_site_setup',
 				'custom-oauth'
 			);
@@ -214,7 +212,6 @@ class SetupUsingGCP extends Component {
 
 	render() {
 		const {
-			canSetup,
 			isAuthenticated,
 			isVerified,
 			needReauthenticate,
@@ -223,7 +220,7 @@ class SetupUsingGCP extends Component {
 			isSiteKitConnected,
 		} = this.state;
 
-		const { redirectURL } = this.props;
+		const { canSetup, redirectURL } = this.props;
 
 		if ( this.isSetupFinished() ) {
 			delay(

@@ -81,6 +81,7 @@ function createSetupAccountStory( variation, args = {} ) {
 				receiveGetSites,
 				receiveGetURLChannels,
 				receiveGetExistingTag,
+				setAccountID,
 			} = registry.dispatch( MODULES_ADSENSE );
 
 			provideSiteInfo( registry, {
@@ -92,8 +93,7 @@ function createSetupAccountStory( variation, args = {} ) {
 			receiveGetSites( sites, { accountID } );
 			receiveGetSettings( { ...defaultSettings, accountID } );
 			receiveGetAlerts( fixtures.alerts, { accountID } );
-
-			registry.dispatch( MODULES_ADSENSE ).setAccountID( accountID );
+			setAccountID( accountID );
 
 			const clientID = clients.find(
 				( { _accountID } ) => _accountID === accountID
@@ -224,6 +224,15 @@ SelectAccount.args = {
 					id: 'Europe/Berlin',
 				},
 				createTime: '2013-10-17T15:51:03.000Z',
+			},
+			{
+				_id: 'pub-2833782679114992',
+				name: 'accounts/pub-2833782679114992',
+				displayName: 'Test Account 2',
+				timeZone: {
+					id: 'Europe/Berlin',
+				},
+				createTime: '2013-10-18T15:51:03.000Z',
 			},
 		] );
 	},

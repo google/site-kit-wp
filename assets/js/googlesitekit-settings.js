@@ -30,7 +30,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/legacy-notifications';
 import Root from './components/Root';
 import SettingsApp from './components/settings/SettingsApp';
 import { VIEW_CONTEXT_SETTINGS } from './googlesitekit/constants';

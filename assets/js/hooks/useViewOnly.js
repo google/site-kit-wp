@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import useViewContext from './useViewContext';
 
@@ -36,7 +36,7 @@ export default function useViewOnly() {
 	const viewContext = useViewContext();
 
 	return (
-		viewContext === VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ||
-		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
+		viewContext === VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY ||
+		viewContext === VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
 	);
 }

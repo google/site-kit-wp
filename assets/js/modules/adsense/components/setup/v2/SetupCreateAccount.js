@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import Link from '../../../../../components/Link';
 import { trackEvent } from '../../../../../util';
 import { parseAccountID } from '../../../util/parsing';
@@ -44,9 +44,6 @@ const { useSelect } = Data;
 export default function SetupCreateAccount() {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
-	const siteURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getReferenceSiteURL()
-	);
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
@@ -68,10 +65,6 @@ export default function SetupCreateAccount() {
 		},
 		[ signUpURL, eventCategory ]
 	);
-
-	if ( ! siteURL || ! userEmail || undefined === existingTag ) {
-		return null;
-	}
 
 	return (
 		<Fragment>
@@ -122,7 +115,6 @@ export default function SetupCreateAccount() {
 							a: (
 								<Link
 									href={ supportURL }
-									inherit
 									external
 									aria-label={ __(
 										'Learn more about adding a user to an existing AdSense account',

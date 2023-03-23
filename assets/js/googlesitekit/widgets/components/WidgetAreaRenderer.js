@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -37,7 +36,6 @@ import { getHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
 import { CORE_UI, ACTIVE_CONTEXT_ID } from '../../datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
-import { useFeature } from '../../../hooks/useFeature';
 import {
 	useBreakpoint,
 	BREAKPOINT_XLARGE,
@@ -50,6 +48,7 @@ import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import useViewOnly from '../../../hooks/useViewOnly';
 import { CORE_USER } from '../../datastore/user/constants';
+import useLatestIntersection from '../../../hooks/useLatestIntersection';
 const { useSelect } = Data;
 
 /**
@@ -74,13 +73,11 @@ function getRootMargin( breakpoint ) {
 	return `-${ top }px -${ gap }px -${ gap }px -${ gap }px`;
 }
 
-export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
-	const viewOnly = useViewOnly();
+export default function WidgetAreaRenderer( { slug, contextID } ) {
+	const viewOnlyDashboard = useViewOnly();
 
 	const viewableModules = useSelect( ( select ) => {
-		if ( ! viewOnly ) {
+		if ( ! viewOnlyDashboard ) {
 			return null;
 		}
 
@@ -90,7 +87,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 	const breakpoint = useBreakpoint();
 
 	const widgetAreaRef = useRef();
-	const intersectionEntry = useIntersection( widgetAreaRef, {
+	const intersectionEntry = useLatestIntersection( widgetAreaRef, {
 		rootMargin: getRootMargin( breakpoint ),
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
@@ -107,7 +104,9 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
 	const isActive = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
+		select( CORE_WIDGETS ).isWidgetAreaActive( slug, {
+			modules: viewableModules ? viewableModules : undefined,
+		} )
 	);
 
 	const activeContextID = useSelect( ( select ) =>
@@ -129,6 +128,10 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 				: !! intersectionEntry?.intersectionRatio,
 		} );
 	}, [ intersectionEntry, slug, activeContextID, contextID ] );
+
+	if ( viewableModules === undefined ) {
+		return null;
+	}
 
 	// Compute the layout.
 	const { columnWidths, rowIndexes } = getWidgetLayout(
@@ -161,10 +164,8 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 				OverrideComponent={
 					overrideComponents[ i ]
 						? () => {
-								const {
-									Component,
-									metadata,
-								} = overrideComponents[ i ];
+								const { Component, metadata } =
+									overrideComponents[ i ];
 								return <Component { ...metadata } />;
 						  }
 						: undefined
@@ -209,28 +210,26 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 				) }
 				ref={ widgetAreaRef }
 			>
-				{ ( unifiedDashboardEnabled || totalAreas > 1 ) && (
-					<Row>
-						<Cell
-							className="googlesitekit-widget-area-header"
-							size={ 12 }
-						>
-							{ Icon && <Icon width={ 33 } height={ 33 } /> }
+				<Row>
+					<Cell
+						className="googlesitekit-widget-area-header"
+						size={ 12 }
+					>
+						{ Icon && <Icon width={ 33 } height={ 33 } /> }
 
-							{ title && (
-								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-									{ title }
-								</h3>
-							) }
+						{ title && (
+							<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+								{ title }
+							</h3>
+						) }
 
-							{ subtitle && (
-								<h4 className="googlesitekit-widget-area-header__subtitle">
-									{ subtitle }
-								</h4>
-							) }
-						</Cell>
-					</Row>
-				) }
+						{ subtitle && (
+							<h4 className="googlesitekit-widget-area-header__subtitle">
+								{ subtitle }
+							</h4>
+						) }
+					</Cell>
+				</Row>
 
 				<div className="googlesitekit-widget-area-widgets">
 					<Row>
@@ -251,6 +250,5 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 
 WidgetAreaRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
-	totalAreas: PropTypes.number,
 	contextID: PropTypes.string,
 };

@@ -29,9 +29,8 @@ import {
 import WPDashboardClicks from './WPDashboardClicks';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardClicks
-);
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'widget-slug' )( WPDashboardClicks );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -45,25 +44,16 @@ Ready.args = {
 	setupRegistry: setupSearchConsoleMockReports,
 };
 
-export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'Data Unavailable';
-
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: setupSearchConsoleGatheringData,
-};
-GatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
-};
-ZeroData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export default {

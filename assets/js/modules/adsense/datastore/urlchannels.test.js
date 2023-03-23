@@ -53,7 +53,9 @@ describe( 'modules/adsense URL channels', () => {
 		describe( 'getURLChannels', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/urlchannels'
+					),
 					{ body: fixtures.urlchannels, status: 200 }
 				);
 
@@ -105,18 +107,20 @@ describe( 'modules/adsense URL channels', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
+				const fakeAccountID = 'pub-777888999';
+				const fakeClientID = 'ca-pub-777888999';
+
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/urlchannels'
+					),
 					{ body: response, status: 500 }
 				);
-
-				const fakeAccountID = 'pub-777888999';
-				const fakeClientID = 'ca-pub-777888999';
 
 				registry
 					.select( MODULES_ADSENSE )
@@ -139,7 +143,14 @@ describe( 'modules/adsense URL channels', () => {
 						fakeAccountID,
 						fakeClientID,
 					] );
-				expect( urlChannelsError ).toEqual( response );
+				expect( urlChannelsError ).toEqual( {
+					...response,
+					selectorData: {
+						args: [ fakeAccountID, fakeClientID ],
+						name: 'getURLChannels',
+						storeName: MODULES_ADSENSE,
+					},
+				} );
 			} );
 		} );
 	} );

@@ -31,21 +31,26 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Switch } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { FORM_SETUP } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
-import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4ActivateSwitch( props ) {
-	const { onActivate } = props;
+	const { onActivate, disabled } = props;
 
 	const viewContext = useViewContext();
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( () => {
@@ -66,16 +71,13 @@ export default function GA4ActivateSwitch( props ) {
 							'Activate Google Analytics 4 and place code on your site.',
 							'google-site-kit'
 						) }{ ' ' }
-						<Link
-							href="https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/"
-							external
-							inherit
-						>
+						<Link href={ documentationURL } external>
 							{ __( 'Learn more', 'google-site-kit' ) }
 						</Link>
 					</Fragment>
 				}
 				checked={ enableGA4 }
+				disabled={ disabled }
 				onClick={ onChange }
 				hideLabel={ false }
 			/>
@@ -86,4 +88,5 @@ export default function GA4ActivateSwitch( props ) {
 // eslint-disable-next-line sitekit/acronym-case
 GA4ActivateSwitch.propTypes = {
 	onActivate: PropTypes.func,
+	disabled: PropTypes.bool,
 };

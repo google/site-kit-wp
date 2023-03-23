@@ -26,12 +26,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
-import Button from '../../../../components/Button';
-import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;

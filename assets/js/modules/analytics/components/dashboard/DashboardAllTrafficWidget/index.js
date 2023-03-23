@@ -47,17 +47,26 @@ import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
-import EmptyPieChart from './EmptyPieChart';
-import { useFeature } from '../../../../../hooks/useFeature';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( props ) {
-	const { Widget, WidgetReportZero, WidgetReportError } = props;
+	const { Widget, WidgetReportError } = props;
 
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+	const viewOnly = useViewOnly();
 
-	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return true;
+		}
+
+		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+	} );
+
+	const isGatheringData = useInViewSelect(
+		( select ) =>
+			canViewSharedAnalytics &&
+			select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
 	const [ firstLoad, setFirstLoad ] = useState( true );
@@ -126,47 +135,62 @@ function DashboardAllTrafficWidget( props ) {
 		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
 	}
 
-	const pieChartLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			pieArgs,
-		] )
+	const pieChartLoaded = useSelect(
+		( select ) =>
+			canViewSharedAnalytics &&
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				pieArgs,
+			] )
 	);
 	const pieChartError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			pieArgs,
 		] )
 	);
-	const pieChartReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( pieArgs )
-	);
+	const pieChartReport = useInViewSelect( ( select ) => {
+		return (
+			canViewSharedAnalytics &&
+			select( MODULES_ANALYTICS ).getReport( pieArgs )
+		);
+	} );
 
-	const userCountGraphLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			graphArgs,
-		] )
+	const userCountGraphLoaded = useSelect(
+		( select ) =>
+			canViewSharedAnalytics &&
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				graphArgs,
+			] )
 	);
 	const userCountGraphError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			graphArgs,
 		] )
 	);
-	const userCountGraphReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( graphArgs )
-	);
+	const userCountGraphReport = useInViewSelect( ( select ) => {
+		return (
+			canViewSharedAnalytics &&
+			select( MODULES_ANALYTICS ).getReport( graphArgs )
+		);
+	} );
 
-	const totalUsersLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			totalsArgs,
-		] )
+	const totalUsersLoaded = useSelect(
+		( select ) =>
+			canViewSharedAnalytics &&
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				totalsArgs,
+			] )
 	);
 	const totalUsersError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			totalsArgs,
 		] )
 	);
-	const totalUsersReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( totalsArgs )
-	);
+	const totalUsersReport = useInViewSelect( ( select ) => {
+		return (
+			canViewSharedAnalytics &&
+			select( MODULES_ANALYTICS ).getReport( totalsArgs )
+		);
+	} );
 
 	let reportType;
 	switch ( dimensionName ) {
@@ -196,12 +220,16 @@ function DashboardAllTrafficWidget( props ) {
 		) }`;
 	}
 
-	const serviceReportURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getServiceReportURL(
+	const serviceReportURL = useSelect( ( select ) => {
+		if ( viewOnly ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getServiceReportURL(
 			reportType,
 			reportArgs
-		)
-	);
+		);
+	} );
 
 	useEffect( () => {
 		if ( dateRange !== currentRange ) {
@@ -255,15 +283,6 @@ function DashboardAllTrafficWidget( props ) {
 	}
 
 	const pieChartReportIsZero = isZeroReport( pieChartReport );
-	if ( ! zeroDataStatesEnabled && isGatheringData && pieChartReportIsZero ) {
-		return (
-			<Widget>
-				<WidgetReportZero moduleSlug="analytics" />
-			</Widget>
-		);
-	}
-
-	const showEmptyPieChart = ! zeroDataStatesEnabled && pieChartReportIsZero;
 
 	return (
 		<Widget
@@ -316,18 +335,13 @@ function DashboardAllTrafficWidget( props ) {
 							gatheringData={ isGatheringData }
 							isZeroData={ pieChartReportIsZero }
 						/>
-
-						{ ! showEmptyPieChart && (
-							<UserDimensionsPieChart
-								dimensionName={ dimensionName }
-								dimensionValue={ dimensionValue }
-								gatheringData={ isGatheringData }
-								loaded={ pieChartLoaded && ! firstLoad }
-								report={ pieChartReport }
-							/>
-						) }
-
-						{ showEmptyPieChart && <EmptyPieChart /> }
+						<UserDimensionsPieChart
+							dimensionName={ dimensionName }
+							dimensionValue={ dimensionValue }
+							gatheringData={ isGatheringData }
+							loaded={ pieChartLoaded && ! firstLoad }
+							report={ pieChartReport }
+						/>
 					</Cell>
 				</Row>
 			</Grid>

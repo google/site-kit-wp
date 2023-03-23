@@ -32,20 +32,27 @@ import {
 } from '../../../datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 export default function Footer() {
+	const viewOnlyDashboard = useViewOnly();
+
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const contentPagesURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getServiceReportURL(
+	const contentPagesURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getServiceReportURL(
 			'content-pages',
 			generateDateRangeArgs( dates )
-		)
-	);
+		);
+	} );
 
 	return (
 		<SourceLink

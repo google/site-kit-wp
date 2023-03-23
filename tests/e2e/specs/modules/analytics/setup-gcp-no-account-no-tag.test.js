@@ -128,8 +128,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		await page.evaluate( () => {
 			window.open = () => {
 				window._e2eApiFetch( {
-					path:
-						'google-site-kit/v1/e2e/setup/analytics/account-created',
+					path: 'google-site-kit/v1/e2e/setup/analytics/account-created',
 					method: 'post',
 				} );
 			};
@@ -161,21 +160,15 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
-		await expect(
-			page
-		).toMatchElement(
+		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
 			{ text: '' }
 		);
-		await expect(
-			page
-		).toMatchElement(
+		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics__select-property .mdc-select__selected-text',
 			{ text: '' }
 		);
-		await expect(
-			page
-		).toMatchElement(
+		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics__select-profile .mdc-select__selected-text',
 			{ text: '' }
 		);

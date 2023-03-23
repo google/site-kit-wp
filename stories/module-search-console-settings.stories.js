@@ -25,6 +25,7 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import {
 	createTestRegistry,
@@ -133,6 +134,32 @@ storiesOf( 'Search Console Module/Settings', module )
 						siteURL: 'sc-domain:example.com',
 					},
 				] );
+
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/search-console/edit"
+				/>
+			);
+		},
+		storyOptions
+	)
+	.add(
+		'Edit, with all settings, w/o module access',
+		( args, { registry } ) => {
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: false },
+					{ slug: 'search-console' }
+				);
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+				...defaultSettings,
+				propertyID: 'sc-domain:example.com',
+			} );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveGetMatchedProperties( [] );
 
 			return (
 				<Settings

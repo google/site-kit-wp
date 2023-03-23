@@ -1,9 +1,24 @@
 /**
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
-import castArray from 'lodash/castArray';
-import mapValues from 'lodash/mapValues';
 import fetchMock from 'fetch-mock';
+import { castArray, mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -26,12 +41,10 @@ import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics from '../../assets/js/modules/analytics';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
-import * as modulesIdeaHub from '../../assets/js/modules/idea-hub';
 import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
-import * as modulesSubscribeWithGoogle from '../../assets/js/modules/subscribe-with-google';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_AUTHENTICATE,
@@ -60,12 +73,10 @@ const allCoreModules = [
 	modulesAdSense,
 	modulesAnalytics,
 	modulesAnalytics4,
-	modulesIdeaHub,
 	modulesOptimize,
 	modulesPageSpeedInsights,
 	modulesSearchConsole,
 	modulesTagManager,
-	modulesSubscribeWithGoogle,
 ];
 
 /**
@@ -217,10 +228,26 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		proxyPermissionsURL:
 			'https://sitekit.withgoogle.com/site-management/permissions/',
 		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/',
+		proxySupportLinkURL: 'https://sitekit.withgoogle.com/support/',
+		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
 		referenceSiteURL: 'http://example.com',
 		siteName: 'My Site Name',
 		timezone: 'America/Detroit',
 		usingProxy: true,
+		postTypes: [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+			{
+				slug: 'attachment',
+				label: 'Media',
+			},
+		],
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -242,6 +269,7 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 	const defaults = {
 		id: 1,
 		name: 'Wapuu WordPress',
+		full_name: 'Wapuu WordPress PhD',
 		email: 'wapuu.wordpress@gmail.com',
 		picture:
 			'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
@@ -320,10 +348,8 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 	const extraDataBySlug = extraData.reduce( ( acc, { slug, ...data } ) => {
 		return { ...acc, [ slug ]: { slug, ...data } };
 	}, {} );
-	const {
-		registerModule: realRegisterModule,
-		...Modules
-	} = coreModules.createModules( registry );
+	const { registerModule: realRegisterModule, ...Modules } =
+		coreModules.createModules( registry );
 	// Decorate `Modules.registerModule` with a function to apply extra data.
 	const registeredModules = {};
 	const testRegisterModule = ( slug, settings ) => {
@@ -444,13 +470,14 @@ export const subscribeWithUnsubscribe = ( registry, ...args ) => {
 export const untilResolved = ( registry, storeName ) => {
 	return mapValues(
 		registry.stores[ storeName ].resolvers || {},
-		( resolverFn, resolverName ) => ( ...args ) => {
-			return subscribeUntil( registry, () =>
-				registry
-					.select( storeName )
-					.hasFinishedResolution( resolverName, args )
-			);
-		}
+		( resolverFn, resolverName ) =>
+			( ...args ) => {
+				return subscribeUntil( registry, () =>
+					registry
+						.select( storeName )
+						.hasFinishedResolution( resolverName, args )
+				);
+			}
 	);
 };
 
@@ -474,6 +501,31 @@ export const unsubscribeFromAll = () => {
 };
 
 /**
+ * Waits for 5ms to ensure all pending timeouts set with the default 1ms will have executed.
+ *
+ * Introduced as a result of updating to @wordpress/data 4.23.0, which introduces a resolver cache and a related call to setTimeout for each resolver.
+ * The delay is 5ms because the resolver setTimeout is using the default which is 1ms in Node, so in order to ensure our setTimeout will execute after
+ * all pending resolvers we need to specify a higher timeout than 1ms. The value 5ms, rather than say 2ms is used in order to provide a degree of headroom,
+ * as "Node.js makes no guarantees about the exact timing of when callbacks will fire, nor of their ordering".
+ *
+ * Obviously, this function will result in _any_ pending 1ms timeouts being waited for (and within-5ms timeouts, although not being the default, these
+ * are less likely to be in progress), but it's primarily introduced to wait for resolvers, with the delay calibrated accordingly.
+ *
+ * References:
+ * - @wordpress/data: https://github.com/WordPress/gutenberg/blob/07baf5a12007d31bbd4ee22113b07952f7eacc26/packages/data/src/namespace-store/index.js#L294-L310.
+ * - Node setTimeout: https://nodejs.org/docs/latest-v14.x/api/timers.html#timers_settimeout_callback_delay_args.
+ *
+ * @since 1.92.0
+ *
+ * @return {Promise} Promise that resolves after a 2ms timeout.
+ */
+export const waitForDefaultTimeouts = () => {
+	return new Promise( ( resolve ) => {
+		setTimeout( resolve, 5 );
+	} );
+};
+
+/**
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0
@@ -487,11 +539,13 @@ export const createWaitForRegistry = ( registry ) => {
 		updates.push( new Promise( ( resolve ) => resolve() ) );
 	const unsubscribe = subscribeWithUnsubscribe( registry, listener );
 
-	// Return a function that waits until the next tick for updates.
+	// Return a function that:
+	// - Waits until the next tick for updates.
+	// - Waits for all pending resolvers to resolve.
 	// We unsubscribe afterwards to allow for potential additions while
 	// Promise.all is resolving.
 	return async () => {
-		await Promise.all( updates );
+		await Promise.all( [ ...updates, waitForDefaultTimeouts() ] );
 		unsubscribe();
 	};
 };

@@ -31,8 +31,8 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import Button from '../../../../../components/Button';
 import PreviewGraph from '../../../../../components/PreviewGraph';
 import GoalsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
 import { trackEvent } from '../../../../../util';

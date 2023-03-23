@@ -29,6 +29,7 @@ import {
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
 
@@ -101,7 +102,9 @@ describe( 'createSettingsStore store', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
 					muteFetch(
-						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
+						new RegExp(
+							'^/google-site-kit/v1/core/site/data/settings'
+						)
 					);
 					dispatch.fetchGetSettings();
 				} ).not.toThrow();
@@ -136,14 +139,18 @@ describe( 'createSettingsStore store', () => {
 		describe( 'saveSettings', () => {
 			it( 'does not require any params', () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
 					{ body: {}, status: 200 }
 				);
 				const values = { setting1: 'serverside' };
 				dispatch.setSettings( values, {} );
 				expect( async () => {
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/core/site/data/settings'
+						),
 						{ body: values, status: 200 }
 					);
 					await dispatch.saveSettings();
@@ -153,7 +160,9 @@ describe( 'createSettingsStore store', () => {
 			it( 'updates settings from server', async () => {
 				const response = { isSkyBlue: 'yes' };
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
 					{ body: response, status: 200 }
 				);
 
@@ -173,7 +182,9 @@ describe( 'createSettingsStore store', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
 					{
 						body: { data: { isSkyBlue: 'no' } },
 					}
@@ -192,7 +203,9 @@ describe( 'createSettingsStore store', () => {
 
 			it( 'sets isDoingSaveSettings', () => {
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
 					{ body: { setting1: true }, status: 200 }
 				);
 
@@ -289,7 +302,9 @@ describe( 'createSettingsStore store', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const response = { setting1: 'value' };
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
 					{ body: response, status: 200 }
 				);
 
@@ -331,7 +346,7 @@ describe( 'createSettingsStore store', () => {
 				// If settings are set on the client, they must be available even
 				// if settings have not been loaded from the server yet.
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/
+					new RegExp( '^/google-site-kit/v1/core/site/data/settings' )
 				);
 				expect( select.getSettings() ).toEqual( values );
 			} );
@@ -343,7 +358,9 @@ describe( 'createSettingsStore store', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -356,6 +373,11 @@ describe( 'createSettingsStore store', () => {
 				);
 
 				const settings = select.getSettings();
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( settings ).toEqual( undefined );
@@ -372,7 +394,9 @@ describe( 'createSettingsStore store', () => {
 				const clientValues = { setting1: 'clientside' };
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
 					{ body: serverValues, status: 200 }
 				);
 
@@ -393,6 +417,140 @@ describe( 'createSettingsStore store', () => {
 				dispatch.setSettings( serverValues );
 				expect( select.haveSettingsChanged() ).toEqual( false );
 			} );
+
+			it( 'compares all keys when keys argument is not supplied', async () => {
+				const serverValues = {
+					setting1: 'serverside',
+					setting2: 'test-value',
+				};
+				const clientValues = {
+					setting1: 'clientside',
+					setting2: 'test-value',
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
+					{ body: serverValues, status: 200 }
+				);
+
+				select.getSettings();
+				await subscribeUntil(
+					registry,
+					() => select.getSettings() !== undefined
+				);
+
+				// Update the settings so they differ. All values are being checked
+				// here.
+				dispatch.setSettings( clientValues );
+				expect( select.haveSettingsChanged() ).toEqual( true );
+			} );
+
+			it( 'compares select keys when keys argument is supplied', async () => {
+				const serverValues = {
+					setting1: 'serverside',
+					setting2: 'test-value',
+				};
+				const clientValues = {
+					setting1: 'clientside',
+					setting2: 'test-value',
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
+					{ body: serverValues, status: 200 }
+				);
+
+				select.getSettings();
+				await subscribeUntil(
+					registry,
+					() => select.getSettings() !== undefined
+				);
+
+				// Update the settings so they differ. Only `setting1` should trigger
+				// a truthy return value.
+				dispatch.setSettings( clientValues );
+				expect( select.haveSettingsChanged( [ 'setting1' ] ) ).toEqual(
+					true
+				);
+				expect( select.haveSettingsChanged( [ 'setting2' ] ) ).toEqual(
+					false
+				);
+
+				// Checking all values should be possible.
+				expect(
+					select.haveSettingsChanged( [ 'setting1', 'setting2' ] )
+				).toEqual( true );
+
+				// Checking no values should be possible, and should not be treated as
+				// an `undefined` keys array.
+				expect( select.haveSettingsChanged( [] ) ).toEqual( false );
+			} );
+		} );
+
+		describe( 'haveOwnedSettingsChanged', () => {
+			it( 'only compares owned settings when checking for changes', async () => {
+				storeDefinition = createSettingsStore( ...STORE_ARGS, {
+					ownedSettingsSlugs: [ 'ourSetting', 'ourSetting2' ],
+					settingSlugs: [
+						'yourSetting',
+						'ourSetting',
+						'ourSetting2',
+					],
+					registry,
+				} );
+				registry.registerStore(
+					storeDefinition.STORE_NAME,
+					storeDefinition
+				);
+				dispatch = registry.dispatch( storeDefinition.STORE_NAME );
+				select = registry.select( storeDefinition.STORE_NAME );
+
+				// Initially false.
+				expect( select.haveOwnedSettingsChanged() ).toEqual( false );
+
+				const serverValues = {
+					yourSetting: 'foo',
+					ourSetting: 'good',
+					ourSetting2: 1,
+				};
+				const clientValues = {
+					yourSetting: 'bar',
+					ourSetting: 'bad',
+					ourSetting2: 1,
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
+					{ body: serverValues, status: 200 }
+				);
+
+				select.getSettings();
+				await subscribeUntil(
+					registry,
+					() => select.getSettings() !== undefined
+				);
+
+				// Still false after fetching settings from server.
+				expect( select.haveOwnedSettingsChanged() ).toEqual( false );
+
+				// True after updating settings on client.
+				dispatch.setSettings( clientValues );
+				expect( select.haveOwnedSettingsChanged() ).toEqual( true );
+
+				// False after updating settings back to original server value on
+				// the client, then changing a non-owned setting.
+				dispatch.setSettings( {
+					...serverValues,
+					yourSetting: 'whatever',
+				} );
+				expect( select.haveOwnedSettingsChanged() ).toEqual( false );
+			} );
 		} );
 
 		describe( 'hasSettingChanged', () => {
@@ -401,7 +559,9 @@ describe( 'createSettingsStore store', () => {
 				const clientValues = { setting1: 'clientside' };
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
 					{ body: serverValues, status: 200 }
 				);
 
@@ -442,7 +602,9 @@ describe( 'createSettingsStore store', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const value = 'serverside';
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/settings'
+					),
 					{
 						body: {
 							otherSetting: 'other-value',
@@ -502,12 +664,11 @@ describe( 'createSettingsStore store', () => {
 						init: { status: 400 },
 					} );
 
-				const result = await storeDefinition.controls.FETCH_GET_SETTINGS(
-					{
+				const result =
+					await storeDefinition.controls.FETCH_GET_SETTINGS( {
 						type: 'FETCH_GET_SETTINGS',
 						payload: { params: {} },
-					}
-				);
+					} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.
@@ -534,12 +695,11 @@ describe( 'createSettingsStore store', () => {
 						init: { status: 400 },
 					} );
 
-				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS(
-					{
+				const result =
+					await storeDefinition.controls.FETCH_SAVE_SETTINGS( {
 						type: 'FETCH_SAVE_SETTINGS',
 						payload: { params: { values: {} } },
-					}
-				);
+					} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.

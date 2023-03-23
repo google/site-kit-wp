@@ -17,14 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -43,14 +38,14 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
-import { useFeature } from '../../hooks/useFeature';
 import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const slug = getQueryParameter( 'slug' );
+	const notification = getQueryParameter( 'notification' );
 	const viewContext = useViewContext();
+
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
@@ -82,32 +77,63 @@ function SetupSuccessBannerNotification() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
 
-	useMount( () => {
-		trackEvent(
-			`${ viewContext }_authentication-success-notification`,
-			'view_notification'
-		);
+	const [ completeUserSetupSent, setCompleteUserSetupSent ] =
+		useState( false );
+	const [ completeSiteSetup, setCompleteSiteSetup ] = useState( false );
 
-		// Only trigger these events if this is a site/plugin setup event,
-		// and not setup of an individual module (eg. AdSense, Analytics, etc.)
-		if ( slug === null ) {
-			trackEvent(
-				`${ viewContext }_authentication-success-notification`,
-				'complete_user_setup',
-				isUsingProxy ? 'proxy' : 'custom-oauth'
-			);
+	useEffect( () => {
+		// Only trigger the GA events if the notification is visible and we haven't
+		// already sent these notifications.
+		if (
+			modules !== undefined &&
+			notification === 'authentication_success'
+		) {
+			// Only trigger these events if this is a site/plugin setup event,
+			// and not setup of an individual module (eg. AdSense, Analytics, etc.)
+			if ( slug === null && ! completeUserSetupSent ) {
+				trackEvent(
+					`${ viewContext }_authentication-success-notification`,
+					'complete_user_setup',
+					isUsingProxy ? 'proxy' : 'custom-oauth'
+				);
+
+				setCompleteUserSetupSent( true );
+			}
 
 			// If the site doesn't yet have multiple admins, this is the initial
 			// site setup so we can log the "site setup complete" event.
-			if ( ! hasMultipleAdmins ) {
+			if (
+				slug === null &&
+				! completeSiteSetup &&
+				hasMultipleAdmins === false
+			) {
 				trackEvent(
 					`${ viewContext }_authentication-success-notification`,
 					'complete_site_setup',
 					isUsingProxy ? 'proxy' : 'custom-oauth'
 				);
+
+				setCompleteSiteSetup( true );
 			}
 		}
-	} );
+	}, [
+		canManageOptions,
+		completeSiteSetup,
+		completeUserSetupSent,
+		hasMultipleAdmins,
+		isUsingProxy,
+		modules,
+		notification,
+		slug,
+		viewContext,
+	] );
+
+	const onView = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_authentication-success-notification`,
+			'view_notification'
+		);
+	}, [ viewContext ] );
 
 	const onDismiss = useCallback( async () => {
 		await trackEvent(
@@ -127,8 +153,19 @@ function SetupSuccessBannerNotification() {
 	}
 
 	// Only show the connected win when the user completes setup flow.
-	const notification = getQueryParameter( 'notification' );
 	if ( ! notification || '' === notification ) {
+		return null;
+	}
+
+	if ( notification === 'authentication_success' && ! canManageOptions ) {
+		return null;
+	}
+
+	if (
+		notification === 'authentication_success' &&
+		slug &&
+		! modules[ slug ]?.active
+	) {
 		return null;
 	}
 
@@ -145,14 +182,6 @@ function SetupSuccessBannerNotification() {
 
 	switch ( notification ) {
 		case 'authentication_success':
-			if ( ! canManageOptions ) {
-				return null;
-			}
-
-			if ( slug && ! modules[ slug ]?.active ) {
-				return null;
-			}
-
 			if ( modules[ slug ] ) {
 				winData.id = `${ winData.id }-${ slug }`;
 				winData.setupTitle = modules[ slug ].name;
@@ -171,17 +200,9 @@ function SetupSuccessBannerNotification() {
 			};
 
 			if ( 'pagespeed-insights' === slug ) {
-				anchor.link = unifiedDashboardEnabled
-					? '#speed'
-					: '#googlesitekit-pagespeed-header';
+				anchor.link = '#speed';
 				anchor.label = __(
 					'Jump to the bottom of the dashboard to see how fast your home page is',
-					'google-site-kit'
-				);
-			} else if ( 'idea-hub' === slug ) {
-				anchor.link = '#googlesitekit-idea-hub-widget';
-				anchor.label = __(
-					'Jump directly to Idea Hub to see topic suggestions for your site',
 					'google-site-kit'
 				);
 			}
@@ -219,6 +240,7 @@ function SetupSuccessBannerNotification() {
 						description={ winData.description }
 						handleDismiss={ () => {} }
 						WinImageSVG={ SuccessGreenSVG }
+						onView={ onView }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
 						format="smaller"

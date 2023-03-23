@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -41,14 +41,10 @@ import TableOverflowContainer from '../../components/TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-import { isFeatureEnabled } from '../../features';
-import { isZeroReport } from '../../modules/analytics/util';
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
-	const { WidgetReportZero, WidgetReportError } = props;
-
-	const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
+	const { WidgetReportError } = props;
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -94,9 +90,10 @@ export default function WPDashboardPopularPages( props ) {
 	);
 
 	const loading = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ reportArgs ] );
+		const reportLoaded = select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ reportArgs ]
+		);
 
 		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
 
@@ -109,14 +106,6 @@ export default function WPDashboardPopularPages( props ) {
 
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
-	}
-
-	if (
-		! zeroDataStatesEnabled &&
-		isGatheringData &&
-		isZeroReport( report )
-	) {
-		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.
@@ -132,9 +121,9 @@ export default function WPDashboardPopularPages( props ) {
 
 	return (
 		<div className="googlesitekit-search-console-widget">
-			<h2 className="googlesitekit-search-console-widget__title">
+			<h3>
 				{ __( 'Top content over the last 28 days', 'google-site-kit' ) }
-			</h2>
+			</h3>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ rows }

@@ -20,7 +20,8 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import intersection from 'lodash/intersection';
+import { intersection } from 'lodash';
+import { original } from 'immer';
 
 /**
  * Internal dependencies
@@ -28,6 +29,7 @@ import intersection from 'lodash/intersection';
 import Data from 'googlesitekit-data';
 import { isInactiveWidgetState, normalizeWidgetModules } from '../util';
 import { CORE_WIDGETS, WIDGET_WIDTHS } from './constants';
+import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 
 const { createRegistrySelector } = Data;
 
@@ -80,7 +82,7 @@ export const actions = {
 	 * @param {number}                [settings.priority]   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
 	 * @param {string|Array.<string>} [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
 	 * @param {boolean}               [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
-	 * @param {string|Array.<string>} [settings.modules]    Optional. Widget's associated moduels.
+	 * @param {string|Array.<string>} [settings.modules]    Optional. Widget's associated modules.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget(
@@ -176,26 +178,22 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case ASSIGN_WIDGET: {
 			const { slug, areaSlugs } = payload;
 
-			const { areaAssignments } = state;
 			areaSlugs.forEach( ( areaSlug ) => {
-				if ( areaAssignments[ areaSlug ] === undefined ) {
-					areaAssignments[ areaSlug ] = [];
+				if ( state.areaAssignments[ areaSlug ] === undefined ) {
+					state.areaAssignments[ areaSlug ] = [];
 				}
 
-				if ( ! areaAssignments[ areaSlug ].includes( slug ) ) {
-					areaAssignments[ areaSlug ].push( slug );
+				if ( ! state.areaAssignments[ areaSlug ].includes( slug ) ) {
+					state.areaAssignments[ areaSlug ].push( slug );
 				}
 			} );
 
-			return {
-				...state,
-				areaAssignments,
-			};
+			return state;
 		}
 
 		case REGISTER_WIDGET: {
@@ -209,55 +207,35 @@ export const reducer = ( state, { type, payload } ) => {
 				return state;
 			}
 
-			return {
-				...state,
-				widgets: {
-					...state.widgets,
-					[ slug ]: {
-						...settings,
-						slug,
-					},
-				},
-			};
+			state.widgets[ slug ] = { ...settings, slug };
+			return state;
 		}
 
 		case SET_WIDGET_STATE: {
 			const { slug, Component, metadata } = payload;
 
-			return {
-				...state,
-				widgetStates: {
-					...state.widgetStates,
-					[ slug ]: {
-						Component,
-						metadata,
-					},
-				},
-			};
+			state.widgetStates[ slug ] = { Component, metadata };
+			return state;
 		}
 
 		case UNSET_WIDGET_STATE: {
 			const { slug, Component, metadata } = payload;
 
-			const widgetStates = { ...state.widgetStates };
 			if (
-				widgetStates?.[ slug ]?.Component === Component &&
-				widgetStates?.[ slug ]?.metadata === metadata
+				state.widgetStates?.[ slug ]?.Component === Component &&
+				original( state.widgetStates?.[ slug ]?.metadata ) === metadata
 			) {
-				delete widgetStates[ slug ];
+				delete state.widgetStates[ slug ];
 			}
 
-			return {
-				...state,
-				widgetStates,
-			};
+			return state;
 		}
 
 		default: {
 			return state;
 		}
 	}
-};
+} );
 
 export const resolvers = {};
 
@@ -312,7 +290,7 @@ export const selectors = {
 	 * @param {Object}                state             Data store's state.
 	 * @param {string}                widgetAreaSlug    Widget context to get areas for.
 	 * @param {Object}                options           Widgets selection options.
-	 * @param {string|Array.<string>} [options.modules] Optional. Widget's associated moduels.
+	 * @param {string|Array.<string>} [options.modules] Optional. Widget's associated modules.
 	 * @return {Array} An ordered array of widgets for this area.
 	 */
 	getWidgets( state, widgetAreaSlug, { modules } = {} ) {
@@ -333,7 +311,7 @@ export const selectors = {
 
 				return (
 					intersection( widget.modules, allowedModules ).length ===
-					allowedModules.length
+					widget.modules.length
 				);
 			} );
 		}

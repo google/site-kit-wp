@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export { default as ModuleTopEarningPagesWidget } from './ModuleTopEarningPagesWidget';
 export { default as ModuleOverviewWidget } from './ModuleOverviewWidget';

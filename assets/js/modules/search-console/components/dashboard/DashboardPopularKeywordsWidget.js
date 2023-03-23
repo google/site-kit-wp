@@ -34,19 +34,19 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import { isZeroReport, generateDateRangeArgs } from '../../util';
+import { generateDateRangeArgs } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
-import { useFeature } from '../../../../hooks/useFeature';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardPopularKeywordsWidget( props ) {
-	const { Widget, WidgetReportZero, WidgetReportError } = props;
+	const { Widget, WidgetReportError } = props;
 
-	const zeroDataStates = useFeature( 'zeroDataStates' );
+	const viewOnlyDashboard = useViewOnly();
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
@@ -81,16 +81,21 @@ function DashboardPopularKeywordsWidget( props ) {
 	);
 	const loading = useSelect(
 		( select ) =>
-			! select(
-				MODULES_SEARCH_CONSOLE
-			).hasFinishedResolution( 'getReport', [ reportArgs ] )
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'getReport',
+				[ reportArgs ]
+			)
 	);
-	const baseServiceURL = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
+	const baseServiceURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 			...generateDateRangeArgs( dateRangeDates ),
 			page: url ? `!${ url }` : undefined,
-		} )
-	);
+		} );
+	} );
 
 	const Footer = () => (
 		<SourceLink
@@ -120,14 +125,6 @@ function DashboardPopularKeywordsWidget( props ) {
 		);
 	}
 
-	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
-		return (
-			<Widget Footer={ Footer }>
-				<WidgetReportZero moduleSlug="search-console" />
-			</Widget>
-		);
-	}
-
 	const tableColumns = [
 		{
 			title: url
@@ -141,6 +138,9 @@ function DashboardPopularKeywordsWidget( props ) {
 			field: 'keys.0',
 			Component: ( { fieldValue } ) => {
 				const searchAnalyticsURL = useSelect( ( select ) => {
+					if ( viewOnlyDashboard ) {
+						return null;
+					}
 					const dates = select( CORE_USER ).getDateRangeDates( {
 						offsetDays: DATE_RANGE_OFFSET,
 					} );
@@ -155,7 +155,11 @@ function DashboardPopularKeywordsWidget( props ) {
 				} );
 
 				return (
-					<Link href={ searchAnalyticsURL } external inherit>
+					<Link
+						href={ searchAnalyticsURL }
+						external
+						hideExternalIndicator
+					>
 						{ fieldValue }
 					</Link>
 				);

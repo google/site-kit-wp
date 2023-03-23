@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BannerNotification should not wrap the description in a paragraph when the description is a React element 1`] = `
+<div>
+  <section
+    class="googlesitekit-publisher-win googlesitekit-publisher-win--is-open"
+    id="fake"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-12-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--order-1-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--order-2-phone"
+        >
+          <div
+            class="googlesitekit-publisher-win__title-image-wrapper"
+          >
+            <h3
+              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+            >
+              Hey there!
+            </h3>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__desc"
+          >
+            <p
+              class="sk-react-element"
+            >
+              I am React element
+            </p>
+            <p />
+          </div>
+          <div
+            class="googlesitekit-publisher-win__actions"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;
+
+exports[`BannerNotification should wrap the description in a paragraph when the description is not a React element 1`] = `
+<div>
+  <section
+    class="googlesitekit-publisher-win googlesitekit-publisher-win--is-open"
+    id="fake"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-12-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--order-1-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--order-2-phone"
+        >
+          <div
+            class="googlesitekit-publisher-win__title-image-wrapper"
+          >
+            <h3
+              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+            >
+              Hey there!
+            </h3>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__desc"
+          >
+            <p>
+              <span>
+                I am string, not React element
+              </span>
+               
+            </p>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__actions"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

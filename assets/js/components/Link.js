@@ -49,7 +49,6 @@ const Link = forwardRef(
 			external,
 			hideExternalIndicator,
 			href,
-			inherit,
 			inverse,
 			onClick,
 			small,
@@ -152,14 +151,15 @@ const Link = forwardRef(
 					'googlesitekit-cta-link--inverse': inverse,
 					'googlesitekit-cta-link--back': back,
 					'googlesitekit-cta-link--small': small,
-					'googlesitekit-cta-link--inherit': inherit,
 					'googlesitekit-cta-link--caps': caps,
 					'googlesitekit-cta-link--danger': danger,
 					'googlesitekit-cta-link--disabled': disabled,
 				} ) }
 				disabled={ disabled }
 				href={
-					type === LINK || type === EXTERNAL_LINK ? href : undefined
+					( type === LINK || type === EXTERNAL_LINK ) && ! disabled
+						? href
+						: undefined
 				}
 				onClick={ onClick }
 				rel={
@@ -187,7 +187,6 @@ Link.propTypes = {
 	external: PropTypes.bool,
 	hideExternalIndicator: PropTypes.bool,
 	href: PropTypes.string,
-	inherit: PropTypes.bool,
 	inverse: PropTypes.bool,
 	onClick: PropTypes.func,
 	small: PropTypes.bool,
@@ -204,7 +203,6 @@ Link.defaultProps = {
 	external: false,
 	hideExternalIndicator: false,
 	href: '',
-	inherit: false,
 	inverse: false,
 	small: false,
 };

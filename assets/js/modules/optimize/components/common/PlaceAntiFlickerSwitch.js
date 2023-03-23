@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Switch from '../../../../components/Switch';
+import { Switch } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
@@ -79,13 +79,12 @@ export default function PlaceAntiFlickerSwitch() {
 					/>
 				</div>
 			</div>
-			<p className="googlesitekit-margin-top-0">
+			<p>
 				{ createInterpolateElement( message, {
 					a: (
 						<Link
 							href={ supportURL }
 							external
-							inherit
 							aria-label={ __(
 								'Learn more about the anti-flicker snippet.',
 								'google-site-kit'

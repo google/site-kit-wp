@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
@@ -24,7 +29,23 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Checkbox from '../assets/js/components/Checkbox';
+import { Checkbox } from 'googlesitekit-components';
+
+const InteractiveCheckbox = ( props ) => {
+	const [ checked, setChecked ] = useState( false );
+	return (
+		<Checkbox
+			{ ...props }
+			onChange={ ( event ) => {
+				global.console.log( event.target.value );
+				setChecked( event.target.checked );
+			} }
+			checked={ checked }
+		>
+			Interactive Checkbox
+		</Checkbox>
+	);
+};
 
 storiesOf( 'Global', module ).add(
 	'Checkboxes',
@@ -34,8 +55,8 @@ storiesOf( 'Global', module ).add(
 				<Checkbox
 					id="googlesitekit-checkbox-1"
 					name="googlesitekit__checkbox"
-					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
 					} }
 					value="value-1"
 				>
@@ -48,8 +69,8 @@ storiesOf( 'Global', module ).add(
 					checked
 					name="googlesitekit__checkbox"
 					id="googlesitekit-checkbox-2"
-					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
 					} }
 					value="value-2"
 				>
@@ -62,13 +83,53 @@ storiesOf( 'Global', module ).add(
 					disabled
 					id="googlesitekit-checkbox-3"
 					name="googlesitekit__checkbox"
-					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
 					} }
 					value="value-3"
 				>
 					Disabled Checkbox
 				</Checkbox>
+			</div>
+
+			<div>
+				<Checkbox
+					id="googlesitekit-checkbox-4"
+					name="googlesitekit__checkbox"
+					loading={ true }
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
+					} }
+					value="value-4"
+				>
+					Loading Checkbox
+				</Checkbox>
+			</div>
+
+			<div>
+				<Checkbox
+					id="googlesitekit-checkbox-5"
+					name="googlesitekit__checkbox"
+					value="value-5"
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
+					} }
+				>
+					<div>
+						<span>
+							Complex <span> Label</span>
+						</span>
+						<span>&nbsp;Checkbox</span>
+					</div>
+				</Checkbox>
+			</div>
+
+			<div>
+				<InteractiveCheckbox
+					id="googlesitekit-checkbox-6"
+					name="googlesitekit__checkbox"
+					value="value-6"
+				/>
 			</div>
 		</div>
 	),

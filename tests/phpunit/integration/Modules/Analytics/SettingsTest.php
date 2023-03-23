@@ -108,6 +108,7 @@ class SettingsTest extends SettingsTestCase {
 				'trackingDisabled'      => array( 'loggedinUsers' ),
 				'adsenseLinked'         => false,
 				'adsConversionID'       => '',
+				'dashboardView'         => 'universal-analytics',
 			),
 			get_option( Settings::OPTION )
 		);
@@ -298,6 +299,56 @@ class SettingsTest extends SettingsTestCase {
 		// No filters restores the default of `true`.
 		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
 		$this->assertTrue( $settings->get()['canUseSnippet'] );
+	}
+
+	public function test_tracking_disabled() {
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$settings = new Settings( new Options( $context ) );
+		$settings->register();
+
+		// Defaults to `[ 'loggedinUsers' ]`
+		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
+
+		// Save with defaults.
+		$settings->merge( array() );
+		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
+
+		// Save with loggedinUsers.
+		$settings->merge( array( 'trackingDisabled' => array( 'loggedinUsers' ) ) );
+		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
+
+		// Save with contentCreators.
+		$settings->merge( array( 'trackingDisabled' => array( 'contentCreators' ) ) );
+		$this->assertEqualSets( array( 'contentCreators' ), $settings->get()['trackingDisabled'] );
+
+		// Save with multiple options including loggedinUsers.
+		$settings->merge( array( 'trackingDisabled' => array( 'loggedinUsers', 'contentCreators' ) ) );
+		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
+	}
+
+	public function test_sanitize_callback__dashboard_view() {
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$settings = new Settings( new Options( $context ) );
+		$settings->register();
+
+		// Defaults to `'universal-analytics'`.
+		$this->assertEquals( 'universal-analytics', $settings->get()['dashboardView'] );
+
+		// Save with defaults.
+		$settings->merge( array() );
+		$this->assertEquals( 'universal-analytics', $settings->get()['dashboardView'] );
+
+		// Save with `'universal-analytics'`.
+		$settings->merge( array( 'dashboardView' => 'universal-analytics' ) );
+		$this->assertEquals( 'universal-analytics', $settings->get()['dashboardView'] );
+
+		// Save with `'google-analytics-4'`.
+		$settings->merge( array( 'dashboardView' => 'google-analytics-4' ) );
+		$this->assertEquals( 'google-analytics-4', $settings->get()['dashboardView'] );
+
+		// Saving with invalid random string should preserve current value.
+		$settings->merge( array( 'dashboardView' => 'random-invalid-value' ) );
+		$this->assertEquals( 'google-analytics-4', $settings->get()['dashboardView'] );
 	}
 
 	protected function get_testcase() {

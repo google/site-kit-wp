@@ -50,6 +50,7 @@ describe( 'core/widgets Widget contexts', () => {
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget1', {
 						Component: () => <div>Test Widget 1</div>,
+						modules: [ 'test-module-1', 'test-module-2' ],
 					} );
 
 				registry
@@ -73,6 +74,7 @@ describe( 'core/widgets Widget contexts', () => {
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget2', {
 						Component: () => <div>Test Widget 2</div>,
+						modules: [ 'test-module-3' ],
 					} );
 
 				registry
@@ -129,6 +131,44 @@ describe( 'core/widgets Widget contexts', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetContextActive( 'TestContext' )
+				).toBe( false );
+			} );
+
+			it( 'returns true when passed a list of modules and the context contains active widgets for those modules', () => {
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetContextActive( 'TestContext', {
+							modules: [ 'test-module-1', 'test-module-2' ],
+						} )
+				).toBe( true );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetContextActive( 'TestContext', {
+							modules: [ 'test-module-3' ],
+						} )
+				).toBe( true );
+			} );
+
+			it( 'returns false when passed a list of modules and the context does not contain active widgets for those modules', () => {
+				// A widget is only considered a match when the widget's module list is a subset of the specified modules. Hence, this check will fail.
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetContextActive( 'TestContext', {
+							modules: [ 'test-module-1' ],
+						} )
+				).toBe( false );
+
+				// Test for non-existent module.
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetContextActive( 'TestContext', {
+							modules: [ 'test-module-4' ],
+						} )
 				).toBe( false );
 			} );
 		} );

@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
@@ -45,13 +46,13 @@ import {
 	AccountSelect,
 	AMPContainerSelect,
 	ContainerNames,
+	FormInstructions,
 	WebContainerSelect,
 	TagCheckProgress,
 } from '../common';
-import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
-import FormInstructions from '../common/FormInstructions';
+import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -60,6 +61,9 @@ export default function SetupForm( { finishSetup } ) {
 	);
 	const singleAnalyticsPropertyID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
@@ -75,6 +79,10 @@ export default function SetupForm( { finishSetup } ) {
 	const initialSubmitMode = useSelect(
 		( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ),
 		[]
+	);
+
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -103,7 +111,6 @@ export default function SetupForm( { finishSetup } ) {
 					submitMode === SETUP_MODE_WITH_ANALYTICS &&
 					! analyticsModuleActive
 				) {
-					await throwOnError( () => activateModule( 'analytics' ) );
 					const { response, error } = await activateModule(
 						'analytics'
 					);
@@ -143,7 +150,9 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, initialAutoSubmit, submitForm, initialSubmitMode ] );
 
 	const isSetupWithAnalytics = !! (
-		singleAnalyticsPropertyID && ! analyticsModuleActive
+		singleAnalyticsPropertyID &&
+		analyticsModuleAvailable &&
+		! analyticsModuleActive
 	);
 
 	// Form submit behavior now varies based on which button is clicked.
@@ -159,9 +168,10 @@ export default function SetupForm( { finishSetup } ) {
 		[ submitForm, isSetupWithAnalytics ]
 	);
 	// Click handler for secondary option when setting up with option to include Analytics.
-	const onSetupWithoutAnalytics = useCallback( () => submitForm(), [
-		submitForm,
-	] );
+	const onSetupWithoutAnalytics = useCallback(
+		() => submitForm(),
+		[ submitForm ]
+	);
 
 	return (
 		<form
@@ -169,7 +179,7 @@ export default function SetupForm( { finishSetup } ) {
 			onSubmit={ onSubmit }
 		>
 			<SetupErrorNotice />
-			<FormInstructions />
+			<FormInstructions isSetup />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
@@ -182,6 +192,8 @@ export default function SetupForm( { finishSetup } ) {
 			</div>
 
 			<ContainerNames />
+
+			{ hasExistingTag && <SetupUseSnippetSwitch /> }
 
 			<div className="googlesitekit-setup-module__action">
 				{ isSetupWithAnalytics && (
@@ -201,7 +213,6 @@ export default function SetupForm( { finishSetup } ) {
 							type="button"
 							onClick={ onSetupWithoutAnalytics }
 							disabled={ ! canSubmitChanges }
-							inherit
 						>
 							{ __(
 								'Complete setup without Analytics',

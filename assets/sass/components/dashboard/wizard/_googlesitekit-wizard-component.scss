@@ -3,7 +3,7 @@
 	.googlesitekit-wizard-component__title {
 		display: inline-block;
 		font-family: $f-primary;
-		margin: 0 0 10px 0;
+		margin: 0 0 10px;
 	}
 
 	.googlesitekit-wizard-component__logo {
@@ -30,10 +30,6 @@
 		flex-wrap: wrap;
 		margin: 0;
 
-		&--multiline {
-			display: block;
-		}
-
 		> div {
 			margin: $grid-gap-phone $grid-gap-phone $grid-gap-phone 0;
 
@@ -41,8 +37,12 @@
 				margin: $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop 0;
 			}
 		}
+	}
 
-		&--multiline > div {
+	.googlesitekit-wizard-component__inputs--multiline {
+		display: block;
+
+		> div {
 			margin: 0;
 			width: 100%;
 		}
@@ -79,7 +79,7 @@
 	}
 
 	.googlesitekit-wizard-component__steps {
-		font-size: 12px;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 	}
 }
-

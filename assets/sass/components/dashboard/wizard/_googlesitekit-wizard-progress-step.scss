@@ -11,10 +11,6 @@
 			margin-bottom: 40px;
 		}
 
-		&--current {
-			display: block;
-		}
-
 		.googlesitekit-wizard-progress-step__number-wrapper {
 			position: relative;
 
@@ -36,98 +32,58 @@
 			}
 		}
 
-		// Hide Line on First & Last Step
-		&--1 .googlesitekit-wizard-progress-step__number-wrapper::after,
-		&--completeSetup .googlesitekit-wizard-progress-step__number-wrapper::after {
-
-			@media (min-width: $bp-tablet) {
-
-				@include vertical-align;
-				background-color: $c-base;
-				content: "";
-				display: block;
-				height: 4px;
-			}
-		}
-		// First Step
-		&--1 .googlesitekit-wizard-progress-step__number-wrapper::after {
-
-			@media (min-width: $bp-tablet) {
-				left: -$grid-gap-phone;
-				right: 50%;
-			}
-
-			@media (min-width: $bp-desktop) {
-				left: -$grid-gap-desktop;
-			}
-		}
-		// Last Step
-		&--completeSetup .googlesitekit-wizard-progress-step__number-wrapper::after {
-
-			@media (min-width: $bp-tablet) {
-				left: 50%;
-				right: -$grid-gap-phone;
-			}
-
-			@media (min-width: $bp-desktop) {
-				right: -$grid-gap-desktop;
-			}
-		}
-
 		.googlesitekit-wizard-progress-step__number {
 			background-color: $c-background;
 			border: 15px solid $c-base;
 			border-radius: 50%;
 			color: $c-secondary;
-			font-size: 14px;
+			font-size: $fs-body-md;
 			height: 54px;
-			line-height: 24px;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 			margin: 0 auto;
 			position: relative;
 			width: 54px;
 			z-index: 2;
+		}
 
-			&--inprogress {
-				background-color: $c-background-brand;
-				color: $c-base;
-			}
+		.googlesitekit-wizard-progress-step__number--inprogress {
+			background-color: $c-background-brand;
+			color: $c-base;
+		}
 
-			&--warning {
-				background-color: $c-warning;
-				color: $c-base;
+		.googlesitekit-wizard-progress-step__number--warning {
+			background-color: $c-warning;
+			color: $c-base;
 
-				svg {
-					color: $c-white;
-				}
-			}
-
-			&--error {
-				background-color: $c-error;
-				color: $c-base;
-
-				svg {
-					color: $c-white;
-				}
-			}
-
-			&--completed {
-				background-color: $c-success;
-				color: $c-base;
-
-				svg {
-					color: $c-white;
-				}
+			svg {
+				color: $c-white;
 			}
 		}
 
-		.googlesitekit-wizard-progress-step__number-text {
+		.googlesitekit-wizard-progress-step__number--error {
+			background-color: $c-error;
+			color: $c-base;
 
-			&--warning,
-			&--error,
-			&--completed {
-
-				@include screen-reader-only;
+			svg {
+				color: $c-white;
 			}
+		}
+
+		.googlesitekit-wizard-progress-step__number--completed {
+			background-color: $c-success;
+			color: $c-base;
+
+			svg {
+				color: $c-white;
+			}
+		}
+
+		.googlesitekit-wizard-progress-step__number-text--warning,
+		.googlesitekit-wizard-progress-step__number-text--error,
+		.googlesitekit-wizard-progress-step__number-text--completed {
+
+			@include screen-reader-only;
 		}
 
 		.googlesitekit-wizard-progress-step__number-icon {
@@ -139,8 +95,9 @@
 
 		.googlesitekit-wizard-progress-step__text {
 			color: $c-tertiary;
-			font-size: 15px;
-			font-weight: $fw-primary-medium;
+			font-size: $fs-body-md;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-s;
 			margin: 0;
 
 			span {
@@ -148,6 +105,50 @@
 				display: inline-block;
 				margin-left: 5px;
 			}
+		}
+	}
+
+	.googlesitekit-wizard-progress-step--current {
+		display: block;
+	}
+
+	// Hide Line on First & Last Step
+	.googlesitekit-wizard-progress-step--1 .googlesitekit-wizard-progress-step__number-wrapper::after,
+	.googlesitekit-wizard-progress-step--completeSetup .googlesitekit-wizard-progress-step__number-wrapper::after {
+
+		@media (min-width: $bp-tablet) {
+
+			@include vertical-align;
+			background-color: $c-base;
+			content: "";
+			display: block;
+			height: 4px;
+		}
+	}
+
+	// First Step
+	.googlesitekit-wizard-progress-step--1 .googlesitekit-wizard-progress-step__number-wrapper::after {
+
+		@media (min-width: $bp-tablet) {
+			left: -$grid-gap-phone;
+			right: 50%;
+		}
+
+		@media (min-width: $bp-desktop) {
+			left: -$grid-gap-desktop;
+		}
+	}
+
+	// Last Step
+	.googlesitekit-wizard-progress-step--completeSetup .googlesitekit-wizard-progress-step__number-wrapper::after {
+
+		@media (min-width: $bp-tablet) {
+			left: 50%;
+			right: -$grid-gap-phone;
+		}
+
+		@media (min-width: $bp-desktop) {
+			right: -$grid-gap-desktop;
 		}
 	}
 }

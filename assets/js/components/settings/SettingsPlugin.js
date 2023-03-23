@@ -26,10 +26,10 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Checkbox } from 'googlesitekit-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import Layout from '../layout/Layout';
-import Checkbox from '../Checkbox';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
@@ -60,6 +60,7 @@ export default function SettingsPlugin() {
 			title={ __( 'Plugin Settings', 'google-site-kit' ) }
 			header
 			fill
+			rounded
 		>
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
 				<Grid>

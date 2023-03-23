@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies

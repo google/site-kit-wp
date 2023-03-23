@@ -64,11 +64,6 @@ NotificationCTA.args = {
 			.receiveGetNotifications( [ notification1 ], {} );
 	},
 };
-NotificationCTA.scenario = {
-	label: 'Global/CoreSiteBannerNotifications1',
-	readySelector: '.googlesitekit-publisher-win',
-	delay: 250, // Needed for fonts to render properly.
-};
 
 export const NoNotifications = Template.bind( {} );
 NoNotifications.storyName = 'Has No Notifications - Not Displayed';
@@ -76,10 +71,6 @@ NoNotifications.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [], {} );
 	},
-};
-NoNotifications.scenario = {
-	label: 'Global/CoreSiteBannerNotifications2',
-	delay: 250,
 };
 
 export const NotificationCTAWithSurvey = Template.bind( {} );
@@ -97,10 +88,6 @@ NotificationCTAWithSurvey.args = {
 				{ triggerID: 'storybook' }
 			);
 	},
-};
-NotificationCTAWithSurvey.scenario = {
-	label: 'Global/CoreSiteBannerNotifications3',
-	delay: 250,
 };
 
 export const NotificationCTAWithSurveyShortDelay = Template.bind( {} );
@@ -122,10 +109,6 @@ NotificationCTAWithSurveyShortDelay.args = {
 		}, 3 * 1000 );
 	},
 };
-NotificationCTAWithSurveyShortDelay.scenario = {
-	label: 'Global/CoreSiteBannerNotifications4',
-	delay: 250,
-};
 
 export const NotificationCTAWithSurveyLongerDelay = Template.bind( {} );
 NotificationCTAWithSurveyLongerDelay.storyName =
@@ -145,11 +128,6 @@ NotificationCTAWithSurveyLongerDelay.args = {
 				);
 		}, 6 * 1000 );
 	},
-};
-NotificationCTAWithSurveyLongerDelay.scenario = {
-	label: 'Global/CoreSiteBannerNotifications5',
-	readySelector: '.googlesitekit-publisher-win',
-	delay: 250,
 };
 
 export default {

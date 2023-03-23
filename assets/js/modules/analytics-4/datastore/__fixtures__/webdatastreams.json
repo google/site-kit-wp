@@ -7,7 +7,7 @@
 		"createTime": "2014-10-02T15:01:23Z",
 		"updateTime": "2014-10-02T15:01:23Z",
 		"webStreamData": {
-			"measurementId": "1A2BCD345E",
+			"measurementId": "G-1A2BCD345E",
 			"defaultUri": "http://example.com"
 		},
 		"displayName": "Test GA4 WebDataStream"
@@ -20,7 +20,7 @@
 		"createTime": "2014-10-03T15:01:23Z",
 		"updateTime": "2014-10-03T15:01:23Z",
 		"webStreamData": {
-			"measurementId": "1A2BCD346E",
+			"measurementId": "G-1A2BCD346E",
 			"defaultUri": "http://example.org"
 		},
 		"displayName": "Another datastream"

@@ -32,6 +32,18 @@
     "jsdoc/require-returns": "error",
     "jsdoc/no-undefined-types": "error",
     "jsdoc/valid-types": "error",
+    "lodash/import-scope" : [
+      "error",
+      "member"
+    ],
+    "require-await": "error",
+    "react/jsx-curly-brace-presence": "error",
+    "no-invalid-regexp": "error",
+    "no-useless-escape": "error",
+    "complexity": [
+      "error",
+      20
+    ],
     "no-restricted-globals": [
       "error",
       {
@@ -69,6 +81,10 @@
       {
         "avoidEscape": true
       }
+    ],
+    "curly": [
+      "error",
+      "all"
     ]
   },
   "settings": {
@@ -77,13 +93,17 @@
       "googlesitekit-modules",
       "googlesitekit-api",
       "googlesitekit-widgets",
+      "googlesitekit-components",
       "@wordpress/i18n__non-shim",
       "@wordpress/api-fetch__non-shim"
     ],
     "import/resolver": {
       "alias": {
         "map": [
-          ["@wordpress-core", "@wordpress"]
+          [
+            "@wordpress-core",
+            "@wordpress"
+          ]
         ]
       }
     }
@@ -103,7 +123,8 @@
       "rules": {
         "no-restricted-globals": [
           "off"
-        ]
+        ],
+        "react-hooks/rules-of-hooks": "off"
       }
     },
     {
@@ -135,6 +156,7 @@
     "filenames",
     "sitekit",
     "jsdoc",
-    "react-hooks"
+    "react-hooks",
+    "lodash"
   ]
 }

@@ -28,6 +28,18 @@ import {
 } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
+	ownedSettingsSlugs: [
+		// TODO: These can be uncommented when Analytics and Analytics 4
+		// modules are officially separated.
+		// 'accountID',
+		// 'adsConversionID',
+		'propertyID',
+		'webDataStreamID',
+		'measurementID',
+		'googleTagID',
+		'googleTagAccountID',
+		'googleTagContainerID',
+	],
 	storeName: MODULES_ANALYTICS_4,
 	settingSlugs: [
 		// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
@@ -37,6 +49,11 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'webDataStreamID',
 		'measurementID',
 		'useSnippet',
+		'ownerID',
+		'googleTagID',
+		'googleTagAccountID',
+		'googleTagContainerID',
+		'googleTagLastSyncedAtMs',
 	],
 	submitChanges,
 	rollbackChanges,

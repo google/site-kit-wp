@@ -152,14 +152,12 @@ const baseActions = {
 			);
 		},
 		function* ( accountID, propertyID, { profileName } ) {
-			const {
-				response,
-				error,
-			} = yield fetchCreateProfileStore.actions.fetchCreateProfile(
-				accountID,
-				propertyID,
-				{ profileName }
-			);
+			const { response, error } =
+				yield fetchCreateProfileStore.actions.fetchCreateProfile(
+					accountID,
+					propertyID,
+					{ profileName }
+				);
 			return { response, error };
 		}
 	),
@@ -213,12 +211,11 @@ const baseResolvers = {
 
 		// Only fetch profiles if there are none received for the given account and property.
 		if ( ! profiles ) {
-			( {
-				response: profiles,
-			} = yield fetchGetProfilesStore.actions.fetchGetProfiles(
-				accountID,
-				propertyID
-			) );
+			( { response: profiles } =
+				yield fetchGetProfilesStore.actions.fetchGetProfiles(
+					accountID,
+					propertyID
+				) );
 		}
 
 		const profileID = registry.select( MODULES_ANALYTICS ).getProfileID();

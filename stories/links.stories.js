@@ -46,11 +46,6 @@ storiesOf( 'Global', module ).add(
 					<Link>Default Link Button</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" inherit>
-						Inherited Link
-					</Link>
-				</p>
-				<p>
 					<Link href="http://google.com" small>
 						Small Link
 					</Link>

@@ -27,13 +27,25 @@ import classnames from 'classnames';
  */
 import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
+import { CORE_USER } from '../../datastore/user/constants';
 import { CORE_WIDGETS } from '../datastore/constants';
 import { Grid, Row, Cell } from '../../../material-components';
+import useViewOnly from '../../../hooks/useViewOnly';
 
 const { useSelect } = Data;
 
 const WidgetContextRenderer = ( props ) => {
 	const { id, slug, className, Header, Footer } = props;
+
+	const viewOnlyDashboard = useViewOnly();
+
+	const viewableModules = useSelect( ( select ) => {
+		if ( ! viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getViewableModules();
+	} );
 
 	const widgetAreas = useSelect( ( select ) => {
 		if ( slug ) {
@@ -44,8 +56,15 @@ const WidgetContextRenderer = ( props ) => {
 
 	const isActive = useSelect(
 		( select ) =>
-			!! slug && select( CORE_WIDGETS ).isWidgetContextActive( slug )
+			!! slug &&
+			select( CORE_WIDGETS ).isWidgetContextActive( slug, {
+				modules: viewableModules ? viewableModules : undefined,
+			} )
 	);
+
+	if ( viewableModules === undefined ) {
+		return null;
+	}
 
 	return (
 		<div
@@ -73,7 +92,6 @@ const WidgetContextRenderer = ( props ) => {
 						<WidgetAreaRenderer
 							key={ area.slug }
 							slug={ area.slug }
-							totalAreas={ widgetAreas.length }
 							contextID={ id }
 						/>
 					);

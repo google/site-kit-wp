@@ -1,17 +1,43 @@
 // Overrides for .mdc-select
-.googlesitekit-plugin .mdc-select {
+.googlesitekit-plugin {
+	.mdc-select {
 
-	@include mdc-select-ink-color($c-primary);
-	@include mdc-select-label-color($c-tertiary);
-	@include mdc-select-focused-label-color($c-input);
-	@include mdc-select-outline-color($c-border-medium);
-	@include mdc-select-hover-outline-color($c-border);
-	@include mdc-select-focused-outline-color($c-input);
-	@include mdc-select-focused-bottom-line-color($c-border-brand);
+		@include mdc-select-ink-color($c-surfaces-on-surface);
+		@include mdc-select-label-color($c-surfaces-on-surface);
+		@include mdc-select-focused-label-color($c-surfaces-on-surface);
+		@include mdc-select-outline-color($c-border-medium);
+		@include mdc-select-hover-outline-color($c-border);
+		@include mdc-select-focused-outline-color($c-content-primary);
+		@include mdc-select-focused-bottom-line-color($c-border-brand);
+		@include mdc-select-outline-shape-radius($br-xs);
 
-	max-width: 100%;
+		max-width: 100%;
 
-	&--invalid {
+		.mdc-select__selected-text {
+			display: block;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		// Overriding WordPress load-styles.php
+		.mdc-select__native-control {
+			appearance: none;
+			box-shadow: none;
+			height: 56px !important;
+			line-height: 1.75rem;
+			margin: 0;
+			padding: 20px 26px 4px 16px;
+		}
+
+		&.mdc-select--focused:not(.mdc-select--disabled) {
+
+			.mdc-floating-label--float-above {
+				color: $c-content-primary;
+			}
+		}
+	}
+
+	.mdc-select--invalid {
 
 		@include mdc-select-outline-color($c-error);
 		@include mdc-select-hover-outline-color($c-error);
@@ -19,13 +45,13 @@
 		@include mdc-select-focused-bottom-line-color($c-error);
 	}
 
-	&--minimal {
+	.mdc-select--minimal {
 		background-color: transparent;
 		background-position: right center;
 		display: block;
 		height: 20px;
 		line-height: 1;
-		margin: 0 0 -6px 0;
+		margin: 0 0 -6px;
 		padding-bottom: 6px;
 		width: 90px;
 
@@ -34,23 +60,7 @@
 		}
 	}
 
-	.mdc-select__selected-text {
-		display: block;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	// Overriding WordPress load-styles.php
-	.mdc-select__native-control {
-		-webkit-appearance: none;
-		box-shadow: none;
-		height: 56px !important;
-		line-height: 1.75rem;
-		margin: 0;
-		padding: 20px 26px 4px 16px;
-	}
-
-	&--outlined .mdc-select__native-control {
+	.mdc-select--outlined .mdc-select__native-control {
 		background-color: transparent;
 		border: none;
 		box-shadow: none;
@@ -59,10 +69,11 @@
 		z-index: 1;
 	}
 
-	&--minimal .mdc-select__selected-text {
+	.mdc-select--minimal .mdc-select__selected-text {
 		border: none;
-		font-size: 0.75rem !important;
+		font-size: $fs-body-sm !important;
 		height: 14px !important;
+		letter-spacing: $ls-xs;
 		line-height: 1;
 		min-width: 0;
 		padding: 0 18px 0 0;
@@ -71,12 +82,12 @@
 	}
 
 	// Icon
-	&--minimal .mdc-select__dropdown-icon {
+	.mdc-select--minimal .mdc-select__dropdown-icon {
 		bottom: 2px;
 		right: -5px;
 	}
 
-	&--minimal.mdc-select--focused .mdc-select__dropdown-icon {
+	.mdc-select--minimal.mdc-select--focused .mdc-select__dropdown-icon {
 		transform: rotate(180deg) translateY(0);
 	}
 }

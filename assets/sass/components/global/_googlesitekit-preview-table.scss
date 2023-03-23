@@ -19,23 +19,23 @@
 .googlesitekit-preview-table {
 	width: 100%;
 
-	&--padding {
-		padding: $grid-gap-phone;
-
-		+ .googlesitekit-preview-table--padding {
-			padding-top: 0;
-		}
-
-		@media (min-width: $bp-desktop) {
-			padding: $grid-gap-desktop;
-		}
-	}
-
 	.googlesitekit-preview-table__row {
-		margin: 0 0 9px 0;
+		margin: 0 0 9px;
 
 		&:last-child {
 			margin-bottom: 0;
 		}
+	}
+}
+
+.googlesitekit-preview-table--padding {
+	padding: $grid-gap-phone;
+
+	+ .googlesitekit-preview-table--padding {
+		padding-top: 0;
+	}
+
+	@media (min-width: $bp-desktop) {
+		padding: $grid-gap-desktop;
 	}
 }

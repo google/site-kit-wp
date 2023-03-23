@@ -32,18 +32,14 @@ import {
 	DATE_RANGE_OFFSET,
 } from '../../modules/search-console/datastore/constants';
 import { calculateChange } from '../../util';
-import { isZeroReport } from '../../modules/search-console/util';
 import PreviewBlock from '../PreviewBlock';
 import DataBlock from '../DataBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
-function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-
+function AdminBarClicks( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -90,14 +86,6 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 		);
 	}
 
-	if (
-		! zeroDataStatesEnabled &&
-		isGatheringData &&
-		isZeroReport( searchConsoleData )
-	) {
-		return <WidgetReportZero moduleSlug="search-console" />;
-	}
-
 	const { compareRange, currentRange } = partitionReport( searchConsoleData, {
 		dateRangeLength,
 	} );
@@ -105,12 +93,10 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
+	const gatheringDataProps = {
+		gatheringData: isGatheringData,
+		gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+	};
 
 	return (
 		<DataBlock

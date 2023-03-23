@@ -85,7 +85,7 @@ final class Tracking {
 		$this->consent->register();
 		$this->rest_controller->register();
 
-		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+		add_filter( 'googlesitekit_inline_tracking_data', $this->get_method_proxy( 'inline_js_tracking_data' ) );
 	}
 
 	/**
@@ -100,14 +100,14 @@ final class Tracking {
 	}
 
 	/**
-	 * Modifies the base data to pass to JS.
+	 * Adds / modifies tracking relevant data to pass to JS.
 	 *
-	 * @since 1.49.0
+	 * @since 1.78.0
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
 	 */
-	private function inline_js_base_data( $data ) {
+	private function inline_js_tracking_data( $data ) {
 		global $hook_suffix;
 		$data['isSiteKitScreen'] = $this->screens->get_screen( $hook_suffix ) instanceof Screen;
 		$data['trackingEnabled'] = $this->is_active();

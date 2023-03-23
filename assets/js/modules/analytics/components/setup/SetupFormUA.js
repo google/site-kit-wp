@@ -33,8 +33,6 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
-	ExistingGTMPropertyNotice,
-	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
@@ -49,7 +47,8 @@ import {
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
 import GA4PropertyNotice from '../common/GA4PropertyNotice';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
+import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
 
 const { useSelect, useDispatch } = Data;
 
@@ -58,9 +57,6 @@ export default function SetupFormUA() {
 	const accounts =
 		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
 		[];
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
 
 	// Needed to conditionally show the profile name field and surrounding container.
 	const profileID = useSelect( ( select ) =>
@@ -76,24 +72,20 @@ export default function SetupFormUA() {
 	const shouldShowGA4PropertyNotice =
 		accountID && accountID !== ACCOUNT_CREATE && propertyID;
 
+	const hasExistingGA4Tag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasExistingTag()
+	);
+
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
 	} );
 
 	return (
 		<Fragment>
-			<StoreErrorNotices
-				moduleSlug="analytics"
-				storeName={ MODULES_ANALYTICS }
-			/>
-
-			<ExistingTagNotice />
-			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
-
-			{ !! accounts.length && ! hasExistingTag && (
+			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">
 					{ __(
-						'Please select the account information below. You can change this view later in your settings.',
+						'Please select the account information below. You can change this later in your settings.',
 						'google-site-kit'
 					) }
 				</p>
@@ -113,13 +105,17 @@ export default function SetupFormUA() {
 				</div>
 			) }
 
+			<SetupUseSnippetSwitchUA />
+
 			{ shouldShowGA4PropertyNotice && (
 				<GA4PropertyNotice
 					notice={ __(
 						'A Google Analytics 4 property will also be created.',
 						'google-site-kit'
 					) }
-				/>
+				>
+					{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
+				</GA4PropertyNotice>
 			) }
 		</Fragment>
 	);

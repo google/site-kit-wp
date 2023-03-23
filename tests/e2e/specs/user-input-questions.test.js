@@ -34,58 +34,55 @@ import {
 	pageWait,
 	step,
 	setSearchConsoleProperty,
+	setupAnalytics,
 } from '../utils';
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
-		await step( 'select role', async () => {
-			await page.waitForSelector( '.googlesitekit-user-input__question' );
-			await expect( page ).toClick( '#role-owner_with_team' );
+		await page.waitForSelector(
+			'.googlesitekit-user-input__question--active'
+		);
+
+		await step( 'select purpose', async () => {
+			await expect( page ).toClick( '#purpose-publish_blog' );
 		} );
 
+		await expect( page ).toClick(
+			'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+		);
+
+		await pageWait();
+
 		await step( 'select post frequency', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
 			await expect( page ).toClick( '#postFrequency-monthly' );
 		} );
 
-		await step( 'select goals', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
-			await expect( page ).toClick( '#goals-publish_blog' );
-			await expect( page ).toClick( '#goals-share_portfolio' );
-		} );
-
-		await step( 'select help needed', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
-			await expect( page ).toClick( '#helpNeeded-retaining_visitors' );
-			await expect( page ).toClick( '#helpNeeded-improving_performance' );
-			await expect( page ).toClick( '#helpNeeded-help_better_rank' );
-		} );
-
-		await step( 'enter keywords', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
-			await expect( page ).toFill( '#searchTerms-keyword-0', 'One' );
-			await expect( page ).toFill( '#searchTerms-keyword-1', 'Two' );
-			await expect( page ).toFill( '#searchTerms-keyword-2', 'Three' );
-		} );
-
-		await step(
-			'go to preview page',
-			expect( page ).toClick( '.googlesitekit-user-input__buttons--next' )
+		await expect( page ).toClick(
+			'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
 		);
+
+		await pageWait();
+
+		await step( 'select goals', async () => {
+			await expect( page ).toClick( '#goals-retaining_visitors' );
+			await expect( page ).toClick( '#goals-improving_performance' );
+			await expect( page ).toClick( '#goals-help_better_rank' );
+		} );
+
+		await step( 'go to preview page', async () => {
+			await expect( page ).toClick(
+				'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+			);
+		} );
+
+		await pageWait();
 
 		await step(
 			'wait for settings submission',
 			Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__buttons--next'
+					'.googlesitekit-user-input__preview button',
+					{ text: /save/i }
 				),
 				page.waitForNavigation(),
 			] )
@@ -103,13 +100,7 @@ describe( 'User Input Settings', () => {
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 
-			if (
-				url.match(
-					'/google-site-kit/v1/core/user/data/user-input-settings'
-				)
-			) {
-				request.continue();
-			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
+			if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {
 				request.continue();
@@ -121,10 +112,10 @@ describe( 'User Input Settings', () => {
 		await enableFeature( 'userInput' );
 		await activatePlugins(
 			'e2e-tests-proxy-setup',
-			'e2e-tests-oauth-callback-plugin',
-			'e2e-tests-user-input-settings-api-mock'
+			'e2e-tests-oauth-callback-plugin'
 		);
 		await setSearchConsoleProperty();
+		await page.setRequestInterception( true );
 	} );
 
 	afterEach( async () => {
@@ -132,36 +123,28 @@ describe( 'User Input Settings', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'should require new users to enter input settings after signing in', async () => {
-		await step(
-			'visit splash screen',
-			visitAdminPage( 'admin.php', 'page=googlesitekit-splash' )
-		);
-		await step(
-			'click on start setup button and wait for navigation',
-			Promise.all( [
-				expect( page ).toClick( '.googlesitekit-start-setup' ),
-				page.waitForNavigation(),
-			] )
-		);
-
-		await fillInInputSettings();
-	} );
-
 	it( 'should offer to enter input settings for existing users', async () => {
 		await setupSiteKit();
+		await page.setRequestInterception( false );
+		await setupAnalytics();
+		await page.setRequestInterception( true );
+		await setSearchConsoleProperty();
 
 		await step(
 			'visit admin dashboard',
 			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
 		);
 
+		await page.waitForSelector( '.googlesitekit-user-input__notification' );
+
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
 				'.googlesitekit-user-input__notification'
 			);
 			await Promise.all( [
-				expect( page ).toClick( '.googlesitekit-notification__cta' ),
+				expect( page ).toClick(
+					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+				),
 				page.waitForNavigation(),
 			] );
 		} );
@@ -171,6 +154,10 @@ describe( 'User Input Settings', () => {
 
 	it( 'should let existing users enter input settings from the settings page', async () => {
 		await setupSiteKit();
+		await page.setRequestInterception( false );
+		await setupAnalytics();
+		await page.setRequestInterception( true );
+		await setSearchConsoleProperty();
 
 		await step( 'visit admin settings', async () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
@@ -186,7 +173,9 @@ describe( 'User Input Settings', () => {
 				'.googlesitekit-user-input__notification'
 			);
 			await Promise.all( [
-				expect( page ).toClick( '.googlesitekit-notification__cta' ),
+				expect( page ).toClick(
+					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+				),
 				page.waitForNavigation(),
 			] );
 		} );

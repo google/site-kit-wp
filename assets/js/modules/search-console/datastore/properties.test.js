@@ -49,7 +49,9 @@ describe( 'modules/search-console properties', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getMatchedProperties', () => {
-			const endpoint = /^\/google-site-kit\/v1\/modules\/search-console\/data\/matched-sites/;
+			const endpoint = new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/matched-sites'
+			);
 
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce( endpoint, {

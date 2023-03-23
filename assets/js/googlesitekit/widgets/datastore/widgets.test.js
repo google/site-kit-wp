@@ -407,7 +407,11 @@ describe( 'core/widgets Widgets', () => {
 					},
 					{
 						Component,
-						modules: [ 'analytics' ],
+						modules: [ 'analytics', 'search-console' ],
+					},
+					{
+						Component,
+						modules: [ 'search-console' ],
 					},
 					{
 						Component,
@@ -429,9 +433,10 @@ describe( 'core/widgets Widgets', () => {
 						modules: [ 'analytics', 'tag-manager' ],
 					} );
 
-				expect( widgets ).toHaveLength( 2 );
+				expect( widgets ).toHaveLength( 3 );
 				expect( widgets[ 0 ].slug ).toBe( 'TestWidget0' );
-				expect( widgets[ 1 ].slug ).toBe( 'TestWidget3' );
+				expect( widgets[ 1 ].slug ).toBe( 'TestWidget1' );
+				expect( widgets[ 2 ].slug ).toBe( 'TestWidget4' );
 			} );
 		} );
 

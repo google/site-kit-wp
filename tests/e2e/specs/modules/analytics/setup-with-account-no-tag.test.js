@@ -54,7 +54,7 @@ async function proceedToSetUpAnalytics() {
 	);
 }
 
-const setReferenceURL = async () => {
+const setReferenceURL = () => {
 	return wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/reference-url',
 		method: 'post',
@@ -290,9 +290,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 			await proceedToSetUpAnalytics();
 
-			await expect(
-				page
-			).toMatchElement(
+			await expect( page ).toMatchElement(
 				'.googlesitekit-analytics__select-account .mdc-select__selected-text',
 				{ text: '' }
 			);
@@ -398,34 +396,21 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await expect( page ).toMatchElement( 'button', {
 				text: /re-fetch my account/i,
 			} );
-			await Promise.all( [
-				page.waitForResponse( ( res ) =>
-					res.url().match( 'modules/analytics/data' )
-				),
-				expect( page ).toClick( 'button', {
-					text: /re-fetch my account/i,
-				} ),
-			] );
+
+			await expect( page ).toClick( 'button', {
+				text: /re-fetch my account/i,
+			} );
 
 			// Dropdowns are revealed and reset on refetch.
-			await expect(
-				page
-			).toMatchElement(
-				'.googlesitekit-analytics__select-account .mdc-select__selected-text',
-				{ text: '' }
-			);
-			await expect(
-				page
-			).toMatchElement(
-				'.googlesitekit-analytics__select-property .mdc-select__selected-text',
-				{ text: '' }
-			);
-			await expect(
-				page
-			).toMatchElement(
-				'.googlesitekit-analytics__select-profile .mdc-select__selected-text',
-				{ text: '' }
-			);
+			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
+				text: /test account a/i,
+			} );
+			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
+				text: /test property x/i,
+			} );
+			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
+				text: /test profile x/i,
+			} );
 		} );
 	} );
 } );

@@ -81,82 +81,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'analytics-module-components-module-page-overview-widget--loaded',
-		kind: 'Analytics Module',
-		name: 'Overview Widget',
-		story: 'Loaded',
-		parameters: {
-			fileName: './stories/module-analytics-components.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector:
-					'.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id:
-			'analytics-module-components-module-page-overview-widget--zero-data',
-		kind: 'Analytics Module',
-		name: 'Overview Widget with zero data',
-		story: 'Zero Data',
-		parameters: {
-			fileName: './stories/module-analytics-components.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector:
-					'.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id:
-			'search-console-module-components-module-page-overview-widget--loaded',
-		kind: 'Search Console Module',
-		name: 'Overview Widget',
-		story: 'Loaded',
-		parameters: {
-			fileName: './stories/module-search-console-components.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector:
-					'.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id:
-			'search-console-module-components-module-page-overview-widget--zero-data',
-		kind: 'Search Console Module',
-		name: 'Overview Widget with zero data',
-		story: 'Zero Data',
-		parameters: {
-			fileName: './stories/module-search-console-components.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector:
-					'.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'global-notifications--module-setup-complete',
-		kind: 'Global/Notifications',
-		name: 'Module Setup Complete',
-		story: 'Module Setup Complete',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'global-notifications--small-with-image',
 		kind: 'Global/Notifications',
 		name: 'Small with Image',
@@ -244,7 +168,6 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				misMatchThreshold: 10,
 			},
 		},
 	},

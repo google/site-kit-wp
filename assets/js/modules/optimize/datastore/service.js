@@ -41,23 +41,28 @@ export const selectors = {
 	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
 	getServiceURL: createRegistrySelector(
-		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
+		( select ) =>
+			( state, { path, query } = {} ) => {
+				let serviceURL = 'https://optimize.google.com/optimize/home/';
 
-			if ( userEmail === undefined ) {
-				return undefined;
+				if ( query ) {
+					serviceURL = addQueryArgs( serviceURL, query );
+				}
+
+				if ( path ) {
+					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+					serviceURL = `${ serviceURL }#${ sanitizedPath }`;
+				}
+
+				const accountChooserBaseURI =
+					select( CORE_USER ).getAccountChooserURL( serviceURL );
+
+				if ( accountChooserBaseURI === undefined ) {
+					return undefined;
+				}
+
+				return accountChooserBaseURI;
 			}
-			const baseURI = 'https://optimize.google.com/optimize/home/';
-			const queryParams = query
-				? { ...query, authuser: userEmail }
-				: { authuser: userEmail };
-			const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
-			if ( path ) {
-				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return `${ baseURIWithQuery }#${ sanitizedPath }`;
-			}
-			return baseURIWithQuery;
-		}
 	),
 };
 

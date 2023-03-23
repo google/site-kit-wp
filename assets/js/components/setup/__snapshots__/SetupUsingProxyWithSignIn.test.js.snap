@@ -1,0 +1,673 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics notice when the Analytics module is not available 1`] = `
+<div>
+  <header
+    class="googlesitekit-header"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+        >
+          <a
+            aria-label="Go to dashboard"
+            class="googlesitekit-cta-link googlesitekit-header__logo-link"
+            href=""
+          >
+            <div
+              aria-hidden="true"
+              class="googlesitekit-logo"
+            >
+              <svg />
+              <svg />
+              <span
+                class="screen-reader-text"
+              >
+                Site Kit by Google Logo
+              </span>
+            </div>
+          </a>
+        </div>
+        <div
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+        >
+          <div
+            class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+          >
+            <button
+              aria-controls="googlesitekit-help-menu"
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Help"
+              class="mdc-button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
+              target="_self"
+              title="Help"
+            >
+              <svg />
+            </button>
+            <div
+              class="mdc-menu mdc-menu-surface googlesitekit-width-auto"
+            >
+              <ul
+                aria-hidden="true"
+                aria-orientation="vertical"
+                class="mdc-list"
+                id="googlesitekit-help-menu"
+                role="menu"
+                tabindex="-1"
+              >
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Fix common issues (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="undefined?doc=fix-common-issues"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    Fix common issues
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Read help docs (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/documentation/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    Read help docs
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Get support (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    Get support
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+          >
+            <button
+              aria-controls="user-menu"
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Account"
+              class="mdc-button googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
+              target="_self"
+            >
+              <i
+                aria-hidden="true"
+                class="mdc-button__icon mdc-button__account"
+              >
+                <img
+                  alt="User Avatar"
+                  class="mdc-button__icon--image"
+                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                />
+              </i>
+            </button>
+            <div
+              class="mdc-menu mdc-menu-surface googlesitekit-user-menu"
+            >
+              <ul
+                aria-hidden="true"
+                aria-orientation="vertical"
+                class="mdc-list"
+                id="user-menu"
+                role="menu"
+                tabindex="-1"
+              >
+                <li>
+                  <div
+                    class="googlesitekit-user-menu__details"
+                  >
+                    <img
+                      alt="User Avatar"
+                      class="googlesitekit-user-menu__details-avatar"
+                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                    />
+                    <div
+                      class="googlesitekit-user-menu__details-info"
+                    >
+                      <p
+                        class="googlesitekit-user-menu__details-info__name"
+                      >
+                        Wapuu WordPress PhD
+                      </p>
+                      <p
+                        class="googlesitekit-user-menu__details-info__email"
+                      >
+                        wapuu.wordpress@gmail.com
+                      </p>
+                    </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="disconnect"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Disconnect
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div
+    class="googlesitekit-subheader"
+  />
+  <div
+    class="googlesitekit-setup"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-layout googlesitekit-layout--rounded"
+          >
+            <section
+              class="googlesitekit-setup__splash"
+            >
+              <div
+                class="mdc-layout-grid"
+              >
+                <div
+                  class="mdc-layout-grid__inner googlesitekit-setup__content"
+                >
+                  <div
+                    class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                  >
+                    <h1
+                      class="googlesitekit-setup__title"
+                    >
+                      Set up Site Kit
+                    </h1>
+                    <p
+                      class="googlesitekit-setup__description"
+                    >
+                      Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard.
+                    </p>
+                    <div
+                      class="googlesitekit-opt-in"
+                    >
+                      <div
+                        class="mdc-form-field"
+                      >
+                        <div
+                          class="mdc-checkbox"
+                        >
+                          <span
+                            class="spinner"
+                            style="display: inline-block; float: none; visibility: visible; margin: 0px;"
+                          />
+                        </div>
+                        <label
+                          for="googlesitekit-opt-in"
+                        >
+                          <span>
+                            Help us improve Site Kit by sharing anonymous usage data.
+                             
+                          </span>
+                          <span>
+                            All collected data is treated in accordance with the 
+                            <a
+                              aria-label="Google Privacy Policy. (opens in a new tab)"
+                              class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                              href="https://policies.google.com/privacy"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              Google Privacy Policy.
+                            </a>
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                    <div
+                      class="googlesitekit-start-setup-wrap"
+                    >
+                      <button
+                        class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                        target="_self"
+                      >
+                        <span
+                          class="mdc-button__label"
+                        >
+                          Sign in with Google
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SetupUsingProxyWithSignIn should render the setup page, including the Activate Analytics notice 1`] = `
+<div>
+  <header
+    class="googlesitekit-header"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+        >
+          <a
+            aria-label="Go to dashboard"
+            class="googlesitekit-cta-link googlesitekit-header__logo-link"
+            href=""
+          >
+            <div
+              aria-hidden="true"
+              class="googlesitekit-logo"
+            >
+              <svg />
+              <svg />
+              <span
+                class="screen-reader-text"
+              >
+                Site Kit by Google Logo
+              </span>
+            </div>
+          </a>
+        </div>
+        <div
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+        >
+          <div
+            class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+          >
+            <button
+              aria-controls="googlesitekit-help-menu"
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Help"
+              class="mdc-button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
+              target="_self"
+              title="Help"
+            >
+              <svg />
+            </button>
+            <div
+              class="mdc-menu mdc-menu-surface googlesitekit-width-auto"
+            >
+              <ul
+                aria-hidden="true"
+                aria-orientation="vertical"
+                class="mdc-list"
+                id="googlesitekit-help-menu"
+                role="menu"
+                tabindex="-1"
+              >
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Fix common issues (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="undefined?doc=fix-common-issues"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    Fix common issues
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Read help docs (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/documentation/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    Read help docs
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Get support (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    Get support
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+          >
+            <button
+              aria-controls="user-menu"
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Account"
+              class="mdc-button googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
+              target="_self"
+            >
+              <i
+                aria-hidden="true"
+                class="mdc-button__icon mdc-button__account"
+              >
+                <img
+                  alt="User Avatar"
+                  class="mdc-button__icon--image"
+                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                />
+              </i>
+            </button>
+            <div
+              class="mdc-menu mdc-menu-surface googlesitekit-user-menu"
+            >
+              <ul
+                aria-hidden="true"
+                aria-orientation="vertical"
+                class="mdc-list"
+                id="user-menu"
+                role="menu"
+                tabindex="-1"
+              >
+                <li>
+                  <div
+                    class="googlesitekit-user-menu__details"
+                  >
+                    <img
+                      alt="User Avatar"
+                      class="googlesitekit-user-menu__details-avatar"
+                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                    />
+                    <div
+                      class="googlesitekit-user-menu__details-info"
+                    >
+                      <p
+                        class="googlesitekit-user-menu__details-info__name"
+                      >
+                        Wapuu WordPress PhD
+                      </p>
+                      <p
+                        class="googlesitekit-user-menu__details-info__email"
+                      >
+                        wapuu.wordpress@gmail.com
+                      </p>
+                    </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="disconnect"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Disconnect
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div
+    class="googlesitekit-subheader"
+  />
+  <div
+    class="googlesitekit-setup"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-layout googlesitekit-layout--rounded"
+          >
+            <section
+              class="googlesitekit-setup__splash"
+            >
+              <div
+                class="mdc-layout-grid"
+              >
+                <div
+                  class="mdc-layout-grid__inner googlesitekit-setup__content"
+                >
+                  <div
+                    class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                  >
+                    <h1
+                      class="googlesitekit-setup__title"
+                    >
+                      Set up Site Kit
+                    </h1>
+                    <p
+                      class="googlesitekit-setup__description"
+                    >
+                      Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard.
+                    </p>
+                    <div
+                      class="googlesitekit-setup-analytics-notice"
+                    >
+                      <div
+                        class="googlesitekit-setup-analytics-notice__opt-in"
+                      >
+                        <div
+                          class="mdc-form-field"
+                        >
+                          <div
+                            class="mdc-checkbox"
+                          >
+                            <input
+                              class="mdc-checkbox__native-control"
+                              id="googlesitekit-analytics-setup-opt-in"
+                              name="googlesitekit-analytics-setup-opt-in"
+                              type="checkbox"
+                              value="1"
+                            />
+                            <div
+                              class="mdc-checkbox__background"
+                            >
+                              <svg
+                                class="mdc-checkbox__checkmark"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  class="mdc-checkbox__checkmark-path"
+                                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                                  fill="none"
+                                />
+                              </svg>
+                              <div
+                                class="mdc-checkbox__mixedmark"
+                              />
+                            </div>
+                          </div>
+                          <label
+                            for="googlesitekit-analytics-setup-opt-in"
+                          >
+                            <strong>
+                              Connect Google Analytics as part of your setup.
+                               
+                            </strong>
+                            <span>
+                              Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-setup-analytics-notice__icon"
+                      >
+                        <svg />
+                      </div>
+                    </div>
+                    <div
+                      class="googlesitekit-opt-in"
+                    >
+                      <div
+                        class="mdc-form-field"
+                      >
+                        <div
+                          class="mdc-checkbox"
+                        >
+                          <span
+                            class="spinner"
+                            style="display: inline-block; float: none; visibility: visible; margin: 0px;"
+                          />
+                        </div>
+                        <label
+                          for="googlesitekit-opt-in"
+                        >
+                          <span>
+                            Help us improve Site Kit by sharing anonymous usage data.
+                             
+                          </span>
+                          <span>
+                            All collected data is treated in accordance with the 
+                            <a
+                              aria-label="Google Privacy Policy. (opens in a new tab)"
+                              class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                              href="https://policies.google.com/privacy"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              Google Privacy Policy.
+                            </a>
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                    <div
+                      class="googlesitekit-start-setup-wrap"
+                    >
+                      <button
+                        class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                        target="_self"
+                      >
+                        <span
+                          class="mdc-button__label"
+                        >
+                          Sign in with Google
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

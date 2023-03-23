@@ -52,7 +52,9 @@ describe( 'core/user authentication', () => {
 		},
 	};
 
-	const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
+	const coreUserDataEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/authentication'
+	);
 
 	let registry;
 	let store;
@@ -235,6 +237,7 @@ describe( 'core/user authentication', () => {
 						'https://www.googleapis.com/auth/ungranted.scope'
 					);
 				expect( hasProvisioningScope ).toEqual( undefined );
+				await untilResolved( registry, CORE_USER ).getAuthentication();
 			} );
 		} );
 
@@ -288,7 +291,14 @@ describe( 'core/user authentication', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( value ).toBeUndefined();
-				expect( error ).toEqual( response );
+				expect( error ).toEqual( {
+					...response,
+					selectorData: {
+						args: [],
+						name: 'getAuthentication',
+						storeName: CORE_USER,
+					},
+				} );
 				expect( console ).toHaveErrored();
 			} );
 
@@ -297,6 +307,7 @@ describe( 'core/user authentication', () => {
 				expect(
 					registry.select( CORE_USER )[ selector ]()
 				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getAuthentication();
 			} );
 		} );
 

@@ -40,10 +40,11 @@ import {
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
+import { stringToDate } from '../../../../../util/date-range/string-to-date';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
-const MOBILE_TO_DESKOP_MEDIA_QUERY =
+const MOBILE_TO_DESKTOP_MEDIA_QUERY =
 	'(min-width: 451px) and (max-width: 1280px';
 const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
@@ -60,14 +61,14 @@ export default function UserCountGraph( props ) {
 	);
 	const graphLineColor = useSelect(
 		( select ) =>
-			select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#1a73e8'
+			select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#3c7251'
 	);
 
 	const [ xSmallOnly, setXSmallOnly ] = useState(
 		global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY )
 	);
 	const [ mobileToDesktop, setMobileToDesktop ] = useState(
-		global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY )
+		global.matchMedia( MOBILE_TO_DESKTOP_MEDIA_QUERY )
 	);
 	const [ xLargeAndAbove, setXLargeAndAbove ] = useState(
 		global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY )
@@ -78,7 +79,7 @@ export default function UserCountGraph( props ) {
 		const updateBreakpoints = () => {
 			setXSmallOnly( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
 			setMobileToDesktop(
-				global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY )
+				global.matchMedia( MOBILE_TO_DESKTOP_MEDIA_QUERY )
 			);
 			setXLargeAndAbove(
 				global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY )
@@ -160,19 +161,19 @@ export default function UserCountGraph( props ) {
 	}
 
 	// Create the start and end ticks, applying the outer offset.
-	const startTick = new Date( startDate );
-	startTick.setDate( new Date( startDate ).getDate() + outerTickOffset );
-	const endTick = new Date( endDate );
-	endTick.setDate( new Date( endDate ).getDate() - outerTickOffset );
+	const startTick = stringToDate( startDate );
+	startTick.setDate( stringToDate( startDate ).getDate() + outerTickOffset );
+	const endTick = stringToDate( endDate );
+	endTick.setDate( stringToDate( endDate ).getDate() - outerTickOffset );
 	const midTicks = [];
 
 	// Create the mid ticks.
 	const tickDenominator = totalTicks - 1; // Used to place the midTicks and even intervals across the axis.
 	totalTicks = totalTicks - 2; // The start and end ticks are already set.
 	while ( totalTicks > 0 ) {
-		const midTick = new Date( endDate );
+		const midTick = stringToDate( endDate );
 		midTick.setDate(
-			new Date( endDate ).getDate() -
+			stringToDate( endDate ).getDate() -
 				totalTicks * ( dateRangeNumberOfDays / tickDenominator )
 		);
 		midTicks.push( midTick );
@@ -228,7 +229,7 @@ UserCountGraph.chartOptions = {
 	curveType: 'function',
 	height: 340,
 	width: '100%',
-	colors: [ '#1a73e8' ],
+	colors: [ '#3c7251' ],
 	chartArea: {
 		left: 7,
 		right: 40,
@@ -239,7 +240,8 @@ UserCountGraph.chartOptions = {
 		position: 'none',
 	},
 	hAxis: {
-		backgroundColor: '#eef4fd', // rgba(26, 115, 232, 0.08) over the white background.
+		// This color is the result of placing `rgba(26, 115, 232, 0.08)` over the white (`#ffffff`) background.
+		backgroundColor: '#eef4fd',
 		format: 'MMM d',
 		gridlines: {
 			color: '#ffffff',
@@ -275,7 +277,7 @@ UserCountGraph.chartOptions = {
 		},
 	},
 	crosshair: {
-		color: '#1a73e8',
+		color: '#3c7251',
 		opacity: 0.1,
 		orientation: 'vertical',
 	},

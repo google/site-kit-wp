@@ -78,12 +78,10 @@ const baseActions = {
 			);
 		},
 		function* ( notificationID ) {
-			const {
-				response,
-				error,
-			} = yield fetchMarkNotificationStore.actions.fetchMarkNotification(
-				{ notificationID, notificationState: ACCEPTED }
-			);
+			const { response, error } =
+				yield fetchMarkNotificationStore.actions.fetchMarkNotification(
+					{ notificationID, notificationState: ACCEPTED }
+				);
 			if ( error ) {
 				yield errorStoreActions.receiveError(
 					error,
@@ -111,12 +109,10 @@ const baseActions = {
 			);
 		},
 		function* ( notificationID ) {
-			const {
-				response,
-				error,
-			} = yield fetchMarkNotificationStore.actions.fetchMarkNotification(
-				{ notificationID, notificationState: DISMISSED }
-			);
+			const { response, error } =
+				yield fetchMarkNotificationStore.actions.fetchMarkNotification(
+					{ notificationID, notificationState: DISMISSED }
+				);
 			if ( error ) {
 				yield errorStoreActions.receiveError(
 					error,

@@ -16,6 +16,5 @@
  * limitations under the License.
  */
 
-export { default as ModuleOverviewWidget } from './ModuleOverviewWidget';
 export { default as ModulePopularPagesWidget } from './ModulePopularPagesWidget';
-export { default as ModuleAcquisitionChannelsWidget } from './ModuleAcquisitionChannelsWidget';
+export { default as ModulePopularPagesWidgetGA4 } from './ModulePopularPagesWidgetGA4';

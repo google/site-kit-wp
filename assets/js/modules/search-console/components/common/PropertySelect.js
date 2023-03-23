@@ -26,14 +26,14 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
-import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect() {
+export default function PropertySelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
 	const propertyID = useSelect( ( select ) =>
@@ -66,6 +66,21 @@ export default function PropertySelect() {
 
 	if ( ! hasResolvedProperties ) {
 		return <ProgressBar small />;
+	}
+
+	if ( hasModuleAccess === false ) {
+		return (
+			<Select
+				className="googlesitekit-search-console__select-property"
+				label={ __( 'Property', 'google-site-kit' ) }
+				value={ propertyID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ propertyID }>{ propertyID }</Option>
+			</Select>
+		);
 	}
 
 	return (

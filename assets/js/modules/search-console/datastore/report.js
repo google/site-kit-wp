@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -37,6 +37,7 @@ import {
 	isValidStringularItems,
 } from '../../../util/report-validation';
 import { isZeroReport } from '../util';
+import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
@@ -80,6 +81,49 @@ const fetchGetReportStore = createFetchStore( {
 			);
 		}
 	},
+} );
+
+const gatheringDataStore = createGatheringDataStore( 'search-console', {
+	storeName: MODULES_SEARCH_CONSOLE,
+	dataAvailable:
+		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
+	selectDataAvailability: createRegistrySelector( ( select ) => () => {
+		const rangeArgs = {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const { compareStartDate: startDate, endDate } =
+			select( CORE_USER ).getDateRangeDates( rangeArgs );
+
+		const args = {
+			dimensions: 'date',
+			startDate,
+			endDate,
+		};
+
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) || report.length ) {
+			return true;
+		}
+
+		return false;
+	} ),
 } );
 
 const baseInitialState = {
@@ -127,57 +171,6 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Determines whether the Search Console is still gathering data or not.
-	 *
-	 * @todo Review the name of this selector to a less confusing one.
-	 * @since 1.44.0
-	 *
-	 * @return {boolean|undefined} Returns TRUE if gathering data, otherwise FALSE. If the request is still being resolved, returns undefined.
-	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
-		const rangeArgs = {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } = select(
-			CORE_USER
-		).getDateRangeDates( rangeArgs );
-
-		const args = {
-			dimensions: 'date',
-			startDate,
-			endDate,
-		};
-
-		if ( url ) {
-			args.url = url;
-		}
-
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_SEARCH_CONSOLE
-		).hasFinishedResolution( 'getReport', [ args ] );
-
-		if ( ! hasResolvedReport ) {
-			return undefined;
-		}
-
-		if ( ! Array.isArray( report ) ) {
-			return false;
-		}
-
-		if ( ! report.length ) {
-			return true;
-		}
-
-		return false;
-	} ),
-
-	/**
 	 * Determines whether the Search Console has zero data or not.
 	 *
 	 * @since 1.68.0
@@ -191,9 +184,8 @@ const baseSelectors = {
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } = select(
-			CORE_USER
-		).getDateRangeDates( rangeArgs );
+		const { compareStartDate: startDate, endDate } =
+			select( CORE_USER ).getDateRangeDates( rangeArgs );
 
 		const args = {
 			dimensions: 'date',
@@ -237,7 +229,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetReportStore, {
+const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

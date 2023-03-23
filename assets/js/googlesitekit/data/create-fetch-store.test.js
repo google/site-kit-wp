@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -31,8 +31,10 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import { subscribeUntil, unsubscribeFromAll } from '../../../../tests/js/utils';
 import { createFetchStore } from './create-fetch-store';
+import { createErrorStore } from './create-error-store';
 
 const TEST_STORE = 'test/some-data';
 const STORE_PARAMS = {
@@ -99,7 +101,7 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected actions', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
-				controlCallback: async () => true,
+				controlCallback: () => true,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.actions ) ).toEqual( [
@@ -126,7 +128,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for an arguments error', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 					argsToParams: ( requiredParam ) => {
 						return {
 							requiredParam,
@@ -148,7 +150,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for a success request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -175,7 +177,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for an error request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -208,7 +210,9 @@ describe( 'createFetchStore store', () => {
 			it( 'makes a network request based on controlCallback', async () => {
 				const expectedResponse = 'response-value';
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+					new RegExp(
+						'^/google-site-kit/v1/core/test/data/some-data'
+					),
 					{ body: JSON.stringify( expectedResponse ), status: 200 }
 				);
 
@@ -224,31 +228,104 @@ describe( 'createFetchStore store', () => {
 				} );
 			} );
 
-			it( 'dispatches an error if the request fails', async () => {
-				const errorResponse = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
-					{ body: errorResponse, status: 500 }
-				);
+			describe( 'error handling', () => {
+				beforeEach( () => {
+					registry = createRegistry();
 
-				const { response, error } = await dispatch.fetchGetSomeData(
-					{},
-					'value-to-key-response-by'
-				);
+					storeDefinition = Data.combineStores(
+						createFetchStore( STORE_PARAMS ),
+						createErrorStore( TEST_STORE )
+					);
+					registry.registerStore( TEST_STORE, storeDefinition );
+					dispatch = registry.dispatch( TEST_STORE );
+					store = registry.stores[ TEST_STORE ].store;
+					select = registry.select( TEST_STORE );
+				} );
 
-				expect( console ).toHaveErrored();
-				expect( error ).toEqual( errorResponse );
-				expect( response ).toEqual( undefined );
-				expect( store.getState().data ).toEqual( undefined );
+				it( 'dispatches an error if the request fails', async () => {
+					const errorResponse = {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					};
+					fetchMock.getOnce(
+						new RegExp(
+							'^/google-site-kit/v1/core/test/data/some-data'
+						),
+						{ body: errorResponse, status: 500 }
+					);
+
+					const errorArgs = [ {}, 'value-to-key-response-by' ];
+
+					const { response, error } = await dispatch.fetchGetSomeData(
+						...errorArgs
+					);
+
+					expect( console ).toHaveErrored();
+					expect( error ).toEqual( errorResponse );
+					expect( response ).toEqual( undefined );
+					expect( store.getState().data ).toEqual( undefined );
+
+					// Verify that the error is stored in the store.
+					expect(
+						select.getError( STORE_PARAMS.baseName, errorArgs )
+					).toEqual( errorResponse );
+					// @TODO: remove assertion once all instances of the legacy usage have been removed.
+					expect( select.getError() ).toEqual( errorResponse );
+				} );
+
+				it( 'clears previously set errors when re-fetching', async () => {
+					const errorResponse = {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					};
+					fetchMock.getOnce(
+						new RegExp(
+							'^/google-site-kit/v1/core/test/data/some-data'
+						),
+						{ body: errorResponse, status: 500 }
+					);
+
+					const errorArgs = [ {}, 'value-to-key-response-by' ];
+
+					await dispatch.fetchGetSomeData( ...errorArgs );
+
+					expect( console ).toHaveErrored();
+
+					// Verify that the error is stored in the store.
+					expect(
+						select.getError( STORE_PARAMS.baseName, errorArgs )
+					).toEqual( errorResponse );
+					// @TODO: remove assertion once all instances of the legacy usage have been removed.
+					expect( select.getError() ).toEqual( errorResponse );
+
+					fetchMock.getOnce(
+						new RegExp(
+							'^/google-site-kit/v1/core/test/data/some-data'
+						),
+						{
+							body: {},
+							status: 200,
+						}
+					);
+
+					await dispatch.fetchGetSomeData( ...errorArgs );
+
+					// Verify that the error has been removed from the store.
+					expect(
+						select.getError( STORE_PARAMS.baseName, errorArgs )
+					).toBeUndefined();
+					// @TODO: remove assertion once all instances of the legacy usage have been removed.
+					expect( select.getError() ).toBeUndefined();
+				} );
 			} );
 
 			it( 'sets flag for request being in progress', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+					new RegExp(
+						'^/google-site-kit/v1/core/test/data/some-data'
+					),
 					{ body: { someValue: 42 }, status: 200 }
 				);
 
@@ -291,7 +368,7 @@ describe( 'createFetchStore store', () => {
 				} );
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 					argsToParams: ( requiredParam ) => {
 						return {
 							requiredParam,
@@ -336,7 +413,7 @@ describe( 'createFetchStore store', () => {
 				const validateParams = jest.fn();
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 					reducerCallback: ( state ) => state,
 					argsToParams: () => ( {} ),
 					validateParams,
@@ -358,7 +435,7 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected selectors', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
-				controlCallback: async () => true,
+				controlCallback: () => true,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.selectors ) ).toEqual( [

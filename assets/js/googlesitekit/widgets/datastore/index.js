@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import areas from './areas';
 import widgets from './widgets';
 import contexts from './contexts';
+import keyMetrics from './key-metrics';
 import { createErrorStore } from '../../data/create-error-store';
 import { CORE_WIDGETS } from './constants';
 
@@ -31,7 +32,8 @@ const store = Data.combineStores(
 	areas,
 	widgets,
 	contexts,
-	createErrorStore()
+	keyMetrics,
+	createErrorStore( CORE_WIDGETS )
 );
 
 export const registerStore = ( registry ) => {

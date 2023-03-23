@@ -183,9 +183,23 @@ class Debug_Data {
 			'verification_status'  => $this->get_verification_status_field(),
 			'connected_user_count' => $this->get_connected_user_count_field(),
 			'active_modules'       => $this->get_active_modules_field(),
+			'recoverable_modules'  => null,
 			'required_scopes'      => $this->get_required_scopes_field(),
 			'capabilities'         => $this->get_capabilities_field(),
 			'enabled_features'     => $this->get_feature_fields(),
+		);
+
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			$fields['recoverable_modules'] = $this->get_recoverable_modules_field();
+
+			$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
+		}
+
+		$fields = array_filter(
+			array_merge(
+				$fields,
+				$this->get_module_fields()
+			)
 		);
 		$none   = __( 'None', 'google-site-kit' );
 
@@ -198,7 +212,7 @@ class Debug_Data {
 
 				return $field;
 			},
-			array_merge( $fields, $this->get_module_fields() )
+			$fields
 		);
 	}
 
@@ -361,6 +375,121 @@ class Debug_Data {
 			),
 			'debug' => join( ', ', wp_list_pluck( $active_modules, 'slug' ) ),
 		);
+	}
+
+	/**
+	 * Gets the field definition for the recoverable_modules field.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @return array
+	 */
+	private function get_recoverable_modules_field() {
+		$recoverable_modules = $this->modules->get_recoverable_modules();
+
+		return array(
+			'label' => __( 'Recoverable Modules', 'google-site-kit' ),
+			'value' => join(
+				/* translators: used between list items, there is a space after the comma. */
+				__( ', ', 'google-site-kit' ),
+				wp_list_pluck( $recoverable_modules, 'name' )
+			),
+			'debug' => join( ', ', wp_list_pluck( $recoverable_modules, 'slug' ) ),
+		);
+	}
+
+	/**
+	 * Gets the field definition for the module_sharing_settings field.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @return array
+	 */
+	private function get_module_sharing_settings_fields() {
+		$sharing_settings = $this->modules->get_module_sharing_settings();
+		$fields           = array();
+
+		foreach ( $this->modules->get_shareable_modules() as $module_slug => $module ) {
+			$module_settings = $sharing_settings->get_module( $module_slug );
+
+			$fields[ "{$module_slug}_shared_roles" ] = array_merge(
+				array(
+					/* translators: %s: module name */
+					'label' => sprintf( __( '%s Shared Roles', 'google-site-kit' ), $module->name ),
+				),
+				$this->get_module_shared_role_names( $module_settings['sharedRoles'] )
+			);
+
+			$fields[ "{$module_slug}_management" ] = array_merge(
+				array(
+					/* translators: %s: module name */
+					'label' => sprintf( __( '%s Management', 'google-site-kit' ), $module->name ),
+				),
+				$this->get_module_management( $module_settings['management'] )
+			);
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Gets the comma separated list of shared role names for module_sharing_settings.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @param array $role_slugs List of role slugs.
+	 *
+	 * @return array $role_names Comma separated list of role names for module_sharing_settings within value and debug keys.
+	 */
+	private function get_module_shared_role_names( $role_slugs ) {
+		if ( ! $role_slugs ) {
+			return array(
+				'value' => __( 'None', 'google-site-kit' ),
+				'debug' => 'none',
+			);
+		}
+
+		$wp_role_names     = wp_roles()->get_names();
+		$shared_role_names = array_filter(
+			$wp_role_names,
+			function( $key ) use ( $role_slugs ) {
+				return in_array( $key, $role_slugs, true );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		return array(
+			'value' => join(
+				/* translators: used between list items, there is a space after the comma. */
+				__( ', ', 'google-site-kit' ),
+				$shared_role_names
+			),
+			'debug' => join( ', ', $role_slugs ),
+		);
+	}
+
+	/**
+	 * Gets the user friendly and debug values for module management used in module_sharing_settings.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @param string $management The module sharing settings management value. Can be either `owner` or `all_admins`.
+	 *
+	 * @return array User friendly and debug values for module management used in module_sharing_settings within value and debug keys.
+	 */
+	private function get_module_management( $management ) {
+		switch ( $management ) {
+			case 'all_admins':
+				return array(
+					'value' => __( 'Any admin signed in with Google', 'google-site-kit' ),
+					'debug' => 'all_admins',
+				);
+			default:
+				return array(
+					'value' => __( 'Owner', 'google-site-kit' ),
+					'debug' => 'owner',
+				);
+		}
 	}
 
 	/**

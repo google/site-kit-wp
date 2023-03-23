@@ -19,15 +19,13 @@
 /**
  * External dependencies
  */
-import copyToClipboard from 'clipboard-copy';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Icon, check, stack } from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -35,8 +33,8 @@ import { Icon, check, stack } from '@wordpress/icons';
 import ViewContextContext from '../Root/ViewContextContext';
 import Notification from '../notifications/BannerNotification';
 import Link from '../Link';
-import Button from '../Button';
 import { trackEvent } from '../../util';
+import ReportErrorButton from '../ReportErrorButton';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
@@ -47,8 +45,6 @@ class ErrorHandler extends Component {
 			info: null,
 			copied: false,
 		};
-
-		this.onErrorClick = this.onErrorClick.bind( this );
 	}
 
 	componentDidCatch( error, info ) {
@@ -64,56 +60,36 @@ class ErrorHandler extends Component {
 		);
 	}
 
-	onErrorClick() {
-		const { error, info } = this.state;
-
-		// Copy message with wrapping backticks for code block formatting on wp.org.
-		copyToClipboard( `\`${ error?.message }\n${ info?.componentStack }\`` );
-
-		this.setState( { copied: true } );
-	}
-
 	render() {
 		const { children } = this.props;
-		const { error, info, copied } = this.state;
+		const { error, info } = this.state;
 
 		// If there is no caught error, render the children components normally.
 		if ( ! error ) {
 			return children;
 		}
 
-		const icon = (
-			<Icon
-				className="mdc-button__icon"
-				icon={ copied ? check : stack }
-			/>
-		);
-
 		return (
 			<Notification
 				id="googlesitekit-error"
+				className="googlesitekit-error-handler"
 				title={ __(
 					'Site Kit encountered an error',
 					'google-site-kit'
 				) }
 				description={
-					<Fragment>
-						<Button
-							trailingIcon={ icon }
-							onClick={ this.onErrorClick }
-						>
-							{ __(
-								'Copy error to clipboard',
-								'google-site-kit'
-							) }
-						</Button>
+					<div className="googlesitekit-error-handler__error-actions">
+						<ReportErrorButton
+							message={ error.message }
+							componentStack={ info.componentStack }
+						/>
 						<Link
 							href="https://wordpress.org/support/plugin/google-site-kit/"
 							external
 						>
 							{ __( 'Report this problem', 'google-site-kit' ) }
 						</Link>
-					</Fragment>
+					</div>
 				}
 				isDismissible={ false }
 				format="small"

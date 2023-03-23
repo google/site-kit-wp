@@ -17,19 +17,16 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import BannerNotification from '../BannerNotification';
 import ZeroStateIcon from '../../../../svg/graphics/zero-state-blue.svg';
 import { getTimeInSeconds, trackEvent } from '../../../util';
@@ -39,6 +36,10 @@ export default function ZeroDataNotification() {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_zero-data-notification`;
 
+	const handleOnView = useCallback( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	}, [ eventCategory ] );
+
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
@@ -47,8 +48,10 @@ export default function ZeroDataNotification() {
 		trackEvent( eventCategory, 'click_learn_more_link' );
 	}, [ eventCategory ] );
 
-	useMount( () => {
-		trackEvent( eventCategory, 'view_notification' );
+	const notEnoughTrafficURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'not-enough-traffic'
+		);
 	} );
 
 	return (
@@ -64,10 +67,11 @@ export default function ZeroDataNotification() {
 			) }
 			format="small"
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/using-the-site-kit-dashboard/#not-enough-traffic"
+			learnMoreURL={ notEnoughTrafficURL }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) }
 			SmallImageSVG={ ZeroStateIcon }
+			onView={ handleOnView }
 			onDismiss={ handleOnDismiss }
 			onLearnMoreClick={ handleOnLearnMoreClick }
 			isDismissible

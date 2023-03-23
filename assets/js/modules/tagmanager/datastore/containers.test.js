@@ -29,6 +29,7 @@ import {
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 describe( 'modules/tagmanager containers', () => {
 	let registry;
@@ -73,7 +74,9 @@ describe( 'modules/tagmanager containers', () => {
 				const containerName = 'sitekit';
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+					),
 					{ body: fixtures.createContainer, status: 200 }
 				);
 
@@ -84,7 +87,9 @@ describe( 'modules/tagmanager containers', () => {
 					} );
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+					),
 					{
 						method: 'POST',
 						body: {
@@ -111,7 +116,9 @@ describe( 'modules/tagmanager containers', () => {
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+					)
 				);
 				const promise = registry
 					.dispatch( MODULES_TAGMANAGER )
@@ -145,7 +152,9 @@ describe( 'modules/tagmanager containers', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+					),
 					{ body: errorResponse, status: 500 }
 				);
 
@@ -168,7 +177,9 @@ describe( 'modules/tagmanager containers', () => {
 
 				// Ignore the request fired by the `getContainers` selector.
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					[]
 				);
 				const containers = registry
@@ -176,18 +187,21 @@ describe( 'modules/tagmanager containers', () => {
 					.getContainers( accountID );
 				// No properties should have been added yet, as the container creation failed.
 				expect( containers ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'selectContainerByID', () => {
 			it( 'sets the containerID and internalContainerID for a web container', async () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers( {
-					container: { usageContext: [ CONTEXT_WEB ] },
-				} );
+				const { account, containers } =
+					factories.buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_WEB ] },
+					} );
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 
@@ -226,12 +240,10 @@ describe( 'modules/tagmanager containers', () => {
 			} );
 
 			it( 'sets the ampContainerID and internalAMPContainerID for an AMP container', async () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers( {
-					container: { usageContext: [ CONTEXT_AMP ] },
-				} );
+				const { account, containers } =
+					factories.buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_AMP ] },
+					} );
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 
@@ -318,7 +330,7 @@ describe( 'modules/tagmanager containers', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getContainerByID', () => {
-			it( 'returns undefined for a container ID that does not belong to a container in state', () => {
+			it( 'returns undefined for a container ID that does not belong to a container in state', async () => {
 				muteFetch(
 					'path:/google-site-kit/v1/modules/tagmanager/data/containers',
 					[]
@@ -328,13 +340,16 @@ describe( 'modules/tagmanager containers', () => {
 						.select( MODULES_TAGMANAGER )
 						.getContainerByID( '12345', 'GTM-GXXXXGL3' )
 				).toBe( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( '12345' );
 			} );
 
 			it( 'returns the full container object for a container in state with a matching publicId', () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers( { count: 5 } );
+				const { account, containers } =
+					factories.buildAccountWithContainers( { count: 5 } );
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 				registry
@@ -353,15 +368,15 @@ describe( 'modules/tagmanager containers', () => {
 
 		describe( 'getContainers', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers();
+				const { account, containers } =
+					factories.buildAccountWithContainers();
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{ body: containers, status: 200 }
 				);
 
@@ -369,20 +384,22 @@ describe( 'modules/tagmanager containers', () => {
 					.select( MODULES_TAGMANAGER )
 					.getContainers( accountID );
 
-				// Ensure the proper parameters were sent.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					{
-						query: { accountID },
-					}
-				);
-
 				expect( initialContainers ).toEqual( undefined );
 
 				await untilResolved(
 					registry,
 					MODULES_TAGMANAGER
 				).getContainers( accountID );
+
+				// Ensure the proper parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
+					{
+						query: { accountID },
+					}
+				);
 
 				const resolvedContainers = registry
 					.select( MODULES_TAGMANAGER )
@@ -393,10 +410,8 @@ describe( 'modules/tagmanager containers', () => {
 			} );
 
 			it( 'does not make a network request if containers for this account are already present', async () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers();
+				const { account, containers } =
+					factories.buildAccountWithContainers();
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 
@@ -426,7 +441,9 @@ describe( 'modules/tagmanager containers', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{ body: errorResponse, status: 500 }
 				);
 
@@ -447,7 +464,14 @@ describe( 'modules/tagmanager containers', () => {
 				const error = registry
 					.select( MODULES_TAGMANAGER )
 					.getErrorForSelector( 'getContainers', [ accountID ] );
-				expect( error ).toEqual( errorResponse );
+				expect( error ).toEqual( {
+					...errorResponse,
+					selectorData: {
+						args: [ accountID ],
+						name: 'getContainers',
+						storeName: MODULES_TAGMANAGER,
+					},
+				} );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -464,7 +488,9 @@ describe( 'modules/tagmanager containers', () => {
 				const accountID = account.accountId;
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{ body: containers, status: 200 }
 				);
 
@@ -472,20 +498,22 @@ describe( 'modules/tagmanager containers', () => {
 					.select( MODULES_TAGMANAGER )
 					.getWebContainers( accountID );
 
-				// Ensure the proper parameters were sent.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					{
-						query: { accountID },
-					}
-				);
-
 				expect( initialContainers ).toEqual( undefined );
 
 				await untilResolved(
 					registry,
 					MODULES_TAGMANAGER
 				).getContainers( accountID );
+
+				// Ensure the proper parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
+					{
+						query: { accountID },
+					}
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(
@@ -535,7 +563,9 @@ describe( 'modules/tagmanager containers', () => {
 				const accountID = account.accountId;
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{ body: containers, status: 200 }
 				);
 
@@ -543,20 +573,22 @@ describe( 'modules/tagmanager containers', () => {
 					.select( MODULES_TAGMANAGER )
 					.getAMPContainers( accountID );
 
-				// Ensure the proper parameters were sent.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					{
-						query: { accountID },
-					}
-				);
-
 				expect( initialContainers ).toEqual( undefined );
 
 				await untilResolved(
 					registry,
 					MODULES_TAGMANAGER
 				).getContainers( accountID );
+
+				// Ensure the proper parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
+					{
+						query: { accountID },
+					}
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(
@@ -591,6 +623,95 @@ describe( 'modules/tagmanager containers', () => {
 						.select( MODULES_TAGMANAGER )
 						.getAMPContainers( accountID )
 				).toEqual( ampContainers );
+			} );
+		} );
+
+		describe( 'getPrimaryContainerID', () => {
+			it( 'returns undefined when isPrimaryAMP is not loaded', () => {
+				const account = factories.accountBuilder();
+				const [ webContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_WEB ],
+				} );
+				const [ ampContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_AMP ],
+				} );
+
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setContainerID( webContainer );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAMPContainerID( ampContainer );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getPrimaryContainerID()
+				).toBeUndefined();
+			} );
+			it( 'returns webContainer when isPrimaryAMP is false', () => {
+				const account = factories.accountBuilder();
+				const [ webContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_WEB ],
+				} );
+				const [ ampContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_AMP ],
+				} );
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					ampMode: 'reader',
+				} );
+
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setContainerID( webContainer );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAMPContainerID( ampContainer );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getPrimaryContainerID()
+				).toEqual( webContainer );
+			} );
+			it( 'returns ampContainer when isPrimaryAMP is true', () => {
+				const account = factories.accountBuilder();
+				const [ webContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_WEB ],
+				} );
+				const [ ampContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_AMP ],
+				} );
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					ampMode: 'primary',
+				} );
+
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setContainerID( webContainer );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAMPContainerID( ampContainer );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getPrimaryContainerID()
+				).toEqual( ampContainer );
 			} );
 		} );
 	} );

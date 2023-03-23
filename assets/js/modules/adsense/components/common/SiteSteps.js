@@ -59,7 +59,7 @@ export default function SiteSteps() {
 						className="googlesitekit-setup-module__list-item"
 						key={ index }
 					>
-						<Link href={ item.linkURL } external inherit>
+						<Link href={ item.linkURL } external>
 							{ item.linkText }
 						</Link>
 					</li>

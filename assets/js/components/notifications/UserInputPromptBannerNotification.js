@@ -19,48 +19,27 @@
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { trackEvent } from '../../util';
 import UserInputSettings from './UserInputSettings';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useSelect } = Data;
 
 const UserInputPromptBannerNotification = () => {
 	const viewContext = useViewContext();
 
-	const userInputState = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputState()
-	);
-
 	const category = `${ viewContext }_user-input-prompt-notification`;
-
-	const [
-		viewNotificationEventFired,
-		setViewNotificationEventFired,
-	] = useState( false );
-
-	useEffect( () => {
-		if (
-			! viewNotificationEventFired &&
-			userInputState !== undefined &&
-			userInputState !== 'completed'
-		) {
-			trackEvent( category, 'view_notification' ).finally( () =>
-				setViewNotificationEventFired( true )
-			);
-		}
-	}, [ category, userInputState, viewNotificationEventFired ] );
 
 	const handleOnCTAClick = () => {
 		trackEvent( category, 'confirm_notification' );
 	};
+
+	const handleOnView = useCallback( () => {
+		trackEvent( category, 'view_notification' );
+	}, [ category ] );
 
 	const handleOnDismiss = () => {
 		trackEvent( category, 'dismiss_notification' );
@@ -71,6 +50,7 @@ const UserInputPromptBannerNotification = () => {
 			isDismissible={ true }
 			onCTAClick={ handleOnCTAClick }
 			onDismiss={ handleOnDismiss }
+			onView={ handleOnView }
 		/>
 	);
 };

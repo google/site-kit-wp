@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import isFinite from 'lodash/isFinite';
-import unescape from 'lodash/unescape';
+import { isFinite, unescape } from 'lodash';
 
 /**
  * Internal dependencies
@@ -32,12 +31,13 @@ export * from './stringify';
 export * from './standalone';
 export * from './storage';
 export * from './i18n';
-export * from './helpers';
 export * from './markdown';
 export * from './convert-time';
 export * from './date-range';
 export * from './chart';
 export * from './urls';
+export * from './is-valid-numeric-id';
+export * from './isnumeric';
 
 /**
  * Transforms a period string into a number of seconds.

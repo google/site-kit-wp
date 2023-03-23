@@ -32,14 +32,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Checkbox } from 'googlesitekit-components';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { toggleTracking, trackEvent } from '../util/tracking';
-import Checkbox from './Checkbox';
 import Link from './Link';
 import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function OptIn( { id, name, className } ) {
+export default function OptIn( {
+	id = 'googlesitekit-opt-in',
+	name = 'optIn',
+	className,
+	trackEventCategory,
+} ) {
 	const enabled = useSelect( ( select ) =>
 		select( CORE_USER ).isTrackingEnabled()
 	);
@@ -64,11 +69,14 @@ export default function OptIn( { id, name, className } ) {
 			if ( ! responseError ) {
 				toggleTracking( response.enabled );
 				if ( response.enabled ) {
-					trackEvent( viewContext, 'tracking_optin' );
+					trackEvent(
+						trackEventCategory || viewContext,
+						'tracking_optin'
+					);
 				}
 			}
 		},
-		[ setTrackingEnabled, viewContext ]
+		[ setTrackingEnabled, trackEventCategory, viewContext ]
 	);
 
 	return (
@@ -98,11 +106,8 @@ export default function OptIn( { id, name, className } ) {
 							a: (
 								<Link
 									key="link"
-									href={
-										'https://policies.google.com/privacy'
-									}
+									href="https://policies.google.com/privacy"
 									external
-									inherit
 								/>
 							),
 						}
@@ -123,9 +128,5 @@ OptIn.propTypes = {
 	id: PropTypes.string,
 	name: PropTypes.string,
 	className: PropTypes.string,
-};
-
-OptIn.defaultProps = {
-	id: 'googlesitekit-opt-in',
-	name: 'optIn',
+	trackEventCategory: PropTypes.string,
 };

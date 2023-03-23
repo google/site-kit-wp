@@ -439,13 +439,6 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( fixtures.clients[ 0 ]._id );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetTagPermission(
-				{
-					accountID: fixtures.accounts[ 0 ]._id,
-					permission: true,
-				},
-				{ clientID: fixtures.clients[ 0 ]._id }
-			);
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetAccounts( fixtures.accounts );
@@ -486,13 +479,6 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( 'ca-pub-123456789' );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetTagPermission(
-				{
-					accountID: 'pub-123456789',
-					permission: false,
-				},
-				{ clientID: 'ca-pub-123456789' }
-			);
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetAccounts( fixtures.accounts );
@@ -565,13 +551,6 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( fixtures.clients[ 0 ]._id );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetTagPermission(
-				{
-					accountID: fixtures.accounts[ 0 ]._id,
-					permission: true,
-				},
-				{ clientID: fixtures.clients[ 0 ]._id }
-			);
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetAccounts( fixtures.accounts );
@@ -609,13 +588,6 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( 'ca-pub-123456789' );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetTagPermission(
-				{
-					accountID: 'pub-123456789',
-					permission: false,
-				},
-				{ clientID: 'ca-pub-123456789' }
-			);
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetAccounts( fixtures.accounts );

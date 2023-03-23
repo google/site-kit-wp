@@ -37,7 +37,9 @@ function directories( relativePath ) {
 function getComponentNames( componentPath ) {
 	return fs
 		.readdirSync( componentPath )
-		.filter( ( name ) => ! /^index|\.(stories|test)\.js$/.test( name ) )
+		.filter(
+			( name ) => ! /^index|utils|\.(stories|test)\.js$/.test( name )
+		)
 		.map( ( name ) => name.replace( /\..*/, '' ) );
 }
 
@@ -63,9 +65,8 @@ describe( 'all modules', () => {
 					...indexExports
 				} = require( `${ componentDirPath }/index.js` );
 				const indexExportNames = Object.keys( indexExports ).sort();
-				const componentNames = getComponentNames(
-					componentDirPath
-				).sort();
+				const componentNames =
+					getComponentNames( componentDirPath ).sort();
 
 				expect( indexExportNames ).toEqual( componentNames );
 			}

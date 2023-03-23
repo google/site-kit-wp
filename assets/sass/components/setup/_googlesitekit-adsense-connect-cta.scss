@@ -1,0 +1,335 @@
+/**
+ * AdSense Connect CTA styles.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-setup__wrapper--adsense-connect {
+
+		.googlesitekit-setup-module--adsense__stage-caption-container {
+			display: grid;
+			grid-template-columns: 1fr;
+			margin: 0;
+
+			@media (min-width: $bp-nonMobile) {
+				// Revert from grid layout to prevent the captions from being overlaid
+				// upon each other.
+				display: block;
+				padding: 32px 0 0;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-caption {
+			color: $c-subtle;
+			display: flex;
+
+			// Set each caption to the same grid cell to overlay them
+			// in order to fade in/out.
+			grid-column-start: 1;
+			grid-row-start: 1;
+			margin: 0;
+			opacity: 0;
+			transition: color 500ms ease-in-out;
+
+			@media (min-width: $bp-nonMobile) {
+				margin-bottom: 24px;
+				opacity: 1;
+			}
+
+			.googlesitekit-setup-module--adsense__stage-caption-indicator {
+				align-self: stretch;
+				background-color: rgba($c-black, 0.1);
+				display: none;
+				margin-right: 20px;
+				width: 1px;
+
+				@media (min-width: $bp-nonMobile) {
+					display: block;
+				}
+			}
+
+			h4 {
+				color: $c-neutral-n-400;
+				font-size: 18px;
+				font-weight: 400;
+				margin: 0 0 4px;
+			}
+
+			p {
+				color: $c-neutral-n-400;
+				font-size: 12px;
+				margin: 0;
+			}
+
+			* {
+				transition: inherit;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-caption--current--static,
+		.googlesitekit-setup-module--adsense__stage-caption--current--enter,
+		.googlesitekit-setup-module--adsense__stage-caption--current--leave {
+
+			h4 {
+				color: $c-brand;
+			}
+
+			p {
+				color: $c-secondary;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-caption--current--static {
+			opacity: 1;
+
+			.googlesitekit-setup-module--adsense__stage-caption-indicator {
+				background-color: $c-brand;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-caption--current--enter,
+		.googlesitekit-setup-module--adsense__stage-caption--current--leave {
+
+			.googlesitekit-setup-module--adsense__stage-caption-indicator {
+				// Provide a solid background colour for the animated "progress
+				// bar" aspect of the stage indicator.
+				background-image: linear-gradient(0deg, $c-brand 0%, $c-brand 100%);
+				background-repeat: no-repeat;
+			}
+		}
+
+		--adsense-connect-cta-fade-in-duration: 7.5s;
+		--adsense-connect-cta-fade-out-duration: 500ms;
+
+		@keyframes googlesitekit-fade-in {
+
+			0% {
+				opacity: 0;
+			}
+
+			6.67% {
+				opacity: 1;
+			}
+
+			100% {
+				opacity: 1;
+			}
+		}
+
+		@keyframes googlesitekit-fade-out {
+
+			0% {
+				opacity: 1;
+			}
+
+			50% {
+				opacity: 0;
+			}
+
+			100% {
+				opacity: 0;
+			}
+		}
+
+		@keyframes googlesitekit-caption-indicator-enter {
+
+			from {
+				background-size: 100% 0%;
+			}
+
+			to {
+				background-size: 100% 100%;
+			}
+		}
+
+		@keyframes googlesitekit-caption-indicator-leave {
+
+			from {
+				background-size: 100% 100%;
+			}
+
+			to {
+				background-size: 100% 0%;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-caption--current--enter {
+			animation: googlesitekit-fade-in var(--adsense-connect-cta-fade-in-duration) linear forwards;
+
+			@media (min-width: $bp-nonMobile) {
+				animation: none;
+			}
+
+			.googlesitekit-setup-module--adsense__stage-caption-indicator {
+				animation: googlesitekit-caption-indicator-enter 500ms linear forwards;
+				background-position: 0% 0%;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-caption--current--leave {
+			animation: googlesitekit-fade-out var(--adsense-connect-cta-fade-out-duration) linear forwards;
+
+			@media (min-width: $bp-nonMobile) {
+				animation: none;
+			}
+
+			.googlesitekit-setup-module--adsense__stage-caption-indicator {
+				animation: googlesitekit-caption-indicator-leave 500ms linear forwards;
+				background-position: 0% 100%;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-image-container {
+			display: grid;
+			grid-template-columns: 1fr;
+			height: 100%;
+			padding: 16px 0;
+			width: 100%;
+
+			@media (min-width: $bp-nonMobile) {
+				height: calc(100% + 70px);
+				margin-bottom: 12px;
+				margin-top: -70px;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-image {
+			align-items: center;
+			display: flex;
+
+			// Set each image container to the same grid cell to overlay them
+			// in order to fade in/out.
+			grid-column-start: 1;
+			grid-row-start: 1;
+			height: 100%;
+			justify-content: center;
+			opacity: 0;
+			width: 100%;
+
+			svg {
+				flex: 1;
+				max-height: 312px;
+				max-width: 100%;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-image--current--static {
+			opacity: 1;
+		}
+
+		.googlesitekit-setup-module--adsense__stage-image--current--enter {
+			animation: googlesitekit-fade-in var(--adsense-connect-cta-fade-in-duration) linear forwards;
+		}
+
+		.googlesitekit-setup-module--adsense__stage-image--current--leave {
+			animation: googlesitekit-fade-out var(--adsense-connect-cta-fade-out-duration) linear forwards;
+		}
+
+		.googlesitekit-setup-module--adsense__stage-indicator {
+			display: grid;
+			grid-auto-flow: column;
+			grid-gap: 6px;
+			justify-content: flex-start;
+			margin: 12px 0 20px;
+
+			@media (min-width: $bp-nonMobile) {
+				display: none;
+			}
+
+			li {
+				background-color: rgba($c-black, 0.1);
+				border-radius: 1px;
+				height: 2px;
+				width: 26px;
+
+				&.googlesitekit-setup-module--adsense__stage-indicator--current--static {
+					background-color: $c-brand;
+				}
+
+				&.googlesitekit-setup-module--adsense__stage-indicator--current--enter,
+				&.googlesitekit-setup-module--adsense__stage-indicator--current--leave {
+					// Provide a solid background colour for the animated "progress
+					// bar" aspect of the stage indicator.
+					background-image: linear-gradient(0deg, $c-brand 0%, $c-brand 100%);
+					background-repeat: no-repeat;
+				}
+
+				--adsense-connect-cta-indicator-duration: 500ms;
+
+				@keyframes googlesitekit-indicator-enter {
+
+					from {
+						background-size: 0% 100%;
+					}
+
+					to {
+						background-size: 100% 100%;
+					}
+				}
+
+				@keyframes googlesitekit-indicator-leave {
+
+					from {
+						background-size: 100% 100%;
+					}
+
+					to {
+						background-size: 0% 100%;
+					}
+				}
+
+				&.googlesitekit-setup-module--adsense__stage-indicator--current--enter {
+					animation: googlesitekit-indicator-enter var(--adsense-connect-cta-indicator-duration) linear forwards;
+					background-position: 0% 0%;
+				}
+
+				&.googlesitekit-setup-module--adsense__stage-indicator--current--leave {
+					animation: googlesitekit-indicator-leave var(--adsense-connect-cta-indicator-duration) linear forwards;
+					background-position: 100% 0%;
+				}
+			}
+		}
+
+		.googlesitekit-setup-module__action {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 24px;
+
+			@media (min-width: $bp-desktop) {
+				column-gap: 48px;
+			}
+		}
+
+		.googlesitekit-setup-module__footer-text {
+
+			@media (min-width: $bp-nonMobile) {
+				align-items: flex-end;
+				display: flex;
+				justify-content: flex-end;
+			}
+
+			a {
+				text-decoration: underline;
+			}
+
+			p {
+				font-size: 12px;
+				margin: 0;
+			}
+		}
+	}
+}

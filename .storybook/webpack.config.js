@@ -1,19 +1,27 @@
 const path = require( 'path' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const mainConfig = require( '../webpack.config' );
-const mapValues = require( 'lodash/mapValues' );
+const { mapValues } = require( 'lodash' );
 const { ProvidePlugin } = require( 'webpack' );
 
+// eslint-disable-next-line require-await
 module.exports = async ( { config } ) => {
 	// Site Kit loads its API packages as externals,
 	// so we need to convert those to aliases for Storybook to be able to resolve them.
 	const siteKitPackageAliases = mapValues(
 		mainConfig.siteKitExternals,
 		( [ global, api ] ) => {
-			// Revert "@wordpress/i18n: [ googlesitekit, i18n ]" external back to the original @wordpress/i18n.
 			if ( global === 'googlesitekit' ) {
+				// Revert "@wordpress/i18n: [ googlesitekit, i18n ]" external back to the original @wordpress/i18n.
 				if ( api === 'i18n' ) {
 					return require.resolve( '@wordpress/i18n' );
+				}
+
+				// Set "googlesitekit-components" to the entry point which can load GM2 or GM3 components.
+				if ( api === 'components' ) {
+					return path.resolve(
+						'.storybook/assets/js/googlesitekit-components.js'
+					);
 				}
 			}
 
@@ -38,34 +46,54 @@ module.exports = async ( { config } ) => {
 		} ),
 	];
 
-	config.module.rules.push( {
-		test: /\.scss$/,
-		use: [
-			MiniCssExtractPlugin.loader,
-			'css-loader',
-			{
-				loader: 'postcss-loader',
-				options: {
-					config: {
-						path: './',
+	config.module.rules.push(
+		{
+			test: /\.scss$/,
+			use: [
+				MiniCssExtractPlugin.loader,
+				'css-loader',
+				{
+					loader: 'postcss-loader',
+					options: {
+						config: {
+							path: './',
+						},
 					},
 				},
-			},
-			{
-				loader: 'sass-loader',
-				options: {
-					implementation: require( 'sass' ),
-					additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
-					sassOptions: {
-						includePaths: [
-							path.resolve( __dirname, '../node_modules/' ),
+				{
+					loader: 'sass-loader',
+					options: {
+						implementation: require( 'sass' ),
+						additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
+						sassOptions: {
+							includePaths: [
+								path.resolve( __dirname, '../node_modules/' ),
+							],
+						},
+					},
+				},
+			],
+			include: path.resolve( __dirname, '../' ),
+		},
+		{
+			test: RegExp( 'node_modules/@material/web/.*.js' ),
+			use: [
+				{
+					loader: 'babel-loader',
+					options: {
+						sourceMap: true,
+						babelrc: false,
+						configFile: false,
+						cacheDirectory: true,
+						presets: [
+							'@wordpress/default',
+							'@babel/preset-react',
 						],
 					},
 				},
-			},
-		],
-		include: path.resolve( __dirname, '../' ),
-	} );
+			],
+		}
+	);
 
 	// exclude existing svg rule created by storybook before pushing custom rule
 	const fileLoaderRule = config.module.rules.find(

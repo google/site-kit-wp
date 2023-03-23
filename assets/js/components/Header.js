@@ -26,6 +26,7 @@ import { useMutationObserver } from 'react-use-observer';
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
@@ -42,13 +43,19 @@ import EntityHeader from './EntityHeader';
 import ViewOnlyMenu from './ViewOnlyMenu';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
+import useDashboardType from '../hooks/useDashboardType';
+import Link from './Link';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const viewOnlyDashboard = useViewOnly();
+	const isDashboard = !! useDashboardType();
+	const isViewOnly = useViewOnly();
 
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -62,7 +69,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 			<header
 				className={ classnames( 'googlesitekit-header', {
 					'googlesitekit-header--has-subheader': hasSubheader,
-					'googlesitekit-header--has-unified-dashboard': unifiedDashboardEnabled,
+					'googlesitekit-header--has-navigation': showNavigation,
 				} ) }
 			>
 				<Grid>
@@ -74,7 +81,16 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 							className="googlesitekit-header__logo"
 							alignMiddle
 						>
-							<Logo />
+							<Link
+								aria-label={ __(
+									'Go to dashboard',
+									'google-site-kit'
+								) }
+								className="googlesitekit-header__logo-link"
+								href={ dashboardURL }
+							>
+								<Logo />
+							</Link>
 						</Cell>
 						<Cell
 							smSize={ 3 }
@@ -85,12 +101,13 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 						>
 							{ children }
 
-							{ isAuthenticated &&
+							{ ! isAuthenticated &&
 								dashboardSharingEnabled &&
-								viewOnlyDashboard && <ViewOnlyMenu /> }
+								isDashboard &&
+								isViewOnly && <ViewOnlyMenu /> }
 							{ isAuthenticated &&
 								( ! dashboardSharingEnabled ||
-									! viewOnlyDashboard ) && <UserMenu /> }
+									! isViewOnly ) && <UserMenu /> }
 						</Cell>
 					</Row>
 				</Grid>
@@ -102,7 +119,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 
 			{ showNavigation && <DashboardNavigation /> }
 
-			{ unifiedDashboardEnabled && <EntityHeader /> }
+			<EntityHeader />
 
 			<ErrorNotifications />
 		</Fragment>

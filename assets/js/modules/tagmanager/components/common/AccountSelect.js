@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -26,28 +31,24 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
-import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function AccountSelect() {
+export default function AccountSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( MODULES_TAGMANAGER ).getAccounts(),
-		hasResolvedAccounts: select( MODULES_TAGMANAGER ).hasFinishedResolution(
-			'getAccounts'
-		),
-	} ) );
-
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAccounts()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
+	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
-	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
 
 	const { selectAccount } = useDispatch( MODULES_TAGMANAGER );
@@ -71,13 +72,27 @@ export default function AccountSelect() {
 		return <ProgressBar small />;
 	}
 
+	if ( hasModuleAccess === false ) {
+		return (
+			<Select
+				className="googlesitekit-tagmanager__select-account"
+				label={ __( 'Account', 'google-site-kit' ) }
+				value={ accountID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ accountID }>{ accountID }</Option>
+			</Select>
+		);
+	}
+
 	return (
 		<Select
 			className="googlesitekit-tagmanager__select-account"
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag }
 			enhanced
 			outlined
 		>
@@ -86,16 +101,22 @@ export default function AccountSelect() {
 					accountId: ACCOUNT_CREATE, // eslint-disable-line sitekit/acronym-case
 					name: __( 'Set up a new account', 'google-site-kit' ),
 				} )
-				.map( (
-					{ accountId, name } // eslint-disable-line sitekit/acronym-case
-				) => (
-					<Option
-						key={ accountId } // eslint-disable-line sitekit/acronym-case
-						value={ accountId } // eslint-disable-line sitekit/acronym-case
-					>
-						{ name }
-					</Option>
-				) ) }
+				.map(
+					(
+						{ accountId, name } // eslint-disable-line sitekit/acronym-case
+					) => (
+						<Option
+							key={ accountId } // eslint-disable-line sitekit/acronym-case
+							value={ accountId } // eslint-disable-line sitekit/acronym-case
+						>
+							{ name }
+						</Option>
+					)
+				) }
 		</Select>
 	);
 }
+
+AccountSelect.propTypes = {
+	hasModuleAccess: PropTypes.bool,
+};

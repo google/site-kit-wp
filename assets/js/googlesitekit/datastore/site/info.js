@@ -46,6 +46,7 @@ function getSiteInfoProperty( propName ) {
 // Actions
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
+const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -83,6 +84,28 @@ export const actions = {
 			type: RECEIVE_PERMALINK_PARAM,
 		};
 	},
+
+	/**
+	 * Sets `siteKitAutoUpdatesEnabled` value; if set to `true` this will
+	 * enable auto-updates for Site Kit. Set to `false` to disable this
+	 * behaviour.
+	 *
+	 * @since 1.93.0
+	 *
+	 * @param {boolean} siteKitAutoUpdatesEnabled Whether Site Kit auto-updates are enabled.
+	 * @return {Object} Redux-style action.
+	 */
+	setSiteKitAutoUpdatesEnabled( siteKitAutoUpdatesEnabled ) {
+		invariant(
+			typeof siteKitAutoUpdatesEnabled === 'boolean',
+			'siteKitAutoUpdatesEnabled must be a boolean.'
+		);
+
+		return {
+			payload: { siteKitAutoUpdatesEnabled },
+			type: SET_SITE_KIT_AUTO_UPDATES_ENABLED,
+		};
+	},
 };
 
 export const controls = {};
@@ -101,10 +124,21 @@ export const reducer = ( state, { payload, type } ) => {
 				proxyPermissionsURL,
 				proxySetupURL,
 				referenceSiteURL,
+				setupErrorCode,
+				setupErrorMessage,
+				setupErrorRedoURL,
 				siteName,
 				timezone,
 				usingProxy,
 				webStoriesActive,
+				proxySupportLinkURL,
+				widgetsAdminURL,
+				postTypes,
+				wpVersion,
+				updateCoreURL,
+				changePluginAutoUpdatesCapacity,
+				siteKitAutoUpdatesEnabled,
+				pluginBasename,
 			} = payload.siteInfo;
 
 			return {
@@ -120,10 +154,21 @@ export const reducer = ( state, { payload, type } ) => {
 					proxyPermissionsURL,
 					proxySetupURL,
 					referenceSiteURL,
+					setupErrorCode,
+					setupErrorMessage,
+					setupErrorRedoURL,
 					siteName,
 					timezone,
 					usingProxy,
 					webStoriesActive,
+					proxySupportLinkURL,
+					widgetsAdminURL,
+					postTypes,
+					wpVersion,
+					updateCoreURL,
+					changePluginAutoUpdatesCapacity,
+					siteKitAutoUpdatesEnabled,
+					pluginBasename,
 				},
 			};
 		}
@@ -133,6 +178,16 @@ export const reducer = ( state, { payload, type } ) => {
 			return {
 				...state,
 				permaLink,
+			};
+
+		case SET_SITE_KIT_AUTO_UPDATES_ENABLED:
+			const { siteKitAutoUpdatesEnabled } = payload;
+			return {
+				...state,
+				siteInfo: {
+					...state.siteInfo,
+					siteKitAutoUpdatesEnabled,
+				},
 			};
 
 		default: {
@@ -164,11 +219,23 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorCode,
+			setupErrorMessage,
+			setupErrorRedoURL,
 			siteName,
 			timezone,
 			usingProxy,
 			webStoriesActive,
+			proxySupportLinkURL,
+			widgetsAdminURL,
+			postTypes,
+			wpVersion,
+			updateCoreURL,
+			changePluginAutoUpdatesCapacity,
+			siteKitAutoUpdatesEnabled,
+			pluginBasename,
 		} = global._googlesitekitBaseData;
+
 		const {
 			currentEntityID,
 			currentEntityTitle,
@@ -187,10 +254,21 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorCode,
+			setupErrorMessage,
+			setupErrorRedoURL,
 			siteName,
 			timezone,
+			postTypes,
 			usingProxy: !! usingProxy,
 			webStoriesActive,
+			proxySupportLinkURL,
+			widgetsAdminURL,
+			wpVersion,
+			updateCoreURL,
+			changePluginAutoUpdatesCapacity,
+			siteKitAutoUpdatesEnabled,
+			pluginBasename,
 		} );
 	},
 };
@@ -223,41 +301,42 @@ export const selectors = {
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
 	getAdminURL: createRegistrySelector(
-		( select ) => ( state, page, args = {} ) => {
-			const { adminURL } = select( CORE_SITE ).getSiteInfo() || {};
+		( select ) =>
+			( state, page, args = {} ) => {
+				const { adminURL } = select( CORE_SITE ).getSiteInfo() || {};
 
-			// Return adminURL if undefined, or if no page supplied.
-			if ( adminURL === undefined || page === undefined ) {
-				return adminURL;
-			}
-
-			const baseURL =
-				adminURL[ adminURL.length - 1 ] === '/'
-					? adminURL
-					: `${ adminURL }/`;
-			let pageArg = page;
-			let phpFile = 'admin.php';
-
-			// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
-			if ( page.indexOf( '.php?' ) !== -1 ) {
-				const splitPage = page.split( '?' );
-				pageArg = queryString.parse( splitPage.pop() ).page;
-
-				if ( ! pageArg ) {
+				// Return adminURL if undefined, or if no page supplied.
+				if ( adminURL === undefined || page === undefined ) {
 					return adminURL;
 				}
 
-				phpFile = splitPage.shift();
+				const baseURL =
+					adminURL[ adminURL.length - 1 ] === '/'
+						? adminURL
+						: `${ adminURL }/`;
+				let pageArg = page;
+				let phpFile = 'admin.php';
+
+				// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
+				if ( page.indexOf( '.php?' ) !== -1 ) {
+					const splitPage = page.split( '?' );
+					pageArg = queryString.parse( splitPage.pop() ).page;
+
+					if ( ! pageArg ) {
+						return adminURL;
+					}
+
+					phpFile = splitPage.shift();
+				}
+
+				// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
+				const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
+
+				return addQueryArgs( `${ baseURL }${ phpFile }`, {
+					page: pageArg,
+					...queryArgs,
+				} );
 			}
-
-			// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
-			const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
-
-			return addQueryArgs( `${ baseURL }${ phpFile }`, {
-				page: pageArg,
-				...queryArgs,
-			} );
-		}
 	),
 
 	/**
@@ -463,6 +542,69 @@ export const selectors = {
 	getSiteName: getSiteInfoProperty( 'siteName' ),
 
 	/**
+	 * Gets a setup error code, if one exists.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} An error code from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
+	 */
+	getSetupErrorCode: getSiteInfoProperty( 'setupErrorCode' ),
+
+	/**
+	 * Gets a setup error message, if one exists.
+	 *
+	 * @since 1.77.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null|undefined)} An error message from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
+	 */
+	getSetupErrorMessage: getSiteInfoProperty( 'setupErrorMessage' ),
+
+	/**
+	 * Gets a setup redo URL, if one exists after encountering a setup error.
+	 *
+	 * This URL will be used to redo the setup process if a user encountered
+	 * an error.
+	 *
+	 * @since 1.77.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null|undefined)} The setup URL, if one exists. Will be `null` if no error exists and thus the setup redo URL doesn't exist; `undefined` when loading.
+	 */
+	getSetupErrorRedoURL: getSiteInfoProperty( 'setupErrorRedoURL' ),
+
+	/**
+	 * Gets the proxy support URL.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null)} The proxy support URL.
+	 */
+	getProxySupportLinkURL: getSiteInfoProperty( 'proxySupportLinkURL' ),
+
+	/**
+	 * Gets the admin widgets editor URL.
+	 *
+	 * @since 1.81.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null)} The proxy support URL.
+	 */
+	getWidgetsAdminURL: getSiteInfoProperty( 'widgetsAdminURL' ),
+
+	/**
+	 * Gets the public post types.
+	 *
+	 * @since 1.81.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array.<Object>} The public post types.
+	 */
+	getPostTypes: getSiteInfoProperty( 'postTypes' ),
+
+	/**
 	 * Gets the 'permaLink' query parameter.
 	 *
 	 * @since 1.18.0
@@ -530,6 +672,92 @@ export const selectors = {
 
 		return permutations;
 	} ),
+
+	/**
+	 * Gets the WordPress version object.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} WordPress version object.
+	 */
+	getWPVersion: getSiteInfoProperty( 'wpVersion' ),
+
+	/**
+	 * Gets the WordPress update core URL.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} WordPress update core URL.
+	 */
+	getUpdateCoreURL: getSiteInfoProperty( 'updateCoreURL' ),
+
+	/**
+	 * Determines if Site Kit auto update settings can be changed.
+	 *
+	 * Auto update settings can not be changed if plugin updates are disabled site-wide
+	 * or if Site Kit auto updates are enforced by a PHP filter.
+	 *
+	 * @since 1.93.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if plugin auto updates are enabled, otherwise `false`.
+	 */
+	hasChangePluginAutoUpdatesCapacity: getSiteInfoProperty(
+		'changePluginAutoUpdatesCapacity'
+	),
+
+	/**
+	 * Determines if the auto updates are enabled for the Site Kit plugin.
+	 *
+	 * @since 1.93.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if Site Kit auto updates are enabled, otherwise `false`.
+	 */
+	getSiteKitAutoUpdatesEnabled: getSiteInfoProperty(
+		'siteKitAutoUpdatesEnabled'
+	),
+
+	/**
+	 * Get the plugin basename.
+	 *
+	 * @since 1.93.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} The basename of plugin, e.g. `'google-site-kit/google-site-kit.php'`.
+	 */
+	getPluginBasename: getSiteInfoProperty( 'pluginBasename' ),
+
+	/**
+	 * Determines whether the current WordPress site has the minimum required version.
+	 * Currently, the minimum required version is 5.2.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {string} minimumWPVersion The minimum required WordPress version.
+	 * @return {(boolean|undefined)} `true` if the WordPress site's version is greater than or equal to the minimum required version, `false` if not. Returns `undefined` if not loaded.
+	 */
+	hasMinimumWordPressVersion: createRegistrySelector(
+		( select ) => ( state, minimumWPVersion ) => {
+			invariant( minimumWPVersion, 'minimumWPVersion is required.' );
+
+			const { major, minor } = select( CORE_SITE ).getWPVersion() || {};
+			if ( major === undefined || minor === undefined ) {
+				return undefined;
+			}
+
+			const [ minimumMajor, minimumMinor = 0 ] = minimumWPVersion
+				.split( '.' )
+				.map( ( v ) => parseInt( v, 10 ) );
+
+			return (
+				minimumMajor < major ||
+				( minimumMajor === major && minimumMinor <= minor )
+			);
+		}
+	),
 };
 
 export default {

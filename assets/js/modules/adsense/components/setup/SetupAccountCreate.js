@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import { trackEvent } from '../../../../util';
 import { parseAccountID } from '../../util/parsing';
@@ -115,7 +115,6 @@ export default function SetupAccountCreate() {
 					) }{ ' ' }
 				<Link
 					href={ supportURL }
-					inherit
 					external
 					aria-label={ __(
 						'Learn more about adding a user to an existing AdSense account',

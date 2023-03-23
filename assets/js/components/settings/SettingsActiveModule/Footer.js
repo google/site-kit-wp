@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import { useHistory, useParams } from 'react-router-dom';
+import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -31,16 +32,19 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
+import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
-import Button from '../../Button';
-import Spinner from '../../Spinner';
 import Link from '../../Link';
-import { clearWebStorage, trackEvent } from '../../../util';
+import { trackEvent } from '../../../util';
+import { clearCache } from '../../../googlesitekit/api/cache';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
@@ -72,6 +76,27 @@ export default function Footer( props ) {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( isSavingKey )
 	);
+	const enableGA4PropertyTooltip = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4PropertyTooltip' )
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const dismissGA4PropertyTooltip = useCallback( () => {
+		if ( slug !== 'analytics' || ! enableGA4PropertyTooltip ) {
+			return null;
+		}
+		setValues( FORM_SETUP, {
+			enableGA4PropertyTooltip: false,
+		} );
+	}, [ slug, enableGA4PropertyTooltip, setValues ] );
+
+	const moduleHomepage = useSelect( ( select ) => {
+		if ( ! module || isEmpty( module.homepage ) ) {
+			return undefined;
+		}
+		return select( CORE_USER ).getAccountChooserURL( module.homepage );
+	} );
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
 	const { clearErrors } = useDispatch( `modules/${ slug }` );
@@ -87,7 +112,11 @@ export default function Footer( props ) {
 		);
 		await clearErrors();
 		history.push( `/connected-services/${ slug }` );
-	}, [ clearErrors, history, viewContext, slug ] );
+
+		if ( slug === 'analytics' ) {
+			dismissGA4PropertyTooltip();
+		}
+	}, [ clearErrors, history, viewContext, slug, dismissGA4PropertyTooltip ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -107,7 +136,11 @@ export default function Footer( props ) {
 				);
 				await clearErrors();
 				history.push( `/connected-services/${ slug }` );
-				clearWebStorage();
+
+				if ( slug === 'analytics' ) {
+					dismissGA4PropertyTooltip();
+				}
+				await clearCache();
 			}
 		},
 		[
@@ -119,6 +152,7 @@ export default function Footer( props ) {
 			clearErrors,
 			history,
 			viewContext,
+			dismissGA4PropertyTooltip,
 		]
 	);
 
@@ -126,51 +160,44 @@ export default function Footer( props ) {
 		setValue( dialogActiveKey, ! dialogActive );
 	}, [ dialogActive, dialogActiveKey, setValue ] );
 
-	const handleEdit = useCallback(
-		() =>
-			trackEvent(
-				`${ viewContext }_module-list`,
-				'edit_module_settings',
-				slug
-			),
-		[ slug, viewContext ]
-	);
+	const handleEdit = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_module-list`,
+			'edit_module_settings',
+			slug
+		);
+	}, [ slug, viewContext ] );
 
 	if ( ! module ) {
 		return null;
 	}
 
-	const { name, homepage, forceActive } = module;
+	const { name, forceActive } = module;
 	let primaryColumn = null;
 	let secondaryColumn = null;
 
 	if ( isEditing || isSaving ) {
-		const closeButton = (
-			<Button onClick={ handleClose }>
-				{ __( 'Close', 'google-site-kit' ) }
-			</Button>
-		);
-		const submitButton = (
-			<Button
-				disabled={ isSaving || ! canSubmitChanges }
-				onClick={ handleConfirm }
-			>
-				{ isSaving
-					? __( 'Saving…', 'google-site-kit' )
-					: __( 'Confirm Changes', 'google-site-kit' ) }
-			</Button>
-		);
-
 		primaryColumn = (
 			<Fragment>
-				{ hasSettings && moduleConnected ? submitButton : closeButton }
-
-				<Spinner isSaving={ isSaving } />
+				{ hasSettings && moduleConnected ? (
+					<SpinnerButton
+						disabled={ isSaving || ! canSubmitChanges }
+						onClick={ handleConfirm }
+						isSaving={ isSaving }
+					>
+						{ isSaving
+							? __( 'Saving…', 'google-site-kit' )
+							: __( 'Confirm Changes', 'google-site-kit' ) }
+					</SpinnerButton>
+				) : (
+					<Button onClick={ handleClose }>
+						{ __( 'Close', 'google-site-kit' ) }
+					</Button>
+				) }
 
 				{ hasSettings && (
 					<Link
 						className="googlesitekit-settings-module__footer-cancel"
-						inherit
 						onClick={ handleClose }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
@@ -182,7 +209,6 @@ export default function Footer( props ) {
 		primaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
-				inherit
 				to={ `/connected-services/${ slug }/edit` }
 				onClick={ handleEdit }
 			>
@@ -201,7 +227,6 @@ export default function Footer( props ) {
 			<Link
 				className="googlesitekit-settings-module__remove-button"
 				onClick={ handleDialog }
-				inherit
 				danger
 			>
 				{ sprintf(
@@ -216,12 +241,11 @@ export default function Footer( props ) {
 				/>
 			</Link>
 		);
-	} else if ( ! isEditing && homepage ) {
+	} else if ( ! isEditing && moduleHomepage ) {
 		secondaryColumn = (
 			<Link
-				href={ homepage }
+				href={ moduleHomepage }
 				className="googlesitekit-settings-module__cta-button"
-				inherit
 				external
 			>
 				{ sprintf(

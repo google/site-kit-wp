@@ -30,15 +30,10 @@ import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
-const {
-	createProperty,
-	createWebDataStream,
-	properties,
-	webDataStreams,
-} = fixtures;
+const { createProperty, properties, webDataStreamsBatch } = fixtures;
 const { accounts } = analyticsFixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
-const propertyID = createWebDataStream._propertyID;
+const propertyIDs = properties.map( ( { _id } ) => _id );
 
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -58,12 +53,14 @@ const setupRegistry = ( { dispatch } ) => {
 		accountID,
 	] );
 
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( webDataStreams, {
-		propertyID,
-	} );
-	dispatch(
-		MODULES_ANALYTICS_4
-	).finishResolution( 'receiveGetWebDataStreams', { propertyID } );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreamsBatch(
+		webDataStreamsBatch,
+		{ propertyIDs }
+	);
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'getWebDataStreamsBatch',
+		[ propertyIDs ]
+	);
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
@@ -78,10 +75,19 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
 		accountID,
 	] );
+
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreamsBatch(
+		{},
+		{ propertyIDs: [] }
+	);
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'getWebDataStreamsBatch',
+		[ [] ]
+	);
 };
 
 describe( 'PropertySelect', () => {
-	it( 'should render an option for each analytics property of the currently selected account.', async () => {
+	it( 'should render an option for each analytics property of the currently selected account.', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -92,7 +98,25 @@ describe( 'PropertySelect', () => {
 		expect( listItems ).toHaveLength( properties.length + 1 );
 	} );
 
-	it( 'should not render if account ID is not valid', async () => {
+	it( 'should disable the property select if the user does not have module access', () => {
+		const { container, getAllByRole } = render(
+			<PropertySelect hasModuleAccess={ false } />,
+			{ setupRegistry }
+		);
+
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		expect( listItems ).toHaveLength( 1 );
+
+		// Verify that the Property select dropdown is disabled.
+		[
+			'.googlesitekit-analytics__select-property',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should not render if account ID is not valid', () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -134,7 +158,7 @@ describe( 'PropertySelect', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
+	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
 			setupRegistry: setupEmptyRegistry,
 		} );
@@ -146,12 +170,11 @@ describe( 'PropertySelect', () => {
 		);
 	} );
 
-	it( 'should update propertyID in the store when a new item is selected', async () => {
-		const {
-			getAllByRole,
-			container,
-			registry,
-		} = render( <PropertySelect />, { setupRegistry } );
+	it( 'should update propertyID in the store when a new item is selected', () => {
+		const { getAllByRole, container, registry } = render(
+			<PropertySelect />,
+			{ setupRegistry }
+		);
 		const allProperties = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getProperties( accountID );

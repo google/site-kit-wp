@@ -36,6 +36,7 @@ const Widget = ( {
 				'googlesitekit-widget',
 				`googlesitekit-widget--${ widgetSlug }`,
 				{ 'googlesitekit-widget--no-padding': noPadding },
+				{ 'googlesitekit-widget--with-header': Header },
 				className
 			) }
 		>

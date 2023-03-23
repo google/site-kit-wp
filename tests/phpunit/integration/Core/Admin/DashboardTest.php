@@ -30,7 +30,6 @@ class DashboardTest extends TestCase {
 		$dashboard      = new Dashboard( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		// Clear registered actions on hooks related to our assertions
 		remove_all_actions( 'wp_dashboard_setup' );
-		remove_all_actions( 'admin_enqueue_scripts' );
 
 		$dashboard->register();
 
@@ -38,7 +37,7 @@ class DashboardTest extends TestCase {
 		add_filter(
 			'map_meta_cap',
 			function ( $caps, $cap ) {
-				if ( Permissions::VIEW_DASHBOARD === $cap ) {
+				if ( Permissions::VIEW_WP_DASHBOARD_WIDGET === $cap ) {
 					$caps = array_filter(
 						$caps,
 						function ( $cap ) {
@@ -53,19 +52,21 @@ class DashboardTest extends TestCase {
 			2
 		);
 
-		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ) );
+		$this->assertFalse( current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) );
 		wp_set_current_user( $admin_id );
-		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ) );
+		$this->assertTrue( current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) );
 
 		require_once ABSPATH . 'wp-admin/includes/dashboard.php';
+
+		$this->assertFalse( wp_style_is( 'googlesitekit-wp-dashboard-css', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'googlesitekit-wp-dashboard', 'enqueued' ) );
+
 		wp_dashboard_setup();
 
 		// Check that the dashboard widget was registered
 		$this->assertArrayHasKey( 'google_dashboard_widget', $wp_meta_boxes['dashboard']['normal']['core'] );
+
 		// Check that expected assets are enqueued
-		$this->assertFalse( wp_style_is( 'googlesitekit-wp-dashboard-css', 'enqueued' ) );
-		$this->assertFalse( wp_script_is( 'googlesitekit-wp-dashboard', 'enqueued' ) );
-		do_action( 'admin_enqueue_scripts' );
 		$this->assertTrue( wp_script_is( 'googlesitekit-wp-dashboard', 'enqueued' ) );
 		$this->assertTrue( wp_style_is( 'googlesitekit-wp-dashboard-css', 'enqueued' ) );
 	}

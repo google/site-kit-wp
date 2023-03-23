@@ -20,40 +20,39 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Icon, arrowLeft } from '@wordpress/icons';
-import {
-	createInterpolateElement,
-	Fragment,
-	useCallback,
-	useState,
-} from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Link from '../Link';
-import Button from '../Button';
-import Portal from '../Portal';
+import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import ShareIcon from '../../../svg/icons/share.svg';
-import { Dialog, DialogContent, DialogFooter } from '../../material-components';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { SETTINGS_DIALOG } from './DashboardSharingSettings/constants';
+import DashboardSharingDialog from './DashboardSharingDialog';
+const { useSelect, useDispatch } = Data;
 
 export default function DashboardSharingSettingsButton() {
-	const breakpoint = useBreakpoint();
-	const [ dialogOpen, setDialogOpen ] = useState( false );
+	const viewContext = useViewContext();
+	const { setValue } = useDispatch( CORE_UI );
+
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
 
 	const openDialog = useCallback( () => {
-		setDialogOpen( true );
-	}, [] );
+		trackEvent(
+			`${ viewContext }_headerbar`,
+			'open_sharing',
+			hasMultipleAdmins ? 'advanced' : 'simple'
+		);
 
-	const closeDialog = useCallback( () => {
-		setDialogOpen( false );
-	}, [] );
-
-	const onApply = useCallback( () => {
-		// @TODO: Implement Apply behaviour.
-		setDialogOpen( false );
-	}, [] );
+		setValue( SETTINGS_DIALOG, true );
+	}, [ setValue, viewContext, hasMultipleAdmins ] );
 
 	return (
 		<Fragment>
@@ -64,81 +63,7 @@ export default function DashboardSharingSettingsButton() {
 				icon={ <ShareIcon width={ 20 } height={ 20 } /> }
 			/>
 
-			<Portal>
-				<Dialog
-					open={ dialogOpen }
-					onClose={ closeDialog }
-					className="googlesitekit-dialog"
-				>
-					<div
-						className="googlesitekit-dialog__back-wrapper"
-						aria-hidden={ breakpoint !== BREAKPOINT_SMALL }
-					>
-						<Button
-							aria-label={ __( 'Back', 'google-site-kit' ) }
-							className="googlesitekit-dialog__back"
-							onClick={ closeDialog }
-						>
-							<Icon icon={ arrowLeft } />
-						</Button>
-					</div>
-
-					<DialogContent className="googlesitekit-dialog__content">
-						<div className="googlesitekit-dialog__header">
-							<div
-								className="googlesitekit-dialog__header-icon"
-								aria-hidden={ breakpoint === BREAKPOINT_SMALL }
-							>
-								<span>
-									<ShareIcon width={ 20 } height={ 20 } />
-								</span>
-							</div>
-
-							<div className="googlesitekit-dialog__header-titles">
-								<h2 className="googlesitekit-dialog__title">
-									{ __(
-										'Dashboard sharing & permissions',
-										'google-site-kit'
-									) }
-								</h2>
-
-								<p className="googlesitekit-dialog__subtitle">
-									{ createInterpolateElement(
-										__(
-											'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													aria-label={ __(
-														'Learn more about dashboard sharing',
-														'google-site-kit'
-													) }
-													href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
-													external
-													hideExternalIndicator
-													inherit
-												/>
-											),
-										}
-									) }
-								</p>
-							</div>
-						</div>
-					</DialogContent>
-
-					<DialogFooter className="googlesitekit-dialog__footer">
-						<Link onClick={ closeDialog }>
-							{ __( 'Cancel', 'google-site-kit' ) }
-						</Link>
-
-						<Button onClick={ onApply }>
-							{ __( 'Apply', 'google-site-kit' ) }
-						</Button>
-					</DialogFooter>
-				</Dialog>
-			</Portal>
+			<DashboardSharingDialog />
 		</Fragment>
 	);
 }

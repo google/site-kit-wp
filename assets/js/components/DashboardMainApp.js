@@ -31,6 +31,7 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import {
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
@@ -48,10 +49,12 @@ import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import ScrollEffect from './ScrollEffect';
 import {
 	ANCHOR_ID_CONTENT,
+	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
@@ -59,29 +62,53 @@ const { useSelect } = Data;
 
 function DashboardMainApp() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const userInputEnabled = useFeature( 'userInput' );
 	const viewOnlyDashboard = useViewOnly();
+
+	const viewableModules = useSelect( ( select ) => {
+		if ( ! viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getViewableModules();
+	} );
+
+	const widgetContextOptions = {
+		modules: viewableModules ? viewableModules : undefined,
+	};
+
+	const isKeyMetricsActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+			widgetContextOptions
+		)
+	);
 
 	const isTrafficActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+			widgetContextOptions
 		)
 	);
 
 	const isContentActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_MAIN_DASHBOARD_CONTENT
+			CONTEXT_MAIN_DASHBOARD_CONTENT,
+			widgetContextOptions
 		)
 	);
 
 	const isSpeedActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_MAIN_DASHBOARD_SPEED
+			CONTEXT_MAIN_DASHBOARD_SPEED,
+			widgetContextOptions
 		)
 	);
 
 	const isMonetizationActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_MAIN_DASHBOARD_MONETIZATION
+			CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+			widgetContextOptions
 		)
 	);
 
@@ -95,6 +122,8 @@ function DashboardMainApp() {
 		lastWidgetAnchor = ANCHOR_ID_CONTENT;
 	} else if ( isTrafficActive ) {
 		lastWidgetAnchor = ANCHOR_ID_TRAFFIC;
+	} else if ( isKeyMetricsActive ) {
+		lastWidgetAnchor = ANCHOR_ID_KEY_METRICS;
 	}
 
 	return (
@@ -109,6 +138,26 @@ function DashboardMainApp() {
 				) }
 				<HelpMenu />
 			</Header>
+			{ /*
+				This isn't *strictly* required, but provides a safety net against
+				accidentally rendering the widget area if any child widgets accidentally
+				render when `userInputEnabled` is false.
+
+				This check can be removed once the User Input feature is fully launched
+				and we remove this feature flag.
+
+				See: https://github.com/google/site-kit-wp/pull/6630#discussion_r1127229162
+			*/ }
+			{ userInputEnabled && (
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_KEY_METRICS }
+					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+					} ) }
+				/>
+			) }
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }

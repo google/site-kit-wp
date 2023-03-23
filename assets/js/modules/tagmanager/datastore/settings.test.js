@@ -60,7 +60,6 @@ import {
 } from './__factories__/utils';
 import { getNormalizedContainerName } from '../util';
 import {
-	INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION,
 	INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH,
 	INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS,
 	INVARIANT_INVALID_ACCOUNT_ID,
@@ -162,11 +161,15 @@ describe( 'modules/tagmanager settings', () => {
 					};
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{ body: createdContainer, status: 200 }
 					);
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						( url, opts ) => {
 							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
@@ -179,7 +182,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{
 							body: {
 								data: {
@@ -216,7 +221,9 @@ describe( 'modules/tagmanager settings', () => {
 					} );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{ body: WPError, status: 500 }
 					);
 
@@ -225,7 +232,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{
 							body: {
 								data: {
@@ -254,7 +263,9 @@ describe( 'modules/tagmanager settings', () => {
 						.setSettings( validSettings );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						{ body: validSettings, status: 200 }
 					);
 
@@ -263,7 +274,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						{
 							body: { data: validSettings },
 						}
@@ -282,7 +295,9 @@ describe( 'modules/tagmanager settings', () => {
 						.setSettings( validSettings );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						{ body: WPError, status: 500 }
 					);
 
@@ -291,7 +306,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						{
 							body: { data: validSettings },
 						}
@@ -306,7 +323,9 @@ describe( 'modules/tagmanager settings', () => {
 						.setSettings( validSettings );
 
 					muteFetch(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						)
 					);
 					const cacheKey = createCacheKey(
 						'modules',
@@ -349,12 +368,16 @@ describe( 'modules/tagmanager settings', () => {
 					} );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{ body: createdAMPContainer, status: 200 }
 					);
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						( url, opts ) => {
 							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
@@ -367,7 +390,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{
 							body: {
 								data: {
@@ -417,7 +442,9 @@ describe( 'modules/tagmanager settings', () => {
 
 					fetchMock.postOnce(
 						{
-							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							url: new RegExp(
+								'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+							),
 							body: { data: { usageContext: CONTEXT_WEB } },
 						},
 						{ body: createdWebContainer, status: 200 },
@@ -425,14 +452,18 @@ describe( 'modules/tagmanager settings', () => {
 					);
 					fetchMock.postOnce(
 						{
-							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							url: new RegExp(
+								'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+							),
 							body: { data: { usageContext: CONTEXT_AMP } },
 						},
 						{ body: createdAMPContainer, status: 200 },
 						{ matchPartialBody: true }
 					);
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						( url, opts ) => {
 							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
@@ -575,38 +606,6 @@ describe( 'modules/tagmanager settings', () => {
 							.select( MODULES_TAGMANAGER )
 							.__dangerousCanSubmitChanges()
 					).toThrow( INVARIANT_INVALID_INTERNAL_CONTAINER_ID );
-				} );
-
-				it( 'requires permissions for an existing tag when present', () => {
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetExistingTag( validSettings.containerID );
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: true },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: false },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'should throw if a new container name is invalid', () => {
@@ -856,9 +855,8 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'should throw if a new container name is invalid', () => {
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					const { accountID } = buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',
@@ -895,9 +893,8 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'supports creating an AMP container', () => {
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					const { accountID } = buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',
@@ -943,38 +940,6 @@ describe( 'modules/tagmanager settings', () => {
 					expect(
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( true );
-				} );
-
-				it( 'requires permissions for an existing tag when present', () => {
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetExistingTag( validSettings.containerID );
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: true },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: false },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'does not support creating an account', () => {
@@ -1189,9 +1154,8 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'supports creating a web container', () => {
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					const { accountID } = buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',
@@ -1220,9 +1184,8 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'supports creating an AMP container', () => {
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					const { accountID } = buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',
@@ -1312,9 +1275,8 @@ describe( 'modules/tagmanager settings', () => {
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( false );
 
-					const normalizedAMPContainerName = getNormalizedContainerName(
-						containers[ 1 ].name
-					);
+					const normalizedAMPContainerName =
+						getNormalizedContainerName( containers[ 1 ].name );
 					expect( () =>
 						registry
 							.select( MODULES_TAGMANAGER )
@@ -1332,38 +1294,6 @@ describe( 'modules/tagmanager settings', () => {
 					expect(
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( true );
-				} );
-
-				it( 'requires permissions for an existing tag when present', () => {
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetExistingTag( validSettings.containerID );
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: true },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: false },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'does not support creating an account', () => {
@@ -1385,9 +1315,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry
 						.dispatch( MODULES_ANALYTICS )
 						.receiveGetSettings( { propertyID: '' } );
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 
 					// Matching property IDs
 					buildAndReceiveWebAndAMP( {
@@ -1424,9 +1353,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry
 						.dispatch( MODULES_ANALYTICS )
 						.receiveGetSettings( { propertyID: '' } );
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',

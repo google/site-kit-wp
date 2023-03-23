@@ -22,16 +22,45 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import { isPermissionScopeError } from '../util/errors';
+import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
+import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
 import ErrorText from './ErrorText';
+
+const { useSelect, useDispatch } = Data;
 
 export default function ErrorNotice( {
 	error,
+	storeName,
+	message = error.message,
 	shouldDisplayError = () => true,
 } ) {
-	// Do not display if no error, or if the error is for missing scopes.
+	const dispatch = useDispatch();
+
+	const selectorData = useSelect( ( select ) => {
+		if ( ! storeName ) {
+			return null;
+		}
+
+		return select( storeName ).getSelectorDataForError( error );
+	} );
+
+	const handleRetry = useCallback( () => {
+		dispatch( selectorData.storeName ).invalidateResolution(
+			selectorData.name,
+			selectorData.args
+		);
+	}, [ dispatch, selectorData ] );
+
+	// Do not display if there is no error, or if the error is for missing scopes.
 	if (
 		! error ||
 		isPermissionScopeError( error ) ||
@@ -40,11 +69,20 @@ export default function ErrorNotice( {
 		return null;
 	}
 
+	const shouldDisplayRetry = isErrorRetryable( error, selectorData );
+
 	return (
-		<ErrorText
-			message={ error.message }
-			reconnectURL={ error.data?.reconnectURL }
-		/>
+		<Fragment>
+			<ErrorText
+				message={ message }
+				reconnectURL={ error.data?.reconnectURL }
+			/>
+			{ shouldDisplayRetry && (
+				<Button onClick={ handleRetry }>
+					{ __( 'Retry', 'google-site-kit' ) }
+				</Button>
+			) }
+		</Fragment>
 	);
 }
 
@@ -52,5 +90,7 @@ ErrorNotice.propTypes = {
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
+	storeName: PropTypes.string,
+	message: PropTypes.string,
 	shouldDisplayError: PropTypes.func,
 };

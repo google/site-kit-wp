@@ -52,18 +52,21 @@ import {
 	PERMISSION_AUTHENTICATE,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	CORE_USER,
+	PERMISSION_VIEW_SHARED_DASHBOARD,
 } from '../googlesitekit/datastore/user/constants';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { getMetaCapabilityPropertyName } from '../googlesitekit/datastore/util/permissions';
 import {
-	VIEW_CONTEXT_PAGE_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 
 const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider value={ viewContext || VIEW_CONTEXT_DASHBOARD }>
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
 			<Header { ...args } />
 		</ViewContextProvider>
 	</WithRegistrySetup>
@@ -71,6 +74,11 @@ const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 
 export const PluginHeader = Template.bind( {} );
 PluginHeader.storyName = 'Plugin Header';
+PluginHeader.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
+};
 PluginHeader.scenario = {
 	label: 'Global/Plugin Header',
 	hierarchyRootSeparator: '|',
@@ -82,6 +90,9 @@ export const HeaderWithDateSelector = Template.bind( {} );
 HeaderWithDateSelector.storyName = 'Plugin Header with Date Selector';
 HeaderWithDateSelector.args = {
 	children: <DateRangeSelector />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 HeaderWithDateSelector.scenario = {
 	label: 'Global/Plugin Header with Date Selector',
@@ -94,6 +105,9 @@ export const HeaderWithHelpMenu = Template.bind( {} );
 HeaderWithHelpMenu.storyName = 'Plugin Header with Help Menu';
 HeaderWithHelpMenu.args = {
 	children: <HelpMenu />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithHelpMenuDateRangeSelector = Template.bind( {} );
@@ -106,6 +120,9 @@ HeaderWithHelpMenuDateRangeSelector.args = {
 			<HelpMenu />
 		</Fragment>
 	),
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithCustomHelpMenuLinks = Template.bind( {} );
@@ -119,12 +136,18 @@ HeaderWithCustomHelpMenuLinks.args = {
 			</HelpMenuLink>
 		</HelpMenu>
 	),
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithSubHeader = Template.bind( {} );
 HeaderWithSubHeader.storyName = 'Plugin Header with Sub Header';
 HeaderWithSubHeader.args = {
 	subHeader: <UserInputSuccessBannerNotification />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithSubHeaderEntityBanner = Template.bind( {} );
@@ -132,13 +155,14 @@ HeaderWithSubHeaderEntityBanner.storyName =
 	'Plugin Header with Sub Header and Entity Header Banner';
 HeaderWithSubHeaderEntityBanner.args = {
 	subHeader: <UserInputSuccessBannerNotification />,
-	viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
+	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, {
 			currentEntityTitle:
 				'Everything you need to know about driving in Ireland',
 			currentEntityURL: 'http://example.com/driving-ireland/',
 		} );
+		provideUserAuthentication( registry );
 	},
 };
 
@@ -146,12 +170,18 @@ export const HeaderWithNullSubHeader = Template.bind( {} );
 HeaderWithNullSubHeader.storyName = 'Plugin Header with Null Sub Header';
 HeaderWithNullSubHeader.args = {
 	subHeader: <Null />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithNavigation = Template.bind( {} );
 HeaderWithNavigation.storyName = 'Plugin Header with Dashboard Navigation';
 HeaderWithNavigation.args = {
 	showNavigation: true,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithDashboardSharingSettings = Template.bind( {} );
@@ -165,6 +195,9 @@ HeaderWithDashboardSharingSettings.args = {
 			<HelpMenu />
 		</Fragment>
 	),
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 HeaderWithDashboardSharingSettings.parameters = {
 	features: [ 'dashboardSharing' ],
@@ -179,7 +212,7 @@ HeaderViewOnly.args = {
 			<HelpMenu />
 		</Fragment>
 	),
-	viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry );
 		provideModules( registry, [
@@ -207,7 +240,8 @@ HeaderViewOnly.args = {
 		] );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry, {
-			[ PERMISSION_AUTHENTICATE ]: true,
+			[ PERMISSION_AUTHENTICATE ]: false,
+			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
 				'search-console'
@@ -245,7 +279,6 @@ export default {
 	decorators: [
 		( Story, { parameters } ) => {
 			const registry = createTestRegistry();
-			provideUserAuthentication( registry );
 			provideSiteInfo( registry );
 
 			return (

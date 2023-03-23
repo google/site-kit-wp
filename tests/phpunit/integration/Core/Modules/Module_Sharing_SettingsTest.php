@@ -11,13 +11,8 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
-use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 class Module_Sharing_SettingsTest extends SettingsTestCase {
@@ -29,11 +24,18 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	 */
 	private $settings;
 
+	/**
+	 * Context instance.
+	 *
+	 * @var Context
+	 */
+	private $context;
+
 	public function set_up() {
 		parent::set_up();
 
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options        = new Options( $context );
+		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $this->context );
 		$this->settings = new Module_Sharing_Settings( $options );
 		$this->settings->register();
 	}
@@ -106,7 +108,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management'  => null,
 			),
 			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor', 'author' ),
 				'management'  => 'all_admins',
 			),
 		);
@@ -124,12 +126,55 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management'  => 'owner',
 			),
 			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor', 'author' ),
 				'management'  => 'all_admins',
 			),
 		);
 		$this->settings->set( $test_sharing_settings );
 		$this->assertEquals( $expected, $this->settings->get() );
+	}
+
+	/**
+	 * @dataProvider data_get_module
+	 * @param array $sharing_settings
+	 * @param string $module_slug
+	 * @param array $expected
+	 */
+	public function test_get_module( $sharing_settings, $module_slug, $expected ) {
+		update_option( $this->get_option_name(), $sharing_settings );
+
+		$actual = $this->settings->get_module( $module_slug );
+
+		$this->assertEquals( $expected, $actual );
+	}
+
+	public function data_get_module() {
+		$module_slug = 'test-module';
+		$defaults    = array(
+			'sharedRoles' => array(),
+			'management'  => 'owner',
+		);
+
+		return array(
+			'no saved settings'          => array(
+				array(),
+				$module_slug,
+				$defaults,
+			),
+			'non-default saved settings' => array(
+				array(
+					$module_slug => array(
+						'sharedRoles' => array( 'editor' ),
+						'management'  => 'all_admins',
+					),
+				),
+				$module_slug,
+				array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'all_admins',
+				),
+			),
+		);
 	}
 
 	public function test_unset_module() {
@@ -147,7 +192,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management'  => 'owner',
 			),
 			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor', 'author' ),
 				'management'  => 'all_admins',
 			),
 		);
@@ -161,7 +206,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management'  => 'owner',
 			),
 			'search-console' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor', 'author' ),
 				'management'  => 'all_admins',
 			),
 		);
@@ -188,12 +233,12 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management'  => null,
 			),
 			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor', 'author' ),
 				'management'  => 'all_admins',
 			),
 		);
 		$this->settings->set( $test_sharing_settings );
-		$this->assertEqualSets( array( 'contributor', 'editor', 'subscriber' ), $this->settings->get_all_shared_roles() );
+		$this->assertEqualSets( array( 'contributor', 'editor', 'author' ), $this->settings->get_all_shared_roles() );
 	}
 
 	public function test_get_shared_roles() {
@@ -201,7 +246,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 		$test_sharing_settings = array(
 			'analytics'          => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor', 'author' ),
 				'management'  => 'owner',
 			),
 			'pagespeed-insights' => array(
@@ -211,88 +256,111 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		);
 
 		$this->settings->set( $test_sharing_settings );
-		$this->assertEquals( array( 'editor', 'subscriber' ), $this->settings->get_shared_roles( 'analytics' ) );
+		$this->assertEquals( array( 'editor', 'author' ), $this->settings->get_shared_roles( 'analytics' ) );
 		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
 	}
 
 	public function test_merge() {
 		$this->enable_feature( 'dashboardSharing' );
 
-		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_1->ID );
+		// Check there are no settings to begin with.
+		$this->assertEmpty( $this->settings->get() );
 
-		$initial_sharing_settings = array(
-			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
-			),
-			'analytics'          => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'owner',   // To test that non-owners cannot merge settings for this module.
-			),
-			'pagespeed-insights' => array(
-				'sharedRoles' => array(),
-				'management'  => 'all_admins',
-			),
-		);
-		$this->settings->set( $initial_sharing_settings );
-
-		$admin_2 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_2->ID );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$user_options = new User_Options( $context, $admin_2->ID );
-
-		// Authenticate admin_2 user to partially grant capability to manage module sharing options.
-		$authentication = new Authentication( $context );
-		$authentication->get_oauth_client()->set_token(
-			array(
-				'access_token' => 'valid-auth-token',
+		$this->assertTrue(
+			$this->settings->merge(
+				array(
+					'search-console' => array(
+						'sharedRoles' => array( 'contributor' ),
+						'management'  => 'owner',
+					),
+					'analytics'      => array(
+						'sharedRoles' => array( 'contributor', 'author' ),
+						'management'  => 'all_admins',
+					),
+				)
 			)
 		);
 
-		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		$permissions = new Permissions( $context, $authentication, new Modules( $context ), $user_options, new Dismissed_Items( $user_options ) );
-		$permissions->register();
-
-		$updated_sharing_settings = array(
-			'analytics'          => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
-			),
-			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
-			),
+		// Modules with `null` values are ignored.
+		$this->assertFalse(
+			$this->settings->merge(
+				array(
+					'search-console' => null,
+					'analytics'      => null,
+				)
+			)
 		);
 
-		$this->assertTrue( $this->settings->merge( $updated_sharing_settings ) );
+		// Modules with `empty` values are ignored.
+		$this->assertFalse(
+			$this->settings->merge(
+				array(
+					'search-console' => array(),
+					'analytics'      => array(),
+				)
+			)
+		);
 
-		$expected_sharing_settings = array(
+		// Merges settings with valid partials and keeps the rest.
+		$test_sharing_settings = array(
 			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
+				'sharedRoles' => array( 'contributor', 'editor' ),
 			),
 			'analytics'          => array(
-				'sharedRoles' => array( 'editor' ),
+				'management' => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'author' ),
+				'management'  => 'owner',
+			),
+		);
+		$expected              = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+				'management'  => 'owner',
+			),
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor', 'author' ),
 				'management'  => 'owner',
 			),
 			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
+				'sharedRoles' => array( 'author' ),
+				'management'  => 'owner',
 			),
 		);
 
-		$this->assertEquals( $expected_sharing_settings, $this->settings->get() );
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
+		$this->assertEquals( $expected, $this->settings->get() );
 
-		// Make admin_2 the owner of analytics so analytics sharing settings can be updated by them.
-		update_option( 'googlesitekit_analytics_settings', array( 'ownerID' => $admin_2->ID ) );
-		$this->assertTrue( $this->settings->merge( $updated_sharing_settings ) );
-
-		$expected_sharing_settings['analytics'] = array(
-			'sharedRoles' => array( 'editor', 'subscriber' ),
-			'management'  => 'all_admins',
+		// Keeps the valid parts of partial and discards the invalid parts.
+		$test_sharing_settings = array(
+			'search-console'     => null,
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor' ),
+				'invalid'     => array( 'invalid' ),
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'author' ),
+				'management'  => null,
+			),
 		);
-		$this->assertEquals( $expected_sharing_settings, $this->settings->get() );
+		$expected              = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+				'management'  => 'owner',
+			),
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'author' ),
+				'management'  => 'owner',
+			),
+		);
+
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
+		$this->assertEquals( $expected, $this->settings->get() );
 	}
 
 }

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -39,7 +39,6 @@ import {
 import { numFmt } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../../components/ReportTable';
@@ -47,11 +46,11 @@ import PreviewTable from '../../../../../components/PreviewTable';
 import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
-import { useFeature } from '../../../../../hooks/useFeature';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidget( props ) {
-	const { Widget, WidgetReportError, WidgetReportZero } = props;
+	const { Widget, WidgetReportError } = props;
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -63,8 +62,7 @@ function ModulePopularPagesWidget( props ) {
 		} )
 	);
 
-	const zeroDataStates = useFeature( 'zeroDataStates' );
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const viewOnlyDashboard = useViewOnly();
 
 	const args = {
 		...dates,
@@ -111,9 +109,10 @@ function ModulePopularPagesWidget( props ) {
 	);
 
 	const loaded = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ args ] );
+		const reportLoaded = select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ args ]
+		);
 
 		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );
@@ -134,14 +133,6 @@ function ModulePopularPagesWidget( props ) {
 		);
 	}
 
-	if ( ! zeroDataStates && isGatheringData && isZeroReport( report ) ) {
-		return (
-			<Widget Header={ Header } Footer={ Footer }>
-				<WidgetReportZero moduleSlug="analytics" />
-			</Widget>
-		);
-	}
-
 	const tableColumns = [
 		{
 			title: __( 'Title', 'google-site-kit' ),
@@ -149,16 +140,20 @@ function ModulePopularPagesWidget( props ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const serviceURL = useSelect( ( select ) =>
-					select( MODULES_ANALYTICS ).getServiceReportURL(
+				const serviceURL = useSelect( ( select ) => {
+					if ( viewOnlyDashboard ) {
+						return null;
+					}
+
+					return select( MODULES_ANALYTICS ).getServiceReportURL(
 						'content-drilldown',
 						{
 							'explorer-table.plotKeys': '[]',
 							'_r.drilldown': `analytics.pagePath:${ url }`,
 							...generateDateRangeArgs( dates ),
 						}
-					)
-				);
+					);
+				} );
 
 				return (
 					<DetailsPermaLinks
@@ -195,10 +190,7 @@ function ModulePopularPagesWidget( props ) {
 				<span>{ numFmt( Number( fieldValue ) / 100, '%' ) }</span>
 			),
 		},
-	];
-
-	if ( unifiedDashboardEnabled ) {
-		tableColumns.push( {
+		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
 			hideOnMobile: true,
@@ -206,8 +198,8 @@ function ModulePopularPagesWidget( props ) {
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, 's' ) }</span>
 			),
-		} );
-	}
+		},
+	];
 
 	const rows = report?.[ 0 ]?.data?.rows?.length
 		? cloneDeep( report[ 0 ].data.rows )

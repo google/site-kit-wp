@@ -20,8 +20,8 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import mapValues from 'lodash/mapValues';
 import memize from 'memize';
+import { mapValues } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -370,23 +370,25 @@ const getStrictSelectors = memize( ( selectors ) =>
  */
 export function createValidationSelector( validate, { negate = false } = {} ) {
 	const safeSelector = createRegistrySelector(
-		( select ) => ( state, ...args ) => {
-			const pass = negate ? false : true;
-			const fail = negate ? true : false;
+		( select ) =>
+			( state, ...args ) => {
+				const pass = negate ? false : true;
+				const fail = negate ? true : false;
 
-			try {
-				validate( select, state, ...args );
-				return pass;
-			} catch {
-				return fail;
+				try {
+					validate( select, state, ...args );
+					return pass;
+				} catch {
+					return fail;
+				}
 			}
-		}
 	);
 
 	const dangerousSelector = createRegistrySelector(
-		( select ) => ( state, ...args ) => {
-			validate( select, state, ...args );
-		}
+		( select ) =>
+			( state, ...args ) => {
+				validate( select, state, ...args );
+			}
 	);
 
 	return {

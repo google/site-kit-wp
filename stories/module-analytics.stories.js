@@ -117,11 +117,8 @@ storiesOf( 'Analytics Module', module )
 		);
 	} )
 	.add( 'Property Select including GA4 properties', () => {
-		const {
-			accounts,
-			properties,
-			profiles,
-		} = fixtures.accountsPropertiesProfiles;
+		const { accounts, properties, profiles } =
+			fixtures.accountsPropertiesProfiles;
 		/* eslint-disable sitekit/acronym-case */
 		const accountID = properties[ 0 ].accountId;
 		const propertyID = profiles[ 0 ].webPropertyId;

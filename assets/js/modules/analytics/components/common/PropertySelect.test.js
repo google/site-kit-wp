@@ -110,7 +110,7 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 };
 
 describe( 'PropertySelect', () => {
-	it( 'should render an option for each analytics property of the currently selected account.', async () => {
+	it( 'should render an option for each analytics property of the currently selected account.', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -123,26 +123,39 @@ describe( 'PropertySelect', () => {
 		);
 	} );
 
-	it( 'should pre-select an existing tag when present, and be disabled', async () => {
+	it( 'should pre-select an existing tag when present', () => {
 		const { container } = render( <PropertySelect />, {
 			setupRegistry: setupRegistryWithExistingTag,
 		} );
 
 		const existingTagPropertyID =
 			fixtures.getTagPermissionsAccess.propertyID;
-		const existingTagProperty = fixtures.accountsPropertiesProfiles.properties.find(
-			( { id } ) => id === existingTagPropertyID
-		);
+		const existingTagProperty =
+			fixtures.accountsPropertiesProfiles.properties.find(
+				( { id } ) => id === existingTagPropertyID
+			);
 		const selectedText = container.querySelector(
 			'.mdc-select__selected-text'
 		);
 		expect( selectedText ).toHaveTextContent( existingTagProperty.name );
-		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
-		expect(
-			container.querySelector(
-				'.googlesitekit-analytics__select-property'
-			)
-		).toHaveClass( 'mdc-select--disabled' );
+	} );
+
+	it( 'should disable the property select if the user does not have module access', () => {
+		const { container, getAllByRole } = render(
+			<PropertySelect hasModuleAccess={ false } />,
+			{ setupRegistry: setupRegistryWithExistingTag }
+		);
+
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		expect( listItems ).toHaveLength( 1 );
+
+		// Verify that the Property select dropdown is disabled.
+		[
+			'.googlesitekit-analytics__select-property',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
 	} );
 
 	it( 'should not render if account ID is invalid', () => {
@@ -155,16 +168,6 @@ describe( 'PropertySelect', () => {
 				);
 			},
 		} );
-
-		// A valid accountID is provided, so ensure it is not currently disabled.
-		const selectWrapper = container.querySelector(
-			'.googlesitekit-analytics__select-property'
-		);
-		const selectedText = container.querySelector(
-			'.mdc-select__selected-text'
-		);
-		expect( selectWrapper ).not.toHaveClass( 'mdc-select--disabled' );
-		expect( selectedText ).not.toHaveAttribute( 'aria-disabled', 'true' );
 
 		act( () => {
 			registry.dispatch( MODULES_ANALYTICS ).setAccountID( 'abcd' );
@@ -187,7 +190,7 @@ describe( 'PropertySelect', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
+	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
 			setupRegistry: setupEmptyRegistry,
 		} );
@@ -199,18 +202,19 @@ describe( 'PropertySelect', () => {
 		);
 	} );
 
-	it( 'should update propertyID in the store when a new item is selected', async () => {
-		const {
-			getAllByRole,
-			container,
-			registry,
-		} = render( <PropertySelect />, { setupRegistry } );
+	it( 'should update propertyID in the store when a new item is selected', () => {
+		const { getAllByRole, container, registry } = render(
+			<PropertySelect />,
+			{ setupRegistry }
+		);
 		const originalPropertyID = registry
 			.select( MODULES_ANALYTICS )
 			.getPropertyID();
 
 		muteFetch(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/profiles'
+			),
 			[]
 		);
 		// Click the label to expose the elements in the menu.
@@ -228,11 +232,10 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update internalWebPropertyID in the store when an item is selected', () => {
-		const {
-			getAllByRole,
-			container,
-			registry,
-		} = render( <PropertySelect />, { setupRegistry } );
+		const { getAllByRole, container, registry } = render(
+			<PropertySelect />,
+			{ setupRegistry }
+		);
 		const accountID =
 			fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 		const originalID = registry
@@ -244,7 +247,9 @@ describe( 'PropertySelect', () => {
 		const targetProperty = properties[ 1 ];
 
 		muteFetch(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/profiles'
+			),
 			[]
 		);
 

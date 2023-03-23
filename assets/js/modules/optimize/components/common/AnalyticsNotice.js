@@ -55,13 +55,7 @@ const AnalyticsNotice = () => {
 					'google-site-kit'
 				),
 				{
-					a: (
-						<Link
-							href="https://optimize.google.com"
-							external
-							inherit
-						/>
-					),
+					a: <Link href="https://optimize.google.com" external />,
 				}
 			) }
 		</p>

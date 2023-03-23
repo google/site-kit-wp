@@ -1,0 +1,77 @@
+{
+	"dimensionHeaders": [ { "name": "date" } ],
+	"kind": "analyticsData#runReport",
+	"maximums": [
+		{
+			"dimensionValues": [ { "value": "RESERVED_MAX" } ],
+			"metricValues": [
+				{ "value": "89" },
+				{ "value": "0.6174966930411756" }
+			]
+		}
+	],
+	"metadata": {
+		"currencyCode": "USD",
+		"timeZone": "America/Los_Angeles"
+	},
+	"metricHeaders": [
+		{ "name": "sessions", "type": "TYPE_INTEGER" },
+		{ "name": "engagementRate", "type": "TYPE_FLOAT" }
+	],
+	"minimums": [
+		{
+			"dimensionValues": [ { "value": "RESERVED_MIN" } ],
+			"metricValues": [
+				{ "value": "55" },
+				{ "value": "0.14262126828543842" }
+			]
+		}
+	],
+	"rowCount": 5,
+	"rows": [
+		{
+			"dimensionValues": [ { "value": "20201229" } ],
+			"metricValues": [
+				{ "value": "55" },
+				{ "value": "0.14262126828543842" }
+			]
+		},
+		{
+			"dimensionValues": [ { "value": "20201230" } ],
+			"metricValues": [
+				{ "value": "3" },
+				{ "value": "0.13729542959481478" }
+			]
+		},
+		{
+			"dimensionValues": [ { "value": "20201231" } ],
+			"metricValues": [
+				{ "value": "17" },
+				{ "value": "0.38743476173840463" }
+			]
+		},
+		{
+			"dimensionValues": [ { "value": "20210101" } ],
+			"metricValues": [
+				{ "value": "10" },
+				{ "value": "0.7306178859435022" }
+			]
+		},
+		{
+			"dimensionValues": [ { "value": "20210102" } ],
+			"metricValues": [
+				{ "value": "89" },
+				{ "value": "0.6174966930411756" }
+			]
+		}
+	],
+	"totals": [
+		{
+			"dimensionValues": [ { "value": "RESERVED_TOTAL" } ],
+			"metricValues": [
+				{ "value": "89" },
+				{ "value": "0.6174966930411756" }
+			]
+		}
+	]
+}

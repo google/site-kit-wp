@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -157,7 +157,8 @@ export const createFetchStore = ( {
 			type: START_FETCH,
 		};
 
-		yield clearError( baseName, args );
+		// @TODO: remove clearMatchingLegacyError usage once all instances of the legacy behavior have been removed.
+		yield clearError( baseName, args, { clearMatchingLegacyError: true } );
 
 		try {
 			response = yield {

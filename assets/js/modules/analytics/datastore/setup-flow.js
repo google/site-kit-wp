@@ -22,7 +22,6 @@
 import Data from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS,
-	SETUP_FLOW_MODE_LEGACY,
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
@@ -32,6 +31,7 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 
 const { createRegistrySelector } = Data;
 
@@ -44,15 +44,6 @@ const baseSelectors = {
 	 * @return {string} Setup flow mode.
 	 */
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
-		// Check to see if the Admin API is working—if it's `false` we should also use
-		// the legacy analytics because the API isn't working properly.
-		const isAdminAPIWorking = select(
-			MODULES_ANALYTICS_4
-		).isAdminAPIWorking();
-		if ( isAdminAPIWorking === false ) {
-			return SETUP_FLOW_MODE_LEGACY;
-		}
-
 		// Ensure the Analytics settings have loaded. If we check
 		// `select( MODULES_ANALYTICS ).getAccountID();` directly, it
 		// could return `undefined` because the settings are loading OR
@@ -71,9 +62,8 @@ const baseSelectors = {
 			return SETUP_FLOW_MODE_UA;
 		}
 
-		const ga4Properties = select( MODULES_ANALYTICS_4 ).getProperties(
-			accountID
-		);
+		const ga4Properties =
+			select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 
 		if ( ga4Properties === undefined ) {
 			return undefined;
@@ -85,9 +75,8 @@ const baseSelectors = {
 			return SETUP_FLOW_MODE_UA;
 		}
 
-		const uaProperties = select( MODULES_ANALYTICS ).getProperties(
-			accountID
-		);
+		const uaProperties =
+			select( MODULES_ANALYTICS ).getProperties( accountID );
 
 		if ( uaProperties === undefined ) {
 			return undefined;
@@ -125,6 +114,40 @@ const baseSelectors = {
 
 		return uaConnected === ga4Connected;
 	} ),
+
+	/**
+	 * Determines whether the live container version has finished loading.
+	 *
+	 * @since 1.94.0
+	 *
+	 * @return {boolean} TRUE if the GTM module is not available or the live container version has finished loading, otherwise FALSE.
+	 */
+	hasFinishedLoadingGTMContainers: createRegistrySelector(
+		( select ) => () => {
+			const tagmanagerModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'tagmanager' );
+			if ( ! tagmanagerModuleConnected ) {
+				return true;
+			}
+
+			const accountID = select( MODULES_TAGMANAGER ).getAccountID();
+			const internalContainerID =
+				select( MODULES_TAGMANAGER ).getInternalContainerID();
+			const internalAMPContainerID =
+				select( MODULES_TAGMANAGER ).getInternalAMPContainerID();
+
+			return (
+				select( MODULES_TAGMANAGER ).hasFinishedResolution(
+					'getLiveContainerVersion',
+					[ accountID, internalContainerID ]
+				) ||
+				select( MODULES_TAGMANAGER ).hasFinishedResolution(
+					'getLiveContainerVersion',
+					[ accountID, internalAMPContainerID ]
+				)
+			);
+		}
+	),
 };
 
 const store = Data.combineStores( {

@@ -30,6 +30,7 @@ import {
 	WithTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
+	provideUserCapabilities,
 } from '../../../../tests/js/utils';
 
 function Template( { ...args } ) {
@@ -44,6 +45,9 @@ Site.parameters = {
 		slug: undefined,
 	},
 };
+Site.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/Site',
+};
 
 export const Module = Template.bind( {} );
 Module.storyName = 'Authentication Success - Generic Module';
@@ -53,6 +57,9 @@ Module.parameters = {
 		notification: 'authentication_success',
 		slug: 'tagmanager',
 	},
+};
+Module.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/Module',
 };
 
 export const ModuleWithDescription = Template.bind( {} );
@@ -65,6 +72,9 @@ ModuleWithDescription.parameters = {
 		slug: 'analytics',
 	},
 };
+ModuleWithDescription.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/ModuleWithDescription',
+};
 
 export const PageSpeedInsights = Template.bind( {} );
 PageSpeedInsights.storyName = 'Authentication Success - Page Speed Insights';
@@ -75,15 +85,8 @@ PageSpeedInsights.parameters = {
 		slug: 'pagespeed-insights',
 	},
 };
-
-export const IdeaHub = Template.bind( {} );
-IdeaHub.storyName = 'Authentication Success - Idea Hub';
-IdeaHub.parameters = {
-	module: { slug: 'idea-hub', name: 'Idea Hub' },
-	query: {
-		notification: 'authentication_success',
-		slug: 'idea-hub',
-	},
+PageSpeedInsights.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/PageSpeedInsights',
 };
 
 export const UserInputSuccess = Template.bind( {} );
@@ -110,6 +113,7 @@ export default {
 				},
 			] );
 			provideModuleRegistrations( registry );
+			provideUserCapabilities( registry );
 
 			return (
 				<WithTestRegistry

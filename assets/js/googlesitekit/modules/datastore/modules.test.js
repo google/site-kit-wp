@@ -23,6 +23,9 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -33,12 +36,83 @@ import {
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
 import FIXTURES, { withActive } from './__fixtures__';
+import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { CORE_USER } from '../../datastore/user/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
-	const recoverableModuleList = {
-		recoverableModules: [ 'analytics', 'search-console', 'tagmanager' ],
+	const sharedOwnershipModulesList = {
+		sharedOwnershipModules: [ 'analytics', 'search-console', 'tagmanager' ],
 	};
+
+	const allModules = [
+		{
+			slug: 'analytics',
+			name: 'Analytics',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: false,
+		},
+		{
+			slug: 'analytics-4',
+			name: 'Analytics-4',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: true,
+		},
+		{
+			slug: 'search-console',
+			name: 'Search Console',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: false,
+		},
+		{
+			slug: 'tagmanager',
+			name: 'Tag Manager',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: false,
+		},
+	];
+
+	const externalModules = [
+		{
+			slug: 'analytics',
+			name: 'Analytics',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: false,
+		},
+		{
+			slug: 'search-console',
+			name: 'Search Console',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: false,
+		},
+		{
+			slug: 'tagmanager',
+			name: 'Tag Manager',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: false,
+		},
+	];
 
 	const sortedFixtures = sortByProperty( FIXTURES, 'order' );
 	const fixturesKeyValue = convertArrayListToKeyedObjectMap(
@@ -85,7 +159,7 @@ describe( 'core/modules modules', () => {
 				// In our fixtures, optimize is off by default.
 				const slug = 'optimize';
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES }
 				);
 
@@ -101,11 +175,15 @@ describe( 'core/modules modules', () => {
 
 				// Activate the module.
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{ body: { success: true } }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
 					{ body: {} }
 				);
 
@@ -113,7 +191,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{
 						body: {
 							data: {
@@ -152,7 +232,9 @@ describe( 'core/modules modules', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -160,7 +242,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{
 						body: {
 							data: {
@@ -184,11 +268,73 @@ describe( 'core/modules modules', () => {
 			} );
 		} );
 
-		describe( 'recoverModule', () => {
-			it( 'dispatches a request to recover a module', async () => {
-				const slug = 'analytics';
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+		describe( 'recoverModules', () => {
+			it( 'dispatches requests to recover modules', async () => {
+				provideModuleRegistrations( registry );
+				const slugs = [ 'analytics', 'tagmanager' ];
+
+				const recoverModulesResponse = {
+					success: {
+						analytics: true,
+						tagmanager: true,
+					},
+					error: {},
+				};
+
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{
+						body: [ ...FIXTURES, ...allModules ],
+						status: 200,
+					}
+				);
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/recover-modules'
+					),
+					{ body: recoverModulesResponse }
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
+					{
+						body: getModulesBySlugList( [ slugs ], FIXTURES ),
+						status: 200,
+					}
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/settings'
+					),
+					{
+						body: getModulesBySlugList( [ slugs ], FIXTURES ),
+						status: 200,
+					}
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					),
+					{
+						body: {},
+						status: 200,
+					}
+				);
+
+				const initialModules = registry
+					.select( CORE_MODULES )
+					.getModules();
+				// The modules info will be its initial value while the modules
+				// info is fetched.
+				expect( initialModules ).toBeUndefined();
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
 						body: [
 							...FIXTURES,
@@ -198,48 +344,52 @@ describe( 'core/modules modules', () => {
 								active: true,
 								connected: true,
 								shareable: true,
+								recoverable: false,
 								storeName: 'modules/analytics',
+							},
+							{
+								slug: 'search-console',
+								name: 'Search Console',
+								active: true,
+								connected: true,
+								shareable: true,
+								recoverable: true,
+								storeName: 'modules/search-console',
+							},
+							{
+								slug: 'tagmanager',
+								name: 'Tag Manager',
+								active: true,
+								connected: true,
+								shareable: true,
+								recoverable: false,
+								storeName: 'modules/tagmanager',
 							},
 						],
 						status: 200,
 					}
 				);
-				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{ body: { ownerID: 1 } }
-				);
-
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
-					{
-						body: getModulesBySlugList( [ slug ], FIXTURES ),
-						status: 200,
-					}
-				);
-
-				const initialModules = registry
-					.select( CORE_MODULES )
-					.getModules();
-				// The modules info will be its initial value while the modules
-				// info is fetched.
-				expect( initialModules ).toBeUndefined();
-				await untilResolved( registry, CORE_MODULES ).getModules();
 
 				const { response } = await registry
 					.dispatch( CORE_MODULES )
-					.recoverModule( slug );
+					.recoverModules( slugs );
 
-				expect( response.ownerID ).toBe( 1 );
+				expect( response.success ).toStrictEqual( {
+					analytics: true,
+					tagmanager: true,
+				} );
 
-				expect( fetchMock ).toHaveFetchedTimes( 4 );
+				expect( fetchMock ).toHaveFetchedTimes( 6 );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/recover-modules'
+					),
 					{
 						body: {
 							data: {
-								slug,
+								slugs: [ 'analytics', 'tagmanager' ],
 							},
 						},
 					}
@@ -247,11 +397,26 @@ describe( 'core/modules modules', () => {
 
 				// Ensure fetchGetSettings have been called.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{
 						body: {
 							data: {
-								slug,
+								slug: 'analytics',
+							},
+						},
+					}
+				);
+
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
+					{
+						body: {
+							data: {
+								slug: 'tagmanager',
 							},
 						},
 					}
@@ -259,25 +424,87 @@ describe( 'core/modules modules', () => {
 
 				// Ensure fetchGetModules have been called.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
 				);
+
+				// Ensure `refreshCapabilities` has been called.
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					)
+				);
+
+				const initialRecoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+				expect( initialRecoverableModules ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_MODULES
+				).getRecoverableModules();
+
+				// Ensure the module has been removed from the recoverable modules list.
+				const recoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+
+				expect( Object.keys( recoverableModules ) ).toEqual( [
+					'search-console',
+				] );
 			} );
 
-			it( 'encounters an error if the module is not recoverable', async () => {
-				const slug = 'analytics';
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+			it( 'encounters an error if the any module is not recoverable', async () => {
+				provideModuleRegistrations( registry );
+				const slugs = [ 'analytics', 'tagmanager' ];
+
+				const recoverModulesResponse = {
+					success: {
+						analytics: true,
+						tagmanager: false,
+					},
+					error: {
+						tagmanager: {
+							code: 'module_not_recoverable',
+							message: 'Module is not recoverable.',
+							data: { status: 403 },
+						},
+					},
+				};
+
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{
+						body: [ ...FIXTURES, ...allModules ],
+						status: 200,
+					}
 				);
 
-				const apiResponse = {
-					code: 'module_not_recoverable',
-					message: 'Module is not recoverable.',
-					data: { status: 403 },
-				};
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{ body: apiResponse }
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/recover-modules'
+					),
+					{ body: recoverModulesResponse, status: 200 }
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
+					{
+						body: getModulesBySlugList( [ slugs ], FIXTURES ),
+						status: 200,
+					}
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					),
+					{
+						body: {},
+						status: 200,
+					}
 				);
 
 				const initialModules = registry
@@ -288,95 +515,123 @@ describe( 'core/modules modules', () => {
 				expect( initialModules ).toBeUndefined();
 				await untilResolved( registry, CORE_MODULES ).getModules();
 
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{
+						body: [
+							...FIXTURES,
+							{
+								slug: 'analytics',
+								name: 'Analytics',
+								active: true,
+								connected: true,
+								shareable: true,
+								recoverable: false,
+								storeName: 'modules/analytics',
+							},
+							{
+								slug: 'search-console',
+								name: 'Search Console',
+								active: true,
+								connected: true,
+								shareable: true,
+								recoverable: true,
+								storeName: 'modules/search-console',
+							},
+							{
+								slug: 'tagmanager',
+								name: 'Tag Manager',
+								active: true,
+								connected: true,
+								shareable: true,
+								recoverable: true,
+								storeName: 'modules/tagmanager',
+							},
+						],
+						status: 200,
+					}
+				);
+
 				const { response } = await registry
 					.dispatch( CORE_MODULES )
-					.recoverModule( slug );
+					.recoverModules( slugs );
 
-				expect( response.message ).toBe( apiResponse.message );
+				expect( response.success ).toStrictEqual( {
+					analytics: true,
+					tagmanager: false,
+				} );
+				expect( response.error.tagmanager.message ).toBe(
+					recoverModulesResponse.error.tagmanager.message
+				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/recover-modules'
+					),
 					{
 						body: {
 							data: {
-								slug,
+								slugs: [ 'analytics', 'tagmanager' ],
 							},
 						},
 					}
 				);
 
-				// Ensure fetchGetSettings haven't been called.
+				// Ensure fetchGetSettings has been called for Analytics.
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
+					{
+						body: {
+							data: {
+								slug: 'analytics',
+							},
+						},
+					}
+				);
+
+				// Ensure fetchGetSettings haven't been called for Tag Manager.
 				expect( fetchMock ).not.toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/settings'
+					),
 					{
 						body: {
 							data: {
-								slug,
+								slug: 'tagmanager',
 							},
 						},
 					}
 				);
-			} );
 
-			it( 'encourters an error if an invalid module slug is passed', async () => {
-				const slug = 'invalid-slug';
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+				// Ensure fetchGetModules have been called.
+				expect( fetchMock ).toHaveFetched(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
 				);
 
-				const apiResponse = {
-					code: 'invalid_module_slug',
-					message: `Invalid module slug ${ slug }.`,
-					data: { status: 404 },
-				};
-				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{ body: apiResponse }
-				);
-
-				const initialModules = registry
+				const initialRecoverableModules = registry
 					.select( CORE_MODULES )
-					.getModules();
-				// The modules info will be its initial value while the modules
-				// info is fetched.
-				expect( initialModules ).toBeUndefined();
-				await untilResolved( registry, CORE_MODULES ).getModules();
+					.getRecoverableModules();
+				expect( initialRecoverableModules ).toBeUndefined();
 
-				const { response } = await registry
-					.dispatch( CORE_MODULES )
-					.recoverModule( slug );
+				await untilResolved(
+					registry,
+					CORE_MODULES
+				).getRecoverableModules();
 
-				expect( response.message ).toBe( apiResponse.message );
+				// Ensure the module has been removed from the recoverable modules list.
+				const recoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
-
-				// Ensure the proper body parameters were sent.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{
-						body: {
-							data: {
-								slug,
-							},
-						},
-					}
-				);
-
-				// Ensure fetchGetSettings haven't been called.
-				expect( fetchMock ).not.toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
-					{
-						body: {
-							data: {
-								slug,
-							},
-						},
-					}
-				);
+				expect( Object.keys( recoverableModules ) ).toEqual( [
+					'search-console',
+					'tagmanager',
+				] );
 			} );
 		} );
 
@@ -394,12 +649,16 @@ describe( 'core/modules modules', () => {
 				expect( isActiveBefore ).toEqual( true );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{ body: { success: true }, status: 200 }
 				);
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
 					{ body: {}, status: 200 }
 				);
 
@@ -409,7 +668,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{
 						body: {
 							data: {
@@ -448,7 +709,9 @@ describe( 'core/modules modules', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -458,7 +721,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{
 						body: {
 							data: {
@@ -561,7 +826,9 @@ describe( 'core/modules modules', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
 					muteFetch(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+						new RegExp(
+							'^/google-site-kit/v1/core/modules/data/list'
+						),
 						[]
 					);
 					registry.dispatch( CORE_MODULES ).fetchGetModules();
@@ -672,6 +939,28 @@ describe( 'core/modules modules', () => {
 				} );
 			} );
 		} );
+
+		describe( 'receiveSharedOwnershipModules', () => {
+			it( 'requires the sharedOwnershipModules param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveSharedOwnershipModules();
+				} ).toThrow( 'sharedOwnershipModules is required' );
+			} );
+
+			it( 'receives sharedOwnershipModules and sets it to the state', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules(
+						sharedOwnershipModulesList.sharedOwnershipModules
+					);
+
+				expect( store.getState().sharedOwnershipModules ).toMatchObject(
+					sharedOwnershipModulesList.sharedOwnershipModules
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -705,7 +994,7 @@ describe( 'core/modules modules', () => {
 			];
 
 			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+				new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 				{ body: moduleFixtures, status: 200 }
 			);
 			const slug1 = 'slug1';
@@ -726,7 +1015,7 @@ describe( 'core/modules modules', () => {
 		describe( 'getModules', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -762,7 +1051,7 @@ describe( 'core/modules modules', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: response, status: 500 }
 				);
 
@@ -874,7 +1163,7 @@ describe( 'core/modules modules', () => {
 		describe( 'getModule', () => {
 			it( 'uses a resolver get all modules when one is requested', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'analytics';
@@ -907,7 +1196,7 @@ describe( 'core/modules modules', () => {
 				const slug = 'analytics';
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: response, status: 500 }
 				);
 
@@ -927,7 +1216,7 @@ describe( 'core/modules modules', () => {
 			it( 'returns undefined if modules is not yet available', async () => {
 				// This triggers a network request, so ignore the error.
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					[]
 				);
 
@@ -936,11 +1225,13 @@ describe( 'core/modules modules', () => {
 					.getModule( 'analytics' );
 
 				expect( module ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
 			it( 'returns null if the module does not exist', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -1029,7 +1320,7 @@ describe( 'core/modules modules', () => {
 		] )( '%s', ( selector, collectionName ) => {
 			it( 'returns undefined when no modules are loaded', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'optimize';
@@ -1039,11 +1330,13 @@ describe( 'core/modules modules', () => {
 
 				// The modules will be undefined whilst loading.
 				expect( namesLoaded ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
 			it( `returns ${ collectionName } module names when modules are loaded`, async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'optimize';
@@ -1066,7 +1359,7 @@ describe( 'core/modules modules', () => {
 
 			it( `returns an empty array when requesting ${ collectionName } for a non-existent module`, async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'non-existent-slug';
@@ -1084,10 +1377,78 @@ describe( 'core/modules modules', () => {
 			} );
 		} );
 
+		describe( 'isModuleAvailable', () => {
+			beforeEach( () => {
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{
+						body: FIXTURES.filter(
+							( { slug } ) => slug !== 'analytics'
+						),
+						status: 200,
+					}
+				);
+			} );
+
+			it( 'returns true if a module is available', async () => {
+				// Search console is available in our fixtures.
+				const slug = 'search-console';
+				const isAvailable = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isAvailable ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const isAvailableLoaded = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isAvailableLoaded ).toEqual( true );
+			} );
+
+			it( 'returns false if a module is not available', async () => {
+				const slug = 'analytics';
+				const isAvailable = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isAvailable ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const isAvailableLoaded = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isAvailableLoaded ).toEqual( false );
+			} );
+
+			it( 'returns undefined if modules is not yet available', async () => {
+				muteFetch(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					[]
+				);
+
+				const isAvailable = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( 'analytics' );
+
+				expect( isAvailable ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			} );
+		} );
+
 		describe( 'isModuleActive', () => {
 			beforeEach( () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 			} );
@@ -1152,7 +1513,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'returns undefined if modules is not yet available', async () => {
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					[]
 				);
 
@@ -1161,6 +1522,8 @@ describe( 'core/modules modules', () => {
 					.isModuleActive( 'analytics' );
 
 				expect( isActive ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 		} );
 
@@ -1192,7 +1555,9 @@ describe( 'core/modules modules', () => {
 				'should return %s',
 				async ( _, slug, expected, extraData = {} ) => {
 					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+						new RegExp(
+							'^/google-site-kit/v1/core/modules/data/list'
+						),
 						{
 							status: 200,
 							body: withActive( slug ).map( ( module ) =>
@@ -1223,7 +1588,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'returns undefined if modules is not yet available', async () => {
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					[]
 				);
 
@@ -1232,13 +1597,15 @@ describe( 'core/modules modules', () => {
 					.isModuleConnected( 'analytics' );
 
 				expect( isConnected ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 		} );
 
 		describe( 'getModuleFeatures', () => {
 			it( 'returns undefined when no modules are loaded', async () => {
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					[]
 				);
 				const featuresLoaded = registry
@@ -1247,9 +1614,11 @@ describe( 'core/modules modules', () => {
 
 				// The modules will be undefined whilst loading.
 				expect( featuresLoaded ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
-			it( 'returns features when modules are loaded', async () => {
+			it( 'returns features when modules are loaded', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
 
 				const featuresLoaded = registry
@@ -1261,7 +1630,7 @@ describe( 'core/modules modules', () => {
 				);
 			} );
 
-			it( 'returns an empty object when requesting features for a non-existent module', async () => {
+			it( 'returns an empty object when requesting features for a non-existent module', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
 
 				const featuresLoaded = registry
@@ -1275,7 +1644,9 @@ describe( 'core/modules modules', () => {
 		describe( 'hasModuleAccess', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
 					{ body: { access: true } }
 				);
 
@@ -1307,7 +1678,9 @@ describe( 'core/modules modules', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -1328,9 +1701,11 @@ describe( 'core/modules modules', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'should return undefined if module access is not resolved yet', () => {
+			it( 'should return undefined if module access is not resolved yet', async () => {
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
 					{ body: { access: true } }
 				);
 
@@ -1339,17 +1714,186 @@ describe( 'core/modules modules', () => {
 					.hasModuleAccess( 'search-console' );
 
 				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
+					'search-console'
+				);
+			} );
+		} );
+
+		describe( 'hasModuleOwnershipOrAccess', () => {
+			it( 'should return undefined if `getModules` is not resolved yet', async () => {
+				muteFetch(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					[]
+				);
+
+				const moduleStoreName = registry
+					.select( CORE_MODULES )
+					.getModuleStoreName( 'search-console' );
+
+				expect( moduleStoreName ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			} );
+
+			it( 'should return undefined if `moduleOwnerID` is not resolved yet', async () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/search-console/data/settings'
+					),
+					{
+						body: {
+							ownerID: 1,
+						},
+					}
+				);
+
+				const moduleOwnerID = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getOwnerID();
+
+				expect( moduleOwnerID ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getSettings();
+			} );
+
+			it( 'should return undefined if `getID` is not resolved yet', () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 1 );
+
+				const loggedInUserID = registry.select( CORE_USER ).getID();
+
+				expect( loggedInUserID ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+			} );
+
+			it( 'should return true if `moduleOwnerID` and `loggedInUserID` are equal', () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				provideUserInfo( registry, { id: 1 } );
+				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 1 );
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( true );
+			} );
+
+			it( 'should return false if access check is false when `moduleOwnerID` and `loggedInUserID` are not equal', async () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				provideUserInfo( registry, { id: 1 } );
+				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 2 );
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
+					{ body: { access: false } }
+				);
+
+				let moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( undefined );
+
+				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
+					'search-console'
+				);
+
+				moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( false );
+			} );
+
+			it( 'should return false if the module store cannot be found', () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				provideUserInfo( registry );
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'not-a-module' );
+
+				expect( moduleAccess ).toBe( false );
+			} );
+
+			it( 'should request the check-access endpoint if `moduleOwnerID` and `loggedInUserID` are not equal', async () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				provideUserInfo( registry, { id: 1 } );
+				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 2 );
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
+					{ body: { access: true } }
+				);
+
+				// `hasModuleAccess` not resolved yet.
+				let moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( undefined );
+
+				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
+					'search-console'
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				// `hasModuleAccess` resolved.
+				moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( true );
 			} );
 		} );
 
 		describe( 'getRecoverableModules', () => {
-			it( 'should return undefined if `recoverableModules` cannot be loaded', () => {
-				global[ dashboardSharingDataBaseVar ] = undefined;
-
+			it( 'should return undefined if the call to retrieve modules fails', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: {}, status: 400 }
 				);
+
+				const initialRecoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+				expect( initialRecoverableModules ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_MODULES
+				).getRecoverableModules();
 
 				const recoverableModules = registry
 					.select( CORE_MODULES )
@@ -1359,42 +1903,21 @@ describe( 'core/modules modules', () => {
 				expect( recoverableModules ).toBeUndefined();
 			} );
 
-			it( 'should return undefined if `modules` list cannot be loaded', () => {
-				global[ dashboardSharingDataBaseVar ] = recoverableModuleList;
-
+			it( 'should return an empty object if there are no recoverable modules', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
-				const recoverableModules = registry
+				const initialRecoverableModules = registry
 					.select( CORE_MODULES )
 					.getRecoverableModules();
+				expect( initialRecoverableModules ).toBeUndefined();
 
-				registry.select( CORE_MODULES ).getModules();
-
-				expect( recoverableModules ).toBeUndefined();
-			} );
-
-			it( 'should return an empty object if there is no `recoverableModules`', async () => {
-				global[ dashboardSharingDataBaseVar ] = {
-					recoverableModules: [],
-				};
-
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-
-				const initialModules = registry
-					.select( CORE_MODULES )
-					.getModules();
-				// The modules info will be its initial value while the modules
-				// info is fetched.
-				expect( initialModules ).toBeUndefined();
-				await untilResolved( registry, CORE_MODULES ).getModules();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				await untilResolved(
+					registry,
+					CORE_MODULES
+				).getRecoverableModules();
 
 				const recoverableModules = registry
 					.select( CORE_MODULES )
@@ -1403,34 +1926,175 @@ describe( 'core/modules modules', () => {
 				expect( recoverableModules ).toMatchObject( {} );
 			} );
 
-			it( 'should return the modules object for each recoverable modules', async () => {
-				global[ dashboardSharingDataBaseVar ] = recoverableModuleList;
-
+			it( 'should return the modules object for each recoverable module', async () => {
+				provideModuleRegistrations( registry );
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{
+						body: [ ...FIXTURES, ...allModules ],
+						status: 200,
+					}
 				);
 
-				const initialModules = registry
+				const initialRecoverableModules = registry
 					.select( CORE_MODULES )
-					.getModules();
-				// The modules info will be its initial value while the modules
-				// info is fetched.
-				expect( initialModules ).toBeUndefined();
-				await untilResolved( registry, CORE_MODULES ).getModules();
+					.getRecoverableModules();
+				expect( initialRecoverableModules ).toBeUndefined();
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				await untilResolved(
+					registry,
+					CORE_MODULES
+				).getRecoverableModules();
 
 				const recoverableModules = registry
 					.select( CORE_MODULES )
 					.getRecoverableModules();
 
 				expect( recoverableModules ).toMatchObject(
+					convertArrayListToKeyedObjectMap( externalModules, 'slug' )
+				);
+			} );
+		} );
+
+		describe( 'getSharedOwnershipModules', () => {
+			it( 'should return undefined if `sharedOwnershipModules` cannot be loaded', async () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				provideModules( registry, FIXTURES );
+
+				const sharedOwnershipModules = registry
+					.select( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				expect( console ).toHaveErrored();
+				expect( sharedOwnershipModules ).toBeUndefined();
+			} );
+
+			it( 'should return undefined if `modules` list cannot be loaded', async () => {
+				global[ dashboardSharingDataBaseVar ] =
+					sharedOwnershipModulesList;
+
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: FIXTURES, status: 200 }
+				);
+
+				registry.select( CORE_MODULES ).getSharedOwnershipModules();
+
+				const modules = registry.select( CORE_MODULES ).getModules();
+
+				expect( modules ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			} );
+
+			it( 'should return an empty object if there is no `sharedOwnershipModules`', async () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					sharedOwnershipModules: [],
+				};
+
+				provideModules( registry, FIXTURES );
+
+				const sharedOwnershipModules = await registry
+					.__experimentalResolveSelect( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				expect( sharedOwnershipModules ).toMatchObject( {} );
+			} );
+
+			it( 'should return the modules object for each shared ownership module', async () => {
+				global[ dashboardSharingDataBaseVar ] =
+					sharedOwnershipModulesList;
+
+				provideModules( registry, FIXTURES );
+
+				const sharedOwnershipModules = await registry
+					.__experimentalResolveSelect( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				expect( sharedOwnershipModules ).toMatchObject(
 					getModulesBySlugList(
-						recoverableModuleList.recoverableModules,
+						sharedOwnershipModulesList.sharedOwnershipModules,
 						fixturesKeyValue
 					)
 				);
+			} );
+		} );
+
+		describe( 'getShareableModules', () => {
+			it( 'should return undefined if the call to retrieve modules fails', async () => {
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: {}, status: 400 }
+				);
+
+				const initialShareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+				expect( initialShareableModules ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect( console ).toHaveErrored();
+				expect( shareableModules ).toBeUndefined();
+			} );
+
+			it( 'should return an empty object if there are no non-internal shareable modules', async () => {
+				// Create a version of the module fixtures where every module is
+				// marked as an internal module.
+				const fixturesWithAllModulesInternal = FIXTURES.map(
+					( module ) => {
+						return { ...module, internal: true };
+					}
+				);
+
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: fixturesWithAllModulesInternal, status: 200 }
+				);
+
+				const initialShareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+				expect( initialShareableModules ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect( Object.values( shareableModules ) ).toHaveLength( 0 );
+				expect( shareableModules ).toEqual( {} );
+			} );
+
+			it( 'should return the modules object for each non-internal shareable module', () => {
+				provideModuleRegistrations( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect(
+					Object.values( shareableModules ).every(
+						( module ) => module.shareable && ! module.internal
+					)
+				).toBeTruthy();
+
+				expect(
+					Object.values( shareableModules ).filter(
+						( module ) => module.shareable && ! module.internal
+					).length
+				).toEqual( Object.values( shareableModules ).length );
 			} );
 		} );
 	} );

@@ -81,19 +81,6 @@ final class Dashboard {
 				$this->add_widgets();
 			}
 		);
-
-		$wp_dashboard_callback = function() {
-			if ( 'dashboard' === get_current_screen()->id && current_user_can( Permissions::VIEW_DASHBOARD ) ) {
-				// Enqueue styles.
-				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard-css' );
-
-				// Enqueue scripts.
-				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard' );
-				$this->modules->enqueue_assets();
-			}
-		};
-
-		add_action( 'admin_enqueue_scripts', $wp_dashboard_callback, 30 );
 	}
 
 	/**
@@ -102,10 +89,16 @@ final class Dashboard {
 	 * @since 1.0.0
 	 */
 	private function add_widgets() {
-		// Only show the Dashboard Widget if the current user has access.
-		if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+		if ( ! current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
 			return;
 		}
+
+		// Enqueue styles.
+		$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard-css' );
+
+		// Enqueue scripts.
+		$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard' );
+		$this->modules->enqueue_assets();
 
 		wp_add_dashboard_widget(
 			'google_dashboard_widget',

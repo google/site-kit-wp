@@ -126,18 +126,17 @@ describe( 'numberFormat', () => {
 			'TypeError: Failed to initialize NumberFormat since used feature is not supported in the linked ICU version';
 
 		// Replicate a browser behaviour to throw errors when certain option key/values are encountered.
-		const createThrowIfOptionMatch = ( key, value ) => (
-			locales,
-			options = {}
-		) => {
-			if (
-				options[ key ] &&
-				( value === options[ key ] || value === undefined )
-			) {
-				throw new TypeError( errorMessage );
-			}
-			return NumberFormat( locales, options );
-		};
+		const createThrowIfOptionMatch =
+			( key, value ) =>
+			( locales, options = {} ) => {
+				if (
+					options[ key ] &&
+					( value === options[ key ] || value === undefined )
+				) {
+					throw new TypeError( errorMessage );
+				}
+				return NumberFormat( locales, options );
+			};
 
 		it( 'degrades gracefully when `signDisplay` has any value other than the default of `auto`', () => {
 			// Regular implementation.

@@ -26,9 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/Button';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
-import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -37,12 +36,12 @@ import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( MODULES_ANALYTICS ).getAccounts(),
-		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getAccounts'
-		),
-	} ) );
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccounts()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);

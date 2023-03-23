@@ -17,30 +17,34 @@
  */
 
 .googlesitekit-settings-module-warning {
-
-	&--settings {
-		margin-bottom: 1em;
-	}
-
-	&--modules-list {
-		font-size: 0.75rem;
-		margin: 1em 0;
-
-		.svg {
-			height: auto;
-			width: 15px;
-		}
-	}
+	font-size: $fs-body-md;
+	letter-spacing: $ls-s;
+	line-height: $lh-body-md;
 
 	svg {
-		color: $c-cinnabar;
+		color: $c-utility-warning;
 	}
+}
 
-	&--module-sitekit-dashboard {
-		margin-top: 1em;
-	}
+.googlesitekit-settings-module-warning--settings {
+	margin-bottom: 1em;
+}
 
-	&--module-dashboard {
-		margin-bottom: 1em;
+.googlesitekit-settings-module-warning--modules-list {
+	font-size: $fs-body-sm;
+	letter-spacing: $ls-xs;
+	margin: 1em 0;
+
+	.svg {
+		height: auto;
+		width: 15px;
 	}
+}
+
+.googlesitekit-settings-module-warning--module-sitekit-dashboard {
+	margin-top: 1em;
+}
+
+.googlesitekit-settings-module-warning--module-dashboard {
+	margin-bottom: 1em;
 }

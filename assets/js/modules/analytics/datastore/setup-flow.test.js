@@ -24,7 +24,6 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import {
 	MODULES_ANALYTICS,
-	SETUP_FLOW_MODE_LEGACY,
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
@@ -34,7 +33,13 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	provideModules,
+	untilResolved,
+	freezeFetch,
 } from '../../../../../tests/js/utils';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { parseLiveContainerVersionIDs } from '../../tagmanager/datastore/__factories__/utils';
+import * as gtmFixtures from '../../tagmanager/datastore/__fixtures__';
 
 const accountID = 'pub-12345678';
 
@@ -119,34 +124,11 @@ describe( 'modules/analytics setup-flow', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
-			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( new Error( 'foo' ), 'getProperties', [
-						'foo',
-						'bar',
-					] );
-
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( false );
-				expect(
-					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_LEGACY );
-			} );
-
-			it( 'should not return undefined if isAdminAPIWorking() returns undefined ', () => {
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBeUndefined();
-				expect(
-					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).not.toBeUndefined();
-			} );
-
-			it( 'should return undefined if settings are still loading', () => {
+			it( 'should return undefined if settings are still loading', async () => {
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{
 						body: {
 							accountID: 'pub-12345678',
@@ -161,14 +143,16 @@ describe( 'modules/analytics setup-flow', () => {
 				populateAnalytics4Datastore( registry );
 
 				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
-				expect(
 					registry.select( MODULES_ANALYTICS ).getSettings()
 				).toBeUndefined();
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getSettings();
 			} );
 
 			it( 'should return "ua" if there is no account selected', () => {
@@ -180,9 +164,6 @@ describe( 'modules/analytics setup-flow', () => {
 
 				populateAnalytics4Datastore( registry );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBe( SETUP_FLOW_MODE_UA );
@@ -208,9 +189,6 @@ describe( 'modules/analytics setup-flow', () => {
 					.setAccountID( accountID );
 				populateAnalyticsDatastore( registry );
 
-				// For isAdminAPIWorking() to return true:
-				// "The state['properties'] object has at least one account with a non-empty array of properties;"
-				// See: https://github.com/google/site-kit-wp/issues/3169
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 					[
 						{
@@ -256,9 +234,6 @@ describe( 'modules/analytics setup-flow', () => {
 					);
 
 				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
-				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBe( SETUP_FLOW_MODE_UA );
 			} );
@@ -270,9 +245,6 @@ describe( 'modules/analytics setup-flow', () => {
 
 				populateAnalytics4Datastore( registry );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBeUndefined();
@@ -289,9 +261,6 @@ describe( 'modules/analytics setup-flow', () => {
 					.receiveGetProperties( [], { accountID } );
 
 				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
-				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
@@ -303,9 +272,6 @@ describe( 'modules/analytics setup-flow', () => {
 				populateAnalytics4Datastore( registry );
 				populateAnalyticsDatastore( registry );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );
@@ -371,6 +337,186 @@ describe( 'modules/analytics setup-flow', () => {
 					.canUseGA4Controls();
 
 				expect( canUseControls ).toBe( true );
+			} );
+		} );
+
+		describe( 'hasFinishedLoadingGTMContainers', () => {
+			it( 'should return TRUE when the Google Tag Manager module is not connected', () => {
+				// Set the Tag Manager module to not be connected.
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						active: true,
+					},
+					{
+						slug: 'tagmanager',
+						name: 'Tag Manager',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				const hasFinishedLoading = registry
+					.select( MODULES_ANALYTICS )
+					.hasFinishedLoadingGTMContainers();
+
+				expect( hasFinishedLoading ).toBe( true );
+			} );
+
+			it( 'should return TRUE when the Google Tag Manager module is connected and the web containers are loaded', async () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						active: true,
+					},
+					{
+						slug: 'tagmanager',
+						name: 'Tag Manager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const webContainerVersion =
+					gtmFixtures.liveContainerVersions.web.gaWithVariable;
+				const gtmAccountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
+				const gtmContainerID = webContainerVersion.containerId; // eslint-disable-line sitekit/acronym-case
+
+				parseLiveContainerVersionIDs(
+					webContainerVersion,
+					( { internalContainerID, containerID } ) => {
+						registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
+							accountID: gtmAccountID,
+							containerID,
+							internalContainerID,
+							useSnippet: true,
+						} );
+						registry
+							.dispatch( MODULES_TAGMANAGER )
+							.receiveGetLiveContainerVersion(
+								webContainerVersion,
+								{
+									accountID: gtmAccountID,
+									internalContainerID,
+								}
+							);
+						registry
+							.select( MODULES_TAGMANAGER )
+							.getLiveContainerVersion(
+								gtmAccountID,
+								internalContainerID
+							);
+					}
+				);
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( gtmAccountID, gtmContainerID );
+				const hasFinishedLoading = registry
+					.select( MODULES_ANALYTICS )
+					.hasFinishedLoadingGTMContainers();
+
+				expect( hasFinishedLoading ).toBe( true );
+			} );
+
+			it( 'should return TRUE when the Google Tag Manager module is available and the AMP containers are loaded', async () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						active: true,
+					},
+					{
+						slug: 'tagmanager',
+						name: 'Tag Manager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const ampContainerVersion =
+					gtmFixtures.liveContainerVersions.amp.ga;
+				const gtmAccountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
+				const gtmAMPContainerID = ampContainerVersion.containerId; // eslint-disable-line sitekit/acronym-case
+
+				parseLiveContainerVersionIDs(
+					ampContainerVersion,
+					( { internalAMPContainerID, containerID } ) => {
+						registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
+							accountID: gtmAccountID,
+							containerID,
+							internalContainerID: internalAMPContainerID,
+							useSnippet: true,
+						} );
+						registry
+							.dispatch( MODULES_TAGMANAGER )
+							.setInternalAMPContainerID(
+								internalAMPContainerID
+							);
+						registry
+							.dispatch( MODULES_TAGMANAGER )
+							.receiveGetLiveContainerVersion(
+								ampContainerVersion,
+								{
+									accountID: gtmAccountID,
+									internalContainerID: internalAMPContainerID,
+								}
+							);
+						registry
+							.select( MODULES_TAGMANAGER )
+							.getLiveContainerVersion(
+								gtmAccountID,
+								internalAMPContainerID
+							);
+					}
+				);
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( gtmAccountID, gtmAMPContainerID );
+				const hasFinishedLoading = registry
+					.select( MODULES_ANALYTICS )
+					.hasFinishedLoadingGTMContainers();
+
+				expect( hasFinishedLoading ).toBe( true );
+			} );
+
+			it( 'should return FALSE when the selector is not resolved yet', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						active: true,
+					},
+					{
+						slug: 'tagmanager',
+						name: 'Tag Manager',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
+					accountID: 100,
+					containerID: 200,
+					internalContainerID: 200,
+					useSnippet: true,
+				} );
+
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
+				);
+
+				const hasFinishedLoading = registry
+					.select( MODULES_ANALYTICS )
+					.hasFinishedLoadingGTMContainers();
+
+				expect( hasFinishedLoading ).toBe( false );
 			} );
 		} );
 	} );

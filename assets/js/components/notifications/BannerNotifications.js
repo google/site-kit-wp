@@ -30,35 +30,59 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
-import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
+import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
+import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
+import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
+import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
+
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const userInputEnabled = useFeature( 'userInput' );
+	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
+	const gteSupportEnabled = useFeature( 'gteSupport' );
+
+	const viewOnly = useViewOnly();
+
+	const isAuthenticated = useSelect( ( select ) =>
+		select( CORE_USER ).isAuthenticated()
+	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
 
-	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
-	const userInputEnabled = useFeature( 'userInput' );
-
 	const [ notification ] = useQueryArg( 'notification' );
-
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	return (
 		<Fragment>
-			{ ( 'authentication_success' === notification ||
-				'user_input_success' === notification ) && (
-				<SetupSuccessBannerNotification />
+			{ ! viewOnly && (
+				<Fragment>
+					{ ( 'authentication_success' === notification ||
+						'user_input_success' === notification ) && (
+						<SetupSuccessBannerNotification />
+					) }
+					<EnableAutoUpdateBannerNotification />
+					{ isAuthenticated && <CoreSiteBannerNotifications /> }
+					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
+					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
+				</Fragment>
 			) }
-			<CoreSiteBannerNotifications />
-			{ zeroDataStatesEnabled && <ZeroDataStateNotifications /> }
-			{ userInputEnabled && <UserInputPromptBannerNotification /> }
-			{ ideaHubModuleEnabled && <IdeaHubPromptBannerNotification /> }
-			{ adSenseModuleActive && <AdSenseAlerts /> }
+			<ZeroDataStateNotifications />
+			{ ! viewOnly && (
+				<Fragment>
+					{ userInputEnabled && (
+						<UserInputPromptBannerNotification />
+					) }
+					{ adSenseModuleActive && <AdSenseAlerts /> }
+					{ gteSupportEnabled && <GoogleTagIDMismatchNotification /> }
+				</Fragment>
+			) }
 		</Fragment>
 	);
 }

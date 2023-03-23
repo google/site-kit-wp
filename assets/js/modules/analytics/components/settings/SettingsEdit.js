@@ -20,18 +20,14 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
+import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
-import ProgressBar from '../../../../components/ProgressBar';
-import {
-	AccountCreate,
-	AccountCreateLegacy,
-	ExistingTagError,
-	ExistingGTMPropertyError,
-} from '../common';
+import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
@@ -40,12 +36,6 @@ export default function SettingsEdit() {
 		[];
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
-	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTagPermission()
 	);
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
@@ -57,39 +47,35 @@ export default function SettingsEdit() {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const {
-		hasGTMAnalyticsPropertyID,
-		hasGTMAnalyticsPropertyIDPermission,
-	} = useSelect( ( select ) => {
-		const gtmPropertyID = select(
-			MODULES_TAGMANAGER
-		).getSingleAnalyticsPropertyID();
-		return {
-			hasGTMAnalyticsPropertyID: !! gtmPropertyID,
-			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID
-				? select( MODULES_ANALYTICS ).hasTagPermission( gtmPropertyID )
-				: false,
-		};
+	const hasAnalyticsAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' )
+	);
+
+	const hasAnalytics4Access = useSelect( ( select ) => {
+		// Prevent the access check from erroring if GA4 isn't connected yet.
+		if ( ! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
+			return true;
+		}
+		return select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+			'analytics-4'
+		);
 	} );
 
-	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
+	useExistingGA4TagEffect();
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isDoingSubmitChanges || ! hasResolvedAccounts ) {
-		viewComponent = <ProgressBar />;
-	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
-		viewComponent = <ExistingTagError />;
-	} else if (
-		! hasExistingTag &&
-		hasGTMAnalyticsPropertyID &&
-		! hasGTMAnalyticsPropertyIDPermission
+	if (
+		isDoingSubmitChanges ||
+		! hasResolvedAccounts ||
+		hasAnalyticsAccess === undefined ||
+		hasAnalytics4Access === undefined
 	) {
-		viewComponent = <ExistingGTMPropertyError />;
+		viewComponent = <ProgressBar />;
 	} else if ( ! accounts.length || isCreateAccount ) {
 		viewComponent = usingProxy ? (
 			<AccountCreate />
@@ -97,7 +83,12 @@ export default function SettingsEdit() {
 			<AccountCreateLegacy />
 		);
 	} else {
-		viewComponent = <SettingsForm />;
+		viewComponent = (
+			<SettingsForm
+				hasAnalyticsAccess={ hasAnalyticsAccess }
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
+		);
 	}
 
 	return (

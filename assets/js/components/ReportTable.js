@@ -20,14 +20,13 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import get from 'lodash/get';
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 
 /**
  * Internal dependencies.
  */
-import { useFeature } from '../hooks/useFeature';
 import GatheringDataNotice from './GatheringDataNotice';
 
 export default function ReportTable( {
@@ -38,8 +37,6 @@ export default function ReportTable( {
 	zeroState: ZeroState,
 	gatheringData = false,
 } ) {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-
 	invariant( Array.isArray( rows ), 'rows must be an array.' );
 	invariant( Array.isArray( columns ), 'columns must be an array.' );
 	columns.forEach( ( { Component, field = null } ) => {
@@ -87,7 +84,8 @@ export default function ReportTable( {
 									className={ classnames(
 										'googlesitekit-table__head-item',
 										{
-											'googlesitekit-table__head-item--primary': primary,
+											'googlesitekit-table__head-item--primary':
+												primary,
 										},
 										{ 'hidden-on-mobile': hideOnMobile },
 										columnClassName
@@ -103,28 +101,26 @@ export default function ReportTable( {
 				</thead>
 
 				<tbody className="googlesitekit-table__body">
-					{ zeroDataStatesEnabled && gatheringData && (
-						<tr className="googlesitekit-table__body-row">
+					{ gatheringData && (
+						<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
 							<td
-								className="googlesitekit-table__body-item googlesitekit-table__body-item-wrap"
+								className="googlesitekit-table__body-item"
 								colSpan={ columns.length }
 							>
 								<GatheringDataNotice />
 							</td>
 						</tr>
 					) }
-					{ ( ! zeroDataStatesEnabled || ! gatheringData ) &&
-						! rows?.length &&
-						ZeroState && (
-							<tr className="googlesitekit-table__body-row">
-								<td
-									className="googlesitekit-table__body-item googlesitekit-table__body-item-wrap"
-									colSpan={ columns.length }
-								>
-									<ZeroState />
-								</td>
-							</tr>
-						) }
+					{ ! gatheringData && ! rows?.length && ZeroState && (
+						<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
+							<td
+								className="googlesitekit-table__body-item"
+								colSpan={ columns.length }
+							>
+								<ZeroState />
+							</td>
+						</tr>
+					) }
 
 					{ ! gatheringData &&
 						rows.slice( 0, limit ).map( ( row, rowIndex ) => (
@@ -152,7 +148,8 @@ export default function ReportTable( {
 												className={ classnames(
 													'googlesitekit-table__body-item',
 													{
-														'hidden-on-mobile': hideOnMobile,
+														'hidden-on-mobile':
+															hideOnMobile,
 													},
 													columnClassName
 												) }

@@ -27,38 +27,24 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
+import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import {
-	trackingExclusionLabels,
-	AUTO_ADS_LOGGED_IN_USERS,
-	AUTO_ADS_CONTENT_CREATORS,
-} from '../common/AutoAdExclusionSwitches';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import {
-	ACCOUNT_STATUS_DISAPPROVED,
-	ACCOUNT_STATUS_GRAYLISTED,
-	ACCOUNT_STATUS_PENDING,
-	ACCOUNT_STATUS_NO_CLIENT,
-	ACCOUNT_STATUS_APPROVED,
-} from '../../util/status';
 import { ErrorNotices } from '../common';
+import {
+	getAccountStatusLabel,
+	getSiteStatusLabel,
+	getSiteStatusLinkLabel,
+	getSnippetLabel,
+	getAutoAdsDisabledMessage,
+} from './utils';
 const { useSelect } = Data;
 
 export default function SettingsView() {
+	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
-	);
-	const clientID = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getClientID()
-	);
-	const accountStatus = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAccountStatus()
-	);
-	const useSnippet = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getUseSnippet()
-	);
-	const existingTag = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getExistingTag()
 	);
 	const siteStatusURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceAccountManageSitesURL()
@@ -69,76 +55,34 @@ export default function SettingsView() {
 	const webStoriesAdUnit = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getWebStoriesAdUnit()
 	);
+	const accountStatus = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountStatus()
+	);
+	const siteStatus = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getSiteStatus()
+	);
+	const useSnippet = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getUseSnippet()
+	);
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingTag()
+	);
+	const clientID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getClientID()
+	);
 	const autoAdsDisabled = useSelect(
 		( select ) => select( MODULES_ADSENSE ).getAutoAdsDisabled() || []
 	);
 
-	let accountStatusLabel;
-	switch ( accountStatus ) {
-		case ACCOUNT_STATUS_APPROVED:
-			accountStatusLabel = __(
-				'Your account has been approved',
-				'google-site-kit'
-			);
-			break;
-		case ACCOUNT_STATUS_PENDING:
-		case ACCOUNT_STATUS_GRAYLISTED:
-			accountStatusLabel = __(
-				'We’re getting your site ready for ads. This usually takes less than a day, but it can sometimes take a bit longer',
-				'google-site-kit'
-			);
-			break;
-		case ACCOUNT_STATUS_NO_CLIENT:
-		case ACCOUNT_STATUS_DISAPPROVED:
-			accountStatusLabel = __(
-				'You need to fix some issues before your account is approved. Go to AdSense to find out how to fix it',
-				'google-site-kit'
-			);
-			break;
-		default:
-			accountStatusLabel = __(
-				'Your site isn’t ready to show ads yet',
-				'google-site-kit'
-			);
-	}
+	const accountStatusLabel = getAccountStatusLabel( accountStatus );
 
-	let useSnippetLabel;
-	if ( useSnippet ) {
-		useSnippetLabel = __(
-			'The AdSense code has been placed on your site',
-			'google-site-kit'
-		);
-	} else if ( existingTag && existingTag === clientID ) {
-		useSnippetLabel = __(
-			'The AdSense code has been placed by another plugin or theme',
-			'google-site-kit'
-		);
-	} else {
-		useSnippetLabel = __(
-			'The AdSense code has not been placed on your site',
-			'google-site-kit'
-		);
-	}
+	const siteStatusLabel = getSiteStatusLabel( siteStatus );
 
-	let autoAdsDisabledMessage = __(
-		'Ads are currently displayed for all visitors',
-		'google-site-kit'
-	);
-	if (
-		autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) &&
-		autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS )
-	) {
-		autoAdsDisabledMessage = __(
-			'All logged-in users and users who can write posts',
-			'google-site-kit'
-		);
-	} else if ( autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) ) {
-		autoAdsDisabledMessage =
-			trackingExclusionLabels[ AUTO_ADS_LOGGED_IN_USERS ];
-	} else if ( autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS ) ) {
-		autoAdsDisabledMessage =
-			trackingExclusionLabels[ AUTO_ADS_CONTENT_CREATORS ];
-	}
+	const siteStatusLinkLabel = getSiteStatusLinkLabel( adsenseSetupV2Enabled );
+
+	const snippetLabel = getSnippetLabel( useSnippet, existingTag, clientID );
+
+	const autoAdsDisabledMessage = getAutoAdsDisabledMessage( autoAdsDisabled );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
@@ -166,16 +110,17 @@ export default function SettingsView() {
 						{ __( 'Site Status', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
+						{ adsenseSetupV2Enabled && siteStatusLabel + ' ' }
 						<Link
 							href={ siteStatusURL }
 							className="googlesitekit-settings-module__cta-button"
-							inherit
 							external
+							disabled={ siteStatusURL === undefined }
+							hideExternalIndicator={
+								siteStatusURL === undefined
+							}
 						>
-							{ __(
-								'Check your site status',
-								'google-site-kit'
-							) }
+							{ siteStatusLinkLabel }
 						</Link>
 					</p>
 				</div>
@@ -187,7 +132,7 @@ export default function SettingsView() {
 						{ __( 'AdSense Code', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ useSnippetLabel }
+						{ snippetLabel }
 					</p>
 				</div>
 			</div>

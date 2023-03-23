@@ -52,6 +52,10 @@ const fetchGetSitesStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, sites, { accountID } ) => {
+		if ( ! Array.isArray( sites ) ) {
+			return state;
+		}
+
 		return {
 			...state,
 			sites: {

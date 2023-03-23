@@ -120,8 +120,7 @@ describe( 'Tag Manager module setup', () => {
 			await page.evaluate( () => {
 				window.open = () => {
 					window._e2eApiFetch( {
-						path:
-							'google-site-kit/v1/e2e/setup/tagmanager/account-created',
+						path: 'google-site-kit/v1/e2e/setup/tagmanager/account-created',
 						method: 'post',
 					} );
 				};
@@ -152,15 +151,11 @@ describe( 'Tag Manager module setup', () => {
 			await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 			// Ensure account and container selections are cleared.
-			await expect(
-				page
-			).toMatchElement(
+			await expect( page ).toMatchElement(
 				'.googlesitekit-tagmanager__select-account .mdc-select__selected-text',
 				{ text: '' }
 			);
-			await expect(
-				page
-			).toMatchElement(
+			await expect( page ).toMatchElement(
 				'.googlesitekit-tagmanager__select-container .mdc-select__selected-text',
 				{ text: '' }
 			);
@@ -195,7 +190,7 @@ describe( 'Tag Manager module setup', () => {
 
 			await pageWait( 1000 );
 			await expect( page ).toClick( 'button', {
-				text: /confirm \& continue/i,
+				text: new RegExp( 'confirm & continue', 'i' ),
 			} );
 
 			await page.waitForSelector(
@@ -211,7 +206,10 @@ describe( 'Tag Manager module setup', () => {
 			// Ensure expected tag is placed.
 			await Promise.all( [
 				page.goto( createURL( '/' ) ),
-				page.waitForNavigation(),
+				page.waitForNavigation( {
+					waitUntil: 'networkidle2',
+					timeout: 0,
+				} ),
 			] );
 			await expect( page ).toMatchElement(
 				'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-ABCXYZ"]'
@@ -233,15 +231,11 @@ describe( 'Tag Manager module setup', () => {
 			);
 
 			// Ensure account and container are not yet selected.
-			await expect(
-				page
-			).toMatchElement(
+			await expect( page ).toMatchElement(
 				'.googlesitekit-tagmanager__select-account .mdc-select__selected-text',
 				{ text: '' }
 			);
-			await expect(
-				page
-			).toMatchElement(
+			await expect( page ).toMatchElement(
 				'.googlesitekit-tagmanager__select-container .mdc-select__selected-text',
 				{ text: '' }
 			);
@@ -263,9 +257,7 @@ describe( 'Tag Manager module setup', () => {
 			] );
 
 			// Ensure account is selected.
-			await expect(
-				page
-			).toMatchElement(
+			await expect( page ).toMatchElement(
 				'.googlesitekit-tagmanager__select-account .mdc-select__selected-text',
 				{ text: /test account b/i }
 			);
@@ -294,7 +286,7 @@ describe( 'Tag Manager module setup', () => {
 
 			await pageWait( 1000 );
 			await expect( page ).toClick( 'button', {
-				text: /confirm \& continue/i,
+				text: new RegExp( 'confirm & continue', 'i' ),
 			} );
 
 			await page.waitForSelector(
@@ -310,7 +302,10 @@ describe( 'Tag Manager module setup', () => {
 			// Ensure expected tag is placed.
 			await Promise.all( [
 				page.goto( createURL( '/' ) ),
-				page.waitForNavigation(),
+				page.waitForNavigation( {
+					waitUntil: 'networkidle2',
+					timeout: 0,
+				} ),
 			] );
 			await expect( page ).toMatchElement(
 				'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-BCDWXY"]'
@@ -357,9 +352,7 @@ describe( 'Tag Manager module setup', () => {
 					text: /create an account/i,
 				}
 			);
-			await expect(
-				page
-			).toMatchElement(
+			await expect( page ).toMatchElement(
 				'.googlesitekit-setup-module .googlesitekit-cta-link',
 				{ text: /re-fetch my account/i }
 			);
@@ -391,18 +384,14 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement(
 					'.googlesitekit-tagmanager__select-container--web'
 				);
-				await expect(
-					page
-				).toMatchElement(
+				await expect( page ).toMatchElement(
 					'.googlesitekit-tagmanager__select-container--web .mdc-floating-label',
 					{ text: 'Web Container' }
 				);
 				await expect( page ).toMatchElement(
 					'.googlesitekit-tagmanager__select-container--amp'
 				);
-				await expect(
-					page
-				).toMatchElement(
+				await expect( page ).toMatchElement(
 					'.googlesitekit-tagmanager__select-container--amp .mdc-floating-label',
 					{ text: 'AMP Container' }
 				);
@@ -423,7 +412,7 @@ describe( 'Tag Manager module setup', () => {
 						}
 					);
 					await expect( page ).toClick( 'button:not(:disabled)', {
-						text: /confirm \& continue/i,
+						text: new RegExp( 'confirm & continue', 'i' ),
 					} );
 					await page.waitForSelector(
 						'.googlesitekit-publisher-win--win-success'
@@ -434,9 +423,13 @@ describe( 'Tag Manager module setup', () => {
 							text: /Congrats on completing the setup for Tag Manager!/i,
 						}
 					);
-					await page.goto( createURL( '/', 'amp' ), {
-						waitUntil: 'load',
-					} );
+					await Promise.all( [
+						page.goto( createURL( '/', 'amp' ) ),
+						page.waitForNavigation( {
+							waitUntil: 'networkidle2',
+							timeout: 0,
+						} ),
+					] );
 				} );
 
 				it( 'validates homepage AMP for logged-in users', async () => {

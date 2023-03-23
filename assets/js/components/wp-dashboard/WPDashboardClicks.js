@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -31,19 +30,15 @@ import {
 	MODULES_SEARCH_CONSOLE,
 } from '../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { isZeroReport } from '../../modules/search-console/util';
-import { calculateChange, trackEvent } from '../../util';
+import { calculateChange } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-
+const WPDashboardClicks = ( { WidgetReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -73,16 +68,11 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 	);
 	const loading = useSelect(
 		( select ) =>
-			! select(
-				MODULES_SEARCH_CONSOLE
-			).hasFinishedResolution( 'getReport', [ reportArgs ] )
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'getReport',
+				[ reportArgs ]
+			)
 	);
-
-	useEffect( () => {
-		if ( error ) {
-			trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		}
-	}, [ error ] );
 
 	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="48%" height="92px" />;
@@ -94,10 +84,6 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 		);
 	}
 
-	if ( ! zeroDataStatesEnabled && isGatheringData && isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="search-console" />;
-	}
-
 	const { compareRange, currentRange } = partitionReport( data, {
 		dateRangeLength,
 	} );
@@ -105,12 +91,10 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
+	const gatheringDataProps = {
+		gatheringData: isGatheringData,
+		gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+	};
 
 	return (
 		<DataBlock

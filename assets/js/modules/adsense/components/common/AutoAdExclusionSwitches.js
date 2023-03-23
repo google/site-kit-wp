@@ -26,8 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Switch } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import Switch from '../../../../components/Switch';
+
 const { useSelect, useDispatch } = Data;
 
 export const AUTO_ADS_LOGGED_IN_USERS = 'loggedinUsers';
@@ -140,7 +141,7 @@ export default function AutoAdExclusionSwitches() {
 					</div>
 				) }
 			</div>
-			<p className="googlesitekit-margin-top-0">{ message }</p>
+			<p>{ message }</p>
 		</fieldset>
 	);
 }

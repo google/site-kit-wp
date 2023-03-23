@@ -159,6 +159,7 @@ final class PageSpeed_Insights extends Module
 						'googlesitekit-data',
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
+						'googlesitekit-components',
 					),
 				)
 			),

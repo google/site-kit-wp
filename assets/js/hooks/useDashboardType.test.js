@@ -21,10 +21,10 @@
  */
 import { renderHook } from '../../../tests/js/test-utils';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_PAGE_DASHBOARD,
-	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
 } from '../googlesitekit/constants';
 import useDashboardType, {
@@ -39,39 +39,39 @@ describe( 'useDashboardType', () => {
 		expect( result.current ).toBeNull();
 	} );
 
-	it( 'should return DASHBOARD_TYPE_MAIN for VIEW_CONTEXT_DASHBOARD view context', () => {
+	it( 'should return DASHBOARD_TYPE_MAIN for VIEW_CONTEXT_MAIN_DASHBOARD view context', () => {
 		const { result } = renderHook( () => useDashboardType(), {
-			viewContext: VIEW_CONTEXT_DASHBOARD,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( result.current ).toEqual( DASHBOARD_TYPE_MAIN );
 	} );
 
-	it( 'should return DASHBOARD_TYPE_MAIN for VIEW_CONTEXT_DASHBOARD_VIEW_ONLY view context', () => {
+	it( 'should return DASHBOARD_TYPE_MAIN for VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY view context', () => {
 		const { result } = renderHook( () => useDashboardType(), {
-			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
 		expect( result.current ).toEqual( DASHBOARD_TYPE_MAIN );
 	} );
 
-	it( 'should return DASHBOARD_TYPE_ENTITY for VIEW_CONTEXT_PAGE_DASHBOARD view context', () => {
+	it( 'should return DASHBOARD_TYPE_ENTITY for VIEW_CONTEXT_ENTITY_DASHBOARD view context', () => {
 		const { result } = renderHook( () => useDashboardType(), {
-			viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
+			viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 		} );
 
 		expect( result.current ).toEqual( DASHBOARD_TYPE_ENTITY );
 	} );
 
-	it( 'should return DASHBOARD_TYPE_ENTITY for VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY view context', () => {
+	it( 'should return DASHBOARD_TYPE_ENTITY for VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY view context', () => {
 		const { result } = renderHook( () => useDashboardType(), {
-			viewContext: VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+			viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 		} );
 
 		expect( result.current ).toEqual( DASHBOARD_TYPE_ENTITY );
 	} );
 
-	it( 'should return null when view context is not a Unified Dashboard type (eg not VIEW_CONTEXT_DASHBOARD or VIEW_CONTEXT_PAGE_DASHBOARD)', () => {
+	it( 'should return null when view context is not a Unified Dashboard type (eg not VIEW_CONTEXT_MAIN_DASHBOARD or VIEW_CONTEXT_ENTITY_DASHBOARD)', () => {
 		const { result } = renderHook( () => useDashboardType(), {
 			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );

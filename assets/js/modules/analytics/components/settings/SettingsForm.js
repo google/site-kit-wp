@@ -25,41 +25,57 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import {
 	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
-	ExistingTagNotice,
-	TrackingExclusionSwitches,
 	ExistingGTMPropertyNotice,
+	TrackingExclusionSwitches,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
+import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../util';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-export default function SettingsForm() {
+export default function SettingsForm( {
+	hasAnalyticsAccess,
+	hasAnalytics4Access,
+} ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-
 	const useAnalyticsSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const useTagManagerSnippet = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getUseSnippet()
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
 	);
-	const analyticsSinglePropertyID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	const useTagManagerSnippet = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getUseSnippet()
+	);
+	const analyticsSinglePropertyID = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 	const showTrackingExclusion =
 		useAnalyticsSnippet ||
 		( useTagManagerSnippet && analyticsSinglePropertyID );
+
+	const gtmContainersResolved = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
+	);
+
+	if ( ! gtmContainersResolved ) {
+		return <ProgressBar />;
+	}
 
 	return (
 		<Fragment>
@@ -67,12 +83,16 @@ export default function SettingsForm() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingTagNotice />
-			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
+			<ExistingGTMPropertyNotice
+				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
+			/>
 
-			<SettingsControls />
+			<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
 
-			<GA4SettingsControls />
+			<GA4SettingsControls
+				hasAnalyticsAccess={ hasAnalyticsAccess }
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
@@ -80,6 +100,10 @@ export default function SettingsForm() {
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
 				</Fragment>
+			) }
+
+			{ hasAnalyticsAccess && (
+				<EntityOwnershipChangeNotice slug="analytics" />
 			) }
 		</Fragment>
 	);

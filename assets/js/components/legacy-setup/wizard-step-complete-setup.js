@@ -30,16 +30,15 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../material-components';
 import { trackEvent } from '../../util';
-import Button from '../Button';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {
 		super( props );
-		const {
-			hasSearchConsoleProperty,
-		} = global._googlesitekitLegacyData.setup;
+		const { hasSearchConsoleProperty } =
+			global._googlesitekitLegacyData.setup;
 
 		// Search console property is set for all but the first user.
 		if ( hasSearchConsoleProperty ) {

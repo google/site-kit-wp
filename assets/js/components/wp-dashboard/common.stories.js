@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../tests/js/utils';
+import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
@@ -55,6 +55,21 @@ const wpDashboardAnalyticsOptionSets = [
 				alias: 'Total Users',
 			},
 		],
+	},
+
+	// Mock options for mocking "Total Users" chart widget response.
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Total Users',
+			},
+		],
+		dimensions: [ 'ga:date' ],
 	},
 
 	// Mock options for mocking "Sessions" report's response.
@@ -109,7 +124,15 @@ export const setupBaseRegistry = ( registry, args ) => {
 			active: true,
 			connected: true,
 		},
+		{
+			slug: 'analytics-4',
+			active: true,
+			connected: true,
+		},
 	] );
+
+	// Set some site information.
+	provideSiteInfo( registry );
 
 	// Call story-specific setup.
 	if ( typeof args?.setupRegistry === 'function' ) {
@@ -153,10 +176,16 @@ export const setupSearchConsoleAnalyticsMockReports = ( registry ) => {
 
 export const widgetDecorators = [
 	( Story ) => (
-		<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<Story />
+		<div id="dashboard-widgets">
+			<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
+				<div className="inside">
+					<div className="googlesitekit-wp-dashboard">
+						<div className="googlesitekit-widget">
+							<div className="googlesitekit-widget__body">
+								<Story />
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
