@@ -281,8 +281,9 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
  * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
  */
 export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
-	const isGA4Enabled = isFeatureEnabled( 'ga4Reporting' );
-	if ( ! isGA4Enabled ) {
+	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
+
+	if ( ! ga4ReportingEnabled ) {
 		return false;
 	}
 
@@ -301,3 +302,57 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 
 	return dashboardView === DASHBOARD_VIEW_GA4;
 } );
+
+/**
+ * Determines whether the user should be prompted to switch to GA4 Dashboard View.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean} True if the user should be prompted to switch to the GA4 Dashboard View, false otherwise, or undefined if not loaded.
+ */
+export const shouldPromptGA4DashboardView = createRegistrySelector(
+	( select ) => () => {
+		const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
+
+		if ( ! ga4ReportingEnabled ) {
+			return false;
+		}
+
+		const ga4ModuleConnected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+		if ( ga4ModuleConnected === undefined ) {
+			return undefined;
+		}
+
+		if ( ! ga4ModuleConnected ) {
+			return false;
+		}
+
+		const ga4DashboardView =
+			select( MODULES_ANALYTICS ).isGA4DashboardView();
+
+		if ( ga4DashboardView === undefined ) {
+			return undefined;
+		}
+
+		// Don't prompt if the user is already on the GA4 Dashboard.
+		if ( ga4DashboardView ) {
+			return false;
+		}
+
+		const ga4GatheringData =
+			select( MODULES_ANALYTICS_4 ).isGatheringData();
+
+		if ( ga4GatheringData === undefined ) {
+			return undefined;
+		}
+
+		// Don't prompt if GA4 is still gathering data.
+		if ( ga4GatheringData ) {
+			return false;
+		}
+
+		return true;
+	}
+);

@@ -39,6 +39,7 @@ import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
+import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
 
 const { useSelect } = Data;
 
@@ -47,6 +48,7 @@ export default function BannerNotifications() {
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 	const gteSupportEnabled = useFeature( 'gteSupport' );
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewOnly = useViewOnly();
 
@@ -55,6 +57,10 @@ export default function BannerNotifications() {
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
+	);
+
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
 
 	const [ notification ] = useQueryArg( 'notification' );
@@ -81,6 +87,9 @@ export default function BannerNotifications() {
 					) }
 					{ adSenseModuleActive && <AdSenseAlerts /> }
 					{ gteSupportEnabled && <GoogleTagIDMismatchNotification /> }
+					{ ga4ReportingEnabled && analyticsModuleConnected && (
+						<SwitchGA4DashboardViewNotification />
+					) }
 				</Fragment>
 			) }
 		</Fragment>
