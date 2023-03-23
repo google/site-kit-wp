@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SettingsNoticeSingleRow from './SettingsNoticeSingleRow';
 import SettingsNoticeMultiRow from './SettingsNoticeMultiRow';
 import {
@@ -33,11 +34,25 @@ import {
 	TYPE_SUGGESTION,
 	getIconFromType,
 } from './utils';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { Button } from 'googlesitekit-components';
+
+const { useSelect, useDispatch } = Data;
 
 export default function SettingsNotice( props ) {
-	const { children, type, Icon = getIconFromType( type ) } = props;
+	const { children, type, dismiss, Icon = getIconFromType( type ) } = props;
+
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( dismiss )
+	);
 
 	const Layout = children ? SettingsNoticeMultiRow : SettingsNoticeSingleRow;
+
+	if ( isDismissed ) {
+		return null;
+	}
 
 	return (
 		<div
@@ -57,6 +72,19 @@ export default function SettingsNotice( props ) {
 			<div className="googlesitekit-settings-notice__body">
 				<Layout { ...props } />
 			</div>
+			{ dismiss && (
+				<div className="googlesitekit-settings-notice__button">
+					<Button
+						onClick={ () => {
+							// Don't return the result here to avoid
+							// added delay in the dismissal.
+							dismissItem( dismiss );
+						} }
+					>
+						OK, Got it!
+					</Button>
+				</div>
+			) }
 		</div>
 	);
 }
@@ -68,6 +96,7 @@ SettingsNotice.propTypes = {
 	type: PropTypes.oneOf( [ TYPE_INFO, TYPE_WARNING, TYPE_SUGGESTION ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
+	dismiss: PropTypes.string,
 };
 
 SettingsNotice.defaultProps = {
