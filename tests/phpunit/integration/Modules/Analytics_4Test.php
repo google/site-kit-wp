@@ -334,14 +334,6 @@ class Analytics_4Test extends TestCase {
 	 * @dataProvider data_create_account_ticket_required_parameters
 	 */
 	public function test_create_account_ticket__required_parameters( $required_param ) {
-		$valid_params = array(
-			'displayName'    => 'test account name',
-			'regionCode'     => 'US',
-			'propertyName'   => 'test property name',
-			'dataStreamName' => 'test stream name',
-			'timezone'       => 'UTC',
-		);
-
 		$provision_account_ticket_request = null;
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
@@ -368,7 +360,14 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$data = $valid_params;
+		$data = array(
+			'displayName'    => 'test account name',
+			'regionCode'     => 'US',
+			'propertyName'   => 'test property name',
+			'dataStreamName' => 'test stream name',
+			'timezone'       => 'UTC',
+		);
+		// Remove the required parameter under test.
 		unset( $data[ $required_param ] );
 
 		$response = $this->analytics->set_data( 'create-account-ticket', $data );
