@@ -5,6 +5,7 @@ namespace Google\Site_Kit\Core\CLI;
 use Exception;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\CLI\Traits\CLI_Auth;
+use Google\Site_Kit\Core\CLI\Traits\Runtime_Input;
 use Google\Site_Kit_Dependencies\Google\Service\SiteVerification;
 use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceResource;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
@@ -21,6 +22,7 @@ use function WP_CLI\Utils\get_flag_value;
  */
 class Site_Verification_CLI_Command extends CLI_Command {
 	use CLI_Auth;
+	use Runtime_Input;
 
 	/**
 	 * Lists all Site Verifications for a user.
