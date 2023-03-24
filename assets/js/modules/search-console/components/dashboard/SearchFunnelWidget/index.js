@@ -417,7 +417,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 					dataLabels={ [
 						__( 'Unique Visitors', 'google-site-kit' ),
 					] }
-					dataFormats={ [
+					tooltipDataFormats={ [
 						( x ) => parseFloat( x ).toLocaleString(),
 					] }
 					statsColor={
@@ -440,7 +440,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 							__( 'Goals', 'google-site-kit' ),
 							__( 'Bounce Rate %', 'google-site-kit' ),
 						] }
-						dataFormats={ [
+						tooltipDataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
 							( x ) =>
 								numFmt( x / 100, {

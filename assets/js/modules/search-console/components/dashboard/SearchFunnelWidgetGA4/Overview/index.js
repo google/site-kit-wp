@@ -118,8 +118,8 @@ const Overview = ( {
 
 	let ga4ConversionsChange = null;
 	let ga4ConversionsDatapoint = null;
-	let ga4EngagedSessionsDatapoint = null;
-	let ga4EngagedSessionsChange = null;
+	let ga4EngagementRateDatapoint = null;
+	let ga4EngagementRateChange = null;
 	let ga4VisitorsDatapoint = null;
 	let ga4VisitorsChange = null;
 
@@ -137,8 +137,8 @@ const Overview = ( {
 			ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 		( {
-			datapoint: ga4EngagedSessionsDatapoint,
-			change: ga4EngagedSessionsChange,
+			datapoint: ga4EngagementRateDatapoint,
+			change: ga4EngagementRateChange,
 		} = getDatapointAndChange( ga4Data, 1 ) );
 
 		ga4VisitorsDatapoint =
@@ -245,8 +245,9 @@ const Overview = ( {
 						id: 'engagement-rate',
 						stat: 4,
 						title: __( 'Engagement Rate', 'google-site-kit' ),
-						datapoint: ga4EngagedSessionsDatapoint,
-						change: ga4EngagedSessionsChange,
+						datapoint: ga4EngagementRateDatapoint,
+						datapointUnit: '%',
+						change: ga4EngagementRateChange,
 						isGatheringData: isGA4GatheringData,
 					},
 			  ]
