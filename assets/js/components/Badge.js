@@ -28,9 +28,10 @@ import PropTypes from 'prop-types';
 import { forwardRef } from '@wordpress/element';
 
 const Badge = forwardRef(
-	( { label, className, hasLeftSpacing = false }, ref ) => (
+	( { label, className, hasLeftSpacing = false, ...rest }, ref ) => (
 		<span
 			ref={ ref }
+			{ ...rest }
 			className={ classnames( 'googlesitekit-badge', className, {
 				'googlesitekit-badge--has-left-spacing': hasLeftSpacing,
 			} ) }
