@@ -38,10 +38,10 @@ import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
-import { useFeature } from '../../hooks/useFeature';
 import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -78,8 +78,9 @@ const WPDashboardSessionDurationGA4Widget = withWidgetComponentProps(
 )( WPDashboardSessionDurationGA4 );
 
 const WPDashboardWidgets = () => {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
 	const analyticsModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
@@ -102,14 +103,14 @@ const WPDashboardWidgets = () => {
 				}
 			) }
 		>
-			{ analyticsModuleActiveAndConnected && ! ga4ReportingEnabled && (
+			{ analyticsModuleActiveAndConnected && ! isGA4DashboardView && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
 					<WPDashboardSessionDurationWidget />
 				</Fragment>
 			) }
 
-			{ analyticsModuleActiveAndConnected && ga4ReportingEnabled && (
+			{ analyticsModuleActiveAndConnected && isGA4DashboardView && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsGA4Widget />
 					<WPDashboardSessionDurationGA4Widget />

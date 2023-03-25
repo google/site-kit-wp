@@ -1,7 +1,7 @@
 /**
- * CurrentSurveyPortal component.
+ * GA4 Dashboard Widget Switcher component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,35 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import CurrentSurvey from './CurrentSurvey';
-import Portal from '../Portal';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 const { useSelect } = Data;
 
-export default function CurrentSurveyPortal() {
-	const currentSurvey = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy() &&
-		select( CORE_USER ).areSurveysOnCooldown() === false
-			? select( CORE_USER ).getCurrentSurvey()
-			: null
+export default function GA4DashboardWidgetSwitcher( {
+	UA,
+	GA4,
+	...widgetProps
+} ) {
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 
-	if ( ! currentSurvey ) {
-		return null;
-	}
-
-	return (
-		<Portal slug="survey">
-			<CurrentSurvey />
-		</Portal>
+	return isGA4DashboardView ? (
+		<GA4 { ...widgetProps } />
+	) : (
+		<UA { ...widgetProps } />
 	);
 }
+
+// eslint-disable-next-line sitekit/acronym-case
+GA4DashboardWidgetSwitcher.propTypes = {
+	UA: PropTypes.elementType,
+	GA4: PropTypes.elementType,
+};

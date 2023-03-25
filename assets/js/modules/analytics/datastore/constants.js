@@ -51,3 +51,6 @@ export const SETUP_FLOW_MODE_GA4_TRANSITIONAL = 'ga4-transitional';
 
 export const PROPERTY_TYPE_UA = 'ua';
 export const PROPERTY_TYPE_GA4 = 'ga4';
+
+export const DASHBOARD_VIEW_GA4 = 'google-analytics-4';
+export const DASHBOARD_VIEW_UA = 'universal-analytics';
