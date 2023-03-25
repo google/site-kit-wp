@@ -22,14 +22,22 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-const Badge = ( { label, className, hasLeftSpacing = false } ) => (
-	<span
-		className={ classnames( 'googlesitekit-badge', className, {
-			'googlesitekit-badge--has-left-spacing': hasLeftSpacing,
-		} ) }
-	>
-		{ label }
-	</span>
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+const Badge = forwardRef(
+	( { label, className, hasLeftSpacing = false }, ref ) => (
+		<span
+			ref={ ref }
+			className={ classnames( 'googlesitekit-badge', className, {
+				'googlesitekit-badge--has-left-spacing': hasLeftSpacing,
+			} ) }
+		>
+			{ label }
+		</span>
+	)
 );
 
 Badge.displayName = 'Badge';
