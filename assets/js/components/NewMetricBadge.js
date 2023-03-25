@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Tooltip from 'googlesitekit-components';
+import { Tooltip } from 'googlesitekit-components';
 import Badge from './Badge';
 import Link from './Link';
 
