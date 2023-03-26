@@ -41,4 +41,18 @@ NewMetricBadgeLongTitle.args = {
 export default {
 	title: 'Components/NewMetricBadge',
 	component: NewMetricBadge,
+	decorators: [
+		( Story ) => (
+			<div
+				style={ {
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'flex-end',
+					height: '200px',
+				} }
+			>
+				<Story />
+			</div>
+		),
+	],
 };
