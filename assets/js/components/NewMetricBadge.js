@@ -1,5 +1,5 @@
 /**
- * Null component.
+ * NewMetricBadge component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -37,6 +37,7 @@ import Link from './Link';
 function NewMetricBadge( { tooltipTitle, learnMoreLink } ) {
 	return (
 		<Tooltip
+			tooltipClassName="googlesitekit-new-metric-badge__tooltip"
 			title={
 				<Fragment>
 					<p>{ tooltipTitle }</p>
