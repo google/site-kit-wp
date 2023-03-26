@@ -46,6 +46,7 @@ function NewMetricBadge( { tooltipTitle, learnMoreLink } ) {
 					</Link>
 				</Fragment>
 			}
+			placement="top"
 			interactive
 		>
 			<Badge
