@@ -49,10 +49,14 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
+import WebDataStreamField from './WebDataStreamField';
 import useViewContext from '../../../../../hooks/useViewContext';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccounts()
@@ -220,7 +224,8 @@ export default function AccountCreate() {
 					<PropertyField />
 				</Cell>
 				<Cell size={ 6 }>
-					<ProfileField />
+					{ ga4ReportingEnabled && <WebDataStreamField /> }
+					{ ! ga4ReportingEnabled && <ProfileField /> }
 				</Cell>
 			</div>
 
