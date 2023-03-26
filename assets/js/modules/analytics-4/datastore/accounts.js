@@ -17,12 +17,23 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { FORM_ACCOUNT_CREATE } from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+
+const { receiveError, clearError } = errorStoreActions;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
@@ -42,11 +53,66 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 	},
 } );
 
+const fetchCreateAccountStore = createFetchStore( {
+	baseName: 'createAccount',
+	controlCallback: ( { data } ) => {
+		return API.set(
+			'modules',
+			'analytics-4',
+			'create-account-ticket',
+			data
+		);
+	},
+	reducerCallback: ( state, accountTicket ) => {
+		const { id } = accountTicket;
+		return {
+			...state,
+			accountTicketID: id,
+		};
+	},
+	argsToParams: ( data ) => {
+		return { data };
+	},
+	validateParams: ( { data } = {} ) => {
+		invariant( isPlainObject( data ), 'data must be an object.' );
+	},
+} );
+
 const baseInitialState = {
 	accountSummaries: undefined,
 };
 
-const baseActions = {};
+const baseActions = {
+	/**
+	 * Creates a new Analytics account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*createAccount() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const { getValue } = registry.select( CORE_FORMS );
+		const data = {
+			displayName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
+			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
+			dataStreamName: getValue( FORM_ACCOUNT_CREATE, 'dataStreamName' ),
+			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
+			regionCode: getValue( FORM_ACCOUNT_CREATE, 'countryCode' ),
+		};
+
+		yield clearError( 'createAccount', [] );
+		const { response, error } =
+			yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+		if ( error ) {
+			// Store error manually since createAccount signature differs from fetchCreateAccount.
+			yield receiveError( error, 'createAccount', [] );
+		}
+
+		return { response, error };
+	},
+};
 
 const baseControls = {};
 
@@ -84,14 +150,18 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetAccountSummariesStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	controls: baseControls,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetAccountSummariesStore,
+	fetchCreateAccountStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;
