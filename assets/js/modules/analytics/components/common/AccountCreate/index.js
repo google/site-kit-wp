@@ -273,12 +273,14 @@ export default function AccountCreate() {
 				) }
 			</p>
 
-			<GA4PropertyNotice
-				notice={ __(
-					'This will create both a Google Analytics 4 and Universal Analytics property.',
-					'google-site-kit'
-				) }
-			/>
+			{ ! ga4ReportingEnabled && (
+				<GA4PropertyNotice
+					notice={ __(
+						'This will create both a Google Analytics 4 and Universal Analytics property.',
+						'google-site-kit'
+					) }
+				/>
+			) }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button
