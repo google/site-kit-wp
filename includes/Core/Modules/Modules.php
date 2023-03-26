@@ -638,7 +638,6 @@ final class Modules {
 	 * Checks whether the module identified by the given slug is connected.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t
 	 *
 	 * @param string $slug Unique module slug.
 	 * @return bool True if module is connected, false otherwise.
@@ -651,6 +650,7 @@ final class Modules {
 		}
 
 		// TODO: Remove this when UA is sunset.
+		// Consider UA to be connected if GA4 is connected.
 		if (
 			Analytics::MODULE_SLUG === $slug &&
 			Feature_Flags::enabled( 'ga4Reporting' ) &&

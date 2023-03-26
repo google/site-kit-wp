@@ -280,22 +280,22 @@ class ModulesTest extends TestCase {
 	public function test_is_module_connected_with_ga4_reporting() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$analytics = 'analytics';
-
-		// Ensure the method returns false when the slug is not `analytics`.
+		// Ensure the method returns false when the slug is not `analytics`
+		// and the test module (analytics-4) is not connected.
 		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
 		$this->assertFalse( $modules->is_module_connected( 'analytics-4' ) );
 
-		// // Ensure the method returns false when the `ga4Reporting` feature flag is disabled.
-		$this->assertArrayHasKey( $analytics, $modules->get_available_modules() );
-		$this->assertFalse( $modules->is_module_connected( $analytics ) );
+		// Ensure the method returns false when the `ga4Reporting` feature flag is disabled
+		// and analytics is not connected.
+		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
+		$this->assertFalse( $modules->is_module_connected( 'analytics' ) );
 
 		// Enable the `ga4Reporting` feature flag.
 		$this->enable_feature( 'ga4Reporting' );
 
-		// Ensure the method returns false when `ga4Reporting` feature flag is enabled but the Analytics-4 is not connected.
-		$this->assertArrayHasKey( $analytics, $modules->get_available_modules() );
-		$this->assertFalse( $modules->is_module_connected( $analytics ) );
+		// Ensure the method returns false when `ga4Reporting` feature flag is enabled but Analytics-4 is not connected.
+		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
+		$this->assertFalse( $modules->is_module_connected( 'analytics' ) );
 
 		// Update the Analytics 4 settings to be connected.
 		update_option(
@@ -308,9 +308,9 @@ class ModulesTest extends TestCase {
 			)
 		);
 
-		// // Ensure the method returns true if all the conditions are met.
-		$this->assertArrayHasKey( $analytics, $modules->get_available_modules() );
-		$this->assertTrue( $modules->is_module_connected( $analytics ) );
+		// Ensure the method returns true if all the conditions are met.
+		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
+		$this->assertTrue( $modules->is_module_connected( 'analytics' ) );
 	}
 
 	public function test_activate_module() {
