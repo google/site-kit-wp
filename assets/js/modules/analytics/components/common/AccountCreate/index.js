@@ -109,6 +109,10 @@ export default function AccountCreate() {
 		? getAccountDefaultsGA4
 		: getAccountDefaultsUA;
 
+	const hasRequiredScope = ga4ReportingEnabled
+		? hasEditScope
+		: hasProvisioningScope;
+
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
@@ -189,13 +193,13 @@ export default function AccountCreate() {
 		viewContext,
 	] );
 
-	// If the user ends up back on this component with the provisioning scope granted,
+	// If the user ends up back on this component with the required scope granted,
 	// and already submitted the form, trigger the submit again.
 	useEffect( () => {
-		if ( hasProvisioningScope && autoSubmit ) {
+		if ( hasRequiredScope && autoSubmit ) {
 			handleSubmit();
 		}
-	}, [ hasProvisioningScope, autoSubmit, handleSubmit ] );
+	}, [ hasRequiredScope, autoSubmit, handleSubmit ] );
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
 	const { rollbackSettings } = useDispatch( MODULES_ANALYTICS );
@@ -208,7 +212,7 @@ export default function AccountCreate() {
 		isDoingCreateAccount ||
 		isNavigating ||
 		! hasResolvedAccounts ||
-		hasProvisioningScope === undefined
+		hasRequiredScope === undefined
 	) {
 		return <ProgressBar />;
 	}
@@ -251,7 +255,7 @@ export default function AccountCreate() {
 			</div>
 
 			<p>
-				{ hasProvisioningScope && (
+				{ hasRequiredScope && (
 					<span>
 						{ __(
 							'You will be redirected to Google Analytics to accept the terms of service.',
@@ -259,7 +263,7 @@ export default function AccountCreate() {
 						) }
 					</span>
 				) }
-				{ ! hasProvisioningScope && (
+				{ ! hasRequiredScope && (
 					<span>
 						{ __(
 							'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.',
