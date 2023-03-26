@@ -33,13 +33,15 @@ import {
 	PROVISIONING_SCOPE,
 	EDIT_SCOPE,
 } from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
-import { getAccountDefaults } from '../../../util/account';
+import { getAccountDefaults as getAccountDefaultsUA } from '../../../util/account';
+import { getAccountDefaults as getAccountDefaultsGA4 } from '../../../../analytics-4/utils/account';
 import { Cell } from '../../../../../material-components';
 import Link from '../../../../../components/Link';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
@@ -98,8 +100,14 @@ export default function AccountCreate() {
 	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { createAccount } = useDispatch( MODULES_ANALYTICS );
+	const { createAccount } = useDispatch(
+		ga4ReportingEnabled ? MODULES_ANALYTICS_4 : MODULES_ANALYTICS
+	);
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
+
+	const getAccountDefaults = ga4ReportingEnabled
+		? getAccountDefaultsGA4
+		: getAccountDefaultsUA;
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
@@ -122,7 +130,14 @@ export default function AccountCreate() {
 				} )
 			);
 		}
-	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
+	}, [
+		hasAccountCreateForm,
+		siteName,
+		siteURL,
+		timezone,
+		setValues,
+		getAccountDefaults,
+	] );
 
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
