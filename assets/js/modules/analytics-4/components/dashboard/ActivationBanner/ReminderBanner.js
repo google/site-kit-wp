@@ -181,7 +181,7 @@ export default function ReminderBanner( {
 		);
 	} else {
 		title = __(
-			'Universal Analytics stopped collecting data on July 1, 2023.',
+			'Universal Analytics stopped collecting data on July 1, 2023',
 			'google-site-kit'
 		);
 		description = __(
