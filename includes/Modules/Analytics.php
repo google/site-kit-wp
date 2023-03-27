@@ -62,6 +62,8 @@ use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exce
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Sort;
@@ -75,12 +77,13 @@ use Google\Site_Kit\Core\Util\URL;
  * @ignore
  */
 final class Analytics extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Data_Available_State {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
+	use Module_With_Data_Available_State_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
@@ -128,6 +131,19 @@ final class Analytics extends Module
 		);
 
 		( new Advanced_Tracking( $this->context ) )->register();
+
+		// Ensure that the data available state is reset when the property changes.
+		add_action(
+			'update_option_googlesitekit_analytics_settings',
+			function( $old_value, $new_value ) {
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
+					$this->reset_data_available();
+				}
+			},
+			10,
+			2
+		);
+
 	}
 
 	/**
@@ -209,6 +225,7 @@ final class Analytics extends Module
 	public function on_deactivation() {
 		$this->get_settings()->delete();
 		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
+		$this->reset_data_available();
 	}
 
 	/**
@@ -547,13 +564,15 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $dimensions ) ) {
-						try {
-							$this->validate_report_dimensions( $dimensions );
-						} catch ( Invalid_Report_Dimensions_Exception $exception ) {
-							return new WP_Error(
-								'invalid_analytics_report_dimensions',
-								$exception->getMessage()
-							);
+						if ( $this->is_shared_data_request( $data ) ) {
+							try {
+								$this->validate_shared_report_dimensions( $dimensions );
+							} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+								return new WP_Error(
+									'invalid_analytics_report_dimensions',
+									$exception->getMessage()
+								);
+							}
 						}
 
 						$request_args['dimensions'] = $dimensions;
@@ -654,13 +673,15 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $metrics ) ) {
-						try {
-							$this->validate_report_metrics( $metrics );
-						} catch ( Invalid_Report_Metrics_Exception $exception ) {
-							return new WP_Error(
-								'invalid_analytics_report_metrics',
-								$exception->getMessage()
-							);
+						if ( $this->is_shared_data_request( $data ) ) {
+							try {
+								$this->validate_shared_report_metrics( $metrics );
+							} catch ( Invalid_Report_Metrics_Exception $exception ) {
+								return new WP_Error(
+									'invalid_analytics_report_metrics',
+									$exception->getMessage()
+								);
+							}
 						}
 
 						$request->setMetrics( $metrics );
@@ -1206,6 +1227,7 @@ final class Analytics extends Module
 						'googlesitekit-datastore-user',
 						'googlesitekit-datastore-forms',
 						'googlesitekit-components',
+						'googlesitekit-modules-data',
 					),
 				)
 			),
@@ -1360,18 +1382,15 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Validates the report metrics.
+	 * Validates the report metrics for a shared request.
 	 *
 	 * @since 1.82.0
+	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsReporting_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
 	 */
-	protected function validate_report_metrics( $metrics ) {
-		if ( false === $this->is_using_shared_credentials ) {
-			return;
-		}
-
+	protected function validate_shared_report_metrics( $metrics ) {
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_metrics',
 			array(
@@ -1416,7 +1435,7 @@ final class Analytics extends Module
 					'Unsupported metric requested: %s',
 					'google-site-kit'
 				),
-				$invalid_metrics
+				$invalid_metrics[0]
 			);
 
 			throw new Invalid_Report_Metrics_Exception( $message );
@@ -1424,18 +1443,15 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Validates the report dimensions.
+	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.82.0
+	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsReporting_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
-	protected function validate_report_dimensions( $dimensions ) {
-		if ( false === $this->is_using_shared_credentials ) {
-			return;
-		}
-
+	protected function validate_shared_report_dimensions( $dimensions ) {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_dimensions',
 			array(
@@ -1477,7 +1493,7 @@ final class Analytics extends Module
 					'Unsupported dimension requested: %s',
 					'google-site-kit'
 				),
-				$invalid_dimensions
+				$invalid_dimensions[0]
 			);
 
 			throw new Invalid_Report_Dimensions_Exception( $message );

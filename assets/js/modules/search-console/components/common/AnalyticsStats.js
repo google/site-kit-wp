@@ -25,35 +25,50 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Grid, Row, Cell } from '../../../../../material-components';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { extractAnalyticsDashboardData } from '../../../../analytics/util';
-import GoogleChart from '../../../../../components/GoogleChart';
+import { Grid, Row, Cell } from '../../../../material-components';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { extractAnalyticsDashboardData } from '../../../analytics/util';
+import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
+import GoogleChart from '../../../../components/GoogleChart';
 const { useSelect } = Data;
 
-export default function AnalyticsStats( props ) {
-	const {
-		data,
-		selectedStats,
-		dateRangeLength,
-		dataLabels,
-		dataFormats,
-		statsColor,
-		gatheringData,
-	} = props;
-
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
-	);
-	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
-	);
-
-	if ( ! analyticsModuleActive || ! analyticsModuleConnected ) {
-		return null;
+/**
+ * Extracts chart data from analytics row data.
+ *
+ * @since 1.96.0
+ * @since n.e.x.t Added chartDataFormats parameter.
+ *
+ * @param {string} moduleSlug         The module slug.
+ * @param {Object} data               The data returned from the Analytics API call.
+ * @param {Array}  selectedStats      The currently selected stat we need to return data for.
+ * @param {number} dateRangeLength    The number of days to extract data for. Pads empty data days.
+ * @param {Array}  dataLabels         The labels to be displayed.
+ * @param {Array}  tooltipDataFormats The formats to be used for the tooltip data.
+ * @param {Array}  chartDataFormats   The formats to be used for the chart data (GA4 only).
+ * @return {Array} The dataMap ready for charting.
+ */
+function extractChartData(
+	moduleSlug,
+	data,
+	selectedStats,
+	dateRangeLength,
+	dataLabels,
+	tooltipDataFormats,
+	chartDataFormats
+) {
+	if ( moduleSlug === 'analytics-4' ) {
+		return (
+			extractAnalytics4DashboardData(
+				data,
+				selectedStats,
+				dateRangeLength,
+				dataLabels,
+				tooltipDataFormats,
+				chartDataFormats
+			) || []
+		);
 	}
-
-	const googleChartData =
+	return (
 		extractAnalyticsDashboardData(
 			data,
 			selectedStats,
@@ -61,8 +76,44 @@ export default function AnalyticsStats( props ) {
 			0,
 			1,
 			dataLabels,
-			dataFormats
-		) || [];
+			tooltipDataFormats
+		) || []
+	);
+}
+
+export default function AnalyticsStats( props ) {
+	const {
+		data,
+		selectedStats,
+		dateRangeLength,
+		dataLabels,
+		tooltipDataFormats,
+		chartDataFormats,
+		statsColor,
+		gatheringData,
+		moduleSlug,
+	} = props;
+
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( moduleSlug )
+	);
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( moduleSlug )
+	);
+
+	if ( ! analyticsModuleActive || ! analyticsModuleConnected ) {
+		return null;
+	}
+
+	const googleChartData = extractChartData(
+		moduleSlug,
+		data,
+		selectedStats,
+		dateRangeLength,
+		dataLabels,
+		tooltipDataFormats,
+		chartDataFormats
+	);
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
 	const options = {
@@ -124,13 +175,17 @@ export default function AnalyticsStats( props ) {
 }
 
 AnalyticsStats.propTypes = {
-	data: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	data: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ).isRequired,
 	dateRangeLength: PropTypes.number.isRequired,
 	selectedStats: PropTypes.number.isRequired,
 	dataLabels: PropTypes.arrayOf( PropTypes.string ).isRequired,
-	dataFormats: PropTypes.arrayOf( PropTypes.func ).isRequired,
+	tooltipDataFormats: PropTypes.arrayOf( PropTypes.func ).isRequired,
 	statsColor: PropTypes.string.isRequired,
 	gatheringData: PropTypes.bool,
+	moduleSlug: PropTypes.string.isRequired,
 };
 
 AnalyticsStats.chartOptions = {

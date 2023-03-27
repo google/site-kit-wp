@@ -20,6 +20,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -75,12 +77,13 @@ use WP_Error;
  * @ignore
  */
 final class Analytics_4 extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Data_Available_State {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
+	use Module_With_Data_Available_State_Trait;
 
 	/**
 	 * Module slug name.
@@ -99,6 +102,18 @@ final class Analytics_4 extends Module
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
+
+		// Ensure that the data available state is reset when the measurement ID changes.
+		add_action(
+			'update_option_googlesitekit_analytics-4_settings',
+			function( $old_value, $new_value ) {
+				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
+					$this->reset_data_available();
+				}
+			},
+			10,
+			2
+		);
 	}
 
 	/**
@@ -154,6 +169,7 @@ final class Analytics_4 extends Module
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
+		$this->reset_data_available();
 	}
 
 	/**
@@ -227,7 +243,7 @@ final class Analytics_4 extends Module
 			'POST:create-webdatastream'  => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 Measurement ID for this site on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream for this site on your behalf.', 'google-site-kit' ),
 			),
 			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
@@ -303,13 +319,11 @@ final class Analytics_4 extends Module
 	 * @since 1.41.0
 	 */
 	private function analytics_tracking_opt_out() {
-		$settings       = $this->get_settings()->get();
-		$measurement_id = $settings['measurementID'];
-		if ( ! $measurement_id ) {
+		$tag_id = $this->get_tag_id();
+		if ( empty( $tag_id ) ) {
 			return;
 		}
-		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $measurement_id ) ) );
-
+		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
 	}
 
 	/**
@@ -506,17 +520,17 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
-				if ( ! isset( $data['internalContainerID'] ) ) {
+				if ( ! isset( $data['containerID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
 						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
 						array( 'status' => 400 )
 					);
 				}
 
 				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
-					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
+					"accounts/{$data['accountID']}/containers/{$data['containerID']}"
 				);
 			case 'GET:google-tag-settings':
 				if ( ! isset( $data['measurementID'] ) ) {
@@ -704,6 +718,7 @@ final class Analytics_4 extends Module
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-forms',
 						'googlesitekit-components',
+						'googlesitekit-modules-data',
 					),
 				)
 			),
@@ -720,13 +735,7 @@ final class Analytics_4 extends Module
 			return;
 		}
 
-		$settings = $this->get_settings()->get();
-
-		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
-			$tag = new Web_Tag( $settings['googleTagID'], self::MODULE_SLUG );
-		} else {
-			$tag = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
-		}
+		$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -966,6 +975,22 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Gets the Google Analytics 4 tag ID.
+	 *
+	 * @since 1.96.0
+	 *
+	 * @return string Google Analytics 4 tag ID.
+	 */
+	private function get_tag_id() {
+		$settings = $this->get_settings()->get();
+
+		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
+			return $settings['googleTagID'];
+		}
+		return $settings['measurementID'];
+	}
+
+	/**
 	 * Creates and executes a new Analytics 4 report request.
 	 *
 	 * @since 1.93.0
@@ -1031,13 +1056,15 @@ final class Analytics_4 extends Module
 			);
 
 			if ( ! empty( $dimensions ) ) {
-				try {
-					$this->validate_report_dimensions( $dimensions );
-				} catch ( Invalid_Report_Dimensions_Exception $exception ) {
-					return new WP_Error(
-						'invalid_analytics_4_report_dimensions',
-						$exception->getMessage()
-					);
+				if ( $this->is_shared_data_request( $data ) ) {
+					try {
+						$this->validate_shared_report_dimensions( $dimensions );
+					} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+						return new WP_Error(
+							'invalid_analytics_4_report_dimensions',
+							$exception->getMessage()
+						);
+					}
 				}
 
 				$request_args['dimensions'] = $dimensions;
@@ -1123,7 +1150,7 @@ final class Analytics_4 extends Module
 
 						if ( is_string( $metric_def ) ) {
 							$metric->setName( $metric_def );
-						} elseif ( is_array( $metric_def ) && ! empty( $metric_def['name'] ) ) {
+						} elseif ( is_array( $metric_def ) ) {
 							$metric->setName( $metric_def['name'] );
 							if ( ! empty( $metric_def['expression'] ) ) {
 								$metric->setExpression( $metric_def['expression'] );
@@ -1134,7 +1161,7 @@ final class Analytics_4 extends Module
 
 						return $metric;
 					},
-					array_filter( $metrics )
+					$metrics
 				)
 			);
 
@@ -1146,6 +1173,17 @@ final class Analytics_4 extends Module
 						'invalid_analytics_4_report_metrics',
 						$exception->getMessage()
 					);
+				}
+
+				if ( $this->is_shared_data_request( $data ) ) {
+					try {
+						$this->validate_shared_report_metrics( $metrics );
+					} catch ( Invalid_Report_Metrics_Exception $exception ) {
+						return new WP_Error(
+							'invalid_analytics_4_report_metrics',
+							$exception->getMessage()
+						);
+					}
 				}
 
 				$request->setMetrics( $metrics );
@@ -1174,7 +1212,7 @@ final class Analytics_4 extends Module
 	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
 	 *
 	 * @since 1.93.0
-	 * @since n.e.x.t Updated to provide support for ordering by dimensions.
+	 * @since 1.95.0 Updated to provide support for ordering by dimensions.
 	 *
 	 * @param array|null $orderby Data request orderby value.
 	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.
@@ -1303,18 +1341,67 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Validates the report metrics.
+	 * Validates the given metrics for a report.
 	 *
-	 * @since 1.93.0
+	 * Metrics must have valid names, matching the regular expression ^[a-zA-Z0-9_]+$ in keeping with the GA4 API.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
 	 */
 	protected function validate_report_metrics( $metrics ) {
-		if ( false === $this->is_using_shared_credentials ) {
-			return;
-		}
+		$valid_name_expression = '^[a-zA-Z0-9_]+$';
 
+		$invalid_metrics = array_map(
+			function ( $metric ) {
+				return $metric->getName();
+			},
+			array_filter(
+				$metrics,
+				function ( $metric ) use ( $valid_name_expression ) {
+					return ! preg_match( "#$valid_name_expression#", $metric->getName() );
+				}
+			)
+		);
+
+		if ( count( $invalid_metrics ) > 0 ) {
+			$message = count( $invalid_metrics ) > 1 ? sprintf(
+				/* translators: 1: the regular expression for a valid name, 2: a comma separated list of the invalid metrics. */
+				__(
+					'Metric names should match the expression %1$s: %2$s',
+					'google-site-kit'
+				),
+				$valid_name_expression,
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_metrics
+				)
+			) : sprintf(
+				/* translators: 1: the regular expression for a valid name, 2: the invalid metric. */
+				__(
+					'Metric name should match the expression %1$s: %2$s',
+					'google-site-kit'
+				),
+				$valid_name_expression,
+				$invalid_metrics[0]
+			);
+
+			throw new Invalid_Report_Metrics_Exception( $message );
+		}
+	}
+
+	/**
+	 * Validates the report metrics for a shared request.
+	 *
+	 * @since 1.93.0
+	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
+	 *
+	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
+	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
+	 */
+	protected function validate_shared_report_metrics( $metrics ) {
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_4_metrics',
 			array(
@@ -1352,7 +1439,7 @@ final class Analytics_4 extends Module
 					'Unsupported metric requested: %s',
 					'google-site-kit'
 				),
-				$invalid_metrics
+				$invalid_metrics[0]
 			);
 
 			throw new Invalid_Report_Metrics_Exception( $message );
@@ -1360,18 +1447,15 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Validates the report dimensions.
+	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.93.0
+	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
-	protected function validate_report_dimensions( $dimensions ) {
-		if ( false === $this->is_using_shared_credentials ) {
-			return;
-		}
-
+	protected function validate_shared_report_dimensions( $dimensions ) {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
@@ -1407,7 +1491,7 @@ final class Analytics_4 extends Module
 					'Unsupported dimension requested: %s',
 					'google-site-kit'
 				),
-				$invalid_dimensions
+				$invalid_dimensions[0]
 			);
 
 			throw new Invalid_Report_Dimensions_Exception( $message );

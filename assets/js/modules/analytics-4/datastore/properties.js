@@ -26,14 +26,17 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { normalizeURL } from '../../../util';
+import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
@@ -159,10 +162,14 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
+const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
+	hasMismatchedTag: false,
+	isMatchingAccountProperty: false,
 };
 
 const baseActions = {
@@ -309,11 +316,21 @@ const baseActions = {
 	 * @return {Object|null} Matched property object on success, otherwise NULL.
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
+		yield {
+			payload: { isMatchingAccountProperty: true },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
+
 		const property = yield baseActions.matchAccountProperty( accountID );
 		const propertyID = property?._id || fallbackPropertyID;
 		if ( propertyID ) {
 			yield baseActions.selectProperty( propertyID );
 		}
+
+		yield {
+			payload: { isMatchingAccountProperty: false },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
 
 		return property;
 	},
@@ -490,6 +507,103 @@ const baseActions = {
 			.setGoogleTagContainerID( googleTagContainerID );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
 	},
+
+	/**
+	 * Sets if GA4 has mismatched Google Tag ID.
+	 *
+	 * @since 1.96.0
+	 *
+	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
+	 * @return {Object} Redux-style action.
+	 */
+	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
+		return {
+			type: SET_HAS_MISMATCHED_TAG,
+			payload: { hasMismatchedTag },
+		};
+	},
+
+	/**
+	 * Syncs Google Tag settings.
+	 *
+	 * @since 1.95.0
+	 */
+	*syncGoogleTagSettings() {
+		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
+			return;
+		}
+
+		const { select, dispatch, __experimentalResolveSelect } =
+			yield Data.commonActions.getRegistry();
+
+		const hasTagManagerReadScope = select( CORE_USER ).hasScope(
+			TAGMANAGER_READ_SCOPE
+		);
+
+		if ( ! hasTagManagerReadScope ) {
+			return;
+		}
+
+		// Wait for modules to be available before selecting.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+
+		const { isModuleConnected } = select( CORE_MODULES );
+
+		if ( ! isModuleConnected( 'analytics-4' ) ) {
+			return;
+		}
+
+		// Wait for module settings to be available before selecting.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
+
+		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
+			select( MODULES_ANALYTICS_4 );
+
+		const measurementID = getMeasurementID();
+
+		if ( ! measurementID ) {
+			return;
+		}
+
+		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
+
+		if (
+			!! googleTagLastSyncedAtMs &&
+			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
+		) {
+			return;
+		}
+
+		const googleTagID = getGoogleTagID();
+
+		if ( !! googleTagID ) {
+			const googleTagContainer = yield Data.commonActions.await(
+				__experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getGoogleTagContainer( measurementID )
+			);
+
+			if ( ! googleTagContainer ) {
+				return;
+			}
+
+			if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
+				yield baseActions.setHasMismatchedGoogleTagID( true );
+			}
+		} else {
+			yield baseActions.updateSettingsForMeasurementID( measurementID );
+		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs(
+			Date.now()
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
+	},
 };
 
 const baseControls = {
@@ -505,8 +619,15 @@ const baseControls = {
 	),
 };
 
-function baseReducer( state, { type } ) {
+function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
+		case MATCHING_ACCOUNT_PROPERTY:
+			return { ...state, ...payload };
+		case SET_HAS_MISMATCHED_TAG:
+			return {
+				...state,
+				hasMismatchedTag: payload.hasMismatchedTag,
+			};
 		default:
 			return state;
 	}
@@ -565,6 +686,30 @@ const baseSelectors = {
 	 */
 	getProperty( state, propertyID ) {
 		return state.propertiesByID[ propertyID ];
+	},
+
+	/**
+	 * Determines whether we are matching account property or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if we matching account property right now, otherwise FALSE.
+	 */
+	isMatchingAccountProperty( state ) {
+		return state.isMatchingAccountProperty;
+	},
+
+	/**
+	 * Checks if GA4 has mismatched Google Tag ID.
+	 *
+	 * @since 1.96.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} If GA4 has mismatched Google Tag ID.
+	 */
+	hasMismatchedGoogleTagID( state ) {
+		return state.hasMismatchedTag;
 	},
 };
 

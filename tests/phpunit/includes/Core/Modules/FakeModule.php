@@ -11,20 +11,27 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
 
 class FakeModule extends Module
-	implements Module_With_Activation, Module_With_Deactivation, Module_With_Settings {
+	implements Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
 
+	use Module_With_Owner_Trait;
 	use Module_With_Settings_Trait;
+
+	public $owner_id = 0;
 
 	/**
 	 * Whether or not the module has been registered.
@@ -32,6 +39,13 @@ class FakeModule extends Module
 	 * @var bool
 	 */
 	protected $is_registered = false;
+
+	/**
+	 * Whether or not the latest request was made as a shared data request.
+	 *
+	 * @var bool|null
+	 */
+	protected $made_shared_data_request = null;
 
 	/**
 	 * Callback to invoke on activation.
@@ -117,7 +131,10 @@ class FakeModule extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:test-request'  => array( 'service' => '' ),
+			'GET:test-request'  => array(
+				'service'   => '',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'POST:test-request' => array( 'service' => '' ),
 		);
 	}
@@ -135,6 +152,8 @@ class FakeModule extends Module
 		$method    = $data->method;
 		$datapoint = $data->datapoint;
 
+		$this->made_shared_data_request = $this->is_shared_data_request( $data );
+
 		switch ( "$method:$datapoint" ) {
 			// Intentional fallthrough.
 			case 'GET:test-request':
@@ -147,6 +166,17 @@ class FakeModule extends Module
 
 		return function () {
 		};
+	}
+
+	/**
+	 * Gets whether or not the latest request was made as a shared data request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool|null True if the latest request was made as a shared data request, false if not, or null if no request has been made yet.
+	 */
+	public function made_shared_data_request() {
+		return $this->made_shared_data_request;
 	}
 
 	/**
@@ -239,9 +269,16 @@ class FakeModule extends Module
 	}
 
 	/**
-	 * Sets up the module's settings instance.
+	 * Gets the module's owner ID.
 	 *
-	 * @since 1.92.0
+	 * @return int
+	 */
+	public function get_owner_id() {
+		return $this->owner_id;
+	}
+
+	/**
+	 * Sets up the module's settings instance.
 	 *
 	 * @return Module_Settings
 	 */

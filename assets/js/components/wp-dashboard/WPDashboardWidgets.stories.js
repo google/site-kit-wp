@@ -36,17 +36,48 @@ import {
 	setupSearchConsoleAnalyticsGatheringData,
 	widgetDecorators,
 } from './common.stories';
+import {
+	setupAnalytics4GatheringData,
+	setupAnalytics4MockReports,
+	setupAnalytics4ZeroData,
+} from './common-GA4.stories';
+import FeaturesProvider from '../FeaturesProvider';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WPDashboardWidgets />
-	</WithRegistrySetup>
-);
+const Template = ( { setupRegistry, features = [] } ) => {
+	const enabledFeatures = new Set( features );
+
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<FeaturesProvider value={ enabledFeatures }>
+				<WPDashboardWidgets />
+			</FeaturesProvider>
+		</WithRegistrySetup>
+	);
+};
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
+};
+
+export const ReadyGA4 = Template.bind( {} );
+ReadyGA4.storyName = 'Ready - GA4';
+ReadyGA4.args = {
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleAnalyticsMockReports( registry );
+		setupAnalytics4MockReports( registry );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_GA4,
+		} );
+	},
+};
+ReadyGA4.parameters = {
+	features: [ 'ga4Reporting' ],
 };
 
 export const ReadyWithActivateModuleCTA = Template.bind( {} );
@@ -122,10 +153,40 @@ GatheringData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
 };
 
+export const GatheringDataGA4 = Template.bind( {} );
+GatheringDataGA4.storyName = 'Gathering Data - GA4';
+GatheringDataGA4.args = {
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleAnalyticsGatheringData( registry );
+		setupAnalytics4GatheringData( registry );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_GA4,
+		} );
+	},
+};
+GatheringDataGA4.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+};
+
+export const ZeroDataGA4 = Template.bind( {} );
+ZeroDataGA4.storyName = 'Zero Data - GA4';
+ZeroDataGA4.args = {
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleAnalyticsZeroData( registry );
+		setupAnalytics4ZeroData( registry );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_GA4,
+		} );
+	},
+};
+ZeroDataGA4.parameters = {
+	features: [ 'ga4Reporting' ],
 };
 
 export default {

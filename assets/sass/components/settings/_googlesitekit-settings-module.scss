@@ -137,6 +137,10 @@
 			}
 		}
 
+		.googlesitekit-settings-module__fields-group--no-border {
+			border: none;
+		}
+
 		.googlesitekit-settings-module__fields-group-title {
 			font-size: $fs-title-sm;
 			font-weight: $fw-medium;
@@ -173,6 +177,10 @@
 				font-size: $fs-body-sm;
 				letter-spacing: $ls-xs;
 			}
+		}
+
+		.googlesitekit-settings-module__meta-item--dashboard-view {
+			margin-bottom: 6px;
 		}
 
 		.googlesitekit-settings-module__meta-item--data-only {

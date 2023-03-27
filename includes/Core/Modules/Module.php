@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
@@ -91,6 +92,14 @@ abstract class Module {
 	protected $assets;
 
 	/**
+	 * Transients instance.
+	 *
+	 * @since 1.96.0
+	 * @var Transients
+	 */
+	protected $transients;
+
+	/**
 	 * Module information.
 	 *
 	 * @since 1.0.0
@@ -115,14 +124,6 @@ abstract class Module {
 	private $google_services;
 
 	/**
-	 * Whether module is using shared credentials or not.
-	 *
-	 * @since 1.82.0
-	 * @var bool
-	 */
-	protected $is_using_shared_credentials = false;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -145,6 +146,7 @@ abstract class Module {
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets         = $assets ?: new Assets( $this->context );
+		$this->transients     = new Transients( $this->context );
 		$this->info           = $this->parse_info( (array) $this->setup_info() );
 	}
 
@@ -339,9 +341,6 @@ abstract class Module {
 			$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
 			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
 
-			// Always reset this property first to ensure it is only set true for the current request.
-			$this->is_using_shared_credentials = false;
-
 			$this->validate_datapoint_scopes( $datapoint, $oauth_client );
 			$this->validate_base_scopes( $oauth_client );
 
@@ -357,9 +356,6 @@ abstract class Module {
 			$restore_defers[] = $this->get_client()->withDefer( true );
 			if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
-
-				// Set request as using shared credentials if oAuth clients do not match.
-				$this->is_using_shared_credentials = true;
 
 				$current_user = wp_get_current_user();
 				// Adds the current user to the active consumers list.
@@ -387,11 +383,6 @@ abstract class Module {
 			foreach ( $restore_defers as $restore_defer ) {
 				$restore_defer();
 			}
-
-			// Reset shared credentials usage property after the request
-			// is made, regardless of whether or not it completed successfully
-			// or encountered an error.
-			$this->is_using_shared_credentials = false;
 		}
 
 		if ( is_wp_error( $response ) ) {
@@ -836,6 +827,25 @@ abstract class Module {
 		$items = array_values( $items );
 
 		return $items;
+	}
+
+	/**
+	 * Determines whether the current request is for shared data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return bool TRUE if the request is for shared data, otherwise FALSE.
+	 */
+	protected function is_shared_data_request( Data_Request $data ) {
+		$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
+		$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
+
+		if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

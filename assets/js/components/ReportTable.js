@@ -20,9 +20,9 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import get from 'lodash/get';
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 
 /**
  * Internal dependencies.

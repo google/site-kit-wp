@@ -35,8 +35,14 @@ import { MODULES_ANALYTICS } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
+import DashboardAllTrafficWidgetGA4 from './components/dashboard/DashboardAllTrafficWidgetGA4';
 import DashboardOverallPageMetricsWidget from './components/dashboard/DashboardOverallPageMetricsWidget';
-import { ModulePopularPagesWidget } from './components/module';
+import DashboardOverallPageMetricsWidgetGA4 from './components/dashboard/DashboardOverallPageMetricsWidgetGA4';
+import {
+	ModulePopularPagesWidget,
+	ModulePopularPagesWidgetGA4,
+} from './components/module';
+import GA4DashboardWidgetSwitcher from './components/dashboard/GA4DashboardWidgetSwitcher';
 
 export { registerStore } from './datastore';
 
@@ -59,7 +65,13 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
-			Component: DashboardAllTrafficWidget,
+			Component: ( widgetProps ) => (
+				<GA4DashboardWidgetSwitcher
+					UA={ DashboardAllTrafficWidget }
+					GA4={ DashboardAllTrafficWidgetGA4 }
+					{ ...widgetProps }
+				/>
+			),
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
@@ -74,7 +86,13 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsOverallPageMetrics',
 		{
-			Component: DashboardOverallPageMetricsWidget,
+			Component: ( widgetProps ) => (
+				<GA4DashboardWidgetSwitcher
+					UA={ DashboardOverallPageMetricsWidget }
+					GA4={ DashboardOverallPageMetricsWidgetGA4 }
+					{ ...widgetProps }
+				/>
+			),
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 3,
 			wrapWidget: false,
@@ -86,7 +104,13 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsModulePopularPages',
 		{
-			Component: ModulePopularPagesWidget,
+			Component: ( widgetProps ) => (
+				<GA4DashboardWidgetSwitcher
+					UA={ ModulePopularPagesWidget }
+					GA4={ ModulePopularPagesWidgetGA4 }
+					{ ...widgetProps }
+				/>
+			),
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 4,
 			wrapWidget: false,

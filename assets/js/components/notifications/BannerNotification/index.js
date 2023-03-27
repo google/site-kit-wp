@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import map from 'lodash/map';
+import { map } from 'lodash';
 import { useMount, useMountedState, useIntersection } from 'react-use';
 import { useWindowWidth } from '@react-hook/window-size/throttled';
 
@@ -41,13 +41,13 @@ import { isURL } from '@wordpress/url';
 /*
  * Internal dependencies
  */
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
 import {
 	getContextScrollTop,
-	getHeaderHeightWithoutNav,
+	getStickyHeaderHeightWithoutNav,
 } from '../../../util/scroll';
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
@@ -57,7 +57,6 @@ import ErrorIcon from '../../../../svg/icons/error.svg';
 import Link from '../../Link';
 import Badge from '../../Badge';
 import ModuleIcon from '../../ModuleIcon';
-import Spinner from '../../Spinner';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
 import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import {
@@ -67,6 +66,7 @@ import {
 	getImageCellOrderProperties,
 } from './utils';
 import { stringToDate } from '../../../util/date-range/string-to-date';
+import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
@@ -141,8 +141,8 @@ function BannerNotification( {
 
 	const bannerNotificationRef = useRef();
 	const intersectionEntry = useIntersection( bannerNotificationRef, {
-		rootMargin: `-${ getHeaderHeightWithoutNav(
-			breakpoint
+		rootMargin: `${ -finiteNumberOrZero(
+			getStickyHeaderHeightWithoutNav( breakpoint )
 		) }px 0px 0px 0px`,
 		threshold: 0,
 	} );
@@ -503,7 +503,7 @@ function BannerNotification( {
 								{ ctaComponent }
 
 								{ ctaLink && (
-									<Button
+									<SpinnerButton
 										className="googlesitekit-notification__cta"
 										href={ ctaLink }
 										target={ ctaTarget }
@@ -512,17 +512,14 @@ function BannerNotification( {
 											isAwaitingCTAResponse ||
 											isNavigatingToCTALink
 										}
+										isSaving={
+											isAwaitingCTAResponse ||
+											isNavigatingToCTALink
+										}
 									>
 										{ ctaLabel }
-									</Button>
+									</SpinnerButton>
 								) }
-
-								<Spinner
-									isSaving={
-										isAwaitingCTAResponse ||
-										isNavigatingToCTALink
-									}
-								/>
 
 								{ isDismissible &&
 									dismiss &&

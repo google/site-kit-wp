@@ -17,3 +17,4 @@
  */
 
 export { default as ModulePopularPagesWidget } from './ModulePopularPagesWidget';
+export { default as ModulePopularPagesWidgetGA4 } from './ModulePopularPagesWidgetGA4';

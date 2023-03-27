@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies

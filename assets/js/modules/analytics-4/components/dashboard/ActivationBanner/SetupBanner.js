@@ -26,15 +26,15 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import {
+	WebDataStreamSelect,
 	PropertySelect,
 	UseSnippetSwitch,
 } from '../../../../analytics-4/components/common';
 import ErrorNotice from '../../../../../components/ErrorNotice';
-import SpinnerButton from '../../../../../components/SpinnerButton';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -59,12 +59,9 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../util';
+import { SetupBannerFooter } from './SetupBannerFooter';
+import { VARIANT } from './constants';
 const { useDispatch, useSelect } = Data;
-
-const VARIANT = {
-	EXISTING_PROPERTY: 'EXISTING_PROPERTY',
-	NO_EXISTING_PROPERTY: 'NO_EXISTING_PROPERTY',
-};
 
 export default function SetupBanner( { onSubmitSuccess } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
@@ -94,15 +91,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const getPropertyID = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID
 	);
-	const ga4PropertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
 
 	const getMeasurementID = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID
-	);
-	const measurementID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 
 	const determineVariant = useCallback( async () => {
@@ -145,8 +136,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	] );
 
 	useEffect( () => {
-		determineVariant();
-	}, [ determineVariant ] );
+		if ( ! variant ) {
+			determineVariant();
+		}
+	}, [ variant, determineVariant ] );
 
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -167,6 +160,23 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
 
+	const commonSubmitChanges = useCallback( async () => {
+		setIsSaving( true );
+
+		const { error } = await submitChanges();
+
+		setIsSaving( false );
+
+		if ( error ) {
+			setErrorNotice( error );
+			return;
+		}
+
+		// Ask the parent component to show the success banner.
+		// This should be called last because it will unmount this component.
+		onSubmitSuccess();
+	}, [ submitChanges, onSubmitSuccess ] );
+
 	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
 
@@ -175,6 +185,15 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			( getPropertyID() === PROPERTY_CREATE || ! getMeasurementID() )
 		) {
 			scopes.push( EDIT_SCOPE );
+		}
+
+		if (
+			variant === VARIANT.NO_EXISTING_PROPERTY ||
+			getPropertyID() === PROPERTY_CREATE
+		) {
+			trackEvent( eventCategory, 'create_property' );
+		} else {
+			trackEvent( eventCategory, 'connect_property' );
 		}
 
 		// If scope not granted, trigger scope error right away. These are
@@ -206,40 +225,14 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			return;
 		}
 
-		setIsSaving( true );
-
-		if ( ! autoSubmit ) {
-			if (
-				variant === VARIANT.NO_EXISTING_PROPERTY ||
-				getPropertyID() === PROPERTY_CREATE
-			) {
-				trackEvent( eventCategory, 'create_property' );
-			} else {
-				trackEvent( eventCategory, 'connect_property' );
-			}
-		}
-
-		const { error } = await submitChanges();
-
-		setIsSaving( false );
-
-		if ( error ) {
-			setErrorNotice( error );
-		} else {
-			setValues( FORM_SETUP, { autoSubmit: false } );
-			// Ask the parent component to show the success banner.
-			// This should be called last because it will unmount this component.
-			onSubmitSuccess();
-		}
+		await commonSubmitChanges();
 	}, [
-		autoSubmit,
 		eventCategory,
 		variant,
 		hasEditScope,
-		onSubmitSuccess,
 		setPermissionScopeError,
 		setValues,
-		submitChanges,
+		commonSubmitChanges,
 		// Here we pass the selectors through to avoid creating a new
 		// callback when the property ID changes on creation.
 		getPropertyID,
@@ -249,10 +242,23 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
-		if ( autoSubmit && hasEditScope ) {
-			handleSubmitChanges();
+		async function handleAutoSubmit() {
+			// Auto-submit should only auto-invoke once.
+			setValues( FORM_SETUP, { autoSubmit: false } );
+
+			await commonSubmitChanges();
 		}
-	}, [ autoSubmit, handleSubmitChanges, hasEditScope ] );
+
+		if ( autoSubmit && hasEditScope ) {
+			handleAutoSubmit();
+		}
+	}, [
+		autoSubmit,
+		hasEditScope,
+		setValues,
+		commonSubmitChanges,
+		onSubmitSuccess,
+	] );
 
 	useEffect( () => {
 		// Only trigger the view event if the notification is visible and we haven't
@@ -312,7 +318,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	let title;
 	let ctaLabel;
 	let children;
-	const footerMessages = [];
 
 	if ( variant === VARIANT.EXISTING_PROPERTY ) {
 		title = __(
@@ -322,12 +327,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		ctaLabel = __( 'Connect', 'google-site-kit' );
 		children = (
 			<div className="googlesitekit-ga4-setup-banner__field-group">
-				<PropertySelect
-					label={ __(
-						'Google Analytics 4 Property',
-						'google-site-kit'
-					) }
-				/>
+				<PropertySelect />
+				<WebDataStreamSelect />
+
 				{ existingTag && (
 					<UseSnippetSwitch
 						description={
@@ -354,60 +356,12 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 				) }
 			</div>
 		);
-
-		if (
-			hasEditScope === false &&
-			( ga4PropertyID === PROPERTY_CREATE || ! measurementID )
-		) {
-			footerMessages.push(
-				__(
-					'You will need to give Site Kit permission to create an Analytics property on your behalf',
-					'google-site-kit'
-				)
-			);
-		}
-
-		footerMessages.push(
-			__(
-				'You can always add/edit this in the Site Kit Settings',
-				'google-site-kit'
-			)
-		);
 	} else {
 		title = __(
 			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
 			'google-site-kit'
 		);
 		ctaLabel = __( 'Create property', 'google-site-kit' );
-
-		if ( existingTag ) {
-			footerMessages.push(
-				sprintf(
-					/* translators: %s: The existing tag ID. */
-					__(
-						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account',
-						'google-site-kit'
-					),
-					existingTag
-				)
-			);
-		}
-
-		if ( hasEditScope === false ) {
-			footerMessages.push(
-				__(
-					'You will need to give Site Kit permission to create an Analytics property on your behalf',
-					'google-site-kit'
-				)
-			);
-		}
-
-		footerMessages.push(
-			__(
-				'You can always add/edit this in the Site Kit Settings',
-				'google-site-kit'
-			)
-		);
 	}
 
 	return (
@@ -423,15 +377,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 					{ ctaLabel }
 				</SpinnerButton>
 			}
-			footer={
-				!! footerMessages.length && (
-					<ul className="googlesitekit-ga4-setup-banner__footer-text-list">
-						{ footerMessages.map( ( message ) => (
-							<li key={ message }>{ message }</li>
-						) ) }
-					</ul>
-				)
-			}
+			footer={ <SetupBannerFooter variant={ variant } /> }
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString

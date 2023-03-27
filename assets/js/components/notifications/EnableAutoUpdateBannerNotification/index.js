@@ -25,6 +25,7 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../../util';
@@ -34,7 +35,6 @@ import {
 	PERMISSION_UPDATE_PLUGINS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
-import SpinnerButton from '../../SpinnerButton';
 import ErrorNotice from '../../ErrorNotice';
 import BannerNotification from '../BannerNotification';
 import {

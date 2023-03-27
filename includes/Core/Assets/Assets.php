@@ -423,6 +423,15 @@ final class Assets {
 					},
 				)
 			),
+			new Script_Data(
+				'googlesitekit-modules-data',
+				array(
+					'global'        => '_googlesitekitModulesData',
+					'data_callback' => function() {
+						return $this->get_inline_modules_data();
+					},
+				)
+			),
 			new Script(
 				'googlesitekit-runtime',
 				array(
@@ -917,6 +926,26 @@ final class Assets {
 			'setup'  => apply_filters( 'googlesitekit_setup_data', array() ),
 		);
 	}
+
+	/**
+	 * Gets inline modules data.
+	 *
+	 * @since 1.96.0
+	 *
+	 * @return array The inline modules data to be output.
+	 */
+	private function get_inline_modules_data() {
+
+		/**
+		 * Filters the inline modules data to pass to JS.
+		 *
+		 * @since 1.96.0
+		 *
+		 * @param array $data Modules data.
+		 */
+		return apply_filters( 'googlesitekit_inline_modules_data', array() );
+	}
+
 
 	/**
 	 * Adds support for async and defer attributes to enqueued scripts.

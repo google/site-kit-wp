@@ -23,7 +23,9 @@ import Modules from 'googlesitekit-modules';
 import { MODULES_ANALYTICS } from './constants';
 import {
 	getCanUseSnippet,
+	isGA4DashboardView,
 	rollbackChanges,
+	shouldPromptGA4DashboardView,
 	submitChanges,
 	validateCanSubmitChanges,
 } from './settings';
@@ -47,6 +49,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'propertyID',
 		'trackingDisabled',
 		'useSnippet',
+		'dashboardView',
 	],
 	submitChanges,
 	rollbackChanges,
@@ -54,5 +57,8 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 } );
 
 baseModuleStore.selectors.getCanUseSnippet = getCanUseSnippet;
+baseModuleStore.selectors.isGA4DashboardView = isGA4DashboardView;
+baseModuleStore.selectors.shouldPromptGA4DashboardView =
+	shouldPromptGA4DashboardView;
 
 export default baseModuleStore;

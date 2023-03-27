@@ -24,6 +24,7 @@ import {
 	provideUserInfo,
 	provideUserAuthentication,
 	provideSiteInfo,
+	muteFetch,
 } from '../../../../../../../tests/js/test-utils';
 import {
 	getViewportWidth,
@@ -80,6 +81,12 @@ describe( 'Overview', () => {
 			{
 				body: searchConsoleData,
 			}
+		);
+
+		muteFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/data-available'
+			)
 		);
 
 		originalViewportWidth = getViewportWidth();
