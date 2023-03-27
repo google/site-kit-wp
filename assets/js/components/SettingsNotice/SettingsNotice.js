@@ -34,6 +34,7 @@ import {
 	TYPE_SUGGESTION,
 	getIconFromType,
 } from './utils';
+import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../modules/adsense/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Button } from 'googlesitekit-components';
 
@@ -45,7 +46,7 @@ export default function SettingsNotice( props ) {
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( dismiss )
+		select( CORE_USER ).isItemDismissed( DISMISSED_KEY )
 	);
 
 	const Layout = children ? SettingsNoticeMultiRow : SettingsNoticeSingleRow;
@@ -76,9 +77,7 @@ export default function SettingsNotice( props ) {
 				<div className="googlesitekit-settings-notice__button">
 					<Button
 						onClick={ () => {
-							// Don't return the result here to avoid
-							// added delay in the dismissal.
-							dismissItem( dismiss );
+							dismissItem( DISMISSED_KEY );
 						} }
 					>
 						OK, Got it!
