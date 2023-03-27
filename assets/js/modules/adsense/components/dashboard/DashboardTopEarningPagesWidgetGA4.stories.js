@@ -23,10 +23,10 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import AdBlockerWarningWidget from './AdBlockerWarningWidget';
+import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'adBlockerWarning' )(
-	AdBlockerWarningWidget
+	DashboardTopEarningPagesWidgetGA4
 );
 
 const Template = () => <WidgetWithComponentProps />;
@@ -35,7 +35,7 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 
 export default {
-	title: 'Modules/AdSense/Widgets/AdBlockerWarning',
+	title: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

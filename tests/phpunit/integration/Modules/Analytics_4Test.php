@@ -1047,7 +1047,162 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
 	}
 
-	public function test_report__metric_validation() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_report__metric_validation_invalid_name_singular( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		// Test the invalid character cases.
+		// Please note this is not a comprehensive list of invalid characters, as that would be a very long list. This is just a representative sample.
+		$invalid_characters = ' !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïð';
+
+		$invalid_names = array_map(
+			function( $character ) {
+				return "test$character";
+			},
+			str_split( $invalid_characters )
+		);
+
+		// Include the empty string as an invalid name.
+		$invalid_name[] = '';
+
+		foreach ( $invalid_names as $invalid_name ) {
+			$invalid_name_metrics_singular = array(
+				array( 'name' => $invalid_name ),
+				array( array( 'name' => $invalid_name ), array( 'name' => 'test' ) ),
+				array(
+					array(
+						'name'       => $invalid_name,
+						'expression' => 'test1',
+					),
+					array(
+						'name'       => 'test2',
+						'expression' => 'test2',
+					),
+				),
+			);
+
+			foreach ( $invalid_name_metrics_singular as $metrics ) {
+				$data = $this->analytics->get_data(
+					'report',
+					array( 'metrics' => $metrics )
+				);
+
+				$this->assertWPErrorWithMessage( "Metric name should match the expression ^[a-zA-Z0-9_]+$: $invalid_name", $data );
+				$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
+			}
+		}
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_report__metric_validation_invalid_name_plural( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		// Test the invalid character cases.
+		// Please note this is not a comprehensive list of invalid characters, as that would be a very long list. This is just a representative sample.
+		$invalid_characters = ' !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïð';
+
+		$invalid_names = array_map(
+			function( $character ) {
+				return "test$character";
+			},
+			str_split( $invalid_characters )
+		);
+
+		// Include the empty string as an invalid name.
+		$invalid_name[] = '';
+
+		foreach ( $invalid_names as $invalid_name ) {
+			$invalid_name_metrics_plural = array(
+				array( array( 'name' => $invalid_name ), array( 'name' => 'test' ), array( 'name' => $invalid_name ) ),
+				array(
+					array(
+						'name'       => $invalid_name,
+						'expression' => 'test1',
+					),
+					array(
+						'name'       => 'test2',
+						'expression' => 'test2',
+					),
+					array(
+						'name'       => $invalid_name,
+						'expression' => 'test3',
+					),
+				),
+			);
+
+			// Validate the string variant of metrics (which can be comma-separated) if $invalid_name does not include a comma.
+			if ( false === strpos( $invalid_name, ',' ) ) {
+				array_push(
+					$invalid_name_metrics_plural,
+					"$invalid_name,$invalid_name",
+					"$invalid_name,test1,$invalid_name,test2",
+					"test1,$invalid_name,test2,$invalid_name"
+				);
+			}
+
+			foreach ( $invalid_name_metrics_plural as $metrics ) {
+				$data = $this->analytics->get_data(
+					'report',
+					array( 'metrics' => $metrics )
+				);
+
+				$this->assertWPErrorWithMessage( "Metric names should match the expression ^[a-zA-Z0-9_]+$: $invalid_name, $invalid_name", $data );
+				$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
+			}
+		}
+	}
+
+	public function test_report__shared_metric_validation() {
 		$this->enable_feature( 'dashboardSharing' );
 
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -1092,7 +1247,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
 	}
 
-	public function test_report__dimension_validation() {
+	public function test_report__shared_dimension_validation() {
 		$this->enable_feature( 'dashboardSharing' );
 
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );

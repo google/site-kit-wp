@@ -1150,7 +1150,7 @@ final class Analytics_4 extends Module
 
 						if ( is_string( $metric_def ) ) {
 							$metric->setName( $metric_def );
-						} elseif ( is_array( $metric_def ) && ! empty( $metric_def['name'] ) ) {
+						} elseif ( is_array( $metric_def ) ) {
 							$metric->setName( $metric_def['name'] );
 							if ( ! empty( $metric_def['expression'] ) ) {
 								$metric->setExpression( $metric_def['expression'] );
@@ -1161,11 +1161,20 @@ final class Analytics_4 extends Module
 
 						return $metric;
 					},
-					array_filter( $metrics )
+					$metrics
 				)
 			);
 
 			if ( ! empty( $metrics ) ) {
+				try {
+					$this->validate_report_metrics( $metrics );
+				} catch ( Invalid_Report_Metrics_Exception $exception ) {
+					return new WP_Error(
+						'invalid_analytics_4_report_metrics',
+						$exception->getMessage()
+					);
+				}
+
 				if ( $this->is_shared_data_request( $data ) ) {
 					try {
 						$this->validate_shared_report_metrics( $metrics );
@@ -1329,6 +1338,58 @@ final class Analytics_4 extends Module
 		}
 
 		return $request;
+	}
+
+	/**
+	 * Validates the given metrics for a report.
+	 *
+	 * Metrics must have valid names, matching the regular expression ^[a-zA-Z0-9_]+$ in keeping with the GA4 API.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
+	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
+	 */
+	protected function validate_report_metrics( $metrics ) {
+		$valid_name_expression = '^[a-zA-Z0-9_]+$';
+
+		$invalid_metrics = array_map(
+			function ( $metric ) {
+				return $metric->getName();
+			},
+			array_filter(
+				$metrics,
+				function ( $metric ) use ( $valid_name_expression ) {
+					return ! preg_match( "#$valid_name_expression#", $metric->getName() );
+				}
+			)
+		);
+
+		if ( count( $invalid_metrics ) > 0 ) {
+			$message = count( $invalid_metrics ) > 1 ? sprintf(
+				/* translators: 1: the regular expression for a valid name, 2: a comma separated list of the invalid metrics. */
+				__(
+					'Metric names should match the expression %1$s: %2$s',
+					'google-site-kit'
+				),
+				$valid_name_expression,
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_metrics
+				)
+			) : sprintf(
+				/* translators: 1: the regular expression for a valid name, 2: the invalid metric. */
+				__(
+					'Metric name should match the expression %1$s: %2$s',
+					'google-site-kit'
+				),
+				$valid_name_expression,
+				$invalid_metrics[0]
+			);
+
+			throw new Invalid_Report_Metrics_Exception( $message );
+		}
 	}
 
 	/**

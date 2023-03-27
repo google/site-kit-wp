@@ -41,7 +41,10 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull } ) {
 	}
 
 	return (
-		<SettingsNotice notice="Top earning pages are not yet available in Google Analytics 4.">
+		<SettingsNotice
+			notice="Top earning pages are not yet available in Google Analytics 4."
+			dismiss={ DISMISSED_KEY }
+		>
 			Site Kit will notify you as soon as you can connect AdSense and
 			Analytics again.
 		</SettingsNotice>

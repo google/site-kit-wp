@@ -1,7 +1,7 @@
 /**
- * Analytics dashboard components.
+ * Utility function `finiteNumberOrZero()`.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,19 @@
  * limitations under the License.
  */
 
-export { default as DashboardAllTrafficWidget } from './DashboardAllTrafficWidget';
-export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWidgetGA4';
-export { default as DashboardOverallPageMetricsWidget } from './DashboardOverallPageMetricsWidget';
-export { default as DashboardOverallPageMetricsWidgetGA4 } from './DashboardOverallPageMetricsWidgetGA4';
-export { default as GA4DashboardWidgetSwitcher } from './GA4DashboardWidgetSwitcher';
+/**
+ * External dependencies
+ */
+import { isFinite } from 'lodash';
+
+/**
+ * Returns the passed value if it's a finite number, otherwise returns 0.
+ *
+ * @since n.e.x.t
+ *
+ * @param {any} value The value to check.
+ * @return {number} The finite number `value`, or 0 if `value` is not a finite number.
+ */
+export const finiteNumberOrZero = ( value ) => {
+	return isFinite( value ) ? value : 0;
+};
