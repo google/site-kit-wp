@@ -488,7 +488,7 @@ describe( 'modules/analytics settings', () => {
 				);
 			} );
 
-			it( 'does not dispatch both createProperty and createProfile when selected and when the `ga4Reporting` feature flag is enabled ', async () => {
+			it( 'does not dispatch both createProperty and createProfile when selected and when the `ga4Reporting` feature flag is enabled', async () => {
 				enabledFeatures.add( 'ga4Reporting' );
 
 				const profileName = fixtures.createProfile.name;
