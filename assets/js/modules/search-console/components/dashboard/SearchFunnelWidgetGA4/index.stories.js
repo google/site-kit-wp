@@ -68,7 +68,7 @@ const ga4ReportArgs = [
 				name: 'conversions',
 			},
 			{
-				name: 'engagedSessions',
+				name: 'engagementRate',
 			},
 		],
 		dimensionFilters: {
@@ -90,7 +90,7 @@ const ga4ReportArgs = [
 				name: 'conversions',
 			},
 			{
-				name: 'engagedSessions',
+				name: 'engagementRate',
 			},
 		],
 		dimensionFilters: {
