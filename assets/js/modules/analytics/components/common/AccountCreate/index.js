@@ -72,8 +72,11 @@ export default function AccountCreate() {
 	const canSubmitAccountCreate = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitAccountCreate()
 	);
-	const isDoingCreateAccount = useSelect( ( select ) =>
+	const isDoingCreateAccountUA = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isDoingCreateAccount()
+	);
+	const isDoingCreateAccountGA4 = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isDoingCreateAccount()
 	);
 	const hasProvisioningScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( PROVISIONING_SCOPE )
@@ -112,6 +115,10 @@ export default function AccountCreate() {
 	const hasRequiredScope = ga4ReportingEnabled
 		? hasEditScope
 		: hasProvisioningScope;
+
+	const isDoingCreateAccount = ga4ReportingEnabled
+		? isDoingCreateAccountGA4
+		: isDoingCreateAccountUA;
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {

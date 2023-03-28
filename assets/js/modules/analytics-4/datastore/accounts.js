@@ -148,6 +148,22 @@ const baseSelectors = {
 	getAccountSummaries( state ) {
 		return state.accountSummaries;
 	},
+
+	/**
+	 * Indicates whether account creation is currently in progress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if an account is being created, false otherwise.
+	 */
+	isDoingCreateAccount( state ) {
+		// Since isFetchingCreateAccount (via createFetchStore)
+		// holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such
+		// request is in progress.
+		return Object.values( state.isFetchingCreateAccount ).some( Boolean );
+	},
 };
 
 const store = Data.combineStores(
