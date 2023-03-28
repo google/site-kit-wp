@@ -573,7 +573,7 @@ function BannerNotification( {
 			</Grid>
 			{ secondaryPane && (
 				<Fragment>
-					<div className="googlesitekit-publisher-win__secondary-pane-divider"></div>
+					<div className="googlesitekit-publisher-win__secondary-pane-divider" />
 					<Grid className="googlesitekit-publisher-win__secondary-pane">
 						<Row>
 							<Cell
