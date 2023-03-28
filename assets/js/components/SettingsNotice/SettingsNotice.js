@@ -53,11 +53,11 @@ export default function SettingsNotice( props ) {
 		select( CORE_USER ).isItemDismissed( dismiss )
 	);
 
-	const Layout = children ? SettingsNoticeMultiRow : SettingsNoticeSingleRow;
-
 	if ( dismiss && isDismissed ) {
 		return null;
 	}
+
+	const Layout = children ? SettingsNoticeMultiRow : SettingsNoticeSingleRow;
 
 	return (
 		<div

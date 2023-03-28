@@ -176,6 +176,11 @@ describe( 'core/user dismissed-items', () => {
 					registry.select( CORE_USER ).isItemDismissed( 'baz' )
 				).toBe( false );
 			} );
+			it( 'should return FALSE if the item is falsely value', () => {
+				expect(
+					registry.select( CORE_USER ).isItemDismissed( '' )
+				).toBe( false );
+			} );
 		} );
 
 		describe( 'isDismissingItem', () => {
