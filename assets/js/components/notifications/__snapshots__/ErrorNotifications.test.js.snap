@@ -227,7 +227,7 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
           >
             <p>
               <span>
-                To continue using Analytics with Site Kit, you need to grant permission to check for any changes in your Google tag’s target Analytics property. Recent updates to the Google tag enable changing which Analytics property it’s connected to without editing the code on the site, so Site Kit must regularly check if the tag on your site matches the Analytics property destination.
+                To continue using Analytics with Site Kit, you need to grant permission to check for any changes in your Google tag’s target Analytics property. The Google tag feature was recently updated to allow users to change a tag’s connected Analytics property without editing site code. Because of this change, Site Kit now must regularly check if the tag on your site matches the Analytics property destination.
               </span>
                
               <a
