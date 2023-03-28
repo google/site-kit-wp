@@ -1,7 +1,7 @@
 /**
  * AdBlockerWarningWidget component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,11 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -42,11 +47,16 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull } ) {
 
 	return (
 		<SettingsNotice
-			notice="Top earning pages are not yet available in Google Analytics 4."
+			notice={ __(
+				'Top earning pages are not yet available in Google Analytics 4.',
+				'google-site-kit'
+			) }
 			dismiss={ DISMISSED_KEY }
 		>
-			Site Kit will notify you as soon as you can connect AdSense and
-			Analytics again.
+			{ __(
+				'Site Kit will notify you as soon as you can connect AdSense and Analytics again.',
+				'google-site-kit'
+			) }
 		</SettingsNotice>
 	);
 }

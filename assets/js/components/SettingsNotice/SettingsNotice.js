@@ -34,24 +34,28 @@ import {
 	TYPE_SUGGESTION,
 	getIconFromType,
 } from './utils';
-import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../modules/adsense/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Button } from 'googlesitekit-components';
 
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsNotice( props ) {
-	const { children, type, dismiss, Icon = getIconFromType( type ) } = props;
+	const {
+		children,
+		type,
+		dismiss = '',
+		Icon = getIconFromType( type ),
+	} = props;
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( DISMISSED_KEY )
+		select( CORE_USER ).isItemDismissed( dismiss )
 	);
 
 	const Layout = children ? SettingsNoticeMultiRow : SettingsNoticeSingleRow;
 
-	if ( isDismissed ) {
+	if ( dismiss && isDismissed ) {
 		return null;
 	}
 
@@ -77,7 +81,7 @@ export default function SettingsNotice( props ) {
 				<div className="googlesitekit-settings-notice__button">
 					<Button
 						onClick={ () => {
-							dismissItem( DISMISSED_KEY );
+							dismissItem( dismiss );
 						} }
 					>
 						OK, Got it!
