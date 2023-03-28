@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -41,12 +42,19 @@ import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../util';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import GA4DashboardViewToggle from './GA4DashboardViewToggle';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm( {
 	hasAnalyticsAccess,
 	hasAnalytics4Access,
 } ) {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -88,6 +96,19 @@ export default function SettingsForm( {
 			<ExistingGTMPropertyNotice
 				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
 			/>
+
+			{ ga4ReportingEnabled && (
+				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
+					<h4 className="googlesitekit-settings-module__fields-group-title">
+						{ __( 'Dashboard view', 'google-site-kit' ) }
+					</h4>
+					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
+						{ isGA4Connected && <GA4DashboardViewToggle /> }
+						{ ! isGA4Connected &&
+							__( 'Universal Analytics', 'google-site-kit' ) }
+					</div>
+				</div>
+			) }
 
 			<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
 

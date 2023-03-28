@@ -21,6 +21,8 @@ export const CORE_USER = 'core/user';
 export const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH =
 	'connected_url_mismatch';
 
+export const GLOBAL_SURVEYS_TIMEOUT_SLUG = '__global';
+
 // Permissions list.
 export const PERMISSION_AUTHENTICATE = 'googlesitekit_authenticate';
 export const PERMISSION_SETUP = 'googlesitekit_setup';
