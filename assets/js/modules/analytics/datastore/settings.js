@@ -198,7 +198,7 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_ACCOUNT_ID
 	);
 
-	// Do not require selecting a property or profile if the `ga4Reporting` is enabled.
+	// Do not require selecting a property or profile if `ga4Reporting` is enabled.
 	// Therefore, only validate these if the `ga4Reporting` is not enabled.
 	if ( ! isFeatureEnabled( 'ga4Reporting' ) ) {
 		invariant(
