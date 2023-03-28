@@ -1,7 +1,7 @@
 /**
  * AdBlockerWarningWidget Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,10 @@
  */
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'adBlockerWarning' )(
-	DashboardTopEarningPagesWidgetGA4
-);
-
-const Template = () => <WidgetWithComponentProps />;
+const Template = () => <DashboardTopEarningPagesWidgetGA4 />;
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
