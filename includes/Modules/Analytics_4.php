@@ -723,6 +723,8 @@ final class Analytics_4 extends Module
 				return $this->get_google_tag_settings_for_measurement_id( $response, $data['measurementID'] );
 			case 'GET:conversion-events':
 				return (array) $response->getConversionEvents();
+			case 'GET:report':
+				return self::parse_report_response( $data, $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -1619,4 +1621,18 @@ final class Analytics_4 extends Module
 			throw new Invalid_Report_Dimensions_Exception( $message );
 		}
 	}
+
+	/**
+	 * Parses the report response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data     Data request object.
+	 * @param mixed        $response Request response.
+	 * @return mixed Parsed response data on success, or WP_Error on failure.
+	 */
+	public static function parse_report_response( Data_Request $data, $response ) {
+
+	}
+
 }
