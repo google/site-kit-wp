@@ -1482,6 +1482,7 @@ final class Analytics_4 extends Module
 
 		// Set updated rows back to the response object.
 		$response->setRows( $rows );
+		$response->setRowCount( count( $rows ) );
 
 		return $response;
 	}
