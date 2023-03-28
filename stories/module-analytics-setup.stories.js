@@ -33,6 +33,7 @@ import {
 	ACCOUNT_CREATE,
 	PROFILE_CREATE,
 	PROVISIONING_SCOPE,
+	EDIT_SCOPE,
 } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
@@ -42,7 +43,9 @@ import {
 	provideModuleRegistrations,
 	provideSiteInfo,
 	provideUserAuthentication,
+	WithTestRegistry,
 } from '../tests/js/utils';
+import { enabledFeatures } from '../assets/js/features';
 const { useRegistry } = Data;
 
 function Setup() {
@@ -413,6 +416,38 @@ storiesOf( 'Analytics Module/Setup', module )
 			/* eslint-enable */
 
 			return <Setup />;
+		},
+		{
+			decorators: [ WithRegistry ],
+			padding: 0,
+		}
+	)
+	.add(
+		'Create Account (ga4Reporting enabled)',
+		( _args, { registry } ) => {
+			enabledFeatures.add( 'ga4Reporting' );
+
+			provideSiteInfo( registry );
+			provideUserAuthentication( registry, {
+				grantedScopes: [ EDIT_SCOPE ],
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { accountID: ACCOUNT_CREATE } );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetExistingTag( null );
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+
+			return (
+				<WithTestRegistry
+					registry={ registry }
+					features={ [ 'ga4Reporting' ] }
+				>
+					<Setup />
+				</WithTestRegistry>
+			);
 		},
 		{
 			decorators: [ WithRegistry ],
