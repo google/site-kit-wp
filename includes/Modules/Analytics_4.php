@@ -724,7 +724,7 @@ final class Analytics_4 extends Module
 			case 'GET:conversion-events':
 				return (array) $response->getConversionEvents();
 			case 'GET:report':
-				return self::parse_report_response( $data, $response );
+				return $this->parse_report_response( $data, $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -1152,47 +1152,20 @@ final class Analytics_4 extends Module
 			$request_args['row_limit'] = $data['limit'];
 		}
 
-		$dimensions = $data['dimensions'];
-		if ( ! empty( $dimensions ) && ( is_string( $dimensions ) || is_array( $dimensions ) ) ) {
-			if ( is_string( $dimensions ) ) {
-				$dimensions = explode( ',', $dimensions );
-			} elseif ( is_array( $dimensions ) && ! wp_is_numeric_array( $dimensions ) ) { // If single object is passed.
-				$dimensions = array( $dimensions );
-			}
-
-			$dimensions = array_filter(
-				array_map(
-					function ( $dimension_def ) {
-						$dimension = new Google_Service_AnalyticsData_Dimension();
-
-						if ( is_string( $dimension_def ) ) {
-							$dimension->setName( $dimension_def );
-						} elseif ( is_array( $dimension_def ) && ! empty( $dimension_def['name'] ) ) {
-							$dimension->setName( $dimension_def['name'] );
-						} else {
-							return null;
-						}
-
-						return $dimension;
-					},
-					array_filter( $dimensions )
-				)
-			);
-
-			if ( ! empty( $dimensions ) ) {
-				if ( $this->is_shared_data_request( $data ) ) {
-					try {
-						$this->validate_shared_report_dimensions( $dimensions );
-					} catch ( Invalid_Report_Dimensions_Exception $exception ) {
-						return new WP_Error(
-							'invalid_analytics_4_report_dimensions',
-							$exception->getMessage()
-						);
-					}
+		$dimensions = $this->parse_reporting_dimensions( $data );
+		if ( ! empty( $dimensions ) ) {
+			if ( $this->is_shared_data_request( $data ) ) {
+				try {
+					$this->validate_shared_report_dimensions( $dimensions );
+				} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+					return new WP_Error(
+						'invalid_analytics_4_report_dimensions',
+						$exception->getMessage()
+					);
 				}
-
-				$request_args['dimensions'] = $dimensions;
 			}
+
+			$request_args['dimensions'] = $dimensions;
 		}
 
 		$dimension_filters            = $data['dimensionFilters'];
@@ -1333,6 +1306,48 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Parses report dimensions received in the request params.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return array An array of parsed dimensions.
+	 */
+	protected function parse_reporting_dimensions( Data_Request $data ) {
+		$dimensions = $data['dimensions'];
+		if ( empty( $dimensions ) || ( ! is_string( $dimensions ) && ! is_array( $dimensions ) ) ) {
+			return array();
+		}
+
+		if ( is_string( $dimensions ) ) {
+			$dimensions = explode( ',', $dimensions );
+		} elseif ( is_array( $dimensions ) && ! wp_is_numeric_array( $dimensions ) ) { // If single object is passed.
+			$dimensions = array( $dimensions );
+		}
+
+		$dimensions = array_filter(
+			array_map(
+				function ( $dimension_def ) {
+					$dimension = new Google_Service_AnalyticsData_Dimension();
+
+					if ( is_string( $dimension_def ) ) {
+						$dimension->setName( $dimension_def );
+					} elseif ( is_array( $dimension_def ) && ! empty( $dimension_def['name'] ) ) {
+						$dimension->setName( $dimension_def['name'] );
+					} else {
+						return null;
+					}
+
+					return $dimension;
+				},
+				array_filter( $dimensions )
+			)
+		);
+
+		return $dimensions;
+	}
+
+	/**
 	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
 	 *
 	 * @since 1.93.0
@@ -1372,6 +1387,24 @@ final class Analytics_4 extends Module
 		$results = array_values( $results );
 
 		return $results;
+	}
+
+	/**
+	 * Parses the report response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data     Data request object.
+	 * @param mixed        $response Request response.
+	 * @return mixed Parsed response data on success, or WP_Error on failure.
+	 */
+	protected function parse_report_response( Data_Request $data, $response ) {
+		$dimensions = $this->parse_reporting_dimensions( $data );
+		if ( count( $dimensions ) !== 1 || $dimensions[0]->getName() !== 'date' ) {
+			return $response;
+		}
+
+		return $response;
 	}
 
 	/**
@@ -1620,19 +1653,6 @@ final class Analytics_4 extends Module
 
 			throw new Invalid_Report_Dimensions_Exception( $message );
 		}
-	}
-
-	/**
-	 * Parses the report response.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Data_Request $data     Data request object.
-	 * @param mixed        $response Request response.
-	 * @return mixed Parsed response data on success, or WP_Error on failure.
-	 */
-	public static function parse_report_response( Data_Request $data, $response ) {
-
 	}
 
 }
