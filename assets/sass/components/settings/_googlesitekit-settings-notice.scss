@@ -185,6 +185,10 @@
 .googlesitekit-settings-notice-ua-cutoff-warning {
 	max-width: none;
 
+	.googlesitekit-settings-notice__icon {
+		padding-top: 10px;
+	}
+
 	.googlesitekit-settings-notice__body {
 		align-items: center;
 		display: flex;
@@ -198,5 +202,5 @@
 }
 
 .googlesitekit-settings-notice-ua-cutoff-warning__notice {
-	margin: 0 14px 2px 0;
+	margin: 0 14px 0 0;
 }
