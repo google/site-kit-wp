@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -124,21 +124,25 @@ export default function UACutoffWarning( { className } ) {
 						notice={
 							<Fragment>
 								<p className="googlesitekit-settings-notice-ua-cutoff-warning__notice">
-									{ __(
-										'Your data is stale because Universal Analytics stopped collecting data on July 1, 2023.',
-										'google-site-kit'
+									{ createInterpolateElement(
+										__(
+											'Your data is stale because Universal Analytics stopped collecting data on July 1, 2023. <a>Learn more</a>',
+											'google-site-kit'
+										),
+										{
+											a: (
+												<Link
+													aria-label={ __(
+														'Learn more about Google Analytics 4',
+														'google-site-kit'
+													) }
+													href={ documentationURL }
+													external
+												/>
+											),
+										}
 									) }
 								</p>
-								<Link
-									aria-label={ __(
-										'Learn more',
-										'google-site-kit'
-									) }
-									href={ documentationURL }
-									external
-								>
-									{ __( 'Learn more', 'google-site-kit' ) }
-								</Link>
 							</Fragment>
 						}
 					/>

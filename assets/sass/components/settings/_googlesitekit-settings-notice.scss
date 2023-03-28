@@ -183,7 +183,6 @@
 // This is a bit of temporary styling to improve the look of the initial implementation of the UA cutoff warning.
 // It should be reviewed and possibly removed as part of https://github.com/google/site-kit-wp/issues/6702.
 .googlesitekit-settings-notice-ua-cutoff-warning {
-	align-items: center;
 	max-width: none;
 
 	.googlesitekit-settings-notice__body {
@@ -197,6 +196,7 @@
 		flex: 1 1 50%;
 	}
 }
+
 .googlesitekit-settings-notice-ua-cutoff-warning__notice {
 	margin: 0 14px 2px 0;
 }
