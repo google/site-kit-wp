@@ -54,12 +54,15 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DimensionOrderBy as Google_Service_AnalyticsData_DimensionOrderBy;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DimensionValue as Google_Service_AnalyticsData_DimensionValue;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Filter as Google_Service_AnalyticsData_Filter;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpression as Google_Service_AnalyticsData_FilterExpression;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpressionList as Google_Service_AnalyticsData_FilterExpressionList;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\InListFilter as Google_Service_AnalyticsData_InListFilter;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricOrderBy as Google_Service_AnalyticsData_MetricOrderBy;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricValue as Google_Service_AnalyticsData_MetricValue;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\OrderBy as Google_Service_AnalyticsData_OrderBy;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Row as Google_Service_AnalyticsData_Row;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse as Google_Service_AnalyticsData_RunReportResponse;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\StringFilter as Google_Service_AnalyticsData_StringFilter;
@@ -1413,23 +1416,72 @@ final class Analytics_4 extends Module
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_report_response( Data_Request $data, $response ) {
+		// Return early if the response is not of the expected type.
 		if ( ! $response instanceof Google_Service_AnalyticsData_RunReportResponse ) {
 			return $response;
 		}
 
+		// Get report dimensions and return early if there is either more than one dimension or 
+		// the only dimension is not "date".
 		$dimensions = $this->parse_reporting_dimensions( $data );
 		if ( count( $dimensions ) !== 1 || $dimensions[0]->getName() !== 'date' ) {
 			return $response;
 		}
 
+		// Get date ranges and return early if there is no date ranges for this report.
 		$date_ranges = $this->parse_reporting_dateranges( $data );
 		if ( empty( $date_ranges ) ) {
 			return $response;
 		}
 
 		$rows = $response->getRows();
-		foreach ( $rows as $row ) {
+		foreach ( $date_ranges as $date_range ) {
+			$start = strtotime( $date_range->getStartDate() );
+			$end   = strtotime( $date_range->getEndDate() );
+
+			// Skip this date range if either start date or end date is corrupted.
+			if ( ! $start || ! $end ) {
+				continue;
+			}
+
+			// Loop through all days in the date range and check if there is a metric value
+			// for it. If the metric value is missing, we will need to add one with a zero value.
+			$now = $start;
+			do {
+				$current_date = date( 'Ymd', $now );
+
+				// Search for the current date in the response rows.
+				$found_dimenension = false;
+				foreach ( $rows as $row ) {
+					$dimention_values = $row->getDimensionValues();
+					if ( $dimention_values[0]->getValue() == $current_date ) {
+						$found_dimenension = true;
+						break;
+					}
+				}
+
+				// If the current date is not found, add the new row to the existing rows.
+				if ( ! $found_dimenension ) {
+					$dimension_value = new Google_Service_AnalyticsData_DimensionValue();
+					$dimension_value->setValue( $current_date );
+
+					$metric_value = new Google_Service_AnalyticsData_MetricValue();
+					$metric_value->setValue( 0 );
+
+					$row = new Google_Service_AnalyticsData_Row();
+					$row->setDimensionValues( array( $dimension_value ) );
+					$row->setMetricValues( array( $metric_value ) );
+
+					$rows[] = $row;
+				}
+
+				// Add a day in seconds value to the current date to shift to the next date.
+				$now += DAY_IN_SECONDS;
+			} while( $now <= $end );
 		}
+
+		// Set updated rows back to the response object.
+		$response->setRows( $rows );
 
 		return $response;
 	}
