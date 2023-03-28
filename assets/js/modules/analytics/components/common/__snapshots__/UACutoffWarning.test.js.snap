@@ -28,17 +28,17 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
               <p
                 class="googlesitekit-settings-notice-ua-cutoff-warning__notice"
               >
-                Your data is stale because Universal Analytics stopped collecting data on July 1, 2023.
+                Your data is stale because Universal Analytics stopped collecting data on July 1, 2023. 
+                <a
+                  aria-label="Learn more about Google Analytics 4 (opens in a new tab)"
+                  class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                  href="https://sitekit.withgoogle.com/support/?doc=ga4"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Learn more
+                </a>
               </p>
-              <a
-                aria-label="Learn more (opens in a new tab)"
-                class="googlesitekit-cta-link googlesitekit-cta-link--external"
-                href="https://sitekit.withgoogle.com/support/?doc=ga4"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                Learn more
-              </a>
             </div>
             <div
               class="googlesitekit-settings-notice__cta"
@@ -90,17 +90,17 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
               <p
                 class="googlesitekit-settings-notice-ua-cutoff-warning__notice"
               >
-                Your data is stale because Universal Analytics stopped collecting data on July 1, 2023.
+                Your data is stale because Universal Analytics stopped collecting data on July 1, 2023. 
+                <a
+                  aria-label="Learn more about Google Analytics 4 (opens in a new tab)"
+                  class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                  href="https://sitekit.withgoogle.com/support/?doc=ga4"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Learn more
+                </a>
               </p>
-              <a
-                aria-label="Learn more (opens in a new tab)"
-                class="googlesitekit-cta-link googlesitekit-cta-link--external"
-                href="https://sitekit.withgoogle.com/support/?doc=ga4"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                Learn more
-              </a>
             </div>
             <div
               class="googlesitekit-settings-notice__cta"
