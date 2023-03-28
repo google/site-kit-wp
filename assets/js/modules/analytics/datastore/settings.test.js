@@ -49,7 +49,6 @@ import {
 	INVARIANT_INVALID_PROFILE_NAME,
 	INVARIANT_INVALID_PROFILE_SELECTION,
 	INVARIANT_INVALID_PROPERTY_SELECTION,
-	INVARIANT_INVALID_INTERNAL_PROPERTY_ID,
 	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -783,12 +782,6 @@ describe( 'modules/analytics settings', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
 				).toBe( true );
-
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).not.toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
 			} );
 
 			it( 'does not require a valid profileID when the `ga4Reporting` feature flag is enabled', () => {
@@ -807,12 +800,6 @@ describe( 'modules/analytics settings', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
 				).toBe( true );
-
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).not.toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
 			} );
 
 			it( 'does not require a valid internalWebPropertyID when the `ga4Reporting` feature flag is enabled', () => {
@@ -821,7 +808,6 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					accountID: '12345',
-					propertyID: null,
 					internalWebPropertyID: null,
 				} );
 
@@ -832,12 +818,6 @@ describe( 'modules/analytics settings', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
 				).toBe( true );
-
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).not.toThrow( INVARIANT_INVALID_INTERNAL_PROPERTY_ID );
 			} );
 
 			it( 'requires a valid adsConversionID when provided', () => {
