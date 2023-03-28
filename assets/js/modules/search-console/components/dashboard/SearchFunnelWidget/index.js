@@ -44,7 +44,7 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import UACutoffWarning from '../../../../analytics/components/dashboard/UACutoffWarning';
+import UACutoffWarning from '../../../../analytics/components/common/UACutoffWarning';
 import Header from './Header';
 import Footer from './Footer';
 import Overview from './Overview';

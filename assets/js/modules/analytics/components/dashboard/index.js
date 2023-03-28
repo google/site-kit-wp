@@ -21,4 +21,3 @@ export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWi
 export { default as DashboardOverallPageMetricsWidget } from './DashboardOverallPageMetricsWidget';
 export { default as DashboardOverallPageMetricsWidgetGA4 } from './DashboardOverallPageMetricsWidgetGA4';
 export { default as GA4DashboardWidgetSwitcher } from './GA4DashboardWidgetSwitcher';
-export { default as UACutoffWarning } from './UACutoffWarning';

@@ -37,7 +37,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import SourceLink from '../../../../components/SourceLink';
-import UACutoffWarning from './UACutoffWarning';
+import UACutoffWarning from '../common/UACutoffWarning';
 import whenActive from '../../../../util/when-active';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { calculateOverallPageMetricsData } from '../../util/overall-page-metrics';

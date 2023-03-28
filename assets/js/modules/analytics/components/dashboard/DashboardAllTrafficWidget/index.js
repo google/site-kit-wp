@@ -47,7 +47,7 @@ import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
-import UACutoffWarning from '../UACutoffWarning';
+import UACutoffWarning from '../../common/UACutoffWarning';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 

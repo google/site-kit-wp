@@ -39,7 +39,7 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import AdBlockerWarning from '../common/AdBlockerWarning';
-import UACutoffWarning from '../../../analytics/components/dashboard/UACutoffWarning';
+import UACutoffWarning from '../../../analytics/components/common/UACutoffWarning';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import {
 	ZeroDataMessage,

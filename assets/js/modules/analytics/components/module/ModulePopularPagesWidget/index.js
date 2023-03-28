@@ -43,7 +43,7 @@ import TableOverflowContainer from '../../../../../components/TableOverflowConta
 import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../../components/ReportTable';
 import PreviewTable from '../../../../../components/PreviewTable';
-import UACutoffWarning from '../../dashboard/UACutoffWarning';
+import UACutoffWarning from '../../common/UACutoffWarning';
 import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
