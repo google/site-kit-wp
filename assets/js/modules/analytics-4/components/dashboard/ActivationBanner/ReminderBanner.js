@@ -172,9 +172,9 @@ export default function ReminderBanner( {
 	) {
 		const remainingDays = 30 - referenceDate.getDate();
 		title = sprintf(
-			/* translators: %s: Number of days remaining before the user can setup Google Analytics 4 */
+			/* translators: %s: Number of days remaining before the user can set up Google Analytics 4 */
 			__(
-				'You only have %d more days to setup Google Analytics 4.',
+				'You only have %d more days to set up Google Analytics 4',
 				'google-site-kit'
 			),
 			remainingDays
