@@ -61,6 +61,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\InListFilter as Go
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricOrderBy as Google_Service_AnalyticsData_MetricOrderBy;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\OrderBy as Google_Service_AnalyticsData_OrderBy;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse as Google_Service_AnalyticsData_RunReportResponse;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\StringFilter as Google_Service_AnalyticsData_StringFilter;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
@@ -761,7 +762,6 @@ final class Analytics_4 extends Module
 		);
 	}
 
-
 	/**
 	 * Gets the configured Analytics Data service object instance.
 	 *
@@ -1200,36 +1200,7 @@ final class Analytics_4 extends Module
 			return $request;
 		}
 
-		$date_ranges = array();
-		$start_date  = $data['startDate'];
-		$end_date    = $data['endDate'];
-		if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
-			$compare_start_date = $data['compareStartDate'];
-			$compare_end_date   = $data['compareEndDate'];
-			$date_ranges[]      = array( $start_date, $end_date );
-
-			// When using multiple date ranges, it changes the structure of the response:
-			// Aggregate properties (minimum, maximum, totals) will have an entry per date range.
-			// The rows property will have additional row entries for each date range.
-			if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
-				$date_ranges[] = array( $compare_start_date, $compare_end_date );
-			}
-		} else {
-			// Default the date range to the last 28 days.
-			$date_ranges[] = $this->parse_date_range( 'last-28-days', 1 );
-		}
-
-		$date_ranges = array_map(
-			function ( $date_range ) {
-				list ( $start_date, $end_date ) = $date_range;
-				$date_range                     = new Google_Service_AnalyticsData_DateRange();
-				$date_range->setStartDate( $start_date );
-				$date_range->setEndDate( $end_date );
-
-				return $date_range;
-			},
-			$date_ranges
-		);
+		$date_ranges = $this->parse_reporting_dateranges( $data );
 		$request->setDateRanges( $date_ranges );
 
 		$metrics = $data['metrics'];
@@ -1303,6 +1274,49 @@ final class Analytics_4 extends Module
 		);
 
 		return $this->get_analyticsdata_service()->properties->runReport( self::normalize_property_id( $option['propertyID'] ), $request );
+	}
+
+	/**
+	 * Parses report date ranges received in the request params.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return array An array of parsed date ranges.
+	 */
+	protected function parse_reporting_dateranges( Data_Request $data ) {
+		$date_ranges = array();
+		$start_date  = $data['startDate'];
+		$end_date    = $data['endDate'];
+		if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
+			$compare_start_date = $data['compareStartDate'];
+			$compare_end_date   = $data['compareEndDate'];
+			$date_ranges[]      = array( $start_date, $end_date );
+
+			// When using multiple date ranges, it changes the structure of the response:
+			// Aggregate properties (minimum, maximum, totals) will have an entry per date range.
+			// The rows property will have additional row entries for each date range.
+			if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
+				$date_ranges[] = array( $compare_start_date, $compare_end_date );
+			}
+		} else {
+			// Default the date range to the last 28 days.
+			$date_ranges[] = $this->parse_date_range( 'last-28-days', 1 );
+		}
+
+		$date_ranges = array_map(
+			function ( $date_range ) {
+				list ( $start_date, $end_date ) = $date_range;
+				$date_range                     = new Google_Service_AnalyticsData_DateRange();
+				$date_range->setStartDate( $start_date );
+				$date_range->setEndDate( $end_date );
+
+				return $date_range;
+			},
+			$date_ranges
+		);
+
+		return $date_ranges;
 	}
 
 	/**
@@ -1394,14 +1408,27 @@ final class Analytics_4 extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Data_Request $data     Data request object.
-	 * @param mixed        $response Request response.
+	 * @param Data_Request                                   $data     Data request object.
+	 * @param Google_Service_AnalyticsData_RunReportResponse $response Request response.
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_report_response( Data_Request $data, $response ) {
+		if ( ! $response instanceof Google_Service_AnalyticsData_RunReportResponse ) {
+			return $response;
+		}
+
 		$dimensions = $this->parse_reporting_dimensions( $data );
 		if ( count( $dimensions ) !== 1 || $dimensions[0]->getName() !== 'date' ) {
 			return $response;
+		}
+
+		$date_ranges = $this->parse_reporting_dateranges( $data );
+		if ( empty( $date_ranges ) ) {
+			return $response;
+		}
+
+		$rows = $response->getRows();
+		foreach ( $rows as $row ) {
 		}
 
 		return $response;
