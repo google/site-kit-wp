@@ -20,7 +20,9 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { FORM_ACCOUNT_CREATE } from '../../analytics/datastore/constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
@@ -30,6 +32,7 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 accounts', () => {
 	let registry;
+	let store;
 
 	const accountSummariesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
@@ -41,6 +44,7 @@ describe( 'modules/analytics-4 accounts', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
@@ -51,6 +55,115 @@ describe( 'modules/analytics-4 accounts', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+	} );
+
+	describe( 'actions', () => {
+		describe( 'createAccount', () => {
+			const accountTicketID = 'abc123';
+			const accountName = 'Test Account';
+			const propertyName = 'Test Property';
+			const dataStreamName = 'Test Web Data Stream';
+			const timezone = 'America/Los Angeles';
+			const countryCode = 'US';
+
+			it( 'creates an account ticket and sets the account ticket ID', async () => {
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					),
+					{
+						// eslint-disable-next-line sitekit/acronym-case
+						body: { accountTicketId: accountTicketID },
+						status: 200,
+					}
+				);
+
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_ACCOUNT_CREATE, {
+						accountName,
+						propertyName,
+						dataStreamName,
+						timezone,
+						countryCode,
+					} );
+
+				await registry.dispatch( MODULES_ANALYTICS_4 ).createAccount();
+
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					),
+					{
+						body: {
+							data: {
+								displayName: accountName,
+								propertyName,
+								dataStreamName,
+								timezone,
+								regionCode: countryCode,
+							},
+						},
+					}
+				);
+
+				expect( store.getState().accountTicketID ).toEqual(
+					accountTicketID
+				);
+			} );
+
+			it( 'sets isDoingCreateAccount ', () => {
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					),
+					// eslint-disable-next-line sitekit/acronym-case
+					{ body: { accountTicketId: accountTicketID }, status: 200 }
+				);
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).createAccount();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isDoingCreateAccount()
+				).toEqual( true );
+			} );
+
+			it( 'dispatches an error if the request fails ', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					),
+					{ body: response, status: 500 }
+				);
+
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_ACCOUNT_CREATE, {
+						accountName,
+						propertyName,
+						dataStreamName,
+						timezone,
+						countryCode,
+					} );
+
+				await registry.dispatch( MODULES_ANALYTICS_4 ).createAccount();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getErrorForAction( 'createAccount' )
+				).toMatchObject( response );
+				expect( console ).toHaveErrored();
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
