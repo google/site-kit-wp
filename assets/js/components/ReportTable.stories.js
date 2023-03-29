@@ -29,7 +29,7 @@ import {
 	provideModuleRegistrations,
 	WithTestRegistry,
 } from '../../../tests/js/utils';
-import NewMetricBadge from './NewMetricBadge';
+import NewBadge from './NewBadge';
 
 const Template = ( args ) => <ReportTable { ...args } />;
 
@@ -106,7 +106,7 @@ ReportTableWithNewBadge.args = {
 			title: 'Title 2',
 			field: 'title2',
 			badge: (
-				<NewMetricBadge
+				<NewBadge
 					tooltipTitle="Tooltip title for the badge in the table header."
 					learnMoreLink="#"
 				/>

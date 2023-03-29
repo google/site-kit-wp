@@ -1,5 +1,5 @@
 /**
- * NewMetricBadge styles.
+ * NewBadge styles.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-.googlesitekit-new-metric-badge {
+.googlesitekit-new-badge {
 	background-color: $c-violet-v-500;
 	color: $c-violet-v-0;
 	margin-left: 6px;
 	text-transform: none;
 }
 
-.googlesitekit-new-metric-badge__tooltip {
+.googlesitekit-new-badge__tooltip {
 
 	&.googlesitekit-tooltip {
 

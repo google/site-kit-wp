@@ -1,5 +1,5 @@
 /**
- * NewMetricBadge component.
+ * NewBadge component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -34,10 +34,10 @@ import { Tooltip } from 'googlesitekit-components';
 import Badge from './Badge';
 import Link from './Link';
 
-function NewMetricBadge( { tooltipTitle, learnMoreLink } ) {
+function NewBadge( { tooltipTitle, learnMoreLink } ) {
 	return (
 		<Tooltip
-			tooltipClassName="googlesitekit-new-metric-badge__tooltip"
+			tooltipClassName="googlesitekit-new-badge__tooltip"
 			title={
 				<Fragment>
 					<p>{ tooltipTitle }</p>
@@ -50,16 +50,16 @@ function NewMetricBadge( { tooltipTitle, learnMoreLink } ) {
 			interactive
 		>
 			<Badge
-				className="googlesitekit-new-metric-badge"
+				className="googlesitekit-new-badge"
 				label={ __( 'New', 'google-site-kit' ) }
 			/>
 		</Tooltip>
 	);
 }
 
-NewMetricBadge.propTypes = {
+NewBadge.propTypes = {
 	tooltipTitle: PropTypes.string.isRequired,
 	learnMoreLink: PropTypes.string.isRequired,
 };
 
-export default NewMetricBadge;
+export default NewBadge;

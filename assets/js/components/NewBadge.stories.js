@@ -1,5 +1,5 @@
 /**
- * NewMetricBadge Component Stories.
+ * NewBadge Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -19,28 +19,28 @@
 /**
  * Internal dependencies
  */
-import NewMetricBadge from './NewMetricBadge';
+import NewBadge from './NewBadge';
 
-const Template = ( args ) => <NewMetricBadge { ...args } />;
+const Template = ( args ) => <NewBadge { ...args } />;
 
-export const NewMetricBadgeDefault = Template.bind( {} );
-NewMetricBadgeDefault.storyName = 'Default';
-NewMetricBadgeDefault.args = {
+export const NewBadgeDefault = Template.bind( {} );
+NewBadgeDefault.storyName = 'Default';
+NewBadgeDefault.args = {
 	tooltipTitle: 'This is a tooltip title',
 	learnMoreLink: 'https://www.google.com',
 };
 
-export const NewMetricBadgeLongTitle = Template.bind( {} );
-NewMetricBadgeLongTitle.storyName = 'Long Title';
-NewMetricBadgeLongTitle.args = {
+export const NewBadgeLongTitle = Template.bind( {} );
+NewBadgeLongTitle.storyName = 'Long Title';
+NewBadgeLongTitle.args = {
 	tooltipTitle:
 		'This is a tooltip title that is very long and will wrap to multiple lines. This should still display as a single paragraph and the link will be displayed under the title.',
 	learnMoreLink: 'https://www.google.com',
 };
 
 export default {
-	title: 'Components/NewMetricBadge',
-	component: NewMetricBadge,
+	title: 'Components/NewBadge',
+	component: NewBadge,
 	decorators: [
 		( Story ) => (
 			<div

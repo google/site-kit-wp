@@ -48,7 +48,7 @@ import { ZeroDataMessage } from '../common';
 import Header from './ModulePopularPagesWidget/Header';
 import Footer from './ModulePopularPagesWidget/Footer';
 import useViewOnly from '../../../../hooks/useViewOnly';
-import NewMetricBadge from '../../../../components/NewMetricBadge';
+import NewBadge from '../../../../components/NewBadge';
 const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidgetGA4( props ) {
@@ -183,7 +183,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
 			badge: (
-				<NewMetricBadge
+				<NewBadge
 					tooltipTitle={ __(
 						'Visitor interactions with your site within a given time frame (30 min by default).',
 						'google-site-kit'
@@ -201,7 +201,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 				<span>{ numFmt( fieldValue, '%' ) }</span>
 			),
 			badge: (
-				<NewMetricBadge
+				<NewBadge
 					tooltipTitle={ __(
 						'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
 						'google-site-kit'

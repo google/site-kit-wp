@@ -26,7 +26,7 @@ import { isPlainObject } from 'lodash';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import NewMetricBadge from '../../../../../../components/NewMetricBadge';
+import NewBadge from '../../../../../../components/NewBadge';
 
 /**
  * Internal dependencies
@@ -238,7 +238,7 @@ const Overview = ( {
 						change: ga4ConversionsChange,
 						isGatheringData: isGA4GatheringData,
 						badge: (
-							<NewMetricBadge
+							<NewBadge
 								tooltipTitle={ __(
 									'Conversions is a new Google Analytics 4 metric replacing the Goals metric.',
 									'google-site-kit'
