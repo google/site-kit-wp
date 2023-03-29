@@ -543,11 +543,9 @@ const baseSelectors = {
 		if ( ! getValue( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
 			return false;
 		}
-
 		if ( ! getValue( FORM_ACCOUNT_CREATE, 'profileName' ) ) {
 			return false;
 		}
-
 		if ( ! getValue( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
 			return false;
 		}
