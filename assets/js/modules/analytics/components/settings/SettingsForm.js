@@ -36,16 +36,12 @@ import {
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import SettingsUACutoffWarning from './SettingsUACutoffWarning';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
-import SettingsNotice, {
-	TYPE_WARNING,
-} from '../../../../components/SettingsNotice';
-import Link from '../../../../components/Link';
 import { isValidAccountID } from '../../util';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import GA4DashboardViewToggle from './GA4DashboardViewToggle';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
@@ -55,14 +51,12 @@ export default function SettingsForm( {
 	hasAnalytics4Access,
 } ) {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountID()
-	);
-	const documentationURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
-	} );
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const useAnalyticsSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
@@ -94,20 +88,7 @@ export default function SettingsForm( {
 
 	return (
 		<Fragment>
-			{ ga4ReportingEnabled && ! isGA4Connected && (
-				<SettingsNotice
-					type={ TYPE_WARNING }
-					LearnMore={ () => (
-						<Link href={ documentationURL } external>
-							{ __( 'Learn more', 'google-site-kit' ) }
-						</Link>
-					) }
-					notice={ __(
-						'Your current Universal Analytics property will stop collecting data on July 1, 2023',
-						'google-site-kit'
-					) }
-				/>
-			) }
+			<SettingsUACutoffWarning />
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }

@@ -38,7 +38,10 @@ function getComponentNames( componentPath ) {
 	return fs
 		.readdirSync( componentPath )
 		.filter(
-			( name ) => ! /^index|utils|\.(stories|test)\.js$/.test( name )
+			( name ) =>
+				! /^index|utils|__snapshots__|\.(stories|test)\.js$/.test(
+					name
+				)
 		)
 		.map( ( name ) => name.replace( /\..*/, '' ) );
 }
