@@ -67,7 +67,7 @@ export const selectors = {
 				}
 
 				const {
-					dates = {},
+					dates,
 					details = {},
 					filters = {},
 					otherArgs = {},
@@ -75,7 +75,7 @@ export const selectors = {
 
 				const embeddedParams = {
 					'_u..nav': 'maui',
-					...generateDateRangeArgs( dates ),
+					...( dates ? generateDateRangeArgs( dates ) : {} ),
 					...generateReportDetailArgs( details ),
 					...generateReportFilterArgs( filters ),
 				};
