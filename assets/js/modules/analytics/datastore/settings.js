@@ -290,14 +290,14 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 	const ga4ModuleActive =
 		select( CORE_MODULES ).isModuleActive( 'analytics-4' );
 
-	if ( ! ga4ModuleActive ) {
-		return false;
-	}
-
 	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
 
-	if ( dashboardView === undefined ) {
+	if ( ga4ModuleActive === undefined || dashboardView === undefined ) {
 		return undefined;
+	}
+
+	if ( ! ga4ModuleActive ) {
+		return false;
 	}
 
 	return dashboardView === DASHBOARD_VIEW_GA4;
