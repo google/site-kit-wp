@@ -28,12 +28,12 @@
 	&.MuiTooltip-tooltip {
 
 		&.googlesitekit-new-badge__tooltip {
-			border-radius: 8px;
+			border-radius: $br-xs;
 			font-family: $f-primary;
 			font-size: $fs-body-sm;
 			font-weight: $fw-normal;
-			letter-spacing: 0.2px;
-			line-height: 16px;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 			max-width: 160px;
 			padding: 12px;
 
