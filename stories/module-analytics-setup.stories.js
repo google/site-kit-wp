@@ -45,7 +45,6 @@ import {
 	provideUserAuthentication,
 	WithTestRegistry,
 } from '../tests/js/utils';
-import { enabledFeatures } from '../assets/js/features';
 const { useRegistry } = Data;
 
 function Setup() {
@@ -425,8 +424,6 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Create Account (ga4Reporting enabled)',
 		( _args, { registry } ) => {
-			enabledFeatures.add( 'ga4Reporting' );
-
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry, {
 				grantedScopes: [ EDIT_SCOPE ],
