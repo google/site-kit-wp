@@ -40,7 +40,8 @@ function NewBadge( { tooltipTitle, learnMoreLink } ) {
 			tooltipClassName="googlesitekit-new-badge__tooltip"
 			title={
 				<Fragment>
-					<p>{ tooltipTitle }</p>
+					{ tooltipTitle }
+					<br />
 					<Link href={ learnMoreLink } external>
 						{ __( 'Learn more', 'google-site-kit' ) }
 					</Link>
