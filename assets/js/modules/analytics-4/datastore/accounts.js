@@ -219,6 +219,11 @@ const baseSelectors = {
 		if ( ! getValue( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
 			return false;
 		}
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'countryCode' ) ) {
+			return false;
+		}
+
 		return true;
 	} ),
 };
