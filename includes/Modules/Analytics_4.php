@@ -1421,7 +1421,7 @@ final class Analytics_4 extends Module
 			return $response;
 		}
 
-		// Get report dimensions and return early if there is either more than one dimension or 
+		// Get report dimensions and return early if there is either more than one dimension or
 		// the only dimension is not "date".
 		$dimensions = $this->parse_reporting_dimensions( $data );
 		if ( count( $dimensions ) !== 1 || $dimensions[0]->getName() !== 'date' ) {
@@ -1450,13 +1450,13 @@ final class Analytics_4 extends Module
 			// for it. If the metric value is missing, we will need to add one with a zero value.
 			$now = $start;
 			do {
-				$current_date = date( 'Ymd', $now );
+				$current_date = gmdate( 'Ymd', $now );
 
 				// Search for the current date in the response rows.
 				$found_dimenension = false;
 				foreach ( $rows as $row ) {
 					$dimention_values = $row->getDimensionValues();
-					if ( $dimention_values[0]->getValue() == $current_date ) {
+					if ( $dimention_values[0]->getValue() === $current_date ) {
 						$found_dimenension = true;
 						break;
 					}
@@ -1494,7 +1494,7 @@ final class Analytics_4 extends Module
 
 				// Add a day in seconds value to the current date to shift to the next date.
 				$now += DAY_IN_SECONDS;
-			} while( $now <= $end );
+			} while ( $now <= $end );
 		}
 
 		// Set updated rows back to the response object.
