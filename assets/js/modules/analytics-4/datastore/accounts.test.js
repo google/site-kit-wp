@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { FORM_ACCOUNT_CREATE } from '../../analytics/datastore/constants';
 import {
@@ -241,6 +242,66 @@ describe( 'modules/analytics-4 accounts', () => {
 					.getAccountSummaries();
 				expect( accountSummaries ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getAccountTicketTermsOfServiceURL', () => {
+			it( 'requires the accountTicketID from createAccount', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveUserInfo( { email: 'test@gmail.com' } );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAccountTicketTermsOfServiceURL()
+				).toEqual( undefined );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveCreateAccount(
+					// eslint-disable-next-line sitekit/acronym-case
+					{ accountTicketId: 'test-account-ticket-id' },
+					{ data: {} }
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAccountTicketTermsOfServiceURL()
+				).toEqual(
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
+				);
+			} );
+
+			it( 'requires the user’s email', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAccountTicketTermsOfServiceURL()
+				).toEqual( undefined );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveCreateAccount(
+					// eslint-disable-next-line sitekit/acronym-case
+					{ accountTicketId: 'test-account-ticket-id' },
+					{ data: {} }
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAccountTicketTermsOfServiceURL()
+				).toEqual( undefined );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveUserInfo( { email: 'test@gmail.com' } );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAccountTicketTermsOfServiceURL()
+				).toEqual(
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
+				);
 			} );
 		} );
 	} );
