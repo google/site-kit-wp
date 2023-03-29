@@ -1434,7 +1434,9 @@ final class Analytics_4 extends Module
 			return $response;
 		}
 
-		$rows = $response->getRows();
+		$rows    = $response->getRows();
+		$metrics = $response->getMetricHeaders();
+
 		foreach ( $date_ranges as $date_range ) {
 			$start = strtotime( $date_range->getStartDate() );
 			$end   = strtotime( $date_range->getEndDate() );
@@ -1465,12 +1467,27 @@ final class Analytics_4 extends Module
 					$dimension_value = new Google_Service_AnalyticsData_DimensionValue();
 					$dimension_value->setValue( $current_date );
 
-					$metric_value = new Google_Service_AnalyticsData_MetricValue();
-					$metric_value->setValue( 0 );
+					$metric_values = array();
+					foreach ( $metrics as $metric ) {
+						$metric_value = new Google_Service_AnalyticsData_MetricValue();
+
+						switch ( $metric->getType() ) {
+							case 'TYPE_INTEGER':
+							case 'TYPE_FLOAT':
+							case 'TYPE_CURRENCY':
+								$metric_value->setValue( 0 );
+								break;
+							default:
+								$metric_value->setValue( null );
+								break;
+						}
+
+						$metric_values[] = $metric_value;
+					}
 
 					$row = new Google_Service_AnalyticsData_Row();
 					$row->setDimensionValues( array( $dimension_value ) );
-					$row->setMetricValues( array( $metric_value ) );
+					$row->setMetricValues( $metric_values );
 
 					$rows[] = $row;
 				}
