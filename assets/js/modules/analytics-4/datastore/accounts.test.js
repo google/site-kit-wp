@@ -39,6 +39,12 @@ describe( 'modules/analytics-4 accounts', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 	);
 
+	const accountName = 'Test Account';
+	const propertyName = 'Test Property';
+	const dataStreamName = 'Test Web Data Stream';
+	const timezone = 'America/Los Angeles';
+	const countryCode = 'US';
+
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -61,11 +67,6 @@ describe( 'modules/analytics-4 accounts', () => {
 	describe( 'actions', () => {
 		describe( 'createAccount', () => {
 			const accountTicketID = 'abc123';
-			const accountName = 'Test Account';
-			const propertyName = 'Test Property';
-			const dataStreamName = 'Test Web Data Stream';
-			const timezone = 'America/Los Angeles';
-			const countryCode = 'US';
 
 			it( 'creates an account ticket and sets the account ticket ID', async () => {
 				fetchMock.post(
@@ -302,6 +303,48 @@ describe( 'modules/analytics-4 accounts', () => {
 				).toEqual(
 					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
 				);
+			} );
+		} );
+
+		describe( 'canSubmitAccountCreate', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_ACCOUNT_CREATE, {
+						accountName,
+						propertyName,
+						dataStreamName,
+						timezone,
+						countryCode,
+					} );
+			} );
+
+			it( 'should return true if all values exist', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.canSubmitAccountCreate()
+				).toEqual( true );
+			} );
+
+			it.each( [
+				'accountName',
+				'propertyName',
+				'dataStreamName',
+				'timezone',
+				'countryCode',
+			] )( "should return false if %s doesn't exist", ( value ) => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_ACCOUNT_CREATE, {
+						[ value ]: '',
+					} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.canSubmitAccountCreate()
+				).toEqual( false );
 			} );
 		} );
 	} );
