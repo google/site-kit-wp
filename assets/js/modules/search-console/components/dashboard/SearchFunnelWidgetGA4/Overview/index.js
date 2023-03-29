@@ -26,7 +26,6 @@ import { isPlainObject } from 'lodash';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import NewBadge from '../../../../../../components/NewBadge';
 
 /**
  * Internal dependencies
@@ -46,6 +45,8 @@ import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/consta
 import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import OptionalCells from './OptionalCells';
+import NewBadge from '../../../../../../components/NewBadge';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
@@ -108,6 +109,12 @@ const Overview = ( {
 	);
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
+	);
+
+	const conversionsRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/9267568',
+		} )
 	);
 
 	const {
@@ -243,7 +250,7 @@ const Overview = ( {
 									'Conversions is a new Google Analytics 4 metric replacing the Goals metric.',
 									'google-site-kit'
 								) }
-								learnMoreLink="https://support.google.com/analytics/answer/9267568"
+								learnMoreLink={ conversionsRateLearnMoreURL }
 							/>
 						),
 					},
