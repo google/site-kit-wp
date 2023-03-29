@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import { ExistingGTMPropertyNotice } from '../common';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import SettingsUACutoffWarning from './SettingsUACutoffWarning';
 import GA4SettingsView from './GA4SettingsView';
 import UASettingsView from './UASettingsView';
 import OptionalSettingsView from './OptionalSettingsView';
@@ -37,22 +38,15 @@ import {
 } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SettingsNotice, {
-	TYPE_WARNING,
-} from '../../../../components/SettingsNotice';
-import Link from '../../../../components/Link';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-	const documentationURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
-	} );
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
+
 	const isTagManagerAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
 	);
@@ -69,20 +63,7 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			{ ga4ReportingEnabled && ! isGA4Connected && (
-				<SettingsNotice
-					type={ TYPE_WARNING }
-					LearnMore={ () => (
-						<Link href={ documentationURL } external>
-							{ __( 'Learn more', 'google-site-kit' ) }
-						</Link>
-					) }
-					notice={ __(
-						'Your current Universal Analytics property will stop collecting data on July 1, 2023',
-						'google-site-kit'
-					) }
-				/>
-			) }
+			<SettingsUACutoffWarning />
 
 			<StoreErrorNotices
 				moduleSlug="analytics"

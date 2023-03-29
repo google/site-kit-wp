@@ -29,6 +29,7 @@ import { Fragment } from '@wordpress/element';
 export default function SettingsNoticeMultiRow( {
 	notice,
 	LearnMore,
+	CTA,
 	children,
 } ) {
 	return (
@@ -47,6 +48,12 @@ export default function SettingsNoticeMultiRow( {
 						<LearnMore />
 					</div>
 				) }
+
+				{ CTA && (
+					<div className="googlesitekit-settings-notice__cta">
+						<CTA />
+					</div>
+				) }
 			</div>
 		</Fragment>
 	);
@@ -56,4 +63,5 @@ SettingsNoticeMultiRow.propTypes = {
 	children: PropTypes.node.isRequired,
 	notice: PropTypes.node.isRequired,
 	LearnMore: PropTypes.elementType,
+	CTA: PropTypes.elementType,
 };

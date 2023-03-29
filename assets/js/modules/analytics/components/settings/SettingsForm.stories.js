@@ -341,6 +341,11 @@ WithDashboardViewLabel.decorators = [
 			// Ensure the analytics-4 module is not connected so that the Dashboard View label is shown rather than the toggle.
 			provideModules( registry, [
 				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
 					slug: 'analytics-4',
 					active: true,
 					connected: false,
