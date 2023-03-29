@@ -195,7 +195,7 @@ export default function ReminderBanner( {
 			<h4 className="googlesitekit-publisher-win__secondary-pane-title">
 				{ __( 'Google Analytics 4 benefits:', 'google-site-kit' ) }
 			</h4>
-			<ul>
+			<ul className="googlesitekit-publisher-win__secondary-pane-list">
 				<li>
 					<CheckIcon height={ 18 } width={ 18 } />
 					{ __(

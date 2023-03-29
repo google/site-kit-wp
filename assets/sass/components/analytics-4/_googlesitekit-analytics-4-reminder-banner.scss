@@ -56,9 +56,10 @@
 				margin: 8px 0 0;
 			}
 
-			ul li {
+			.googlesitekit-publisher-win__secondary-pane-list li {
 				color: $c-neutral-n-400;
 				display: flex;
+				max-width: 22rem;
 
 				svg {
 					fill: currentColor;
