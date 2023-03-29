@@ -34,7 +34,7 @@ import { Tooltip } from 'googlesitekit-components';
 import Badge from './Badge';
 import Link from './Link';
 
-function NewBadge( { tooltipTitle, learnMoreLink } ) {
+function NewBadge( { tooltipTitle, learnMoreLink, forceOpen } ) {
 	return (
 		<Tooltip
 			tooltipClassName="googlesitekit-new-badge__tooltip"
@@ -49,6 +49,7 @@ function NewBadge( { tooltipTitle, learnMoreLink } ) {
 			}
 			placement="top"
 			interactive
+			open={ forceOpen }
 		>
 			<Badge
 				className="googlesitekit-new-badge"
@@ -61,6 +62,7 @@ function NewBadge( { tooltipTitle, learnMoreLink } ) {
 NewBadge.propTypes = {
 	tooltipTitle: PropTypes.string.isRequired,
 	learnMoreLink: PropTypes.string.isRequired,
+	forceOpen: PropTypes.bool,
 };
 
 export default NewBadge;

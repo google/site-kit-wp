@@ -38,6 +38,18 @@ NewBadgeLongTitle.args = {
 	learnMoreLink: 'https://www.google.com',
 };
 
+export const NewBadgeForceOpen = Template.bind( {} );
+NewBadgeForceOpen.storyName = 'Force Open';
+NewBadgeForceOpen.args = {
+	tooltipTitle:
+		'This is a tooltip that is forced to be open all the time using the forceOpen prop. This is useful for testing the tooltip in Storybook.',
+	learnMoreLink: 'https://www.google.com',
+	forceOpen: true,
+};
+NewBadgeForceOpen.scenario = {
+	label: 'Global/NewBadge',
+};
+
 export default {
 	title: 'Components/NewBadge',
 	component: NewBadge,
