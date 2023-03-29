@@ -29,10 +29,14 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { FORM_ACCOUNT_CREATE } from '../../analytics/datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	FORM_ACCOUNT_CREATE,
+} from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
+const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
@@ -63,11 +67,11 @@ const fetchCreateAccountStore = createFetchStore( {
 			data
 		);
 	},
-	reducerCallback: ( state, accountTicket ) => {
-		const { id } = accountTicket;
+	// eslint-disable-next-line sitekit/acronym-case
+	reducerCallback: ( state, { accountTicketId: accountTicketID } ) => {
 		return {
 			...state,
-			accountTicketID: id,
+			accountTicketID,
 		};
 	},
 	argsToParams: ( data ) => {
@@ -80,6 +84,7 @@ const fetchCreateAccountStore = createFetchStore( {
 
 const baseInitialState = {
 	accountSummaries: undefined,
+	accountTicketID: undefined,
 };
 
 const baseActions = {
@@ -164,6 +169,58 @@ const baseSelectors = {
 		// request is in progress.
 		return Object.values( state.isFetchingCreateAccount ).some( Boolean );
 	},
+
+	/**
+	 * Get the terms of service URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The terms of service URL.
+	 */
+	getAccountTicketTermsOfServiceURL: createRegistrySelector(
+		( select ) => ( state ) => {
+			const { accountTicketID } = state;
+			const tosURL = select( MODULES_ANALYTICS ).getServiceURL( {
+				path: `/termsofservice/${ accountTicketID }`,
+				query: { provisioningSignup: 'false' },
+			} );
+
+			if ( undefined === accountTicketID || ! tosURL ) {
+				return undefined;
+			}
+
+			return tosURL;
+		}
+	),
+
+	/**
+	 * Whether or not the account create form is valid to submit.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @return {boolean} True if valid, otherwise false.
+	 */
+	canSubmitAccountCreate: createRegistrySelector( ( select ) => () => {
+		const { getValue } = select( CORE_FORMS );
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
+			return false;
+		}
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
+			return false;
+		}
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'dataStreamName' ) ) {
+			return false;
+		}
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
+			return false;
+		}
+		return true;
+	} ),
 };
 
 const store = Data.combineStores(

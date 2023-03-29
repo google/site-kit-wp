@@ -29,7 +29,6 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../util';
-import { isFeatureEnabled } from '../../../features';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_ANALYTICS,
@@ -545,14 +544,7 @@ const baseSelectors = {
 			return false;
 		}
 
-		if (
-			! getValue(
-				FORM_ACCOUNT_CREATE,
-				isFeatureEnabled( 'ga4Reporting' )
-					? 'dataStreamName'
-					: 'profileName'
-			)
-		) {
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'profileName' ) ) {
 			return false;
 		}
 

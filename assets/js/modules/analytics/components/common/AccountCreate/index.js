@@ -66,11 +66,17 @@ export default function AccountCreate() {
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
-	const accountTicketTermsOfServiceURL = useSelect( ( select ) =>
+	const accountTicketTermsOfServiceURLUA = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountTicketTermsOfServiceURL()
 	);
-	const canSubmitAccountCreate = useSelect( ( select ) =>
+	const accountTicketTermsOfServiceURLGA4 = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAccountTicketTermsOfServiceURL()
+	);
+	const canSubmitAccountCreateUA = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitAccountCreate()
+	);
+	const canSubmitAccountCreateGA4 = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).canSubmitAccountCreate()
 	);
 	const isDoingCreateAccountUA = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isDoingCreateAccount()
@@ -119,6 +125,14 @@ export default function AccountCreate() {
 	const isDoingCreateAccount = ga4ReportingEnabled
 		? isDoingCreateAccountGA4
 		: isDoingCreateAccountUA;
+
+	const canSubmitAccountCreate = ga4ReportingEnabled
+		? canSubmitAccountCreateGA4
+		: canSubmitAccountCreateUA;
+
+	const accountTicketTermsOfServiceURL = ga4ReportingEnabled
+		? accountTicketTermsOfServiceURLGA4
+		: accountTicketTermsOfServiceURLUA;
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
