@@ -978,13 +978,16 @@ describe( 'modules/analytics settings', () => {
 						connected: false,
 					},
 				] );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: DASHBOARD_VIEW_UA,
+				} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
 				).toBe( false );
 			} );
 
-			it( 'should return undefined when analytics settings are not loaded', async () => {
+			it( 'should return undefined when analytics dashboard view is not loaded', async () => {
 				freezeFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/settings'
