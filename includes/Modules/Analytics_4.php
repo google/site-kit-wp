@@ -1262,7 +1262,7 @@ final class Analytics_4 extends Module
 		}
 
 		// Order by.
-		$orderby = $this->parse_reporting_orderby( $data['orderby'] );
+		$orderby = $this->parse_reporting_orderby( $data );
 		if ( ! empty( $orderby ) ) {
 			$request->setOrderBys( $orderby );
 		}
@@ -1370,10 +1370,11 @@ final class Analytics_4 extends Module
 	 * @since 1.93.0
 	 * @since 1.95.0 Updated to provide support for ordering by dimensions.
 	 *
-	 * @param array|null $orderby Data request orderby value.
+	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.
 	 */
-	protected function parse_reporting_orderby( $orderby ) {
+	protected function parse_reporting_orderby( Data_Request $data ) {
+		$orderby = $data['orderby'];
 		if ( empty( $orderby ) || ! is_array( $orderby ) || ! wp_is_numeric_array( $orderby ) ) {
 			return array();
 		}
@@ -1434,10 +1435,18 @@ final class Analytics_4 extends Module
 			return $response;
 		}
 
-		$rows    = $response->getRows();
-		$metrics = $response->getMetricHeaders();
+		// Get all available dates in the report.
+		$rows = array();
+		foreach ( $response->getRows() as $row ) {
+			$dimension_values         = $row->getDimensionValues();
+			$date                     = $dimension_values[0]->getValue();
+			$rows[ $date ]            = $row;
+		}
 
-		foreach ( $date_ranges as $date_range ) {
+		$metrics         = $response->getMetricHeaders();
+		$multiple_ranges = count( $date_ranges ) > 1;
+
+		foreach ( $date_ranges as $date_range_index => $date_range ) {
 			$start = strtotime( $date_range->getStartDate() );
 			$end   = strtotime( $date_range->getEndDate() );
 
@@ -1450,56 +1459,78 @@ final class Analytics_4 extends Module
 			// for it. If the metric value is missing, we will need to add one with a zero value.
 			$now = $start;
 			do {
+				// Format the current time to a date string and add a day in seconds to the current date
+				// to shift to the next date.
 				$current_date = gmdate( 'Ymd', $now );
-
-				// Search for the current date in the response rows.
-				$found_dimension = false;
-				foreach ( $rows as $row ) {
-					$dimension_values = $row->getDimensionValues();
-					if ( $dimension_values[0]->getValue() === $current_date ) {
-						$found_dimension = true;
-						break;
-					}
-				}
-
-				// If the current date is not found, add the new row to the existing rows.
-				if ( ! $found_dimension ) {
-					$dimension_value = new Google_Service_AnalyticsData_DimensionValue();
-					$dimension_value->setValue( $current_date );
-
-					$metric_values = array();
-					foreach ( $metrics as $metric ) {
-						$metric_value = new Google_Service_AnalyticsData_MetricValue();
-
-						switch ( $metric->getType() ) {
-							case 'TYPE_INTEGER':
-							case 'TYPE_FLOAT':
-							case 'TYPE_CURRENCY':
-								$metric_value->setValue( 0 );
-								break;
-							default:
-								$metric_value->setValue( null );
-								break;
-						}
-
-						$metric_values[] = $metric_value;
-					}
-
-					$row = new Google_Service_AnalyticsData_Row();
-					$row->setDimensionValues( array( $dimension_value ) );
-					$row->setMetricValues( $metric_values );
-
-					$rows[] = $row;
-				}
-
-				// Add a day in seconds value to the current date to shift to the next date.
 				$now += DAY_IN_SECONDS;
+
+				// If the current date is found, then go to the next day.
+				if ( isset( $rows[ $current_date ] ) ) {
+					continue;
+				}
+
+				$dimension_values = array();
+
+				$current_date_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
+				$current_date_dimension_value->setValue( $current_date );
+				$dimension_values[] = $current_date_dimension_value;
+
+				// If we have multiple date ranges, we need to add "date_range_{i}" index to dimension values.
+				if ( $multiple_ranges ) {
+					$date_range_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
+					$date_range_dimension_value->setValue( "date_range_{$date_range_index}" );
+					$dimension_values[] = $date_range_dimension_value;
+				}
+
+				$metric_values = array();
+				foreach ( $metrics as $metric ) {
+					$metric_value = new Google_Service_AnalyticsData_MetricValue();
+
+					switch ( $metric->getType() ) {
+						case 'TYPE_INTEGER':
+						case 'TYPE_FLOAT':
+						case 'TYPE_CURRENCY':
+							$metric_value->setValue( '0' );
+							break;
+						default:
+							$metric_value->setValue( null );
+							break;
+					}
+
+					$metric_values[] = $metric_value;
+				}
+
+				$row = new Google_Service_AnalyticsData_Row();
+				$row->setDimensionValues( $dimension_values );
+				$row->setMetricValues( $metric_values );
+
+				$rows[ $current_date ] = $row;
 			} while ( $now <= $end );
 		}
 
+		// If we have the same number of rows as in the response at the moment, then
+		// we can return the response without setting the new rows back into the response.
+		$new_rows_count = count( $rows );
+		if ( $new_rows_count <= $response->getRowCount() ) {
+			return $response;
+		}
+
+		// Sort rows by keys to have all records in ascending order.
+		$orderby = $this->parse_reporting_orderby( $data );
+		if ( ! empty( $orderby ) ) {
+			uasort(
+				$rows,
+				function( $a, $b ) use ( $orderby ) {
+					foreach ( $orderby as $order ) {
+
+					}
+				}
+			);
+		}
+
 		// Set updated rows back to the response object.
-		$response->setRows( $rows );
-		$response->setRowCount( count( $rows ) );
+		$response->setRows( array_values( $rows ) );
+		$response->setRowCount( $new_rows_count );
 
 		return $response;
 	}
