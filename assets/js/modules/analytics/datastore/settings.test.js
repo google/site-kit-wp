@@ -745,7 +745,6 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
-					accountID: '12345',
 					propertyID: null,
 				} );
 
