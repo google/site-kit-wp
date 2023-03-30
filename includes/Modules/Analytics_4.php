@@ -532,8 +532,8 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
-		
-				$settings = $this->get_settings()->get();		
+
+				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',

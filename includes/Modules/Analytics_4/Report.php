@@ -337,8 +337,8 @@ class Report {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array  $args {
-	 *     Optional. Additional arguments.
+	 * @param array $args {
+	 *    Optional. Additional arguments.
 	 *
 	 *     @type array                                           $dimensions        List of request dimensions. Default empty array.
 	 *     @type Google_Service_AnalyticsData_FilterExpression[] $dimension_filters List of dimension filter instances for the specified request dimensions. Default empty array.
@@ -606,9 +606,9 @@ class Report {
 		// Get all available dates in the report.
 		$rows = array();
 		foreach ( $response->getRows() as $row ) {
-			$dimension_values         = $row->getDimensionValues();
-			$date                     = $dimension_values[0]->getValue();
-			$rows[ $date ]            = $row;
+			$dimension_values = $row->getDimensionValues();
+			$date             = $dimension_values[0]->getValue();
+			$rows[ $date ]    = $row;
 		}
 
 		$metrics         = $response->getMetricHeaders();
@@ -630,7 +630,7 @@ class Report {
 				// Format the current time to a date string and add a day in seconds to the current date
 				// to shift to the next date.
 				$current_date = gmdate( 'Ymd', $now );
-				$now += DAY_IN_SECONDS;
+				$now         += DAY_IN_SECONDS;
 
 				// If the current date is found, then go to the next day.
 				if ( isset( $rows[ $current_date ] ) ) {
