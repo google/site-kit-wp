@@ -37,6 +37,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import SourceLink from '../../../../components/SourceLink';
+import UACutoffWarning from '../common/UACutoffWarning';
 import whenActive from '../../../../util/when-active';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { calculateOverallPageMetricsData } from '../../util/overall-page-metrics';
@@ -170,6 +171,7 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
+			<UACutoffWarning className="googlesitekit-ua-cutoff-warning--overall-page-metrics" />
 			<Grid>
 				<Row>
 					{ data.map(

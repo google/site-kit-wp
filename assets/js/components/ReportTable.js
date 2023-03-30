@@ -77,6 +77,7 @@ export default function ReportTable( {
 									primary,
 									hideOnMobile,
 									className: columnClassName,
+									badge,
 								},
 								colIndex
 							) => (
@@ -94,6 +95,7 @@ export default function ReportTable( {
 									key={ `googlesitekit-table__head-row-${ colIndex }` }
 								>
 									{ title }
+									{ badge }
 								</th>
 							)
 						) }
@@ -191,6 +193,7 @@ ReportTable.propTypes = {
 			field: PropTypes.string,
 			hideOnMobile: PropTypes.bool,
 			Component: PropTypes.componentType,
+			badge: PropTypes.node,
 		} )
 	).isRequired,
 	className: PropTypes.string,

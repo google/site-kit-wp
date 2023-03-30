@@ -1,13 +1,13 @@
 /**
- * Analytics module constants
+ * Analytics Overall Page Metrics widget styles.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *		 https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-export const AREA_MODULE_ANALYTICS_MAIN = 'moduleAnalyticsMain';
+.googlesitekit-plugin {
 
-// Date that Universal Analytics will stop recording data: July 1, 2023.
-export const UA_CUTOFF_DATE = '2023-07-01';
+	.googlesitekit-ua-cutoff-warning--overall-page-metrics {
+		padding-left: 0;
+		padding-right: 0;
+		padding-top: 0;
+	}
+}
