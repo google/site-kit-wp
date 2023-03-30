@@ -1,7 +1,7 @@
 /**
- * SetupFormGA4 component stories.
+ * SetupFormGA4Legacy component stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ function Template() {
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tag';
 WithoutExistingTag.scenario = {
-	label: 'Modules/Analytics/Setup/SetupFormGA4/WithoutExistingTag',
+	label: 'Modules/Analytics/Setup/SetupFormGA4Legacy/WithoutExistingTag',
 	delay: 250,
 };
 
@@ -93,12 +93,12 @@ WithBothTags.decorators = [
 	},
 ];
 WithBothTags.scenario = {
-	label: 'Modules/Analytics/Setup/SetupFormGA4/WithBothTags',
+	label: 'Modules/Analytics/Setup/SetupFormGA4Legacy/WithBothTags',
 	delay: 250,
 };
 
 export default {
-	title: 'Modules/Analytics/Setup/SetupFormGA4',
+	title: 'Modules/Analytics/Setup/SetupFormGA4Legacy',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
