@@ -1,5 +1,5 @@
 /**
- * Analytics GA4 Setup form.
+ * Analytics GA4 Setup form Legacy.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -48,7 +48,7 @@ import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupFormGA4() {
+export default function SetupFormGA4Legacy() {
 	const accounts =
 		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
 		[];
