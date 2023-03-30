@@ -34,7 +34,7 @@ import { Tooltip } from 'googlesitekit-components';
 import Badge from './Badge';
 import Link from './Link';
 
-function NewBadge( { tooltipTitle, learnMoreLink, forceOpen } ) {
+function NewBadge( { tooltipTitle, learnMoreLink, forceOpen = true } ) {
 	return (
 		<Tooltip
 			tooltipClassName="googlesitekit-new-badge__tooltip"
