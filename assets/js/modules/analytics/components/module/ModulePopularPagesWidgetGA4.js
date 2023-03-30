@@ -48,6 +48,8 @@ import { ZeroDataMessage } from '../common';
 import Header from './ModulePopularPagesWidget/Header';
 import Footer from './ModulePopularPagesWidget/Footer';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import NewBadge from '../../../../components/NewBadge';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidgetGA4( props ) {
@@ -117,6 +119,18 @@ function ModulePopularPagesWidgetGA4( props ) {
 		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );
 
+	const sessionsLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/9191807',
+		} )
+	);
+
+	const engagementRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12195621',
+		} )
+	);
+
 	if ( ! loaded || isGatheringData === undefined ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer } noPadding>
@@ -181,6 +195,15 @@ function ModulePopularPagesWidgetGA4( props ) {
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
+			badge: (
+				<NewBadge
+					tooltipTitle={ __(
+						'Visitor interactions with your site within a given time frame (30 min by default).',
+						'google-site-kit'
+					) }
+					learnMoreLink={ sessionsLearnMoreURL }
+				/>
+			),
 		},
 		{
 			title: __( 'Engagement Rate', 'google-site-kit' ),
@@ -189,6 +212,15 @@ function ModulePopularPagesWidgetGA4( props ) {
 			field: 'metricValues.2.value',
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, '%' ) }</span>
+			),
+			badge: (
+				<NewBadge
+					tooltipTitle={ __(
+						'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
+						'google-site-kit'
+					) }
+					learnMoreLink={ engagementRateLearnMoreURL }
+				/>
 			),
 		},
 		{

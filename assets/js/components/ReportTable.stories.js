@@ -29,6 +29,7 @@ import {
 	provideModuleRegistrations,
 	WithTestRegistry,
 } from '../../../tests/js/utils';
+import NewBadge from './NewBadge';
 
 const Template = ( args ) => <ReportTable { ...args } />;
 
@@ -90,6 +91,32 @@ ReportTableGatheringData.args = {
 		},
 	],
 	gatheringData: true,
+};
+
+export const ReportTableWithNewBadge = Template.bind( {} );
+ReportTableWithNewBadge.storyName = 'With New Badge';
+ReportTableWithNewBadge.args = {
+	rows: [],
+	columns: [
+		{
+			title: 'Title 1',
+			field: 'title1',
+		},
+		{
+			title: 'Title 2',
+			field: 'title2',
+			badge: (
+				<NewBadge
+					tooltipTitle="Tooltip title for the badge in the table header."
+					learnMoreLink="#"
+				/>
+			),
+		},
+		{
+			title: 'Title 3',
+			field: 'title3',
+		},
+	],
 };
 
 export default {
