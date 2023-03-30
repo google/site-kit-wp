@@ -1285,7 +1285,7 @@ final class Analytics_4 extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data Data request object.
-	 * @return array An array of parsed date ranges.
+	 * @return Google_Service_AnalyticsData_DateRange[] An array of AnalyticsData DateRange objects.
 	 */
 	protected function parse_reporting_dateranges( Data_Request $data ) {
 		$date_ranges = array();
@@ -1328,7 +1328,7 @@ final class Analytics_4 extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data Data request object.
-	 * @return array An array of parsed dimensions.
+	 * @return Google_Service_AnalyticsData_Dimension[] An array of AnalyticsData Dimension objects.
 	 */
 	protected function parse_reporting_dimensions( Data_Request $data ) {
 		$dimensions = $data['dimensions'];
@@ -1407,7 +1407,7 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Parses the report response.
+	 * Parses the report response, and pads the report data with zero-data rows where rows are missing. This only applies for reports which request a single `date` dimension.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -1428,7 +1428,7 @@ final class Analytics_4 extends Module
 			return $response;
 		}
 
-		// Get date ranges and return early if there is no date ranges for this report.
+		// Get date ranges and return early if there are no date ranges for this report.
 		$date_ranges = $this->parse_reporting_dateranges( $data );
 		if ( empty( $date_ranges ) ) {
 			return $response;
