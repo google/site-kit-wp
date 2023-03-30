@@ -42,7 +42,7 @@ const { createRegistrySelector } = Data;
 
 export const selectors = {
 	/**
-	 * Gets a URL for a specific reporting view on the service.
+	 * Gets a URL for a specific Analytics 4 reporting view on the service.
 	 *
 	 * @since n.e.x.t
 	 *
