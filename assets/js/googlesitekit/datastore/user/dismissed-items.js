@@ -134,9 +134,6 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if dismissed, otherwise FALSE, `undefined` if not resolved yet.
 	 */
 	isItemDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
-		if ( slug === '' ) {
-			return undefined;
-		}
 		return select( CORE_USER ).getDismissedItems()?.includes( slug );
 	} ),
 

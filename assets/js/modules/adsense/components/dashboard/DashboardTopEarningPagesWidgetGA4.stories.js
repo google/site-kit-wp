@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
@@ -41,10 +40,6 @@ export default {
 						slug: 'adsense',
 					},
 				] );
-
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveIsAdBlockerActive( true );
 			};
 
 			return (

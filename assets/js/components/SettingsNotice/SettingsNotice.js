@@ -23,6 +23,11 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -41,6 +46,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function SettingsNotice( props ) {
 	const {
+		className,
 		children,
 		type,
 		dismiss = '',
@@ -50,7 +56,7 @@ export default function SettingsNotice( props ) {
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( dismiss )
+		dismiss ? select( CORE_USER ).isItemDismissed( dismiss ) : undefined
 	);
 
 	if ( dismiss && isDismissed ) {
@@ -62,6 +68,7 @@ export default function SettingsNotice( props ) {
 	return (
 		<div
 			className={ classnames(
+				className,
 				'googlesitekit-settings-notice',
 				`googlesitekit-settings-notice--${ type }`,
 				{
@@ -84,7 +91,7 @@ export default function SettingsNotice( props ) {
 							dismissItem( dismiss );
 						} }
 					>
-						OK, Got it!
+						{ __( 'OK, Got it!', 'google-site-kit' ) }
 					</Button>
 				</div>
 			) }
@@ -94,12 +101,13 @@ export default function SettingsNotice( props ) {
 
 // Extra props are used in child components.
 SettingsNotice.propTypes = {
+	className: PropTypes.string,
 	children: PropTypes.node,
 	notice: PropTypes.node.isRequired,
 	type: PropTypes.oneOf( [ TYPE_INFO, TYPE_WARNING, TYPE_SUGGESTION ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
-	dismiss: PropTypes.string,
+	CTA: PropTypes.elementType,
 };
 
 SettingsNotice.defaultProps = {

@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
@@ -35,13 +36,17 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
+use Google\Site_Kit_Dependencies\Google\Service\Exception;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Stream;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_User;
 
 /**
@@ -184,7 +189,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->register();
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -296,7 +301,7 @@ class Analytics_4Test extends TestCase {
 			$options->get( Settings::OPTION )
 		);
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -313,6 +318,140 @@ class Analytics_4Test extends TestCase {
 			),
 			$options->get( Settings::OPTION )
 		);
+	}
+
+	public function data_create_account_ticket_required_parameters() {
+		return array(
+			'displayName'    => array( 'displayName' ),
+			'regionCode'     => array( 'regionCode' ),
+			'propertyName'   => array( 'propertyName' ),
+			'dataStreamName' => array( 'dataStreamName' ),
+			'timezone'       => array( 'timezone' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_create_account_ticket_required_parameters
+	 */
+	public function test_create_account_ticket__required_parameters( $required_param ) {
+		$provision_account_ticket_request = null;
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( &$provision_account_ticket_request ) {
+				$url = parse_url( $request->getUri() );
+
+				if (
+					'sitekit.withgoogle.com' === $url['host']
+					&& '/v1beta/accounts:provisionAccountTicket' === $url['path']
+				) {
+					$provision_account_ticket_request = $request;
+				}
+
+				return new Response( 200 );
+			}
+		);
+
+		$this->analytics->register();
+		// Grant required scopes.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		$data = array(
+			'displayName'    => 'test account name',
+			'regionCode'     => 'US',
+			'propertyName'   => 'test property name',
+			'dataStreamName' => 'test stream name',
+			'timezone'       => 'UTC',
+		);
+		// Remove the required parameter under test.
+		unset( $data[ $required_param ] );
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
+		$this->assertEquals( "Request parameter is empty: $required_param.", $response->get_error_message() );
+		// Ensure transient is not set in the event of a failure.
+		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
+		// Ensure remote request was not made.
+		$this->assertNull( $provision_account_ticket_request );
+	}
+
+	public function test_create_account_ticket() {
+		$account_ticket_id     = 'test-account-ticket-id';
+		$account_display_name  = 'test account name';
+		$region_code           = 'US';
+		$property_display_name = 'test property name';
+		$stream_display_name   = 'test stream name';
+		$timezone              = 'UTC';
+
+		$provision_account_ticket_request = null;
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( &$provision_account_ticket_request, $account_ticket_id ) {
+				$url = parse_url( $request->getUri() );
+
+				if ( 'sitekit.withgoogle.com' !== $url['host'] ) {
+					return new Response( 200 );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/accounts:provisionAccountTicket':
+						$provision_account_ticket_request = $request;
+
+						$response = new GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse();
+						$response->setAccountTicketId( $account_ticket_id );
+
+						return new Response( 200, array(), json_encode( $response ) );
+
+					default:
+						throw new Exception( 'Not implemented' );
+				}
+			}
+		);
+
+		$this->analytics->register();
+		$data = array(
+			'displayName'    => $account_display_name,
+			'regionCode'     => $region_code,
+			'propertyName'   => $property_display_name,
+			'dataStreamName' => $stream_display_name,
+			'timezone'       => $timezone,
+		);
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+		// Assert that the Analytics edit scope is required.
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_scopes', $response->get_error_code() );
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		// Assert request was made with expected arguments.
+		$this->assertNotWPError( $response );
+		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
+			json_decode( $provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
+		);
+		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName() );
+		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode() );
+		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
+		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri() );
+
+		// Assert transient is set with params.
+		$account_ticket_params = get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
+		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'] );
+		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'] );
+		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'] );
+		$this->assertEquals( $timezone, $account_ticket_params['timezone'] );
 	}
 
 	public function test_get_scopes() {
@@ -400,6 +539,7 @@ class Analytics_4Test extends TestCase {
 				'report',
 				'webdatastreams',
 				'webdatastreams-batch',
+				'create-account-ticket',
 			),
 			$this->analytics->get_datapoints()
 		);

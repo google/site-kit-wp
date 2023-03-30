@@ -176,11 +176,6 @@ describe( 'core/user dismissed-items', () => {
 					registry.select( CORE_USER ).isItemDismissed( 'baz' )
 				).toBe( false );
 			} );
-			it( 'should return undefined if the item is empty string', () => {
-				expect(
-					registry.select( CORE_USER ).isItemDismissed( '' )
-				).toBe( undefined );
-			} );
 		} );
 
 		describe( 'isDismissingItem', () => {
