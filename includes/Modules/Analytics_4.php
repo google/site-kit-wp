@@ -1453,17 +1453,17 @@ final class Analytics_4 extends Module
 				$current_date = gmdate( 'Ymd', $now );
 
 				// Search for the current date in the response rows.
-				$found_dimenension = false;
+				$found_dimension = false;
 				foreach ( $rows as $row ) {
-					$dimention_values = $row->getDimensionValues();
-					if ( $dimention_values[0]->getValue() === $current_date ) {
-						$found_dimenension = true;
+					$dimension_values = $row->getDimensionValues();
+					if ( $dimension_values[0]->getValue() === $current_date ) {
+						$found_dimension = true;
 						break;
 					}
 				}
 
 				// If the current date is not found, add the new row to the existing rows.
-				if ( ! $found_dimenension ) {
+				if ( ! $found_dimension ) {
 					$dimension_value = new Google_Service_AnalyticsData_DimensionValue();
 					$dimension_value->setValue( $current_date );
 
