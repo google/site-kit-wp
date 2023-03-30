@@ -40,6 +40,7 @@ import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
+import { GTM_SCOPE } from '../../modules/analytics/datastore/constants';
 
 const { useSelect } = Data;
 
@@ -61,6 +62,12 @@ export default function BannerNotifications() {
 
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+	const ga4ModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const hasGTMScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( GTM_SCOPE )
 	);
 
 	const [ notification ] = useQueryArg( 'notification' );
@@ -86,7 +93,9 @@ export default function BannerNotifications() {
 						<UserInputPromptBannerNotification />
 					) }
 					{ adSenseModuleActive && <AdSenseAlerts /> }
-					{ gteSupportEnabled && <GoogleTagIDMismatchNotification /> }
+					{ gteSupportEnabled &&
+						ga4ModuleConnected &&
+						hasGTMScope && <GoogleTagIDMismatchNotification /> }
 					{ ga4ReportingEnabled && analyticsModuleConnected && (
 						<SwitchGA4DashboardViewNotification />
 					) }
