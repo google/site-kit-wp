@@ -426,7 +426,6 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
-					accountID: '12345',
 					propertyID: PROPERTY_CREATE,
 				} );
 
@@ -444,8 +443,7 @@ describe( 'modules/analytics settings', () => {
 				expect( fetchMock ).not.toHaveFetched(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/create-property'
-					),
-					{ body: { data: { accountID: '12345' } } }
+					)
 				);
 
 				expect( result.error ).toBeFalsy();
@@ -454,11 +452,8 @@ describe( 'modules/analytics settings', () => {
 			it( 'does not dispatch createProfile when the `ga4Reporting` feature flag is enabled', async () => {
 				enabledFeatures.add( 'ga4Reporting' );
 
-				const profileName = fixtures.createProfile.name;
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
-					accountID: '12345',
-					propertyID: 'UA-12345-1',
 					profileID: PROFILE_CREATE,
 				} );
 
@@ -474,26 +469,15 @@ describe( 'modules/analytics settings', () => {
 				expect( fetchMock ).not.toHaveFetched(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/create-profile'
-					),
-					{
-						body: {
-							data: {
-								accountID: '12345',
-								propertyID: 'UA-12345-1',
-								profileName,
-							},
-						},
-					}
+					)
 				);
 			} );
 
 			it( 'does not dispatch both createProperty and createProfile when selected and when the `ga4Reporting` feature flag is enabled', async () => {
 				enabledFeatures.add( 'ga4Reporting' );
 
-				const profileName = fixtures.createProfile.name;
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
-					accountID: '12345',
 					propertyID: PROPERTY_CREATE,
 					profileID: PROFILE_CREATE,
 				} );
@@ -510,24 +494,14 @@ describe( 'modules/analytics settings', () => {
 				expect( fetchMock ).not.toHaveFetched(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/create-property'
-					),
-					{ body: { data: { accountID: '12345' } } }
+					)
 				);
 
 				// Ensure that the create-profile request is not made.
 				expect( fetchMock ).not.toHaveFetched(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/create-profile'
-					),
-					{
-						body: {
-							data: {
-								accountID: '12345',
-								propertyID: 'UA-12345-1',
-								profileName,
-							},
-						},
-					}
+					)
 				);
 			} );
 
@@ -789,7 +763,6 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
-					accountID: '12345',
 					profileID: null,
 				} );
 
@@ -807,7 +780,6 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
-					accountID: '12345',
 					internalWebPropertyID: null,
 				} );
 
@@ -961,11 +933,9 @@ describe( 'modules/analytics settings', () => {
 					.setProfileID( PROFILE_CREATE );
 
 				// Ensure the validation is not triggered when the profile name is not set at all.
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).not.toThrow( INVARIANT_INVALID_PROFILE_NAME );
+				expect(
+					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+				).toBe( true );
 
 				// Set an invalid/empty profile name.
 				registry
@@ -973,11 +943,9 @@ describe( 'modules/analytics settings', () => {
 					.setValues( FORM_SETUP, { profileName: '' } );
 
 				// Ensure the validation is not triggered when an empty profile name is set.
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).not.toThrow( INVARIANT_INVALID_PROFILE_NAME );
+				expect(
+					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+				).toBe( true );
 			} );
 
 			it( 'does not support creating an account', () => {
