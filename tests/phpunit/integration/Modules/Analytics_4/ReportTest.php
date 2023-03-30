@@ -58,12 +58,18 @@ class ReportTest extends TestCase {
 
 		$this->assertEquals( 6, $response->getRowCount() );
 
-		foreach ( $response->getRows() as $i => $row ) {
-			$date = strtotime( $i < 3 ? '2023-02-01' : '2023-01-01' ) + ( $i % 3 ) * DAY_IN_SECONDS;
-			$date = gmdate( 'Ymd', $date );
+		$expected_dates = array(
+			'20230201',
+			'20230202',
+			'20230203',
+			'20230101',
+			'20230102',
+			'20230103',
+		);
 
+		foreach ( $response->getRows() as $i => $row ) {
 			$dimension_values = $row->getDimensionValues();
-			$this->assertEquals( $date, $dimension_values[0]->getValue() );
+			$this->assertEquals( $expected_dates[ $i ], $dimension_values[0]->getValue() );
 
 			$metric_values = $row->getMetricValues();
 			$this->assertEquals( 0, $metric_values[0]->getValue() );
