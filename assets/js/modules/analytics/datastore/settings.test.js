@@ -960,6 +960,7 @@ describe( 'modules/analytics settings', () => {
 		} );
 
 		describe( 'isGA4DashboardView', () => {
+			// This is necessary to reset the top-level `provideModules` mock.
 			beforeEach( () => {
 				registry = createTestRegistry();
 			} );
