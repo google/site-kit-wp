@@ -33,7 +33,6 @@ export const FORM_SETUP = 'analyticsSetup';
 export const PROVISIONING_SCOPE =
 	'https://www.googleapis.com/auth/analytics.provision';
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
-export const GTM_SCOPE = 'https://www.googleapis.com/auth/tagmanager.readonly';
 
 // Date range offset days for Analytics report requests.
 export const DATE_RANGE_OFFSET = 1;

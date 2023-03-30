@@ -40,7 +40,7 @@ import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
-import { GTM_SCOPE } from '../../modules/analytics/datastore/constants';
+import { GTM_SCOPE } from '../../modules/analytics-4/datastore/constants';
 
 const { useSelect } = Data;
 
