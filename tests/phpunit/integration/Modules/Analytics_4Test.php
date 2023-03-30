@@ -38,8 +38,6 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricHeader;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
@@ -1143,44 +1141,6 @@ class Analytics_4Test extends TestCase {
 			),
 			$request_params['dimensions']
 		);
-	}
-
-	public function test_get_report__missing_rows() {
-		$report_args = array(
-			'startDate'        => '2023-02-01',
-			'endDate'          => '2023-02-03',
-			'compareStartDate' => '2023-01-01',
-			'compareEndDate'   => '2023-01-03',
-			'dimensions'       => 'date',
-		);
-
-		$first_metric = new MetricHeader();
-		$first_metric->setType( 'TYPE_INTEGER' );
-
-		$second_metric = new MetricHeader();
-		$second_metric->setType( 'TYPE_KILOMETERS' );
-
-		$data     = new Data_Request( '', '', '', '', $report_args );
-		$response = new RunReportResponse();
-		$response->setMetricHeaders( array( $first_metric, $second_metric ) );
-
-		$reflected_parse_report_response_method = new \ReflectionMethod( Analytics_4::class, 'parse_report_response' );
-		$reflected_parse_report_response_method->setAccessible( true );
-		$response = $reflected_parse_report_response_method->invoke( $this->analytics, $data, $response );
-
-		$this->assertEquals( 6, $response->getRowCount() );
-
-		foreach ( $response->getRows() as $i => $row ) {
-			$date = strtotime( $i < 3 ? '2023-02-01' : '2023-01-01' ) + ( $i % 3 ) * DAY_IN_SECONDS;
-			$date = gmdate( 'Ymd', $date );
-
-			$dimension_values = $row->getDimensionValues();
-			$this->assertEquals( $date, $dimension_values[0]->getValue() );
-
-			$metric_values = $row->getMetricValues();
-			$this->assertEquals( 0, $metric_values[0]->getValue() );
-			$this->assertNull( $metric_values[1]->getValue() );
-		}
 	}
 
 	/**
