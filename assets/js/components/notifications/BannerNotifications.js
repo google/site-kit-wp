@@ -77,6 +77,7 @@ export default function BannerNotifications() {
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
+					{ gteSupportEnabled && <GoogleTagIDMismatchNotification /> }
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />
@@ -86,7 +87,6 @@ export default function BannerNotifications() {
 						<UserInputPromptBannerNotification />
 					) }
 					{ adSenseModuleActive && <AdSenseAlerts /> }
-					{ gteSupportEnabled && <GoogleTagIDMismatchNotification /> }
 					{ ga4ReportingEnabled && analyticsModuleConnected && (
 						<SwitchGA4DashboardViewNotification />
 					) }
