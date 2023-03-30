@@ -35,13 +35,14 @@ import {
 } from './utils';
 
 export default function SettingsNotice( props ) {
-	const { children, type, Icon = getIconFromType( type ) } = props;
+	const { className, children, type, Icon = getIconFromType( type ) } = props;
 
 	const Layout = children ? SettingsNoticeMultiRow : SettingsNoticeSingleRow;
 
 	return (
 		<div
 			className={ classnames(
+				className,
 				'googlesitekit-settings-notice',
 				`googlesitekit-settings-notice--${ type }`,
 				{
@@ -63,11 +64,13 @@ export default function SettingsNotice( props ) {
 
 // Extra props are used in child components.
 SettingsNotice.propTypes = {
+	className: PropTypes.string,
 	children: PropTypes.node,
 	notice: PropTypes.node.isRequired,
 	type: PropTypes.oneOf( [ TYPE_INFO, TYPE_WARNING, TYPE_SUGGESTION ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
+	CTA: PropTypes.elementType,
 };
 
 SettingsNotice.defaultProps = {
