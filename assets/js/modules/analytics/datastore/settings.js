@@ -199,7 +199,7 @@ export function validateCanSubmitChanges( select ) {
 	);
 
 	// Do not require selecting a property or profile if `ga4Reporting` is enabled.
-	// Therefore, only validate these if the `ga4Reporting` is not enabled.
+	// Therefore, only validate these if `ga4Reporting` is not enabled.
 	if ( ! isFeatureEnabled( 'ga4Reporting' ) ) {
 		invariant(
 			isValidPropertySelection( getPropertyID() ),
