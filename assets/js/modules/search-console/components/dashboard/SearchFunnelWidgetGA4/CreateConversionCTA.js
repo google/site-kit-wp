@@ -30,18 +30,24 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import PreviewGraph from '../../../../../components/PreviewGraph';
 import ConversionsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 export default function CreateConversionCTA() {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_search-traffic-widget`;
 
-	const createConversionEventsURL =
-		'https://support.google.com/analytics/answer/12844695';
+	const createConversionEventsSupportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12844695',
+		} )
+	);
 
 	const handleOnClick = useCallback( () => {
 		trackEvent( eventCategory, 'click_ga4_conversions_cta' );
@@ -67,7 +73,7 @@ export default function CreateConversionCTA() {
 					) }
 				</p>
 				<Button
-					href={ createConversionEventsURL }
+					href={ createConversionEventsSupportURL }
 					target="_blank"
 					onClick={ handleOnClick }
 				>

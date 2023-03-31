@@ -170,7 +170,7 @@ const Overview = ( {
 		dashboardType === DASHBOARD_TYPE_MAIN &&
 		( ! ga4ConversionsData?.length ||
 			// Show the CTA if the sole conversion set up is the
-			// GA4 default "purchase" conversion event with no data value
+			// GA4 default "purchase" conversion event with no data value.
 			( ga4ConversionsData?.length === 1 &&
 				ga4ConversionsData[ 0 ].eventName === 'purchase' &&
 				ga4ConversionsDatapoint === '0' ) );
