@@ -35,41 +35,120 @@ class ReportTest extends TestCase {
 		$this->report = new Report( $context );
 	}
 
-	public function test_parse_response() {
-		$report_args = array(
-			'startDate'        => '2023-02-01',
-			'endDate'          => '2023-02-03',
-			'compareStartDate' => '2023-01-01',
-			'compareEndDate'   => '2023-01-03',
-			'dimensions'       => 'date',
-		);
-
+	private function get_parsed_response_for_args( $report_args, $initial_data ) {
 		$first_metric = new MetricHeader();
 		$first_metric->setType( 'TYPE_INTEGER' );
 
 		$second_metric = new MetricHeader();
 		$second_metric->setType( 'TYPE_KILOMETERS' );
 
-		$data     = new Data_Request( '', '', '', '', $report_args );
+		$data          = new Data_Request( '', '', '', '', $report_args );
+		$metric_header = array( $first_metric, $second_metric );
+
 		$response = new RunReportResponse();
-		$response->setMetricHeaders( array( $first_metric, $second_metric ) );
+		$response->setMetricHeaders( $metric_header );
 
-		$response = $this->report->parse_response( $data, $response );
+		if ( ! empty( $initial_data ) ) {
+			$report_rows = array();
 
-		$this->assertEquals( 6, $response->getRowCount() );
+			foreach ( $initial_data as $initial_row ) {
+				$report_rows[] = Report::create_report_row(
+					$metric_header,
+					$initial_row[0],
+					isset( $initial_row[1] ) ? $initial_row[1] : false
+				);
+			}
 
-		$expected_dates = array(
-			'20230201',
-			'20230202',
-			'20230203',
-			'20230101',
-			'20230102',
-			'20230103',
+			$response->setRows( $report_rows );
+			$response->setRowCount( count( $report_rows ) );
+		}
+
+		return $this->report->parse_response( $data, $response );
+	}
+
+	public function data_report_args() {
+		return array(
+			'single range'    => array(
+				array(
+					'report_args'               => array(
+						'startDate'  => '2023-02-01',
+						'endDate'    => '2023-02-03',
+						'dimensions' => 'date',
+					),
+					'initial_data'              => array(),
+					'expected_dates_and_ranges' => array(
+						array( '20230201' ),
+						array( '20230202' ),
+						array( '20230203' ),
+					),
+					'expected_rows_count'       => 3,
+					'expected_dimension_values' => 1,
+				),
+			),
+			'multiple ranges' => array(
+				array(
+					'report_args'               => array(
+						'startDate'        => '2023-02-01',
+						'endDate'          => '2023-02-03',
+						'compareStartDate' => '2023-01-01',
+						'compareEndDate'   => '2023-01-03',
+						'dimensions'       => 'date',
+					),
+					'initial_data'              => array(),
+					'expected_dates_and_ranges' => array(
+						array( '20230201', 'date_range_0' ),
+						array( '20230202', 'date_range_0' ),
+						array( '20230203', 'date_range_0' ),
+						array( '20230101', 'date_range_1' ),
+						array( '20230102', 'date_range_1' ),
+						array( '20230103', 'date_range_1' ),
+					),
+					'expected_rows_count'       => 6,
+					'expected_dimension_values' => 2,
+				),
+			),
+			'properly sorted' => array(
+				array(
+					'report_args'               => array(
+						'startDate'        => '2023-02-01',
+						'endDate'          => '2023-02-03',
+						'compareStartDate' => '2023-01-01',
+						'compareEndDate'   => '2023-01-03',
+						'dimensions'       => 'date',
+					),
+					'initial_data'              => array(
+						array( '20230101', 1 ),
+						array( '20230203', 0 ),
+					),
+					'expected_dates_and_ranges' => array(
+						array( '20230201', 'date_range_0' ),
+						array( '20230202', 'date_range_0' ),
+						array( '20230203', 'date_range_0' ),
+						array( '20230101', 'date_range_1' ),
+						array( '20230102', 'date_range_1' ),
+						array( '20230103', 'date_range_1' ),
+					),
+					'expected_rows_count'       => 6,
+					'expected_dimension_values' => 2,
+				),
+			),
 		);
+	}
+
+	/**
+	 * @dataProvider data_report_args
+	 */
+	public function test_parse_response( $args ) {
+		$response = $this->get_parsed_response_for_args( $args['report_args'], $args['initial_data'] );
+		$this->assertEquals( $args['expected_rows_count'], $response->getRowCount() );
 
 		foreach ( $response->getRows() as $i => $row ) {
 			$dimension_values = $row->getDimensionValues();
-			$this->assertEquals( $expected_dates[ $i ], $dimension_values[0]->getValue() );
+			$this->assertCount( $args['expected_dimension_values'], $dimension_values );
+			$this->assertEquals( $args['expected_dates_and_ranges'][ $i ][0], $dimension_values[0]->getValue() );
+			if ( $args['expected_dimension_values'] > 1 ) {
+				$this->assertEquals( $args['expected_dates_and_ranges'][ $i ][1], $dimension_values[1]->getValue() );
+			}
 
 			$metric_values = $row->getMetricValues();
 			$this->assertEquals( 0, $metric_values[0]->getValue() );

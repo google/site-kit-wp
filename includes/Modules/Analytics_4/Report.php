@@ -24,6 +24,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Filter as Google_S
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpression as Google_Service_AnalyticsData_FilterExpression;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpressionList as Google_Service_AnalyticsData_FilterExpressionList;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\InListFilter as Google_Service_AnalyticsData_InListFilter;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricHeader as Google_Service_AnalyticsData_MetricHeader;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricOrderBy as Google_Service_AnalyticsData_MetricOrderBy;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricValue as Google_Service_AnalyticsData_MetricValue;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\OrderBy as Google_Service_AnalyticsData_OrderBy;
@@ -604,15 +605,16 @@ class Report {
 		}
 
 		// Get all available dates in the report.
-		$rows = array();
+		$existing_rows = array();
 		foreach ( $response->getRows() as $row ) {
-			$dimension_values = $row->getDimensionValues();
-			$date             = $dimension_values[0]->getValue();
-			$rows[ $date ]    = $row;
+			$dimension_values       = $row->getDimensionValues();
+			$date                   = $dimension_values[0]->getValue();
+			$existing_rows[ $date ] = $row;
 		}
 
-		$metrics         = $response->getMetricHeaders();
+		$metric_headers  = $response->getMetricHeaders();
 		$multiple_ranges = count( $date_ranges ) > 1;
+		$rows            = array();
 
 		foreach ( $date_ranges as $date_range_index => $date_range ) {
 			$start = strtotime( $date_range->getStartDate() );
@@ -632,47 +634,14 @@ class Report {
 				$current_date = gmdate( 'Ymd', $now );
 				$now         += DAY_IN_SECONDS;
 
-				// If the current date is found, then go to the next day.
-				if ( isset( $rows[ $current_date ] ) ) {
-					continue;
-				}
-
-				$dimension_values = array();
-
-				$current_date_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
-				$current_date_dimension_value->setValue( $current_date );
-				$dimension_values[] = $current_date_dimension_value;
-
-				// If we have multiple date ranges, we need to add "date_range_{i}" index to dimension values.
-				if ( $multiple_ranges ) {
-					$date_range_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
-					$date_range_dimension_value->setValue( "date_range_{$date_range_index}" );
-					$dimension_values[] = $date_range_dimension_value;
-				}
-
-				$metric_values = array();
-				foreach ( $metrics as $metric ) {
-					$metric_value = new Google_Service_AnalyticsData_MetricValue();
-
-					switch ( $metric->getType() ) {
-						case 'TYPE_INTEGER':
-						case 'TYPE_FLOAT':
-						case 'TYPE_CURRENCY':
-							$metric_value->setValue( '0' );
-							break;
-						default:
-							$metric_value->setValue( null );
-							break;
-					}
-
-					$metric_values[] = $metric_value;
-				}
-
-				$row = new Google_Service_AnalyticsData_Row();
-				$row->setDimensionValues( $dimension_values );
-				$row->setMetricValues( $metric_values );
-
-				$rows[ $current_date ] = $row;
+				// Copy the existing row if it is available, otherwise create a new zero-value row.
+				$rows[ $current_date ] = isset( $existing_rows[ $current_date ] )
+					? $existing_rows[ $current_date ]
+					: self::create_report_row(
+						$metric_headers,
+						$current_date,
+						$multiple_ranges ? $date_range_index : false
+					);
 			} while ( $now <= $end );
 		}
 
@@ -683,24 +652,60 @@ class Report {
 			return $response;
 		}
 
-		// Sort rows by keys to have all records in ascending order.
-		$orderby = $this->parse_orderby( $data );
-		if ( ! empty( $orderby ) ) {
-			uasort(
-				$rows,
-				function( $a, $b ) use ( $orderby ) {
-					foreach ( $orderby as $order ) {
-
-					}
-				}
-			);
-		}
-
 		// Set updated rows back to the response object.
 		$response->setRows( array_values( $rows ) );
 		$response->setRowCount( $new_rows_count );
 
 		return $response;
+	}
+
+	/**
+	 * Creates and returns a new zero-value row for provided date and metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Service_AnalyticsData_MetricHeader[] $metric_headers   Metric headers from the report response.
+	 * @param string                                      $current_date     The current date to create a zero-value row for.
+	 * @param int|bool                                    $date_range_index The date range index for the current date.
+	 * @return Google_Service_AnalyticsData_Row A new zero-value row instance.
+	 */
+	public static function create_report_row( $metric_headers, $current_date, $date_range_index ) {
+		$dimension_values = array();
+
+		$current_date_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
+		$current_date_dimension_value->setValue( $current_date );
+		$dimension_values[] = $current_date_dimension_value;
+
+		// If we have multiple date ranges, we need to add "date_range_{i}" index to dimension values.
+		if ( false !== $date_range_index ) {
+			$date_range_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
+			$date_range_dimension_value->setValue( "date_range_{$date_range_index}" );
+			$dimension_values[] = $date_range_dimension_value;
+		}
+
+		$metric_values = array();
+		foreach ( $metric_headers as $metric_header ) {
+			$metric_value = new Google_Service_AnalyticsData_MetricValue();
+
+			switch ( $metric_header->getType() ) {
+				case 'TYPE_INTEGER':
+				case 'TYPE_FLOAT':
+				case 'TYPE_CURRENCY':
+					$metric_value->setValue( '0' );
+					break;
+				default:
+					$metric_value->setValue( null );
+					break;
+			}
+
+			$metric_values[] = $metric_value;
+		}
+
+		$row = new Google_Service_AnalyticsData_Row();
+		$row->setDimensionValues( $dimension_values );
+		$row->setMetricValues( $metric_values );
+
+		return $row;
 	}
 
 }
