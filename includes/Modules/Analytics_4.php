@@ -125,6 +125,26 @@ final class Analytics_4 extends Module
 			10,
 			2
 		);
+
+		// Ensure both Analytics modules always reference the same owner.
+		add_filter(
+			'pre_update_option_' . Analytics_Settings::OPTION,
+			function( $new_value, $old_value ) {
+				if ( $old_value['ownerID'] !== $new_value['ownerID'] ) {
+					$settings = $this->get_settings()->get();
+
+					if ( $settings['ownerID'] && $new_value['ownerID'] !== $settings['ownerID'] ) {
+						$this->get_settings()->merge(
+							array( 'ownerID' => $new_value['ownerID'] )
+						);
+					}
+				}
+
+				return $new_value;
+			},
+			20,
+			2
+		);
 	}
 
 	/**
