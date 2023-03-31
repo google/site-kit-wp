@@ -181,16 +181,23 @@ const baseSelectors = {
 	getAccountTicketTermsOfServiceURL: createRegistrySelector(
 		( select ) => ( state ) => {
 			const { accountTicketID } = state;
-			const tosURL = select( MODULES_ANALYTICS ).getServiceURL( {
-				path: `/termsofservice/${ accountTicketID }`,
-				query: { provisioningSignup: 'false' },
-			} );
 
-			if ( undefined === accountTicketID || ! tosURL ) {
+			if ( accountTicketID === undefined ) {
 				return undefined;
 			}
 
-			return tosURL;
+			const termsOfServiceURL = select( MODULES_ANALYTICS ).getServiceURL(
+				{
+					path: `/termsofservice/${ accountTicketID }`,
+					query: { provisioningSignup: 'false' },
+				}
+			);
+
+			if ( ! termsOfServiceURL ) {
+				return undefined;
+			}
+
+			return termsOfServiceURL;
 		}
 	),
 
