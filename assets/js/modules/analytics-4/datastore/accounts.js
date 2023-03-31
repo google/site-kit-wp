@@ -215,6 +215,7 @@ const baseSelectors = {
 		if ( ! getValue( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
 			return false;
 		}
+
 		if ( ! getValue( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
 			return false;
 		}
