@@ -53,6 +53,7 @@ const DataBlock = ( {
 	invertChangeColor = false,
 	gatheringData = false,
 	gatheringDataNoticeStyle = NOTICE_STYLE.DEFAULT,
+	badge,
 } ) => {
 	const handleClick = useCallback( () => {
 		if ( ! gatheringData && handleStatSelection ) {
@@ -106,6 +107,7 @@ const DataBlock = ( {
 					"
 				>
 					{ title }
+					{ badge }
 				</h3>
 
 				{ ! gatheringData && (
@@ -163,6 +165,7 @@ DataBlock.propTypes = {
 	invertChangeColor: PropTypes.bool,
 	gatheringData: PropTypes.bool,
 	gatheringDataNoticeStyle: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
+	badge: PropTypes.node,
 };
 
 export default DataBlock;

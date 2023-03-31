@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import { ActivateAnalyticsCTA } from '../../../common';
-import SetupConversionsCTA from '../SetupConversionsCTA';
+import CreateConversionCTA from '../CreateConversionCTA';
 import RecoverableModules from '../../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
@@ -93,7 +93,7 @@ export default function OptionalCells( {
 
 			{ showGA4 && (
 				<Cell { ...quarterCellProps } smSize={ 4 }>
-					{ showConversionsCTA && <SetupConversionsCTA /> }
+					{ showConversionsCTA && <CreateConversionCTA /> }
 				</Cell>
 			) }
 

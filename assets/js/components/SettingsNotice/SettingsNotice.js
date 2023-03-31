@@ -23,8 +23,14 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SettingsNoticeSingleRow from './SettingsNoticeSingleRow';
 import SettingsNoticeMultiRow from './SettingsNoticeMultiRow';
 import {
@@ -33,9 +39,29 @@ import {
 	TYPE_SUGGESTION,
 	getIconFromType,
 } from './utils';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { Button } from 'googlesitekit-components';
+
+const { useSelect, useDispatch } = Data;
 
 export default function SettingsNotice( props ) {
-	const { className, children, type, Icon = getIconFromType( type ) } = props;
+	const {
+		className,
+		children,
+		type,
+		dismiss = '',
+		Icon = getIconFromType( type ),
+	} = props;
+
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const isDismissed = useSelect( ( select ) =>
+		dismiss ? select( CORE_USER ).isItemDismissed( dismiss ) : undefined
+	);
+
+	if ( dismiss && isDismissed ) {
+		return null;
+	}
 
 	const Layout = children ? SettingsNoticeMultiRow : SettingsNoticeSingleRow;
 
@@ -58,6 +84,17 @@ export default function SettingsNotice( props ) {
 			<div className="googlesitekit-settings-notice__body">
 				<Layout { ...props } />
 			</div>
+			{ dismiss && (
+				<div className="googlesitekit-settings-notice__button">
+					<Button
+						onClick={ () => {
+							dismissItem( dismiss );
+						} }
+					>
+						{ __( 'OK, Got it!', 'google-site-kit' ) }
+					</Button>
+				</div>
+			) }
 		</div>
 	);
 }
