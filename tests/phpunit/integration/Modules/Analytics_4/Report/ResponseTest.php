@@ -156,7 +156,7 @@ class ResponseTest extends TestCase {
 
 			$metric_values = $row->getMetricValues();
 			$this->assertEquals( 0, $metric_values[0]->getValue() );
-			$this->assertNull( $metric_values[1]->getValue() );
+			$this->assertEquals( 0, $metric_values[1]->getValue() );
 		}
 	}
 

@@ -51,17 +51,7 @@ trait Row_Trait {
 		$metric_values = array();
 		foreach ( $metric_headers as $metric_header ) {
 			$metric_value = new Google_Service_AnalyticsData_MetricValue();
-
-			switch ( $metric_header->getType() ) {
-				case 'TYPE_INTEGER':
-				case 'TYPE_FLOAT':
-				case 'TYPE_CURRENCY':
-					$metric_value->setValue( '0' );
-					break;
-				default:
-					$metric_value->setValue( null );
-					break;
-			}
+			$metric_value->setValue( '0' );
 
 			$metric_values[] = $metric_value;
 		}
