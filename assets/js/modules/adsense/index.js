@@ -36,7 +36,9 @@ import {
 	DashboardTopEarningPagesWidget,
 	AdBlockerWarningWidget,
 	AdSenseConnectCTAWidget,
+	DashboardTopEarningPagesWidgetGA4,
 } from './components/dashboard';
+import GA4DashboardWidgetSwitcher from '../analytics/components/dashboard/GA4DashboardWidgetSwitcher';
 import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/graphics/adsense.svg';
 import { MODULES_ADSENSE } from './datastore/constants';
@@ -124,7 +126,13 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'adsenseTopEarningPages',
 		{
-			Component: DashboardTopEarningPagesWidget,
+			Component: ( widgetProps ) => (
+				<GA4DashboardWidgetSwitcher
+					UA={ DashboardTopEarningPagesWidget }
+					GA4={ DashboardTopEarningPagesWidgetGA4 }
+					{ ...widgetProps }
+				/>
+			),
 			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,
