@@ -421,6 +421,90 @@ describe( 'modules/analytics settings', () => {
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
 
+			it( 'does not dispatch createProperty when the `ga4Reporting` feature flag is enabled', async () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					propertyID: PROPERTY_CREATE,
+				} );
+
+				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
+					const { data } = JSON.parse( opts.body );
+					// Return the same settings passed to the API.
+					return { body: data, status: 200 };
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ANALYTICS )
+					.submitChanges();
+
+				// Ensure that the create-property request is not made.
+				expect( fetchMock ).not.toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					)
+				);
+
+				expect( result.error ).toBeFalsy();
+			} );
+
+			it( 'does not dispatch createProfile when the `ga4Reporting` feature flag is enabled', async () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					profileID: PROFILE_CREATE,
+				} );
+
+				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
+					const { data } = JSON.parse( opts.body );
+					// Return the same settings passed to the API.
+					return { body: data, status: 200 };
+				} );
+
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
+
+				// Ensure that the create-profile request is not made.
+				expect( fetchMock ).not.toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					)
+				);
+			} );
+
+			it( 'does not dispatch both createProperty and createProfile when selected and when the `ga4Reporting` feature flag is enabled', async () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					propertyID: PROPERTY_CREATE,
+					profileID: PROFILE_CREATE,
+				} );
+
+				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
+					const { data } = JSON.parse( opts.body );
+					// Return the same settings passed to the API.
+					return { body: data, status: 200 };
+				} );
+
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
+
+				// Ensure that the create-property request is not made.
+				expect( fetchMock ).not.toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					)
+				);
+
+				// Ensure that the create-profile request is not made.
+				expect( fetchMock ).not.toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					)
+				);
+			} );
+
 			describe( 'analytics-4', () => {
 				beforeEach( () => {
 					registry
@@ -656,6 +740,57 @@ describe( 'modules/analytics settings', () => {
 				).toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
 			} );
 
+			it( 'does not require a valid propertyID when the `ga4Reporting` feature flag is enabled', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					propertyID: null,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( tagWithPermission.propertyID );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+				).toBe( true );
+			} );
+
+			it( 'does not require a valid profileID when the `ga4Reporting` feature flag is enabled', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					profileID: null,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( tagWithPermission.propertyID );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+				).toBe( true );
+			} );
+
+			it( 'does not require a valid internalWebPropertyID when the `ga4Reporting` feature flag is enabled', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					internalWebPropertyID: null,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( tagWithPermission.propertyID );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+				).toBe( true );
+			} );
+
 			it( 'requires a valid adsConversionID when provided', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
@@ -782,6 +917,34 @@ describe( 'modules/analytics settings', () => {
 						.select( MODULES_ANALYTICS )
 						.__dangerousCanSubmitChanges()
 				).toThrow( INVARIANT_INVALID_PROFILE_NAME );
+			} );
+
+			it( 'does not require a valid profile name when the `ga4Reporting` feature flag is enabled', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( null );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setSettings( validSettings );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setProfileID( PROFILE_CREATE );
+
+				// Ensure the validation is not triggered when the profile name is not set at all.
+				expect(
+					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+				).toBe( true );
+
+				// Set an invalid/empty profile name.
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { profileName: '' } );
+
+				// Ensure the validation is not triggered when an empty profile name is set.
+				expect(
+					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+				).toBe( true );
 			} );
 
 			it( 'does not support creating an account', () => {
