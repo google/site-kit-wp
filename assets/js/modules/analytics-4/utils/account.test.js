@@ -28,7 +28,8 @@ describe( 'getAccountDefaults', () => {
 	const fallbackTimezone = 'Europe/Berlin';
 
 	// The fallback timezone is used here to avoid location-sensitive results,
-	// but also because the default fallback will raise errors otherwise due to the node environment.
+	// but also because the default fallback will raise errors otherwise due to tests
+	// running in a Node environment instead of a browser environment.
 	const getAccountDefaults = ( args ) =>
 		accountUtils.getAccountDefaults( args, fallbackTimezone );
 

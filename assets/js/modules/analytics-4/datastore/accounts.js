@@ -89,7 +89,7 @@ const baseInitialState = {
 
 const baseActions = {
 	/**
-	 * Creates a new Analytics account.
+	 * Creates a new Analytics (GA4) account.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -110,8 +110,8 @@ const baseActions = {
 		yield clearError( 'createAccount', [] );
 		const { response, error } =
 			yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+
 		if ( error ) {
-			// Store error manually since createAccount signature differs from fetchCreateAccount.
 			yield receiveError( error, 'createAccount', [] );
 		}
 

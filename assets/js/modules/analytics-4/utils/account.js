@@ -34,7 +34,7 @@ import { countryCodesByTimezone } from '../../analytics/util/countries-timezones
 /**
  * Gets default values for a new account.
  *
- * @since 1.17.0
+ * @since n.e.x.t
  *
  * @param {Object} args              Site information.
  * @param {string} args.siteName     Site name.
@@ -42,7 +42,7 @@ import { countryCodesByTimezone } from '../../analytics/util/countries-timezones
  * @param {string} args.timezone     Site timezone.
  * @param {string} _fallbackTimezone Fallback timezone. Defaults to local timezone.
  *                                   This parameter should only be used for providing a deterministic fallback in tests.
- * @return {Object} Default values.
+ * @return {Object} Default property values for a new account.
  */
 export function getAccountDefaults(
 	{ siteName, siteURL, timezone },
