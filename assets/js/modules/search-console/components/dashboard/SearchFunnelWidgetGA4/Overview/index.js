@@ -45,6 +45,8 @@ import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/consta
 import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import OptionalCells from './OptionalCells';
+import NewBadge from '../../../../../../components/NewBadge';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
@@ -107,6 +109,12 @@ const Overview = ( {
 	);
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
+	);
+
+	const conversionsRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/9267568',
+		} )
 	);
 
 	const {
@@ -236,6 +244,15 @@ const Overview = ( {
 						datapoint: ga4ConversionsDatapoint,
 						change: ga4ConversionsChange,
 						isGatheringData: isGA4GatheringData,
+						badge: (
+							<NewBadge
+								tooltipTitle={ __(
+									'Conversions is a new Google Analytics 4 metric replacing the Goals metric.',
+									'google-site-kit'
+								) }
+								learnMoreLink={ conversionsRateLearnMoreURL }
+							/>
+						),
 					},
 			  ]
 			: [] ),
@@ -301,6 +318,7 @@ const Overview = ( {
 									}
 									handleStatSelection={ handleStatsSelection }
 									gatheringData={ dataBlock.isGatheringData }
+									badge={ dataBlock.badge }
 								/>
 							</Cell>
 						) ) }

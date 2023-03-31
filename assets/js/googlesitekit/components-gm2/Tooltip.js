@@ -19,14 +19,27 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import { Tooltip as MuiTooltip } from '@material-ui/core';
 
-export default function Tooltip( { children, ...props } ) {
+export default function Tooltip( {
+	children,
+	popperClassName,
+	tooltipClassName,
+	...props
+} ) {
 	return (
 		<MuiTooltip
 			classes={ {
-				popper: 'googlesitekit-tooltip-popper',
-				tooltip: 'googlesitekit-tooltip',
+				popper: classnames(
+					'googlesitekit-tooltip-popper',
+					popperClassName
+				),
+				tooltip: classnames(
+					'googlesitekit-tooltip',
+					tooltipClassName
+				),
 			} }
 			arrow
 			{ ...props }
@@ -35,3 +48,9 @@ export default function Tooltip( { children, ...props } ) {
 		</MuiTooltip>
 	);
 }
+
+Tooltip.propTypes = {
+	children: PropTypes.node,
+	popperClassName: PropTypes.string,
+	tooltipClassName: PropTypes.string,
+};
