@@ -48,18 +48,19 @@ export function getAccountDefaults(
 	{ siteName, siteURL, timezone },
 	_fallbackTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 ) {
-	invariant( isURL( siteURL ), 'a valid siteURL is required.' );
+	invariant( isURL( siteURL ), 'A valid siteURL is required.' );
 
 	const { hostname, pathname } = new URL( siteURL );
-	const tz = countryCodesByTimezone[ timezone ]
-		? timezone
-		: _fallbackTimezone;
 
 	return {
 		accountName: siteName || hostname,
 		propertyName: `${ hostname }${ pathname }`.replace( /\/$/, '' ),
 		dataStreamName: hostname,
-		countryCode: countryCodesByTimezone[ tz ],
-		timezone: tz,
+		countryCode:
+			countryCodesByTimezone[ timezone ] ||
+			countryCodesByTimezone[ _fallbackTimezone ],
+		timezone: countryCodesByTimezone[ timezone ]
+			? timezone
+			: _fallbackTimezone,
 	};
 }
