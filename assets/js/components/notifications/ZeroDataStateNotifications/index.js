@@ -37,13 +37,13 @@ const { useSelect, useInViewSelect } = Data;
 
 export default function ZeroDataStateNotifications() {
 	const viewOnly = useViewOnly();
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected(
 			isGA4DashboardView ? 'analytics-4' : 'analytics'
 		)
-	);
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 	const analyticsDataStore = isGA4DashboardView
 		? MODULES_ANALYTICS_4
