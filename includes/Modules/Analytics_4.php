@@ -44,7 +44,8 @@ use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
-use Google\Site_Kit\Modules\Analytics_4\Report as Analytics_4_Report;
+use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
+use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
@@ -542,7 +543,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				$report  = new Analytics_4_Report( $this->context );
+				$report  = new Analytics_4_Report_Request( $this->context );
 				$request = $report->create_request( $data, $this->is_shared_data_request( $data ) );
 				if ( is_wp_error( $request ) ) {
 					return $request;
@@ -738,7 +739,7 @@ final class Analytics_4 extends Module
 			case 'GET:conversion-events':
 				return (array) $response->getConversionEvents();
 			case 'GET:report':
-				$report = new Analytics_4_Report( $this->context );
+				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
 		}
 

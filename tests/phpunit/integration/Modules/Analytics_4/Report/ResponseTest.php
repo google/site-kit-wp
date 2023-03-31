@@ -1,8 +1,8 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Analytics_4\ReportTest
+ * Class Google\Site_Kit\Tests\Modules\Analytics_4\Report\ResponseTest
  *
- * @package   Google\Site_Kit\Tests\Modules\Analytics_4
+ * @package   Google\Site_Kit\Tests\Modules\Analytics_4\Report
  * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Modules\Analytics_4\Report;
+use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricHeader;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse;
 use Google\Site_Kit\Tests\TestCase;
@@ -20,19 +20,20 @@ use Google\Site_Kit\Tests\TestCase;
 /**
  * @group Modules
  * @group Analytics_4
+ * @group Report
  */
-class ReportTest extends TestCase {
+class ResponseTest extends TestCase {
 
 	/**
-	 * @var Report
+	 * @var Analytics_4_Report_Response
 	 */
-	protected $report;
+	protected $report_response;
 
 	public function set_up() {
 		parent::set_up();
 
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->report = new Report( $context );
+		$context               = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->report_response = new Analytics_4_Report_Response( $context );
 	}
 
 	private function get_parsed_response_for_args( $report_args, $initial_data ) {
@@ -52,7 +53,7 @@ class ReportTest extends TestCase {
 			$report_rows = array();
 
 			foreach ( $initial_data as $initial_row ) {
-				$report_rows[] = Report::create_report_row(
+				$report_rows[] = Analytics_4_Report_Response::create_report_row(
 					$metric_header,
 					$initial_row[0],
 					isset( $initial_row[1] ) ? $initial_row[1] : false
@@ -63,7 +64,7 @@ class ReportTest extends TestCase {
 			$response->setRowCount( count( $report_rows ) );
 		}
 
-		return $this->report->parse_response( $data, $response );
+		return $this->report_response->parse_response( $data, $response );
 	}
 
 	public function data_report_args() {
