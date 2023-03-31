@@ -1244,29 +1244,12 @@ describe( 'modules/analytics settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return false when the analytics-4 module is not active', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: false,
-						connected: false,
-					},
-				] );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.shouldPromptGA4DashboardView()
-				).toBe( false );
-			} );
-
 			it( 'should return false when the analytics-4 module is not connected', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
-						active: true,
+						active: false,
 						connected: false,
 					},
 				] );
