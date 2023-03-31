@@ -320,9 +320,9 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 	},
 };
 
-export const ReadyWithSetupConversionsCTA = Template.bind( {} );
-ReadyWithSetupConversionsCTA.storyName = 'Ready with Set up Conversions CTA';
-ReadyWithSetupConversionsCTA.args = {
+export const ReadyWithCreateConversionCTA = Template.bind( {} );
+ReadyWithCreateConversionCTA.storyName = 'Ready with Set up Conversions CTA';
+ReadyWithCreateConversionCTA.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
@@ -338,8 +338,8 @@ ReadyWithSetupConversionsCTA.args = {
 	},
 };
 
-ReadyWithSetupConversionsCTA.scenario = {
-	label: 'SearchConsole/SearchFunnelWidgetGA4/ReadyWithSetupConversionsCTA',
+ReadyWithCreateConversionCTA.scenario = {
+	label: 'SearchConsole/SearchFunnelWidgetGA4/ReadyWithCreateConversionCTA',
 	delay: 3000,
 };
 

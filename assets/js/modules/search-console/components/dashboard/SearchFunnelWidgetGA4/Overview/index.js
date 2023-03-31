@@ -168,7 +168,12 @@ const Overview = ( {
 		isAuthenticated &&
 		showGA4 &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
-		! ga4ConversionsData?.length;
+		( ! ga4ConversionsData?.length ||
+			// Show the CTA if the sole conversion set up is the
+			// GA4 default "purchase" conversion event with no data value.
+			( ga4ConversionsData?.length === 1 &&
+				ga4ConversionsData[ 0 ].eventName === 'purchase' &&
+				ga4ConversionsDatapoint === '0' ) );
 
 	const quarterCellProps = {
 		smSize: 2,
@@ -235,7 +240,7 @@ const Overview = ( {
 			: [] ),
 		...( showGA4 &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
-		ga4ConversionsData?.length > 0
+		! showConversionsCTA
 			? [
 					{
 						id: 'conversions',
