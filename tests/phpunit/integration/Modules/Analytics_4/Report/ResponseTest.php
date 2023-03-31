@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Analytics_4\Report\Row_Trait as Analytics_4_Report_Row_Trait;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricHeader;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse;
@@ -23,6 +24,8 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Report
  */
 class ResponseTest extends TestCase {
+
+	use Analytics_4_Report_Row_Trait;
 
 	/**
 	 * @var Analytics_4_Report_Response
@@ -53,7 +56,7 @@ class ResponseTest extends TestCase {
 			$report_rows = array();
 
 			foreach ( $initial_data as $initial_row ) {
-				$report_rows[] = Analytics_4_Report_Response::create_report_row(
+				$report_rows[] = $this->create_report_row(
 					$metric_header,
 					$initial_row[0],
 					isset( $initial_row[1] ) ? $initial_row[1] : false

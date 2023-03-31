@@ -12,10 +12,6 @@ namespace Google\Site_Kit\Modules\Analytics_4\Report;
 
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DimensionValue as Google_Service_AnalyticsData_DimensionValue;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricHeader as Google_Service_AnalyticsData_MetricHeader;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricValue as Google_Service_AnalyticsData_MetricValue;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Row as Google_Service_AnalyticsData_Row;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse as Google_Service_AnalyticsData_RunReportResponse;
 
 /**
@@ -26,6 +22,8 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse 
  * @ignore
  */
 class Response extends Report {
+
+	use Row_Trait;
 
 	/**
 	 * Parses the report response, and pads the report data with zero-data rows where rows are missing. This only applies for reports which request a single `date` dimension.
@@ -88,7 +86,7 @@ class Response extends Report {
 				// Copy the existing row if it is available, otherwise create a new zero-value row.
 				$rows[ $current_date ] = isset( $existing_rows[ $current_date ] )
 					? $existing_rows[ $current_date ]
-					: self::create_report_row(
+					: $this->create_report_row(
 						$metric_headers,
 						$current_date,
 						$multiple_ranges ? $date_range_index : false
@@ -108,55 +106,6 @@ class Response extends Report {
 		$response->setRowCount( $new_rows_count );
 
 		return $response;
-	}
-
-	/**
-	 * Creates and returns a new zero-value row for provided date and metrics.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Google_Service_AnalyticsData_MetricHeader[] $metric_headers   Metric headers from the report response.
-	 * @param string                                      $current_date     The current date to create a zero-value row for.
-	 * @param int|bool                                    $date_range_index The date range index for the current date.
-	 * @return Google_Service_AnalyticsData_Row A new zero-value row instance.
-	 */
-	public static function create_report_row( $metric_headers, $current_date, $date_range_index ) {
-		$dimension_values = array();
-
-		$current_date_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
-		$current_date_dimension_value->setValue( $current_date );
-		$dimension_values[] = $current_date_dimension_value;
-
-		// If we have multiple date ranges, we need to add "date_range_{i}" index to dimension values.
-		if ( false !== $date_range_index ) {
-			$date_range_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
-			$date_range_dimension_value->setValue( "date_range_{$date_range_index}" );
-			$dimension_values[] = $date_range_dimension_value;
-		}
-
-		$metric_values = array();
-		foreach ( $metric_headers as $metric_header ) {
-			$metric_value = new Google_Service_AnalyticsData_MetricValue();
-
-			switch ( $metric_header->getType() ) {
-				case 'TYPE_INTEGER':
-				case 'TYPE_FLOAT':
-				case 'TYPE_CURRENCY':
-					$metric_value->setValue( '0' );
-					break;
-				default:
-					$metric_value->setValue( null );
-					break;
-			}
-
-			$metric_values[] = $metric_value;
-		}
-
-		$row = new Google_Service_AnalyticsData_Row();
-		$row->setDimensionValues( $dimension_values );
-		$row->setMetricValues( $metric_values );
-
-		return $row;
 	}
 
 }
