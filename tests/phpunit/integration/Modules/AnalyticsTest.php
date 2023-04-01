@@ -324,14 +324,12 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				// create-account-ticket not available.
+				// create-account-ticket, 'create-property' and 'create-profile' not available.
 				'goals',
 				'accounts-properties-profiles',
 				'properties-profiles',
 				'profiles',
 				'report',
-				'create-property',
-				'create-profile',
 			),
 			$analytics->get_datapoints()
 		);
