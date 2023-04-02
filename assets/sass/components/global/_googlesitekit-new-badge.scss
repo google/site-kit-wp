@@ -19,8 +19,11 @@
 .googlesitekit-new-badge {
 	background-color: $c-violet-v-500;
 	color: $c-violet-v-0;
+	font-size: $fs-title-sm;
+	line-height: $lh-title-sm;
 	margin-left: 6px;
 	text-transform: none;
+	vertical-align: baseline;
 }
 
 .googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-new-badge__tooltip {
