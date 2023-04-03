@@ -51,7 +51,7 @@ import {
 	PROFILE_CREATE,
 	FORM_SETUP,
 	DASHBOARD_VIEW_GA4,
-	// DASHBOARD_VIEW_UA,
+	DASHBOARD_VIEW_UA,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isPermissionScopeError } from '../../../util/errors';
@@ -148,6 +148,13 @@ export async function submitChanges( registry ) {
 		if ( error ) {
 			return { error };
 		}
+	}
+
+	// If `ga4Reporting` is enabled and the dashboard view is set to UA, we need
+	// to set the dashboard view to GA4.
+	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
+	if ( ga4ReportingEnabled && dashboardView === DASHBOARD_VIEW_UA ) {
+		dispatch( MODULES_ANALYTICS ).setDashboardView( DASHBOARD_VIEW_GA4 );
 	}
 
 	// This action shouldn't be called if settings haven't changed,
