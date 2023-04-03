@@ -111,14 +111,15 @@ export default function GA4SettingsControls( props ) {
 
 	const getWebDataStreamsError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-			'getWebDataStreams'[ propertyID ]
+			'getWebDataStreams',
+			[ propertyID ]
 		)
 	);
 
 	const getPropertiesError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-			'getProperties'[ accountID ]
-		)
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getProperties', [
+			accountID,
+		] )
 	);
 
 	if ( properties === undefined || webDataStreams === undefined ) {
