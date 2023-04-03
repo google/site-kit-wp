@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
@@ -45,6 +45,8 @@ import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/S
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import GA4SettingsNotice from './GA4SettingsNotice';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { isValidPropertyID } from '../../../analytics-4/utils/validation';
+import ErrorText from '../../../../components/ErrorText';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
@@ -68,6 +70,10 @@ export default function GA4SettingsControls( props ) {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
+	const measurementID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
+	);
+
 	const isModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -89,6 +95,58 @@ export default function GA4SettingsControls( props ) {
 	const isDisabled = ! propertyID && ! enableGA4;
 	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
 
+	const properties = useSelect( ( select ) =>
+		hasModuleAccess !== false && ! isDisabled
+			? select( MODULES_ANALYTICS_4 ).getProperties( accountID )
+			: []
+	);
+
+	const webDataStreams = useSelect( ( select ) =>
+		isValidPropertyID( propertyID )
+			? select(
+					MODULES_ANALYTICS_4
+			  ).getMatchingWebDataStreamsByPropertyID( propertyID )
+			: []
+	);
+
+	const getWebDataStreamsError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+			'getWebDataStreams'[ propertyID ]
+		)
+	);
+
+	const getPropertiesError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+			'getProperties'[ accountID ]
+		)
+	);
+
+	if ( properties === undefined || webDataStreams === undefined ) {
+		return null;
+	}
+
+	let webDataStreamsNotAvailable = false;
+	let propertyNotAvailable = false;
+
+	if (
+		properties.some( ( { _id } ) => _id === propertyID ) &&
+		! webDataStreams.some(
+			( { webStreamData } ) =>
+				// eslint-disable-next-line sitekit/acronym-case
+				webStreamData.measurementId === measurementID
+		) &&
+		! getWebDataStreamsError
+	) {
+		webDataStreamsNotAvailable = true;
+	}
+
+	if (
+		! properties.some( ( { _id } ) => _id === propertyID ) &&
+		! getPropertiesError
+	) {
+		propertyNotAvailable = true;
+	}
+
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			<h4 className="googlesitekit-settings-module__fields-group-title">
@@ -96,6 +154,18 @@ export default function GA4SettingsControls( props ) {
 			</h4>
 
 			<div className="googlesitekit-setup-module__inputs">
+				{ propertyNotAvailable && (
+					<ErrorText>
+						{ sprintf(
+							/* translators: 1: Google Analytics 4 Property ID. */
+							__(
+								'The previously selected property with ID %1$s is no longer available. Please select a new property to continue collecting data with Google Analytics 4.',
+								'google-site-kit'
+							),
+							propertyID
+						) }
+					</ErrorText>
+				) }
 				<PropertySelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }
@@ -107,6 +177,18 @@ export default function GA4SettingsControls( props ) {
 					}
 				/>
 
+				{ webDataStreamsNotAvailable && (
+					<ErrorText>
+						{ sprintf(
+							/* translators: 1: Google Analytics 4 Measurement ID. */
+							__(
+								'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
+								'google-site-kit'
+							),
+							measurementID
+						) }
+					</ErrorText>
+				) }
 				<WebDataStreamSelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }
