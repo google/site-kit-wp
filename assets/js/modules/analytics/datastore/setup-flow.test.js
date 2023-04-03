@@ -28,6 +28,7 @@ import {
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 	FORM_SETUP,
+	SETUP_FLOW_MODE_GA4_LEGACY,
 } from './constants';
 import {
 	createTestRegistry,
@@ -40,6 +41,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { parseLiveContainerVersionIDs } from '../../tagmanager/datastore/__factories__/utils';
 import * as gtmFixtures from '../../tagmanager/datastore/__fixtures__';
+import { enabledFeatures } from '../../../features';
 
 const accountID = 'pub-12345678';
 
@@ -250,7 +252,20 @@ describe( 'modules/analytics setup-flow', () => {
 				).toBeUndefined();
 			} );
 
-			it( 'should return "ga4" if selected account returns an empty array from UA getProperties selector', () => {
+			it( 'should return "ga4" if the `ga4Reporting` feature flag is enabled', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
+				populateAnalytics4Datastore( registry );
+
+				enabledFeatures.add( 'ga4Reporting' );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBe( SETUP_FLOW_MODE_GA4 );
+			} );
+
+			it( 'should return "ga4-legacy" if selected account returns an empty array from UA getProperties selector', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setAccountID( accountID );
@@ -262,7 +277,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_GA4 );
+				).toBe( SETUP_FLOW_MODE_GA4_LEGACY );
 			} );
 
 			it( 'should return "ga4-transitional" if both GA4 and UA properties are found for an account', () => {
