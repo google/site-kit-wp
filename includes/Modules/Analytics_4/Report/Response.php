@@ -60,6 +60,12 @@ class Response extends Report {
 
 			$range = 'date_range_0';
 			if ( count( $dimension_values ) > 1 ) {
+				// Considering this code will only be run when we are requesting a single dimension, `date`,
+				// the implication is that the row will _only_ have an additional dimension when multiple
+				// date ranges are requested.
+				//
+				// In this scenario, the dimension at index 1 will have a value of `date_range_{i}`, where
+				// `i` is the zero-based index of the date range.
 				$range = $dimension_values[1]->getValue();
 			}
 
@@ -127,8 +133,8 @@ class Response extends Report {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $date             The date of the row to return key for.
-	 * @param int    $date_range_index The date range index.
+	 * @param string   $date             The date of the row to return key for.
+	 * @param int|bool $date_range_index The date range index, of FALSE if no index is available.
 	 * @return string The row key.
 	 */
 	protected static function get_response_row_key( $date, $date_range_index ) {
