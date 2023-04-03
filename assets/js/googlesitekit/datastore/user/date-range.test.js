@@ -309,7 +309,7 @@ describe( 'core/user date-range', () => {
 				).toEqual( getDateString( new Date() ) );
 			} );
 
-			it( 'dhould return the reference date defined in global base data when available', () => {
+			it( 'should return the reference date defined in global base data when available', () => {
 				global._googlesitekitBaseData = {
 					referenceDate: '2023-09-01',
 				};
