@@ -590,10 +590,8 @@ const baseActions = {
 			);
 
 			if ( ! googleTagContainer ) {
-				return;
-			}
-
-			if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
+				yield baseActions.setIsWebDataStreamNotAvailable( true );
+			} else if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
 				yield baseActions.setHasMismatchedGoogleTagID( true );
 			}
 		} else {
