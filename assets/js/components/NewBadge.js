@@ -48,6 +48,8 @@ function NewBadge( { tooltipTitle, learnMoreLink, forceOpen } ) {
 				</Fragment>
 			}
 			placement="top"
+			enterTouchDelay={ 0 }
+			leaveTouchDelay={ 5000 }
 			interactive
 			open={ forceOpen }
 		>
