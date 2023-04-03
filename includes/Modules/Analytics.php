@@ -449,6 +449,8 @@ final class Analytics extends Module
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			unset( $datapoints['POST:create-account-ticket'] );
+			unset( $datapoints['POST:create-profile'] );
+			unset( $datapoints['POST:create-property'] );
 		}
 
 		return $datapoints;
