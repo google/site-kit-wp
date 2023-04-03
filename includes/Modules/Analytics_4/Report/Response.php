@@ -86,7 +86,7 @@ class Response extends Report {
 		// Add rows for the current date for each date range.
 		self::iterate_date_ranges(
 			$date_ranges,
-			function( $date ) use ( &$rows, $ranges_count, $metric_headers, $multiple_ranges ) {
+			function( $date ) use ( &$rows, $existing_rows, $ranges_count, $metric_headers, $multiple_ranges ) {
 				for ( $i = 0; $i < $ranges_count; $i++ ) {
 					// Copy the existing row if it is available, otherwise create a new zero-value row.
 					$key          = self::get_response_row_key( $date, $i );
