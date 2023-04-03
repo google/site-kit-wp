@@ -127,6 +127,11 @@ final class Analytics_4 extends Module
 		);
 
 		// Ensure both Analytics modules always reference the same owner.
+		//
+		// The filter for Analytics (UA) is added in this class, and
+		// and the filter for Analytics 4 is added in Analytics class.
+		// This is to prevent an infinite loop, see:
+		// https://github.com/google/site-kit-wp/issues/6465#issuecomment-1483120333.
 		add_filter(
 			'pre_update_option_' . Analytics_Settings::OPTION,
 			function( $new_value, $old_value ) {
