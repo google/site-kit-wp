@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Modules\Analytics_4\Report;
 
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Row as Google_Service_AnalyticsData_Row;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse as Google_Service_AnalyticsData_RunReportResponse;
 
 /**
@@ -48,7 +50,7 @@ class Response extends Report {
 		}
 
 		// Get date ranges and return early if there are no date ranges for this report.
-		$date_ranges = $this->parse_dateranges( $data );
+		$date_ranges = $this->get_sorted_dateranges( $data );
 		if ( empty( $date_ranges ) ) {
 			return $response;
 		}
@@ -81,44 +83,31 @@ class Response extends Report {
 		$multiple_ranges = $ranges_count > 1;
 		$rows            = array();
 
-		foreach ( $date_ranges as $date_range ) {
-			$start = strtotime( $date_range->getStartDate() );
-			$end   = strtotime( $date_range->getEndDate() );
-
-			// Skip this date range if either start date or end date is corrupted.
-			if ( ! $start || ! $end ) {
-				continue;
-			}
-
-			// Loop through all days in the date range and check if there is a metric value
-			// for it. If the metric value is missing, we will need to add one with a zero value.
-			$now = $start;
-			do {
-				// Format the current time to a date string and add a day in seconds to the current date
-				// to shift to the next date.
-				$current_date = gmdate( 'Ymd', $now );
-				$now         += DAY_IN_SECONDS;
-
-				// Add rows for the current date for each date range.
+		// Add rows for the current date for each date range.
+		self::iterate_date_ranges(
+			$date_ranges,
+			function( $date ) use ( &$rows, $ranges_count, $metric_headers, $multiple_ranges ) {
 				for ( $i = 0; $i < $ranges_count; $i++ ) {
 					// Copy the existing row if it is available, otherwise create a new zero-value row.
-					$current_date_key          = self::get_response_row_key( $current_date, $i );
-					$rows[ $current_date_key ] = isset( $existing_rows[ $current_date_key ] )
-						? $existing_rows[ $current_date_key ]
-						: $this->create_report_row(
-							$metric_headers,
-							$current_date,
-							$multiple_ranges ? $i : false
-						);
+					$key          = self::get_response_row_key( $date, $i );
+					$rows[ $key ] = isset( $existing_rows[ $key ] )
+						? $existing_rows[ $key ]
+						: $this->create_report_row( $metric_headers, $date, $multiple_ranges ? $i : false );
 				}
-			} while ( $now <= $end );
-		}
+			}
+		);
 
 		// If we have the same number of rows as in the response at the moment, then
 		// we can return the response without setting the new rows back into the response.
 		$new_rows_count = count( $rows );
 		if ( $new_rows_count <= $response->getRowCount() ) {
 			return $response;
+		}
+
+		// If we have multiple date ranges, we need to sort rows to have them in
+		// the correct order.
+		if ( $multiple_ranges ) {
+			$rows = self::sort_response_rows( $rows, $date_ranges );
 		}
 
 		// Set updated rows back to the response object.
@@ -134,11 +123,109 @@ class Response extends Report {
 	 * @since n.e.x.t
 	 *
 	 * @param string   $date             The date of the row to return key for.
-	 * @param int|bool $date_range_index The date range index, of FALSE if no index is available.
+	 * @param int|bool $date_range_index The date range index, or FALSE if no index is available.
 	 * @return string The row key.
 	 */
 	protected static function get_response_row_key( $date, $date_range_index ) {
 		return "{$date}_{$date_range_index}";
+	}
+
+	/**
+	 * Returns sorted and filtered date ranges received in the request params. All corrupted date ranges
+	 * are ignored and not included in the returning list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return Google_Service_AnalyticsData_DateRange[] An array of AnalyticsData DateRange objects.
+	 */
+	protected function get_sorted_dateranges( Data_Request $data ) {
+		$date_ranges = $this->parse_dateranges( $data );
+		if ( empty( $date_ranges ) ) {
+			return $date_ranges;
+		}
+
+		// Filter out all corrupted date ranges.
+		$date_ranges = array_filter(
+			$date_ranges,
+			function( $range ) {
+				$start = strtotime( $range->getStartDate() );
+				$end   = strtotime( $range->getEndDate() );
+				return ! empty( $start ) && ! empty( $end );
+			}
+		);
+
+		// Sort date ranges preserving keys to have the oldest date range at the beginning and
+		// the latest date range at the end.
+		uasort(
+			$date_ranges,
+			function( $a, $b ) {
+				$a_start = strtotime( $a->getStartDate() );
+				$b_start = strtotime( $b->getStartDate() );
+				return $a_start - $b_start;
+			}
+		);
+
+		return $date_ranges;
+	}
+
+	/**
+	 * Sorts response rows using the algorithm similar to the one that Analytics 4 uses internally
+	 * and returns sorted rows.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Service_AnalyticsData_Row[]       $rows   The current report rows.
+	 * @param Google_Service_AnalyticsData_DateRange[] $ranges The report date ranges.
+	 * @return Google_Service_AnalyticsData_Row[] Sorted rows.
+	 */
+	protected static function sort_response_rows( $rows, $date_ranges ) {
+		$sorted_rows  = array();
+		$ranges_count = count( $date_ranges );
+
+		self::iterate_date_ranges(
+			$date_ranges,
+			function( $date, $range_index ) use ( &$sorted_rows, $ranges_count, $rows ) {
+				// First take the main date range row.
+				$key                 = self::get_response_row_key( $date, $range_index );
+				$sorted_rows[ $key ] = $rows[ $key ];
+
+				// Then take all remaining rows.
+				for ( $i = 0; $i < $ranges_count; $i++ ) {
+					if ( $i !== $range_index ) {
+						$key                 = self::get_response_row_key( $date, $i );
+						$sorted_rows[ $key ] = $rows[ $key ];
+					}
+				}
+			}
+		);
+
+		return $sorted_rows;
+	}
+
+	/**
+	 * Iterates over the date ranges and calls callback for each date in each range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Service_AnalyticsData_DateRange[] $ranges   The report date ranges.
+	 * @param callable                                 $callback The callback to execute fot each date.
+	 */
+	protected static function iterate_date_ranges( $date_ranges, $callback ) {
+		foreach ( $date_ranges as $date_range_index => $date_range ) {
+			$now = strtotime( $date_range->getStartDate() );
+			$end = strtotime( $date_range->getEndDate() );
+
+			do {
+				call_user_func(
+					$callback,
+					gmdate( 'Ymd', $now ),
+					$date_range_index
+				);
+
+				$now += DAY_IN_SECONDS;
+			} while ( $now <= $end );
+		}
 	}
 
 }
