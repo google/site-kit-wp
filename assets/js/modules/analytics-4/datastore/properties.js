@@ -164,12 +164,14 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
+const SET_IS_WEBDATASTREAM_NOT_AVAILABLE = 'SET_IS_WEBDATASTREAM_NOT_AVAILABLE';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
 	hasMismatchedTag: false,
 	isMatchingAccountProperty: false,
+	isWebDataStreamNotAvailable: false,
 };
 
 const baseActions = {
@@ -604,6 +606,21 @@ const baseActions = {
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},
+
+	/**
+	 * Sets whether the Web Data Stream is not available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} isWebDataStreamNotAvailable Whether the Web Data Stream is not available.
+	 * @return {Object} Redux-style action.
+	 */
+	*setIsWebDataStreamNotAvailable( isWebDataStreamNotAvailable ) {
+		return {
+			type: SET_IS_WEBDATASTREAM_NOT_AVAILABLE,
+			payload: { isWebDataStreamNotAvailable },
+		};
+	},
 };
 
 const baseControls = {
@@ -627,6 +644,12 @@ function baseReducer( state, { type, payload } ) {
 			return {
 				...state,
 				hasMismatchedTag: payload.hasMismatchedTag,
+			};
+		case SET_IS_WEBDATASTREAM_NOT_AVAILABLE:
+			return {
+				...state,
+				isWebDataStreamNotAvailable:
+					payload.isWebDataStreamNotAvailable,
 			};
 		default:
 			return state;
@@ -710,6 +733,18 @@ const baseSelectors = {
 	 */
 	hasMismatchedGoogleTagID( state ) {
 		return state.hasMismatchedTag;
+	},
+
+	/**
+	 * Checks if the Web Data Stream is not available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} If the Web Data Stream is not available.
+	 */
+	isWebDataStreamNotAvailable( state ) {
+		return state.isWebDataStreamNotAvailable;
 	},
 };
 
