@@ -98,7 +98,9 @@ WithUAMatchingTag.decorators = [
 			registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 				profileName,
 			} );
-
+			registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+				enableUA: true,
+			} );
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 
