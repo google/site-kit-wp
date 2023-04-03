@@ -51,6 +51,7 @@ import {
 	PROFILE_CREATE,
 	FORM_SETUP,
 	DASHBOARD_VIEW_GA4,
+	// DASHBOARD_VIEW_UA,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isPermissionScopeError } from '../../../util/errors';
@@ -92,8 +93,12 @@ export async function submitChanges( registry ) {
 
 	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
 
+	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
 	let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
-	if ( ! ga4ReportingEnabled && propertyID === PROPERTY_CREATE ) {
+	if (
+		( ! ga4ReportingEnabled || isUAEnabled ) &&
+		propertyID === PROPERTY_CREATE
+	) {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 		const { response: property, error } = await dispatch(
 			MODULES_ANALYTICS
@@ -112,7 +117,10 @@ export async function submitChanges( registry ) {
 	}
 
 	const profileID = select( MODULES_ANALYTICS ).getProfileID();
-	if ( ! ga4ReportingEnabled && profileID === PROFILE_CREATE ) {
+	if (
+		( ! ga4ReportingEnabled || isUAEnabled ) &&
+		profileID === PROFILE_CREATE
+	) {
 		const profileName = select( CORE_FORMS ).getValue(
 			FORM_SETUP,
 			'profileName'
@@ -198,9 +206,10 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_ACCOUNT_ID
 	);
 
+	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
 	// Do not require selecting a property or profile if `ga4Reporting` is enabled.
-	// Therefore, only validate these if `ga4Reporting` is not enabled.
-	if ( ! isFeatureEnabled( 'ga4Reporting' ) ) {
+	// Therefore, only validate these if `ga4Reporting` is not enabled OR `enableUA` is enabled.
+	if ( ! isFeatureEnabled( 'ga4Reporting' ) || isUAEnabled ) {
 		invariant(
 			isValidPropertySelection( getPropertyID() ),
 			INVARIANT_INVALID_PROPERTY_SELECTION
