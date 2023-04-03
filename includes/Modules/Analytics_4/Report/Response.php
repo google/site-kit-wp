@@ -209,7 +209,7 @@ class Response extends Report {
 	 * @since n.e.x.t
 	 *
 	 * @param Google_Service_AnalyticsData_DateRange[] $ranges   The report date ranges.
-	 * @param callable                                 $callback The callback to execute fot each date.
+	 * @param callable                                 $callback The callback to execute for each date.
 	 */
 	protected static function iterate_date_ranges( $date_ranges, $callback ) {
 		foreach ( $date_ranges as $date_range_index => $date_range ) {
