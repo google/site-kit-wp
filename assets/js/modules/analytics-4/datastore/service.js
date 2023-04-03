@@ -32,6 +32,7 @@ import { addQueryArgs } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { REPORT_ARGS_NAV_KEY } from '../constants';
 import { generateDateRangeArgs } from '../../analytics/util/report-date-range-args';
 import { escapeURI } from '../../../util/escape-uri';
 import {
@@ -74,7 +75,7 @@ export const selectors = {
 				} = reportArgs;
 
 				const embeddedParams = {
-					'_u..nav': 'maui',
+					[ REPORT_ARGS_NAV_KEY ]: 'maui',
 					...( dates ? generateDateRangeArgs( dates ) : {} ),
 					...generateReportDetailArgs( details ),
 					...generateReportFilterArgs( filters ),

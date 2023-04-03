@@ -26,6 +26,12 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 } from '../../../../../tests/js/utils';
+import {
+	REPORT_ARGS_DATA_FILTERS_KEY,
+	REPORT_ARGS_NAV_KEY,
+	REPORT_ARGS_SELECTED_DIMENSION_KEY,
+	REPORT_ARGS_SELECTED_METRIC_KEY,
+} from '../constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'module/analytics-4 service store', () => {
@@ -84,7 +90,7 @@ describe( 'module/analytics-4 service store', () => {
 						true
 					);
 					expect( url.hash ).toBe(
-						`#/p${ propertyID }/reports/explorer?params=_u..nav=maui&r=${ type }`
+						`#/p${ propertyID }/reports/explorer?params=${ REPORT_ARGS_NAV_KEY }=maui&r=${ type }`
 					);
 				} );
 
@@ -136,21 +142,21 @@ describe( 'module/analytics-4 service store', () => {
 					);
 
 					expect( Object.fromEntries( searchParams ) ).toEqual( {
-						'_u..nav': 'maui',
+						[ REPORT_ARGS_NAV_KEY ]: 'maui',
 						// Date args:
 						'_u.date00': '20230123',
 						'_u.date01': '20230124',
 						'_u.date10': '20230212',
 						'_u.date11': '20230213',
 						// Detail args:
-						'_r.explorerCard..selmet': JSON.stringify( [
+						[ REPORT_ARGS_SELECTED_METRIC_KEY ]: JSON.stringify( [
 							'totalUsers',
 						] ),
-						'_r.explorerCard..seldim': JSON.stringify( [
-							'country',
-						] ),
+						[ REPORT_ARGS_SELECTED_DIMENSION_KEY ]: JSON.stringify(
+							[ 'country' ]
+						),
 						// Filter args:
-						'_r..dataFilters': JSON.stringify( [
+						[ REPORT_ARGS_DATA_FILTERS_KEY ]: JSON.stringify( [
 							{
 								type: 1,
 								fieldName: 'sessionSource',

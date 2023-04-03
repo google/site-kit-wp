@@ -23,6 +23,15 @@ import invariant from 'invariant';
 import { isEmpty, isPlainObject } from 'lodash';
 
 /**
+ * Internal dependencies
+ */
+import {
+	REPORT_ARGS_DATA_FILTERS_KEY,
+	REPORT_ARGS_SELECTED_DIMENSION_KEY,
+	REPORT_ARGS_SELECTED_METRIC_KEY,
+} from '../constants';
+
+/**
  * Generates a set of report detail arguments for a Google Analytics 4 report.
  *
  * @since n.e.x.t
@@ -55,11 +64,13 @@ export function generateReportDetailArgs( details ) {
 	const detailArgs = {};
 
 	if ( metric ) {
-		detailArgs[ '_r.explorerCard..selmet' ] = JSON.stringify( [ metric ] );
+		detailArgs[ REPORT_ARGS_SELECTED_METRIC_KEY ] = JSON.stringify( [
+			metric,
+		] );
 	}
 
 	if ( dimension ) {
-		detailArgs[ '_r.explorerCard..seldim' ] = JSON.stringify( [
+		detailArgs[ REPORT_ARGS_SELECTED_DIMENSION_KEY ] = JSON.stringify( [
 			dimension,
 		] );
 	}
@@ -109,6 +120,6 @@ export function generateReportFilterArgs( filters ) {
 	);
 
 	return {
-		'_r..dataFilters': JSON.stringify( dataFilters ),
+		[ REPORT_ARGS_DATA_FILTERS_KEY ]: JSON.stringify( dataFilters ),
 	};
 }

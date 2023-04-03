@@ -20,6 +20,11 @@
  * Internal dependencies.
  */
 import {
+	REPORT_ARGS_DATA_FILTERS_KEY,
+	REPORT_ARGS_SELECTED_DIMENSION_KEY,
+	REPORT_ARGS_SELECTED_METRIC_KEY,
+} from '../constants';
+import {
 	generateReportDetailArgs,
 	generateReportFilterArgs,
 } from './report-args';
@@ -64,7 +69,7 @@ describe( 'generateReportDetailArgs', () => {
 			{
 				details: { metric: 'totalUsers' },
 				expectedDetailArgs: {
-					'_r.explorerCard..selmet': JSON.stringify( [
+					[ REPORT_ARGS_SELECTED_METRIC_KEY ]: JSON.stringify( [
 						'totalUsers',
 					] ),
 				},
@@ -75,7 +80,9 @@ describe( 'generateReportDetailArgs', () => {
 			{
 				details: { dimension: 'date' },
 				expectedDetailArgs: {
-					'_r.explorerCard..seldim': JSON.stringify( [ 'date' ] ),
+					[ REPORT_ARGS_SELECTED_DIMENSION_KEY ]: JSON.stringify( [
+						'date',
+					] ),
 				},
 			},
 		],
@@ -84,10 +91,12 @@ describe( 'generateReportDetailArgs', () => {
 			{
 				details: { metric: 'totalUsers', dimension: 'date' },
 				expectedDetailArgs: {
-					'_r.explorerCard..selmet': JSON.stringify( [
+					[ REPORT_ARGS_SELECTED_METRIC_KEY ]: JSON.stringify( [
 						'totalUsers',
 					] ),
-					'_r.explorerCard..seldim': JSON.stringify( [ 'date' ] ),
+					[ REPORT_ARGS_SELECTED_DIMENSION_KEY ]: JSON.stringify( [
+						'date',
+					] ),
 				},
 			},
 		],
@@ -162,7 +171,8 @@ describe( 'generateReportFilterArgs', () => {
 		];
 
 		expect( result ).toEqual( {
-			'_r..dataFilters': JSON.stringify( expectedDataFilters ),
+			[ REPORT_ARGS_DATA_FILTERS_KEY ]:
+				JSON.stringify( expectedDataFilters ),
 		} );
 	} );
 } );
