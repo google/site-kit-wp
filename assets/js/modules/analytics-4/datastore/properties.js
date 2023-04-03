@@ -477,13 +477,11 @@ const baseActions = {
 		}
 
 		if ( ! measurementID ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagAccountID( '' );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagContainerID( '' );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( '' );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				googleTagAccountID: '',
+				googleTagContainerID: '',
+				googleTagID: '',
+			} );
 			return;
 		}
 
@@ -499,13 +497,16 @@ const baseActions = {
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
 			response;
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setGoogleTagAccountID( googleTagAccountID );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setGoogleTagContainerID( googleTagContainerID );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
+		// Note that when plain actions are dispatched in a generator function action, they are handled asynchronously when they would normally be synchronous.
+		// This means that following the usual pattern of dispatching individual setter actions for the `googleTagAccountID`, `googleTagContainerID` and `googleTagID` settings
+		// each resulted in a rerender of the GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with
+		// mismatched settings. To mitigate this, we dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
+		// See https://github.com/google/site-kit-wp/issues/6784.
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			googleTagAccountID,
+			googleTagContainerID,
+			googleTagID,
+		} );
 	},
 
 	/**
