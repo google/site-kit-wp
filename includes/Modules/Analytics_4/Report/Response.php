@@ -56,16 +56,26 @@ class Response extends Report {
 		// Get all available dates in the report.
 		$existing_rows = array();
 		foreach ( $response->getRows() as $row ) {
-			$dimension_values       = $row->getDimensionValues();
-			$date                   = $dimension_values[0]->getValue();
-			$existing_rows[ $date ] = $row;
+			$dimension_values = $row->getDimensionValues();
+
+			$range = 'date_range_0';
+			if ( count( $dimension_values ) > 1 ) {
+				$range = $dimension_values[1]->getValue();
+			}
+
+			$range = str_replace( 'date_range_', '', $range );
+			$date  = $dimension_values[0]->getValue();
+			$key   = self::get_response_row_key( $date, is_numeric( $range ) ? $range : false );
+
+			$existing_rows[ $key ] = $row;
 		}
 
 		$metric_headers  = $response->getMetricHeaders();
-		$multiple_ranges = count( $date_ranges ) > 1;
+		$ranges_count    = count( $date_ranges );
+		$multiple_ranges = $ranges_count > 1;
 		$rows            = array();
 
-		foreach ( $date_ranges as $date_range_index => $date_range ) {
+		foreach ( $date_ranges as $date_range ) {
 			$start = strtotime( $date_range->getStartDate() );
 			$end   = strtotime( $date_range->getEndDate() );
 
@@ -83,14 +93,18 @@ class Response extends Report {
 				$current_date = gmdate( 'Ymd', $now );
 				$now         += DAY_IN_SECONDS;
 
-				// Copy the existing row if it is available, otherwise create a new zero-value row.
-				$rows[ $current_date ] = isset( $existing_rows[ $current_date ] )
-					? $existing_rows[ $current_date ]
-					: $this->create_report_row(
-						$metric_headers,
-						$current_date,
-						$multiple_ranges ? $date_range_index : false
-					);
+				// Add rows for the current date for each date range.
+				for ( $i = 0; $i < $ranges_count; $i++ ) {
+					// Copy the existing row if it is available, otherwise create a new zero-value row.
+					$current_date_key          = self::get_response_row_key( $current_date, $i );
+					$rows[ $current_date_key ] = isset( $existing_rows[ $current_date_key ] )
+						? $existing_rows[ $current_date_key ]
+						: $this->create_report_row(
+							$metric_headers,
+							$current_date,
+							$multiple_ranges ? $i : false
+						);
+				}
 			} while ( $now <= $end );
 		}
 
@@ -106,6 +120,19 @@ class Response extends Report {
 		$response->setRowCount( $new_rows_count );
 
 		return $response;
+	}
+
+	/**
+	 * Gets the response row key composed from the date and the date range index values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $date             The date of the row to return key for.
+	 * @param int    $date_range_index The date range index.
+	 * @return string The row key.
+	 */
+	protected static function get_response_row_key( $date, $date_range_index ) {
+		return "{$date}_{$date_range_index}";
 	}
 
 }

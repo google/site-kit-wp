@@ -72,7 +72,7 @@ class ResponseTest extends TestCase {
 
 	public function data_report_args() {
 		return array(
-			'single range'    => array(
+			'single range'                                => array(
 				array(
 					'report_args'               => array(
 						'startDate'  => '2023-02-01',
@@ -85,11 +85,10 @@ class ResponseTest extends TestCase {
 						array( '20230202' ),
 						array( '20230203' ),
 					),
-					'expected_rows_count'       => 3,
 					'expected_dimension_values' => 1,
 				),
 			),
-			'multiple ranges' => array(
+			'multiple ranges'                             => array(
 				array(
 					'report_args'               => array(
 						'startDate'        => '2023-02-01',
@@ -101,17 +100,68 @@ class ResponseTest extends TestCase {
 					'initial_data'              => array(),
 					'expected_dates_and_ranges' => array(
 						array( '20230201', 'date_range_0' ),
+						array( '20230201', 'date_range_1' ),
 						array( '20230202', 'date_range_0' ),
+						array( '20230202', 'date_range_1' ),
 						array( '20230203', 'date_range_0' ),
+						array( '20230203', 'date_range_1' ),
+						array( '20230101', 'date_range_0' ),
 						array( '20230101', 'date_range_1' ),
+						array( '20230102', 'date_range_0' ),
 						array( '20230102', 'date_range_1' ),
+						array( '20230103', 'date_range_0' ),
 						array( '20230103', 'date_range_1' ),
 					),
-					'expected_rows_count'       => 6,
 					'expected_dimension_values' => 2,
 				),
 			),
-			'properly sorted' => array(
+			'overlapping ranges'                          => array(
+				array(
+					'report_args'               => array(
+						'startDate'        => '2023-01-01',
+						'endDate'          => '2023-01-04',
+						'compareStartDate' => '2023-01-03',
+						'compareEndDate'   => '2023-01-05',
+						'dimensions'       => 'date',
+					),
+					'initial_data'              => array(),
+					'expected_dates_and_ranges' => array(
+						array( '20230101', 'date_range_0' ),
+						array( '20230101', 'date_range_1' ),
+						array( '20230102', 'date_range_0' ),
+						array( '20230102', 'date_range_1' ),
+						array( '20230103', 'date_range_0' ),
+						array( '20230103', 'date_range_1' ),
+						array( '20230104', 'date_range_0' ),
+						array( '20230104', 'date_range_1' ),
+						array( '20230105', 'date_range_0' ),
+						array( '20230105', 'date_range_1' ),
+					),
+					'expected_dimension_values' => 2,
+				),
+			),
+			'some rows exist in the single range request' => array(
+				array(
+					'report_args'               => array(
+						'startDate'  => '2023-02-01',
+						'endDate'    => '2023-02-05',
+						'dimensions' => 'date',
+					),
+					'initial_data'              => array(
+						array( '20230101' ),
+						array( '20230104' ),
+					),
+					'expected_dates_and_ranges' => array(
+						array( '20230201' ),
+						array( '20230202' ),
+						array( '20230203' ),
+						array( '20230204' ),
+						array( '20230205' ),
+					),
+					'expected_dimension_values' => 1,
+				),
+			),
+			'some rows exist in the multi ranges request' => array(
 				array(
 					'report_args'               => array(
 						'startDate'        => '2023-02-01',
@@ -126,13 +176,18 @@ class ResponseTest extends TestCase {
 					),
 					'expected_dates_and_ranges' => array(
 						array( '20230201', 'date_range_0' ),
+						array( '20230201', 'date_range_1' ),
 						array( '20230202', 'date_range_0' ),
+						array( '20230202', 'date_range_1' ),
 						array( '20230203', 'date_range_0' ),
+						array( '20230203', 'date_range_1' ),
+						array( '20230101', 'date_range_0' ),
 						array( '20230101', 'date_range_1' ),
+						array( '20230102', 'date_range_0' ),
 						array( '20230102', 'date_range_1' ),
+						array( '20230103', 'date_range_0' ),
 						array( '20230103', 'date_range_1' ),
 					),
-					'expected_rows_count'       => 6,
 					'expected_dimension_values' => 2,
 				),
 			),
@@ -144,7 +199,7 @@ class ResponseTest extends TestCase {
 	 */
 	public function test_parse_response( $args ) {
 		$response = $this->get_parsed_response_for_args( $args['report_args'], $args['initial_data'] );
-		$this->assertEquals( $args['expected_rows_count'], $response->getRowCount() );
+		$this->assertEquals( count( $args['expected_dates_and_ranges'] ), $response->getRowCount() );
 
 		foreach ( $response->getRows() as $i => $row ) {
 			$dimension_values = $row->getDimensionValues();
