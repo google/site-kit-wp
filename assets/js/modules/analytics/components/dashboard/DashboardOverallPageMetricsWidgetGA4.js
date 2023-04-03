@@ -26,10 +26,7 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS,
-} from '../../datastore/constants';
+import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
@@ -39,7 +36,6 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import SourceLink from '../../../../components/SourceLink';
 import whenActive from '../../../../util/when-active';
-import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { calculateOverallPageMetricsData } from '../../..//analytics-4/utils/overall-page-metrics';
 import { getURLPath } from '../../../../util';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
@@ -91,13 +87,16 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		url,
 	};
 
-	const reportArgs = generateDateRangeArgs( dates );
+	const reportArgs = {
+		dates,
+		// eslint-disable-next-line sitekit/acronym-case
+		otherArgs: { collectionId: 'life-cycle' },
+	};
 
 	if ( isURL( url ) ) {
-		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
-		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
-			url
-		) }`;
+		reportArgs.filters = {
+			unifiedPagePathScreen: getURLPath( url ),
+		};
 	}
 
 	const isLoading = useSelect(
@@ -119,8 +118,8 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getServiceReportURL(
-			'visitors-overview',
+		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+			'all-pages-and-screens',
 			reportArgs
 		);
 	} );
