@@ -55,6 +55,7 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
               </button>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
@@ -117,6 +118,7 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
               </button>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
