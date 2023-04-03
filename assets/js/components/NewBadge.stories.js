@@ -60,7 +60,7 @@ export default {
 					display: 'flex',
 					justifyContent: 'center',
 					alignItems: 'flex-end',
-					height: '200px',
+					height: '250px',
 				} }
 			>
 				<Story />
