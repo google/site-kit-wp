@@ -1,7 +1,7 @@
 /**
  * Account helpers.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +24,17 @@ import invariant from 'invariant';
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { countryCodesByTimezone } from './countries-timezones';
+import { countryCodesByTimezone } from '../../analytics/util/countries-timezones';
 
 /**
  * Gets default values for a new account.
  *
- * @since 1.17.0
+ * @since n.e.x.t
  *
  * @param {Object} args              Site information.
  * @param {string} args.siteName     Site name.
@@ -43,7 +42,7 @@ import { countryCodesByTimezone } from './countries-timezones';
  * @param {string} args.timezone     Site timezone.
  * @param {string} _fallbackTimezone Fallback timezone. Defaults to local timezone.
  *                                   This parameter should only be used for providing a deterministic fallback in tests.
- * @return {Object} Default values.
+ * @return {Object} Default property values for a new account.
  */
 export function getAccountDefaults(
 	{ siteName, siteURL, timezone },
@@ -52,19 +51,16 @@ export function getAccountDefaults(
 	invariant( isURL( siteURL ), 'A valid siteURL is required.' );
 
 	const { hostname, pathname } = new URL( siteURL );
-	const tz = countryCodesByTimezone[ timezone ]
-		? timezone
-		: _fallbackTimezone;
 
 	return {
 		accountName: siteName || hostname,
 		propertyName: `${ hostname }${ pathname }`.replace( /\/$/, '' ),
-		profileName: _x(
-			'All Web Site Data',
-			'default Analytics view name',
-			'google-site-kit'
-		),
-		countryCode: countryCodesByTimezone[ tz ],
-		timezone: tz,
+		dataStreamName: hostname,
+		countryCode:
+			countryCodesByTimezone[ timezone ] ||
+			countryCodesByTimezone[ _fallbackTimezone ],
+		timezone: countryCodesByTimezone[ timezone ]
+			? timezone
+			: _fallbackTimezone,
 	};
 }

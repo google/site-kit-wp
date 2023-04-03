@@ -360,6 +360,11 @@ final class Analytics extends Module
 		// At this point, account creation was successful.
 		$new_settings['accountID'] = $account_id;
 
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			// For GA4-SPECIFIC provisioning callback, switch to GA4 dashboard view.
+			$new_settings['dashboardView'] = 'google-analytics-4';
+		}
+
 		$this->get_settings()->merge( $new_settings );
 
 		do_action(
