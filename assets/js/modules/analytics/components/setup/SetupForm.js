@@ -52,11 +52,17 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ExistingGTMPropertyNotice } from '../common';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitChanges()
+	);
+	const canSubmitChangesGA4 = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).canSubmitChanges()
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -130,7 +136,13 @@ export default function SetupForm( { finishSetup } ) {
 				<SetupFormGA4Transitional />
 			) }
 			<div className="googlesitekit-setup-module__action">
-				<Button disabled={ ! canSubmitChanges }>
+				<Button
+					disabled={
+						ga4ReportingEnabled
+							? ! canSubmitChangesGA4
+							: ! canSubmitChanges
+					}
+				>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
 				</Button>
 			</div>
