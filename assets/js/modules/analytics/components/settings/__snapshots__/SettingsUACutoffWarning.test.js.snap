@@ -32,6 +32,7 @@ exports[`SettingsUACutoffWarning should render the UA cutoff warning notice when
         </a>
       </div>
     </div>
+    
   </div>
 </div>
 `;
@@ -68,6 +69,7 @@ exports[`SettingsUACutoffWarning should render the UA cutoff warning notice when
         </a>
       </div>
     </div>
+    
   </div>
 </div>
 `;
@@ -104,6 +106,7 @@ exports[`SettingsUACutoffWarning should render the UA cutoff warning notice when
         </a>
       </div>
     </div>
+    
   </div>
 </div>
 `;

@@ -1,7 +1,7 @@
 /**
  * Account helper tests.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ describe( 'getAccountDefaults', () => {
 	const fallbackTimezone = 'Europe/Berlin';
 
 	// The fallback timezone is used here to avoid location-sensitive results,
-	// but also because the default fallback will raise errors otherwise due to the node environment.
+	// but also because the default fallback will raise errors otherwise due to tests
+	// running in a Node environment instead of a browser environment.
 	const getAccountDefaults = ( args ) =>
 		accountUtils.getAccountDefaults( args, fallbackTimezone );
 
@@ -76,12 +77,12 @@ describe( 'getAccountDefaults', () => {
 		} );
 	} );
 
-	describe( 'profileName', () => {
-		it( 'should be "All Web Site Data"', () => {
+	describe( 'dataStreamName', () => {
+		it( 'should be the domain name of the siteURL', () => {
 			expect(
 				getAccountDefaults( { siteName, siteURL, timezone } )
-					.profileName
-			).toBe( 'All Web Site Data' );
+					.dataStreamName
+			).toBe( 'example.com' );
 		} );
 	} );
 

@@ -21,3 +21,5 @@ export const AREA_MODULE_ADSENSE_MAIN = 'moduleAdsenseMain';
 export const ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY = 'adsense-connect-cta';
 export const ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY =
 	'adsense-connect-cta-tooltip-state';
+export const ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY =
+	'adsense-ga4-top-earnings-notice';
