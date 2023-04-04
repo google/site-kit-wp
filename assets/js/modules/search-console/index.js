@@ -35,6 +35,7 @@ import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
 import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import { isFeatureEnabled } from '../../features';
 import GA4DashboardWidgetSwitcher from '../analytics/components/dashboard/GA4DashboardWidgetSwitcher';
+import { TestWidget } from './components/widgets';
 
 export { registerStore } from './datastore';
 
@@ -48,6 +49,18 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
+		'searchFunnel',
+		{
+			Component: TestWidget,
+			width: [ widgets.WIDGET_WIDTHS.FULL ],
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'search-console' ],
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY ]
+	);
+
 	widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{

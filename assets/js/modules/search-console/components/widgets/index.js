@@ -17,3 +17,4 @@
  */
 
 export { default as PopularKeywordsWidget } from './PopularKeywordsWidget';
+export { default as TestWidget } from './TestWidget';

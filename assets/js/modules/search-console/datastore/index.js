@@ -25,12 +25,14 @@ import baseModuleStore from './base';
 import report from './report';
 import service from './service';
 import properties from './properties';
+import testStore from './test-store';
 
 const store = Data.combineStores(
 	baseModuleStore,
 	report,
 	service,
-	properties
+	properties,
+	testStore
 );
 
 export const initialState = store.initialState;

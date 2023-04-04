@@ -26,7 +26,7 @@ import { submitChanges, validateCanSubmitChanges } from './settings';
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	ownedSettingsSlugs: [ 'propertyID' ],
 	storeName: MODULES_SEARCH_CONSOLE,
-	settingSlugs: [ 'propertyID', 'ownerID' ],
+	settingSlugs: [ 'testSetting', 'propertyID', 'ownerID' ],
 	requiresSetup: false,
 	submitChanges,
 	validateCanSubmitChanges,
