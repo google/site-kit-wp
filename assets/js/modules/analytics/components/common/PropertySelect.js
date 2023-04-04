@@ -111,7 +111,10 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		);
 	}
 
-	if ( ! ga4ReportingEnabled ) {
+	if (
+		! ga4ReportingEnabled &&
+		! properties.find( ( property ) => property.id === PROPERTY_CREATE )
+	) {
 		properties.push( {
 			id: PROPERTY_CREATE,
 			name: __( 'Set up a new property', 'google-site-kit' ),
