@@ -1123,6 +1123,11 @@ describe( 'modules/analytics settings', () => {
 		} );
 
 		describe( 'isGA4DashboardView', () => {
+			// This is necessary to reset the top-level `provideModules` mock.
+			beforeEach( () => {
+				registry = createTestRegistry();
+			} );
+
 			it( 'should return false when the `ga4Reporting` feature flag is not enabled', () => {
 				// Delete the `ga4Reporting` feature flag if it exists.
 				enabledFeatures.delete( 'ga4Reporting' );
@@ -1132,7 +1137,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return false when the analytics-4 module is not active', () => {
+			it( 'should return false when the analytics-4 module is not connected', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
@@ -1141,13 +1146,33 @@ describe( 'modules/analytics settings', () => {
 						connected: false,
 					},
 				] );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: DASHBOARD_VIEW_UA,
+				} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
 				).toBe( false );
 			} );
 
-			it( 'should return undefined when analytics settings are not loaded', async () => {
+			it( 'should return undefined when analytics-4 module is not loaded', async () => {
+				freezeFetch(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
+				);
+				enabledFeatures.add( 'ga4Reporting' );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: DASHBOARD_VIEW_UA,
+				} );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
+				).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return undefined when analytics dashboard view is not loaded', async () => {
 				freezeFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/settings'
@@ -1219,29 +1244,12 @@ describe( 'modules/analytics settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return false when the analytics-4 module is not active', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: false,
-						connected: false,
-					},
-				] );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.shouldPromptGA4DashboardView()
-				).toBe( false );
-			} );
-
 			it( 'should return false when the analytics-4 module is not connected', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
-						active: true,
+						active: false,
 						connected: false,
 					},
 				] );

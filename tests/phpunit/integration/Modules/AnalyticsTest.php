@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -66,6 +67,23 @@ class AnalyticsTest extends TestCase {
 		// Test actions for tracking opt-out are added.
 		$this->assertTrue( has_action( 'wp_head' ) );
 		$this->assertTrue( has_action( 'web_stories_story_head' ) );
+
+		// Test ownerID synchronization between Analytics and Analytics_4.
+		$analytics->get_settings()->merge(
+			array(
+				'ownerID' => '1',
+			)
+		);
+
+		update_option(
+			Analytics_4_Settings::OPTION,
+			array( 'ownerID' => '12345' )
+		);
+
+		$this->assertEquals(
+			$analytics->get_settings()->get()['ownerID'],
+			'12345'
+		);
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -324,14 +342,12 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				// create-account-ticket not available.
+				// create-account-ticket, 'create-property' and 'create-profile' not available.
 				'goals',
 				'accounts-properties-profiles',
 				'properties-profiles',
 				'profiles',
 				'report',
-				'create-property',
-				'create-profile',
 			),
 			$analytics->get_datapoints()
 		);

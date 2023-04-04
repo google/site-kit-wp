@@ -32,7 +32,6 @@ import {
 	UI_DIMENSION_VALUE,
 	DATE_RANGE_OFFSET,
 	UI_ALL_TRAFFIC_LOADED,
-	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
 import { isZeroReport } from '../../../../../modules/analytics-4/utils';
@@ -40,7 +39,6 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { DAY_IN_SECONDS, getURLPath } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
@@ -205,32 +203,47 @@ function DashboardAllTrafficWidgetGA4( props ) {
 		);
 	} );
 
+	const reportArgs = {
+		dates: {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+		},
+	};
+
 	let reportType;
 	switch ( dimensionName ) {
 		case 'country':
-			reportType = 'visitors-geo';
+			reportType = 'user-demographics-detail';
+			reportArgs.details = {
+				metric: 'activeUsers',
+				dimension: 'country',
+			};
+			// eslint-disable-next-line sitekit/acronym-case
+			reportArgs.otherArgs = { collectionId: 'user' };
 			break;
 		case 'deviceCategory':
-			reportType = 'visitors-mobile-overview';
+			reportType = 'user-technology-detail';
+			reportArgs.details = {
+				metric: 'activeUsers',
+				dimension: 'deviceCategory',
+			};
+			// eslint-disable-next-line sitekit/acronym-case
+			reportArgs.otherArgs = { collectionId: 'user' };
 			break;
 		case 'sessionDefaultChannelGrouping':
 		default:
-			reportType = 'trafficsources-overview';
+			reportType = 'lifecycle-traffic-acquisition-v2';
+			// eslint-disable-next-line sitekit/acronym-case
+			reportArgs.otherArgs = { collectionId: 'life-cycle' };
 			break;
 	}
 
-	const reportArgs = generateDateRangeArgs( {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-	} );
-
 	if ( isURL( entityURL ) ) {
-		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
-		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
-			entityURL
-		) }`;
+		reportArgs.filters = {
+			unifiedPagePathScreen: getURLPath( entityURL ),
+		};
 	}
 
 	const serviceReportURL = useSelect( ( select ) => {
@@ -238,7 +251,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getServiceReportURL(
+		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
 			reportType,
 			reportArgs
 		);
