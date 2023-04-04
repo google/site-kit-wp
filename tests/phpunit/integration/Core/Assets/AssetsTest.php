@@ -186,4 +186,116 @@ class AssetsTest extends TestCase {
 		$localized_script = wp_scripts()->get_data( 'googlesitekit-commons', 'data' );
 		$this->assertStringContainsString( 'var _googlesitekitLegacyData = ', $localized_script );
 	}
+
+	public function test_googlesitekit_base_data() {
+		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'wp_print_scripts' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$assets->register();
+		$assets->enqueue_asset( 'googlesitekit-base-data' );
+
+		do_action( 'wp_print_scripts' );
+
+		$localized_script = wp_scripts()->get_data( 'googlesitekit-base-data', 'data' );
+		$this->assertStringStartsWith( 'var _googlesitekitBaseData = ', $localized_script );
+
+		$json = substr( $localized_script, strlen( 'var _googlesitekitBaseData = ' ) );
+		// Remove the trailing semicolon.
+		$json = substr( $json, 0, -1 );
+		$this->assertJson( $json );
+
+		$script_data_output_object = json_decode( $json, true );
+
+		// Remove values that are not predictable.
+		unset( $script_data_output_object['storagePrefix'] );
+		unset( $script_data_output_object['proxySetupURL'] );
+		unset( $script_data_output_object['proxyPermissionsURL'] );
+
+		$this->assertEquals(
+			array(
+				'homeURL'                         => 'http://example.org/',
+				'referenceSiteURL'                => 'http://example.org/',
+				'adminURL'                        => 'http://example.org/wp-admin/',
+				'assetsURL'                       => 'http://example.org/wp-content/plugins/google-site-kit/dist/assets/',
+				'widgetsAdminURL'                 => '',
+				'blogPrefix'                      => 'wptests_',
+				'ampMode'                         => false,
+				'isNetworkMode'                   => false,
+				'timezone'                        => '',
+				'siteName'                        => 'Test Blog',
+				'enabledFeatures'                 => array(),
+				'webStoriesActive'                => false,
+				'postTypes'                       => array(
+					0 => array(
+						'slug'  => 'post',
+						'label' => 'Posts',
+					),
+					1 => array(
+						'slug'  => 'page',
+						'label' => 'Pages',
+					),
+					2 => array(
+						'slug'  => 'attachment',
+						'label' => 'Media',
+					),
+				),
+				'referenceDate'                   => null,
+				'isOwner'                         => false,
+				'splashURL'                       => 'http://example.org/wp-admin/admin.php?page=googlesitekit-splash',
+				'usingProxy'                      => true,
+				'isAuthenticated'                 => false,
+				'setupErrorCode'                  => null,
+				'setupErrorMessage'               => null,
+				'setupErrorRedoURL'               => null,
+				'proxySupportLinkURL'             => 'https://sitekit.withgoogle.com/support',
+				'updateCoreURL'                   => 'http://example.org/wp-admin/update-core.php',
+				'wpVersion'                       => array(
+					'version' => '6.1.1',
+					'major'   => 6,
+					'minor'   => 1,
+				),
+				'changePluginAutoUpdatesCapacity' => false,
+				'siteKitAutoUpdatesEnabled'       => false,
+				'pluginBasename'                  => 'google-site-kit/google-site-kit.php',
+				'userRoles'                       => array( 0 => 'administrator' ),
+				'activeModules'                   => array(
+					0 => 'search-console',
+					1 => 'pagespeed-insights',
+				),
+			),
+			$script_data_output_object
+		);
+	}
+
+	public function test_googlesitekit_base_data__reference_date_filter() {
+		add_filter(
+			'googlesitekit_reference_date',
+			function() {
+				return '2020-01-01';
+			}
+		);
+
+		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'wp_print_scripts' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$assets->register();
+
+		$assets->enqueue_asset( 'googlesitekit-base-data' );
+		do_action( 'wp_print_scripts' );
+
+		$localized_script = wp_scripts()->get_data( 'googlesitekit-base-data', 'data' );
+
+		$json = substr( $localized_script, strlen( 'var _googlesitekitBaseData = ' ) );
+		// Remove the trailing semicolon.
+		$json = substr( $json, 0, -1 );
+
+		$script_data_output_object = json_decode( $json, true );
+
+		$this->assertEquals( '2020-01-01', $script_data_output_object['referenceDate'] );
+	}
+
 }
