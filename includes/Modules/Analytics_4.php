@@ -1655,7 +1655,7 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Returns sharing settings with settings for Analytic-4 replicated from Analytics.
+	 * Returns sharing settings with settings for Analytics-4 replicated from Analytics.
 	 *
 	 * Module sharing settings for Analytics and Analytics-4 are always kept "in-sync" when
 	 * setting these settings in the datastore. However, this function ensures backwards

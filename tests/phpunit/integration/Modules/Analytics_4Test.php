@@ -147,7 +147,12 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_register__replicate_analytics_sharing_settings() {
+	/**
+	 * @dataProvider analytics_sharing_settings_data_provider
+	 * @param array $sharing_settings
+	 * @param array $expected
+	 */
+	public function test_register__replicate_analytics_sharing_settings( $sharing_settings, $expected ) {
 		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
 		$this->assertFalse( has_filter( 'option_' . Module_Sharing_Settings::OPTION ) );
 
@@ -155,17 +160,18 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertTrue( has_filter( 'option_' . Module_Sharing_Settings::OPTION ) );
 
-		$initial_sharing_settings = array(
+		update_option( Module_Sharing_Settings::OPTION, $sharing_settings );
+		$this->assertEquals( $expected, get_option( Module_Sharing_Settings::OPTION ) );
+	}
+
+	public function analytics_sharing_settings_data_provider() {
+		$initial_sharing_settings              = array(
 			'search-console' => array(
 				'sharedRoles' => array( 'contributor', 'administrator' ),
 				'management'  => 'all_admins',
 			),
 		);
-		update_option( Module_Sharing_Settings::OPTION, $initial_sharing_settings );
-		// The filter tested above should not replicate Analytics settings to Analytics-4 when not set.
-		$this->assertEquals( $initial_sharing_settings, get_option( Module_Sharing_Settings::OPTION ) );
-
-		$sharing_settings_with_analytics = array_merge(
+		$sharing_settings_with_analytics       = array_merge(
 			$initial_sharing_settings,
 			array(
 				'analytics' => array(
@@ -174,8 +180,7 @@ class Analytics_4Test extends TestCase {
 				),
 			)
 		);
-		update_option( Module_Sharing_Settings::OPTION, $sharing_settings_with_analytics );
-		$expected_sharing_settings = array_merge(
+		$sharing_settings_with_both_analytics  = array_merge(
 			$sharing_settings_with_analytics,
 			array(
 				'analytics-4' => array(
@@ -184,8 +189,23 @@ class Analytics_4Test extends TestCase {
 				),
 			)
 		);
-		// The filter tested above should replicate Analytics settings to Analytics-4 when set.
-		$this->assertEquals( $expected_sharing_settings, get_option( Module_Sharing_Settings::OPTION ) );
+		$modified_settings_with_both_analytics = $sharing_settings_with_both_analytics;
+		$modified_settings_with_both_analytics['analytics']['sharedRoles'] = array( 'contributor' );
+
+		return array(
+			'Analytics and Analtyics-4 both not set' => array(
+				$initial_sharing_settings,
+				$initial_sharing_settings,
+			),
+			'Anlaytics set and Analytics-4 not set'  => array(
+				$sharing_settings_with_analytics,
+				$sharing_settings_with_both_analytics,
+			),
+			'Analytics and Analytics-4 both set'     => array(
+				$modified_settings_with_both_analytics,
+				$modified_settings_with_both_analytics,
+			),
+		);
 	}
 
 	public function test_handle_provisioning_callback() {
