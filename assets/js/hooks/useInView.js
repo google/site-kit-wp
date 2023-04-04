@@ -53,7 +53,7 @@ export const useInView = ( { sticky = false } = {} ) => {
 		select( CORE_UI ).getInViewResetHook()
 	);
 	const forceInView = useSelect( ( select ) =>
-		select( CORE_UI ).get( 'forceInView' )
+		select( CORE_UI ).getValue( 'forceInView' )
 	);
 
 	useEffect( () => {
