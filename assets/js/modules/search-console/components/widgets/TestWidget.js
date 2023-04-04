@@ -5,9 +5,8 @@ import { Button } from 'googlesitekit-components';
 const { useDispatch, useSelect } = Data;
 
 export default function TestWidget() {
-	const testValue = useSelect(
-		( select ) => select( MODULES_SEARCH_CONSOLE ).getTestValue(),
-		[]
+	const testValue = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getTestValue()
 	);
 
 	const {
