@@ -126,8 +126,16 @@ export default function GA4SettingsControls( props ) {
 		return null;
 	}
 
-	let webDataStreamsNotAvailable = false;
 	let propertyNotAvailable = false;
+	let webDataStreamsNotAvailable = false;
+
+	if (
+		isValidPropertyID( propertyID ) &&
+		! properties.some( ( { _id } ) => _id === propertyID ) &&
+		! getPropertiesError
+	) {
+		propertyNotAvailable = true;
+	}
 
 	if (
 		properties.some( ( { _id } ) => _id === propertyID ) &&
@@ -139,13 +147,6 @@ export default function GA4SettingsControls( props ) {
 		! getWebDataStreamsError
 	) {
 		webDataStreamsNotAvailable = true;
-	}
-
-	if (
-		! properties.some( ( { _id } ) => _id === propertyID ) &&
-		! getPropertiesError
-	) {
-		propertyNotAvailable = true;
 	}
 
 	return (
@@ -167,16 +168,6 @@ export default function GA4SettingsControls( props ) {
 						) }
 					/>
 				) }
-				<PropertySelect
-					hasModuleAccess={ hasModuleAccess }
-					isDisabled={ isDisabled }
-					onChange={ () =>
-						enableGA4PropertyTooltip &&
-						setValues( FORM_SETUP, {
-							enableGA4PropertyTooltip: false,
-						} )
-					}
-				/>
 
 				{ webDataStreamsNotAvailable && (
 					<ErrorText
@@ -190,6 +181,18 @@ export default function GA4SettingsControls( props ) {
 						) }
 					/>
 				) }
+
+				<PropertySelect
+					hasModuleAccess={ hasModuleAccess }
+					isDisabled={ isDisabled }
+					onChange={ () =>
+						enableGA4PropertyTooltip &&
+						setValues( FORM_SETUP, {
+							enableGA4PropertyTooltip: false,
+						} )
+					}
+				/>
+
 				<WebDataStreamSelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }
