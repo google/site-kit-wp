@@ -526,6 +526,21 @@ const baseActions = {
 	},
 
 	/**
+	 * Sets whether the Web Data Stream is not available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} isWebDataStreamNotAvailable Whether the Web Data Stream is not available.
+	 * @return {Object} Redux-style action.
+	 */
+	*setIsWebDataStreamNotAvailable( isWebDataStreamNotAvailable ) {
+		return {
+			type: SET_IS_WEBDATASTREAM_NOT_AVAILABLE,
+			payload: { isWebDataStreamNotAvailable },
+		};
+	},
+
+	/**
 	 * Syncs Google Tag settings.
 	 *
 	 * @since 1.95.0
@@ -603,21 +618,6 @@ const baseActions = {
 		);
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
-	},
-
-	/**
-	 * Sets whether the Web Data Stream is not available.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {boolean} isWebDataStreamNotAvailable Whether the Web Data Stream is not available.
-	 * @return {Object} Redux-style action.
-	 */
-	*setIsWebDataStreamNotAvailable( isWebDataStreamNotAvailable ) {
-		return {
-			type: SET_IS_WEBDATASTREAM_NOT_AVAILABLE,
-			payload: { isWebDataStreamNotAvailable },
-		};
 	},
 };
 
