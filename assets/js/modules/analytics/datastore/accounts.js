@@ -99,7 +99,7 @@ const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION =
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
 const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
-const RESET_PROPERTY_AND_PROFILE = 'RESET_PROPERTY_AND_PROFILE';
+const RESET_PROPERTY_AND_PROFILE_IDS = 'RESET_PROPERTY_AND_PROFILE_IDS';
 
 const baseInitialState = {
 	accounts: undefined,
@@ -141,7 +141,7 @@ const baseActions = {
 	resetPropertyAndProfileIDs() {
 		return {
 			payload: {},
-			type: RESET_PROPERTY_AND_PROFILE,
+			type: RESET_PROPERTY_AND_PROFILE_IDS,
 		};
 	},
 
@@ -306,7 +306,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RESET_PROPERTY_AND_PROFILE: {
+		case RESET_PROPERTY_AND_PROFILE_IDS: {
 			return {
 				...state,
 				settings: {
