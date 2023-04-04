@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { identity } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -39,6 +40,7 @@ import {
 import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from '../SearchFunnelWidget/Header';
 import Footer from '../SearchFunnelWidget/Footer';
@@ -163,7 +165,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 				name: 'conversions',
 			},
 			{
-				name: 'engagedSessions',
+				name: 'engagementRate',
 			},
 		],
 		dimensionFilters: {
@@ -442,7 +444,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 					dataLabels={ [
 						__( 'Unique Visitors', 'google-site-kit' ),
 					] }
-					dataFormats={ [
+					tooltipDataFormats={ [
 						( x ) => parseFloat( x ).toLocaleString(),
 					] }
 					statsColor={
@@ -463,12 +465,18 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 						metrics={ SearchFunnelWidgetGA4.metrics }
 						dataLabels={ [
 							__( 'Conversions', 'google-site-kit' ),
-							__( 'Engaged Sessions', 'google-site-kit' ),
+							__( 'Engagement Rate %', 'google-site-kit' ),
 						] }
-						dataFormats={ [
+						tooltipDataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
-							( x ) => parseFloat( x ).toLocaleString(),
+							( x ) =>
+								numFmt( x / 100, {
+									style: 'percent',
+									signDisplay: 'never',
+									maximumFractionDigits: 2,
+								} ),
 						] }
+						chartDataFormats={ [ identity, ( x ) => x * 100 ] }
 						statsColor={
 							SearchFunnelWidgetGA4.metrics[ selectedStats ].color
 						}
@@ -508,9 +516,9 @@ SearchFunnelWidgetGA4.metrics = [
 		service: 'analytics-4',
 	},
 	{
-		id: 'engaged-sessions',
+		id: 'engagement-rate',
 		color: '#6e48ab',
-		label: __( 'Engaged Sessions', 'google-site-kit' ),
+		label: __( 'Engagement Rate', 'google-site-kit' ),
 		service: 'analytics-4',
 	},
 ];

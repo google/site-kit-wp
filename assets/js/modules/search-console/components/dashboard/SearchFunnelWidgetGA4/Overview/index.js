@@ -45,6 +45,8 @@ import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/consta
 import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import OptionalCells from './OptionalCells';
+import NewBadge from '../../../../../../components/NewBadge';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
@@ -109,6 +111,12 @@ const Overview = ( {
 		select( CORE_USER ).isAuthenticated()
 	);
 
+	const conversionsRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/9267568',
+		} )
+	);
+
 	const {
 		totalClicks,
 		totalImpressions,
@@ -118,8 +126,8 @@ const Overview = ( {
 
 	let ga4ConversionsChange = null;
 	let ga4ConversionsDatapoint = null;
-	let ga4EngagedSessionsDatapoint = null;
-	let ga4EngagedSessionsChange = null;
+	let ga4EngagementRateDatapoint = null;
+	let ga4EngagementRateChange = null;
 	let ga4VisitorsDatapoint = null;
 	let ga4VisitorsChange = null;
 
@@ -137,8 +145,8 @@ const Overview = ( {
 			ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 		( {
-			datapoint: ga4EngagedSessionsDatapoint,
-			change: ga4EngagedSessionsChange,
+			datapoint: ga4EngagementRateDatapoint,
+			change: ga4EngagementRateChange,
 		} = getDatapointAndChange( ga4Data, 1 ) );
 
 		ga4VisitorsDatapoint =
@@ -160,7 +168,12 @@ const Overview = ( {
 		isAuthenticated &&
 		showGA4 &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
-		! ga4ConversionsData?.length;
+		( ! ga4ConversionsData?.length ||
+			// Show the CTA if the sole conversion set up is the
+			// GA4 default "purchase" conversion event with no data value.
+			( ga4ConversionsData?.length === 1 &&
+				ga4ConversionsData[ 0 ].eventName === 'purchase' &&
+				ga4ConversionsDatapoint === '0' ) );
 
 	const quarterCellProps = {
 		smSize: 2,
@@ -227,7 +240,7 @@ const Overview = ( {
 			: [] ),
 		...( showGA4 &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
-		ga4ConversionsData?.length > 0
+		! showConversionsCTA
 			? [
 					{
 						id: 'conversions',
@@ -236,17 +249,27 @@ const Overview = ( {
 						datapoint: ga4ConversionsDatapoint,
 						change: ga4ConversionsChange,
 						isGatheringData: isGA4GatheringData,
+						badge: (
+							<NewBadge
+								tooltipTitle={ __(
+									'Conversions is a new Google Analytics 4 metric replacing the Goals metric.',
+									'google-site-kit'
+								) }
+								learnMoreLink={ conversionsRateLearnMoreURL }
+							/>
+						),
 					},
 			  ]
 			: [] ),
 		...( showGA4 && dashboardType === DASHBOARD_TYPE_ENTITY
 			? [
 					{
-						id: 'engaged-sessions',
+						id: 'engagement-rate',
 						stat: 4,
-						title: __( 'Engaged Sessions', 'google-site-kit' ),
-						datapoint: ga4EngagedSessionsDatapoint,
-						change: ga4EngagedSessionsChange,
+						title: __( 'Engagement Rate', 'google-site-kit' ),
+						datapoint: ga4EngagementRateDatapoint,
+						datapointUnit: '%',
+						change: ga4EngagementRateChange,
 						isGatheringData: isGA4GatheringData,
 					},
 			  ]
@@ -300,6 +323,7 @@ const Overview = ( {
 									}
 									handleStatSelection={ handleStatsSelection }
 									gatheringData={ dataBlock.isGatheringData }
+									badge={ dataBlock.badge }
 								/>
 							</Cell>
 						) ) }

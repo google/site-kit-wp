@@ -44,6 +44,7 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import UACutoffWarning from '../../../../analytics/components/common/UACutoffWarning';
 import Header from './Header';
 import Footer from './Footer';
 import Overview from './Overview';
@@ -363,6 +364,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 
 	return (
 		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
+			<UACutoffWarning />
 			<Overview
 				analyticsData={ analyticsOverviewData }
 				analyticsGoalsData={ analyticsGoalsData }
@@ -417,7 +419,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 					dataLabels={ [
 						__( 'Unique Visitors', 'google-site-kit' ),
 					] }
-					dataFormats={ [
+					tooltipDataFormats={ [
 						( x ) => parseFloat( x ).toLocaleString(),
 					] }
 					statsColor={
@@ -440,7 +442,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 							__( 'Goals', 'google-site-kit' ),
 							__( 'Bounce Rate %', 'google-site-kit' ),
 						] }
-						dataFormats={ [
+						tooltipDataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
 							( x ) =>
 								numFmt( x / 100, {

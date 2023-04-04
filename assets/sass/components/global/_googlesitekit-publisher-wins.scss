@@ -33,7 +33,6 @@
 		flex-direction: row;
 
 		.googlesitekit-publisher-win__secondary-pane-divider {
-			border-left: 1px solid $c-athens-gray;
 			height: 106px;
 			margin: auto 30px;
 		}
@@ -154,7 +153,7 @@
 	}
 
 	.googlesitekit-button-icon--spinner + .googlesitekit-cta-link {
-		margin-left: $grid-gap-desktop;
+		text-align: center;
 	}
 
 	.googlesitekit-publisher-win__logo {
@@ -178,6 +177,15 @@
 		svg {
 			max-height: 85px;
 			max-width: 85px;
+		}
+	}
+
+	.googlesitekit-publisher-win__actions {
+		display: flex;
+		gap: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			gap: $grid-gap-desktop;
 		}
 	}
 

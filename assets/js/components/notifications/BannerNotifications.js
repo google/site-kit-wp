@@ -39,6 +39,8 @@ import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
+import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
+import { GTM_SCOPE } from '../../modules/analytics-4/datastore/constants';
 
 const { useSelect } = Data;
 
@@ -47,6 +49,7 @@ export default function BannerNotifications() {
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 	const gteSupportEnabled = useFeature( 'gteSupport' );
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewOnly = useViewOnly();
 
@@ -55,6 +58,16 @@ export default function BannerNotifications() {
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
+	);
+
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+	const ga4ModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const hasGTMScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( GTM_SCOPE )
 	);
 
 	const [ notification ] = useQueryArg( 'notification' );
@@ -71,6 +84,9 @@ export default function BannerNotifications() {
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
+					{ gteSupportEnabled &&
+						ga4ModuleConnected &&
+						hasGTMScope && <GoogleTagIDMismatchNotification /> }
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />
@@ -80,7 +96,9 @@ export default function BannerNotifications() {
 						<UserInputPromptBannerNotification />
 					) }
 					{ adSenseModuleActive && <AdSenseAlerts /> }
-					{ gteSupportEnabled && <GoogleTagIDMismatchNotification /> }
+					{ ga4ReportingEnabled && analyticsModuleConnected && (
+						<SwitchGA4DashboardViewNotification />
+					) }
 				</Fragment>
 			) }
 		</Fragment>

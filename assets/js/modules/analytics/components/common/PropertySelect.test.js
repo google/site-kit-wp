@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import PropertySelect from './PropertySelect';
-import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	ACCOUNT_CREATE,
+	PROPERTY_CREATE,
+} from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import {
@@ -121,6 +125,28 @@ describe( 'PropertySelect', () => {
 		expect( listItems ).toHaveLength(
 			fixtures.accountsPropertiesProfiles.properties.length + 1
 		);
+		expect(
+			listItems.some(
+				( { dataset } ) => dataset.value === PROPERTY_CREATE
+			)
+		).toBe( true );
+	} );
+
+	it( 'should not render an option to "Set up a new property" if the GA4 Reporting feature flag is enabled.', () => {
+		const { getAllByRole } = render( <PropertySelect />, {
+			setupRegistry,
+			features: [ 'ga4Reporting' ],
+		} );
+
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		expect( listItems ).toHaveLength(
+			fixtures.accountsPropertiesProfiles.properties.length
+		);
+		expect(
+			listItems.some(
+				( { dataset } ) => dataset.value === PROPERTY_CREATE
+			)
+		).toBe( false );
 	} );
 
 	it( 'should pre-select an existing tag when present', () => {

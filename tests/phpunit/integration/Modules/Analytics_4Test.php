@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
+use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
@@ -24,6 +25,8 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
@@ -31,17 +34,20 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
-use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
+use Google\Site_Kit_Dependencies\Google\Service\Exception;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Stream;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_User;
 
 /**
@@ -122,6 +128,23 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
+
+		// Test ownerID synchronization between Analytics and Analytics_4.
+		$this->analytics->get_settings()->merge(
+			array(
+				'ownerID' => '1',
+			)
+		);
+
+		update_option(
+			Analytics_Settings::OPTION,
+			array( 'ownerID' => '12345' )
+		);
+
+		$this->assertEquals(
+			$this->analytics->get_settings()->get()['ownerID'],
+			'12345'
+		);
 	}
 
 	public function test_handle_provisioning_callback() {
@@ -141,10 +164,10 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$http_client = new FakeHttpClient();
-		$http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
 			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 
 				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
 					return new Response( 200 );
@@ -155,11 +178,9 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									array(
-										'name' => "properties/{$property_id}",
-									)
+							json_encode(
+								array(
+									'name' => "properties/{$property_id}",
 								)
 							)
 						);
@@ -174,9 +195,7 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode( $datastream->toSimpleObject() )
-							)
+							json_encode( $datastream->toSimpleObject() )
 						);
 					default:
 						return new Response( 200 );
@@ -186,10 +205,9 @@ class Analytics_4Test extends TestCase {
 
 		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
 
-		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -229,10 +247,10 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$http_client = new FakeHttpClient();
-		$http_client->set_request_handler(
-			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id, $google_tag_account_id, $google_tag_container_id, $tag_ids ) {
-				$url = parse_url( $request->getUrl() );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id, $google_tag_account_id, $google_tag_container_id, $tag_ids ) {
+				$url = parse_url( $request->getUri() );
 
 				if ( ! in_array( $url['host'], array( 'analyticsadmin.googleapis.com', 'tagmanager.googleapis.com' ), true ) ) {
 					return new Response( 200 );
@@ -243,11 +261,9 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									array(
-										'name' => "properties/{$property_id}",
-									)
+							json_encode(
+								array(
+									'name' => "properties/{$property_id}",
 								)
 							)
 						);
@@ -262,9 +278,7 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode( $datastream->toSimpleObject() )
-							)
+							json_encode( $datastream->toSimpleObject() )
 						);
 					case '/tagmanager/v2/accounts/containers:lookup':
 						$data = new Container();
@@ -274,10 +288,8 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									$data->toSimpleObject()
-								)
+							json_encode(
+								$data->toSimpleObject()
 							)
 						);
 
@@ -289,7 +301,6 @@ class Analytics_4Test extends TestCase {
 
 		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
 
-		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
 		$this->assertEqualSetsWithIndex(
@@ -308,7 +319,7 @@ class Analytics_4Test extends TestCase {
 			$options->get( Settings::OPTION )
 		);
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -325,6 +336,140 @@ class Analytics_4Test extends TestCase {
 			),
 			$options->get( Settings::OPTION )
 		);
+	}
+
+	public function data_create_account_ticket_required_parameters() {
+		return array(
+			'displayName'    => array( 'displayName' ),
+			'regionCode'     => array( 'regionCode' ),
+			'propertyName'   => array( 'propertyName' ),
+			'dataStreamName' => array( 'dataStreamName' ),
+			'timezone'       => array( 'timezone' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_create_account_ticket_required_parameters
+	 */
+	public function test_create_account_ticket__required_parameters( $required_param ) {
+		$provision_account_ticket_request = null;
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( &$provision_account_ticket_request ) {
+				$url = parse_url( $request->getUri() );
+
+				if (
+					'sitekit.withgoogle.com' === $url['host']
+					&& '/v1beta/accounts:provisionAccountTicket' === $url['path']
+				) {
+					$provision_account_ticket_request = $request;
+				}
+
+				return new Response( 200 );
+			}
+		);
+
+		$this->analytics->register();
+		// Grant required scopes.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		$data = array(
+			'displayName'    => 'test account name',
+			'regionCode'     => 'US',
+			'propertyName'   => 'test property name',
+			'dataStreamName' => 'test stream name',
+			'timezone'       => 'UTC',
+		);
+		// Remove the required parameter under test.
+		unset( $data[ $required_param ] );
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
+		$this->assertEquals( "Request parameter is empty: $required_param.", $response->get_error_message() );
+		// Ensure transient is not set in the event of a failure.
+		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
+		// Ensure remote request was not made.
+		$this->assertNull( $provision_account_ticket_request );
+	}
+
+	public function test_create_account_ticket() {
+		$account_ticket_id     = 'test-account-ticket-id';
+		$account_display_name  = 'test account name';
+		$region_code           = 'US';
+		$property_display_name = 'test property name';
+		$stream_display_name   = 'test stream name';
+		$timezone              = 'UTC';
+
+		$provision_account_ticket_request = null;
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( &$provision_account_ticket_request, $account_ticket_id ) {
+				$url = parse_url( $request->getUri() );
+
+				if ( 'sitekit.withgoogle.com' !== $url['host'] ) {
+					return new Response( 200 );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/accounts:provisionAccountTicket':
+						$provision_account_ticket_request = $request;
+
+						$response = new GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse();
+						$response->setAccountTicketId( $account_ticket_id );
+
+						return new Response( 200, array(), json_encode( $response ) );
+
+					default:
+						throw new Exception( 'Not implemented' );
+				}
+			}
+		);
+
+		$this->analytics->register();
+		$data = array(
+			'displayName'    => $account_display_name,
+			'regionCode'     => $region_code,
+			'propertyName'   => $property_display_name,
+			'dataStreamName' => $stream_display_name,
+			'timezone'       => $timezone,
+		);
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+		// Assert that the Analytics edit scope is required.
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_scopes', $response->get_error_code() );
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		// Assert request was made with expected arguments.
+		$this->assertNotWPError( $response );
+		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
+			json_decode( $provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
+		);
+		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName() );
+		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode() );
+		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
+		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri() );
+
+		// Assert transient is set with params.
+		$account_ticket_params = get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
+		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'] );
+		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'] );
+		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'] );
+		$this->assertEquals( $timezone, $account_ticket_params['timezone'] );
 	}
 
 	public function test_get_scopes() {
@@ -412,6 +557,7 @@ class Analytics_4Test extends TestCase {
 				'report',
 				'webdatastreams',
 				'webdatastreams-batch',
+				'create-account-ticket',
 			),
 			$this->analytics->get_datapoints()
 		);
@@ -429,10 +575,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = new FakeHttpClient();
-		$http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
 			function ( Request $request ) use ( $tag_ids_data ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 
 				if ( 'tagmanager.googleapis.com' !== $url['host'] ) {
 					return new Response( 200 );
@@ -446,10 +592,8 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									$data->toSimpleObject()
-								)
+							json_encode(
+								$data->toSimpleObject()
 							)
 						);
 
@@ -459,7 +603,6 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
 		$data = $this->analytics->get_data(
@@ -535,8 +678,11 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+
 		$this->analytics->register();
 
 		// Fetch a report that exercises all input parameters, barring the alternative date range,
@@ -774,8 +920,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -825,8 +973,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -875,8 +1025,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -926,8 +1078,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -977,8 +1131,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -1049,7 +1205,162 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
 	}
 
-	public function test_report__metric_validation() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_report__metric_validation_invalid_name_singular( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		// Test the invalid character cases.
+		// Please note this is not a comprehensive list of invalid characters, as that would be a very long list. This is just a representative sample.
+		$invalid_characters = ' !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïð';
+
+		$invalid_names = array_map(
+			function( $character ) {
+				return "test$character";
+			},
+			str_split( $invalid_characters )
+		);
+
+		// Include the empty string as an invalid name.
+		$invalid_name[] = '';
+
+		foreach ( $invalid_names as $invalid_name ) {
+			$invalid_name_metrics_singular = array(
+				array( 'name' => $invalid_name ),
+				array( array( 'name' => $invalid_name ), array( 'name' => 'test' ) ),
+				array(
+					array(
+						'name'       => $invalid_name,
+						'expression' => 'test1',
+					),
+					array(
+						'name'       => 'test2',
+						'expression' => 'test2',
+					),
+				),
+			);
+
+			foreach ( $invalid_name_metrics_singular as $metrics ) {
+				$data = $this->analytics->get_data(
+					'report',
+					array( 'metrics' => $metrics )
+				);
+
+				$this->assertWPErrorWithMessage( "Metric name should match the expression ^[a-zA-Z0-9_]+$: $invalid_name", $data );
+				$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
+			}
+		}
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_report__metric_validation_invalid_name_plural( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		// Test the invalid character cases.
+		// Please note this is not a comprehensive list of invalid characters, as that would be a very long list. This is just a representative sample.
+		$invalid_characters = ' !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïð';
+
+		$invalid_names = array_map(
+			function( $character ) {
+				return "test$character";
+			},
+			str_split( $invalid_characters )
+		);
+
+		// Include the empty string as an invalid name.
+		$invalid_name[] = '';
+
+		foreach ( $invalid_names as $invalid_name ) {
+			$invalid_name_metrics_plural = array(
+				array( array( 'name' => $invalid_name ), array( 'name' => 'test' ), array( 'name' => $invalid_name ) ),
+				array(
+					array(
+						'name'       => $invalid_name,
+						'expression' => 'test1',
+					),
+					array(
+						'name'       => 'test2',
+						'expression' => 'test2',
+					),
+					array(
+						'name'       => $invalid_name,
+						'expression' => 'test3',
+					),
+				),
+			);
+
+			// Validate the string variant of metrics (which can be comma-separated) if $invalid_name does not include a comma.
+			if ( false === strpos( $invalid_name, ',' ) ) {
+				array_push(
+					$invalid_name_metrics_plural,
+					"$invalid_name,$invalid_name",
+					"$invalid_name,test1,$invalid_name,test2",
+					"test1,$invalid_name,test2,$invalid_name"
+				);
+			}
+
+			foreach ( $invalid_name_metrics_plural as $metrics ) {
+				$data = $this->analytics->get_data(
+					'report',
+					array( 'metrics' => $metrics )
+				);
+
+				$this->assertWPErrorWithMessage( "Metric names should match the expression ^[a-zA-Z0-9_]+$: $invalid_name, $invalid_name", $data );
+				$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
+			}
+		}
+	}
+
+	public function test_report__shared_metric_validation() {
 		$this->enable_feature( 'dashboardSharing' );
 
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -1094,7 +1405,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
 	}
 
-	public function test_report__dimension_validation() {
+	public function test_report__shared_dimension_validation() {
 		$this->enable_feature( 'dashboardSharing' );
 
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -1190,8 +1501,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		// Fetch conversion events.
@@ -1255,84 +1568,75 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
-	 * Creates a fake HTTP client with call tracking.
+	 * Creates a fake HTTP handler with call tracking.
 	 *
 	 * @param string $property_id The GA4 property ID to use.
-	 * @return FakeHttpClient The fake HTTP client.
+	 * @return Closure The fake HTTP client.
 	 */
-	protected function create_fake_http_client( $property_id ) {
+	protected function create_fake_http_handler( $property_id ) {
 		$this->request_handler_calls = array();
 
-		$http_client = new FakeHttpClient();
-		$http_client->set_request_handler(
-			function ( Request $request ) use ( $property_id ) {
-				$url    = parse_url( $request->getUrl() );
-				$params = json_decode( (string) $request->getBody(), true );
+		return function ( Request $request ) use ( $property_id ) {
+			$url    = parse_url( $request->getUri() );
+			$params = json_decode( (string) $request->getBody(), true );
 
-				$this->request_handler_calls[] = array(
-					'url'    => $url,
-					'params' => $params,
-				);
+			$this->request_handler_calls[] = array(
+				'url'    => $url,
+				'params' => $params,
+			);
 
-				if (
-					! in_array(
-						$url['host'],
-						array( 'analyticsdata.googleapis.com', 'analyticsadmin.googleapis.com' ),
-						true
-					)
-				) {
-					return new Response( 200 );
-				}
+			if (
+				! in_array(
+					$url['host'],
+					array( 'analyticsdata.googleapis.com', 'analyticsadmin.googleapis.com' ),
+					true
+				)
+			) {
+				return new Response( 200 );
+			}
 
-				switch ( $url['path'] ) {
-					case "/v1beta/properties/$property_id:runReport":
-						// Return a mock report.
-						return new Response(
-							200,
-							array(),
-							Stream::factory(
-								json_encode(
-									array(
-										'kind' => 'analyticsData#runReport',
+			switch ( $url['path'] ) {
+				case "/v1beta/properties/$property_id:runReport":
+					// Return a mock report.
+					return new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'kind' => 'analyticsData#runReport',
+								array(
+									'rows' => array(
 										array(
-											'rows' => array(
+											'metricValues' => array(
 												array(
-													'metricValues' => array(
-														array(
-															'value' => 'some-value',
-														),
-													),
+													'value' => 'some-value',
 												),
 											),
 										),
-									)
-								)
+									),
+								),
 							)
-						);
+						)
+					);
 
-					case "/v1beta/properties/$property_id/conversionEvents":
-						$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
-						$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
-						$conversion_event->setEventName( 'some-event' );
+				case "/v1beta/properties/$property_id/conversionEvents":
+					$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
+					$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
+					$conversion_event->setEventName( 'some-event' );
 
-						$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
-						$conversion_events->setConversionEvents( array( $conversion_event ) );
+					$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
+					$conversion_events->setConversionEvents( array( $conversion_event ) );
 
-						return new Response(
-							200,
-							array(),
-							Stream::factory(
-								json_encode( $conversion_events )
-							)
-						);
+					return new Response(
+						200,
+						array(),
+						json_encode( $conversion_events )
+					);
 
-					default:
-						return new Response( 200 );
-				}
+				default:
+					return new Response( 200 );
 			}
-		);
-
-		return $http_client;
+		};
 	}
 
 	/**

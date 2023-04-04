@@ -45,6 +45,7 @@ import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
+	let store;
 
 	const createPropertyEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
@@ -71,6 +72,8 @@ describe( 'modules/analytics-4 properties', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
+
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
@@ -455,6 +458,20 @@ describe( 'modules/analytics-4 properties', () => {
 					webDataStreamID,
 					measurementID,
 				} );
+			} );
+
+			it( 'should update the isMatchingAccountProperty property', async () => {
+				const promise = registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.matchAndSelectProperty( accountID );
+
+				expect( store.getState().isMatchingAccountProperty ).toBe(
+					true
+				);
+				await promise;
+				expect( store.getState().isMatchingAccountProperty ).toBe(
+					false
+				);
 			} );
 		} );
 

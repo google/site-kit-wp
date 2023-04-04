@@ -1,5 +1,5 @@
 /**
- * SetupConversionsCTA component for SearchFunnelWidgetGA4.
+ * CreateConversionCTA component for SearchFunnelWidgetGA4.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -36,33 +36,25 @@ import PreviewGraph from '../../../../../components/PreviewGraph';
 import ConversionsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
-import { escapeURI } from '../../../../../util/escape-uri';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-export default function SetupConversionsCTA() {
+export default function CreateConversionCTA() {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_search-traffic-widget`;
 
-	const ga4PropertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
-	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountID()
-	);
-	const createConversionEventsURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getServiceURL( {
-			path: escapeURI`/a${ accountID }p${ ga4PropertyID }/admin/events/overview`,
+	const createConversionEventsSupportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12844695',
 		} )
 	);
 
 	const handleOnClick = useCallback( () => {
-		trackEvent( eventCategory, 'click_analytics_conversions_cta' );
+		trackEvent( eventCategory, 'click_ga4_conversions_cta' );
 	}, [ eventCategory ] );
 
 	useMount( () => {
-		trackEvent( eventCategory, 'view_analytics_conversions_cta' );
+		trackEvent( eventCategory, 'view_ga4_conversions_cta' );
 	} );
 
 	return (
@@ -81,7 +73,7 @@ export default function SetupConversionsCTA() {
 					) }
 				</p>
 				<Button
-					href={ createConversionEventsURL }
+					href={ createConversionEventsSupportURL }
 					target="_blank"
 					onClick={ handleOnClick }
 				>

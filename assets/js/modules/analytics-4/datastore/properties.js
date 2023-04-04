@@ -162,12 +162,14 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
 	hasMismatchedTag: false,
+	isMatchingAccountProperty: false,
 };
 
 const baseActions = {
@@ -314,11 +316,21 @@ const baseActions = {
 	 * @return {Object|null} Matched property object on success, otherwise NULL.
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
+		yield {
+			payload: { isMatchingAccountProperty: true },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
+
 		const property = yield baseActions.matchAccountProperty( accountID );
 		const propertyID = property?._id || fallbackPropertyID;
 		if ( propertyID ) {
 			yield baseActions.selectProperty( propertyID );
 		}
+
+		yield {
+			payload: { isMatchingAccountProperty: false },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
 
 		return property;
 	},
@@ -465,13 +477,11 @@ const baseActions = {
 		}
 
 		if ( ! measurementID ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagAccountID( '' );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagContainerID( '' );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( '' );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				googleTagAccountID: '',
+				googleTagContainerID: '',
+				googleTagID: '',
+			} );
 			return;
 		}
 
@@ -487,13 +497,17 @@ const baseActions = {
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
 			response;
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setGoogleTagAccountID( googleTagAccountID );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setGoogleTagContainerID( googleTagContainerID );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
+		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
+		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
+		// individual setter actions for the `googleTagAccountID`, `googleTagContainerID` and `googleTagID` settings each resulted in a rerender of the
+		// GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with mismatched settings. To mitigate this, we
+		// dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
+		// See issue https://github.com/google/site-kit-wp/issues/6784 and the PR https://github.com/google/site-kit-wp/pull/6814.
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			googleTagAccountID,
+			googleTagContainerID,
+			googleTagID,
+		} );
 	},
 
 	/**
@@ -609,12 +623,13 @@ const baseControls = {
 
 function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
+		case MATCHING_ACCOUNT_PROPERTY:
+			return { ...state, ...payload };
 		case SET_HAS_MISMATCHED_TAG:
 			return {
 				...state,
 				hasMismatchedTag: payload.hasMismatchedTag,
 			};
-
 		default:
 			return state;
 	}
@@ -673,6 +688,18 @@ const baseSelectors = {
 	 */
 	getProperty( state, propertyID ) {
 		return state.propertiesByID[ propertyID ];
+	},
+
+	/**
+	 * Determines whether we are matching account property or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if we matching account property right now, otherwise FALSE.
+	 */
+	isMatchingAccountProperty( state ) {
+		return state.isMatchingAccountProperty;
 	},
 
 	/**

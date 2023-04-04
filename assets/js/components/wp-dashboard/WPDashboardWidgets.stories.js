@@ -42,6 +42,10 @@ import {
 	setupAnalytics4ZeroData,
 } from './common-GA4.stories';
 import FeaturesProvider from '../FeaturesProvider';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 
 const Template = ( { setupRegistry, features = [] } ) => {
 	const enabledFeatures = new Set( features );
@@ -67,7 +71,12 @@ ReadyGA4.args = {
 	setupRegistry: ( registry ) => {
 		setupSearchConsoleAnalyticsMockReports( registry );
 		setupAnalytics4MockReports( registry );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_GA4,
+		} );
 	},
+};
+ReadyGA4.parameters = {
 	features: [ 'ga4Reporting' ],
 };
 
@@ -150,7 +159,12 @@ GatheringDataGA4.args = {
 	setupRegistry: ( registry ) => {
 		setupSearchConsoleAnalyticsGatheringData( registry );
 		setupAnalytics4GatheringData( registry );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_GA4,
+		} );
 	},
+};
+GatheringDataGA4.parameters = {
 	features: [ 'ga4Reporting' ],
 };
 
@@ -166,7 +180,12 @@ ZeroDataGA4.args = {
 	setupRegistry: ( registry ) => {
 		setupSearchConsoleAnalyticsZeroData( registry );
 		setupAnalytics4ZeroData( registry );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_GA4,
+		} );
 	},
+};
+ZeroDataGA4.parameters = {
 	features: [ 'ga4Reporting' ],
 };
 

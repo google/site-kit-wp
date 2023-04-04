@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -66,6 +67,23 @@ class AnalyticsTest extends TestCase {
 		// Test actions for tracking opt-out are added.
 		$this->assertTrue( has_action( 'wp_head' ) );
 		$this->assertTrue( has_action( 'web_stories_story_head' ) );
+
+		// Test ownerID synchronization between Analytics and Analytics_4.
+		$analytics->get_settings()->merge(
+			array(
+				'ownerID' => '1',
+			)
+		);
+
+		update_option(
+			Analytics_4_Settings::OPTION,
+			array( 'ownerID' => '12345' )
+		);
+
+		$this->assertEquals(
+			$analytics->get_settings()->get()['ownerID'],
+			'12345'
+		);
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -317,8 +335,27 @@ class AnalyticsTest extends TestCase {
 		);
 	}
 
+	public function test_get_datapoints__ga4Reporting() {
+		$this->enable_feature( 'ga4Reporting' );
+
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				// create-account-ticket, 'create-property' and 'create-profile' not available.
+				'goals',
+				'accounts-properties-profiles',
+				'properties-profiles',
+				'profiles',
+				'report',
+			),
+			$analytics->get_datapoints()
+		);
+	}
+
 	public function test_handle_provisioning_callback() {
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$analytics = new Analytics( $context );
 
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
@@ -335,7 +372,7 @@ class AnalyticsTest extends TestCase {
 			2
 		);
 
-		$analytics_module_page_url   = add_query_arg( 'page', 'googlesitekit-module-analytics', admin_url( 'admin.php' ) );
+		$dashboard_url               = $context->admin_url();
 		$account_ticked_id_transient = Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id();
 
 		$_GET['gatoscallback']   = '1';
@@ -351,7 +388,7 @@ class AnalyticsTest extends TestCase {
 			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $analytics_module_page_url ),
+				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
 				$redirect->get_location()
 			);
 		}
@@ -364,7 +401,7 @@ class AnalyticsTest extends TestCase {
 			$this->fail( 'Expected redirect to module page with "user_cancel" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'user_cancel', $analytics_module_page_url ),
+				add_query_arg( 'error_code', 'user_cancel', $dashboard_url ),
 				$redirect->get_location()
 			);
 			// Ensure transient was deleted by the method despite error.
@@ -381,7 +418,7 @@ class AnalyticsTest extends TestCase {
 			$this->fail( 'Expected redirect to module page with "callback_missing_parameter" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'callback_missing_parameter', $analytics_module_page_url ),
+				add_query_arg( 'error_code', 'callback_missing_parameter', $dashboard_url ),
 				$redirect->get_location()
 			);
 			// Ensure transient was deleted by the method despite error.
@@ -459,6 +496,7 @@ class AnalyticsTest extends TestCase {
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
+		wp_styles(); // Prevent potential ->queue of non-object error.
 		remove_all_actions( 'wp_enqueue_scripts' );
 		// Remove irrelevant script from throwing errors in CI from readfile().
 		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );

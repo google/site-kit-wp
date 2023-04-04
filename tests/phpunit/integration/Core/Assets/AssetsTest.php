@@ -186,4 +186,55 @@ class AssetsTest extends TestCase {
 		$localized_script = wp_scripts()->get_data( 'googlesitekit-commons', 'data' );
 		$this->assertStringContainsString( 'var _googlesitekitLegacyData = ', $localized_script );
 	}
+
+	public function test_googlesitekit_base_data__reference_date_default() {
+		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'wp_print_scripts' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$assets->register();
+
+		$assets->enqueue_asset( 'googlesitekit-base-data' );
+		do_action( 'wp_print_scripts' );
+
+		$localized_script = wp_scripts()->get_data( 'googlesitekit-base-data', 'data' );
+
+		$json = substr( $localized_script, strlen( 'var _googlesitekitBaseData = ' ) );
+		// Remove the trailing semicolon.
+		$json = substr( $json, 0, -1 );
+
+		$script_data_output_object = json_decode( $json, true );
+
+		$this->assertEquals( null, $script_data_output_object['referenceDate'] );
+	}
+
+	public function test_googlesitekit_base_data__reference_date_filter() {
+		add_filter(
+			'googlesitekit_reference_date',
+			function() {
+				return '2020-01-01';
+			}
+		);
+
+		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'wp_print_scripts' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$assets->register();
+
+		$assets->enqueue_asset( 'googlesitekit-base-data' );
+		do_action( 'wp_print_scripts' );
+
+		$localized_script = wp_scripts()->get_data( 'googlesitekit-base-data', 'data' );
+
+		$json = substr( $localized_script, strlen( 'var _googlesitekitBaseData = ' ) );
+		// Remove the trailing semicolon.
+		$json = substr( $json, 0, -1 );
+
+		$script_data_output_object = json_decode( $json, true );
+
+		$this->assertEquals( '2020-01-01', $script_data_output_object['referenceDate'] );
+	}
 }

@@ -40,15 +40,14 @@ import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useT
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
-import Link from '../../../../../components/Link';
 import { stringToDate } from '../../../../../util';
 import { trackEvent } from '../../../../../util/tracking';
 import InfoIcon from '../../../../../../svg/icons/info.svg';
-import ErrorIcon from '../../../../../../svg/icons/error.svg';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import useViewContext from '../../../../../hooks/useViewContext';
+import CheckIcon from '../../../../../../svg/icons/check_circle.svg';
 
 const { useSelect } = Data;
 
@@ -146,16 +145,10 @@ export default function ReminderBanner( {
 
 	let title;
 	let description = __(
-		'Your current Universal Analytics will stop recording stats on July 1st, 2023',
+		'Your current Universal Analytics will stop recording stats on July 1st, 2023.',
 		'google-site-kit'
 	);
-	let descriptionIcon = (
-		<ErrorIcon
-			height="14"
-			width="14"
-			className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--error"
-		/>
-	);
+	let descriptionIcon = null;
 
 	const referenceDate = stringToDate( referenceDateString );
 
@@ -179,53 +172,52 @@ export default function ReminderBanner( {
 	) {
 		const remainingDays = 30 - referenceDate.getDate();
 		title = sprintf(
-			/* translators: %s: Number of days remaining before the user can setup Google Analytics 4 */
+			/* translators: %s: Number of days remaining before the user can set up Google Analytics 4 */
 			__(
-				'You only have %d more days to setup Google Analytics 4',
+				'You only have %d more days to set up Google Analytics 4',
 				'google-site-kit'
 			),
 			remainingDays
 		);
 	} else {
 		title = __(
-			'Your current Universal Analytics stopped recording stats on July 1st, 2023',
+			'Universal Analytics stopped collecting data on July 1, 2023',
 			'google-site-kit'
 		);
 		description = __(
-			'Set up Google Analytics 4 now to resume recording stats',
+			'Set up Google Analytics 4, the new version of Google Analytics, to continue seeing data in Site Kit.',
 			'google-site-kit'
 		);
 	}
 
 	const secondaryPane = (
 		<section>
-			<ul>
+			<h4 className="googlesitekit-publisher-win__secondary-pane-title">
+				{ __( 'Google Analytics 4 benefits:', 'google-site-kit' ) }
+			</h4>
+			<ul className="googlesitekit-publisher-win__secondary-pane-list">
 				<li>
+					<CheckIcon height={ 18 } width={ 18 } />
 					{ __(
 						'Full cross-device and cross-platform reporting',
 						'google-site-kit'
 					) }
 				</li>
 				<li>
+					<CheckIcon height={ 18 } width={ 18 } />
 					{ __(
-						'Set up advanced conversion tracking, e.g. when visitors submit a form or add an item to cart',
+						'Advanced conversion tracking, such as when visitors submit a form or add an item to cart',
 						'google-site-kit'
 					) }
 				</li>
 				<li>
+					<CheckIcon height={ 18 } width={ 18 } />
 					{ __(
-						'Get detailed insights on how users navigate your site',
+						'Detailed insights on how users navigate your site',
 						'google-site-kit'
 					) }
 				</li>
 			</ul>
-			<Link
-				onClick={ handleLearnMore }
-				href={ documentationURL }
-				external
-			>
-				{ __( 'Learn more about GA4', 'google-site-kit' ) }
-			</Link>
 		</section>
 	);
 
@@ -249,7 +241,11 @@ export default function ReminderBanner( {
 			className="googlesitekit-ga4-reminder-banner"
 			title={ title }
 			description={ description }
-			descriptionIcon={ descriptionIcon }
+			learnMoreLabel={ __(
+				'Learn more about Google Analytics 4',
+				'google-site-kit'
+			) }
+			learnMoreURL={ documentationURL }
 			ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 			ctaLink={ onSubmitSuccess ? '#' : null }
 			onCTAClick={ handleCTAClick }
@@ -259,6 +255,7 @@ export default function ReminderBanner( {
 			) }
 			secondaryPane={ secondaryPane }
 			onDismiss={ handleDismiss }
+			onLearnMoreClick={ handleLearnMore }
 		>
 			{ children }
 		</BannerNotification>

@@ -30,6 +30,7 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import useViewOnly from '../../../../../hooks/useViewOnly';
@@ -38,14 +39,29 @@ const { useSelect } = Data;
 export default function Footer() {
 	const viewOnlyDashboard = useViewOnly();
 
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
+
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const contentPagesURL = useSelect( ( select ) => {
+	const sourceLinkURL = useSelect( ( select ) => {
 		if ( viewOnlyDashboard ) {
 			return null;
+		}
+
+		if ( isGA4DashboardView ) {
+			return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+				'all-pages-and-screens',
+				{
+					dates,
+					// eslint-disable-next-line sitekit/acronym-case
+					otherArgs: { collectionId: 'life-cycle' },
+				}
+			);
 		}
 
 		return select( MODULES_ANALYTICS ).getServiceReportURL(
@@ -56,7 +72,7 @@ export default function Footer() {
 
 	return (
 		<SourceLink
-			href={ contentPagesURL }
+			href={ sourceLinkURL }
 			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			external
 		/>
