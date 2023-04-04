@@ -1,5 +1,5 @@
 /**
- * Analytics GA4 Setup form Legacy.
+ * Analytics GA4 Setup form (legacy version, supports UA setup).
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
