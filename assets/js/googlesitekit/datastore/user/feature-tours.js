@@ -84,7 +84,7 @@ const baseInitialState = {
 	// Array of tour objects.
 	tours: featureTours,
 	// Current active tour
-	currentTour: null,
+	currentTour: undefined,
 };
 
 const baseActions = {
@@ -213,9 +213,13 @@ const baseActions = {
 			};
 
 			if ( tourQualifies ) {
-				return yield baseActions.triggerTour( tour );
+				yield baseActions.triggerTour( tour );
+				return tour;
 			}
 		}
+
+		yield baseActions.receiveCurrentTour( null );
+		return null;
 	},
 };
 
