@@ -30,6 +30,7 @@ import { ProgressBar } from 'googlesitekit-components';
 import {
 	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
+	EnableUniversalAnalytics,
 	ExistingGTMPropertyNotice,
 	TrackingExclusionSwitches,
 } from '../common';
@@ -37,13 +38,13 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
-// import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID, isValidPropertyID } from '../../util';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import GA4DashboardViewToggle from './GA4DashboardViewToggle';
 import { useFeature } from '../../../../hooks/useFeature';
+import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 const { useSelect } = Data;
 
 export default function SettingsForm( {
@@ -115,13 +116,14 @@ export default function SettingsForm( {
 				</div>
 			) }
 
-			{ /* <SettingsControls hasModuleAccess={ hasAnalyticsAccess } /> */ }
-
 			<GA4SettingsControls
 				hasAnalyticsAccess={ hasAnalyticsAccess }
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
-			{ /* Place <EnableUniversalAnalytics /> */ }
+
+			<EnableUniversalAnalytics>
+				<SettingsUseSnippetSwitch />
+			</EnableUniversalAnalytics>
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
