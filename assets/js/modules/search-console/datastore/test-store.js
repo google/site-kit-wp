@@ -77,4 +77,3 @@ const store = {
 };
 
 export default store;
-// export default Data.combineStores( store );
