@@ -137,7 +137,7 @@ export async function submitChanges( registry ) {
 		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
-	// If `ga4Reporting` AND `enableUA` are both enabled, we need to reset the
+	// If `ga4Reporting` is enabled AND `enableUA` toggle is disabled, we need to reset the
 	// property and profile IDs to ensure that the UA settings are not saved.
 	if ( ga4ReportingEnabled && ! isUAEnabled ) {
 		dispatch( MODULES_ANALYTICS ).resetPropertyAndProfileIDs();
@@ -221,7 +221,7 @@ export function validateCanSubmitChanges( select ) {
 
 	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
 	// Do not require selecting a property or profile if `ga4Reporting` is enabled.
-	// Therefore, only validate these if `ga4Reporting` is not enabled OR `enableUA` is enabled.
+	// Only validate UA settings if `ga4Reporting` is not enabled OR `enableUA` is enabled.
 	if ( ! isFeatureEnabled( 'ga4Reporting' ) || isUAEnabled ) {
 		invariant(
 			isValidPropertySelection( getPropertyID() ),
