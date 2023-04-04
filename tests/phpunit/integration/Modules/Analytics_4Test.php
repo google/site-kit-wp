@@ -147,6 +147,47 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_register__replicate_analytics_sharing_settings() {
+		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
+		$this->assertFalse( has_filter( 'option_' . Module_Sharing_Settings::OPTION ) );
+
+		$this->analytics->register();
+
+		$this->assertTrue( has_filter( 'option_' . Module_Sharing_Settings::OPTION ) );
+
+		$initial_sharing_settings = array(
+			'search-console' => array(
+				'sharedRoles' => array( 'contributor', 'administrator' ),
+				'management'  => 'all_admins',
+			),
+		);
+		update_option( Module_Sharing_Settings::OPTION, $initial_sharing_settings );
+		// The filter tested above should not replicate Analytics settings to Analytics-4 when not set.
+		$this->assertEquals( $initial_sharing_settings, get_option( Module_Sharing_Settings::OPTION ) );
+
+		$sharing_settings_with_analytics = array_merge(
+			$initial_sharing_settings,
+			array(
+				'analytics' => array(
+					'sharedRoles' => array( 'editor', 'administrator' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+		update_option( Module_Sharing_Settings::OPTION, $sharing_settings_with_analytics );
+		$expected_sharing_settings = array_merge(
+			$sharing_settings_with_analytics,
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor', 'administrator' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+		// The filter tested above should replicate Analytics settings to Analytics-4 when set.
+		$this->assertEquals( $expected_sharing_settings, get_option( Module_Sharing_Settings::OPTION ) );
+	}
+
 	public function test_handle_provisioning_callback() {
 		$account_id       = '12345678';
 		$property_id      = '1001';

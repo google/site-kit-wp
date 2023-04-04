@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -150,6 +151,14 @@ final class Analytics_4 extends Module
 			20,
 			2
 		);
+
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			// Replicate Analytics settings for Analytics-4 if not set.
+			add_filter(
+				'option_' . Module_Sharing_Settings::OPTION,
+				$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
+			);
+		}
 	}
 
 	/**
@@ -1643,5 +1652,26 @@ final class Analytics_4 extends Module
 
 			throw new Invalid_Report_Dimensions_Exception( $message );
 		}
+	}
+
+	/**
+	 * Returns sharing settings with settings for Analytic-4 replicated from Analytics.
+	 *
+	 * Module sharing settings for Analytics and Analytics-4 are always kept "in-sync" when
+	 * setting these settings in the datastore. However, this function ensures backwards
+	 * compatibility before this replication was introduced, i.e. when sharing settings were
+	 * saved for Analytics but not copied to Analytics-4.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
+	 * @return array Dashboard sharing settings option with Analytics-4 settings.
+	 */
+	protected function replicate_analytics_sharing_settings( $sharing_settings ) {
+		if ( ! isset( $sharing_settings[ self::MODULE_SLUG ] ) && isset( $sharing_settings[ Analytics::MODULE_SLUG ] ) ) {
+			$sharing_settings[ self::MODULE_SLUG ] = $sharing_settings[ Analytics::MODULE_SLUG ];
+		}
+
+		return $sharing_settings;
 	}
 }
