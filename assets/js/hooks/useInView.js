@@ -52,12 +52,19 @@ export const useInView = ( { sticky = false } = {} ) => {
 	const resetCount = useSelect( ( select ) =>
 		select( CORE_UI ).getInViewResetHook()
 	);
+	const forceInView = useSelect( ( select ) =>
+		select( CORE_UI ).get( 'forceInView' )
+	);
 
 	useEffect( () => {
 		if ( inView.value && ! hasBeenInViewOnce ) {
 			setHasBeenInViewOnce( true );
 		}
 	}, [ hasBeenInViewOnce, inView, setHasBeenInViewOnce ] );
+
+	useEffect( () => {
+		setHasBeenInViewOnce( true );
+	}, [ forceInView ] );
 
 	useUpdateEffect( () => {
 		setHasBeenInViewOnce( false );
