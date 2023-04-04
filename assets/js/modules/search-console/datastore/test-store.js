@@ -19,8 +19,6 @@ const actions = {
 			'incrementTestValueGeneratorFunc: incrementTestValue() 1'
 		);
 		yield actions.incrementTestValue();
-		// Note, the same behaviour is observed when using yield instead of dispatch.
-		// yield actions.incrementTestValue();
 		console.log(
 			'incrementTestValueGeneratorFunc: incrementTestValue() 2'
 		);
@@ -49,7 +47,7 @@ const actions = {
 			'incrementTestValueGeneratorFunc: incrementTestValue() 1'
 		);
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).incrementTestValue();
-		// Note, the same behaviour is observed when using yield instead of dispatch.
+		// Note, the same behaviour is not observed when using yield instead of dispatch.
 		// yield actions.incrementTestValue();
 		console.log(
 			'incrementTestValueGeneratorFunc: incrementTestValue() 2'
