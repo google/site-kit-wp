@@ -156,8 +156,8 @@ export default function GA4SettingsControls( props ) {
 
 			<div className="googlesitekit-setup-module__inputs">
 				{ propertyNotAvailable && (
-					<ErrorText>
-						{ sprintf(
+					<ErrorText
+						message={ sprintf(
 							/* translators: 1: Google Analytics 4 Property ID. */
 							__(
 								'The previously selected property with ID %1$s is no longer available. Please select a new property to continue collecting data with Google Analytics 4.',
@@ -165,7 +165,7 @@ export default function GA4SettingsControls( props ) {
 							),
 							propertyID
 						) }
-					</ErrorText>
+					/>
 				) }
 				<PropertySelect
 					hasModuleAccess={ hasModuleAccess }
@@ -179,8 +179,8 @@ export default function GA4SettingsControls( props ) {
 				/>
 
 				{ webDataStreamsNotAvailable && (
-					<ErrorText>
-						{ sprintf(
+					<ErrorText
+						message={ sprintf(
 							/* translators: 1: Google Analytics 4 Measurement ID. */
 							__(
 								'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
@@ -188,7 +188,7 @@ export default function GA4SettingsControls( props ) {
 							),
 							measurementID
 						) }
-					</ErrorText>
+					/>
 				) }
 				<WebDataStreamSelect
 					hasModuleAccess={ hasModuleAccess }
