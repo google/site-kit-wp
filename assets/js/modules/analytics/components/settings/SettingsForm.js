@@ -37,10 +37,10 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
-import SettingsControls from './SettingsControls';
+// import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
-import { isValidAccountID } from '../../util';
+import { isValidAccountID, isValidPropertyID } from '../../util';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import GA4DashboardViewToggle from './GA4DashboardViewToggle';
 import { useFeature } from '../../../../hooks/useFeature';
@@ -53,6 +53,9 @@ export default function SettingsForm( {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 
 	const accountID = useSelect( ( select ) =>
@@ -103,19 +106,22 @@ export default function SettingsForm( {
 						{ __( 'Dashboard view', 'google-site-kit' ) }
 					</h4>
 					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
-						{ isGA4Connected && <GA4DashboardViewToggle /> }
+						{ isValidPropertyID( propertyID ) && isGA4Connected && (
+							<GA4DashboardViewToggle />
+						) }
 						{ ! isGA4Connected &&
 							__( 'Universal Analytics', 'google-site-kit' ) }
 					</div>
 				</div>
 			) }
 
-			<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
+			{ /* <SettingsControls hasModuleAccess={ hasAnalyticsAccess } /> */ }
 
 			<GA4SettingsControls
 				hasAnalyticsAccess={ hasAnalyticsAccess }
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
+			{ /* Place <EnableUniversalAnalytics /> */ }
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
