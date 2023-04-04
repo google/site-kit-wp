@@ -51,13 +51,14 @@
 		.googlesitekit-publisher-win__secondary-pane {
 
 			.googlesitekit-publisher-win__secondary-pane-title {
+				font-family: $f-primary;
 				font-size: $fs-title-sm;
 				font-weight: $fw-medium;
 				margin: 8px 0 0;
 			}
 
 			.googlesitekit-publisher-win__secondary-pane-list li {
-				color: $c-neutral-n-400;
+				color: $c-boulder;
 				display: flex;
 				max-width: 22rem;
 

@@ -36,6 +36,11 @@ export default function GA4DashboardWidgetSwitcher( {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
+	const { WidgetNull } = widgetProps;
+
+	if ( isGA4DashboardView === undefined ) {
+		return <WidgetNull />;
+	}
 
 	return isGA4DashboardView ? (
 		<GA4 { ...widgetProps } />

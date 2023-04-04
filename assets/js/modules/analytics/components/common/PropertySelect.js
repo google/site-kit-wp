@@ -32,9 +32,12 @@ import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( { hasModuleAccess } ) {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -48,7 +51,7 @@ export default function PropertySelect( { hasModuleAccess } ) {
 			return [];
 		}
 
-		return select( MODULES_ANALYTICS ).getProperties( accountID );
+		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
 	} );
 
 	const isResolvingProperties = useSelect( ( select ) => {
@@ -108,6 +111,13 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		);
 	}
 
+	if ( ! ga4ReportingEnabled ) {
+		properties.push( {
+			id: PROPERTY_CREATE,
+			name: __( 'Set up a new property', 'google-site-kit' ),
+		} );
+	}
+
 	return (
 		<Select
 			className="googlesitekit-analytics__select-property"
@@ -117,37 +127,32 @@ export default function PropertySelect( { hasModuleAccess } ) {
 			enhanced
 			outlined
 		>
-			{ ( properties || [] )
-				.concat( {
-					id: PROPERTY_CREATE,
-					name: __( 'Set up a new property', 'google-site-kit' ),
-				} )
-				.map(
-					(
-						// eslint-disable-next-line sitekit/acronym-case
-						{ id, name, internalWebPropertyId },
-						index
-					) => (
-						<Option
-							key={ index }
-							value={ id }
-							data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
-						>
-							{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
-								? sprintf(
-										/* translators: 1: property name, 2: property ID */
-										_x(
-											'%1$s (%2$s)',
-											'Analytics property name and ID',
-											'google-site-kit'
-										),
-										name,
-										id
-								  )
-								: name }
-						</Option>
-					)
-				) }
+			{ properties.map(
+				(
+					// eslint-disable-next-line sitekit/acronym-case
+					{ id, name, internalWebPropertyId },
+					index
+				) => (
+					<Option
+						key={ index }
+						value={ id }
+						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
+					>
+						{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
+							? sprintf(
+									/* translators: 1: property name, 2: property ID */
+									_x(
+										'%1$s (%2$s)',
+										'Analytics property name and ID',
+										'google-site-kit'
+									),
+									name,
+									id
+							  )
+							: name }
+					</Option>
+				)
+			) }
 		</Select>
 	);
 }

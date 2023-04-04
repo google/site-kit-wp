@@ -32,9 +32,12 @@ import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import { isValidPropertySelection, isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileSelect( { hasModuleAccess } ) {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -50,7 +53,10 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID );
+		return (
+			select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID ) ||
+			[]
+		);
 	} );
 
 	const isLoading = useSelect( ( select ) => {
@@ -111,6 +117,13 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 		);
 	}
 
+	if ( ! ga4ReportingEnabled ) {
+		profiles.push( {
+			id: PROFILE_CREATE,
+			name: __( 'Set up a new view', 'google-site-kit' ),
+		} );
+	}
+
 	return (
 		<Select
 			className="googlesitekit-analytics__select-profile"
@@ -120,16 +133,11 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 			enhanced
 			outlined
 		>
-			{ ( profiles || [] )
-				.concat( {
-					id: PROFILE_CREATE,
-					name: __( 'Set up a new view', 'google-site-kit' ),
-				} )
-				.map( ( { id, name }, index ) => (
-					<Option key={ index } value={ id }>
-						{ name }
-					</Option>
-				) ) }
+			{ profiles.map( ( { id, name }, index ) => (
+				<Option key={ index } value={ id }>
+					{ name }
+				</Option>
+			) ) }
 		</Select>
 	);
 }
