@@ -497,11 +497,12 @@ const baseActions = {
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
 			response;
 
-		// Note that when plain actions are dispatched in a generator function action, they are handled asynchronously when they would normally be synchronous.
-		// This means that following the usual pattern of dispatching individual setter actions for the `googleTagAccountID`, `googleTagContainerID` and `googleTagID` settings
-		// each resulted in a rerender of the GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with
-		// mismatched settings. To mitigate this, we dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
-		// See https://github.com/google/site-kit-wp/issues/6784.
+		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
+		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
+		// individual setter actions for the `googleTagAccountID`, `googleTagContainerID` and `googleTagID` settings each resulted in a rerender of the
+		// GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with mismatched settings. To mitigate this, we
+		// dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
+		// See issue https://github.com/google/site-kit-wp/issues/6784 and the PR https://github.com/google/site-kit-wp/pull/6814.
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			googleTagAccountID,
 			googleTagContainerID,
