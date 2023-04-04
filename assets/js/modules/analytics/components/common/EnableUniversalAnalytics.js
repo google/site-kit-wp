@@ -75,7 +75,6 @@ export default function EnableUniversalAnalytics( { children } ) {
 					checked={ isUAEnabled }
 					onClick={ onChange }
 					hideLabel={ false }
-					disabled={ false }
 				/>
 				<p>
 					{ __(
