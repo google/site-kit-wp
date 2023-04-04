@@ -660,6 +660,28 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
+		describe( 'setIsWebDataStreamNotAvailable', () => {
+			it( 'sets the value of isWebDataStreamNotAvailable', async () => {
+				const isWebDataStreamNotAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamNotAvailable();
+
+				// It is false by default.
+				expect( isWebDataStreamNotAvailable ).toBe( false );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setIsWebDataStreamNotAvailable( true );
+
+				const updatedIsWebDataStreamNotAvailable = registry
+
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamNotAvailable();
+
+				expect( updatedIsWebDataStreamNotAvailable ).toBe( true );
+			} );
+		} );
+
 		describe( 'syncGoogleTagSettings', () => {
 			beforeEach( () => {
 				enabledFeatures.add( 'gteSupport' );
@@ -1270,6 +1292,27 @@ describe( 'modules/analytics-4 properties', () => {
 					.hasMismatchedGoogleTagID();
 
 				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+			} );
+		} );
+
+		describe( 'isWebDataStreamNotAvailable', () => {
+			it( 'returns a specific key in state', () => {
+				const isWebDataStreamNotAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamNotAvailable();
+
+				// It is false by default.
+				expect( isWebDataStreamNotAvailable ).toBe( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setIsWebDataStreamNotAvailable( true );
+
+				const updatedIsWebDataStreamNotAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamNotAvailable();
+
+				expect( updatedIsWebDataStreamNotAvailable ).toBe( true );
 			} );
 		} );
 	} );
