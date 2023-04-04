@@ -1,7 +1,7 @@
 /**
- * SetupFormGA4 component stories.
+ * SetupFormGA4Legacy component stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	provideModules,
@@ -30,33 +30,31 @@ import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 
 function Template() {
 	return <ModuleSetup moduleSlug="analytics" />;
 }
 
-const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-const accountID = accounts[ 0 ].id;
-const propertyID = properties[ 0 ].id;
-
-export const WithoutEnableUAToggle = Template.bind( null );
-WithoutEnableUAToggle.storyName = 'Without Enable UA Toggle';
-WithoutEnableUAToggle.scenario = {
-	label: 'Modules/Analytics/Setup/SetupFormGA4/WithoutEnableUAToggle',
+export const WithoutExistingTag = Template.bind( null );
+WithoutExistingTag.storyName = 'Without Existing Tag';
+WithoutExistingTag.scenario = {
+	label: 'Modules/Analytics/Setup/SetupFormGA4Legacy/WithoutExistingTag',
 	delay: 250,
 };
 
-export const WithEnableUAToggle = Template.bind( null );
-WithEnableUAToggle.storyName = 'With Enable UA Toggle';
-WithEnableUAToggle.decorators = [
+export const WithGA4Tag = Template.bind( null );
+WithGA4Tag.storyName = 'With GA4 Tag, non-matching property selected';
+WithGA4Tag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( fixtures.propertiesProfiles.properties, {
-					accountID,
-				} );
+				.dispatch( MODULES_ANALYTICS_4 )
+				.selectProperty( ga4Fixtures.properties[ 1 ]._id );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
+				// eslint-disable-next-line sitekit/acronym-case
+				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
+			);
 		};
 
 		return (
@@ -66,42 +64,25 @@ WithEnableUAToggle.decorators = [
 		);
 	},
 ];
-WithEnableUAToggle.scenario = {
-	label: 'Modules/Analytics/Setup/SetupFormGA4/WithEnableUAToggle',
-	delay: 250,
-};
 
-export const WithUAMatchingTag = Template.bind( null );
-WithUAMatchingTag.storyName = 'With UA Enabled, matching UA property selected';
-WithUAMatchingTag.decorators = [
+export const WithBothTags = Template.bind( null );
+WithBothTags.storyName = 'With Both Tags, matching GA4 property selected';
+WithBothTags.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, {
-					accountID,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( propertyID );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
+				// eslint-disable-next-line sitekit/acronym-case
+				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
+			);
 
 			registry
 				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID,
-					propertyID,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.selectProperty( properties[ 0 ].id );
-			const profileName = fixtures.createProfile.name;
-			registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
-				profileName,
-			} );
-			registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
-				enableUA: true,
-			} );
+				.receiveGetExistingTag(
+					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
+				);
+
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( false );
 		};
 
 		return (
@@ -111,16 +92,20 @@ WithUAMatchingTag.decorators = [
 		);
 	},
 ];
-WithUAMatchingTag.scenario = {
-	label: 'Modules/Analytics/Setup/SetupFormGA4/WithUAMatchingTag',
+WithBothTags.scenario = {
+	label: 'Modules/Analytics/Setup/SetupFormGA4Legacy/WithBothTags',
 	delay: 250,
 };
 
 export default {
-	title: 'Modules/Analytics/Setup/SetupFormGA4',
+	title: 'Modules/Analytics/Setup/SetupFormGA4Legacy',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				const accounts =
+					fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
+				const accountID = accounts[ 0 ].id;
+
 				provideModules( registry, [
 					{
 						slug: 'analytics',
@@ -185,5 +170,5 @@ export default {
 			);
 		},
 	],
-	parameters: { padding: 0, features: [ 'ga4Reporting' ] },
+	parameters: { padding: 0 },
 };
