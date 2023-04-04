@@ -36,8 +36,6 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import { MODULES_ANALYTICS, FORM_SETUP } from '../../datastore/constants';
 import ProfileSelect from './ProfileSelect';
 import PropertySelect from './PropertySelect';
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function EnableUniversalAnalytics( { children } ) {
@@ -58,13 +56,9 @@ export default function EnableUniversalAnalytics( { children } ) {
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
 
-	const viewContext = useViewContext();
-
 	const onChange = useCallback( () => {
 		setValues( FORM_SETUP, { enableUA: ! isUAEnabled } );
-
-		trackEvent( `${ viewContext }_analytics`, 'enable_ua' );
-	}, [ setValues, isUAEnabled, viewContext ] );
+	}, [ setValues, isUAEnabled ] );
 
 	if ( properties.length === 0 ) {
 		return null;
