@@ -14,6 +14,31 @@ const actions = {
 		};
 	},
 
+	*incrementTestValueGeneratorFuncYielding() {
+		console.log(
+			'incrementTestValueGeneratorFunc: incrementTestValue() 1'
+		);
+		yield actions.incrementTestValue();
+		// Note, the same behaviour is observed when using yield instead of dispatch.
+		// yield actions.incrementTestValue();
+		console.log(
+			'incrementTestValueGeneratorFunc: incrementTestValue() 2'
+		);
+		yield actions.incrementTestValue();
+		console.log(
+			'incrementTestValueGeneratorFunc: incrementTestValue() 3'
+		);
+		yield actions.incrementTestValue();
+		console.log(
+			'incrementTestValueGeneratorFunc: incrementTestValue() 4'
+		);
+		yield actions.incrementTestValue();
+		console.log(
+			'incrementTestValueGeneratorFunc: incrementTestValue() 5'
+		);
+		yield actions.incrementTestValue();
+	},
+
 	*incrementTestValueGeneratorFunc() {
 		const registry = yield commonActions.getRegistry();
 

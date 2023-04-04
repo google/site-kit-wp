@@ -5,13 +5,16 @@ import { Button } from 'googlesitekit-components';
 const { useDispatch, useSelect } = Data;
 
 export default function TestWidget() {
-	const testValue = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getTestValue()
+	const testValue = useSelect(
+		( select ) => select( MODULES_SEARCH_CONSOLE ).getTestValue(),
+		[]
 	);
 
-	const { incrementTestValue, incrementTestValueGeneratorFunc } = useDispatch(
-		MODULES_SEARCH_CONSOLE
-	);
+	const {
+		incrementTestValue,
+		incrementTestValueGeneratorFunc,
+		incrementTestValueGeneratorFuncYielding,
+	} = useDispatch( MODULES_SEARCH_CONSOLE );
 
 	console.log( 'Render TestWidget with testValue: ', testValue );
 
@@ -38,6 +41,7 @@ export default function TestWidget() {
 			>
 				Increment five times in click handler
 			</Button>
+
 			<Button
 				onClick={ () => {
 					console.log(
@@ -47,6 +51,17 @@ export default function TestWidget() {
 				} }
 			>
 				Increment five times in generator function
+			</Button>
+
+			<Button
+				onClick={ () => {
+					console.log(
+						'TestWidget: incrementTestValueGeneratorFuncYielding()'
+					);
+					incrementTestValueGeneratorFuncYielding();
+				} }
+			>
+				Increment five times in generator function w/ yield
 			</Button>
 		</div>
 	);
