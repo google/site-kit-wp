@@ -77,121 +77,121 @@ class ResponseTest extends TestCase {
 		return array(
 			'single range'                                => array(
 				array(
-					'report_args'               => array(
+					'report_args'                      => array(
 						'startDate'  => '2023-02-01',
 						'endDate'    => '2023-02-03',
 						'dimensions' => 'date',
 					),
-					'initial_data'              => array(),
-					'expected_dates_and_ranges' => array(
-						array( '20230201' ),
-						array( '20230202' ),
-						array( '20230203' ),
+					'initial_data'                     => array(),
+					'expected_dates_ranges_and_values' => array(
+						array( '20230201', '0' ),
+						array( '20230202', '0' ),
+						array( '20230203', '0' ),
 					),
-					'expected_dimension_values' => 1,
+					'expected_dimension_values'        => 1,
 				),
 			),
 			'multiple ranges'                             => array(
 				array(
-					'report_args'               => array(
+					'report_args'                      => array(
 						'startDate'        => '2022-12-05',
 						'endDate'          => '2022-12-07',
 						'compareStartDate' => '2022-12-02',
 						'compareEndDate'   => '2022-12-04',
 						'dimensions'       => 'date',
 					),
-					'initial_data'              => array(),
-					'expected_dates_and_ranges' => array(
-						array( '20221202', 'date_range_1' ),
-						array( '20221202', 'date_range_0' ),
-						array( '20221203', 'date_range_1' ),
-						array( '20221203', 'date_range_0' ),
-						array( '20221204', 'date_range_1' ),
-						array( '20221204', 'date_range_0' ),
-						array( '20221205', 'date_range_0' ),
-						array( '20221205', 'date_range_1' ),
-						array( '20221206', 'date_range_0' ),
-						array( '20221206', 'date_range_1' ),
-						array( '20221207', 'date_range_0' ),
-						array( '20221207', 'date_range_1' ),
+					'initial_data'                     => array(),
+					'expected_dates_ranges_and_values' => array(
+						array( '20221202', 'date_range_1', '0' ),
+						array( '20221202', 'date_range_0', '0' ),
+						array( '20221203', 'date_range_1', '0' ),
+						array( '20221203', 'date_range_0', '0' ),
+						array( '20221204', 'date_range_1', '0' ),
+						array( '20221204', 'date_range_0', '0' ),
+						array( '20221205', 'date_range_0', '0' ),
+						array( '20221205', 'date_range_1', '0' ),
+						array( '20221206', 'date_range_0', '0' ),
+						array( '20221206', 'date_range_1', '0' ),
+						array( '20221207', 'date_range_0', '0' ),
+						array( '20221207', 'date_range_1', '0' ),
 					),
-					'expected_dimension_values' => 2,
+					'expected_dimension_values'        => 2,
 				),
 			),
 			'overlapping ranges'                          => array(
 				array(
-					'report_args'               => array(
+					'report_args'                      => array(
 						'startDate'        => '2023-01-01',
 						'endDate'          => '2023-01-04',
 						'compareStartDate' => '2023-01-03',
 						'compareEndDate'   => '2023-01-05',
 						'dimensions'       => 'date',
 					),
-					'initial_data'              => array(),
-					'expected_dates_and_ranges' => array(
-						array( '20230101', 'date_range_0' ),
-						array( '20230101', 'date_range_1' ),
-						array( '20230102', 'date_range_0' ),
-						array( '20230102', 'date_range_1' ),
-						array( '20230103', 'date_range_0' ),
-						array( '20230103', 'date_range_1' ),
-						array( '20230104', 'date_range_0' ),
-						array( '20230104', 'date_range_1' ),
-						array( '20230105', 'date_range_1' ),
-						array( '20230105', 'date_range_0' ),
+					'initial_data'                     => array(),
+					'expected_dates_ranges_and_values' => array(
+						array( '20230101', 'date_range_0', '0' ),
+						array( '20230101', 'date_range_1', '0' ),
+						array( '20230102', 'date_range_0', '0' ),
+						array( '20230102', 'date_range_1', '0' ),
+						array( '20230103', 'date_range_0', '0' ),
+						array( '20230103', 'date_range_1', '0' ),
+						array( '20230104', 'date_range_0', '0' ),
+						array( '20230104', 'date_range_1', '0' ),
+						array( '20230105', 'date_range_1', '0' ),
+						array( '20230105', 'date_range_0', '0' ),
 					),
-					'expected_dimension_values' => 2,
+					'expected_dimension_values'        => 2,
 				),
 			),
 			'some rows exist in the single range request' => array(
 				array(
-					'report_args'               => array(
+					'report_args'                      => array(
 						'startDate'  => '2023-02-01',
 						'endDate'    => '2023-02-05',
 						'dimensions' => 'date',
 					),
-					'initial_data'              => array(
+					'initial_data'                     => array(
 						array( '20230201' ),
 						array( '20230204' ),
 					),
-					'expected_dates_and_ranges' => array(
-						array( '20230201' ),
-						array( '20230202' ),
-						array( '20230203' ),
-						array( '20230204' ),
-						array( '20230205' ),
+					'expected_dates_ranges_and_values' => array(
+						array( '20230201', self::DEFAULT_VALUE_FOR_EXISTING_ROWS ),
+						array( '20230202', '0' ),
+						array( '20230203', '0' ),
+						array( '20230204', self::DEFAULT_VALUE_FOR_EXISTING_ROWS ),
+						array( '20230205', '0' ),
 					),
-					'expected_dimension_values' => 1,
+					'expected_dimension_values'        => 1,
 				),
 			),
 			'some rows exist in the multi ranges request' => array(
 				array(
-					'report_args'               => array(
+					'report_args'                      => array(
 						'startDate'        => '2023-02-01',
 						'endDate'          => '2023-02-03',
 						'compareStartDate' => '2023-01-01',
 						'compareEndDate'   => '2023-01-03',
 						'dimensions'       => 'date',
 					),
-					'initial_data'              => array(
+					'initial_data'                     => array(
 						array( '20230101', 1 ),
 						array( '20230203', 0 ),
 					),
-					'expected_dates_and_ranges' => array(
-						array( '20230101', 'date_range_1' ),
-						array( '20230101', 'date_range_0' ),
-						array( '20230102', 'date_range_1' ),
-						array( '20230102', 'date_range_0' ),
-						array( '20230103', 'date_range_1' ),
-						array( '20230103', 'date_range_0' ),
-						array( '20230201', 'date_range_0' ),
-						array( '20230201', 'date_range_1' ),
-						array( '20230202', 'date_range_0' ),
-						array( '20230202', 'date_range_1' ),
-						array( '20230203', 'date_range_0' ),
-						array( '20230203', 'date_range_1' ),
+					'expected_dates_ranges_and_values' => array(
+						array( '20230101', 'date_range_1', self::DEFAULT_VALUE_FOR_EXISTING_ROWS ),
+						array( '20230101', 'date_range_0', '0' ),
+						array( '20230102', 'date_range_1', '0' ),
+						array( '20230102', 'date_range_0', '0' ),
+						array( '20230103', 'date_range_1', '0' ),
+						array( '20230103', 'date_range_0', '0' ),
+						array( '20230201', 'date_range_0', '0' ),
+						array( '20230201', 'date_range_1', '0' ),
+						array( '20230202', 'date_range_0', '0' ),
+						array( '20230202', 'date_range_1', '0' ),
+						array( '20230203', 'date_range_0', self::DEFAULT_VALUE_FOR_EXISTING_ROWS ),
+						array( '20230203', 'date_range_1', '0' ),
 					),
-					'expected_dimension_values' => 2,
+					'expected_dimension_values'        => 2,
 				),
 			),
 		);
@@ -202,41 +202,22 @@ class ResponseTest extends TestCase {
 	 */
 	public function test_parse_response( $args ) {
 		$response = $this->get_parsed_response_for_args( $args['report_args'], $args['initial_data'] );
-		$this->assertEquals( count( $args['expected_dates_and_ranges'] ), $response->getRowCount() );
+		$this->assertEquals( count( $args['expected_dates_ranges_and_values'] ), $response->getRowCount() );
 
 		foreach ( $response->getRows() as $i => $row ) {
 			// Verify that dimension values are set correctly.
 			$dimension_values = $row->getDimensionValues();
 			$this->assertCount( $args['expected_dimension_values'], $dimension_values );
-			$this->assertEquals( $args['expected_dates_and_ranges'][ $i ][0], $dimension_values[0]->getValue() );
+			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][0], $dimension_values[0]->getValue() );
+			$expected_value_index = 1;
 			if ( $args['expected_dimension_values'] > 1 ) {
-				$this->assertEquals( $args['expected_dates_and_ranges'][ $i ][1], $dimension_values[1]->getValue() );
-			}
-
-			// Get the expected value for metrics. If the row has already existed in the report response
-			// then its value should not be zero.
-			$expected_metric_values = '0';
-			foreach ( $args['initial_data'] as $initial_data ) {
-				// Skip if this initial row is for a wrong date.
-				if ( $dimension_values[0]->getValue() !== $initial_data[0] ) {
-					continue;
-				}
-
-				// Skip if this initial row is for a wrong date range.
-				if ( count( $initial_data ) === 2 && $dimension_values[1]->getValue() !== "date_range_{$initial_data[1]}" ) {
-					continue;
-				}
-
-				// Otherwise if date and date range match, then the current row exists in the intial
-				// data and we need to use the default value for initial rows.
-				$expected_metric_values = self::DEFAULT_VALUE_FOR_EXISTING_ROWS;
-				break;
+				$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][1], $dimension_values[1]->getValue() );
+				$expected_value_index++;
 			}
 
 			// Verify that metric values are set correctly.
-			$metric_values = $row->getMetricValues();
-			$this->assertEquals( $expected_metric_values, $metric_values[0]->getValue() );
-			$this->assertEquals( $expected_metric_values, $metric_values[1]->getValue() );
+			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][ $expected_value_index ], $row->getMetricValues()[0]->getValue() );
+			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][ $expected_value_index ], $row->getMetricValues()[1]->getValue() );
 		}
 	}
 
