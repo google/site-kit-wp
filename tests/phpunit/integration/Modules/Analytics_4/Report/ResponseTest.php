@@ -27,6 +27,8 @@ class ResponseTest extends TestCase {
 
 	use Analytics_4_Report_Row_Trait;
 
+	const DEFAULT_VALUE_FOR_EXISTING_ROWS = '99';
+
 	/**
 	 * @var Analytics_4_Report_Response
 	 */
@@ -59,7 +61,8 @@ class ResponseTest extends TestCase {
 				$report_rows[] = $this->create_report_row(
 					$metric_header,
 					$initial_row[0],
-					isset( $initial_row[1] ) ? $initial_row[1] : false
+					isset( $initial_row[1] ) ? $initial_row[1] : false,
+					self::DEFAULT_VALUE_FOR_EXISTING_ROWS
 				);
 			}
 
@@ -148,8 +151,8 @@ class ResponseTest extends TestCase {
 						'dimensions' => 'date',
 					),
 					'initial_data'              => array(
-						array( '20230101' ),
-						array( '20230104' ),
+						array( '20230201' ),
+						array( '20230204' ),
 					),
 					'expected_dates_and_ranges' => array(
 						array( '20230201' ),
@@ -202,6 +205,7 @@ class ResponseTest extends TestCase {
 		$this->assertEquals( count( $args['expected_dates_and_ranges'] ), $response->getRowCount() );
 
 		foreach ( $response->getRows() as $i => $row ) {
+			// Verify that dimension values are set correctly.
 			$dimension_values = $row->getDimensionValues();
 			$this->assertCount( $args['expected_dimension_values'], $dimension_values );
 			$this->assertEquals( $args['expected_dates_and_ranges'][ $i ][0], $dimension_values[0]->getValue() );
@@ -209,9 +213,30 @@ class ResponseTest extends TestCase {
 				$this->assertEquals( $args['expected_dates_and_ranges'][ $i ][1], $dimension_values[1]->getValue() );
 			}
 
+			// Get the expected value for metrics. If the row has already existed in the report response
+			// then its value should not be zero.
+			$expected_metric_values = '0';
+			foreach ( $args['initial_data'] as $initial_data ) {
+				// Skip if this initial row is for a wrong date.
+				if ( $dimension_values[0]->getValue() !== $initial_data[0] ) {
+					continue;
+				}
+
+				// Skip if this initial row is for a wrong date range.
+				if ( count( $initial_data ) === 2 && $dimension_values[1]->getValue() !== "date_range_{$initial_data[1]}" ) {
+					continue;
+				}
+
+				// Otherwise if date and date range match, then the current row exists in the intial
+				// data and we need to use the default value for initial rows.
+				$expected_metric_values = self::DEFAULT_VALUE_FOR_EXISTING_ROWS;
+				break;
+			}
+
+			// Verify that metric values are set correctly.
 			$metric_values = $row->getMetricValues();
-			$this->assertEquals( 0, $metric_values[0]->getValue() );
-			$this->assertEquals( 0, $metric_values[1]->getValue() );
+			$this->assertEquals( $expected_metric_values, $metric_values[0]->getValue() );
+			$this->assertEquals( $expected_metric_values, $metric_values[1]->getValue() );
 		}
 	}
 

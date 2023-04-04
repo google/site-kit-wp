@@ -32,9 +32,10 @@ trait Row_Trait {
 	 * @param Google_Service_AnalyticsData_MetricHeader[] $metric_headers   Metric headers from the report response.
 	 * @param string                                      $current_date     The current date to create a zero-value row for.
 	 * @param int|bool                                    $date_range_index The date range index for the current date.
+	 * @param string                                      $default_value    The default value to use for metric values in the row.
 	 * @return Google_Service_AnalyticsData_Row A new zero-value row instance.
 	 */
-	protected function create_report_row( $metric_headers, $current_date, $date_range_index ) {
+	protected function create_report_row( $metric_headers, $current_date, $date_range_index, $default_value = '0' ) {
 		$dimension_values = array();
 
 		$current_date_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
@@ -51,7 +52,7 @@ trait Row_Trait {
 		$metric_values = array();
 		foreach ( $metric_headers as $metric_header ) {
 			$metric_value = new Google_Service_AnalyticsData_MetricValue();
-			$metric_value->setValue( '0' );
+			$metric_value->setValue( $default_value );
 
 			$metric_values[] = $metric_value;
 		}
