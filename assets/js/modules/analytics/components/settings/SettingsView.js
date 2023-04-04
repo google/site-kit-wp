@@ -39,12 +39,17 @@ import {
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
+import { isValidPropertyID } from '../../util';
+import GA4DashboardViewToggle from './GA4DashboardViewToggle';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 
 	const isTagManagerAvailable = useSelect( ( select ) =>
@@ -80,6 +85,9 @@ export default function SettingsView() {
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'Dashboard view', 'google-site-kit' ) }
 						</h5>
+						{ isValidPropertyID( propertyID ) && isGA4Connected && (
+							<GA4DashboardViewToggle />
+						) }
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting
 								value={
@@ -100,9 +108,9 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			<UASettingsView />
-
 			<GA4SettingsView />
+
+			<UASettingsView />
 
 			<OptionalSettingsView />
 		</div>
