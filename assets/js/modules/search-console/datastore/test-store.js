@@ -29,23 +29,19 @@ const actions = {
 		console.log(
 			'incrementTestValueGeneratorFunc: incrementTestValue() 2'
 		);
-		//registry.dispatch( MODULES_SEARCH_CONSOLE ).incrementTestValue();
-		yield actions.incrementTestValue();
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).incrementTestValue();
 		console.log(
 			'incrementTestValueGeneratorFunc: incrementTestValue() 3'
 		);
-		//registry.dispatch( MODULES_SEARCH_CONSOLE ).incrementTestValue();
-		yield actions.incrementTestValue();
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).incrementTestValue();
 		console.log(
 			'incrementTestValueGeneratorFunc: incrementTestValue() 4'
 		);
-		//registry.dispatch( MODULES_SEARCH_CONSOLE ).incrementTestValue();
-		yield actions.incrementTestValue();
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).incrementTestValue();
 		console.log(
 			'incrementTestValueGeneratorFunc: incrementTestValue() 5'
 		);
-		//registry.dispatch( MODULES_SEARCH_CONSOLE ).incrementTestValue();
-		yield actions.incrementTestValue();
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).incrementTestValue();
 	},
 };
 
