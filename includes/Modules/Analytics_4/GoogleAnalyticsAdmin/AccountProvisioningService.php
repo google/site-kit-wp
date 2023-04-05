@@ -16,7 +16,7 @@ use Google\Site_Kit_Dependencies\Google_Client;
 /**
  * Class for Analytics account provisioning service of the GoogleAnalytics Admin API.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class AccountProvisioningService extends GoogleAnalyticsAdmin {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param Google_Client $client The client used to deliver requests.
 	 * @param string        $rootUrl The root URL used for requests to the service.

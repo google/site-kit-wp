@@ -294,7 +294,7 @@ final class Analytics extends Module
 	 * Handles the provisioning callback after the user completes the terms of service.
 	 *
 	 * @since 1.9.0
-	 * @since n.e.x.t Extended to handle callback from Admin API (no UA entities).
+	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -1453,7 +1453,7 @@ final class Analytics extends Module
 	 * Validates the report metrics for a shared request.
 	 *
 	 * @since 1.82.0
-	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
+	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsReporting_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -1514,7 +1514,7 @@ final class Analytics extends Module
 	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.82.0
-	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
+	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsReporting_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.

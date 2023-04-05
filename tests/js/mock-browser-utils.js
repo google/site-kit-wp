@@ -53,7 +53,7 @@ export function mockLocation() {
  *
  * Based on https://github.com/jsdom/jsdom/issues/135#issuecomment-68191941, thanks to the original author.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  */
 export function mockElementOffsets() {
 	let restoreElementOffsets;

@@ -873,7 +873,7 @@ final class AdSense extends Module
 	 * Validates the report metrics for a shared request.
 	 *
 	 * @since 1.83.0
-	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
+	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param string[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -920,7 +920,7 @@ final class AdSense extends Module
 	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.83.0
-	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
+	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param string[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.

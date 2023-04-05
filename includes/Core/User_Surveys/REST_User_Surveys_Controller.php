@@ -46,7 +46,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Survey_Queue instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 * @var Survey_Queue
 	 */
 	protected $queue;

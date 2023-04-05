@@ -377,7 +377,7 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
  * Provides the current survey data to the given registry.
  *
  * @since 1.42.0
- * @since n.e.x.t Removed tracking enabling side effect.
+ * @since 1.98.0 Removed tracking enabling side effect.
  *
  * @param {Object} registry Registry object to dispatch to.
  * @param {Object} survey   The current survey.
@@ -392,7 +392,7 @@ export function provideCurrentSurvey(
 /**
  * Provides user tracking consent state.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @param {Object}  registry Registry object to dispatch to.
  * @param {boolean} enabled  Optional. Whether tracking consent has been granted. Defaults to `true`.
