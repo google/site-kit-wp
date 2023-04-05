@@ -44,11 +44,14 @@ import {
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import GA4SettingsNotice from './GA4SettingsNotice';
+import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
+
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { matchAndSelectProperty } = useDispatch( MODULES_ANALYTICS_4 );
@@ -96,7 +99,9 @@ export default function GA4SettingsControls( props ) {
 			</h4>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect hasModuleAccess={ hasModuleAccess } />
+				{ ga4ReportingEnabled && (
+					<AccountSelect hasModuleAccess={ hasModuleAccess } />
+				) }
 				<PropertySelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }
