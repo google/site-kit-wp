@@ -24,3 +24,8 @@ export const ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY =
 	'activation-acknowledgement-tooltip-state';
 
 export const GA4_ACTIVATION_BANNER_STATE_KEY = 'ga4-activation-banner-state';
+
+export const REPORT_ARGS_SELECTED_METRIC_KEY = '_r.explorerCard..selmet';
+export const REPORT_ARGS_SELECTED_DIMENSION_KEY = '_r.explorerCard..seldim';
+export const REPORT_ARGS_DATA_FILTERS_KEY = '_r..dataFilters';
+export const REPORT_ARGS_NAV_KEY = '_r..nav';

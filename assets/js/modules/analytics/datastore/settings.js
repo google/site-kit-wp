@@ -51,6 +51,7 @@ import {
 	PROFILE_CREATE,
 	FORM_SETUP,
 	DASHBOARD_VIEW_GA4,
+	DASHBOARD_VIEW_UA,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isPermissionScopeError } from '../../../util/errors';
@@ -92,8 +93,12 @@ export async function submitChanges( registry ) {
 
 	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
 
+	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
 	let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
-	if ( ! ga4ReportingEnabled && propertyID === PROPERTY_CREATE ) {
+	if (
+		( ! ga4ReportingEnabled || isUAEnabled ) &&
+		propertyID === PROPERTY_CREATE
+	) {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 		const { response: property, error } = await dispatch(
 			MODULES_ANALYTICS
@@ -112,7 +117,10 @@ export async function submitChanges( registry ) {
 	}
 
 	const profileID = select( MODULES_ANALYTICS ).getProfileID();
-	if ( ! ga4ReportingEnabled && profileID === PROFILE_CREATE ) {
+	if (
+		( ! ga4ReportingEnabled || isUAEnabled ) &&
+		profileID === PROFILE_CREATE
+	) {
 		const profileName = select( CORE_FORMS ).getValue(
 			FORM_SETUP,
 			'profileName'
@@ -127,6 +135,19 @@ export async function submitChanges( registry ) {
 		}
 
 		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
+	}
+
+	// If `ga4Reporting` is enabled AND `enableUA` toggle is disabled, we need to reset the
+	// property and profile IDs to ensure that the UA settings are not saved.
+	if ( ga4ReportingEnabled && ! isUAEnabled ) {
+		dispatch( MODULES_ANALYTICS ).resetPropertyAndProfileIDs();
+	}
+
+	// If `ga4Reporting` is enabled and the dashboard view is set to UA, we need
+	// to set the dashboard view to GA4.
+	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
+	if ( ga4ReportingEnabled && dashboardView === DASHBOARD_VIEW_UA ) {
+		dispatch( MODULES_ANALYTICS ).setDashboardView( DASHBOARD_VIEW_GA4 );
 	}
 
 	const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -198,9 +219,10 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_ACCOUNT_ID
 	);
 
+	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
 	// Do not require selecting a property or profile if `ga4Reporting` is enabled.
-	// Therefore, only validate these if `ga4Reporting` is not enabled.
-	if ( ! isFeatureEnabled( 'ga4Reporting' ) ) {
+	// Only validate UA settings if `ga4Reporting` is not enabled OR `enableUA` is enabled.
+	if ( ! isFeatureEnabled( 'ga4Reporting' ) || isUAEnabled ) {
 		invariant(
 			isValidPropertySelection( getPropertyID() ),
 			INVARIANT_INVALID_PROPERTY_SELECTION
@@ -294,17 +316,17 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 		return false;
 	}
 
-	const ga4ModuleActive =
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' );
-
-	if ( ! ga4ModuleActive ) {
-		return false;
-	}
+	const ga4ModuleConnected =
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
 	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
 
-	if ( dashboardView === undefined ) {
+	if ( ga4ModuleConnected === undefined || dashboardView === undefined ) {
 		return undefined;
+	}
+
+	if ( ! ga4ModuleConnected ) {
+		return false;
 	}
 
 	return dashboardView === DASHBOARD_VIEW_GA4;
