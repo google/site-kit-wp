@@ -31,16 +31,20 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
+import { useInstanceId as useInstanceID } from '@wordpress/compose';
 import {
+	Fragment,
 	useEffect,
 	useLayoutEffect,
 	useRef,
 	useState,
 } from '@wordpress/element';
+import { Icon, info } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
+import { Tooltip } from 'googlesitekit-components';
 import PreviewBlock from '../PreviewBlock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
@@ -55,6 +59,7 @@ import {
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
+import invariant from 'invariant';
 const { useDispatch, useSelect } = Data;
 
 export default function GoogleChart( props ) {
@@ -64,6 +69,7 @@ export default function GoogleChart( props ) {
 		children,
 		className,
 		data,
+		dateMarkers,
 		getChartWrapper,
 		height,
 		loaded,
@@ -76,9 +82,11 @@ export default function GoogleChart( props ) {
 		selectedStats,
 		width,
 		options,
-		gatheringData = false,
+		gatheringData,
 		...otherProps
 	} = props;
+
+	const instanceID = useInstanceID( GoogleChart );
 
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
@@ -197,6 +205,74 @@ export default function GoogleChart( props ) {
 		}
 	}, [ onMouseOver, onMouseOut ] );
 
+	/**
+	 * Adds any "key date" vertical lines/tooltips to the charts.
+	 */
+	const addKeyDateLinesToChart = () => {
+		if ( ! chartWrapperRef.current ) {
+			return;
+		}
+
+		if ( ! dateMarkers.length ) {
+			return;
+		}
+
+		const chart = chartWrapperRef.current.getChart();
+		const chartLayoutInterface = chart?.getChartLayoutInterface();
+		const chartArea = chartLayoutInterface?.getChartAreaBoundingBox();
+		const dataTable = chartWrapperRef.current?.getDataTable();
+
+		if ( ! chartLayoutInterface || ! chartArea || ! dataTable ) {
+			return;
+		}
+
+		// Add the dotted line and tooltip for each date marker.
+		dateMarkers.forEach( ( dateMarker, index ) => {
+			const dateFromMarker = new Date( Date.parse( dateMarker.date ) );
+
+			const chartLine = document.querySelector(
+				`#googlesitekit-chart__date-marker-line--${ instanceID }-${ index }`
+			);
+			invariant(
+				chartLine,
+				`#googlesitekit-chart__date-marker-line--${ instanceID }-${ index } is missing from the DOM, but required to render date markers.`
+			);
+
+			// Align the dotted line with the date for this marker.
+			chartLine.style.left =
+				Math.floor(
+					chartLayoutInterface.getXLocation( dateFromMarker )
+				) -
+				1 +
+				'px';
+			chartLine.style.top = Math.floor( chartArea.top ) + 18 + 'px';
+			chartLine.style.height = Math.floor( chartArea.height ) - 18 + 'px';
+			chartLine.style.opacity = 1;
+
+			// Text is optional, so only modify the DOM elements for the tooltip
+			// text if the property was provided.
+			if ( dateMarker.text ) {
+				const tooltip = document.querySelector(
+					`#googlesitekit-chart__date-marker-tooltip--${ instanceID }-${ index }`
+				);
+				invariant(
+					tooltip,
+					`#googlesitekit-chart__date-marker-tooltip--${ instanceID }-${ index } is missing from the DOM, but required to render date marker tooltips.`
+				);
+
+				// Align the tooltip component with the date line.
+				tooltip.style.left =
+					Math.floor(
+						chartLayoutInterface.getXLocation( dateFromMarker )
+					) -
+					9 +
+					'px';
+				tooltip.style.top = Math.floor( chartArea.top ) + 'px';
+				tooltip.style.opacity = 1;
+			}
+		} );
+	};
+
 	if ( googleChartsCollisionError ) {
 		return null;
 	}
@@ -279,6 +355,19 @@ export default function GoogleChart( props ) {
 						if ( getChartWrapper ) {
 							getChartWrapper( chartWrapper, google );
 						}
+
+						// Wait to run the code that adds the key date lines to the chart
+						// until the next tick. This is to ensure that the chart has
+						// finished rendering before we try to add the lines.
+						//
+						// If we don't do this, the `chart` variable (from
+						// `chartWrapper.getChart()`) will be `null`.
+						//
+						// TODO: Remove this setTimeout and use a Google Charts "after
+						// rendered" event, if possible.
+						setTimeout( () => {
+							addKeyDateLinesToChart();
+						}, 0 );
 					} }
 					width={ width }
 					options={ chartOptions }
@@ -287,6 +376,35 @@ export default function GoogleChart( props ) {
 				{ gatheringData && isChartLoaded && (
 					<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
 				) }
+				{ !! dateMarkers.length &&
+					dateMarkers.map( ( marker, index ) => {
+						return (
+							<Fragment
+								key={ `googlesitekit-chart__date-marker--${ instanceID }-${ index }` }
+							>
+								<div
+									id={ `googlesitekit-chart__date-marker-line--${ instanceID }-${ index }` }
+									className="googlesitekit-chart__date-marker-line"
+								/>
+								{ marker.text && (
+									<div
+										id={ `googlesitekit-chart__date-marker-tooltip--${ instanceID }-${ index }` }
+										className="googlesitekit-chart__date-marker-tooltip"
+									>
+										<Tooltip title={ marker.text }>
+											<span>
+												<Icon
+													fill="currentColor"
+													icon={ info }
+													size={ 18 }
+												/>
+											</span>
+										</Tooltip>
+									</div>
+								) }
+							</Fragment>
+						);
+					} ) }
 				{ children }
 			</div>
 		</GoogleChartErrorHandler>
@@ -309,6 +427,18 @@ GoogleChart.propTypes = {
 	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r626620601
 	chartType: PropTypes.oneOf( [ 'LineChart', 'PieChart' ] ).isRequired,
 	data: PropTypes.array,
+	dateMarkers: PropTypes.arrayOf(
+		PropTypes.shape( {
+			/**
+			 * The date to mark on the chart, in the format `'YYYY-MM-DD'`.
+			 */
+			date: PropTypes.string.isRequired,
+			/**
+			 * Text to display in a tooltip when the date marker is hovered.
+			 */
+			text: PropTypes.string,
+		} )
+	),
 	getChartWrapper: PropTypes.func,
 	height: PropTypes.string,
 	loaded: PropTypes.bool,
@@ -326,5 +456,7 @@ GoogleChart.propTypes = {
 
 GoogleChart.defaultProps = {
 	...Chart.defaultProps,
+	dateMarkers: [],
+	gatheringData: false,
 	loaded: true,
 };
