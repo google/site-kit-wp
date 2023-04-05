@@ -42,6 +42,8 @@ import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate
 import ReportError from '../../../../../components/ReportError';
 import { stringToDate } from '../../../../../util/date-range/string-to-date';
 import { createZeroDataRow } from './utils';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { getDateString } from '../../../../../util';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
@@ -92,6 +94,18 @@ export default function UserCountGraph( props ) {
 			global.removeEventListener( 'resize', updateBreakpoints );
 		};
 	}, [] );
+
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+	const property = useSelect( ( select ) =>
+		propertyID
+			? select( MODULES_ANALYTICS_4 ).getProperty( propertyID )
+			: null
+	);
+	const propertyCreatedDate = property?.createTime
+		? getDateString( new Date( property.createTime ) )
+		: null;
 
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
@@ -212,6 +226,19 @@ export default function UserCountGraph( props ) {
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
+				dateMarkers={
+					propertyCreatedDate
+						? [
+								{
+									date: propertyCreatedDate,
+									text: __(
+										'Google Analytics 4 property created',
+										'google-site-kit'
+									),
+								},
+						  ]
+						: undefined
+				}
 				height="368px"
 				loadingHeight="340px"
 				loaded={ loaded }

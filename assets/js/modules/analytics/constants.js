@@ -18,5 +18,12 @@
 
 export const AREA_MODULE_ANALYTICS_MAIN = 'moduleAnalyticsMain';
 
-// Date that Universal Analytics will stop recording data: July 1, 2023.
+/**
+ * Date that Universal Analytics will stop recording data: July 1, 2023.
+ *
+ * Used to display a line on charts indicating why UA-sourced data has no
+ * data after this date.
+ *
+ * Can be changed to test the date marker UI.
+ */
 export const UA_CUTOFF_DATE = '2023-07-01';

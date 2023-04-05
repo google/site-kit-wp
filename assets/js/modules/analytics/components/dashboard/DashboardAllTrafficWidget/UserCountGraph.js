@@ -41,6 +41,7 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
 import { stringToDate } from '../../../../../util/date-range/string-to-date';
+import { UA_CUTOFF_DATE } from '../../../constants';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
@@ -100,24 +101,6 @@ export default function UserCountGraph( props ) {
 		? report?.[ 0 ]?.data?.rows
 		: [];
 
-	const smallestValue = rows.reduce( ( acc, { metrics } ) => {
-		const value = parseInt( metrics[ 0 ].values[ 0 ], 10 );
-		if ( acc !== undefined && acc < value ) {
-			return acc;
-		}
-
-		return value;
-	}, undefined );
-
-	const largestValue = rows.reduce( ( acc, { metrics } ) => {
-		const value = parseInt( metrics[ 0 ].values[ 0 ], 10 );
-		if ( acc > value ) {
-			return acc;
-		}
-
-		return value;
-	}, 100 );
-
 	const chartData = [
 		[
 			{
@@ -128,21 +111,13 @@ export default function UserCountGraph( props ) {
 				type: 'number',
 				label: __( 'Users', 'google-site-kit' ),
 			},
-			{
-				type: 'number',
-			},
 		],
-		...rows.map( ( { metrics, dimensions } ) => [
-			parseDimensionStringToDate( dimensions[ 0 ] ),
-			metrics[ 0 ].values[ 0 ],
-			null,
-		] ),
-		[
-			new Date( 1679008415622 ),
-			null,
-			smallestValue - smallestValue * 100,
-		],
-		[ new Date( 1679008415622 ), null, largestValue + largestValue * 100 ],
+		...rows.map( ( { metrics, dimensions } ) => {
+			return [
+				parseDimensionStringToDate( dimensions[ 0 ] ),
+				metrics[ 0 ].values[ 0 ],
+			];
+		} ),
 	];
 
 	// Putting the actual start and end dates in the ticks causes the charts not to render
@@ -224,9 +199,7 @@ export default function UserCountGraph( props ) {
 	) {
 		chartOptions.vAxis.viewWindow.max = 100;
 	} else {
-		chartOptions.vAxis.viewWindow.max = largestValue * 1.2;
-		chartOptions.vAxis.viewWindow.minValue =
-			smallestValue === 0 ? smallestValue : smallestValue * 0.8;
+		chartOptions.vAxis.viewWindow.max = undefined;
 	}
 
 	return (
@@ -234,6 +207,15 @@ export default function UserCountGraph( props ) {
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
+				dateMarkers={ [
+					{
+						date: UA_CUTOFF_DATE,
+						text: __(
+							'Universal Analytics stopped collecting data',
+							'google-site-kit'
+						),
+					},
+				] }
 				height="368px"
 				loadingHeight="340px"
 				loaded={ loaded }
@@ -259,7 +241,7 @@ UserCountGraph.chartOptions = {
 	curveType: 'function',
 	height: 340,
 	width: '100%',
-	colors: '#3c7251',
+	colors: [ '#3c7251' ],
 	chartArea: {
 		left: 7,
 		right: 40,
@@ -304,16 +286,6 @@ UserCountGraph.chartOptions = {
 		0: {
 			lineWidth: 3,
 			targetAxisIndex: 1,
-		},
-		1: {
-			color: '#000000',
-			lineDashStyle: [ 3, 3 ],
-			lineWidth: 1,
-			pointSize: 0,
-			pointsVisible: false,
-			type: 'line',
-			targetAxisIndex: 1,
-			visibleInLegend: false,
 		},
 	},
 	crosshair: {
