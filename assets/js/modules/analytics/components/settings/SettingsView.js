@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -79,15 +80,13 @@ export default function SettingsView() {
 				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
 			/>
 
-			{ ga4ReportingEnabled && (
+			{ ga4ReportingEnabled && isValidPropertyID( propertyID ) && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'Dashboard view', 'google-site-kit' ) }
 						</h5>
-						{ isValidPropertyID( propertyID ) && isGA4Connected && (
-							<GA4DashboardViewToggle />
-						) }
+						{ isGA4Connected && <GA4DashboardViewToggle /> }
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting
 								value={
@@ -108,9 +107,19 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			<GA4SettingsView />
+			{ ga4ReportingEnabled && (
+				<Fragment>
+					<GA4SettingsView />
+					<UASettingsView />
+				</Fragment>
+			) }
 
-			<UASettingsView />
+			{ ! ga4ReportingEnabled && (
+				<Fragment>
+					<UASettingsView />
+					<GA4SettingsView />
+				</Fragment>
+			) }
 
 			<OptionalSettingsView />
 		</div>
