@@ -19,7 +19,7 @@
 /**
  * Determines the best Google Tag ID to use from the Google Tag IDs array present in a container response.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @param {Array}  tagIDs        Array of tag IDs.
  * @param {string} measurementID This will be preferred over other tags that start with "G-" in the array.

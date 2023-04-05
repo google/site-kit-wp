@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -22,6 +24,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
@@ -33,9 +36,13 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Sort;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\AMP_Tag;
@@ -44,6 +51,7 @@ use Google\Site_Kit\Modules\Analytics\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics\Web_Tag;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\Analytics as Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting as Google_Service_AnalyticsReporting;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\GetReportsRequest as Google_Service_AnalyticsReporting_GetReportsRequest;
@@ -63,12 +71,6 @@ use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exce
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
-use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
-use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
-use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Util\Sort;
-use Google\Site_Kit\Core\Util\URL;
 
 /**
  * Class representing the Analytics module.
@@ -142,6 +144,31 @@ final class Analytics extends Module
 				}
 			},
 			10,
+			2
+		);
+
+		// Ensure both Analytics modules always reference the same owner.
+		//
+		// The filter for Analytics (UA) is added in the Analytics_4 class,
+		// and the filter for Analytics 4 is added in this class.
+		// This is to prevent an infinite loop, see:
+		// https://github.com/google/site-kit-wp/issues/6465#issuecomment-1483120333.
+		add_filter(
+			'pre_update_option_' . Analytics_4_Settings::OPTION,
+			function( $new_value, $old_value ) {
+				if ( $old_value['ownerID'] !== $new_value['ownerID'] ) {
+					$settings = $this->get_settings()->get();
+
+					if ( $settings['ownerID'] && $new_value['ownerID'] !== $settings['ownerID'] ) {
+						$this->get_settings()->merge(
+							array( 'ownerID' => $new_value['ownerID'] )
+						);
+					}
+				}
+
+				return $new_value;
+			},
+			20,
 			2
 		);
 
@@ -267,7 +294,7 @@ final class Analytics extends Module
 	 * Handles the provisioning callback after the user completes the terms of service.
 	 *
 	 * @since 1.9.0
-	 * @since n.e.x.t Extended to handle callback from Admin API (no UA entities).
+	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -359,6 +386,11 @@ final class Analytics extends Module
 		// At this point, account creation was successful.
 		$new_settings['accountID'] = $account_id;
 
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			// For GA4-SPECIFIC provisioning callback, switch to GA4 dashboard view.
+			$new_settings['dashboardView'] = 'google-analytics-4';
+		}
+
 		$this->get_settings()->merge( $new_settings );
 
 		do_action(
@@ -418,6 +450,8 @@ final class Analytics extends Module
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			unset( $datapoints['POST:create-account-ticket'] );
+			unset( $datapoints['POST:create-profile'] );
+			unset( $datapoints['POST:create-property'] );
 		}
 
 		return $datapoints;
@@ -651,12 +685,12 @@ final class Analytics extends Module
 					}
 				} else {
 					$date_range    = $data['dateRange'] ?: 'last-28-days';
-					$date_ranges[] = $this->parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
+					$date_ranges[] = Date::parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
 
 					// When using multiple date ranges, it changes the structure of the response,
 					// where each date range becomes an item in a list.
 					if ( ! empty( $data['multiDateRange'] ) ) {
-						$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+						$date_ranges[] = Date::parse_date_range( $date_range, 1, 1, true );
 					}
 				}
 
@@ -857,7 +891,7 @@ final class Analytics extends Module
 				} else {
 					$account_summaries = $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
 					$current_url       = $this->context->get_reference_site_url();
-					$current_urls      = $this->permute_site_url( $current_url );
+					$current_urls      = URL::permute_site_url( $current_url );
 
 					foreach ( $account_summaries as $account_summary ) {
 						$found_property = $this->find_property( $account_summary->getWebProperties(), '', $current_urls );
@@ -906,7 +940,7 @@ final class Analytics extends Module
 				}
 
 				$current_url    = $this->context->get_reference_site_url();
-				$current_urls   = $this->permute_site_url( $current_url );
+				$current_urls   = URL::permute_site_url( $current_url );
 				$found_property = $this->find_property( $properties, '', $current_urls );
 
 				if ( ! is_null( $found_property ) ) {
@@ -1013,7 +1047,7 @@ final class Analytics extends Module
 
 		$dimension_filter_clauses = array();
 
-		$hostnames = $this->permute_site_hosts( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+		$hostnames = URL::permute_site_hosts( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 
 		$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 		$dimension_filter->setDimensionName( 'ga:hostname' );
@@ -1419,7 +1453,7 @@ final class Analytics extends Module
 	 * Validates the report metrics for a shared request.
 	 *
 	 * @since 1.82.0
-	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
+	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsReporting_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -1480,7 +1514,7 @@ final class Analytics extends Module
 	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.82.0
-	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
+	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsReporting_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.

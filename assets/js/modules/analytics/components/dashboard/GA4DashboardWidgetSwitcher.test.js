@@ -83,4 +83,24 @@ describe( 'GA4DashboardWidgetSwitcher', () => {
 
 		expect( container ).toHaveTextContent( 'GA4' );
 	} );
+
+	it( 'does not render the UA or GA4 widgets if the dashboard view is not loaded', () => {
+		enabledFeatures.add( 'ga4Reporting' );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: undefined,
+		} );
+
+		const WidgetNull = () => <div>NULL</div>;
+
+		const { container } = render(
+			<GA4DashboardWidgetSwitcher
+				UA={ () => <div>UA</div> }
+				GA4={ () => <div>GA4</div> }
+				WidgetNull={ WidgetNull }
+			/>,
+			{ registry }
+		);
+
+		expect( container ).toHaveTextContent( 'NULL' );
+	} );
 } );

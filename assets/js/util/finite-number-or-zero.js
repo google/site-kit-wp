@@ -24,7 +24,7 @@ import { isFinite } from 'lodash';
 /**
  * Returns the passed value if it's a finite number, otherwise returns 0.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @param {any} value The value to check.
  * @return {number} The finite number `value`, or 0 if `value` is not a finite number.

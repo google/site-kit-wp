@@ -716,6 +716,7 @@ final class Assets {
 			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
 			'postTypes'        => $this->get_post_types(),
 			'storagePrefix'    => $this->get_storage_prefix(),
+			'referenceDate'    => apply_filters( 'googlesitekit_reference_date', null ),
 		);
 
 		/**

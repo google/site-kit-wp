@@ -47,7 +47,7 @@ export function getContextScrollTop( context, breakpoint ) {
  * Gets the height of the sticky header.
  *
  * @since 1.69.0
- * @since n.e.x.t Renamed from `getHeaderHeight()` to `getStickyHeaderHeight()`.
+ * @since 1.98.0 Renamed from `getHeaderHeight()` to `getStickyHeaderHeight()`.
  *
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky header.
@@ -70,7 +70,7 @@ export function getStickyHeaderHeight( breakpoint ) {
 /**
  * Returns the height of the sticky WordPress admin bar, if present.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky WordPress admin bar, if present.
@@ -89,7 +89,7 @@ function getWordPressAdminBarHeight( breakpoint ) {
 /**
  * Returns the height of the sticky Site Kit header including the sticky WordPress admin bar when it's present.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky Site Kit header including the sticky WordPress admin bar when it's present.
@@ -116,7 +116,7 @@ function getGoogleSiteKitHeaderHeight( breakpoint ) {
  * Gets the height of the sticky header without the Site Kit navigation bar.
  *
  * @since 1.95.0
- * @since n.e.x.t Renamed from `getHeaderHeightWithoutNav()` to `getStickyHeaderHeightWithoutNav()`.
+ * @since 1.98.0 Renamed from `getHeaderHeightWithoutNav()` to `getStickyHeaderHeightWithoutNav()`.
  *
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky header without the navigation bar.

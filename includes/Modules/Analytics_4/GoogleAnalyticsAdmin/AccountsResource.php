@@ -16,7 +16,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Resource;
 /**
  * Class for representing the Accounts resource of the GoogleAnalytics Admin API for provisioning.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class AccountsResource extends Resource {
 	/**
 	 * Requests a ticket for creating an account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest $post_body  The post body to send.
 	 * @param array                                                   $opt_params Optional parameters.

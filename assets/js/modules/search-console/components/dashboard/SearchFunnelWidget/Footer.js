@@ -42,6 +42,7 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import { generateDateRangeArgs as generateAnalyticsDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import SourceLink from '../../../../../components/SourceLink';
 import Data from 'googlesitekit-data';
@@ -102,6 +103,51 @@ function SourceLinkAnalytics( { id } ) {
 	);
 }
 
+function SourceLinkAnalytics4() {
+	const viewOnlyDashboard = useViewOnly();
+
+	const serviceURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		const { getServiceReportURL } = select( MODULES_ANALYTICS_4 );
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const dates = select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
+		} );
+
+		const reportArgs = {
+			dates,
+			filters: {
+				sessionSource: 'google',
+			},
+			otherArgs: {
+				// eslint-disable-next-line sitekit/acronym-case
+				collectionId: 'life-cycle',
+			},
+		};
+
+		if ( isURL( url ) ) {
+			reportArgs.filters.unifiedPagePathScreen = getURLPath( url );
+		}
+
+		return getServiceReportURL(
+			'lifecycle-traffic-acquisition-v2',
+			reportArgs
+		);
+	} );
+
+	return (
+		<SourceLink
+			href={ serviceURL }
+			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			external
+		/>
+	);
+}
+
 function SourceLinkSearch( { metric } ) {
 	const viewOnlyDashboard = useViewOnly();
 
@@ -147,6 +193,10 @@ function SourceLinkSearch( { metric } ) {
 }
 
 const Footer = ( { metrics, selectedStats } ) => {
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
+
 	if ( ! metrics?.[ selectedStats ] ) {
 		return null;
 	}
@@ -154,6 +204,11 @@ const Footer = ( { metrics, selectedStats } ) => {
 
 	if ( service === 'search-console' ) {
 		return <SourceLinkSearch metric={ metric } />;
+	}
+
+	// If the service is not Search Console, it must be Analytics.
+	if ( isGA4DashboardView ) {
+		return <SourceLinkAnalytics4 />;
 	}
 
 	return <SourceLinkAnalytics id={ id } />;

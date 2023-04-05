@@ -391,7 +391,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether surveys are on cooldown or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return {(boolean|undefined)} TRUE if surveys are on cooldown, otherwise FALSE, `undefined` if not resolved yet.
 	 */

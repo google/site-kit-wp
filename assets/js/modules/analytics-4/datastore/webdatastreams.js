@@ -302,7 +302,7 @@ const baseSelectors = {
 	/**
 	 * Gets web data streams that match the current reference URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {Array}  datastreams A list of web data streams.
@@ -361,7 +361,7 @@ const baseSelectors = {
 	/**
 	 * Gets matched web data streams for selected property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
