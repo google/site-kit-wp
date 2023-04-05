@@ -58,6 +58,7 @@ export default function SettingsForm( {
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
+	const isUAConnected = isValidPropertyID( propertyID );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -101,15 +102,13 @@ export default function SettingsForm( {
 				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
 			/>
 
-			{ ga4ReportingEnabled && (
+			{ ga4ReportingEnabled && isUAConnected && (
 				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 					<h4 className="googlesitekit-settings-module__fields-group-title">
 						{ __( 'Dashboard view', 'google-site-kit' ) }
 					</h4>
 					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
-						{ isValidPropertyID( propertyID ) && isGA4Connected && (
-							<GA4DashboardViewToggle />
-						) }
+						{ isGA4Connected && <GA4DashboardViewToggle /> }
 						{ ! isGA4Connected &&
 							__( 'Universal Analytics', 'google-site-kit' ) }
 					</div>
@@ -121,9 +120,11 @@ export default function SettingsForm( {
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
 
-			<EnableUniversalAnalytics>
-				<SettingsUseSnippetSwitch />
-			</EnableUniversalAnalytics>
+			{ ga4ReportingEnabled && (
+				<EnableUniversalAnalytics>
+					<SettingsUseSnippetSwitch />
+				</EnableUniversalAnalytics>
+			) }
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
