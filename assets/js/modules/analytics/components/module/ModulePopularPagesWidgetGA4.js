@@ -192,6 +192,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			description: __( 'Sessions', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metricValues.1.value',
+			className: 'googlesitekit-table__head-item--sessions',
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
@@ -210,6 +211,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			description: __( 'Engagement Rate', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metricValues.2.value',
+			className: 'googlesitekit-table__head-item--engagement-rate',
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, '%' ) }</span>
 			),

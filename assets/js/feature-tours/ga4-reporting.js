@@ -32,7 +32,7 @@ const ga4Reporting = {
 		`${ viewContext }_dashboard-ga4-reporting`,
 	steps: [
 		{
-			target: '',
+			target: '.googlesitekit-data-block--conversions .googlesitekit-data-block__title',
 			title: __(
 				'See the new metrics from Google Analytics 4',
 				'google-site-kit'
@@ -44,7 +44,7 @@ const ga4Reporting = {
 			placement: 'auto',
 		},
 		{
-			target: '',
+			target: '.googlesitekit-widget--searchFunnel .googlesitekit-table__head-item--sessions',
 			title: __(
 				'"Sessions" has replaced "Bounce rate"',
 				'google-site-kit'
@@ -56,7 +56,7 @@ const ga4Reporting = {
 			placement: 'auto',
 		},
 		{
-			target: '',
+			target: '.googlesitekit-widget--searchFunnel .googlesitekit-table__head-item--engagement-rate',
 			title: __( 'New metric: engaged sessions', 'google-site-kit' ),
 			content: __(
 				'An engaged session is a session that lasts 10 seconds or longer, has 1 or more conversion events, or has 2 or more page or screen views.',

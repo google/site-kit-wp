@@ -21,7 +21,7 @@
  */
 import compareVersions from 'compare-versions';
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isPlainObject, isNull } from 'lodash';
 
 /**
  * Internal dependencies
@@ -124,7 +124,10 @@ const baseActions = {
 	),
 
 	receiveCurrentTour( tour ) {
-		invariant( isPlainObject( tour ), 'tour must be a plain object.' );
+		invariant(
+			isPlainObject( tour ) || isNull( tour ),
+			'tour must be a plain object or null.'
+		);
 		return {
 			payload: { tour },
 			type: RECEIVE_CURRENT_TOUR,
