@@ -165,13 +165,13 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function analytics_sharing_settings_data_provider() {
-		$initial_sharing_settings              = array(
+		$initial_sharing_settings                                     = array(
 			'search-console' => array(
 				'sharedRoles' => array( 'contributor', 'administrator' ),
 				'management'  => 'all_admins',
 			),
 		);
-		$sharing_settings_with_analytics       = array_merge(
+		$sharing_settings_with_analytics                              = array_merge(
 			$initial_sharing_settings,
 			array(
 				'analytics' => array(
@@ -180,7 +180,7 @@ class Analytics_4Test extends TestCase {
 				),
 			)
 		);
-		$sharing_settings_with_both_analytics  = array_merge(
+		$sharing_settings_with_both_analytics                         = array_merge(
 			$sharing_settings_with_analytics,
 			array(
 				'analytics-4' => array(
@@ -189,7 +189,16 @@ class Analytics_4Test extends TestCase {
 				),
 			)
 		);
-		$modified_settings_with_both_analytics = $sharing_settings_with_both_analytics;
+		$sharing_settings_with_both_analytics_with_different_settings = array_merge(
+			$sharing_settings_with_analytics,
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'contributor' ),
+					'management'  => 'all_admins',
+				),
+			)
+		);
+		$modified_settings_with_both_analytics                        = $sharing_settings_with_both_analytics;
 		$modified_settings_with_both_analytics['analytics']['sharedRoles'] = array( 'contributor' );
 
 		return array(
@@ -202,8 +211,8 @@ class Analytics_4Test extends TestCase {
 				$sharing_settings_with_both_analytics,
 			),
 			'Analytics and Analytics-4 both set'     => array(
-				$modified_settings_with_both_analytics,
-				$modified_settings_with_both_analytics,
+				$sharing_settings_with_both_analytics_with_different_settings,
+				$sharing_settings_with_both_analytics_with_different_settings,
 			),
 		);
 	}
