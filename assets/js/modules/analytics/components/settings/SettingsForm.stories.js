@@ -76,6 +76,17 @@ WithGA4andUASnippet.scenario = {
 	delay: 250,
 };
 
+export const WithGA4andUASnippetGA4Enabled = Template.bind( null );
+WithGA4andUASnippetGA4Enabled.storyName =
+	'Settings w/ all switches, GA4 enabled';
+WithGA4andUASnippetGA4Enabled.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithGA4andUASnippetGA4Enabled',
+	delay: 250,
+};
+WithGA4andUASnippetGA4Enabled.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+
 export const WithoutUAAndGA4AccessGA4NotConnected = Template.bind( null );
 WithoutUAAndGA4AccessGA4NotConnected.storyName =
 	'Settings w/o UA access, GA4 not connected';
