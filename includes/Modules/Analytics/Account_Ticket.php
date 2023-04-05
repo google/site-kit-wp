@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics;
 /**
  * Class representing an account ticket for Analytics account provisioning with associated parameters.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Account_Ticket {
 	/**
 	 * Account ticket ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 * @var string
 	 */
 	protected $id;
@@ -30,7 +30,7 @@ class Account_Ticket {
 	/**
 	 * Property name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 * @var string
 	 */
 	protected $property_name;
@@ -38,7 +38,7 @@ class Account_Ticket {
 	/**
 	 * Data stream name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 * @var string
 	 */
 	protected $data_stream_name;
@@ -46,7 +46,7 @@ class Account_Ticket {
 	/**
 	 * Timezone.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 * @var string
 	 */
 	protected $timezone;
@@ -54,7 +54,7 @@ class Account_Ticket {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param array $data Data to hydrate properties with.
 	 */
@@ -72,7 +72,7 @@ class Account_Ticket {
 	/**
 	 * Gets the account ticket ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return string
 	 */
@@ -83,7 +83,7 @@ class Account_Ticket {
 	/**
 	 * Sets the account ticket ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param string $id Account ticket ID.
 	 */
@@ -94,7 +94,7 @@ class Account_Ticket {
 	/**
 	 * Gets the property name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return string
 	 */
@@ -105,7 +105,7 @@ class Account_Ticket {
 	/**
 	 * Sets the property name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param string $property_name Property name.
 	 */
@@ -116,7 +116,7 @@ class Account_Ticket {
 	/**
 	 * Gets the data stream name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return string
 	 */
@@ -127,7 +127,7 @@ class Account_Ticket {
 	/**
 	 * Sets the data stream name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param string $data_stream_name Data stream name.
 	 */
@@ -138,7 +138,7 @@ class Account_Ticket {
 	/**
 	 * Gets the timezone.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return string
 	 */
@@ -149,7 +149,7 @@ class Account_Ticket {
 	/**
 	 * Sets the timezone.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param string $timezone Timezone.
 	 */
@@ -160,7 +160,7 @@ class Account_Ticket {
 	/**
 	 * Gets the array representation of the instance values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return array
 	 */

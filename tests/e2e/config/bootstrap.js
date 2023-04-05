@@ -262,7 +262,7 @@ function observeConsoleLogging() {
 /**
  * Checks if the given console message is coming from a specific plugin.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @param {string}         pluginSlug Plugin slug.
  * @param {ConsoleMessage} message    Console message.

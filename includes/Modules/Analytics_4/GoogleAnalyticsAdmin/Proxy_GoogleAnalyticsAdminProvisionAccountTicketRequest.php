@@ -15,7 +15,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 /**
  * Class for representing a proxied account ticket provisioning request body.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  * @access private
  * @ignore
  */
@@ -23,7 +23,7 @@ class Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest extends GoogleAnal
 	/**
 	 * The site ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 * @var string
 	 */
 	public $site_id = '';
@@ -31,7 +31,7 @@ class Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest extends GoogleAnal
 	/**
 	 * The site secret.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 * @var string
 	 */
 	public $site_secret = '';
@@ -39,7 +39,7 @@ class Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest extends GoogleAnal
 	/**
 	 * Gets the site ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 */
 	public function getSiteId() {
 		return $this->site_id;
@@ -48,7 +48,7 @@ class Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest extends GoogleAnal
 	/**
 	 * Sets the site ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param string $id The site id.
 	 */
@@ -59,7 +59,7 @@ class Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest extends GoogleAnal
 	/**
 	 * Gets the site secret.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 */
 	public function getSiteSecret() {
 		return $this->site_secret;
@@ -68,7 +68,7 @@ class Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest extends GoogleAnal
 	/**
 	 * Sets the site secret.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param string $secret The site secret.
 	 */

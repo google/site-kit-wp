@@ -307,7 +307,7 @@ final class Analytics_4 extends Module
 	 * Creates a new property for provided account.
 	 *
 	 * @since 1.35.0
-	 * @since n.e.x.t Added `$options` parameter.
+	 * @since 1.98.0 Added `$options` parameter.
 	 *
 	 * @param string $account_id Account ID.
 	 * @param array  $options {
@@ -343,7 +343,7 @@ final class Analytics_4 extends Module
 	 * Creates a new web data stream for provided property.
 	 *
 	 * @since 1.35.0
-	 * @since n.e.x.t Added `$options` parameter.
+	 * @since 1.98.0 Added `$options` parameter.
 	 *
 	 * @param string $property_id Property ID.
 	 * @param array  $options {
@@ -398,7 +398,7 @@ final class Analytics_4 extends Module
 	 * Provisions new GA4 property and web data stream for provided account.
 	 *
 	 * @since 1.35.0
-	 * @since n.e.x.t Added $account_ticket.
+	 * @since 1.98.0 Added $account_ticket.
 	 *
 	 * @param string         $account_id     Account ID.
 	 * @param Account_Ticket $account_ticket Account ticket instance.
@@ -863,7 +863,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the provisioning redirect URI that listens for the Terms of Service redirect.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return string Provisioning redirect URI.
 	 */
@@ -1492,7 +1492,7 @@ final class Analytics_4 extends Module
 	 *
 	 * Metrics must have valid names, matching the regular expression ^[a-zA-Z0-9_]+$ in keeping with the GA4 API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -1543,7 +1543,7 @@ final class Analytics_4 extends Module
 	 * Validates the report metrics for a shared request.
 	 *
 	 * @since 1.93.0
-	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
+	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -1597,7 +1597,7 @@ final class Analytics_4 extends Module
 	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.93.0
-	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
+	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.

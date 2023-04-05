@@ -832,7 +832,7 @@ abstract class Module {
 	/**
 	 * Determines whether the current request is for shared data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return bool TRUE if the request is for shared data, otherwise FALSE.

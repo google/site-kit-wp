@@ -171,7 +171,7 @@ class FakeModule extends Module
 	/**
 	 * Gets whether or not the latest request was made as a shared data request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return bool|null True if the latest request was made as a shared data request, false if not, or null if no request has been made yet.
 	 */
