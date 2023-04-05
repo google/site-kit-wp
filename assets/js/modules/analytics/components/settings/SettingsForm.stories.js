@@ -87,6 +87,31 @@ WithGA4andUASnippetGA4Enabled.parameters = {
 	features: [ 'ga4Reporting' ],
 };
 
+export const WithoutUAToggleGA4Enabled = Template.bind( null );
+WithoutUAToggleGA4Enabled.storyName = 'Settings w/o UA toggle, GA4 enabled';
+WithoutUAToggleGA4Enabled.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetProperties( [], { accountID } );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithoutUAToggleGA4Enabled.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithoutUAToggleGA4Enabled',
+	delay: 250,
+};
+WithoutUAToggleGA4Enabled.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+
 export const WithoutUAAndGA4AccessGA4NotConnected = Template.bind( null );
 WithoutUAAndGA4AccessGA4NotConnected.storyName =
 	'Settings w/o UA access, GA4 not connected';
