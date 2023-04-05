@@ -46,6 +46,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 import { createValidatedAction } from '../../data/utils';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -1361,6 +1362,13 @@ const baseSelectors = {
 
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
 			if ( modules[ slug ].shareable && ! modules[ slug ].internal ) {
+				if (
+					slug === 'analytics' &&
+					select( MODULES_ANALYTICS ).isGA4DashboardView()
+				) {
+					return { 'analytics-4': modules[ 'analytics-4' ], ...acc };
+				}
+
 				return { [ slug ]: modules[ slug ], ...acc };
 			}
 
