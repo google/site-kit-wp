@@ -198,8 +198,6 @@ class Analytics_4Test extends TestCase {
 				),
 			)
 		);
-		$modified_settings_with_both_analytics                        = $sharing_settings_with_both_analytics;
-		$modified_settings_with_both_analytics['analytics']['sharedRoles'] = array( 'contributor' );
 
 		return array(
 			'Analytics and Analytics-4 both not set' => array(
