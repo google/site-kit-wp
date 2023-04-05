@@ -98,8 +98,11 @@ export default function Overview( props ) {
 		return select( CORE_USER ).canViewSharedModule( 'analytics' );
 	} );
 
-	const currentTour = useSelect( ( select ) =>
-		select( CORE_USER ).getCurrentTour()
+	const toursAreOnCooldown = useSelect( ( select ) =>
+		select( CORE_USER ).areFeatureToursOnCooldown()
+	);
+	const shownTour = useSelect( ( select ) =>
+		select( CORE_USER ).getShownTour()
 	);
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
@@ -176,19 +179,25 @@ export default function Overview( props ) {
 	const { setValue } = useDispatch( CORE_UI );
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	useEffect( () => {
-		if ( ! showGA4 ) {
-			return;
-		}
-		if ( dashboardType !== DASHBOARD_TYPE_MAIN ) {
-			return;
-		}
-		if ( currentTour !== null ) {
+		if (
+			toursAreOnCooldown ||
+			!! shownTour ||
+			! showGA4 ||
+			dashboardType !== DASHBOARD_TYPE_MAIN
+		) {
 			return;
 		}
 
 		setValue( 'forceInView', true );
 		triggerOnDemandTour( ga4Reporting );
-	}, [ currentTour, showGA4, dashboardType, setValue, triggerOnDemandTour ] );
+	}, [
+		showGA4,
+		dashboardType,
+		setValue,
+		triggerOnDemandTour,
+		toursAreOnCooldown,
+		shownTour,
+	] );
 
 	const showConversionsCTA =
 		isAuthenticated &&

@@ -79,12 +79,10 @@ const fetchDismissTourStore = createFetchStore( {
 
 const baseInitialState = {
 	lastDismissedAt: undefined,
-	// Array of dismissed tour slugs.
 	dismissedTourSlugs: undefined,
-	// Array of tour objects.
 	tours: featureTours,
-	// Current active tour
 	currentTour: undefined,
+	shownTour: undefined,
 };
 
 const baseActions = {
@@ -324,6 +322,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				currentTour: payload.tour,
+				shownTour: payload.tour,
 			};
 		}
 
@@ -388,6 +387,18 @@ const baseSelectors = {
 	 */
 	getCurrentTour( state ) {
 		return state.currentTour;
+	},
+
+	/**
+	 * Gets the feature tour that has been already shown in the current page view.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Shown tour object.
+	 */
+	getShownTour( state ) {
+		return state.shownTour;
 	},
 
 	/**
