@@ -38,6 +38,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
+import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID, isValidPropertyID } from '../../util';
@@ -113,6 +114,10 @@ export default function SettingsForm( {
 							__( 'Universal Analytics', 'google-site-kit' ) }
 					</div>
 				</div>
+			) }
+
+			{ ! ga4ReportingEnabled && (
+				<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
 			) }
 
 			<GA4SettingsControls
