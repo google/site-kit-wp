@@ -39,12 +39,11 @@ import {
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import whenActive from '../../../../util/when-active';
 import SourceLink from '../../../../components/SourceLink';
-import Widget from '../../../../googlesitekit/widgets/components/Widget';
 import SettingsNotice from '../../../../components/SettingsNotice';
 import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
-function DashboardTopEarningPagesWidgetGA4( { WidgetNull } ) {
+function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
 
 	const isDismissed = useSelect( ( select ) =>
