@@ -39,22 +39,30 @@ import {
 	MODULES_ANALYTICS,
 	FORM_SETUP,
 	EDIT_SCOPE,
+	SETUP_FLOW_MODE_GA4_LEGACY,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
+import SetupFormGA4Legacy from './SetupFormGA4Legacy';
 import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ExistingGTMPropertyNotice } from '../common';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitChanges()
+	);
+	const canSubmitChangesGA4 = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).canSubmitChanges()
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -121,11 +129,20 @@ export default function SetupForm( { finishSetup } ) {
 			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
+			{ setupFlowMode === SETUP_FLOW_MODE_GA4_LEGACY && (
+				<SetupFormGA4Legacy />
+			) }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && (
 				<SetupFormGA4Transitional />
 			) }
 			<div className="googlesitekit-setup-module__action">
-				<Button disabled={ ! canSubmitChanges }>
+				<Button
+					disabled={
+						ga4ReportingEnabled
+							? ! canSubmitChangesGA4
+							: ! canSubmitChanges
+					}
+				>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
 				</Button>
 			</div>
