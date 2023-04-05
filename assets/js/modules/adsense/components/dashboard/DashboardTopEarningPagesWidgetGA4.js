@@ -99,6 +99,7 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 
 DashboardTopEarningPagesWidgetGA4.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( { moduleName: 'adsense' } )(

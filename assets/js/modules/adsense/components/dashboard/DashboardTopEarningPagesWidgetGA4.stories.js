@@ -22,8 +22,9 @@
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
+import Widget from '../../../../googlesitekit/widgets/components/Widget';
 
-const Template = () => <DashboardTopEarningPagesWidgetGA4 />;
+const Template = () => <DashboardTopEarningPagesWidgetGA4 Widget={ Widget } />;
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
