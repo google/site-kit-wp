@@ -1361,8 +1361,10 @@ const baseSelectors = {
 		}
 
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
-			// When analytics is not connected, it is set to not shareable. So moving this if block
-			// within the shareable and internal check below will cause issues in that case.
+			// When Analytics is not connected, it is set to not shareable. So moving this if block
+			// within the shareable and internal check below will cause issues in that case. Specifically,
+			// when Analytics is active with GA4 connected, but UA is not connected, the Analytics 4 module
+			// would not be included in the shareable modules list when it should be.
 			if (
 				slug === 'analytics' &&
 				select( MODULES_ANALYTICS ).isGA4DashboardView()
