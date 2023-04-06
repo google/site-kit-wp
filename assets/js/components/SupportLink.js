@@ -28,19 +28,17 @@ import Link from './Link';
 const { useSelect } = Data;
 
 export default function SupportLink( props ) {
-	const { href, ...otherProps } = props;
+	const { path, query, hash, ...otherProps } = props;
 
 	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( href )
+		select( CORE_SITE ).getGoogleSupportURL( { path, query, hash } )
 	);
 
-	return <Link href={ supportURL } { ...otherProps } />;
+	return <Link { ...otherProps } href={ supportURL } />;
 }
 
 SupportLink.propTypes = {
-	href: PropTypes.shape( {
-		path: PropTypes.string,
-		query: PropTypes.object,
-		hash: PropTypes.hash,
-	} ).isRequired,
+	path: PropTypes.string.isRequired,
+	query: PropTypes.object,
+	hash: PropTypes.hash,
 };

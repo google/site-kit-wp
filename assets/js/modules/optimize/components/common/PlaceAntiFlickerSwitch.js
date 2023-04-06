@@ -77,7 +77,7 @@ export default function PlaceAntiFlickerSwitch() {
 				{ createInterpolateElement( message, {
 					a: (
 						<SupportLink
-							href={ { path: '/optimize/answer/7100284' } }
+							path="/optimize/answer/7100284"
 							external
 							aria-label={ __(
 								'Learn more about the anti-flicker snippet.',

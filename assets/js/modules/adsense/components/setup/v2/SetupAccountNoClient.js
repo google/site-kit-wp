@@ -62,7 +62,7 @@ export default function SetupAccountNoClient() {
 					{
 						a: (
 							<SupportLink
-								href={ { path: '/adsense/answer/6023158' } }
+								path="/adsense/answer/6023158"
 								external
 								aria-label={ __(
 									'Learn more about updating your AdSense account',

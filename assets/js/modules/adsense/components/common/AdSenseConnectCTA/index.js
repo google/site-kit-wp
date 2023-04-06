@@ -161,9 +161,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								{
 									a: (
 										<SupportLink
-											href={ {
-												path: '/adsense/answer/9724',
-											} }
+											path="/adsense/answer/9724"
 											external
 											hideExternalIndicator
 										/>

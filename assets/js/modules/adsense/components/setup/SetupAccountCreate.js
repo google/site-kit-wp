@@ -109,7 +109,7 @@ export default function SetupAccountCreate() {
 						userEmail
 					) }{ ' ' }
 				<SupportLink
-					href={ { path: '/adsense/answer/2659101' } }
+					path="/adsense/answer/2659101"
 					external
 					aria-label={ __(
 						'Learn more about adding a user to an existing AdSense account',

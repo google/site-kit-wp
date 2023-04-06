@@ -49,7 +49,7 @@ export default function SetupAccountNoClient() {
 
 			<div className="googlesitekit-setup-module__action">
 				<SupportLink
-					href={ { path: '/adsense/answer/6023158' } }
+					path="/adsense/answer/6023158"
 					external
 					aria-label={ __(
 						'Learn more about updating your AdSense account',

@@ -81,9 +81,7 @@ export default function AnonymizeIPSwitch() {
 							{
 								LearnMoreLink: (
 									<SupportLink
-										href={ {
-											path: '/analytics/answer/2763052',
-										} }
+										path="/analytics/answer/2763052"
 										external
 										aria-label={ __(
 											'Learn more about IP anonymization.',
