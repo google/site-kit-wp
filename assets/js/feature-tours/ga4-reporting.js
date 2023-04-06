@@ -18,11 +18,13 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /*
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
+import Link from '../components/Link';
 
 const ga4Reporting = {
 	slug: 'ga4Reporting',
@@ -37,30 +39,56 @@ const ga4Reporting = {
 				'See the new metrics from Google Analytics 4',
 				'google-site-kit'
 			),
-			content: __(
-				'"Conversions" have replaced "Goals", since "Goals" no longer exist in GA4. Learn how to set up Conversions',
-				'google-site-kit'
+			content: createInterpolateElement(
+				__(
+					'"Conversions" have replaced "Goals", since "Goals" no longer exist in GA4. <a>Learn how to set up Conversions</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							href="https://support.google.com/analytics/answer/12966437"
+							inverse
+							external
+							hideExternalIndicator
+							standalone
+						/>
+					),
+				}
 			),
 			placement: 'auto',
 		},
 		{
-			target: '.googlesitekit-widget--searchFunnel .googlesitekit-table__head-item--sessions',
+			target: '.googlesitekit-table__head-item--sessions',
 			title: __(
 				'"Sessions" has replaced "Bounce rate"',
 				'google-site-kit'
 			),
 			content: __(
-				'Google Analytics 4 focuses on measuring Engagement rate instead of Bounce rate. Learn more',
+				'An engaged session is a session that lasts 10 seconds or longer, has 1 or more conversion events, or has 2 or more page or screen views.',
 				'google-site-kit'
 			),
 			placement: 'auto',
 		},
 		{
-			target: '.googlesitekit-widget--searchFunnel .googlesitekit-table__head-item--engagement-rate',
-			title: __( 'New metric: engaged sessions', 'google-site-kit' ),
-			content: __(
-				'An engaged session is a session that lasts 10 seconds or longer, has 1 or more conversion events, or has 2 or more page or screen views.',
-				'google-site-kit'
+			target: '.googlesitekit-table__head-item--engagement-rate',
+			title: __( 'New metric: engagement rate', 'google-site-kit' ),
+			content: createInterpolateElement(
+				__(
+					'Google Analytics 4 focuses on measuring Engagement rate instead of Bounce rate. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							href="https://support.google.com/analytics/answer/12195621"
+							inverse
+							external
+							hideExternalIndicator
+							standalone
+						/>
+					),
+				}
 			),
 			placement: 'auto',
 		},

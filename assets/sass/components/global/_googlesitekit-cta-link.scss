@@ -45,6 +45,10 @@
 		letter-spacing: $ls-xs;
 	}
 
+	&.googlesitekit-cta-link--standalone {
+		display: block;
+	}
+
 	&.googlesitekit-cta-link--arrow,
 	&.googlesitekit-cta-link--external {
 		// This is the external link icon, in the color #108080 ($c-content-secondary).

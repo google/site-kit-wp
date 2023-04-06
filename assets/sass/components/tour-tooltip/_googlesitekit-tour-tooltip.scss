@@ -41,11 +41,10 @@
 		position: relative;
 
 		a {
+			text-decoration: underline;
 
-			&:active,
-			&:hover,
-			&:visited {
-				color: $c-content-on-primary;
+			&.googlesitekit-cta-link--standalone {
+				margin-top: 5px;
 			}
 		}
 
@@ -60,9 +59,8 @@
 	font-family: $f-secondary;
 	font-size: $fs-body-lg;
 	font-weight: $fw-medium;
-	letter-spacing: $ls-m;
-	line-height: $lh-body-lg;
-	margin-bottom: 4px;
+	line-height: $lh-display-lg;
+	margin-bottom: 10px;
 	margin-top: 0;
 }
 
