@@ -119,7 +119,7 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 
 	if (
 		! ga4ReportingEnabled &&
-		! profiles.find( ( profile ) => profile.id === PROFILE_CREATE )
+		! profiles.some( ( profile ) => profile.id === PROFILE_CREATE )
 	) {
 		profiles.push( {
 			id: PROFILE_CREATE,

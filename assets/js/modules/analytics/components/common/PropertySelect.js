@@ -113,7 +113,7 @@ export default function PropertySelect( { hasModuleAccess } ) {
 
 	if (
 		! ga4ReportingEnabled &&
-		! properties.find( ( property ) => property.id === PROPERTY_CREATE )
+		! properties.some( ( property ) => property.id === PROPERTY_CREATE )
 	) {
 		properties.push( {
 			id: PROPERTY_CREATE,
