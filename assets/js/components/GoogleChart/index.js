@@ -299,7 +299,19 @@ export default function GoogleChart( props ) {
 	}
 
 	const combinedChartEvents = getCombinedChartEvents(
-		chartEvents,
+		[
+			...( chartEvents || [] ),
+			// Call the `addKeyDateLinesToChart` function after the chart
+			// has been rendered.
+			//
+			// This is to ensure that the chart has finished rendering before
+			// we try to add the lines. If we don't do this, the `chart`
+			// variable (from `chartWrapper.getChart()`) will be `null`.
+			{
+				eventName: 'ready',
+				callback: addKeyDateLinesToChart,
+			},
+		],
 		onReady,
 		onSelect
 	);
@@ -362,19 +374,6 @@ export default function GoogleChart( props ) {
 						if ( getChartWrapper ) {
 							getChartWrapper( chartWrapper, google );
 						}
-
-						// Wait to run the code that adds the key date lines to the chart
-						// until the next tick. This is to ensure that the chart has
-						// finished rendering before we try to add the lines.
-						//
-						// If we don't do this, the `chart` variable (from
-						// `chartWrapper.getChart()`) will be `null`.
-						//
-						// TODO: Remove this setTimeout and use a Google Charts "after
-						// rendered" event, if possible.
-						setTimeout( () => {
-							addKeyDateLinesToChart();
-						}, 0 );
 					} }
 					width={ width }
 					options={ chartOptions }
