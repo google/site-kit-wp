@@ -24,12 +24,12 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
-import Link from '../components/Link';
+import SupportLink from '../components/SupportLink';
 
 const ga4Reporting = {
 	slug: 'ga4Reporting',
 	contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-	version: '1.98.0',
+	version: '1.999.0', // Change this version to the actual version when GA4 reporting is released to 100% of users.
 	gaEventCategory: ( viewContext ) =>
 		`${ viewContext }_dashboard-ga4-reporting`,
 	steps: [
@@ -46,8 +46,8 @@ const ga4Reporting = {
 				),
 				{
 					a: (
-						<Link
-							href="https://support.google.com/analytics/answer/12966437"
+						<SupportLink
+							href={ { path: '/analytics/answer/12966437' } }
 							inverse
 							external
 							hideExternalIndicator
@@ -61,11 +61,11 @@ const ga4Reporting = {
 		{
 			target: '.googlesitekit-table__head-item--sessions',
 			title: __(
-				'"Sessions" has replaced "Bounce rate"',
+				'"Sessions" has replaced "Unique Pageviews"',
 				'google-site-kit'
 			),
 			content: __(
-				'An engaged session is a session that lasts 10 seconds or longer, has 1 or more conversion events, or has 2 or more page or screen views.',
+				'A session is a period of time during which a user interacts with your website or app.',
 				'google-site-kit'
 			),
 			placement: 'auto',
@@ -75,13 +75,13 @@ const ga4Reporting = {
 			title: __( 'New metric: engagement rate', 'google-site-kit' ),
 			content: createInterpolateElement(
 				__(
-					'Google Analytics 4 focuses on measuring Engagement rate instead of Bounce rate. <a>Learn more</a>',
+					'Engagement rate shows the percentage of engaged sessions, the opposite of bounce rate. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{
 					a: (
-						<Link
-							href="https://support.google.com/analytics/answer/12195621"
+						<SupportLink
+							href={ { path: '/analytics/answer/12195621' } }
 							inverse
 							external
 							hideExternalIndicator
