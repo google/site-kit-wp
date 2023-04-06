@@ -35,7 +35,9 @@ import {
 
 export const initialState = {
 	dateRange: 'last-28-days',
-	referenceDate: getDateString( new Date() ),
+	referenceDate: getDateString(
+		global._googlesitekitBaseData?.referenceDate || new Date()
+	),
 };
 
 /**
@@ -199,9 +201,7 @@ export const selectors = {
 	 * @return {string} The current reference date as YYYY-MM-DD.
 	 */
 	getReferenceDate( state ) {
-		return (
-			global._googlesitekitBaseData?.referenceDate ?? state.referenceDate
-		);
+		return state.referenceDate;
 	},
 };
 
