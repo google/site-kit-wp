@@ -112,12 +112,11 @@ export default function AnalyticsStats( props ) {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
-	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
 
 	const propertyID = useSelect( ( select ) =>
-		isGA4Connected ? select( MODULES_ANALYTICS_4 ).getPropertyID() : null
+		isGA4DashboardView
+			? select( MODULES_ANALYTICS_4 ).getPropertyID()
+			: null
 	);
 	const property = useSelect( ( select ) =>
 		propertyID

@@ -24,6 +24,7 @@ import '../../util/initialize-google-global';
  * External dependencies
  */
 import classnames from 'classnames';
+import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
 import { useMount } from 'react-use';
@@ -59,7 +60,6 @@ import {
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
-import invariant from 'invariant';
 const { useDispatch, useSelect } = Data;
 
 export default function GoogleChart( props ) {
@@ -85,6 +85,11 @@ export default function GoogleChart( props ) {
 		gatheringData,
 		...otherProps
 	} = props;
+
+	/**
+	 * Size of the icons (in pixels) used in the tooltip.
+	 */
+	const iconSize = 18;
 
 	const instanceID = useInstanceID( GoogleChart );
 
@@ -220,7 +225,7 @@ export default function GoogleChart( props ) {
 		const chart = chartWrapperRef.current.getChart();
 		const chartLayoutInterface = chart?.getChartLayoutInterface();
 		const chartArea = chartLayoutInterface?.getChartAreaBoundingBox();
-		const dataTable = chartWrapperRef.current?.getDataTable();
+		const dataTable = chartWrapperRef.current.getDataTable();
 
 		if ( ! chartLayoutInterface || ! chartArea || ! dataTable ) {
 			return;
@@ -228,10 +233,10 @@ export default function GoogleChart( props ) {
 
 		// Add the dotted line and tooltip for each date marker.
 		dateMarkers.forEach( ( dateMarker, index ) => {
-			const dateFromMarker = new Date( Date.parse( dateMarker.date ) );
+			const dateFromMarker = new Date( dateMarker.date );
 
-			const chartLine = document.querySelector(
-				`#googlesitekit-chart__date-marker-line--${ instanceID }-${ index }`
+			const chartLine = document.getElementById(
+				`googlesitekit-chart__date-marker-line--${ instanceID }-${ index }`
 			);
 			invariant(
 				chartLine,
@@ -239,21 +244,22 @@ export default function GoogleChart( props ) {
 			);
 
 			// Align the dotted line with the date for this marker.
-			chartLine.style.left =
-				Math.floor(
-					chartLayoutInterface.getXLocation( dateFromMarker )
-				) -
-				1 +
-				'px';
-			chartLine.style.top = Math.floor( chartArea.top ) + 18 + 'px';
-			chartLine.style.height = Math.floor( chartArea.height ) - 18 + 'px';
-			chartLine.style.opacity = 1;
+			Object.assign( chartLine.style, {
+				left: `${
+					Math.floor(
+						chartLayoutInterface.getXLocation( dateFromMarker )
+					) - 1
+				}px`,
+				top: `${ Math.floor( chartArea.top ) + iconSize }px`,
+				height: `${ Math.floor( chartArea.height ) - iconSize }px`,
+				opacity: 1,
+			} );
 
 			// Text is optional, so only modify the DOM elements for the tooltip
 			// text if the property was provided.
 			if ( dateMarker.text ) {
-				const tooltip = document.querySelector(
-					`#googlesitekit-chart__date-marker-tooltip--${ instanceID }-${ index }`
+				const tooltip = document.getElementById(
+					`googlesitekit-chart__date-marker-tooltip--${ instanceID }-${ index }`
 				);
 				invariant(
 					tooltip,
@@ -261,14 +267,15 @@ export default function GoogleChart( props ) {
 				);
 
 				// Align the tooltip component with the date line.
-				tooltip.style.left =
-					Math.floor(
-						chartLayoutInterface.getXLocation( dateFromMarker )
-					) -
-					9 +
-					'px';
-				tooltip.style.top = Math.floor( chartArea.top ) + 'px';
-				tooltip.style.opacity = 1;
+				Object.assign( tooltip.style, {
+					left: `${
+						Math.floor(
+							chartLayoutInterface.getXLocation( dateFromMarker )
+						) - 9
+					}px`,
+					top: `${ Math.floor( chartArea.top ) }px`,
+					opacity: 1,
+				} );
 			}
 		} );
 	};
@@ -396,7 +403,7 @@ export default function GoogleChart( props ) {
 												<Icon
 													fill="currentColor"
 													icon={ info }
-													size={ 18 }
+													size={ iconSize }
 												/>
 											</span>
 										</Tooltip>
