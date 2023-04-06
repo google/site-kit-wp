@@ -122,31 +122,31 @@ export default function GA4SettingsControls( props ) {
 		] )
 	);
 
-	if ( properties === undefined || webDataStreams === undefined ) {
-		return null;
-	}
-
 	let propertyNotAvailable = false;
 	let webDataStreamsNotAvailable = false;
 
 	if (
+		properties !== undefined &&
+		webDataStreams !== undefined &&
+		hasModuleAccess &&
+		isDisabled &&
 		isValidPropertyID( propertyID ) &&
-		! properties.some( ( { _id } ) => _id === propertyID ) &&
-		! getPropertiesError
+		measurementID
 	) {
-		propertyNotAvailable = true;
-	}
-
-	if (
-		properties.some( ( { _id } ) => _id === propertyID ) &&
-		! webDataStreams.some(
-			( { webStreamData } ) =>
-				// eslint-disable-next-line sitekit/acronym-case
-				webStreamData.measurementId === measurementID
-		) &&
-		! getWebDataStreamsError
-	) {
-		webDataStreamsNotAvailable = true;
+		if ( properties.some( ( { _id } ) => _id === propertyID ) ) {
+			if (
+				! getWebDataStreamsError &&
+				! webDataStreams.some(
+					( { webStreamData } ) =>
+						// eslint-disable-next-line sitekit/acronym-case
+						webStreamData.measurementId === measurementID
+				)
+			) {
+				webDataStreamsNotAvailable = true;
+			}
+		} else if ( ! getPropertiesError ) {
+			propertyNotAvailable = true;
+		}
 	}
 
 	return (
@@ -154,34 +154,33 @@ export default function GA4SettingsControls( props ) {
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'Google Analytics 4', 'google-site-kit' ) }
 			</h4>
+			{ propertyNotAvailable && (
+				<ErrorText
+					message={ sprintf(
+						/* translators: 1: Google Analytics 4 Property ID. */
+						__(
+							'The previously selected property with ID %1$s is no longer available. Please select a new property to continue collecting data with Google Analytics 4.',
+							'google-site-kit'
+						),
+						propertyID
+					) }
+				/>
+			) }
+
+			{ webDataStreamsNotAvailable && (
+				<ErrorText
+					message={ sprintf(
+						/* translators: 1: Google Analytics 4 Measurement ID. */
+						__(
+							'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
+							'google-site-kit'
+						),
+						measurementID
+					) }
+				/>
+			) }
 
 			<div className="googlesitekit-setup-module__inputs">
-				{ propertyNotAvailable && (
-					<ErrorText
-						message={ sprintf(
-							/* translators: 1: Google Analytics 4 Property ID. */
-							__(
-								'The previously selected property with ID %1$s is no longer available. Please select a new property to continue collecting data with Google Analytics 4.',
-								'google-site-kit'
-							),
-							propertyID
-						) }
-					/>
-				) }
-
-				{ webDataStreamsNotAvailable && (
-					<ErrorText
-						message={ sprintf(
-							/* translators: 1: Google Analytics 4 Measurement ID. */
-							__(
-								'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
-								'google-site-kit'
-							),
-							measurementID
-						) }
-					/>
-				) }
-
 				<PropertySelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }
@@ -228,14 +227,12 @@ export default function GA4SettingsControls( props ) {
 					) }
 			</div>
 
-			{ isDisabled && (
+			{ isDisabled ? (
 				<GA4ActivateSwitch
 					disabled={ ! hasAnalyticsAccess }
 					onActivate={ onActivate }
 				/>
-			) }
-
-			{ ! isDisabled && (
+			) : (
 				<div className="googlesitekit-settings-module__meta-item">
 					<SettingsUseSnippetSwitch />
 				</div>
