@@ -41,7 +41,6 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 import { isValidPropertyID } from '../../util';
-import GA4DashboardViewToggle from './GA4DashboardViewToggle';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -86,7 +85,6 @@ export default function SettingsView() {
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'Dashboard view', 'google-site-kit' ) }
 						</h5>
-						{ isGA4Connected && <GA4DashboardViewToggle /> }
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting
 								value={
