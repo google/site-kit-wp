@@ -63,7 +63,9 @@ export const useInView = ( { sticky = false } = {} ) => {
 	}, [ hasBeenInViewOnce, inView, setHasBeenInViewOnce ] );
 
 	useEffect( () => {
-		setHasBeenInViewOnce( true );
+		if ( forceInView ) {
+			setHasBeenInViewOnce( true );
+		}
 	}, [ forceInView ] );
 
 	useUpdateEffect( () => {
