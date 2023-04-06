@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage\Setting;
 /**
  * A trait for a single setting of the array type.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ trait List_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return string The type name.
 	 */
@@ -33,7 +33,7 @@ trait List_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return array The default value.
 	 */
@@ -44,7 +44,7 @@ trait List_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return array Value set for the option, or default if not set.
 	 */
@@ -56,7 +56,7 @@ trait List_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -67,7 +67,7 @@ trait List_Setting {
 	/**
 	 * Filters array items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param array $items The original array items.
 	 * @return array Filtered items.

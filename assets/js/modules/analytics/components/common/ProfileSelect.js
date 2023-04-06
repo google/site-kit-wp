@@ -117,7 +117,10 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 		);
 	}
 
-	if ( ! ga4ReportingEnabled ) {
+	if (
+		! ga4ReportingEnabled &&
+		! profiles.some( ( profile ) => profile.id === PROFILE_CREATE )
+	) {
 		profiles.push( {
 			id: PROFILE_CREATE,
 			name: __( 'Set up a new view', 'google-site-kit' ),

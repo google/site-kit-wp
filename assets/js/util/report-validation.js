@@ -20,7 +20,7 @@
  * Validates data that can be either string or object of the certain type, or array of them.
  *
  * @since 1.13.0
- * @since n.e.x.t Added verifyStringFunction parameter.
+ * @since 1.98.0 Added verifyStringFunction parameter.
  *
  * @param {string|string[]|Object|Object[]} data                   The data to check.
  * @param {Function}                        verifyObjectFunction   The callback to verify an object.
