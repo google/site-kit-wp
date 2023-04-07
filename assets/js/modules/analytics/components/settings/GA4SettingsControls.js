@@ -126,7 +126,7 @@ export default function GA4SettingsControls( props ) {
 									zIndex: 9999,
 								},
 							} }
-							target=".googlesitekit-analytics-4__select-property:not( .mdc-select--disabled )"
+							target=".googlesitekit-analytics-4__select-property--loaded"
 							onDismiss={ onDismissTooltip }
 							cta={
 								<Button
