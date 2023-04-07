@@ -129,12 +129,12 @@ export default function GA4SettingsControls( props ) {
 		properties !== undefined &&
 		webDataStreams !== undefined &&
 		hasModuleAccess &&
-		isDisabled &&
-		isValidPropertyID( propertyID ) &&
-		measurementID
+		! isDisabled &&
+		isValidPropertyID( propertyID )
 	) {
 		if ( properties.some( ( { _id } ) => _id === propertyID ) ) {
 			if (
+				measurementID &&
 				! getWebDataStreamsError &&
 				! webDataStreams.some(
 					( { webStreamData } ) =>
