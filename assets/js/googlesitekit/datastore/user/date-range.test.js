@@ -314,6 +314,8 @@ describe( 'core/user date-range', () => {
 					referenceDate: '2023-09-01',
 				};
 
+				registry = createTestRegistry();
+
 				expect(
 					registry.select( CORE_USER ).getReferenceDate()
 				).toEqual( '2023-09-01' );
