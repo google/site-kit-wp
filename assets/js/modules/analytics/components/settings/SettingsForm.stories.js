@@ -76,6 +76,49 @@ WithGA4andUASnippet.scenario = {
 	delay: 250,
 };
 
+export const PropertyNotAvailable = Template.bind( null );
+PropertyNotAvailable.storyName =
+	'Settings w/ selected GA4 property not available';
+PropertyNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WebDataStreamNotAvailable = Template.bind( null );
+WebDataStreamNotAvailable.storyName =
+	'Settings w/ selected GA4 webDataStream not available';
+WebDataStreamNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreamsBatch(
+					{ 1000: [] },
+					{
+						propertyIDs: [ '1000' ],
+					}
+				);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
 export const WithoutUAAndGA4AccessGA4NotConnected = Template.bind( null );
 WithoutUAAndGA4AccessGA4NotConnected.storyName =
 	'Settings w/o UA access, GA4 not connected';
