@@ -714,7 +714,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether we are matching account property or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if we matching account property right now, otherwise FALSE.

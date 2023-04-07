@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Setting\List_Setting;
 /**
  * Class for handling surveys queue.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Survey_Queue extends User_Setting {
 	/**
 	 * Adds a new survey to the queue.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param array $survey {
 	 *     The survey object to add to the queue.
@@ -59,7 +59,7 @@ class Survey_Queue extends User_Setting {
 	/**
 	 * Dequeues a survey that has the provided survey ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param string $survey_id The survey ID to dequeue.
 	 * @return array|null A survey object if it has been found, otherwise NULL.
@@ -89,7 +89,7 @@ class Survey_Queue extends User_Setting {
 	/**
 	 * Gets the first survey in the queue without removing it from the queue.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return array|null A survey object if at least one survey exists in the queue, otherwise NULL.
 	 */
@@ -101,7 +101,7 @@ class Survey_Queue extends User_Setting {
 	/**
 	 * Gets the survey for the provided session.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param array $session {
 	 *     The current session object.
@@ -130,7 +130,7 @@ class Survey_Queue extends User_Setting {
 	/**
 	 * Sanitizes array items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param array $items The original array items.
 	 * @return array Filtered items.

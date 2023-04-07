@@ -46,6 +46,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 import { createValidatedAction } from '../../data/utils';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -1360,6 +1361,17 @@ const baseSelectors = {
 		}
 
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
+			// When Analytics is not connected, it is set to not shareable. So moving this if block
+			// within the shareable and internal check below will cause issues in that case. Specifically,
+			// when Analytics is active with GA4 connected, but UA is not connected, the Analytics 4 module
+			// would not be included in the shareable modules list when it should be.
+			if (
+				slug === 'analytics' &&
+				select( MODULES_ANALYTICS ).isGA4DashboardView()
+			) {
+				return { 'analytics-4': modules[ 'analytics-4' ], ...acc };
+			}
+
 			if ( modules[ slug ].shareable && ! modules[ slug ].internal ) {
 				return { [ slug ]: modules[ slug ], ...acc };
 			}

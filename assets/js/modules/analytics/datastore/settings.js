@@ -305,7 +305,7 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
 /**
  * Gets the value of dashboardView from the Analytics settings.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
  */
@@ -335,7 +335,7 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 /**
  * Determines whether the user should be prompted to switch to GA4 Dashboard View.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @return {boolean} True if the user should be prompted to switch to the GA4 Dashboard View, false otherwise, or undefined if not loaded.
  */

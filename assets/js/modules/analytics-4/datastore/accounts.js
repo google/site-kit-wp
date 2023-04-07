@@ -91,7 +91,7 @@ const baseActions = {
 	/**
 	 * Creates a new Analytics (GA4) account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -157,7 +157,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether account creation is currently in progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if an account is being created, false otherwise.
@@ -173,7 +173,7 @@ const baseSelectors = {
 	/**
 	 * Get the terms of service URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The terms of service URL.
@@ -204,7 +204,7 @@ const baseSelectors = {
 	/**
 	 * Whether or not the account create form is valid to submit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 * @private
 	 *
 	 * @return {boolean} True if valid, otherwise false.
