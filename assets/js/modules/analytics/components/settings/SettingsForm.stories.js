@@ -23,6 +23,7 @@ import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
 import {
 	DASHBOARD_VIEW_GA4,
+	FORM_SETUP,
 	MODULES_ANALYTICS,
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
@@ -35,6 +36,7 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 
 const account = fixtures.accountsPropertiesProfiles.accounts[ 0 ];
 const properties = [
@@ -74,17 +76,6 @@ WithGA4andUASnippet.storyName = 'Settings w/ all switches';
 WithGA4andUASnippet.scenario = {
 	label: 'Modules/Analytics/Settings/SettingsEdit/WithGA4andUASnippet',
 	delay: 250,
-};
-
-export const WithGA4andUASnippetGA4Enabled = Template.bind( null );
-WithGA4andUASnippetGA4Enabled.storyName =
-	'Settings w/ all switches, GA4 enabled';
-WithGA4andUASnippetGA4Enabled.scenario = {
-	label: 'Modules/Analytics/Settings/SettingsEdit/WithGA4andUASnippetGA4Enabled',
-	delay: 250,
-};
-WithGA4andUASnippetGA4Enabled.parameters = {
-	features: [ 'ga4Reporting' ],
 };
 
 export const WithoutUAToggleGA4Enabled = Template.bind( null );
@@ -352,6 +343,9 @@ WithDashboardViewToggle.decorators = [
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.setDashboardView( DASHBOARD_VIEW_GA4 );
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( FORM_SETUP, { enableUA: true } );
 		};
 
 		return (
@@ -387,6 +381,10 @@ WithDashboardViewLabel.decorators = [
 					connected: false,
 				},
 			] );
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( FORM_SETUP, { enableUA: true } );
 		};
 
 		return (
