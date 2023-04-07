@@ -35,7 +35,6 @@ import { useMount } from 'react-use';
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
 import {
 	Fragment,
-	useCallback,
 	useEffect,
 	useLayoutEffect,
 	useRef,
@@ -212,37 +211,31 @@ export default function GoogleChart( props ) {
 		}
 	}, [ onMouseOver, onMouseOut ] );
 
-	/**
-	 * Checks to see if the date is within the date range.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Date} date The date to check.
-	 * @return {boolean}  `true` if the date is within the current date
-	 *                    range, `false` otherwise.
-	 */
-	const isDateWithinRange = useCallback(
-		( date ) => {
-			// If any of the dates are not set, return false.
-			if ( ! date || ! startDate || ! endDate ) {
-				return false;
-			}
+	// Checks to see if the date is within the date range.
+	const isDateWithinRange = ( date ) => {
+		// If any of the dates are not set, return false.
+		if ( ! date || ! startDate || ! endDate ) {
+			return false;
+		}
 
-			if (
-				// Don't render this marker if the date is before the first date
-				// in the current date range.
-				date.getTime() < stringToDate( startDate ).getTime() ||
-				// Don't render this marker if the date is after the last date
-				// in the current date range.
-				date.getTime() > stringToDate( endDate ).getTime()
-			) {
-				return false;
-			}
+		if (
+			// Don't render this marker if the date is before the first date
+			// in the current date range.
+			date.getTime() < stringToDate( startDate ).getTime() ||
+			// Don't render this marker if the date is after the last date
+			// in the current date range.
+			date.getTime() > stringToDate( endDate ).getTime()
+		) {
+			return false;
+		}
 
-			return true;
-		},
-		[ startDate, endDate ]
-	);
+		return true;
+	};
+
+	// Only use markers if the date is within the current date range.
+	const dateMarkersInRange = dateMarkers.filter( ( dateMarker ) => {
+		return isDateWithinRange( new Date( dateMarker.date ) );
+	} );
 
 	/**
 	 * Adds any "key date" vertical lines/tooltips to the charts.
@@ -252,7 +245,7 @@ export default function GoogleChart( props ) {
 			return;
 		}
 
-		if ( ! dateMarkers.length ) {
+		if ( ! dateMarkersInRange.length ) {
 			return;
 		}
 
@@ -266,14 +259,8 @@ export default function GoogleChart( props ) {
 		}
 
 		// Add the dotted line and tooltip for each date marker.
-		dateMarkers.forEach( ( dateMarker, index ) => {
+		dateMarkersInRange.forEach( ( dateMarker, index ) => {
 			const dateFromMarker = new Date( dateMarker.date );
-
-			// Don't render this marker if the date is not within the current
-			// date range.
-			if ( ! isDateWithinRange( dateFromMarker ) ) {
-				return;
-			}
 
 			const chartLine = document.getElementById(
 				`googlesitekit-chart__date-marker-line--${ instanceID }-${ index }`
@@ -311,7 +298,8 @@ export default function GoogleChart( props ) {
 					left: `${
 						Math.floor(
 							chartLayoutInterface.getXLocation( dateFromMarker )
-						) - 9
+						) -
+						iconSize / 2
 					}px`,
 					top: `${ Math.floor( chartArea.top ) }px`,
 					opacity: 1,
@@ -422,16 +410,8 @@ export default function GoogleChart( props ) {
 				{ gatheringData && isChartLoaded && (
 					<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
 				) }
-				{ !! dateMarkers.length &&
-					dateMarkers.map( ( dateMarker, index ) => {
-						const dateFromMarker = new Date( dateMarker.date );
-
-						// Don't render this marker if the date is not within the current
-						// date range.
-						if ( ! isDateWithinRange( dateFromMarker ) ) {
-							return null;
-						}
-
+				{ !! dateMarkersInRange.length &&
+					dateMarkersInRange.map( ( dateMarker, index ) => {
 						return (
 							<Fragment
 								key={ `googlesitekit-chart__date-marker--${ instanceID }-${ index }` }
