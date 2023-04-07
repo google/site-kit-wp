@@ -79,6 +79,10 @@ WithGA4andUASnippet.scenario = {
 export const PropertyNotAvailable = Template.bind( null );
 PropertyNotAvailable.storyName =
 	'Settings w/ selected GA4 property not available';
+PropertyNotAvailable.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
 PropertyNotAvailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -94,10 +98,18 @@ PropertyNotAvailable.decorators = [
 		);
 	},
 ];
+PropertyNotAvailable.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/PropertyNotAvailable',
+	delay: 250,
+};
 
 export const WebDataStreamNotAvailable = Template.bind( null );
 WebDataStreamNotAvailable.storyName =
 	'Settings w/ selected GA4 webDataStream not available';
+WebDataStreamNotAvailable.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
 WebDataStreamNotAvailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -118,6 +130,10 @@ WebDataStreamNotAvailable.decorators = [
 		);
 	},
 ];
+WebDataStreamNotAvailable.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WebDataStreamNotAvailable',
+	delay: 250,
+};
 
 export const WithoutUAAndGA4AccessGA4NotConnected = Template.bind( null );
 WithoutUAAndGA4AccessGA4NotConnected.storyName =
@@ -412,7 +428,7 @@ export default {
 	title: 'Modules/Analytics/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			const setupRegistry = async ( registry ) => {
 				provideModules( registry, [
 					{
 						slug: 'analytics',
@@ -477,7 +493,7 @@ export default {
 						{ accountID, propertyID: properties[ 1 ].id }
 					);
 
-				registry
+				await registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
 			};
