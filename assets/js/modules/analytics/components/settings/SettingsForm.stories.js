@@ -281,6 +281,10 @@ WithGA4Tag.decorators = [
 		);
 	},
 ];
+WithGA4Tag.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithGA4Tag',
+	delay: 250,
+};
 
 export const WithBothTags = Template.bind( null );
 WithBothTags.storyName =
