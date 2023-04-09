@@ -85,6 +85,8 @@ export default function WebDataStreamNotAvailableNotification() {
 			ctaLink={ `${ settingsURL }#connected-services/analytics/edit` }
 			ctaLabel={ __( 'Update Analytics settings', 'google-site-kit' ) }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
+			// This is arbitrarily set to 55 minutes to ensure that the notification
+			// will become ready to be displayed again in an hour.
 			dismissExpires={ getTimeInSeconds( 'minute' ) * 55 }
 		/>
 	);
