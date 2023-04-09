@@ -30,8 +30,7 @@ import BannerNotification from './BannerNotification';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../util';
-import { Grid } from '@material-ui/core';
-import { Cell, Row } from '../../material-components';
+import { Cell, Grid, Row } from '../../material-components';
 
 const { useSelect } = Data;
 
