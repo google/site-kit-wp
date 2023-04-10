@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -49,6 +50,9 @@ export default function EnableUniversalAnalytics( { children } ) {
 
 		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
 	} );
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -59,6 +63,12 @@ export default function EnableUniversalAnalytics( { children } ) {
 	const onChange = useCallback( () => {
 		setValues( FORM_SETUP, { enableUA: ! isUAEnabled } );
 	}, [ setValues, isUAEnabled ] );
+
+	useMount( () => {
+		if ( propertyID ) {
+			setValues( FORM_SETUP, { enableUA: true } );
+		}
+	} );
 
 	if ( properties.length === 0 ) {
 		return null;
