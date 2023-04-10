@@ -29,6 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../util';
+import { isFeatureEnabled } from '../../../features';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_ANALYTICS,
@@ -201,7 +202,7 @@ const baseActions = {
 				};
 			}
 
-			if ( uaProperty?.id ) {
+			if ( uaProperty?.id && ! isFeatureEnabled( 'ga4Reporting' ) ) {
 				yield propertyActions.selectProperty(
 					uaProperty?.id,
 					// eslint-disable-next-line sitekit/acronym-case
@@ -418,10 +419,13 @@ const baseResolvers = {
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.setAccountID( matchedProperty.accountId );
-			yield propertyActions.selectProperty(
-				matchedProperty.id,
-				matchedProperty.internalWebPropertyId
-			);
+
+			if ( ! isFeatureEnabled( 'ga4Reporting' ) ) {
+				yield propertyActions.selectProperty(
+					matchedProperty.id,
+					matchedProperty.internalWebPropertyId
+				);
+			}
 			/* eslint-enable */
 		}
 
