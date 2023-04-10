@@ -58,11 +58,8 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-	const canSubmitChanges = useSelect( ( select ) =>
+	const canSubmitUAChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitChanges()
-	);
-	const canSubmitChangesGA4 = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).canSubmitChanges()
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -73,6 +70,19 @@ export default function SetupForm( { finishSetup } ) {
 	const setupFlowMode = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
+	const isUAEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
+	);
+	const canSubmitGA4Changes = useSelect( ( select ) => {
+		const canSubmitChanges =
+			select( MODULES_ANALYTICS_4 ).canSubmitChanges();
+
+		if ( isUAEnabled ) {
+			return canSubmitUAChanges && canSubmitChanges;
+		}
+
+		return canSubmitChanges;
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS );
@@ -139,8 +149,8 @@ export default function SetupForm( { finishSetup } ) {
 				<Button
 					disabled={
 						ga4ReportingEnabled
-							? ! canSubmitChangesGA4
-							: ! canSubmitChanges
+							? ! canSubmitGA4Changes
+							: ! canSubmitUAChanges
 					}
 				>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
