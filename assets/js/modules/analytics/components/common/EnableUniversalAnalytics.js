@@ -55,14 +55,27 @@ export default function EnableUniversalAnalytics( { children } ) {
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { resetPropertyAndProfileIDs, revertPropertyAndProfileIDs } =
+		useDispatch( MODULES_ANALYTICS );
 
 	const isUAEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
 
 	const onChange = useCallback( () => {
+		if ( isUAEnabled ) {
+			resetPropertyAndProfileIDs();
+		} else {
+			revertPropertyAndProfileIDs();
+		}
+
 		setValues( FORM_SETUP, { enableUA: ! isUAEnabled } );
-	}, [ setValues, isUAEnabled ] );
+	}, [
+		isUAEnabled,
+		setValues,
+		resetPropertyAndProfileIDs,
+		revertPropertyAndProfileIDs,
+	] );
 
 	useMount( () => {
 		if ( propertyID ) {
