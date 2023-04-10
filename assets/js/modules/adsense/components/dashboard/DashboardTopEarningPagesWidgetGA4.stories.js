@@ -40,6 +40,11 @@ export default {
 						connected: true,
 						slug: 'adsense',
 					},
+					{
+						active: true,
+						connected: true,
+						slug: 'analytics-4',
+					},
 				] );
 			};
 
