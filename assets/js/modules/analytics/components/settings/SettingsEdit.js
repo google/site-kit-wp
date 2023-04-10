@@ -28,6 +28,7 @@ import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
 import { AccountCreate, AccountCreateLegacy } from '../common';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
@@ -46,9 +47,16 @@ export default function SettingsEdit() {
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
-	const hasAnalyticsAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' )
+	const hasAnalyticsAccess = useSelect(
+		( select ) =>
+			select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' ) ||
+			( ga4ReportingEnabled &&
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) &&
+				select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+					'analytics-4'
+				) )
 	);
 
 	const hasAnalytics4Access = useSelect( ( select ) => {
