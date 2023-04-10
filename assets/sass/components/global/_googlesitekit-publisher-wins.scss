@@ -85,11 +85,11 @@
 	}
 
 	.googlesitekit-publisher-win__icons {
-		position: absolute;
+		display: flex;
+		height: 100%;
+		justify-content: left;
 		right: 8px;
 		top: 50%;
-		transform: translateY(-50%);
-
 		@media (min-width: $bp-desktop) {
 			right: calc(#{$grid-gap-desktop} * 2);
 		}
