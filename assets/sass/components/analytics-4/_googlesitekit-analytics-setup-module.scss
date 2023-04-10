@@ -1,7 +1,7 @@
 /**
- * Analytics Settings styles.
+ * Analytics Setup styles.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,12 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-settings-module--analytics {
+	.googlesitekit-setup-module--analytics {
 
 		.googlesitekit-setup-module__inputs {
 
-			.googlesitekit-analytics__select-account,
 			.googlesitekit-analytics__select-property,
-			.googlesitekit-analytics__select-profile,
-			.googlesitekit-analytics-4__select-property,
-			.googlesitekit-analytics-4__select-webdatastream {
+			.googlesitekit-analytics__select-profile {
 				margin-top: $grid-gap-phone / 2;
 			}
 		}
