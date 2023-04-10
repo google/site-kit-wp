@@ -41,6 +41,7 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
 import { stringToDate } from '../../../../../util/date-range/string-to-date';
+import { UA_CUTOFF_DATE } from '../../../constants';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
@@ -111,10 +112,12 @@ export default function UserCountGraph( props ) {
 				label: __( 'Users', 'google-site-kit' ),
 			},
 		],
-		...rows.map( ( { metrics, dimensions } ) => [
-			parseDimensionStringToDate( dimensions[ 0 ] ),
-			metrics[ 0 ].values[ 0 ],
-		] ),
+		...rows.map( ( { metrics, dimensions } ) => {
+			return [
+				parseDimensionStringToDate( dimensions[ 0 ] ),
+				metrics[ 0 ].values[ 0 ],
+			];
+		} ),
 	];
 
 	// Putting the actual start and end dates in the ticks causes the charts not to render
@@ -204,6 +207,15 @@ export default function UserCountGraph( props ) {
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
+				dateMarkers={ [
+					{
+						date: UA_CUTOFF_DATE,
+						text: __(
+							'Universal Analytics stopped collecting data',
+							'google-site-kit'
+						),
+					},
+				] }
 				height="368px"
 				loadingHeight="340px"
 				loaded={ loaded }

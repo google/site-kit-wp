@@ -39,6 +39,7 @@ export const getFilteredChartData = ( data, selectedStats ) => {
 	if ( ! selectedStats?.length ) {
 		return data;
 	}
+
 	// Ensure we don't filter out columns that aren't data, but are things like
 	// tooltips or other content.
 	let nonDataColumns = [];
