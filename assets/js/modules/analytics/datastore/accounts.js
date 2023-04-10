@@ -100,6 +100,7 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
 const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
 const RESET_PROPERTY_AND_PROFILE_IDS = 'RESET_PROPERTY_AND_PROFILE_IDS';
+const REVERT_PROPERTY_AND_PROFILE_IDS = 'REVERT_PROPERTY_AND_PROFILE_IDS';
 
 const baseInitialState = {
 	accounts: undefined,
@@ -142,6 +143,13 @@ const baseActions = {
 		return {
 			payload: {},
 			type: RESET_PROPERTY_AND_PROFILE_IDS,
+		};
+	},
+
+	revertPropertyAndProfileIDs() {
+		return {
+			payload: {},
+			type: REVERT_PROPERTY_AND_PROFILE_IDS,
 		};
 	},
 
@@ -314,6 +322,19 @@ const baseReducer = ( state, { type, payload } ) => {
 					propertyID: '',
 					internalWebPropertyID: '',
 					profileID: '',
+				},
+			};
+		}
+
+		case REVERT_PROPERTY_AND_PROFILE_IDS: {
+			return {
+				...state,
+				settings: {
+					...state.settings,
+					propertyID: state.savedSettings.propertyID,
+					internalWebPropertyID:
+						state.savedSettings.internalWebPropertyID,
+					profileID: state.savedSettings.profileID,
 				},
 			};
 		}
