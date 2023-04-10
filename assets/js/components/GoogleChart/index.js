@@ -60,7 +60,7 @@ import {
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
-import { stringToDate } from '../../util';
+import { stringToDate, getDateString } from '../../util/date-range';
 const { useDispatch, useSelect } = Data;
 
 export default function GoogleChart( props ) {
@@ -270,13 +270,22 @@ export default function GoogleChart( props ) {
 				`#googlesitekit-chart__date-marker-line--${ instanceID }-${ index } is missing from the DOM, but required to render date markers.`
 			);
 
+			// We need to make sure the dates we use on the chart and on
+			// this line are exactly the same, so we get the position on the
+			// chart that matches the date we create from the date string.
+			//
+			// This prevents the line and the chart data from being
+			// slightly out-of-alignment, see:
+			// https://github.com/google/site-kit-wp/pull/6822#pullrequestreview-1376066844.
+			const dateCordinateX = Math.floor(
+				chartLayoutInterface.getXLocation(
+					stringToDate( getDateString( dateFromMarker ) )
+				)
+			);
+
 			// Align the dotted line with the date for this marker.
 			Object.assign( chartLine.style, {
-				left: `${
-					Math.floor(
-						chartLayoutInterface.getXLocation( dateFromMarker )
-					) - 1
-				}px`,
+				left: `${ dateCordinateX - 1 }px`,
 				top: `${ Math.floor( chartArea.top ) + iconSize }px`,
 				height: `${ Math.floor( chartArea.height ) - iconSize }px`,
 				opacity: 1,
@@ -295,12 +304,7 @@ export default function GoogleChart( props ) {
 
 				// Align the tooltip component with the date line.
 				Object.assign( tooltip.style, {
-					left: `${
-						Math.floor(
-							chartLayoutInterface.getXLocation( dateFromMarker )
-						) -
-						iconSize / 2
-					}px`,
+					left: `${ dateCordinateX - iconSize / 2 }px`,
 					top: `${ Math.floor( chartArea.top ) }px`,
 					opacity: 1,
 				} );
