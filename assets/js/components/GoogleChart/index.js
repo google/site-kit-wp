@@ -277,7 +277,7 @@ export default function GoogleChart( props ) {
 			// This prevents the line and the chart data from being
 			// slightly out-of-alignment, see:
 			// https://github.com/google/site-kit-wp/pull/6822#pullrequestreview-1376066844.
-			const dateCordinateX = Math.floor(
+			const dateCoordinateX = Math.floor(
 				chartLayoutInterface.getXLocation(
 					stringToDate( getDateString( dateFromMarker ) )
 				)
@@ -285,7 +285,7 @@ export default function GoogleChart( props ) {
 
 			// Align the dotted line with the date for this marker.
 			Object.assign( chartLine.style, {
-				left: `${ dateCordinateX - 1 }px`,
+				left: `${ dateCoordinateX - 1 }px`,
 				top: `${ Math.floor( chartArea.top ) + iconSize }px`,
 				height: `${ Math.floor( chartArea.height ) - iconSize }px`,
 				opacity: 1,
@@ -304,7 +304,7 @@ export default function GoogleChart( props ) {
 
 				// Align the tooltip component with the date line.
 				Object.assign( tooltip.style, {
-					left: `${ dateCordinateX - iconSize / 2 }px`,
+					left: `${ dateCoordinateX - iconSize / 2 }px`,
 					top: `${ Math.floor( chartArea.top ) }px`,
 					opacity: 1,
 				} );
