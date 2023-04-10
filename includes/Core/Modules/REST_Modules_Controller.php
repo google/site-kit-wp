@@ -341,7 +341,7 @@ class REST_Modules_Controller {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 
-							if ( ! $this->modules->is_module_connected( $slug ) ) {
+							if ( ! $module->is_connected() ) {
 								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
 
