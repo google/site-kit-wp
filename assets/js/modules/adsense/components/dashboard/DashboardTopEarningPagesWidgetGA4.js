@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { compose } from '@wordpress/compose';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -124,6 +125,7 @@ DashboardTopEarningPagesWidgetGA4.propTypes = {
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'adsense' } )(
-	DashboardTopEarningPagesWidgetGA4
-);
+export default compose(
+	whenActive( { moduleName: 'adsense' } ),
+	whenActive( { moduleName: 'analytics-4' } )
+)( DashboardTopEarningPagesWidgetGA4 );
