@@ -343,6 +343,13 @@ WithDashboardViewToggle.decorators = [
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.setDashboardView( DASHBOARD_VIEW_GA4 );
+
+			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
+				properties[ 0 ].id,
+				// eslint-disable-next-line sitekit/acronym-case
+				properties[ 0 ].internalWebPropertyId
+			);
+
 			registry
 				.dispatch( CORE_FORMS )
 				.setValues( FORM_SETUP, { enableUA: true } );
@@ -381,6 +388,12 @@ WithDashboardViewLabel.decorators = [
 					connected: false,
 				},
 			] );
+
+			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
+				properties[ 0 ].id,
+				// eslint-disable-next-line sitekit/acronym-case
+				properties[ 0 ].internalWebPropertyId
+			);
 
 			registry
 				.dispatch( CORE_FORMS )

@@ -35,6 +35,19 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
+const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
+const properties = [
+	{
+		...fixtures.accountsPropertiesProfiles.properties[ 0 ],
+		websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+	},
+	{
+		...fixtures.accountsPropertiesProfiles.properties[ 1 ],
+	},
+];
+
+const accountID = accounts[ 0 ].id;
+
 function Template( { setupRegistry = () => {}, ...args } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
@@ -72,6 +85,12 @@ export const WithDashboardView = Template.bind( null );
 WithDashboardView.storyName = 'Settings with Dashboard View';
 WithDashboardView.args = {
 	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS ).selectProperty(
+			properties[ 0 ].id,
+			// eslint-disable-next-line sitekit/acronym-case
+			properties[ 0 ].internalWebPropertyId
+		);
+
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.setDashboardView( DASHBOARD_VIEW_GA4 );
@@ -90,20 +109,6 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const accounts =
-					fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
-				const properties = [
-					{
-						...fixtures.accountsPropertiesProfiles.properties[ 0 ],
-						websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-					},
-					{
-						...fixtures.accountsPropertiesProfiles.properties[ 1 ],
-					},
-				];
-
-				const accountID = accounts[ 0 ].id;
-
 				provideModules( registry, [
 					{
 						slug: 'analytics',
