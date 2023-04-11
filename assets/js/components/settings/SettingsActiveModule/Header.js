@@ -45,7 +45,6 @@ import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
-import { useFeature } from '../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function Header( { slug } ) {
@@ -54,7 +53,6 @@ export default function Header( { slug } ) {
 	const viewContext = useViewContext();
 	const history = useHistory();
 	const headerRef = useRef();
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const { moduleSlug } = useParams();
 	const isOpen = moduleSlug === slug;
@@ -77,14 +75,8 @@ export default function Header( { slug } ) {
 		if ( ! ( slug === 'analytics' && module?.connected ) ) {
 			return false;
 		}
-		return (
-			select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' ) ||
-			( ga4ReportingEnabled &&
-				isGA4Connected &&
-				select( CORE_MODULES ).hasModuleOwnershipOrAccess(
-					'analytics-4'
-				) )
-		);
+
+		return select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' );
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
