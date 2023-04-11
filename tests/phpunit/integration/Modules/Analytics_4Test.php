@@ -27,7 +27,6 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
@@ -128,23 +127,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals(
 			$this->analytics->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
-		);
-
-		// Test ownerID synchronization between Analytics and Analytics_4.
-		$this->analytics->get_settings()->merge(
-			array(
-				'ownerID' => '1',
-			)
-		);
-
-		update_option(
-			Analytics_Settings::OPTION,
-			array( 'ownerID' => '12345' )
-		);
-
-		$this->assertEquals(
-			$this->analytics->get_settings()->get()['ownerID'],
-			'12345'
 		);
 	}
 
