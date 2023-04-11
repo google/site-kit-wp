@@ -199,9 +199,7 @@ export const selectors = {
 	 * @return {string} The current reference date as YYYY-MM-DD.
 	 */
 	getReferenceDate( state ) {
-		return (
-			global._googlesitekitBaseData?.referenceDate ?? state.referenceDate
-		);
+		return state.referenceDate;
 	},
 };
 

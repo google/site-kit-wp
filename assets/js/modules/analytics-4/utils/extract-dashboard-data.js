@@ -68,7 +68,7 @@ function reduceAnalytics4RowsData( rows, selectedStats ) {
  * Extracts the data required from an analytics 'site-analytics' request.
  *
  * @since 1.96.0
- * @since n.e.x.t Added chartDataFormats parameter.
+ * @since 1.98.0 Added chartDataFormats parameter.
  *
  * @param {Object} report             The data returned from the Analytics API call.
  * @param {Array}  selectedStats      The currently selected stat we need to return data for.

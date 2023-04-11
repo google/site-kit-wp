@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics;
@@ -144,6 +145,74 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals(
 			$this->analytics->get_settings()->get()['ownerID'],
 			'12345'
+		);
+	}
+
+	/**
+	 * @dataProvider analytics_sharing_settings_data_provider
+	 * @param array $sharing_settings
+	 * @param array $expected
+	 */
+	public function test_register__replicate_analytics_sharing_settings( $sharing_settings, $expected ) {
+		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
+		$this->assertFalse( has_filter( 'option_' . Module_Sharing_Settings::OPTION ) );
+
+		$this->analytics->register();
+
+		$this->assertTrue( has_filter( 'option_' . Module_Sharing_Settings::OPTION ) );
+
+		update_option( Module_Sharing_Settings::OPTION, $sharing_settings );
+		$this->assertEquals( $expected, get_option( Module_Sharing_Settings::OPTION ) );
+	}
+
+	public function analytics_sharing_settings_data_provider() {
+		$initial_sharing_settings                                     = array(
+			'search-console' => array(
+				'sharedRoles' => array( 'contributor', 'administrator' ),
+				'management'  => 'all_admins',
+			),
+		);
+		$sharing_settings_with_analytics                              = array_merge(
+			$initial_sharing_settings,
+			array(
+				'analytics' => array(
+					'sharedRoles' => array( 'editor', 'administrator' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+		$sharing_settings_with_both_analytics                         = array_merge(
+			$sharing_settings_with_analytics,
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor', 'administrator' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+		$sharing_settings_with_both_analytics_with_different_settings = array_merge(
+			$sharing_settings_with_analytics,
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'contributor' ),
+					'management'  => 'all_admins',
+				),
+			)
+		);
+
+		return array(
+			'Analytics and Analytics-4 both not set' => array(
+				$initial_sharing_settings,
+				$initial_sharing_settings,
+			),
+			'Analytics set and Analytics-4 not set'  => array(
+				$sharing_settings_with_analytics,
+				$sharing_settings_with_both_analytics,
+			),
+			'Analytics and Analytics-4 both set'     => array(
+				$sharing_settings_with_both_analytics_with_different_settings,
+				$sharing_settings_with_both_analytics_with_different_settings,
+			),
 		);
 	}
 

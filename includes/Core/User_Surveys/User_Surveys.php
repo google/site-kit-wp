@@ -41,7 +41,7 @@ class User_Surveys {
 	/**
 	 * Survey_Queue instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 * @var Survey_Queue
 	 */
 	protected $queue;

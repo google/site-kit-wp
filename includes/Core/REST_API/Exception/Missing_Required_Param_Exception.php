@@ -17,7 +17,7 @@ use WP_Error;
 /**
  * Class for representing a missing required parameter.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Missing_Required_Param_Exception extends Exception implements WP_Errorable
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @param string $parameter_name Missing request parameter name.
 	 * @param int    $code           Optional. HTTP Status code of resulting error. Defaults to 400.
@@ -50,7 +50,7 @@ class Missing_Required_Param_Exception extends Exception implements WP_Errorable
 	/**
 	 * Gets the WP_Error representation of this exception.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.98.0
 	 *
 	 * @return WP_Error
 	 */

@@ -34,7 +34,7 @@ import {
 /**
  * Generates a set of report detail arguments for a Google Analytics 4 report.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @param {Object} details Report details.
  * @return {Object} Report detail arguments.
@@ -81,7 +81,7 @@ export function generateReportDetailArgs( details ) {
 /**
  * Generates a set of report filter arguments for a Google Analytics 4 report.
  *
- * @since n.e.x.t
+ * @since 1.98.0
  *
  * @param {Object} filters Report filters.
  * @return {Object} Report filter arguments.
