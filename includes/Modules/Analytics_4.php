@@ -695,7 +695,7 @@ final class Analytics_4 extends Module
 				}
 
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
-				$property_id = self::normalize_property_id( $settings['propertyID'] );
+				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
 					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
