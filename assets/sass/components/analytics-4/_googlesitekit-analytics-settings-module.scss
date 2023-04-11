@@ -28,5 +28,13 @@
 				margin-top: $grid-gap-phone / 2;
 			}
 		}
+
+		.googlesitekit-analytics-enable + .googlesitekit-setup-module__inputs {
+
+			.googlesitekit-analytics__select-property,
+			.googlesitekit-analytics__select-profile {
+				margin-top: $grid-gap-phone / 2;
+			}
+		}
 	}
 }
