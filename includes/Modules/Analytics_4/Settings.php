@@ -35,6 +35,32 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		parent::register();
 
 		$this->register_owned_keys();
+
+		add_filter(
+			'default_option_' . self::OPTION,
+			function ( $default ) {
+				$owner_id = apply_filters( 'googlesitekit_analytics_owner_id', null );
+
+				if ( is_numeric( $owner_id ) ) {
+					$default['ownerID'] = (int) $owner_id;
+				}
+
+				return $default;
+			}
+		);
+
+		add_filter(
+			'option_' . self::OPTION,
+			function ( $option ) {
+				$owner_id = apply_filters( 'googlesitekit_analytics_owner_id', null );
+
+				if ( is_numeric( $owner_id ) ) {
+					$option['ownerID'] = (int) $owner_id;
+				}
+
+				return $option;
+			}
+		);
 	}
 
 	/**

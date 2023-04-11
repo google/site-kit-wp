@@ -63,6 +63,11 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$default['canUseSnippet'] = $can_use_snippet;
 				}
 
+				$owner_id = apply_filters( 'googlesitekit_analytics_owner_id', null );
+				if ( is_numeric( $owner_id ) ) {
+					$default['ownerID'] = (int) $owner_id;
+				}
+
 				return $default;
 			}
 		);
@@ -148,6 +153,11 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true, $property_id );
 				if ( is_bool( $can_use_snippet ) ) {
 					$option['canUseSnippet'] = $can_use_snippet;
+				}
+
+				$owner_id = apply_filters( 'googlesitekit_analytics_owner_id', null );
+				if ( is_numeric( $owner_id ) ) {
+					$option['ownerID'] = (int) $owner_id;
 				}
 
 				return $option;
