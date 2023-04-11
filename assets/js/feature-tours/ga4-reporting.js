@@ -25,6 +25,7 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import SupportLink from '../components/SupportLink';
+import { isFeatureEnabled } from '../features';
 
 const ga4Reporting = {
 	slug: 'ga4Reporting',
@@ -32,6 +33,7 @@ const ga4Reporting = {
 	version: '1.999.0', // Change this version to the actual version when GA4 reporting is released to 100% of users.
 	gaEventCategory: ( viewContext ) =>
 		`${ viewContext }_dashboard-ga4-reporting`,
+	checkRequirements: () => isFeatureEnabled( 'ga4Reporting' ),
 	steps: [
 		{
 			target: '.googlesitekit-data-block--conversions .googlesitekit-data-block__title',
