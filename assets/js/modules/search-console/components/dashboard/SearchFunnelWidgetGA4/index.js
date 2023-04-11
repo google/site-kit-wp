@@ -122,15 +122,11 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		return Object.keys( recoverableModules ).includes( 'analytics' );
 	} );
 
-	const ga4PropertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
-
 	const ga4ConversionsData = useInViewSelect( ( select ) => {
 		return isGA4Connected &&
 			canViewSharedAnalytics &&
 			! showRecoverableAnalytics
-			? select( MODULES_ANALYTICS_4 ).getConversionEvents( ga4PropertyID )
+			? select( MODULES_ANALYTICS_4 ).getConversionEvents()
 			: [];
 	} );
 
@@ -138,7 +134,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		isGA4Connected && canViewSharedAnalytics && ! showRecoverableAnalytics
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getConversionEvents',
-					[ ga4PropertyID ]
+					[]
 			  )
 			: false
 	);
@@ -147,7 +143,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		isGA4Connected && ! showRecoverableAnalytics
 			? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 					'getConversionEvents',
-					[ ga4PropertyID ]
+					[]
 			  )
 			: null
 	);
