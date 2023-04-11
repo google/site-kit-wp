@@ -36,13 +36,11 @@ trait Setting_With_Owned_Keys_Trait {
 	 * @since 1.16.0
 	 */
 	protected function register_owned_keys() {
-		$keys = $this->get_owned_keys();
-
 		add_action(
 			'add_option_' . static::OPTION,
-			function ( $option, $value ) use ( $keys ) {
-				if ( is_array( $value ) && count( array_intersect( array_keys( $value ), $keys ) ) > 0 && current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-					$this->merge( array( 'ownerID' => get_current_user_id() ) );
+			function ( $option, $value ) {
+				if ( is_array( $value ) ) {
+					$this->maybe_set_owner_id( $value );
 				}
 			},
 			10,
@@ -51,21 +49,53 @@ trait Setting_With_Owned_Keys_Trait {
 
 		add_filter(
 			'pre_update_option_' . static::OPTION,
-			function( $value, $old_value ) use ( $keys ) {
+			function ( $value, $old_value ) {
 				if ( is_array( $value ) && is_array( $old_value ) ) {
-					foreach ( $keys as $key ) {
-						if ( isset( $value[ $key ], $old_value[ $key ] ) && $value[ $key ] !== $old_value[ $key ] && current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-							$value['ownerID'] = get_current_user_id();
-							break;
-						}
-					}
+					return $this->maybe_update_owner_id_in_settings( $value, $old_value );
 				}
-
-				return $value;
 			},
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Updates settings to set the current user as an owner of the module if settings contain owned keys.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $settings The module settings.
+	 */
+	protected function maybe_set_owner_id( $settings ) {
+		$keys = $this->get_owned_keys();
+		if ( count( array_intersect( array_keys( $settings ), $keys ) ) > 0 && current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+			$this->merge( array( 'ownerID' => get_current_user_id() ) );
+		}
+	}
+
+	/**
+	 * Updates the current module settings to have the current user as the owner of the module if at least
+	 * one of the owned keys have been changed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $settings The new module settings.
+	 * @param array $old_settings The old module settings.
+	 */
+	protected function maybe_update_owner_id_in_settings( $settings, $old_settings ) {
+		$keys = $this->get_owned_keys();
+		foreach ( $keys as $key ) {
+			if (
+				isset( $settings[ $key ], $old_settings[ $key ] ) &&
+				$settings[ $key ] !== $old_settings[ $key ] &&
+				current_user_can( Permissions::MANAGE_OPTIONS )
+			) {
+				$settings['ownerID'] = get_current_user_id();
+				break;
+			}
+		}
+
+		return $settings;
 	}
 
 }
