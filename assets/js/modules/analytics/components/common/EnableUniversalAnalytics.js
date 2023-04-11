@@ -106,7 +106,7 @@ export default function EnableUniversalAnalytics( {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-analytics-usesnippet">
+			<div className="googlesitekit-analytics-enable">
 				<Switch
 					label={ __(
 						'Enable Universal Analytics',
