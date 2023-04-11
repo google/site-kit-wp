@@ -84,13 +84,20 @@ export default function SettingsForm( {
 			isTagManagerAvailable &&
 			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
-	const showTrackingExclusion =
-		useAnalyticsSnippet ||
-		( useTagManagerSnippet && analyticsSinglePropertyID );
-
 	const gtmContainersResolved = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
+	const properties = useSelect( ( select ) => {
+		if ( ! accountID ) {
+			return [];
+		}
+
+		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
+	} );
+
+	const showTrackingExclusion =
+		useAnalyticsSnippet ||
+		( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	if ( ! gtmContainersResolved ) {
 		return <ProgressBar />;
@@ -129,7 +136,7 @@ export default function SettingsForm( {
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
 
-			{ ga4ReportingEnabled && (
+			{ ga4ReportingEnabled && properties.length > 0 && (
 				<div className="googlesitekit-settings-module__fields-group">
 					<h4 className="googlesitekit-settings-module__fields-group-title">
 						{ __( 'Universal Analytics', 'google-site-kit' ) }
