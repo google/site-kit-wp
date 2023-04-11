@@ -27,8 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
-import Link from '../../../../components/Link';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import SupportLink from '../../../../components/SupportLink';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
@@ -37,11 +36,6 @@ export default function PlaceAntiFlickerSwitch() {
 		select( MODULES_OPTIMIZE ).getPlaceAntiFlickerSnippet()
 	);
 	const { setPlaceAntiFlickerSnippet } = useDispatch( MODULES_OPTIMIZE );
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/optimize/answer/7100284',
-		} )
-	);
 
 	let message;
 	if ( placeAntiFlickerSnippet ) {
@@ -82,8 +76,8 @@ export default function PlaceAntiFlickerSwitch() {
 			<p>
 				{ createInterpolateElement( message, {
 					a: (
-						<Link
-							href={ supportURL }
+						<SupportLink
+							path="/optimize/answer/7100284"
 							external
 							aria-label={ __(
 								'Learn more about the anti-flicker snippet.',
