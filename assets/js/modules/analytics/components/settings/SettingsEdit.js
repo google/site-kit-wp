@@ -53,9 +53,15 @@ export default function SettingsEdit() {
 		const { hasModuleOwnershipOrAccess, getErrorForAction } =
 			select( CORE_MODULES );
 
-		if ( hasModuleOwnershipOrAccess( 'analytics' ) ) {
+		const hasAccess = hasModuleOwnershipOrAccess( 'analytics' );
+
+		if ( undefined === hasAccess ) {
+			return undefined;
+		}
+		if ( hasAccess ) {
 			return true;
 		}
+
 		// If we've gotten this far, then the current user is not the module owner
 		// nor do they have access to UA (meaning a request was made to check via checkModuleAccess).
 
