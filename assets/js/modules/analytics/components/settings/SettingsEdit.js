@@ -55,24 +55,32 @@ export default function SettingsEdit() {
 
 		const hasAccess = hasModuleOwnershipOrAccess( 'analytics' );
 
-		if ( undefined === hasAccess ) {
-			return undefined;
-		}
 		if ( hasAccess ) {
 			return true;
 		}
 
+		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
+			'analytics',
+		] );
+
+		// Return early if request is not completed yet.
+		if ( undefined === hasAccess && ! checkAccessError ) {
+			return undefined;
+		}
+
+		// Return false if UA is connected and access is concretely missing.
+		if ( false === hasAccess ) {
+			return false;
+		}
+
 		// If we've gotten this far, then the current user is not the module owner
-		// nor do they have access to UA (meaning a request was made to check via checkModuleAccess).
+		// nor do they have access to UA (meaning a request was made and completed to check via checkModuleAccess)
+		// which means that the check request resulted in an error.
 
 		if ( ! ga4ReportingEnabled ) {
 			return false;
 		}
 
-		// If UA is not actually connected, it will return a module_not_connected error.
-		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
-			'analytics',
-		] );
 		if ( 'module_not_connected' === checkAccessError?.code ) {
 			return true;
 		}
