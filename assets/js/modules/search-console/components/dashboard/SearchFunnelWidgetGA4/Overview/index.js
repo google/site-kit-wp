@@ -98,12 +98,20 @@ export default function Overview( props ) {
 		return select( CORE_USER ).canViewSharedModule( 'analytics' );
 	} );
 
-	const toursAreOnCooldown = useSelect( ( select ) =>
-		select( CORE_USER ).areFeatureToursOnCooldown()
-	);
-	const shownTour = useSelect( ( select ) =>
-		select( CORE_USER ).getShownTour()
-	);
+	const canShowGA4ReportingFeatureTour = useSelect( ( select ) => {
+		// Don't show the GA4 report feature tour if feature tours are on cooldown.
+		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
+			return false;
+		}
+
+		// Don't show the GA4 report feature tour if we have already shown a feature tour
+		// during the current page view.
+		if ( !! select( CORE_USER ).getShownTour() ) {
+			return false;
+		}
+
+		return true;
+	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
@@ -180,9 +188,8 @@ export default function Overview( props ) {
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	useEffect( () => {
 		if (
-			toursAreOnCooldown ||
-			!! shownTour ||
 			! showGA4 ||
+			! canShowGA4ReportingFeatureTour ||
 			dashboardType !== DASHBOARD_TYPE_MAIN
 		) {
 			return;
@@ -195,8 +202,7 @@ export default function Overview( props ) {
 		dashboardType,
 		setValue,
 		triggerOnDemandTour,
-		toursAreOnCooldown,
-		shownTour,
+		canShowGA4ReportingFeatureTour,
 	] );
 
 	const showConversionsCTA =

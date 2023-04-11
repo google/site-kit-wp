@@ -40,5 +40,5 @@ export default function SupportLink( props ) {
 SupportLink.propTypes = {
 	path: PropTypes.string.isRequired,
 	query: PropTypes.object,
-	hash: PropTypes.hash,
+	hash: PropTypes.string,
 };
