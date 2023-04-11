@@ -49,15 +49,31 @@ export default function SettingsEdit() {
 	);
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
-	const hasAnalyticsAccess = useSelect(
-		( select ) =>
-			select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' ) ||
-			( ga4ReportingEnabled &&
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) &&
-				select( CORE_MODULES ).hasModuleOwnershipOrAccess(
-					'analytics-4'
-				) )
-	);
+	const hasAnalyticsAccess = useSelect( ( select ) => {
+		const { hasModuleOwnershipOrAccess, getErrorForAction } =
+			select( CORE_MODULES );
+
+		if ( hasModuleOwnershipOrAccess( 'analytics' ) ) {
+			return true;
+		}
+		// If we've gotten this far, then the current user is not the module owner
+		// nor do they have access to UA (meaning a request was made to check via checkModuleAccess).
+
+		if ( ! ga4ReportingEnabled ) {
+			return false;
+		}
+
+		// If UA is not actually connected, it will return a module_not_connected error.
+		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
+			'analytics',
+		] );
+		if ( 'module_not_connected' === checkAccessError?.code ) {
+			return true;
+		}
+
+		// For any other error or case, the user does not have access to UA.
+		return false;
+	} );
 
 	const hasAnalytics4Access = useSelect( ( select ) => {
 		// Prevent the access check from erroring if GA4 isn't connected yet.
