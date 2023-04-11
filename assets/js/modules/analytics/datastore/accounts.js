@@ -29,6 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../util';
+import { isFeatureEnabled } from '../../../features';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_ANALYTICS,
@@ -100,6 +101,7 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
 const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
 const RESET_PROPERTY_AND_PROFILE_IDS = 'RESET_PROPERTY_AND_PROFILE_IDS';
+const REVERT_PROPERTY_AND_PROFILE_IDS = 'REVERT_PROPERTY_AND_PROFILE_IDS';
 
 const baseInitialState = {
 	accounts: undefined,
@@ -142,6 +144,13 @@ const baseActions = {
 		return {
 			payload: {},
 			type: RESET_PROPERTY_AND_PROFILE_IDS,
+		};
+	},
+
+	revertPropertyAndProfileIDs() {
+		return {
+			payload: {},
+			type: REVERT_PROPERTY_AND_PROFILE_IDS,
 		};
 	},
 
@@ -193,7 +202,7 @@ const baseActions = {
 				};
 			}
 
-			if ( uaProperty?.id ) {
+			if ( uaProperty?.id && ! isFeatureEnabled( 'ga4Reporting' ) ) {
 				yield propertyActions.selectProperty(
 					uaProperty?.id,
 					// eslint-disable-next-line sitekit/acronym-case
@@ -318,6 +327,19 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case REVERT_PROPERTY_AND_PROFILE_IDS: {
+			return {
+				...state,
+				settings: {
+					...state.settings,
+					propertyID: state.savedSettings.propertyID,
+					internalWebPropertyID:
+						state.savedSettings.internalWebPropertyID,
+					profileID: state.savedSettings.profileID,
+				},
+			};
+		}
+
 		default: {
 			return state;
 		}
@@ -397,10 +419,13 @@ const baseResolvers = {
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.setAccountID( matchedProperty.accountId );
-			yield propertyActions.selectProperty(
-				matchedProperty.id,
-				matchedProperty.internalWebPropertyId
-			);
+
+			if ( ! isFeatureEnabled( 'ga4Reporting' ) ) {
+				yield propertyActions.selectProperty(
+					matchedProperty.id,
+					matchedProperty.internalWebPropertyId
+				);
+			}
 			/* eslint-enable */
 		}
 
