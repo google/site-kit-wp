@@ -81,7 +81,7 @@ const ga4Reporting = {
 				{
 					a: (
 						<SupportLink
-							path="/analytics/answer/12195621"
+							path="/analytics/answer/11109416"
 							inverse
 							external
 							hideExternalIndicator
