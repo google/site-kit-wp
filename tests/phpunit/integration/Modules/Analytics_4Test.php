@@ -1526,7 +1526,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertWPErrorWithMessage( 'No connected Google Analytics 4 property ID.', $data );
 		$this->assertEquals( 'missing_required_setting', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 428 ), $data->get_error_data( 'missing_required_setting' ) );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_setting' ) );
 	}
 
 	/**

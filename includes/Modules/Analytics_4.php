@@ -548,7 +548,7 @@ final class Analytics_4 extends Module
 					return new WP_Error(
 						'missing_required_setting',
 						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
-						array( 'status' => 428 )
+						array( 'status' => 400 )
 					);
 				}
 
@@ -665,7 +665,7 @@ final class Analytics_4 extends Module
 					return new WP_Error(
 						'missing_required_setting',
 						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
-						array( 'status' => 428 )
+						array( 'status' => 400 )
 					);
 				}
 
