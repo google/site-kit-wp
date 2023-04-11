@@ -20,26 +20,45 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	PropertySelect as GA4PropertySelect,
 	WebDataStreamSelect as GA4WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
 import { AccountSelect } from '../common';
 import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
+import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
 import EnableUniversalAnalytics from '../common/EnableUniversalAnalytics';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
 	const accounts =
 		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
 		[];
+	const hasExistingGA4Tag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasExistingTag()
+	);
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getExistingTag()
+	);
+	const measurementID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
+	);
+
+	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	useEffect( () => {
+		if ( hasExistingGA4Tag ) {
+			setUseSnippet( existingTag !== measurementID );
+		}
+	}, [ setUseSnippet, hasExistingGA4Tag, existingTag, measurementID ] );
 
 	return (
 		<Fragment>
@@ -57,6 +76,8 @@ export default function SetupFormGA4() {
 				<GA4PropertySelect />
 				<GA4WebDataStreamSelect />
 			</div>
+
+			{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
 
 			<EnableUniversalAnalytics>
 				<SetupUseSnippetSwitchUA />
