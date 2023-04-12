@@ -70,13 +70,15 @@ export default function WPDashboardUniqueVisitorsChartWidgetGA4() {
 		endDate,
 		compareStartDate,
 		compareEndDate,
-		metrics: [
+		metrics: [ { name: 'totalUsers' } ],
+		dimensions: [ 'date' ],
+		orderby: [
 			{
-				expression: 'ga:users',
-				alias: 'Total Users',
+				dimension: {
+					dimensionName: 'date',
+				},
 			},
 		],
-		dimensions: [ 'ga:date' ],
 	};
 
 	const data = useInViewSelect( ( select ) =>
