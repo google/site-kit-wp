@@ -51,7 +51,7 @@ trait Setting_With_Owned_Keys_Trait {
 			'pre_update_option_' . static::OPTION,
 			function ( $value, $old_value ) {
 				if ( is_array( $value ) && is_array( $old_value ) ) {
-					return $this->maybe_update_owner_id_in_settings( $value, $old_value );
+					return $this->maybe_update_owner_id_in_settings_before_saving_them( $value, $old_value );
 				}
 			},
 			10,
@@ -82,7 +82,7 @@ trait Setting_With_Owned_Keys_Trait {
 	 * @param array $settings The new module settings.
 	 * @param array $old_settings The old module settings.
 	 */
-	protected function maybe_update_owner_id_in_settings( $settings, $old_settings ) {
+	protected function maybe_update_owner_id_in_settings_before_saving_them( $settings, $old_settings ) {
 		$keys = $this->get_owned_keys();
 		foreach ( $keys as $key ) {
 			if (
