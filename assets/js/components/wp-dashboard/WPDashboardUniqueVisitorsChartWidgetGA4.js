@@ -33,10 +33,10 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../modules/analytics/datastore/constants';
-import { extractAnalyticsDashboardData } from '../../modules/analytics/util';
 import WidgetReportError from '../../googlesitekit/widgets/components/WidgetReportError';
 import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
+import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/extract-dashboard-data';
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardUniqueVisitorsChartWidgetGA4() {
@@ -118,12 +118,10 @@ export default function WPDashboardUniqueVisitorsChartWidgetGA4() {
 			: [];
 	}
 	const googleChartData =
-		extractAnalyticsDashboardData(
+		extractAnalytics4DashboardData(
 			data || [],
 			0,
 			dateRangeLength,
-			0,
-			1,
 			[ __( 'Unique Visitors', 'google-site-kit' ) ],
 			[ ( x ) => parseFloat( x ).toLocaleString() ]
 		) || [];
