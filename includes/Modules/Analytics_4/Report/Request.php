@@ -330,7 +330,13 @@ class Request extends Report {
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_4_metrics',
 			array(
-				// TODO: Add metrics to this allow-list as they are used in the plugin.
+				'averageSessionDuration',
+				'conversions',
+				'engagedSessions',
+				'engagementRate',
+				'screenPageViews',
+				'sessions',
+				'totalUsers',
 			)
 		);
 
@@ -383,7 +389,9 @@ class Request extends Report {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
-				// TODO: Add dimensions to this allow-list as they are used in the plugin.
+				'date',
+				'pagePath',
+				'sessionDefaultChannelGrouping',
 			)
 		);
 
