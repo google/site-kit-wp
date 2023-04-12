@@ -38,8 +38,8 @@ import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
-import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
-import WPDashboardUniqueVisitorsChartWidgetGA4 from './WPDashboardUniqueVisitorsChartWidgetGA4';
+import WPDashboardUniqueVisitorsChart from './WPDashboardUniqueVisitorsChart';
+import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
@@ -49,6 +49,7 @@ const { useSelect } = Data;
 const WIDGET_IMPRESSIONS = 'wpDashboardImpressions';
 const WIDGET_CLICKS = 'wpDashboardClicks';
 const WIDGET_VISITORS = 'wpDashboardUniqueVisitors';
+const WIDGET_VISITORS_CHART = 'wpDashboardUniqueVisitorsChart';
 const WIDGET_SESSION_DURATION = 'wpDashboardSessionDuration';
 const WIDGET_POPULAR_PAGES = 'wpDashboardPopularPages';
 
@@ -69,6 +70,9 @@ const WPDashboardSessionDurationWidget = withWidgetComponentProps(
 const WPDashboardPopularPagesWidget = withWidgetComponentProps(
 	WIDGET_POPULAR_PAGES
 )( WPDashboardPopularPages );
+const WPDashboardUniqueVisitorsChartWidget = withWidgetComponentProps(
+	WIDGET_VISITORS_CHART
+)( WPDashboardUniqueVisitorsChart );
 
 // Analytics 4 Widgets.
 const WPDashboardUniqueVisitorsGA4Widget = withWidgetComponentProps(
@@ -77,6 +81,9 @@ const WPDashboardUniqueVisitorsGA4Widget = withWidgetComponentProps(
 const WPDashboardSessionDurationGA4Widget = withWidgetComponentProps(
 	WIDGET_SESSION_DURATION
 )( WPDashboardSessionDurationGA4 );
+const WPDashboardUniqueVisitorsChartWidgetGA4 = withWidgetComponentProps(
+	WIDGET_VISITORS_CHART
+)( WPDashboardUniqueVisitorsChartGA4 );
 
 export default function WPDashboardWidgets() {
 	const isGA4DashboardView = useSelect( ( select ) =>

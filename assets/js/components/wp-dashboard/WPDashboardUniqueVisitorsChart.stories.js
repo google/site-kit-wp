@@ -1,5 +1,5 @@
 /**
- * WPDashboardUniqueVisitorsChartWidget Component Stories.
+ * WPDashboardUniqueVisitorsChart Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -28,10 +28,10 @@ import {
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { freezeFetch } from '../../../../tests/js/utils';
-import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
+import WPDashboardUniqueVisitorsChart from './WPDashboardUniqueVisitorsChart';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardUniqueVisitorsChartWidget
+	WPDashboardUniqueVisitorsChart
 );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (

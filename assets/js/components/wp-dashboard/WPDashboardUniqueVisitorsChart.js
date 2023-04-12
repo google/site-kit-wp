@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2023 Google LLC
+ * WPDashboardUniqueVisitorsChart component.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +19,7 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
 
 /**
@@ -28,26 +31,29 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import {
+	MODULES_ANALYTICS,
+	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../modules/analytics/datastore/constants';
-import WidgetReportError from '../../googlesitekit/widgets/components/WidgetReportError';
+import { extractAnalyticsDashboardData } from '../../modules/analytics/util';
 import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
-import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/extract-dashboard-data';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardUniqueVisitorsChartWidgetGA4() {
+export default function WPDashboardUniqueVisitorsChart( props ) {
+	const { WidgetReportError } = props;
+
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isGatheringData()
+		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 	const googleChartsCollisionError = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
@@ -70,31 +76,28 @@ export default function WPDashboardUniqueVisitorsChartWidgetGA4() {
 		endDate,
 		compareStartDate,
 		compareEndDate,
-		metrics: [ { name: 'totalUsers' } ],
-		dimensions: [ 'date' ],
-		orderby: [
+		metrics: [
 			{
-				dimension: {
-					dimensionName: 'date',
-				},
+				expression: 'ga:users',
+				alias: 'Total Users',
 			},
 		],
+		dimensions: [ 'ga:date' ],
 	};
 
 	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
 	);
 
 	const loading = useSelect(
 		( select ) =>
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportArgs ]
-			)
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				reportArgs,
+			] )
 	);
 
 	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			reportArgs,
 		] )
 	);
@@ -118,10 +121,12 @@ export default function WPDashboardUniqueVisitorsChartWidgetGA4() {
 			: [];
 	}
 	const googleChartData =
-		extractAnalytics4DashboardData(
+		extractAnalyticsDashboardData(
 			data || [],
 			0,
 			dateRangeLength,
+			0,
+			1,
 			[ __( 'Unique Visitors', 'google-site-kit' ) ],
 			[ ( x ) => parseFloat( x ).toLocaleString() ]
 		) || [];
@@ -175,3 +180,7 @@ export default function WPDashboardUniqueVisitorsChartWidgetGA4() {
 		</div>
 	);
 }
+
+WPDashboardUniqueVisitorsChart.propTypes = {
+	WidgetReportError: PropTypes.elementType.isRequired,
+};
