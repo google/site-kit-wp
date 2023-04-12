@@ -391,6 +391,7 @@ class Request extends Report {
 			array(
 				'date',
 				'pagePath',
+				'pageTitle',
 				'sessionDefaultChannelGrouping',
 			)
 		);
