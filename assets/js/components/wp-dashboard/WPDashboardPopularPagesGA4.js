@@ -96,6 +96,7 @@ export default function WPDashboardPopularPagesGA4( props ) {
 	} );
 
 	return (
+		/* TODO: decouple the styles from search-console class */
 		<div className="googlesitekit-search-console-widget">
 			<h3>
 				{ __( 'Top content over the last 28 days', 'google-site-kit' ) }
