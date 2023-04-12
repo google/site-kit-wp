@@ -139,7 +139,7 @@ const WPDashboardWidgets = () => {
 
 			{ isGA4DashboardView && (
 				<Fragment>
-					{ /* <WPDashboardUniqueVisitorsChartWidget /> */ }
+					{ /* TODO <WPDashboardUniqueVisitorsChartGA4Widget /> */ }
 					<WPDashboardPopularPagesGA4Widget />
 				</Fragment>
 			) }
