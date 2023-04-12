@@ -39,6 +39,7 @@ import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
+import WPDashboardUniqueVisitorsChartWidgetGA4 from './WPDashboardUniqueVisitorsChartWidgetGA4';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
@@ -77,21 +78,25 @@ const WPDashboardSessionDurationGA4Widget = withWidgetComponentProps(
 	WIDGET_SESSION_DURATION
 )( WPDashboardSessionDurationGA4 );
 
-const WPDashboardWidgets = () => {
+export default function WPDashboardWidgets() {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 	const analyticsModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
-	const analyticsModuleActive = analyticsModule?.active;
-	const analyticsModuleConnected = analyticsModule?.connected;
-	const analyticsModuleActiveAndConnected =
-		analyticsModuleActive && analyticsModuleConnected;
 
 	if ( analyticsModule === undefined ) {
 		return null;
 	}
+
+	const {
+		active: analyticsModuleActive,
+		connected: analyticsModuleConnected,
+	} = analyticsModule;
+
+	const analyticsModuleActiveAndConnected =
+		analyticsModuleActive && analyticsModuleConnected;
 
 	return (
 		<div
@@ -126,14 +131,19 @@ const WPDashboardWidgets = () => {
 				</div>
 			) }
 
-			{ analyticsModuleActiveAndConnected && (
+			{ analyticsModuleActiveAndConnected && ! isGA4DashboardView && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsChartWidget />
 					<WPDashboardPopularPagesWidget />
 				</Fragment>
 			) }
+
+			{ analyticsModuleActiveAndConnected && isGA4DashboardView && (
+				<Fragment>
+					<WPDashboardUniqueVisitorsChartWidgetGA4 />
+					<WPDashboardPopularPagesWidget />
+				</Fragment>
+			) }
 		</div>
 	);
-};
-
-export default WPDashboardWidgets;
+}
