@@ -42,6 +42,7 @@ import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsCha
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -76,6 +77,9 @@ const WPDashboardUniqueVisitorsGA4Widget = withWidgetComponentProps(
 const WPDashboardSessionDurationGA4Widget = withWidgetComponentProps(
 	WIDGET_SESSION_DURATION
 )( WPDashboardSessionDurationGA4 );
+const WPDashboardPopularPagesGA4Widget = withWidgetComponentProps(
+	WIDGET_POPULAR_PAGES
+)( WPDashboardPopularPagesGA4 );
 
 const WPDashboardWidgets = () => {
 	const isGA4DashboardView = useSelect( ( select ) =>
@@ -110,7 +114,7 @@ const WPDashboardWidgets = () => {
 				</Fragment>
 			) }
 
-			{ analyticsModuleActiveAndConnected && isGA4DashboardView && (
+			{ isGA4DashboardView && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsGA4Widget />
 					<WPDashboardSessionDurationGA4Widget />
@@ -126,10 +130,17 @@ const WPDashboardWidgets = () => {
 				</div>
 			) }
 
-			{ analyticsModuleActiveAndConnected && (
+			{ analyticsModuleActiveAndConnected && ! isGA4DashboardView && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsChartWidget />
 					<WPDashboardPopularPagesWidget />
+				</Fragment>
+			) }
+
+			{ isGA4DashboardView && (
+				<Fragment>
+					{ /* <WPDashboardUniqueVisitorsChartWidget /> */ }
+					<WPDashboardPopularPagesGA4Widget />
 				</Fragment>
 			) }
 		</div>
