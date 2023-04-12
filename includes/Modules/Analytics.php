@@ -146,6 +146,18 @@ final class Analytics extends Module
 			2
 		);
 
+		add_filter(
+			'googlesitekit_dashboard_sharing_data',
+			function ( $data ) {
+				if ( Feature_Flags::enabled( 'ga4Reporting' ) && ! $this->authentication->is_authenticated() ) {
+					$settings              = $this->get_settings()->get();
+					$data['dashboardView'] = $settings['dashboardView'];
+				}
+
+				return $data;
+			}
+		);
+
 	}
 
 	/**
