@@ -27,7 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import Link from '../../../../components/Link';
+import SupportLink from '../../../../components/SupportLink';
 import { trackEvent } from '../../../../util';
 import { parseAccountID } from '../../util/parsing';
 import { MODULES_ADSENSE } from '../../datastore/constants';
@@ -49,11 +49,6 @@ export default function SetupAccountCreate() {
 	);
 	const signUpURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceCreateAccountURL()
-	);
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/adsense/answer/2659101',
-		} )
 	);
 
 	const createAccountHandler = useCallback(
@@ -113,8 +108,8 @@ export default function SetupAccountCreate() {
 						),
 						userEmail
 					) }{ ' ' }
-				<Link
-					href={ supportURL }
+				<SupportLink
+					path="/adsense/answer/2659101"
 					external
 					aria-label={ __(
 						'Learn more about adding a user to an existing AdSense account',
@@ -122,7 +117,7 @@ export default function SetupAccountCreate() {
 					) }
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
+				</SupportLink>
 			</p>
 		</Fragment>
 	);
