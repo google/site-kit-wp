@@ -119,7 +119,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'analytics' );
+		return Object.keys( recoverableModules ).includes( 'analytics-4' );
 	} );
 
 	const ga4ConversionsData = useInViewSelect( ( select ) => {
