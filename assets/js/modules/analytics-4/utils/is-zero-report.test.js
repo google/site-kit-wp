@@ -117,7 +117,7 @@ describe( 'isZeroReport', () => {
 		],
 		[
 			false,
-			'a report that has a row with no metricValues',
+			'a report that has a single row with no metricValues but another with data',
 			{
 				rows: [ {}, {}, {} ],
 				totals: [
@@ -127,8 +127,8 @@ describe( 'isZeroReport', () => {
 			},
 		],
 		[
-			false,
-			'a report that has multiple rows with no metricValues',
+			true,
+			'a report that has multiple rows that have no metricValues, and no rows with data',
 			{
 				rows: [ {}, {}, {} ],
 				totals: [ {}, {} ],
@@ -136,7 +136,7 @@ describe( 'isZeroReport', () => {
 		],
 		[
 			false,
-			'a report that has no data for a date range',
+			'a report that has metric values and dimension values',
 			{
 				rows: [ {} ],
 				totals: [
