@@ -750,11 +750,29 @@ const baseResolvers = {
 			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
+		if ( modules?.analytics?.recoverable ) {
+			yield Data.commonActions.await(
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.getSettings()
+			);
+		}
+
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable && ! module.internal ) {
-					moduleList.push( moduleSlug );
+					if (
+						moduleSlug === 'analytics' &&
+						registry
+							.select( MODULES_ANALYTICS )
+							.isGA4DashboardView()
+					) {
+						moduleList.push( 'analytics-4' );
+					} else {
+						moduleList.push( moduleSlug );
+					}
 				}
+
 				return moduleList;
 			},
 			[]
