@@ -49,12 +49,16 @@ export default function ZeroDataStateNotifications() {
 		? MODULES_ANALYTICS_4
 		: MODULES_ANALYTICS;
 
+	const analyticsModuleName = isGA4DashboardView
+		? 'analytics-4'
+		: 'analytics';
+
 	const canViewSharedAnalytics = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( analyticsModuleName );
 	} );
 	const canViewSharedSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
