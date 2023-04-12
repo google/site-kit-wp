@@ -59,7 +59,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		// modules. We will remove this hack when UA is sunset and only both modules
 		// are merged.
 		$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
-		$value['ownerID'] = $analytics_settings['ownerID'];
+		$value['ownerID']   = $analytics_settings['ownerID'];
 
 		return $value;
 	}

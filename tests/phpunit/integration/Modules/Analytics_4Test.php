@@ -1700,7 +1700,6 @@ class Analytics_4Test extends TestCase {
 		);
 		$restore_user();
 
-
 		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		$permssions_callback = function( $caps, $cap ) {
 			if ( Permissions::MANAGE_OPTIONS === $cap ) {
@@ -1713,7 +1712,7 @@ class Analytics_4Test extends TestCase {
 		wp_set_current_user( $admin->ID );
 
 		// Ensure the Analytics 4 module is connected and the owner ID is set.
-		delete_option( Analytics_Settings:: OPTION );
+		delete_option( Analytics_Settings::OPTION );
 		delete_option( Settings::OPTION );
 
 		$analytics_settings = new Analytics_Settings( $this->options );
