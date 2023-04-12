@@ -75,7 +75,9 @@ export default function ZeroDataStateNotifications() {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'analytics' );
+		return Object.keys( recoverableModules ).includes(
+			isGA4DashboardView ? 'analytics-4' : 'analytics'
+		);
 	} );
 	const showRecoverableSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
