@@ -37,24 +37,14 @@ trait Setting_With_Owned_Keys_Trait {
 	 * @since 1.16.0
 	 */
 	protected function register_owned_keys() {
-		$call_when_owned_settings_changed = function( $settings, $old_settings, $callback ) {
-			if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-				return;
-			}
-
-			$keys = $this->get_owned_keys();
-			foreach ( $keys as $key ) {
-				if ( isset( $settings[ $key ], $old_settings[ $key ] ) && $settings[ $key ] !== $old_settings[ $key ] ) {
-					call_user_func( $callback );
-					break;
-				}
-			}
-		};
-
 		add_action(
 			'add_option_' . static::OPTION,
-			function ( $option, $value ) use ( $call_when_owned_settings_changed ) {
-				if ( ! is_array( $value ) || ! $this instanceof Setting ) {
+			function ( $option, $settings ) {
+				if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+					return;
+				}
+
+				if ( ! is_array( $settings ) || ! $this instanceof Setting ) {
 					return;
 				}
 
@@ -63,11 +53,9 @@ trait Setting_With_Owned_Keys_Trait {
 					return;
 				}
 
-				$call_when_owned_settings_changed(
-					$value,
-					$defaults,
-					array( $this, 'merge_initial_owner_id' )
-				);
+				if ( $this->have_owned_settings_changed( $settings, $defaults ) ) {
+					$this->merge_initial_owner_id();
+				}
 			},
 			10,
 			2
@@ -75,18 +63,17 @@ trait Setting_With_Owned_Keys_Trait {
 
 		add_filter(
 			'pre_update_option_' . static::OPTION,
-			function ( $value, $old_value ) use ( $call_when_owned_settings_changed ) {
-				if ( is_array( $value ) && is_array( $old_value ) ) {
-					$call_when_owned_settings_changed(
-						$value,
-						$old_value,
-						function() use ( &$value ) {
-							$value = $this->filter_owner_id_for_updated_settings( $value );
-						}
-					);
+			function ( $settings, $old_settings ) {
+				if (
+					current_user_can( Permissions::MANAGE_OPTIONS ) &&
+					is_array( $settings ) &&
+					is_array( $old_settings ) &&
+					$this->have_owned_settings_changed( $settings, $old_settings )
+				) {
+					return $this->filter_owner_id_for_updated_settings( $settings );
 				}
 
-				return $value;
+				return $settings;
 			},
 			10,
 			2
@@ -113,6 +100,27 @@ trait Setting_With_Owned_Keys_Trait {
 	protected function filter_owner_id_for_updated_settings( $settings ) {
 		$settings['ownerID'] = get_current_user_id();
 		return $settings;
+	}
+
+	/**
+	 * Determines whether the owned settings have changed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $settings     The new settings.
+	 * @param array $old_settings The old settings.
+	 * @return bool TRUE if owned settings have changed, otherwise FALSE.
+	 */
+	protected function have_owned_settings_changed( $settings, $old_settings ) {
+		$keys = $this->get_owned_keys();
+
+		foreach ( $keys as $key ) {
+			if ( isset( $settings[ $key ], $old_settings[ $key ] ) && $settings[ $key ] !== $old_settings[ $key ] ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }
