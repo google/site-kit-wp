@@ -111,7 +111,7 @@ export default function WPDashboardWidgets() {
 				'googlesitekit-wp-dashboard-stats googlesitekit-wp-dashboard-stats--twoup',
 				{
 					'googlesitekit-wp-dashboard-stats--fourup':
-						analyticsModuleActive && analyticsModuleConnected,
+						analyticsModuleActiveAndConnected,
 				}
 			) }
 		>
@@ -122,7 +122,7 @@ export default function WPDashboardWidgets() {
 				</Fragment>
 			) }
 
-			{ analyticsModuleActiveAndConnected && isGA4DashboardView && (
+			{ isGA4DashboardView && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsGA4Widget />
 					<WPDashboardSessionDurationGA4Widget />
@@ -132,7 +132,7 @@ export default function WPDashboardWidgets() {
 			<WPDashboardImpressionsWidget />
 			<WPDashboardClicksWidget />
 
-			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+			{ ! analyticsModuleActiveAndConnected && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
 					<WPDashboardActivateAnalyticsCTA />
 				</div>
@@ -145,7 +145,7 @@ export default function WPDashboardWidgets() {
 				</Fragment>
 			) }
 
-			{ analyticsModuleActiveAndConnected && isGA4DashboardView && (
+			{ isGA4DashboardView && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsChartWidgetGA4 />
 					<WPDashboardPopularPagesWidget />

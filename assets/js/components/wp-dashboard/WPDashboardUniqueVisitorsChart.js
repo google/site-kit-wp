@@ -37,7 +37,6 @@ import {
 } from '../../modules/analytics/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { extractAnalyticsDashboardData } from '../../modules/analytics/util';
 import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
@@ -46,13 +45,8 @@ const { useSelect, useInViewSelect } = Data;
 export default function WPDashboardUniqueVisitorsChart( props ) {
 	const { WidgetReportError } = props;
 
-	const analyticsIsReady = useSelect(
-		( select ) =>
-			select( CORE_MODULES ).isModuleActive( 'analytics' ) &&
-			select( CORE_MODULES ).isModuleConnected( 'analytics' )
-	);
 	const isGatheringData = useInViewSelect( ( select ) =>
-		analyticsIsReady ? select( MODULES_ANALYTICS ).isGatheringData() : false
+		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 	const googleChartsCollisionError = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
@@ -85,34 +79,24 @@ export default function WPDashboardUniqueVisitorsChart( props ) {
 	};
 
 	const data = useInViewSelect( ( select ) =>
-		analyticsIsReady
-			? select( MODULES_ANALYTICS ).getReport( reportArgs )
-			: undefined
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
 	);
 
-	const loading = useSelect( ( select ) =>
-		analyticsIsReady
-			? ! select( MODULES_ANALYTICS ).hasFinishedResolution(
-					'getReport',
-					[ reportArgs ]
-			  )
-			: false
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				reportArgs,
+			] )
 	);
 
 	const error = useSelect( ( select ) =>
-		analyticsIsReady
-			? select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-					reportArgs,
-			  ] )
-			: null
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
 	);
 
 	// If we can't load Google Charts, don't display this component at all.
 	if ( googleChartsCollisionError ) {
-		return null;
-	}
-
-	if ( ! analyticsIsReady ) {
 		return null;
 	}
 

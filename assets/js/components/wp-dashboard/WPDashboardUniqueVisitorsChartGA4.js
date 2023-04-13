@@ -30,7 +30,6 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import GoogleChart from '../GoogleChart';
@@ -41,15 +40,8 @@ const { useSelect, useInViewSelect } = Data;
 export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 	const { WidgetReportError } = props;
 
-	const analytics4ActiveAndConnected = useSelect(
-		( select ) =>
-			select( CORE_MODULES ).isModuleActive( 'analytics-4' ) &&
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
 	const isGatheringData = useInViewSelect( ( select ) =>
-		analytics4ActiveAndConnected
-			? select( MODULES_ANALYTICS_4 ).isGatheringData()
-			: false
+		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 	const googleChartsCollisionError = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
@@ -84,34 +76,25 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 	};
 
 	const data = useInViewSelect( ( select ) =>
-		analytics4ActiveAndConnected
-			? select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
-			: undefined
+		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
 	);
 
-	const loading = useSelect( ( select ) =>
-		analytics4ActiveAndConnected
-			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getReport',
-					[ reportArgs ]
-			  )
-			: false
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportArgs ]
+			)
 	);
 
 	const error = useSelect( ( select ) =>
-		analytics4ActiveAndConnected
-			? select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-					reportArgs,
-			  ] )
-			: false
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
 	);
 
 	// If we can't load Google Charts, don't display this component at all.
 	if ( googleChartsCollisionError ) {
-		return null;
-	}
-
-	if ( ! analytics4ActiveAndConnected ) {
 		return null;
 	}
 
