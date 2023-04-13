@@ -62,7 +62,7 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamNotAvailable( true );
+					.setIsWebDataStreamAvailable( false );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 			};

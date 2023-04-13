@@ -164,14 +164,14 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
-const SET_IS_WEBDATASTREAM_NOT_AVAILABLE = 'SET_IS_WEBDATASTREAM_NOT_AVAILABLE';
+const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
 	hasMismatchedTag: false,
 	isMatchingAccountProperty: false,
-	isWebDataStreamNotAvailable: false,
+	isWebDataStreamAvailable: true,
 };
 
 const baseActions = {
@@ -528,17 +528,17 @@ const baseActions = {
 	},
 
 	/**
-	 * Sets whether the Web Data Stream is not available.
+	 * Sets whether the Web Data Stream is available.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {boolean} isWebDataStreamNotAvailable Whether the Web Data Stream is not available.
+	 * @param {boolean} isWebDataStreamAvailable Whether the Web Data Stream is available.
 	 * @return {Object} Redux-style action.
 	 */
-	*setIsWebDataStreamNotAvailable( isWebDataStreamNotAvailable ) {
+	*setIsWebDataStreamAvailable( isWebDataStreamAvailable ) {
 		return {
-			type: SET_IS_WEBDATASTREAM_NOT_AVAILABLE,
-			payload: { isWebDataStreamNotAvailable },
+			type: SET_IS_WEBDATASTREAM_AVAILABLE,
+			payload: { isWebDataStreamAvailable },
 		};
 	},
 
@@ -607,7 +607,7 @@ const baseActions = {
 			);
 
 			if ( ! googleTagContainer ) {
-				yield baseActions.setIsWebDataStreamNotAvailable( true );
+				yield baseActions.setIsWebDataStreamAvailable( false );
 			} else if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
 				yield baseActions.setHasMismatchedGoogleTagID( true );
 			}
@@ -645,11 +645,10 @@ function baseReducer( state, { type, payload } ) {
 				...state,
 				hasMismatchedTag: payload.hasMismatchedTag,
 			};
-		case SET_IS_WEBDATASTREAM_NOT_AVAILABLE:
+		case SET_IS_WEBDATASTREAM_AVAILABLE:
 			return {
 				...state,
-				isWebDataStreamNotAvailable:
-					payload.isWebDataStreamNotAvailable,
+				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
 			};
 		default:
 			return state;
@@ -736,15 +735,15 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks if the Web Data Stream is not available.
+	 * Checks if the Web Data Stream is available.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} If the Web Data Stream is not available.
+	 * @return {boolean} TRUE if the Web Data Stream is available, otherwise FALSE.
 	 */
-	isWebDataStreamNotAvailable( state ) {
-		return state.isWebDataStreamNotAvailable;
+	isWebDataStreamAvailable( state ) {
+		return state.isWebDataStreamAvailable;
 	},
 };
 

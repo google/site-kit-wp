@@ -660,25 +660,25 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
-		describe( 'setIsWebDataStreamNotAvailable', () => {
-			it( 'sets the value of isWebDataStreamNotAvailable', async () => {
-				const isWebDataStreamNotAvailable = registry
+		describe( 'setIsWebDataStreamAvailable', () => {
+			it( 'sets the value of isWebDataStreamAvailable', async () => {
+				const isWebDataStreamAvailable = registry
 					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamNotAvailable();
+					.isWebDataStreamAvailable();
 
-				// It is false by default.
-				expect( isWebDataStreamNotAvailable ).toBe( false );
+				// It is true by default.
+				expect( isWebDataStreamAvailable ).toBe( true );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamNotAvailable( true );
+					.setIsWebDataStreamAvailable( false );
 
-				const updatedIsWebDataStreamNotAvailable = registry
+				const updatedIsWebDataStreamAvailable = registry
 
 					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamNotAvailable();
+					.isWebDataStreamAvailable();
 
-				expect( updatedIsWebDataStreamNotAvailable ).toBe( true );
+				expect( updatedIsWebDataStreamAvailable ).toBe( false );
 			} );
 		} );
 
@@ -911,7 +911,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( googleTagID );
 			} );
 
-			it( 'should set `isWebDataStreamNotAvailable` to `true` when there is no Google Tag Container available', async () => {
+			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
 				} );
@@ -987,8 +987,8 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isWebDataStreamNotAvailable()
-				).toBe( true );
+						.isWebDataStreamAvailable()
+				).toBe( false );
 
 				expect(
 					registry
@@ -1074,8 +1074,8 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isWebDataStreamNotAvailable()
-				).toBe( false );
+						.isWebDataStreamAvailable()
+				).toBe( true );
 
 				// but the Google Tag ID is mismatched.
 				expect(
@@ -1295,24 +1295,24 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
-		describe( 'isWebDataStreamNotAvailable', () => {
+		describe( 'isWebDataStreamAvailable', () => {
 			it( 'returns a specific key in state', () => {
-				const isWebDataStreamNotAvailable = registry
+				const isWebDataStreamAvailable = registry
 					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamNotAvailable();
+					.isWebDataStreamAvailable();
 
-				// It is false by default.
-				expect( isWebDataStreamNotAvailable ).toBe( false );
+				// It is true by default.
+				expect( isWebDataStreamAvailable ).toBe( true );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamNotAvailable( true );
+					.setIsWebDataStreamAvailable( false );
 
-				const updatedIsWebDataStreamNotAvailable = registry
+				const updatedIsWebDataStreamAvailable = registry
 					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamNotAvailable();
+					.isWebDataStreamAvailable();
 
-				expect( updatedIsWebDataStreamNotAvailable ).toBe( true );
+				expect( updatedIsWebDataStreamAvailable ).toBe( false );
 			} );
 		} );
 	} );

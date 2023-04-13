@@ -35,8 +35,8 @@ import { Cell, Grid, Row } from '../../material-components';
 const { useSelect } = Data;
 
 export default function WebDataStreamNotAvailableNotification() {
-	const isWebDataStreamNotAvailable = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isWebDataStreamNotAvailable()
+	const isWebDataStreamAvailable = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable()
 	);
 
 	const measurementID = useSelect( ( select ) =>
@@ -47,7 +47,8 @@ export default function WebDataStreamNotAvailableNotification() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
 
-	if ( ! isWebDataStreamNotAvailable ) {
+	// If the data stream is available, we don't have to show a warning to the user.
+	if ( isWebDataStreamAvailable ) {
 		return null;
 	}
 
