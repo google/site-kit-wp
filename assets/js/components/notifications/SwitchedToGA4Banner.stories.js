@@ -17,6 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
@@ -26,6 +36,8 @@ import {
 	DASHBOARD_VIEW_UA,
 	MODULES_ANALYTICS,
 } from '../../modules/analytics/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import FeatureTours from '../FeatureTours';
 
 function Template() {
 	return <SwitchedToGA4Banner />;
@@ -33,6 +45,9 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.parameters = {
+	features: [ 'ga4Reporting' ],
+};
 Default.scenario = {
 	label: 'Global/SwitchedToGA4Banner/Default',
 };
@@ -58,12 +73,33 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setDashboardView( DASHBOARD_VIEW_UA );
+
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/dismiss-tour'
+					),
+					{
+						body: JSON.stringify( [ 'ga4Reporting' ] ),
+						status: 200,
+					}
+				);
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
+				<Fragment>
+					{ /* Provide a mockup of the page structure to allow the feature tour to be displayed. */ }
+					<div className="googlesitekit-data-block--conversions">
+						<div className="googlesitekit-data-block__title"></div>
+					</div>
+					<div className="googlesitekit-table__head-item--sessions"></div>
+					<div className="googlesitekit-table__head-item--engagement-rate"></div>
+					<WithRegistrySetup func={ setupRegistry }>
+						<Story />
+						<FeatureTours />
+					</WithRegistrySetup>
+				</Fragment>
 			);
 		},
 	],

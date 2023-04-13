@@ -28,11 +28,14 @@ import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	DASHBOARD_VIEW_UA,
 	MODULES_ANALYTICS,
 } from '../../modules/analytics/datastore/constants';
-const { useSelect } = Data;
+import ga4Reporting from '../../feature-tours/ga4-reporting';
+const { useDispatch, useSelect } = Data;
 
 export default function SwitchedToGA4Banner() {
 	const analyticsModuleConnected = useSelect( ( select ) =>
@@ -44,6 +47,8 @@ export default function SwitchedToGA4Banner() {
 	const dashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getDashboardView()
 	);
+	const { setValue } = useDispatch( CORE_UI );
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 
 	const shouldDisplayNotification =
 		analyticsModuleConnected &&
@@ -54,10 +59,14 @@ export default function SwitchedToGA4Banner() {
 		return null;
 	}
 
+	const showGA4ReportingTour = () => {
+		setValue( 'forceInView', true );
+		triggerOnDemandTour( ga4Reporting );
+	};
+
 	return (
 		<BannerNotification
 			id="switched-to-ga4-banner"
-			// className="googlesitekit-ga4-setup-banner"
 			title={ __(
 				'Your dashboard now displays data from Google Analytics 4, the new version of Analytics',
 				'google-site-kit'
@@ -69,7 +78,7 @@ export default function SwitchedToGA4Banner() {
 			WinImageSVG={ () => <SuccessGreenSVG /> }
 			ctaLabel={ __( 'Learn what’s new', 'google-site-kit' ) }
 			ctaLink="#"
-			onCTAClick={ () => {} }
+			onCTAClick={ showGA4ReportingTour }
 			dismiss={ __( 'No, thanks', 'google-site-kit' ) }
 		/>
 	);
