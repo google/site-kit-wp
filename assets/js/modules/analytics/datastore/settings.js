@@ -137,16 +137,14 @@ export async function submitChanges( registry ) {
 		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
-	// If `ga4Reporting` is enabled AND `enableUA` toggle is disabled, we need to reset the
-	// property and profile IDs to ensure that the UA settings are not saved.
-	if ( ga4ReportingEnabled && ! isUAEnabled ) {
-		dispatch( MODULES_ANALYTICS ).resetPropertyAndProfileIDs();
-	}
-
-	// If `ga4Reporting` is enabled and the dashboard view is set to UA, we need
-	// to set the dashboard view to GA4.
+	// If `ga4Reporting` is enabled, the dashboard view is set to UA
+	// and UA is not enabled, we need to set the dashboard view to GA4.
 	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
-	if ( ga4ReportingEnabled && dashboardView === DASHBOARD_VIEW_UA ) {
+	if (
+		ga4ReportingEnabled &&
+		dashboardView === DASHBOARD_VIEW_UA &&
+		! isUAEnabled
+	) {
 		dispatch( MODULES_ANALYTICS ).setDashboardView( DASHBOARD_VIEW_GA4 );
 	}
 

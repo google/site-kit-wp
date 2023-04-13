@@ -115,31 +115,6 @@ final class Analytics_4 extends Module
 			2
 		);
 
-		// Ensure both Analytics modules always reference the same owner.
-		//
-		// The filter for Analytics (UA) is added in this class, and
-		// and the filter for Analytics 4 is added in Analytics class.
-		// This is to prevent an infinite loop, see:
-		// https://github.com/google/site-kit-wp/issues/6465#issuecomment-1483120333.
-		add_filter(
-			'pre_update_option_' . Analytics_Settings::OPTION,
-			function( $new_value, $old_value ) {
-				if ( $old_value['ownerID'] !== $new_value['ownerID'] ) {
-					$settings = $this->get_settings()->get();
-
-					if ( $settings['ownerID'] && $new_value['ownerID'] !== $settings['ownerID'] ) {
-						$this->get_settings()->merge(
-							array( 'ownerID' => $new_value['ownerID'] )
-						);
-					}
-				}
-
-				return $new_value;
-			},
-			20,
-			2
-		);
-
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// Replicate Analytics settings for Analytics-4 if not set.
 			add_filter(
@@ -685,17 +660,17 @@ final class Analytics_4 extends Module
 
 				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['measurementID'] ) );
 			case 'GET:conversion-events':
-				if ( ! isset( $data['propertyID'] ) ) {
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
+						'missing_required_setting',
+						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
 					);
 				}
 
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
-				$property_id    = self::normalize_property_id( $data['propertyID'] );
+				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
 					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase

@@ -47,6 +47,7 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { trackEvent } from '../../../../../util';
 import ContentAutoUpdate from './ContentAutoUpdate';
 import Link from '../../../../../components/Link';
+import SupportLink from '../../../../../components/SupportLink';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
@@ -70,11 +71,6 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 		}
 	}, [ inView, viewContext, hasBeenInView ] );
 
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/adsense/answer/9724',
-		} )
-	);
 	const adminReauthURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdminReauthURL()
 	);
@@ -164,8 +160,8 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								),
 								{
 									a: (
-										<Link
-											href={ supportURL }
+										<SupportLink
+											path="/adsense/answer/9724"
 											external
 											hideExternalIndicator
 										/>
