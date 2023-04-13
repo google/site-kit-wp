@@ -81,7 +81,7 @@ const WPDashboardUniqueVisitorsGA4Widget = withWidgetComponentProps(
 const WPDashboardSessionDurationGA4Widget = withWidgetComponentProps(
 	WIDGET_SESSION_DURATION
 )( WPDashboardSessionDurationGA4 );
-const WPDashboardUniqueVisitorsChartWidgetGA4 = withWidgetComponentProps(
+const WPDashboardUniqueVisitorsChartGA4Widget = withWidgetComponentProps(
 	WIDGET_VISITORS_CHART
 )( WPDashboardUniqueVisitorsChartGA4 );
 
@@ -147,7 +147,7 @@ export default function WPDashboardWidgets() {
 
 			{ isGA4DashboardView && (
 				<Fragment>
-					<WPDashboardUniqueVisitorsChartWidgetGA4 />
+					<WPDashboardUniqueVisitorsChartGA4Widget />
 					<WPDashboardPopularPagesWidget />
 				</Fragment>
 			) }
