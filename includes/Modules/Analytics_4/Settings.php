@@ -162,7 +162,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @param array $settings The new module settings.
 	 * @return array Updated module settings with the current user ID as the ownerID setting.
 	 */
-	protected function filter_owner_id_for_updated_settings( $settings ) {
+	protected function update_owner_id_in_settings( $settings ) {
 		// This is a temporary solution to sync owner IDs between Analytics and Analytics 4 modules.
 		// The owner ID setting of the Analytics module is the source of truth for the Analytics 4 module.
 		// This will change when Analytics is sunset and we merge both modules into one.

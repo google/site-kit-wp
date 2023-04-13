@@ -70,7 +70,7 @@ trait Setting_With_Owned_Keys_Trait {
 					is_array( $old_settings ) &&
 					$this->have_owned_settings_changed( $settings, $old_settings )
 				) {
-					return $this->filter_owner_id_for_updated_settings( $settings );
+					return $this->update_owner_id_in_settings( $settings );
 				}
 
 				return $settings;
@@ -97,7 +97,7 @@ trait Setting_With_Owned_Keys_Trait {
 	 * @param array $settings The new module settings.
 	 * @return array Updated module settings with the current user ID as the ownerID setting.
 	 */
-	protected function filter_owner_id_for_updated_settings( $settings ) {
+	protected function update_owner_id_in_settings( $settings ) {
 		$settings['ownerID'] = get_current_user_id();
 		return $settings;
 	}
