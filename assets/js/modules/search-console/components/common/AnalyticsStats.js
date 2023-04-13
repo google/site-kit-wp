@@ -67,15 +67,13 @@ function extractChartData(
 	chartDataFormats
 ) {
 	if ( moduleSlug === 'analytics-4' ) {
-		return (
-			extractAnalytics4DashboardData(
-				data,
-				selectedStats,
-				dateRangeLength,
-				dataLabels,
-				tooltipDataFormats,
-				chartDataFormats
-			) || []
+		return extractAnalytics4DashboardData(
+			data,
+			selectedStats,
+			dateRangeLength,
+			dataLabels,
+			tooltipDataFormats,
+			chartDataFormats
 		);
 	}
 	return (

@@ -69,6 +69,23 @@ const wpDashboardAnalytics4OptionSets = [
 			},
 		],
 	},
+
+	// Mock options for mocking "Total Users" chart widget response.
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [ { name: 'totalUsers' } ],
+		dimensions: [ 'date' ],
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
+	},
 ];
 
 export const setupAnalytics4MockReports = (
@@ -165,7 +182,7 @@ export function setupAnalytics4Error(
 	} );
 }
 
-export function setupAnalytics4Property( registry, createdDayBefore = 2 ) {
+export function setupAnalytics4Property( registry, createdDayBefore = 10 ) {
 	const createTime = new Date(
 		Date.now() - DAY_IN_SECONDS * createdDayBefore * 1000
 	).toISOString();
