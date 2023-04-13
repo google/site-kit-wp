@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Storage;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Setting;
 
 /**
  * Trait for a Setting that has owner ID option key.
@@ -36,12 +37,37 @@ trait Setting_With_Owned_Keys_Trait {
 	 * @since 1.16.0
 	 */
 	protected function register_owned_keys() {
+		$call_when_owned_settings_changed = function( $settings, $old_settings, $callback ) {
+			if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+				return;
+			}
+	
+			$keys = $this->get_owned_keys();
+			foreach ( $keys as $key ) {
+				if ( isset( $settings[ $key ], $old_settings[ $key ] ) && $settings[ $key ] !== $old_settings[ $key ] ) {
+					call_user_func( $callback );
+					break;
+				}
+			}
+		};
+
 		add_action(
 			'add_option_' . static::OPTION,
-			function ( $option, $value ) {
-				if ( is_array( $value ) ) {
-					$this->maybe_set_owner_id( $value );
+			function ( $option, $value ) use ( $call_when_owned_settings_changed ) {
+				if ( ! is_array( $value ) || ! $this instanceof Setting ) {
+					return;
 				}
+
+				$defaults = $this->get_default();
+				if ( ! is_array( $defaults ) ) {
+					return;
+				}
+
+				$call_when_owned_settings_changed(
+					$value,
+					$defaults,
+					array( $this, 'merge_initial_owner_id' )
+				);
 			},
 			10,
 			2
@@ -49,10 +75,18 @@ trait Setting_With_Owned_Keys_Trait {
 
 		add_filter(
 			'pre_update_option_' . static::OPTION,
-			function ( $value, $old_value ) {
+			function ( $value, $old_value ) use ( $call_when_owned_settings_changed ) {
 				if ( is_array( $value ) && is_array( $old_value ) ) {
-					return $this->maybe_update_owner_id_in_settings_before_saving_them( $value, $old_value );
+					$call_when_owned_settings_changed(
+						$value,
+						$old_value,
+						function() use ( &$value ) {
+							$value = $this->filter_owner_id_for_updated_settings( $value );
+						}
+					);
 				}
+
+				return $value;
 			},
 			10,
 			2
@@ -60,41 +94,24 @@ trait Setting_With_Owned_Keys_Trait {
 	}
 
 	/**
-	 * Updates settings to set the current user as an owner of the module if settings contain owned keys.
+	 * Merges the current user ID into the module settings as the initial owner ID.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @param array $settings The module settings.
 	 */
-	protected function maybe_set_owner_id( $settings ) {
-		$keys = $this->get_owned_keys();
-		if ( count( array_intersect( array_keys( $settings ), $keys ) ) > 0 && current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-			$this->merge( array( 'ownerID' => get_current_user_id() ) );
-		}
+	protected function merge_initial_owner_id() {
+		$this->merge( array( 'ownerID' => get_current_user_id() ) );
 	}
 
 	/**
-	 * Updates the current module settings to have the current user as the owner of the module if at least
-	 * one of the owned keys have been changed.
+	 * Adds the current user ID as the module owner ID to the current module settings.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $settings The new module settings.
-	 * @param array $old_settings The old module settings.
+	 * @return array Updated module settings with the current user ID as the ownerID setting.
 	 */
-	protected function maybe_update_owner_id_in_settings_before_saving_them( $settings, $old_settings ) {
-		$keys = $this->get_owned_keys();
-		foreach ( $keys as $key ) {
-			if (
-				isset( $settings[ $key ], $old_settings[ $key ] ) &&
-				$settings[ $key ] !== $old_settings[ $key ] &&
-				current_user_can( Permissions::MANAGE_OPTIONS )
-			) {
-				$settings['ownerID'] = get_current_user_id();
-				break;
-			}
-		}
-
+	protected function filter_owner_id_for_updated_settings( $settings ) {
+		$settings['ownerID'] = get_current_user_id();
 		return $settings;
 	}
 
