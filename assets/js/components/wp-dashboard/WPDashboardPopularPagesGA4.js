@@ -1,7 +1,7 @@
 /**
  * WPDashboardPopularPagesGA4 component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,6 +113,7 @@ export default function WPDashboardPopularPagesGA4( props ) {
 		</div>
 	);
 }
+
 // Expose function for selecting report args for use in Storybook/tests.
 WPDashboardPopularPagesGA4.selectReportArgs = ( select ) => {
 	const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
