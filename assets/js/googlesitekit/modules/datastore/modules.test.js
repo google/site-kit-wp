@@ -31,6 +31,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
+import { enabledFeatures } from '../../../features';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -38,6 +39,7 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
+import { DASHBOARD_VIEW_GA4 } from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -1936,6 +1938,16 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
+					{
+						body: {},
+						status: 200,
+					}
+				);
+
 				const initialRecoverableModules = registry
 					.select( CORE_MODULES )
 					.getRecoverableModules();
@@ -1952,6 +1964,56 @@ describe( 'core/modules modules', () => {
 
 				expect( recoverableModules ).toMatchObject(
 					convertArrayListToKeyedObjectMap( externalModules, 'slug' )
+				);
+			} );
+
+			it( 'should return analytics-4 instead of analytics in the GA4 dashboard view', async () => {
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModuleRegistrations( registry );
+
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{
+						body: [ ...FIXTURES, ...allModules ],
+						status: 200,
+					}
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
+					{
+						body: {
+							dashboardView: DASHBOARD_VIEW_GA4,
+						},
+						status: 200,
+					}
+				);
+
+				const initialRecoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+				expect( initialRecoverableModules ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_MODULES
+				).getRecoverableModules();
+
+				const recoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+
+				const externalModulesWithoutAnalytics = externalModules.filter(
+					( module ) => module.slug !== 'analytics'
+				);
+
+				expect( recoverableModules ).toMatchObject(
+					convertArrayListToKeyedObjectMap(
+						externalModulesWithoutAnalytics,
+						'slug'
+					)
 				);
 			} );
 		} );
