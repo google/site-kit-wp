@@ -51,6 +51,7 @@ use Google\Site_Kit\Modules\Analytics\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics\Web_Tag;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\Analytics as Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting as Google_Service_AnalyticsReporting;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\GetReportsRequest as Google_Service_AnalyticsReporting_GetReportsRequest;
@@ -156,9 +157,11 @@ final class Analytics extends Module
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
-		$settings = $this->get_settings()->get();
+		$settings     = $this->get_settings()->get();
+		$ga4_settings = ( new Analytics_4_Settings( $this->options ) )->get();
+
 		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
-		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
+		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] || $ga4_settings['useSnippet'] ) ) {
 			return false;
 		}
 
@@ -1209,24 +1212,22 @@ final class Analytics extends Module
 		$account_id  = $settings['accountID'];
 		$property_id = $settings['propertyID'];
 
-		if ( empty( $property_id ) ) {
-			return;
-		}
-
 		if ( ! $this->is_tracking_disabled() ) {
 			return;
 		}
 
-		if ( $this->context->is_amp() ) : ?>
+		if ( $this->context->is_amp() && ! empty( $property_id ) ) : ?>
 			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
 			<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php else : ?>
 			<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<?php
-			BC_Functions::wp_print_inline_script_tag(
-				sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $property_id ) )
-			);
+			if ( ! empty( $property_id ) ) {
+				BC_Functions::wp_print_inline_script_tag(
+					sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $property_id ) )
+				);
+			}
 			?>
 			<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
 			<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
