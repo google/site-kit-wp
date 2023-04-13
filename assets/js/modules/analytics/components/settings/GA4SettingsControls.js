@@ -36,7 +36,7 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { GA4ActivateSwitch } from '../common';
+import { AccountSelect, GA4ActivateSwitch } from '../common';
 import {
 	PropertySelect,
 	WebDataStreamSelect,
@@ -44,6 +44,7 @@ import {
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import GA4SettingsNotice from './GA4SettingsNotice';
+import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { isValidPropertyID } from '../../../analytics-4/utils/validation';
 import ErrorText from '../../../../components/ErrorText';
@@ -51,6 +52,8 @@ const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
+
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { matchAndSelectProperty } = useDispatch( MODULES_ANALYTICS_4 );
@@ -181,6 +184,9 @@ export default function GA4SettingsControls( props ) {
 			) }
 
 			<div className="googlesitekit-setup-module__inputs">
+				{ ga4ReportingEnabled && (
+					<AccountSelect hasModuleAccess={ hasModuleAccess } />
+				) }
 				<PropertySelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }
@@ -211,7 +217,7 @@ export default function GA4SettingsControls( props ) {
 									zIndex: 9999,
 								},
 							} }
-							target=".googlesitekit-analytics-4__select-property"
+							target=".googlesitekit-analytics-4__select-property--loaded"
 							onDismiss={ onDismissTooltip }
 							cta={
 								<Button

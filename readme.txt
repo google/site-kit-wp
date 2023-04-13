@@ -139,7 +139,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Update the graphic and copy on the GA4 Activation Success Banner. See [#6539](https://github.com/google/site-kit-wp/issues/6539).
 * Update design and text of GA4 Reminder Banner. See [#6538](https://github.com/google/site-kit-wp/issues/6538).
 * Follow API naming conventions for Analytics 4 field names. See [#6484](https://github.com/google/site-kit-wp/issues/6484).
-* Sync module owners/module owner changes between Analytics and Analytics 4. See [#6465](https://github.com/google/site-kit-wp/issues/6465).
 * Update logic for handling Google Tag detection. See [#6374](https://github.com/google/site-kit-wp/issues/6374).
 * Add a notification for users when their Google tag associations change. See [#6373](https://github.com/google/site-kit-wp/issues/6373).
 * Add a dedicated control for the Google Analytics 4 web data stream instead of a single property select. See [#6330](https://github.com/google/site-kit-wp/issues/6330).

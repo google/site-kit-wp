@@ -408,7 +408,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'module_not_connected', $response->get_data()['code'] );
-		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 500, $response->get_status() );
 	}
 
 	public function test_check_access_rest_endpoint__shareable_module_does_not_have_service_entity() {
@@ -452,7 +452,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'invalid_module', $response->get_data()['code'] );
-		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 500, $response->get_status() );
 	}
 
 	public function test_check_access_rest_endpoint__success() {

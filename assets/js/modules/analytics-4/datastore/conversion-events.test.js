@@ -49,49 +49,46 @@ describe( 'modules/analytics-4 conversion-events', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getConversionEvents', () => {
-			const propertyID = '567829876';
-
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/conversion-events'
 					),
-					{ body: fixtures.conversionEvents, status: 200 }
+					{ body: fixtures.conversionEvents }
 				);
 
 				const initialConversionEvents = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getConversionEvents( propertyID );
+					.getConversionEvents();
 
 				expect( initialConversionEvents ).toBeUndefined();
 
 				const conversionEvents = await registry
 					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-					.getConversionEvents( propertyID );
+					.getConversionEvents();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( conversionEvents ).toEqual( fixtures.conversionEvents );
 			} );
 
-			it( 'does not make a network request if conversion events for the given propertyID are already present', async () => {
+			it( 'does not make a network request if conversion events are already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetConversionEvents( fixtures.conversionEvents, {
-						propertyID,
-					} );
+					.receiveGetConversionEvents(
+						fixtures.conversionEvents,
+						{}
+					);
 
 				const conversionEvents = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getConversionEvents( propertyID );
+					.getConversionEvents();
 
 				await subscribeUntil( registry, () =>
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.hasFinishedResolution( 'getConversionEvents', [
-							propertyID,
-						] )
+						.hasFinishedResolution( 'getConversionEvents', [] )
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -114,13 +111,13 @@ describe( 'modules/analytics-4 conversion-events', () => {
 
 				await registry
 					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-					.getConversionEvents( propertyID );
+					.getConversionEvents();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const conversionEvents = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getConversionEvents( propertyID );
+					.getConversionEvents();
 				expect( conversionEvents ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );

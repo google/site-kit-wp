@@ -65,6 +65,13 @@ export const {
 
 export const registerStore = ( registry ) => {
 	registry.registerStore( CORE_USER, store );
+
+	// If a reference date was set by the server, set it in the store.
+	if ( global._googlesitekitBaseData?.referenceDate ) {
+		registry
+			.dispatch( CORE_USER )
+			.setReferenceDate( global._googlesitekitBaseData.referenceDate );
+	}
 };
 
 export default store;

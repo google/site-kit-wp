@@ -51,7 +51,6 @@ use Google\Site_Kit\Modules\Analytics\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics\Web_Tag;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
-use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\Analytics as Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting as Google_Service_AnalyticsReporting;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\GetReportsRequest as Google_Service_AnalyticsReporting_GetReportsRequest;
@@ -144,31 +143,6 @@ final class Analytics extends Module
 				}
 			},
 			10,
-			2
-		);
-
-		// Ensure both Analytics modules always reference the same owner.
-		//
-		// The filter for Analytics (UA) is added in the Analytics_4 class,
-		// and the filter for Analytics 4 is added in this class.
-		// This is to prevent an infinite loop, see:
-		// https://github.com/google/site-kit-wp/issues/6465#issuecomment-1483120333.
-		add_filter(
-			'pre_update_option_' . Analytics_4_Settings::OPTION,
-			function( $new_value, $old_value ) {
-				if ( $old_value['ownerID'] !== $new_value['ownerID'] ) {
-					$settings = $this->get_settings()->get();
-
-					if ( $settings['ownerID'] && $new_value['ownerID'] !== $settings['ownerID'] ) {
-						$this->get_settings()->merge(
-							array( 'ownerID' => $new_value['ownerID'] )
-						);
-					}
-				}
-
-				return $new_value;
-			},
-			20,
 			2
 		);
 

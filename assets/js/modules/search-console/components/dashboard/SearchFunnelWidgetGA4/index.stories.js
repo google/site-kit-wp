@@ -328,9 +328,7 @@ ReadyWithCreateConversionCTA.args = {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetConversionEvents( [], {
-				propertyID,
-			} );
+			.receiveGetConversionEvents( [], {} );
 
 		for ( const options of ga4ReportArgs ) {
 			provideAnalytics4MockReport( registry, options );
@@ -543,9 +541,7 @@ export default {
 				.setPropertyID( propertyID );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetConversionEvents( fixtures.conversionEvents, {
-					propertyID,
-				} );
+				.receiveGetConversionEvents( fixtures.conversionEvents, {} );
 
 			return (
 				<WithTestRegistry
