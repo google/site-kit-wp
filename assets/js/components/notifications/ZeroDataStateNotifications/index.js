@@ -40,19 +40,17 @@ export default function ZeroDataStateNotifications() {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
-	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected(
-			isGA4DashboardView ? 'analytics-4' : 'analytics'
-		)
-	);
-	const analyticsDataStore = isGA4DashboardView
-		? MODULES_ANALYTICS_4
-		: MODULES_ANALYTICS;
 
 	const analyticsModuleName = isGA4DashboardView
 		? 'analytics-4'
 		: 'analytics';
+	const analyticsDataStore = isGA4DashboardView
+		? MODULES_ANALYTICS_4
+		: MODULES_ANALYTICS;
 
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( analyticsModuleName )
+	);
 	const canViewSharedAnalytics = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return true;
