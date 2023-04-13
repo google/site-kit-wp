@@ -30,6 +30,7 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
@@ -48,12 +49,16 @@ export default function OptionalSettingsView() {
 	const trackingDisabled = useSelect(
 		( select ) => select( MODULES_ANALYTICS ).getTrackingDisabled() || []
 	);
+	const useGA4Snippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getUseSnippet()
+	);
 
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
 	const showIPAnonymizationSettings = useSnippet && ampMode !== 'primary';
 
-	const showAdsConversionIDSettings = useSnippet && canUseSnippet;
+	const showAdsConversionIDSettings =
+		canUseSnippet && ( useSnippet || useGA4Snippet );
 
 	return (
 		<Fragment>
