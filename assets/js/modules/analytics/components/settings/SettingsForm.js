@@ -144,7 +144,7 @@ export default function SettingsForm( {
 					<EnableUniversalAnalytics
 						hasModuleAccess={ hasAnalyticsAccess }
 					>
-						<SettingsUseSnippetSwitch />
+						{ isUAConnected && <SettingsUseSnippetSwitch /> }
 					</EnableUniversalAnalytics>
 				</div>
 			) }
