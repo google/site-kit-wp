@@ -911,7 +911,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( googleTagID );
 			} );
 
-			it( 'should set `isWebDataStreamNotAvailable` to `true` when there is no google tag conainer available', async () => {
+			it( 'should set `isWebDataStreamNotAvailable` to `true` when there is no Google Tag Container available', async () => {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
 				} );
