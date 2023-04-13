@@ -45,11 +45,21 @@ export default function AnonymizeIPSwitch() {
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
 
 	const { setAnonymizeIP } = useDispatch( MODULES_ANALYTICS );
+
+	const isDisabled = isGA4DashboardView && useGA4Snippet && ! useSnippet;
+
 	const onChange = useCallback( () => {
+		if ( isDisabled ) {
+			return;
+		}
+
 		setAnonymizeIP( ! anonymizeIP );
-	}, [ anonymizeIP, setAnonymizeIP ] );
+	}, [ anonymizeIP, isDisabled, setAnonymizeIP ] );
 
 	if (
 		( ! useSnippet && ! useGA4Snippet ) ||
@@ -72,38 +82,64 @@ export default function AnonymizeIPSwitch() {
 							'google-site-kit'
 						) }
 						onClick={ onChange }
-						checked={ anonymizeIP }
+						checked={ isDisabled ? false : anonymizeIP }
 						hideLabel={ false }
+						disabled={ isDisabled }
 					/>
 					<p>
-						{ createInterpolateElement(
-							anonymizeIP
-								? __(
-										'IP addresses will be anonymized. <LearnMoreLink />',
-										'google-site-kit'
-								  )
-								: __(
-										'IP addresses will not be anonymized. <LearnMoreLink />',
-										'google-site-kit'
-								  ),
-							{
-								LearnMoreLink: (
-									<SupportLink
-										path="/analytics/answer/2763052"
-										external
-										aria-label={ __(
-											'Learn more about IP anonymization.',
-											'google-site-kit'
-										) }
-									>
-										{ __(
-											'Learn more',
-											'google-site-kit'
-										) }
-									</SupportLink>
+						{ isDisabled &&
+							createInterpolateElement(
+								__(
+									'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored. <LearnMoreLink />',
+									'google-site-kit'
 								),
-							}
-						) }
+								{
+									LearnMoreLink: (
+										<SupportLink
+											path="/analytics/answer/2763052"
+											external
+											aria-label={ __(
+												'Learn more about IP anonymization.',
+												'google-site-kit'
+											) }
+										>
+											{ __(
+												'Learn more',
+												'google-site-kit'
+											) }
+										</SupportLink>
+									),
+								}
+							) }
+						{ ! isDisabled &&
+							createInterpolateElement(
+								anonymizeIP
+									? __(
+											'IP addresses will be anonymized. <LearnMoreLink />',
+											'google-site-kit'
+									  )
+									: __(
+											'IP addresses will not be anonymized. <LearnMoreLink />',
+											'google-site-kit'
+									  ),
+								{
+									LearnMoreLink: (
+										<SupportLink
+											path="/analytics/answer/2763052"
+											external
+											aria-label={ __(
+												'Learn more about IP anonymization.',
+												'google-site-kit'
+											) }
+										>
+											{ __(
+												'Learn more',
+												'google-site-kit'
+											) }
+										</SupportLink>
+									),
+								}
+							) }
 					</p>
 				</div>
 			</div>
