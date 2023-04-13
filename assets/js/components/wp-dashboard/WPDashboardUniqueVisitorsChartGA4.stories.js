@@ -18,14 +18,15 @@
  * Internal dependencies
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { widgetDecorators } from './common.stories';
 import {
 	setupAnalytics4MockReports,
 	setupAnalytics4GatheringData,
 	setupAnalytics4ZeroData,
-	widgetDecorators,
-} from './common.stories';
+	setupAnalytics4Loading,
+	setupAnalytics4Error,
+} from './common-GA4.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { freezeFetch } from '../../../../tests/js/utils';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
@@ -59,11 +60,13 @@ ZeroData.args = {
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading Data';
 Loading.args = {
-	setupRegistry: () => {
-		freezeFetch(
-			RegExp( '/google-site-kit/v1/modules/analytics-4/data/' )
-		);
-	},
+	setupRegistry: setupAnalytics4Loading,
+};
+
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: setupAnalytics4Error,
 };
 
 export default {
