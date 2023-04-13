@@ -341,8 +341,8 @@ class REST_Modules_Controller {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 
-							if ( ! $this->modules->is_module_connected( $slug ) ) {
-								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
+							if ( ! $module->is_connected() ) {
+								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 
 							if ( ! $module instanceof Module_With_Service_Entity ) {
@@ -354,7 +354,7 @@ class REST_Modules_Controller {
 									);
 								}
 
-								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 400 ) );
+								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 
 							$access = $module->check_service_entity_access();
