@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SupportLink from '../../../../components/SupportLink';
 
@@ -40,6 +41,9 @@ export default function AnonymizeIPSwitch() {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
+	const useGA4Snippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getUseSnippet()
+	);
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
 	const { setAnonymizeIP } = useDispatch( MODULES_ANALYTICS );
@@ -47,7 +51,11 @@ export default function AnonymizeIPSwitch() {
 		setAnonymizeIP( ! anonymizeIP );
 	}, [ anonymizeIP, setAnonymizeIP ] );
 
-	if ( ! useSnippet || ampMode === 'primary' || anonymizeIP === undefined ) {
+	if (
+		( ! useSnippet && ! useGA4Snippet ) ||
+		ampMode === 'primary' ||
+		anonymizeIP === undefined
+	) {
 		return null;
 	}
 

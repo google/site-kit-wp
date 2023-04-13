@@ -37,6 +37,7 @@ import {
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
@@ -94,9 +95,13 @@ export default function SettingsForm( {
 
 		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
 	} );
+	const useGA4Snippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getUseSnippet()
+	);
 
 	const showTrackingExclusion =
 		useAnalyticsSnippet ||
+		useGA4Snippet ||
 		( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	if ( ! gtmContainersResolved ) {
