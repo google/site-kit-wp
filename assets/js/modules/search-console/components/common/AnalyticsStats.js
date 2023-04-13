@@ -39,6 +39,7 @@ import { UA_CUTOFF_DATE } from '../../../analytics/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { getDateString } from '../../../../util';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 /**
@@ -103,6 +104,8 @@ export default function AnalyticsStats( props ) {
 		moduleSlug,
 	} = props;
 
+	const isViewOnly = useViewOnly();
+
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( moduleSlug )
 	);
@@ -119,7 +122,7 @@ export default function AnalyticsStats( props ) {
 			: null
 	);
 	const property = useSelect( ( select ) =>
-		propertyID
+		propertyID && ! isViewOnly
 			? select( MODULES_ANALYTICS_4 ).getProperty( propertyID )
 			: null
 	);
