@@ -116,16 +116,20 @@ export default function AnalyticsStats( props ) {
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 
-	const propertyID = useSelect( ( select ) =>
-		isGA4DashboardView
-			? select( MODULES_ANALYTICS_4 ).getPropertyID()
-			: null
-	);
-	const property = useSelect( ( select ) =>
-		propertyID && ! isViewOnly
-			? select( MODULES_ANALYTICS_4 ).getProperty( propertyID )
-			: null
-	);
+	const property = useSelect( ( select ) => {
+		if ( isViewOnly || isGA4DashboardView ) {
+			return null;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( ! propertyID ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+	} );
+
 	const propertyCreatedDate = property?.createTime
 		? getDateString( new Date( property.createTime ) )
 		: null;
