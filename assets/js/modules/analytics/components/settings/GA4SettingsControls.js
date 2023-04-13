@@ -46,7 +46,7 @@ import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import GA4SettingsNotice from './GA4SettingsNotice';
 import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import PropertyOrWebDataStreamsNotAvailableError from './PropertyOrWebDataStreamsNotAvailableError';
+import PropertyOrWebDataStreamsNotAvailableErrorGA4 from './PropertyOrWebDataStreamsNotAvailableErrorGA4';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
@@ -98,11 +98,10 @@ export default function GA4SettingsControls( props ) {
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'Google Analytics 4', 'google-site-kit' ) }
 			</h4>
-			<PropertyOrWebDataStreamsNotAvailableError
+			<PropertyOrWebDataStreamsNotAvailableErrorGA4
 				hasModuleAccess={ hasModuleAccess }
 				isDisabled={ isDisabled }
 			/>
-
 			<div className="googlesitekit-setup-module__inputs">
 				{ ga4ReportingEnabled && (
 					<AccountSelect hasModuleAccess={ hasModuleAccess } />
@@ -152,20 +151,17 @@ export default function GA4SettingsControls( props ) {
 						/>
 					) }
 			</div>
-
 			{ isDisabled && (
 				<GA4ActivateSwitch
 					disabled={ ! hasAnalyticsAccess }
 					onActivate={ onActivate }
 				/>
 			) }
-
 			{ ! isDisabled && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<SettingsUseSnippetSwitch />
 				</div>
 			) }
-
 			<GA4SettingsNotice
 				isGA4Connected={ isModuleConnected }
 				hasAnalyticsAccess={ hasAnalyticsAccess }

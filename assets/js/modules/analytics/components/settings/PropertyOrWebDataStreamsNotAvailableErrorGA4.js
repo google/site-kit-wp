@@ -1,7 +1,7 @@
 /**
- * PropertyOrWebDataStreamsNotAvailableError component.
+ * PropertyOrWebDataStreamsNotAvailableErrorGA4 component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import { isValidPropertyID } from '../../../analytics-4/utils/validation';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
-export default function PropertyOrWebDataStreamsNotAvailableError( props ) {
+export default function PropertyOrWebDataStreamsNotAvailableErrorGA4( props ) {
 	const { hasModuleAccess, isDisabled } = props;
 
 	const accountID = useSelect( ( select ) =>
@@ -129,7 +129,7 @@ export default function PropertyOrWebDataStreamsNotAvailableError( props ) {
 	return null;
 }
 
-PropertyOrWebDataStreamsNotAvailableError.propTypes = {
+PropertyOrWebDataStreamsNotAvailableErrorGA4.propTypes = {
 	hasModuleAccess: PropTypes.bool,
 	isDisabled: PropTypes.bool,
 };
