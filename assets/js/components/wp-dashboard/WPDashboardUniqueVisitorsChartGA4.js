@@ -18,7 +18,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -42,14 +41,15 @@ const { useSelect, useInViewSelect } = Data;
 export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 	const { WidgetReportError } = props;
 
-	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
-	);
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	const analytics4ActiveAndConnected = useSelect(
+		( select ) =>
+			select( CORE_MODULES ).isModuleActive( 'analytics-4' ) &&
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isGatheringData()
+		analytics4ActiveAndConnected
+			? select( MODULES_ANALYTICS_4 ).isGatheringData()
+			: false
 	);
 	const googleChartsCollisionError = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
@@ -84,21 +84,26 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 	};
 
 	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+		analytics4ActiveAndConnected
+			? select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+			: undefined
 	);
 
-	const loading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportArgs ]
-			)
+	const loading = useSelect( ( select ) =>
+		analytics4ActiveAndConnected
+			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ reportArgs ]
+			  )
+			: false
 	);
 
 	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			reportArgs,
-		] )
+		analytics4ActiveAndConnected
+			? select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+					reportArgs,
+			  ] )
+			: false
 	);
 
 	// If we can't load Google Charts, don't display this component at all.
@@ -106,27 +111,21 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 		return null;
 	}
 
-	if ( ! ( analyticsModuleActive && analyticsModuleConnected ) ) {
+	if ( ! analytics4ActiveAndConnected ) {
 		return null;
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics-4" error={ error } />;
 	}
 
-	if ( ! isEmpty( data?.[ 0 ] ) ) {
-		data[ 0 ].data.rows = Array.isArray( data[ 0 ].data?.rows )
-			? data[ 0 ].data?.rows
-			: [];
-	}
-	const googleChartData =
-		extractAnalytics4DashboardData(
-			data || [],
-			0,
-			dateRangeLength,
-			[ __( 'Unique Visitors', 'google-site-kit' ) ],
-			[ ( x ) => parseFloat( x ).toLocaleString() ]
-		) || [];
+	const googleChartData = extractAnalytics4DashboardData(
+		data,
+		0,
+		dateRangeLength,
+		[ __( 'Unique Visitors', 'google-site-kit' ) ],
+		[ ( x ) => parseFloat( x ).toLocaleString() ]
+	);
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
 	const options = {

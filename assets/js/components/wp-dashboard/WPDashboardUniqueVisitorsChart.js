@@ -46,14 +46,13 @@ const { useSelect, useInViewSelect } = Data;
 export default function WPDashboardUniqueVisitorsChart( props ) {
 	const { WidgetReportError } = props;
 
-	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
-	);
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	const analyticsIsReady = useSelect(
+		( select ) =>
+			select( CORE_MODULES ).isModuleActive( 'analytics' ) &&
+			select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		analyticsIsReady ? select( MODULES_ANALYTICS ).isGatheringData() : false
 	);
 	const googleChartsCollisionError = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
@@ -86,20 +85,26 @@ export default function WPDashboardUniqueVisitorsChart( props ) {
 	};
 
 	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( reportArgs )
+		analyticsIsReady
+			? select( MODULES_ANALYTICS ).getReport( reportArgs )
+			: undefined
 	);
 
-	const loading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				reportArgs,
-			] )
+	const loading = useSelect( ( select ) =>
+		analyticsIsReady
+			? ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+					'getReport',
+					[ reportArgs ]
+			  )
+			: false
 	);
 
 	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			reportArgs,
-		] )
+		analyticsIsReady
+			? select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+					reportArgs,
+			  ] )
+			: null
 	);
 
 	// If we can't load Google Charts, don't display this component at all.
@@ -107,7 +112,7 @@ export default function WPDashboardUniqueVisitorsChart( props ) {
 		return null;
 	}
 
-	if ( ! ( analyticsModuleActive && analyticsModuleConnected ) ) {
+	if ( ! analyticsIsReady ) {
 		return null;
 	}
 
@@ -120,6 +125,7 @@ export default function WPDashboardUniqueVisitorsChart( props ) {
 			? data[ 0 ].data?.rows
 			: [];
 	}
+
 	const googleChartData =
 		extractAnalyticsDashboardData(
 			data || [],

@@ -13,3 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Internal dependencies
+ */
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import {
+	setupAnalytics4MockReports,
+	setupAnalytics4GatheringData,
+	setupAnalytics4ZeroData,
+	widgetDecorators,
+} from './common.stories';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { freezeFetch } from '../../../../tests/js/utils';
+import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
+
+const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
+	WPDashboardUniqueVisitorsChartGA4
+);
+
+const Template = ( { setupRegistry = () => {}, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<WidgetWithComponentProps { ...args } />
+	</WithRegistrySetup>
+);
+
+export const Ready = Template.bind( {} );
+Ready.storyName = 'Ready';
+Ready.args = {
+	setupRegistry: setupAnalytics4MockReports,
+};
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: setupAnalytics4GatheringData,
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: setupAnalytics4ZeroData,
+};
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading Data';
+Loading.args = {
+	setupRegistry: () => {
+		freezeFetch(
+			RegExp( '/google-site-kit/v1/modules/analytics-4/data/' )
+		);
+	},
+};
+
+export default {
+	title: 'Views/WPDashboardApp/WPDashboardUniqueVisitorsChartGA4',
+	decorators: widgetDecorators,
+};

@@ -23,7 +23,7 @@ import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	setupAnalyticsGatheringData,
 	setupAnalyticsMockReports,
-	setupSearchConsoleAnalyticsZeroData,
+	setupAnalyticsZeroData,
 	widgetDecorators,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -55,7 +55,7 @@ GatheringData.args = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+	setupRegistry: setupAnalyticsZeroData,
 };
 
 export const Loading = Template.bind( {} );
@@ -67,6 +67,6 @@ Loading.args = {
 };
 
 export default {
-	title: 'Views/WPDashboardApp/WPDashboardUniqueVisitorsChartWidget',
+	title: 'Views/WPDashboardApp/WPDashboardUniqueVisitorsChart',
 	decorators: widgetDecorators,
 };
