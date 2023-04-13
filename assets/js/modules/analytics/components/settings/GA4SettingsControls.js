@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
@@ -46,8 +46,7 @@ import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import GA4SettingsNotice from './GA4SettingsNotice';
 import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { isValidPropertyID } from '../../../analytics-4/utils/validation';
-import ErrorText from '../../../../components/ErrorText';
+import PropertyOrWebDataStreamsNotAvailableError from './PropertyOrWebDataStreamsNotAvailableError';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
@@ -73,10 +72,6 @@ export default function GA4SettingsControls( props ) {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	const measurementID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMeasurementID()
-	);
-
 	const isModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -98,90 +93,15 @@ export default function GA4SettingsControls( props ) {
 	const isDisabled = ! propertyID && ! enableGA4;
 	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
 
-	const properties = useSelect( ( select ) =>
-		hasModuleAccess !== false && ! isDisabled
-			? select( MODULES_ANALYTICS_4 ).getProperties( accountID )
-			: []
-	);
-
-	const webDataStreams = useSelect( ( select ) =>
-		isValidPropertyID( propertyID )
-			? select(
-					MODULES_ANALYTICS_4
-			  ).getMatchingWebDataStreamsByPropertyID( propertyID )
-			: []
-	);
-
-	const getWebDataStreamsError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-			'getWebDataStreams',
-			[ propertyID ]
-		)
-	);
-
-	const getPropertiesError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getProperties', [
-			accountID,
-		] )
-	);
-
-	let propertyNotAvailable = false;
-	let webDataStreamsNotAvailable = false;
-
-	if (
-		properties !== undefined &&
-		webDataStreams !== undefined &&
-		hasModuleAccess &&
-		! isDisabled &&
-		isValidPropertyID( propertyID )
-	) {
-		if ( properties.some( ( { _id } ) => _id === propertyID ) ) {
-			if (
-				measurementID &&
-				! getWebDataStreamsError &&
-				! webDataStreams.some(
-					( { webStreamData } ) =>
-						// eslint-disable-next-line sitekit/acronym-case
-						webStreamData.measurementId === measurementID
-				)
-			) {
-				webDataStreamsNotAvailable = true;
-			}
-		} else if ( ! getPropertiesError ) {
-			propertyNotAvailable = true;
-		}
-	}
-
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'Google Analytics 4', 'google-site-kit' ) }
 			</h4>
-			{ propertyNotAvailable && (
-				<ErrorText
-					message={ sprintf(
-						/* translators: 1: Google Analytics 4 Property ID. */
-						__(
-							'The previously selected property with ID %1$s is no longer available. Please select a new property to continue collecting data with Google Analytics 4.',
-							'google-site-kit'
-						),
-						propertyID
-					) }
-				/>
-			) }
-
-			{ webDataStreamsNotAvailable && (
-				<ErrorText
-					message={ sprintf(
-						/* translators: 1: Google Analytics 4 Measurement ID. */
-						__(
-							'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
-							'google-site-kit'
-						),
-						measurementID
-					) }
-				/>
-			) }
+			<PropertyOrWebDataStreamsNotAvailableError
+				hasModuleAccess={ hasModuleAccess }
+				isDisabled={ isDisabled }
+			/>
 
 			<div className="googlesitekit-setup-module__inputs">
 				{ ga4ReportingEnabled && (
@@ -233,12 +153,14 @@ export default function GA4SettingsControls( props ) {
 					) }
 			</div>
 
-			{ isDisabled ? (
+			{ isDisabled && (
 				<GA4ActivateSwitch
 					disabled={ ! hasAnalyticsAccess }
 					onActivate={ onActivate }
 				/>
-			) : (
+			) }
+
+			{ ! isDisabled && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<SettingsUseSnippetSwitch />
 				</div>
