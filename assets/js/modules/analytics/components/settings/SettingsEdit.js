@@ -74,9 +74,9 @@ export default function SettingsEdit() {
 		}
 
 		// If we've gotten this far, then the current user is not the module owner
-		// nor do they have access to UA (meaning a request was made and completed to check via checkModuleAccess)
-		// which means that the check request resulted in an error.
-
+		// nor do they have access to UA (meaning a request was made and completed
+		// to check via checkModuleAccess) which means that the check request
+		// resulted in an error.
 		if ( ! ga4ReportingEnabled ) {
 			return false;
 		}
