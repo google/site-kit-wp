@@ -41,7 +41,7 @@ trait Setting_With_Owned_Keys_Trait {
 			if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
 				return;
 			}
-	
+
 			$keys = $this->get_owned_keys();
 			foreach ( $keys as $key ) {
 				if ( isset( $settings[ $key ], $old_settings[ $key ] ) && $settings[ $key ] !== $old_settings[ $key ] ) {
