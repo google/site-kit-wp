@@ -836,6 +836,58 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status() );
 	}
 
+	public function test_recover_modules_rest_endpoint__analytics_4_exception() {
+		// Enabling the following feature flags is required for analytics-4
+		// module to be declared shareable.
+		$this->enable_feature( 'ga4Reporting' );
+		$this->enable_feature( 'dashboardSharing' );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		// Make analytics-4 a recoverable module
+		$analytics_4 = $this->modules->get_module( 'analytics-4' );
+		$analytics_4->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'measurementID'   => 'G-1234567',
+				'webDataStreamID' => '123456789',
+			)
+		);
+		$test_sharing_settings = array(
+			'analytics-4' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		// Make analytics-4 service requests accessible
+		FakeHttp::fake_google_http_handler( $analytics_4->get_client() );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slugs' => array( 'analytics-4' ),
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals(
+			array(
+				'success' => array(
+					'analytics-4' => true,
+				),
+				'error'   => (object) array(),
+			),
+			$response->get_data()
+		);
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
 	public function test_data_rest_endpoint__requires_active_module() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
