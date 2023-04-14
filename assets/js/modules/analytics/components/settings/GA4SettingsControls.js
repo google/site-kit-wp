@@ -46,7 +46,7 @@ import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import GA4SettingsNotice from './GA4SettingsNotice';
 import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import PropertyOrWebDataStreamsNotAvailableErrorGA4 from './PropertyOrWebDataStreamsNotAvailableErrorGA4';
+import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
@@ -99,7 +99,7 @@ export default function GA4SettingsControls( props ) {
 				{ __( 'Google Analytics 4', 'google-site-kit' ) }
 			</h4>
 
-			<PropertyOrWebDataStreamsNotAvailableErrorGA4
+			<PropertyOrWebDataStreamNotAvailableError
 				hasModuleAccess={ hasModuleAccess }
 				isDisabled={ isDisabled }
 			/>

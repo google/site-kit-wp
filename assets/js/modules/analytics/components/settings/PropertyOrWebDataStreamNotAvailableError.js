@@ -1,5 +1,5 @@
 /**
- * PropertyOrWebDataStreamsNotAvailableErrorGA4 component.
+ * PropertyOrWebDataStreamNotAvailableError component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -36,7 +36,7 @@ import { isValidPropertyID } from '../../../analytics-4/utils/validation';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
-export default function PropertyOrWebDataStreamsNotAvailableErrorGA4( props ) {
+export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	const { hasModuleAccess, isDisabled } = props;
 
 	const accountID = useSelect( ( select ) =>
@@ -88,32 +88,35 @@ export default function PropertyOrWebDataStreamsNotAvailableErrorGA4( props ) {
 		return null;
 	}
 
-	if ( properties.some( ( { _id } ) => _id === propertyID ) ) {
-		if (
-			measurementID &&
-			! getWebDataStreamsError &&
-			! webDataStreams.some(
-				( { webStreamData } ) =>
-					// eslint-disable-next-line sitekit/acronym-case
-					webStreamData.measurementId === measurementID
-			)
-		) {
-			return (
-				<ErrorText
-					message={ sprintf(
-						/* translators: 1: Google Analytics 4 Measurement ID. */
-						__(
-							'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
-							'google-site-kit'
-						),
-						measurementID
-					) }
-				/>
-			);
-		}
+	const propertyAvailable = properties.some(
+		( { _id } ) => _id === propertyID
+	);
+
+	if (
+		propertyAvailable &&
+		measurementID &&
+		! getWebDataStreamsError &&
+		! webDataStreams.some(
+			( { webStreamData } ) =>
+				// eslint-disable-next-line sitekit/acronym-case
+				webStreamData.measurementId === measurementID
+		)
+	) {
+		return (
+			<ErrorText
+				message={ sprintf(
+					/* translators: 1: Google Analytics 4 Measurement ID. */
+					__(
+						'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
+						'google-site-kit'
+					),
+					measurementID
+				) }
+			/>
+		);
 	}
 
-	if ( ! getPropertiesError ) {
+	if ( ! propertyAvailable && ! getPropertiesError ) {
 		return (
 			<ErrorText
 				message={ sprintf(
@@ -131,7 +134,7 @@ export default function PropertyOrWebDataStreamsNotAvailableErrorGA4( props ) {
 	return null;
 }
 
-PropertyOrWebDataStreamsNotAvailableErrorGA4.propTypes = {
+PropertyOrWebDataStreamNotAvailableError.propTypes = {
 	hasModuleAccess: PropTypes.bool,
 	isDisabled: PropTypes.bool,
 };
