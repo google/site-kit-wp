@@ -30,7 +30,15 @@ function autoload_classes() {
 
 	spl_autoload_register(
 		function ( $class ) use ( $class_map ) {
-			if ( isset( $class_map[ $class ] ) ) {
+			if (
+				// Only handle classes defined in our class maps.
+				isset( $class_map[ $class ] )
+				// Only load core Site Kit classes or others that exist (e.g. polyfills).
+				&& (
+					'Google\\Site_Kit' === substr( $class, 0, 15 )
+					|| file_exists( $class_map[ $class ] )
+				)
+			) {
 				require_once $class_map[ $class ];
 			}
 		},
