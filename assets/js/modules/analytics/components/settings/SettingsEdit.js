@@ -28,6 +28,7 @@ import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
 import { AccountCreate, AccountCreateLegacy } from '../common';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
@@ -46,10 +47,47 @@ export default function SettingsEdit() {
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
-	const hasAnalyticsAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' )
-	);
+	const hasAnalyticsAccess = useSelect( ( select ) => {
+		const { hasModuleOwnershipOrAccess, getErrorForAction } =
+			select( CORE_MODULES );
+
+		const hasAccess = hasModuleOwnershipOrAccess( 'analytics' );
+
+		if ( hasAccess ) {
+			return true;
+		}
+
+		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
+			'analytics',
+		] );
+
+		// Return early if request is not completed yet.
+		if ( undefined === hasAccess && ! checkAccessError ) {
+			return undefined;
+		}
+
+		// Return false if UA is connected and access is concretely missing.
+		if ( false === hasAccess ) {
+			return false;
+		}
+
+		// If we've gotten this far, then the current user is not the module owner
+		// nor do they have access to UA (meaning a request was made and completed
+		// to check via checkModuleAccess) which means that the check request
+		// resulted in an error.
+		if ( ! ga4ReportingEnabled ) {
+			return false;
+		}
+
+		if ( 'module_not_connected' === checkAccessError?.code ) {
+			return true;
+		}
+
+		// For any other error or case, the user does not have access to UA.
+		return false;
+	} );
 
 	const hasAnalytics4Access = useSelect( ( select ) => {
 		// Prevent the access check from erroring if GA4 isn't connected yet.

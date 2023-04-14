@@ -27,6 +27,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
@@ -70,6 +71,13 @@ class Analytics_4Test extends TestCase {
 	private $context;
 
 	/**
+	 * Options object.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
 	 * User object.
 	 *
 	 * @var WP_User
@@ -110,11 +118,11 @@ class Analytics_4Test extends TestCase {
 		$this->enable_feature( 'ga4Reporting' );
 
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options              = new Options( $this->context );
+		$this->options        = new Options( $this->context );
 		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$this->user_options   = new User_Options( $this->context, $this->user->ID );
-		$this->authentication = new Authentication( $this->context, $options, $this->user_options );
-		$this->analytics      = new Analytics_4( $this->context, $options, $this->user_options, $this->authentication );
+		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->analytics      = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
 		wp_set_current_user( $this->user->ID );
 	}
 
@@ -1414,13 +1422,6 @@ class Analytics_4Test extends TestCase {
 	public function test_report__shared_metric_validation() {
 		$this->enable_feature( 'dashboardSharing' );
 
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options              = new Options( $this->context );
-		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_options   = new User_Options( $this->context, $this->user->ID );
-		$this->authentication = new Authentication( $this->context, $options, $this->user_options );
-		$this->analytics      = new Analytics_4( $this->context, $options, $this->user_options, $this->authentication );
-
 		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
 		// TODO: Remove this when `dashboardSharing` feature flag is removed.
 		$modules     = new Modules( $this->context, null, $this->user_options, $this->authentication );
@@ -1458,13 +1459,6 @@ class Analytics_4Test extends TestCase {
 
 	public function test_report__shared_dimension_validation() {
 		$this->enable_feature( 'dashboardSharing' );
-
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options              = new Options( $this->context );
-		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_options   = new User_Options( $this->context, $this->user->ID );
-		$this->authentication = new Authentication( $this->context, $options, $this->user_options );
-		$this->analytics      = new Analytics_4( $this->context, $options, $this->user_options, $this->authentication );
 
 		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
 		// TODO: Remove this when `dashboardSharing` feature flag is removed.
@@ -1697,7 +1691,7 @@ class Analytics_4Test extends TestCase {
 		// Create a user to set as the Analytics 4 module owner.
 		$admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 
-		$this->setup_user_authentication( 'valid-auth-token', $admin->ID );
+		$this->set_user_access_token( $admin->ID, 'valid-auth-token' );
 
 		// Ensure the new user has the necessary scopes to make the request.
 		$restore_user = $this->user_options->switch_user( $admin->ID );
@@ -1706,9 +1700,27 @@ class Analytics_4Test extends TestCase {
 		);
 		$restore_user();
 
+		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
+		$permssions_callback = function( $caps, $cap ) {
+			if ( Permissions::MANAGE_OPTIONS === $cap ) {
+				return array( 'manage_options' );
+			}
+			return $caps;
+		};
+
+		add_filter( 'map_meta_cap', $permssions_callback, 99, 2 );
+		wp_set_current_user( $admin->ID );
+
 		// Ensure the Analytics 4 module is connected and the owner ID is set.
-		update_option(
-			'googlesitekit_analytics-4_settings',
+		delete_option( Analytics_Settings::OPTION );
+		delete_option( Settings::OPTION );
+
+		$analytics_settings = new Analytics_Settings( $this->options );
+		$analytics_settings->register();
+
+		$analytics_4_settings = new Settings( $this->options );
+		$analytics_4_settings->register();
+		$analytics_4_settings->merge(
 			array(
 				'propertyID'      => '123',
 				'webDataStreamID' => '456',
@@ -1716,6 +1728,9 @@ class Analytics_4Test extends TestCase {
 				'ownerID'         => $admin->ID,
 			)
 		);
+
+		remove_filter( 'map_meta_cap', $permssions_callback, 99, 2 );
+		wp_set_current_user( $this->user->ID );
 
 		// Ensure sharing is enabled for the Analytics 4 module.
 		add_option(
@@ -1760,8 +1775,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_tracking_opt_out_snippet() {
-		$analytics_4 = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics_4->register();
+		$this->analytics->register();
 
 		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
 		// Ensure the snippet is not output when the measurement ID is empty.
@@ -1770,7 +1784,7 @@ class Analytics_4Test extends TestCase {
 		$settings = array(
 			'measurementID' => 'G-12345678',
 		);
-		$analytics_4->get_settings()->merge( $settings );
+		$this->analytics->get_settings()->merge( $settings );
 
 		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
 		// Ensure the snippet contains the configured measurement ID.
@@ -1779,9 +1793,7 @@ class Analytics_4Test extends TestCase {
 
 	public function test_tracking_opt_out_snippet__gteSupport() {
 		$this->enable_feature( 'gteSupport' );
-
-		$analytics_4 = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics_4->register();
+		$this->analytics->register();
 
 		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
 		// Ensure the snippet is not output when both measurement ID and google tag ID are empty.
@@ -1790,7 +1802,7 @@ class Analytics_4Test extends TestCase {
 		$settings = array(
 			'measurementID' => 'G-12345678',
 		);
-		$analytics_4->get_settings()->merge( $settings );
+		$this->analytics->get_settings()->merge( $settings );
 
 		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
 		// Ensure the snippet contains the configured measurement ID when it is set and the google tag ID is empty.
@@ -1800,7 +1812,7 @@ class Analytics_4Test extends TestCase {
 			'googleTagID' => 'GT-12345678',
 		);
 
-		$analytics_4->get_settings()->merge( $settings );
+		$this->analytics->get_settings()->merge( $settings );
 
 		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
 		// Ensure the snippet contains the configured google tag ID when it is set.
@@ -1832,7 +1844,7 @@ class Analytics_4Test extends TestCase {
 	 * @return Module_With_Service_Entity
 	 */
 	protected function get_module_with_service_entity() {
-		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		return $this->analytics;
 	}
 
 	protected function set_up_check_service_entity_access( Module $module ) {
@@ -1847,7 +1859,7 @@ class Analytics_4Test extends TestCase {
 	 * @return Module_With_Data_Available_State
 	 */
 	protected function get_module_with_data_available_state() {
-		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		return $this->analytics;
 	}
 
 }
