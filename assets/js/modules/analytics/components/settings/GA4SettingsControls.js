@@ -98,6 +98,7 @@ export default function GA4SettingsControls( props ) {
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'Google Analytics 4', 'google-site-kit' ) }
 			</h4>
+
 			<PropertyOrWebDataStreamsNotAvailableErrorGA4
 				hasModuleAccess={ hasModuleAccess }
 				isDisabled={ isDisabled }
@@ -151,17 +152,20 @@ export default function GA4SettingsControls( props ) {
 						/>
 					) }
 			</div>
+
 			{ isDisabled && (
 				<GA4ActivateSwitch
 					disabled={ ! hasAnalyticsAccess }
 					onActivate={ onActivate }
 				/>
 			) }
+
 			{ ! isDisabled && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<SettingsUseSnippetSwitch />
 				</div>
 			) }
+
 			<GA4SettingsNotice
 				isGA4Connected={ isModuleConnected }
 				hasAnalyticsAccess={ hasAnalyticsAccess }
