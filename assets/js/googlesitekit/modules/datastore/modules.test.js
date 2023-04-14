@@ -2011,6 +2011,14 @@ describe( 'core/modules modules', () => {
 						'slug'
 					)
 				);
+
+				expect( Object.keys( recoverableModules ) ).toContain(
+					'analytics-4'
+				);
+
+				expect( Object.keys( recoverableModules ) ).not.toContain(
+					'analytics-4'
+				);
 			} );
 		} );
 
