@@ -1938,14 +1938,10 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				fetchMock.getOnce(
+				muteFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/settings'
-					),
-					{
-						body: {},
-						status: 200,
-					}
+					)
 				);
 
 				const initialRecoverableModules = registry
