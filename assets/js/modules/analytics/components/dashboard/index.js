@@ -20,4 +20,3 @@ export { default as DashboardAllTrafficWidget } from './DashboardAllTrafficWidge
 export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWidgetGA4';
 export { default as DashboardOverallPageMetricsWidget } from './DashboardOverallPageMetricsWidget';
 export { default as DashboardOverallPageMetricsWidgetGA4 } from './DashboardOverallPageMetricsWidgetGA4';
-export { default as GA4DashboardWidgetSwitcher } from './GA4DashboardWidgetSwitcher';
