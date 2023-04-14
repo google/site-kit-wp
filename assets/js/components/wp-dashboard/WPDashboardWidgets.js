@@ -30,6 +30,9 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
@@ -37,12 +40,10 @@ import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
-import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
+import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 import WPDashboardUniqueVisitorsChart from './WPDashboardUniqueVisitorsChart';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -81,6 +82,9 @@ const WPDashboardUniqueVisitorsGA4Widget = withWidgetComponentProps(
 const WPDashboardSessionDurationGA4Widget = withWidgetComponentProps(
 	WIDGET_SESSION_DURATION
 )( WPDashboardSessionDurationGA4 );
+const WPDashboardPopularPagesGA4Widget = withWidgetComponentProps(
+	WIDGET_POPULAR_PAGES
+)( WPDashboardPopularPagesGA4 );
 const WPDashboardUniqueVisitorsChartGA4Widget = withWidgetComponentProps(
 	WIDGET_VISITORS_CHART
 )( WPDashboardUniqueVisitorsChartGA4 );
@@ -148,7 +152,7 @@ export default function WPDashboardWidgets() {
 			{ isGA4DashboardView && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsChartGA4Widget />
-					<WPDashboardPopularPagesWidget />
+					<WPDashboardPopularPagesGA4Widget />
 				</Fragment>
 			) }
 		</div>

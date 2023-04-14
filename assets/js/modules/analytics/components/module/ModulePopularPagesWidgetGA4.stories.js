@@ -258,7 +258,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics',
+						slug: 'analytics-4',
 					},
 				] );
 

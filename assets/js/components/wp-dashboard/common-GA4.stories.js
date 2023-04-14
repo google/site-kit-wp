@@ -86,6 +86,29 @@ const wpDashboardAnalytics4OptionSets = [
 			},
 		],
 	},
+
+	// Mock options for mocking "Popular pages" report's response.
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		dimensions: [ 'pagePath' ],
+		metrics: [
+			{
+				name: 'screenPageViews',
+			},
+		],
+		orderby: [
+			{
+				metric: {
+					metricName: 'screenPageViews',
+				},
+				desc: true,
+			},
+		],
+		limit: 5,
+	},
 ];
 
 export const setupAnalytics4MockReports = (
