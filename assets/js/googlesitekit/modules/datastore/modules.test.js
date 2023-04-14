@@ -2017,7 +2017,7 @@ describe( 'core/modules modules', () => {
 				);
 
 				expect( Object.keys( recoverableModules ) ).not.toContain(
-					'analytics-4'
+					'analytics'
 				);
 			} );
 		} );
