@@ -111,7 +111,9 @@ export default function PropertyOrWebDataStreamsNotAvailableErrorGA4( props ) {
 				/>
 			);
 		}
-	} else if ( ! getPropertiesError ) {
+	}
+
+	if ( ! getPropertiesError ) {
 		return (
 			<ErrorText
 				message={ sprintf(
