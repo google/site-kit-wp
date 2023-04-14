@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 
 /**
@@ -113,6 +114,10 @@ export default function WPDashboardPopularPagesGA4( props ) {
 		</div>
 	);
 }
+
+WPDashboardPopularPagesGA4.propTypes = {
+	WidgetReportError: PropTypes.elementType.isRequired,
+};
 
 // Expose function for selecting report args for use in Storybook/tests.
 WPDashboardPopularPagesGA4.selectReportArgs = ( select ) => {
