@@ -33,9 +33,10 @@ function autoload_classes() {
 			if (
 				// Only handle classes defined in our class maps.
 				isset( $class_map[ $class ] )
-				// Only load core Site Kit classes or others that exist (e.g. polyfills).
+				// Only load Site Kit classes or others that exist (e.g. polyfills).
 				&& (
-					'Google\\Site_Kit' === substr( $class, 0, 15 )
+					0 === strpos( $class, 'Google\\Site_Kit\\' )
+					|| 0 === strpos( $class, 'Google\\Site_Kit_Dependencies\\' )
 					|| file_exists( $class_map[ $class ] )
 				)
 			) {
