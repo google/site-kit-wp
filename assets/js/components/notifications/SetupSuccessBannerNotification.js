@@ -27,7 +27,7 @@ import { removeQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getQueryParameter } from '../../util';
+import useQueryArg from '../../hooks/useQueryArg';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
@@ -42,8 +42,8 @@ import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
-	const slug = getQueryParameter( 'slug' );
-	const notification = getQueryParameter( 'notification' );
+	const slug = useQueryArg( 'slug' );
+	const notification = useQueryArg( 'notification' );
 	const viewContext = useViewContext();
 
 	const modules = useSelect( ( select ) =>
