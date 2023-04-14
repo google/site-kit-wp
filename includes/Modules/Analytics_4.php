@@ -242,6 +242,10 @@ final class Analytics_4 extends Module
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
 			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
 			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'GET:conversion-events'      => array(
+				'service'   => 'analyticsadmin',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'POST:create-account-ticket' => array(
 				'service'                => 'analyticsprovisioning',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
@@ -262,7 +266,6 @@ final class Analytics_4 extends Module
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
-			'GET:conversion-events'      => array( 'service' => 'analyticsadmin' ),
 		);
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
