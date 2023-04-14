@@ -47,14 +47,35 @@ const { useSelect, useInViewSelect } = Data;
 export default function WPDashboardPopularPagesGA4( props ) {
 	const { WidgetReportError } = props;
 
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
-	const reportArgs = useSelect(
-		WPDashboardPopularPagesGA4.selectReportArgs,
-		[]
-	);
+	const reportArgs = {
+		...dateRangeDates,
+		dimensions: [ 'pagePath' ],
+		metrics: [
+			{
+				name: 'screenPageViews',
+			},
+		],
+		orderby: [
+			{
+				metric: {
+					metricName: 'screenPageViews',
+				},
+				desc: true,
+			},
+		],
+		limit: 5,
+	};
 
 	const report = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
@@ -71,13 +92,15 @@ export default function WPDashboardPopularPagesGA4( props ) {
 	);
 
 	const loading = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getReport', [ reportArgs ] );
-
 		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
+		if ( ! hasLoadedPageTitles ) {
+			return true;
+		}
 
-		return ! hasLoadedPageTitles || ! reportLoaded;
+		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getReport',
+			[ reportArgs ]
+		);
 	} );
 
 	if ( loading || isGatheringData === undefined ) {
@@ -95,6 +118,28 @@ export default function WPDashboardPopularPagesGA4( props ) {
 		const url = row.dimensionValues[ 0 ].value;
 		row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
 	} );
+
+	const tableColumns = [
+		{
+			title: __( 'Title', 'google-site-kit' ),
+			description: __( 'Page Title', 'google-site-kit' ),
+			primary: true,
+			Component: ( { row } ) => {
+				const [ { value: title }, { value: url } ] =
+					row.dimensionValues;
+
+				return <DetailsPermaLinks title={ title } path={ url } />;
+			},
+		},
+		{
+			title: __( 'Pageviews', 'google-site-kit' ),
+			description: __( 'Pageviews', 'google-site-kit' ),
+			field: 'metricValues.0.value',
+			Component: ( { fieldValue } ) => (
+				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+			),
+		},
+	];
 
 	return (
 		/* TODO: decouple the styles from search-console class */
@@ -118,51 +163,3 @@ export default function WPDashboardPopularPagesGA4( props ) {
 WPDashboardPopularPagesGA4.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-// Expose function for selecting report args for use in Storybook/tests.
-WPDashboardPopularPagesGA4.selectReportArgs = ( select ) => {
-	const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} );
-
-	return {
-		...dateRangeDates,
-		dimensions: [ 'pagePath' ],
-		metrics: [
-			{
-				name: 'screenPageViews',
-			},
-		],
-		orderby: [
-			{
-				metric: {
-					metricName: 'screenPageViews',
-				},
-				desc: true,
-			},
-		],
-		limit: 5,
-	};
-};
-
-const tableColumns = [
-	{
-		title: __( 'Title', 'google-site-kit' ),
-		description: __( 'Page Title', 'google-site-kit' ),
-		primary: true,
-		Component: ( { row } ) => {
-			const [ { value: title }, { value: url } ] = row.dimensionValues;
-
-			return <DetailsPermaLinks title={ title } path={ url } />;
-		},
-	},
-	{
-		title: __( 'Pageviews', 'google-site-kit' ),
-		description: __( 'Pageviews', 'google-site-kit' ),
-		field: 'metricValues.0.value',
-		Component: ( { fieldValue } ) => (
-			<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
-		),
-	},
-];

@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { widgetDecorators } from './common.stories';
 import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-} from '../../modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
-import { provideModules } from '../../../../tests/js/utils';
+	setupAnalytics4MockReports,
+	setupAnalytics4ZeroData,
+	setupAnalytics4Loading,
+	setupAnalytics4Error,
+} from './common-GA4.stories';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
 	WPDashboardPopularPagesGA4
@@ -41,117 +41,39 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	</WithRegistrySetup>
 );
 
-function provideGatheringData( registry, value ) {
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( value );
-}
-
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: ( registry ) => {
-		const options = WPDashboardPopularPagesGA4.selectReportArgs(
-			registry.select
-		);
-
-		provideGatheringData( registry, false );
-		provideAnalytics4MockReport( registry, options );
-	},
+	setupRegistry: setupAnalytics4MockReports,
 };
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: ( registry ) => {
-		provideGatheringData( registry, true );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 	},
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: ( registry ) => {
-		const options = WPDashboardPopularPagesGA4.selectReportArgs(
-			registry.select
-		);
-		const report = getAnalytics4MockResponse( options );
-		const zeroReport =
-			replaceValuesInAnalytics4ReportWithZeroData( report );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
-			options,
-		} );
-		provideGatheringData( registry, false );
-	},
+	setupRegistry: setupAnalytics4ZeroData,
 };
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry: ( registry ) => {
-		const options = WPDashboardPopularPagesGA4.selectReportArgs(
-			registry.select
-		);
-		provideAnalytics4MockReport( registry, options );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [ options ] );
-	},
+	setupRegistry: setupAnalytics4Loading,
 };
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: ( registry ) => {
-		provideModules( registry ); // "Data error in {module name}"
-		const options = WPDashboardPopularPagesGA4.selectReportArgs(
-			registry.select
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsGatheringData( false );
-		const error = {
-			code: 'missing_required_param',
-			message: 'Request parameter is empty: metrics.',
-			data: {},
-		};
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'getReport', [ options ] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ options ] );
-	},
+	setupRegistry: setupAnalytics4Error,
 };
 
 export default {
 	title: 'Views/WPDashboardApp/WPDashboardPopularPagesGA4',
-	decorators: [
-		( Story ) => (
-			<WithRegistrySetup
-				func={ ( registry ) =>
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( '2021-01-28' )
-				}
-			>
-				<Story />
-			</WithRegistrySetup>
-		),
-		( Story ) => (
-			<div id="dashboard-widgets">
-				<div
-					id="google_dashboard_widget"
-					className="postbox"
-					style={ { maxWidth: '600px' } }
-				>
-					<div className="inside">
-						<div className="googlesitekit-plugin">
-							<div className="googlesitekit-wp-dashboard">
-								<Story />
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		),
-	],
+	decorators: widgetDecorators,
 };
