@@ -1,5 +1,5 @@
 /**
- * WPDashboardUniqueVisitorsChartWidget component.
+ * WPDashboardUniqueVisitorsChart component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,12 +19,13 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,21 +35,16 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../modules/analytics/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { extractAnalyticsDashboardData } from '../../modules/analytics/util';
-import WidgetReportError from '../../googlesitekit/widgets/components/WidgetReportError';
-import GoogleChart from '../GoogleChart';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { extractAnalyticsDashboardData } from '../../modules/analytics/util';
+import GoogleChart from '../GoogleChart';
+import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardUniqueVisitorsChartWidget = () => {
-	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
-	);
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
-	);
+export default function WPDashboardUniqueVisitorsChart( props ) {
+	const { WidgetReportError } = props;
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -104,10 +100,6 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 		return null;
 	}
 
-	if ( ! ( analyticsModuleActive && analyticsModuleConnected ) ) {
-		return null;
-	}
-
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
@@ -117,6 +109,7 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 			? data[ 0 ].data?.rows
 			: [];
 	}
+
 	const googleChartData =
 		extractAnalyticsDashboardData(
 			data || [],
@@ -130,9 +123,9 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
 	const options = {
-		...WPDashboardUniqueVisitorsChartWidget.chartOptions,
+		...UNIQUE_VISITORS_CHART_OPTIONS,
 		hAxis: {
-			...WPDashboardUniqueVisitorsChartWidget.chartOptions.hAxis,
+			...UNIQUE_VISITORS_CHART_OPTIONS.hAxis,
 			ticks: [ dates[ 0 ], dates[ dates.length - 1 ] ],
 		},
 	};
@@ -153,7 +146,18 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 
 	return (
 		<div className="googlesitekit-unique-visitors-chart-widget">
-			<h3>Unique visitors over the last 28 days</h3>
+			<h3>
+				{ sprintf(
+					/* translators: %s: number of days */
+					_n(
+						'Unique visitors over the last %s day',
+						'Unique visitors over the last %s days',
+						dateRangeLength,
+						'google-site-kit'
+					),
+					dateRangeLength
+				) }
+			</h3>
 			<GoogleChart
 				chartType="LineChart"
 				data={ googleChartData }
@@ -165,72 +169,8 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 			/>
 		</div>
 	);
-};
+}
 
-WPDashboardUniqueVisitorsChartWidget.chartOptions = {
-	animation: {
-		startup: true,
-	},
-	chart: {
-		title: 'Unique visitors over the last 28 days',
-	},
-	curveType: 'function',
-	height: 270,
-	width: '100%',
-	chartArea: {
-		height: '80%',
-		left: 20,
-		right: 20,
-	},
-	legend: {
-		position: 'top',
-		textStyle: {
-			color: '#616161',
-			fontSize: 12,
-		},
-	},
-	hAxis: {
-		format: 'M/d/yy',
-		gridlines: {
-			color: '#fff',
-		},
-		textStyle: {
-			color: '#616161',
-			fontSize: 12,
-		},
-	},
-	vAxis: {
-		textPosition: 'none',
-		viewWindow: {
-			min: 0,
-		},
-		gridlines: {
-			color: '#eee',
-		},
-	},
-	series: {
-		0: {
-			color: '#6380b8',
-			targetAxisIndex: 0,
-		},
-		1: {
-			color: '#6380b8',
-			targetAxisIndex: 0,
-			lineDashStyle: [ 3, 3 ],
-			lineWidth: 1,
-		},
-	},
-	focusTarget: 'category',
-	crosshair: {
-		color: 'gray',
-		opacity: 0.1,
-		orientation: 'vertical',
-		trigger: 'both',
-	},
-	tooltip: {
-		isHtml: true, // eslint-disable-line sitekit/acronym-case
-		trigger: 'both',
-	},
+WPDashboardUniqueVisitorsChart.propTypes = {
+	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default WPDashboardUniqueVisitorsChartWidget;

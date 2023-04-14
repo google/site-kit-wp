@@ -82,12 +82,12 @@ export default function Overview( props ) {
 
 	const viewOnly = useViewOnly();
 
-	const analyticsModuleAvailable = useSelect( ( select ) =>
+	const isAnalytics4ModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( ! analyticsModuleAvailable ) {
+	const canViewSharedAnalytics4 = useSelect( ( select ) => {
+		if ( ! isAnalytics4ModuleAvailable ) {
 			return false;
 		}
 
@@ -95,7 +95,7 @@ export default function Overview( props ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
 	} );
 
 	const canShowGA4ReportingFeatureTour = useSelect( ( select ) => {
@@ -179,7 +179,7 @@ export default function Overview( props ) {
 	}
 
 	const showGA4 =
-		canViewSharedAnalytics &&
+		canViewSharedAnalytics4 &&
 		ga4ModuleConnected &&
 		! error &&
 		! showRecoverableAnalytics;
@@ -372,7 +372,7 @@ export default function Overview( props ) {
 				</Cell>
 
 				<OptionalCells
-					canViewSharedAnalytics={ canViewSharedAnalytics }
+					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
 					error={ error }
 					halfCellProps={ halfCellProps }
 					quarterCellProps={ quarterCellProps }

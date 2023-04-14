@@ -1,7 +1,5 @@
 /**
- * WPDashboardUniqueVisitorsChartWidget Component Stories.
- *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +18,19 @@
  * Internal dependencies
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { widgetDecorators } from './common.stories';
 import {
-	setupAnalyticsGatheringData,
-	setupAnalyticsMockReports,
-	setupSearchConsoleAnalyticsZeroData,
-	widgetDecorators,
-} from './common.stories';
+	setupAnalytics4MockReports,
+	setupAnalytics4GatheringData,
+	setupAnalytics4ZeroData,
+	setupAnalytics4Loading,
+	setupAnalytics4Error,
+} from './common-GA4.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { freezeFetch } from '../../../../tests/js/utils';
-import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
+import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardUniqueVisitorsChartWidget
+	WPDashboardUniqueVisitorsChartGA4
 );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
@@ -43,30 +42,34 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => (
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupAnalyticsMockReports,
+	setupRegistry: setupAnalytics4MockReports,
 };
 
 export const GatheringData = Template.bind( {} );
-GatheringData.storyName = 'GatheringData';
+GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
-	setupRegistry: setupAnalyticsGatheringData,
+	setupRegistry: setupAnalytics4GatheringData,
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+	setupRegistry: setupAnalytics4ZeroData,
 };
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading Data';
 Loading.args = {
-	setupRegistry: () => {
-		freezeFetch( RegExp( '/google-site-kit/v1/modules/analytics/data/' ) );
-	},
+	setupRegistry: setupAnalytics4Loading,
+};
+
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: setupAnalytics4Error,
 };
 
 export default {
-	title: 'Views/WPDashboardApp/WPDashboardUniqueVisitorsChartWidget',
+	title: 'Views/WPDashboardApp/WPDashboardUniqueVisitorsChartGA4',
 	decorators: widgetDecorators,
 };

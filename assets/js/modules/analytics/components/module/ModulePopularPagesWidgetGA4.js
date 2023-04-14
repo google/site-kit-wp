@@ -142,7 +142,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 	if ( error ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
-				<WidgetReportError moduleSlug="analytics" error={ error } />
+				<WidgetReportError moduleSlug="analytics-4" error={ error } />
 			</Widget>
 		);
 	}
@@ -263,6 +263,6 @@ ModulePopularPagesWidgetGA4.propTypes = {
 	WidgetReportZero: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'analytics' } )(
+export default whenActive( { moduleName: 'analytics-4' } )(
 	ModulePopularPagesWidgetGA4
 );
