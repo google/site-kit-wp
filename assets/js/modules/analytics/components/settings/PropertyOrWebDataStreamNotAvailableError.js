@@ -116,7 +116,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 		);
 	}
 
-	if ( ! propertyAvailable && getPropertiesError === false ) {
+	if ( ! propertyAvailable && ! getPropertiesError ) {
 		return (
 			<ErrorText
 				message={ sprintf(
