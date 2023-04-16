@@ -31,6 +31,10 @@ import { Select, Option } from '../../../../material-components';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from '../../../analytics-4/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect( { hasModuleAccess } ) {
@@ -46,12 +50,17 @@ export default function AccountSelect( { hasModuleAccess } ) {
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
 
+	const { setPropertyID } = useDispatch( MODULES_ANALYTICS_4 );
+
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
 		( index, item ) => {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
 				selectAccount( newAccountID );
+
+				// Reset the property ID.
+				setPropertyID( PROPERTY_CREATE );
 				const action =
 					newAccountID === ACCOUNT_CREATE
 						? 'change_account_new'
@@ -59,7 +68,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 				trackEvent( `${ viewContext }_analytics`, action );
 			}
 		},
-		[ accountID, selectAccount, viewContext ]
+		[ accountID, selectAccount, setPropertyID, viewContext ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
