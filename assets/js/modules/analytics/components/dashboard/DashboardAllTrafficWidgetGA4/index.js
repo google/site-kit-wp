@@ -371,10 +371,13 @@ function DashboardAllTrafficWidgetGA4( props ) {
 					</Cell>
 				</Row>
 			</Grid>
-			<SurveyViewTrigger
-				triggerID="view_ga4_dashboard"
-				ttl={ DAY_IN_SECONDS }
-			/>
+
+			{ ! viewOnly && (
+				<SurveyViewTrigger
+					triggerID="view_ga4_dashboard"
+					ttl={ DAY_IN_SECONDS }
+				/>
+			) }
 		</Widget>
 	);
 }
