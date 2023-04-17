@@ -51,7 +51,7 @@ export const registerModule = ( modules ) => {
 const isAnalyticsActive = ( select ) =>
 	negateDefined( select( MODULES_ANALYTICS ).isGA4DashboardView() );
 const isAnalytics4Active = ( select ) =>
-	select( MODULES_ANALYTICS ).isGA4DashboardView( select );
+	select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
