@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -79,3 +84,10 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 		/>
 	);
 }
+
+EntityOwnershipChangeNotice.propTypes = {
+	slug: PropTypes.oneOf( [
+		PropTypes.string,
+		PropTypes.arrayOf( PropTypes.string ),
+	] ).isRequired,
+};
