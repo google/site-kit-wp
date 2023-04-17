@@ -303,20 +303,18 @@ export const selectors = {
 
 				const { areaAssignments } = state;
 
-				let widgets = Object.values( state.widgets ).filter(
-					( widget ) => {
-						if (
-							typeof widget.isActive === 'function' &&
-							widget.isActive( select ) === false
-						) {
-							return false;
-						}
-
-						return areaAssignments[ widgetAreaSlug ]?.includes(
+				let widgets = Object.values( state.widgets )
+					.filter( ( widget ) =>
+						areaAssignments[ widgetAreaSlug ]?.includes(
 							widget.slug
-						);
-					}
-				);
+						)
+					)
+					.filter( ( widget ) => {
+						if ( typeof widget.isActive !== 'function' ) {
+							return true;
+						}
+						return widget.isActive( select ) === true;
+					} );
 
 				if ( modules ) {
 					const allowedModules = normalizeWidgetModules( modules );
