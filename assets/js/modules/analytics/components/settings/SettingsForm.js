@@ -158,7 +158,9 @@ export default function SettingsForm( {
 			) }
 
 			{ hasAnalyticsAccess && (
-				<EntityOwnershipChangeNotice slug="analytics" />
+				<EntityOwnershipChangeNotice
+					slug={ [ 'analytics', 'analytics-4' ] }
+				/>
 			) }
 		</Fragment>
 	);
