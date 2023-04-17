@@ -70,8 +70,10 @@ export default function DashboardMainApp() {
 	const viewOnlyDashboard = useViewOnly();
 
 	useMount( () => {
-		// Render the current survey portal in 5 seconds after the initial rendering.
-		setTimeout( () => setShowSurveyPortal( true ), 5000 );
+		if ( ! viewOnlyDashboard ) {
+			// Render the current survey portal in 5 seconds after the initial rendering.
+			setTimeout( () => setShowSurveyPortal( true ), 5000 );
+		}
 	} );
 
 	const viewableModules = useSelect( ( select ) => {
