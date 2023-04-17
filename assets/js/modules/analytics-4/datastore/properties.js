@@ -164,12 +164,14 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
+const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
 	hasMismatchedTag: false,
 	isMatchingAccountProperty: false,
+	isWebDataStreamAvailable: true,
 };
 
 const baseActions = {
@@ -526,6 +528,21 @@ const baseActions = {
 	},
 
 	/**
+	 * Sets whether the Web Data Stream is available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} isWebDataStreamAvailable Whether the Web Data Stream is available.
+	 * @return {Object} Redux-style action.
+	 */
+	*setIsWebDataStreamAvailable( isWebDataStreamAvailable ) {
+		return {
+			type: SET_IS_WEBDATASTREAM_AVAILABLE,
+			payload: { isWebDataStreamAvailable },
+		};
+	},
+
+	/**
 	 * Syncs Google Tag settings.
 	 *
 	 * @since 1.95.0
@@ -590,10 +607,8 @@ const baseActions = {
 			);
 
 			if ( ! googleTagContainer ) {
-				return;
-			}
-
-			if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
+				yield baseActions.setIsWebDataStreamAvailable( false );
+			} else if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
 				yield baseActions.setHasMismatchedGoogleTagID( true );
 			}
 		} else {
@@ -629,6 +644,11 @@ function baseReducer( state, { type, payload } ) {
 			return {
 				...state,
 				hasMismatchedTag: payload.hasMismatchedTag,
+			};
+		case SET_IS_WEBDATASTREAM_AVAILABLE:
+			return {
+				...state,
+				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
 			};
 		default:
 			return state;
@@ -712,6 +732,18 @@ const baseSelectors = {
 	 */
 	hasMismatchedGoogleTagID( state ) {
 		return state.hasMismatchedTag;
+	},
+
+	/**
+	 * Checks if the Web Data Stream is available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the Web Data Stream is available, otherwise FALSE.
+	 */
+	isWebDataStreamAvailable( state ) {
+		return state.isWebDataStreamAvailable;
 	},
 };
 
