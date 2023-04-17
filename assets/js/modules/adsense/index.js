@@ -45,8 +45,9 @@ import {
 	AREA_MODULE_ADSENSE_MAIN,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
-import { isGA4DashboardView } from '../analytics/datastore/settings';
 import { isFeatureEnabled } from '../../features';
+import { negateDefined } from '../../util/negate';
+import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -86,8 +87,10 @@ export const registerModule = ( modules ) => {
 	} );
 };
 
-const isAnalyticsActive = ( select ) => ! isGA4DashboardView( select );
-const isAnalytics4Active = ( select ) => isGA4DashboardView( select );
+const isAnalyticsActive = ( select ) =>
+	negateDefined( select( MODULES_ANALYTICS ).isGA4DashboardView() );
+const isAnalytics4Active = ( select ) =>
+	select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(

@@ -32,7 +32,6 @@ import {
 } from '../../googlesitekit/widgets/default-areas';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS } from './datastore/constants';
-import { isGA4DashboardView } from './datastore/settings';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
@@ -43,6 +42,7 @@ import {
 	ModulePopularPagesWidget,
 	ModulePopularPagesWidgetGA4,
 } from './components/module';
+import { negateDefined } from '../../util/negate';
 
 export { registerStore } from './datastore';
 
@@ -61,8 +61,10 @@ export const registerModule = ( modules ) => {
 	} );
 };
 
-const isAnalyticsActive = ( select ) => ! isGA4DashboardView( select );
-const isAnalytics4Active = ( select ) => isGA4DashboardView( select );
+const isAnalyticsActive = ( select ) =>
+	negateDefined( select( MODULES_ANALYTICS ).isGA4DashboardView() );
+const isAnalytics4Active = ( select ) =>
+	select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 export const registerWidgets = ( widgets ) => {
 	// Register Analytics (UA) Widgets.

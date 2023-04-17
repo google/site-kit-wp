@@ -36,7 +36,7 @@ const ga4Reporting = {
 	checkRequirements: () => isFeatureEnabled( 'ga4Reporting' ),
 	steps: [
 		{
-			target: '.googlesitekit-data-block--conversions .googlesitekit-data-block__title',
+			target: '.googlesitekit-data-block--conversions .googlesitekit-data-block__title, .googlesitekit-analytics-cta--setup-conversions',
 			title: __(
 				'See the new metrics from Google Analytics 4',
 				'google-site-kit'
