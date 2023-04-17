@@ -32,10 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS,
-} from '../../datastore/constants';
+import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
@@ -160,11 +157,10 @@ function ModulePopularPagesWidgetGA4( props ) {
 						return null;
 					}
 
-					return select( MODULES_ANALYTICS ).getServiceReportURL(
-						'content-drilldown',
+					return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+						'all-pages-and-screens',
 						{
-							'explorer-table.plotKeys': '[]',
-							'_r.drilldown': `analytics.pagePath:${ url }`,
+							filters: { unifiedPagePathScreen: url },
 							...generateDateRangeArgs( dates ),
 						}
 					);
