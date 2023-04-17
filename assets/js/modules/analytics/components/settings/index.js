@@ -28,3 +28,4 @@ export { default as GA4SettingsNotice } from './GA4SettingsNotice';
 export { default as OptionalSettingsView } from './OptionalSettingsView';
 export { default as GA4SettingsView } from './GA4SettingsView';
 export { default as UASettingsView } from './UASettingsView';
+export { default as PropertyOrWebDataStreamNotAvailableError } from './PropertyOrWebDataStreamNotAvailableError';
