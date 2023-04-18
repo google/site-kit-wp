@@ -62,7 +62,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ 'search-console' ],
-			isActive: isAnalyticsActive,
 		},
 		[
 			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
