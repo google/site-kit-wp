@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 const { createRegistrySelector } = Data;
 
 export const selectors = {
@@ -37,6 +38,13 @@ export const selectors = {
 	 * @return {Object} The service description, learn more label and URL.
 	 */
 	getSetupSuccessContent: createRegistrySelector( ( select ) => () => {
+		const isGA4DashboardView =
+			select( MODULES_ANALYTICS ).isGA4DashboardView();
+
+		if ( isGA4DashboardView ) {
+			return null;
+		}
+
 		const documentationURL =
 			select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 

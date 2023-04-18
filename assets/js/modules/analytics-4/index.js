@@ -30,6 +30,7 @@ import {
 	TopTrafficSourceWidget,
 	TopConvertingTrafficSourceWidget,
 } from './components/widgets';
+import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import { isFeatureEnabled } from '../../features';
@@ -39,6 +40,7 @@ export { registerStore } from './datastore';
 export const registerModule = ( modules ) => {
 	modules.registerModule( 'analytics-4', {
 		storeName: MODULES_ANALYTICS_4,
+		Icon: AnalyticsIcon,
 	} );
 };
 

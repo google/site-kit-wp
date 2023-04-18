@@ -25,6 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,19 +36,21 @@ import { Grid, Row, Cell } from '../../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../../util';
 import { calculateChange } from '../../../../../../util';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 	DASHBOARD_TYPE_ENTITY,
 } from '../../../../../../hooks/useDashboardType';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/constants';
 import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-const { useSelect, useInViewSelect } = Data;
+import ga4Reporting from '../../../../../../feature-tours/ga4-reporting';
+const { useSelect, useDispatch, useInViewSelect } = Data;
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	return {
@@ -61,28 +64,30 @@ function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	};
 }
 
-const Overview = ( {
-	ga4Data,
-	ga4ConversionsData,
-	ga4VisitorsData,
-	searchConsoleData,
-	selectedStats,
-	handleStatsSelection,
-	dateRangeLength,
-	error,
-	WidgetReportError,
-	showRecoverableAnalytics,
-} ) => {
+export default function Overview( props ) {
+	const {
+		ga4Data,
+		ga4ConversionsData,
+		ga4VisitorsData,
+		searchConsoleData,
+		selectedStats,
+		handleStatsSelection,
+		dateRangeLength,
+		error,
+		WidgetReportError,
+		showRecoverableAnalytics,
+	} = props;
+
 	const dashboardType = useDashboardType();
 
 	const viewOnly = useViewOnly();
 
-	const analyticsModuleAvailable = useSelect( ( select ) =>
+	const isAnalytics4ModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( ! analyticsModuleAvailable ) {
+	const canViewSharedAnalytics4 = useSelect( ( select ) => {
+		if ( ! isAnalytics4ModuleAvailable ) {
 			return false;
 		}
 
@@ -90,7 +95,22 @@ const Overview = ( {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+	} );
+
+	const canShowGA4ReportingFeatureTour = useSelect( ( select ) => {
+		// Don't show the GA4 report feature tour if feature tours are on cooldown.
+		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
+			return false;
+		}
+
+		// Don't show the GA4 report feature tour if we have already shown a feature tour
+		// during the current page view.
+		if ( !! select( CORE_USER ).getShownTour() ) {
+			return false;
+		}
+
+		return true;
 	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
@@ -159,10 +179,31 @@ const Overview = ( {
 	}
 
 	const showGA4 =
-		canViewSharedAnalytics &&
+		canViewSharedAnalytics4 &&
 		ga4ModuleConnected &&
 		! error &&
 		! showRecoverableAnalytics;
+
+	const { setValue } = useDispatch( CORE_UI );
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+	useEffect( () => {
+		if (
+			! showGA4 ||
+			! canShowGA4ReportingFeatureTour ||
+			dashboardType !== DASHBOARD_TYPE_MAIN
+		) {
+			return;
+		}
+
+		setValue( 'forceInView', true );
+		triggerOnDemandTour( ga4Reporting );
+	}, [
+		showGA4,
+		dashboardType,
+		setValue,
+		triggerOnDemandTour,
+		canShowGA4ReportingFeatureTour,
+	] );
 
 	const showConversionsCTA =
 		isAuthenticated &&
@@ -331,7 +372,7 @@ const Overview = ( {
 				</Cell>
 
 				<OptionalCells
-					canViewSharedAnalytics={ canViewSharedAnalytics }
+					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
 					error={ error }
 					halfCellProps={ halfCellProps }
 					quarterCellProps={ quarterCellProps }
@@ -343,7 +384,7 @@ const Overview = ( {
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Overview.propTypes = {
 	ga4Data: PropTypes.object,
@@ -355,5 +396,3 @@ Overview.propTypes = {
 	error: PropTypes.object,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default Overview;

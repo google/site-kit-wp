@@ -55,17 +55,17 @@ function DashboardAllTrafficWidgetGA4( props ) {
 
 	const viewOnly = useViewOnly();
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
+	const canViewSharedAnalytics4 = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
 	} );
 
 	const isGatheringData = useInViewSelect(
 		( select ) =>
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
@@ -148,7 +148,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 
 	const pieChartLoaded = useSelect(
 		( select ) =>
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				pieArgs,
 			] )
@@ -160,14 +160,14 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	);
 	const pieChartReport = useInViewSelect( ( select ) => {
 		return (
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
 		);
 	} );
 
 	const userCountGraphLoaded = useSelect(
 		( select ) =>
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				graphArgs,
 			] )
@@ -179,14 +179,14 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	);
 	const userCountGraphReport = useInViewSelect( ( select ) => {
 		return (
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
 		);
 	} );
 
 	const totalUsersLoaded = useSelect(
 		( select ) =>
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				totalsArgs,
 			] )
@@ -198,7 +198,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	);
 	const totalUsersReport = useInViewSelect( ( select ) => {
 		return (
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
 		);
 	} );
@@ -371,10 +371,13 @@ function DashboardAllTrafficWidgetGA4( props ) {
 					</Cell>
 				</Row>
 			</Grid>
-			<SurveyViewTrigger
-				triggerID="view_ga4_dashboard"
-				ttl={ DAY_IN_SECONDS }
-			/>
+
+			{ ! viewOnly && (
+				<SurveyViewTrigger
+					triggerID="view_ga4_dashboard"
+					ttl={ DAY_IN_SECONDS }
+				/>
+			) }
 		</Widget>
 	);
 }

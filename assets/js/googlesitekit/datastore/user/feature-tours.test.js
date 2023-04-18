@@ -176,7 +176,7 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'sets the currentTour in state', () => {
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 
 				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
 
@@ -284,7 +284,7 @@ describe( 'core/user feature-tours', () => {
 
 		describe( 'triggerTour', () => {
 			it( 'sets the currentTour in state if none is already set', async () => {
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 
 				await registry.dispatch( CORE_USER ).triggerTour( testTourA );
 
@@ -301,7 +301,7 @@ describe( 'core/user feature-tours', () => {
 
 		describe( 'triggerOnDemandTour', () => {
 			it( 'triggers the given tour', async () => {
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 				await registry
 					.dispatch( CORE_USER )
@@ -311,7 +311,7 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'does not trigger the given tour if it has been dismissed', async () => {
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedTours( [ testTourA.slug ] );
@@ -319,7 +319,7 @@ describe( 'core/user feature-tours', () => {
 					.dispatch( CORE_USER )
 					.triggerOnDemandTour( testTourA );
 
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 			} );
 
 			it( 'will trigger the given tour even when tours are on cooldown', async () => {
@@ -342,7 +342,7 @@ describe( 'core/user feature-tours', () => {
 			it( 'will not trigger a given tour with a checkRequirements function that returns false', async () => {
 				const checkRequirements = jest.fn( () => false );
 				const tour = { ...testTourA, checkRequirements };
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 
 				await registry
@@ -350,13 +350,13 @@ describe( 'core/user feature-tours', () => {
 					.triggerOnDemandTour( tour );
 
 				expect( checkRequirements ).toHaveBeenCalledTimes( 1 );
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 			} );
 
 			it( 'will trigger a given tour with a checkRequirements function that returns true', async () => {
 				const checkRequirements = jest.fn( () => true );
 				const tour = { ...testTourA, checkRequirements };
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 
 				await registry
@@ -377,7 +377,7 @@ describe( 'core/user feature-tours', () => {
 				expect( testTourA.contexts ).toContain( 'common-context' );
 				expect( testTourB.contexts ).toContain( 'common-context' );
 
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 
 				await registry
 					.dispatch( CORE_USER )
@@ -394,7 +394,7 @@ describe( 'core/user feature-tours', () => {
 				expect( testTourA.contexts ).not.toContain( 'b-only-context' );
 				expect( testTourB.contexts ).toContain( 'b-only-context' );
 
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 
 				await registry
 					.dispatch( CORE_USER )

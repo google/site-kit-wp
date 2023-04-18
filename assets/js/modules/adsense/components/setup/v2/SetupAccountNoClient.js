@@ -29,23 +29,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import Link from '../../../../../components/Link';
+import SupportLink from '../../../../../components/SupportLink';
 import { ErrorNotices } from '../../common';
 import { trackEvent } from '../../../../../util';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import useViewContext from '../../../../../hooks/useViewContext';
-const { useSelect } = Data;
 
 export default function SetupAccountNoClient() {
 	const viewContext = useViewContext();
-
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/adsense/answer/6023158',
-		} )
-	);
 
 	const onButtonClick = useCallback( () => {
 		trackEvent( `${ viewContext }_adsense`, 'apply_afc' );
@@ -70,8 +61,8 @@ export default function SetupAccountNoClient() {
 					),
 					{
 						a: (
-							<Link
-								href={ supportURL }
+							<SupportLink
+								path="/adsense/answer/6023158"
 								external
 								aria-label={ __(
 									'Learn more about updating your AdSense account',

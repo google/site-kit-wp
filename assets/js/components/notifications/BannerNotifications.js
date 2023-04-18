@@ -41,6 +41,7 @@ import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotifica
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
 import { GTM_SCOPE } from '../../modules/analytics-4/datastore/constants';
+import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 
 const { useSelect } = Data;
 
@@ -84,9 +85,12 @@ export default function BannerNotifications() {
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-					{ gteSupportEnabled &&
-						ga4ModuleConnected &&
-						hasGTMScope && <GoogleTagIDMismatchNotification /> }
+					{ gteSupportEnabled && ga4ModuleConnected && hasGTMScope && (
+						<Fragment>
+							<GoogleTagIDMismatchNotification />
+							<WebDataStreamNotAvailableNotification />
+						</Fragment>
+					) }
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />

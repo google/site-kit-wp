@@ -76,10 +76,6 @@ export default function SetupFormGA4Legacy() {
 	const shouldShowAssociatedPropertyNotice =
 		accountID && accountID !== ACCOUNT_CREATE && ga4PropertyID;
 
-	const hasExistingGA4Tag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasExistingTag()
-	);
-
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
 		setValues( FORM_SETUP, {
@@ -114,7 +110,7 @@ export default function SetupFormGA4Legacy() {
 				<GA4WebDataStreamSelect />
 			</div>
 
-			{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
+			{ ga4HasExistingTag && <SetupUseSnippetSwitchGA4 /> }
 
 			{ shouldShowAssociatedPropertyNotice && (
 				<GA4PropertyNotice

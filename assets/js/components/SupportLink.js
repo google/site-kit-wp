@@ -1,6 +1,4 @@
 /**
- * GA4 Dashboard Widget Switcher component.
- *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,32 +23,22 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import Link from './Link';
 const { useSelect } = Data;
 
-export default function GA4DashboardWidgetSwitcher( {
-	UA,
-	GA4,
-	...widgetProps
-} ) {
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
-	);
-	const { WidgetNull } = widgetProps;
+export default function SupportLink( props ) {
+	const { path, query, hash, ...otherProps } = props;
 
-	if ( isGA4DashboardView === undefined ) {
-		return <WidgetNull />;
-	}
-
-	return isGA4DashboardView ? (
-		<GA4 { ...widgetProps } />
-	) : (
-		<UA { ...widgetProps } />
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( { path, query, hash } )
 	);
+
+	return <Link { ...otherProps } href={ supportURL } />;
 }
 
-// eslint-disable-next-line sitekit/acronym-case
-GA4DashboardWidgetSwitcher.propTypes = {
-	UA: PropTypes.elementType,
-	GA4: PropTypes.elementType,
+SupportLink.propTypes = {
+	path: PropTypes.string.isRequired,
+	query: PropTypes.object,
+	hash: PropTypes.string,
 };
