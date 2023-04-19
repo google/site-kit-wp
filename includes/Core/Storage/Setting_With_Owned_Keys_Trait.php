@@ -83,7 +83,7 @@ trait Setting_With_Owned_Keys_Trait {
 	/**
 	 * Merges the current user ID into the module settings as the initial owner ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 */
 	protected function merge_initial_owner_id() {
 		$this->merge( array( 'ownerID' => get_current_user_id() ) );
@@ -92,7 +92,7 @@ trait Setting_With_Owned_Keys_Trait {
 	/**
 	 * Adds the current user ID as the module owner ID to the current module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param array $settings The new module settings.
 	 * @return array Updated module settings with the current user ID as the ownerID setting.
@@ -105,7 +105,7 @@ trait Setting_With_Owned_Keys_Trait {
 	/**
 	 * Determines whether the owned settings have changed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param array $settings     The new settings.
 	 * @param array $old_settings The old settings.

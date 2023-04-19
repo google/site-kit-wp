@@ -43,7 +43,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets Analytics 4 settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @return array Analytics 4 settings, or default if not set.
 	 */
@@ -145,7 +145,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Merges the current user ID into the module settings as the initial owner ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 */
 	protected function merge_initial_owner_id() {
 		// This is a temporary solution to sync owner IDs between Analytics and Analytics 4 modules.
@@ -157,7 +157,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Adds the current user ID as the module owner ID to the current module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param array $settings The new module settings.
 	 * @return array Updated module settings with the current user ID as the ownerID setting.

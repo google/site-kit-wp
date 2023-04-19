@@ -530,7 +530,7 @@ const baseActions = {
 	/**
 	 * Sets whether the Web Data Stream is available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param {boolean} isWebDataStreamAvailable Whether the Web Data Stream is available.
 	 * @return {Object} Redux-style action.
@@ -737,7 +737,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the Web Data Stream is available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the Web Data Stream is available, otherwise FALSE.

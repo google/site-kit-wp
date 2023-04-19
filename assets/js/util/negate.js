@@ -19,7 +19,7 @@
 /**
  * Negates a defined value.
  *
- * @since n.e.x.t
+ * @since 1.99.0
  *
  * @param {*} value The value to negate.
  * @return {(boolean|undefined)} The negated value, if defined.
