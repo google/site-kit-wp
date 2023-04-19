@@ -29,7 +29,7 @@ use WP_Error;
 /**
  * Class for Analytics 4 report requests.
  *
- * @since n.e.x.t
+ * @since 1.99.0
  * @access private
  * @ignore
  */
@@ -39,7 +39,7 @@ class Request extends Report {
 	/**
 	 * Creates and executes a new Analytics 4 report request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Data_Request $data           Data request object.
 	 * @param bool         $is_shared_request Determines whether the current request is shared or not.
@@ -182,7 +182,7 @@ class Request extends Report {
 	/**
 	 * Creates a new Analytics 4 site request for the current site and given arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param array $args {
 	 *    Optional. Additional arguments.
@@ -271,7 +271,7 @@ class Request extends Report {
 	 *
 	 * Metrics must have valid names, matching the regular expression ^[a-zA-Z0-9_]+$ in keeping with the GA4 API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -321,7 +321,7 @@ class Request extends Report {
 	/**
 	 * Validates the report metrics for a shared request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -380,7 +380,7 @@ class Request extends Report {
 	/**
 	 * Validates the report dimensions for a shared request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.

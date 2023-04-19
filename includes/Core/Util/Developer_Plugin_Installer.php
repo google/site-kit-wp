@@ -180,7 +180,7 @@ class Developer_Plugin_Installer {
 	 * Gets plugin data from the API.
 	 *
 	 * @since 1.3.0
-	 * @since n.e.x.t Update plugin data to pull from GCS bucket.
+	 * @since 1.99.0 Update plugin data to pull from GCS bucket.
 	 *
 	 * @return array|null Associative array of plugin data, or null on failure.
 	 */

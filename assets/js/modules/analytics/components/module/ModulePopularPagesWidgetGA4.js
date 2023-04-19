@@ -36,7 +36,6 @@ import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
-import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../components/ReportTable';
@@ -161,7 +160,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 						'all-pages-and-screens',
 						{
 							filters: { unifiedPagePathScreen: url },
-							...generateDateRangeArgs( dates ),
+							dates,
 						}
 					);
 				} );

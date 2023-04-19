@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Class for custom date parsing methods.
  *
- * @since n.e.x.t
+ * @since 1.99.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Date {
 	/**
 	 * Parses a date range string into a start date and an end date.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param string $range         Date range string. Either 'last-7-days', 'last-14-days', 'last-90-days', or
 	 *                              'last-28-days' (default).
