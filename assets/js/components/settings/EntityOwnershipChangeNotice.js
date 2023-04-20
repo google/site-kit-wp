@@ -46,25 +46,26 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 	const storeNames = useSelect( ( select ) => {
 		const { getModuleStoreName } = select( CORE_MODULES );
 
-		return slugs.reduce( ( acc, currSlug ) => {
-			const storeName = getModuleStoreName( currSlug );
+		return slugs.reduce( ( acc, currentSlug ) => {
+			const storeName = getModuleStoreName( currentSlug );
 			if ( storeName ) {
-				acc[ currSlug ] = storeName;
+				acc[ currentSlug ] = storeName;
 			}
 			return acc;
 		}, {} );
 	} );
 
 	const haveOwnedSettingsChanged = useSelect( ( select ) =>
-		Object.keys( storeNames ).reduce( ( acc, currSlug ) => {
-			const storeName = storeNames[ currSlug ];
+		Object.keys( storeNames ).reduce( ( acc, currentSlug ) => {
+			const storeName = storeNames[ currentSlug ];
 			const moduleOwnerID = select( storeName )?.getOwnerID();
 			const loggedInUserID = select( CORE_USER ).getID();
 			const haveSettingsChanged =
 				select( storeName )?.haveOwnedSettingsChanged();
 			if ( haveSettingsChanged && moduleOwnerID === loggedInUserID ) {
-				acc[ currSlug ] = haveSettingsChanged;
+				acc[ currentSlug ] = haveSettingsChanged;
 			}
+
 			return acc;
 		}, {} )
 	);
