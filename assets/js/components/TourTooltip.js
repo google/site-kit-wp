@@ -29,6 +29,15 @@ import PropTypes from 'prop-types';
 import { Button } from 'googlesitekit-components';
 import { createIncrementalArrayBySize } from '../util/create-incremental-array-by-size';
 import CloseIcon from '../../svg/icons/close.svg';
+import { useRef } from '@wordpress/element';
+
+// Avoid console.log in tests.
+const log = process?.stdout
+	? ( ...args ) =>
+			process.stdout.write(
+				args.map( JSON.stringify ).join( ' ' ) + '\n'
+			)
+	: global.console.log;
 
 export default function TourTooltip( {
 	backProps,
@@ -44,6 +53,13 @@ export default function TourTooltip( {
 		classnames( 'googlesitekit-tooltip-indicator', {
 			active: indicatorIndex === index,
 		} );
+
+	const ref = useRef();
+	if ( ! ref.current ) {
+		const date = new Date();
+		log( 'TourTooltip render', date, date.getTime() );
+		ref.current = true;
+	}
 
 	return (
 		<div

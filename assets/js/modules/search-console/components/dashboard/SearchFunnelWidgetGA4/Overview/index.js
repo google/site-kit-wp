@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -64,6 +64,7 @@ function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	};
 }
 
+// eslint-disable-next-line complexity
 export default function Overview( props ) {
 	const {
 		ga4Data,
@@ -179,6 +180,14 @@ export default function Overview( props ) {
 		! showRecoverableAnalytics;
 
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+	// Avoid console.log in tests.
+	const log = process?.stdout
+		? ( ...args ) =>
+				process.stdout.write(
+					args.map( JSON.stringify ).join( ' ' ) + '\n'
+				)
+		: global.console.log;
+	// log( { showGA4, canShowGA4ReportingFeatureTour, dashboardType } );
 	useEffect( () => {
 		if (
 			! showGA4 ||
@@ -188,6 +197,18 @@ export default function Overview( props ) {
 			return;
 		}
 
+		const date = new Date();
+		log( 'triggerOnDemandTour', date, date.getTime() );
+		log( {
+			'.googlesitekit-data-block--conversions .googlesitekit-data-block__title':
+				!! document.querySelector(
+					'.googlesitekit-data-block--conversions .googlesitekit-data-block__title'
+				),
+			'.googlesitekit-analytics-cta--setup-conversions':
+				!! document.querySelector(
+					'.googlesitekit-analytics-cta--setup-conversions'
+				),
+		} );
 		triggerOnDemandTour( ga4Reporting );
 	}, [
 		showGA4,
@@ -331,6 +352,13 @@ export default function Overview( props ) {
 		3: oneThirdCellProps,
 		4: quarterCellProps,
 	};
+
+	const ref = useRef();
+	const date = new Date();
+	if ( ! ref.current ) {
+		log( 'Overview render', date, date.getTime() );
+		ref.current = true;
+	}
 
 	return (
 		<Grid>
