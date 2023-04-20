@@ -136,6 +136,11 @@ export default function Overview( props ) {
 			path: '/analytics/answer/9267568',
 		} )
 	);
+	const engagementRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12195621',
+		} )
+	);
 
 	const {
 		totalClicks,
@@ -312,6 +317,15 @@ export default function Overview( props ) {
 						datapointUnit: '%',
 						change: ga4EngagementRateChange,
 						isGatheringData: isGA4GatheringData,
+						badge: (
+							<NewBadge
+								tooltipTitle={ __(
+									'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
+									'google-site-kit'
+								) }
+								learnMoreLink={ engagementRateLearnMoreURL }
+							/>
+						),
 					},
 			  ]
 			: [] ),
