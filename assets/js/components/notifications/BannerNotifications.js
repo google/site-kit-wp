@@ -40,7 +40,10 @@ import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
-import { GTM_SCOPE } from '../../modules/analytics-4/datastore/constants';
+import {
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 
 const { useSelect } = Data;
@@ -70,6 +73,16 @@ export default function BannerNotifications() {
 	const hasGTMScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( GTM_SCOPE )
 	);
+	const isAnalyticsModuleOwner = useSelect( ( select ) => {
+		const userID = select( CORE_USER ).getID();
+		const ownerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+
+		if ( userID === undefined || ownerID === undefined ) {
+			return undefined;
+		}
+
+		return userID === ownerID;
+	} );
 
 	const [ notification ] = useQueryArg( 'notification' );
 
@@ -85,12 +98,15 @@ export default function BannerNotifications() {
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-					{ gteSupportEnabled && ga4ModuleConnected && hasGTMScope && (
-						<Fragment>
-							<GoogleTagIDMismatchNotification />
-							<WebDataStreamNotAvailableNotification />
-						</Fragment>
-					) }
+					{ gteSupportEnabled &&
+						ga4ModuleConnected &&
+						hasGTMScope &&
+						isAnalyticsModuleOwner && (
+							<Fragment>
+								<GoogleTagIDMismatchNotification />
+								<WebDataStreamNotAvailableNotification />
+							</Fragment>
+						) }
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />
