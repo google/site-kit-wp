@@ -34,16 +34,16 @@ import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
 import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT,
+} from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
-import {
-	GTM_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
+import { GTM_SCOPE } from '../../modules/analytics-4/datastore/constants';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 
 const { useSelect } = Data;
@@ -73,16 +73,14 @@ export default function BannerNotifications() {
 	const hasGTMScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( GTM_SCOPE )
 	);
-	const isAnalyticsModuleOwner = useSelect( ( select ) => {
-		const userID = select( CORE_USER ).getID();
-		const ownerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
-
-		if ( userID === undefined || ownerID === undefined ) {
-			return undefined;
-		}
-
-		return userID === ownerID;
-	} );
+	const isAnalyticsModuleOwner = useSelect( ( select ) =>
+		// Here we check for a capability that only the module owner would have
+		// since the ownerID setting won't be available in a view-only context.
+		select( CORE_USER ).hasCapability(
+			PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT,
+			'analytics-4'
+		)
+	);
 
 	const [ notification ] = useQueryArg( 'notification' );
 
