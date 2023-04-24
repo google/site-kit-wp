@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
@@ -41,6 +42,12 @@ export default function UnsatisfiedScopesAlertGTE() {
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ TAGMANAGER_READ_SCOPE ],
 			redirectURL: global.location.href,
+		} )
+	);
+
+	const googleTagLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/tagmanager/answer/11994839',
 		} )
 	);
 
@@ -65,7 +72,7 @@ export default function UnsatisfiedScopesAlertGTE() {
 			ctaLink={ connectURL }
 			ctaLabel={ __( 'Grant permission', 'google-site-kit' ) }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL="https://support.google.com/tagmanager/answer/11994839" // FIXME: Update URL.
+			learnMoreURL={ googleTagLearnMoreURL }
 		/>
 	);
 }
