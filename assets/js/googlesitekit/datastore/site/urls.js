@@ -118,22 +118,19 @@ export const selectors = {
 	 * Gets the Site Kit documentation URL.
 	 *
 	 * @since 1.80.0
-	 * @since n.e.x.t Added the anchor parameter.
 	 *
-	 * @param {Object} state  Data store's state.
-	 * @param {string} slug   The slug of the documentation page.
-	 * @param {string} anchor The anchor on the documentation page.
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  The slug of the documentation page.
 	 * @return {string} The Site Kit support URL.
 	 */
 	getDocumentationLinkURL: createRegistrySelector(
-		( select ) => ( state, slug, anchor ) => {
+		( select ) => ( state, slug ) => {
 			invariant( slug, 'A slug is required.' );
 
 			const proxySupportLink =
 				select( CORE_SITE ).getProxySupportLinkURL();
 
-			const url = addQueryArgs( proxySupportLink, { doc: slug } );
-			return url + ( anchor ? `#${ anchor }` : '' );
+			return addQueryArgs( proxySupportLink, { doc: slug } );
 		}
 	),
 
