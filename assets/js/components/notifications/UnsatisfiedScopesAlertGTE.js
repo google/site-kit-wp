@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 export default function UnsatisfiedScopesAlertGTE() {
@@ -38,6 +39,7 @@ export default function UnsatisfiedScopesAlertGTE() {
 	);
 	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
+			additionalScopes: [ TAGMANAGER_READ_SCOPE ],
 			redirectURL: global.location.href,
 		} )
 	);
