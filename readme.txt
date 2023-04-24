@@ -114,6 +114,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Enhanced**
 
+* Only show the "Google tag mismatch" and "web data stream not available" notifications to the Analytics module owner. See [#6949](https://github.com/google/site-kit-wp/issues/6949).
 * Update source links in the Popular Pages widget for the Analytics 4 version. See [#6871](https://github.com/google/site-kit-wp/issues/6871).
 * Add the Analytics 4 version of the Popular Pages widget on the WordPress dashboard. See [#6868](https://github.com/google/site-kit-wp/issues/6868).
 * Add GA4 version of the Unique Visitors chart on the WP dashboard. See [#6855](https://github.com/google/site-kit-wp/issues/6855).
