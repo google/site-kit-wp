@@ -92,8 +92,6 @@ const wpDashboardAnalyticsOptionSets = [
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
-		compareStartDate: '2020-12-03',
-		compareEndDate: '2020-12-30',
 		metrics: [
 			{
 				expression: 'ga:pageviews',
