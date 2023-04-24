@@ -102,6 +102,19 @@ describe( 'core/site urls', () => {
 					`https://example.com/support/?doc=${ testSlug }`
 				);
 			} );
+
+			it( 'should return the correct documentation URL with a hash for the given documnation page slug and anchor', () => {
+				const testSlug = 'test-slug';
+				const testAnchor = 'test-anchor';
+
+				const url = registry
+					.select( CORE_SITE )
+					.getDocumentationLinkURL( testSlug, testAnchor );
+
+				expect( url ).toBe(
+					`https://example.com/support/?doc=${ testSlug }#${ testAnchor }`
+				);
+			} );
 		} );
 
 		describe( 'getErrorTroubleshootingLinkURL', () => {

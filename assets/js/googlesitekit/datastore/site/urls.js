@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -113,19 +118,22 @@ export const selectors = {
 	 * Gets the Site Kit documentation URL.
 	 *
 	 * @since 1.80.0
+	 * @since n.e.x.t Added the anchor parameter.
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  The slug of the documentation page.
+	 * @param {Object} state  Data store's state.
+	 * @param {string} slug   The slug of the documentation page.
+	 * @param {string} anchor The anchor on the documentation page.
 	 * @return {string} The Site Kit support URL.
 	 */
 	getDocumentationLinkURL: createRegistrySelector(
-		( select ) => ( state, slug ) => {
+		( select ) => ( state, slug, anchor ) => {
 			invariant( slug, 'A slug is required.' );
 
 			const proxySupportLink =
 				select( CORE_SITE ).getProxySupportLinkURL();
 
-			return `${ proxySupportLink }?doc=${ encodeURIComponent( slug ) }`;
+			const url = addQueryArgs( proxySupportLink, { doc: slug } );
+			return url + ( anchor ? `#${ anchor }` : '' );
 		}
 	),
 
@@ -142,24 +150,19 @@ export const selectors = {
 		( select ) => ( state, error ) => {
 			invariant( error, 'An error is required.' );
 
+			const { id, code, message } = error;
 			const proxySupportLink =
 				select( CORE_SITE ).getProxySupportLinkURL();
 
-			if ( error.id && ! isNumeric( error.id ) ) {
-				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
-					error.id
-				) }`;
+			if ( id && ! isNumeric( id ) ) {
+				return addQueryArgs( proxySupportLink, { error_id: id } );
 			}
 
-			if ( error.code && ! isNumeric( error.code ) ) {
-				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
-					error.code
-				) }`;
+			if ( code && ! isNumeric( code ) ) {
+				return addQueryArgs( proxySupportLink, { error_id: code } );
 			}
 
-			return `${ proxySupportLink }?error=${ encodeURIComponent(
-				error.message
-			) }`;
+			return addQueryArgs( proxySupportLink, { error: message } );
 		}
 	),
 
