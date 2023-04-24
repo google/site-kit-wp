@@ -62,7 +62,7 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 			const loggedInUserID = select( CORE_USER ).getID();
 			const haveSettingsChanged =
 				select( storeName )?.haveOwnedSettingsChanged();
-			if ( haveSettingsChanged && moduleOwnerID === loggedInUserID ) {
+			if ( haveSettingsChanged && moduleOwnerID !== loggedInUserID ) {
 				acc[ currentSlug ] = haveSettingsChanged;
 			}
 
