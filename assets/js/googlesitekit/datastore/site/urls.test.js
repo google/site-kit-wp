@@ -21,6 +21,7 @@
  */
 import {
 	createTestRegistry,
+	provideSiteInfo,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
@@ -78,6 +79,12 @@ describe( 'core/site urls', () => {
 		} );
 
 		describe( 'getDocumentationLinkURL', () => {
+			beforeEach( () => {
+				provideSiteInfo( registry, {
+					proxySupportLinkURL: 'https://example.com/support/',
+				} );
+			} );
+
 			it( 'should throw an error if the slug is omitted', () => {
 				expect( () =>
 					registry.select( CORE_SITE ).getDocumentationLinkURL()
@@ -87,19 +94,23 @@ describe( 'core/site urls', () => {
 			it( 'should return the correct documentation URL given a documentation slug', () => {
 				const testSlug = 'test-slug';
 
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
 				const url = registry
 					.select( CORE_SITE )
 					.getDocumentationLinkURL( testSlug );
 
-				expect( url ).toBe( `${ baseURL }?doc=${ testSlug }` );
+				expect( url ).toBe(
+					`https://example.com/support/?doc=${ testSlug }`
+				);
 			} );
 		} );
 
 		describe( 'getErrorTroubleshootingLinkURL', () => {
+			beforeEach( () => {
+				provideSiteInfo( registry, {
+					proxySupportLinkURL: 'https://example.com/support/',
+				} );
+			} );
+
 			const testError = {
 				data: {
 					reason: 'Data Error',
@@ -134,48 +145,36 @@ describe( 'core/site urls', () => {
 			} );
 
 			it( 'should return the support link with the error message if no code or id is given', () => {
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
 				const url = registry
 					.select( CORE_SITE )
 					.getErrorTroubleshootingLinkURL( testErrorWithMessage );
 
 				expect( url ).toBe(
-					`${ baseURL }?error=${ encodeURIComponent(
+					`https://example.com/support/?error=${ encodeURIComponent(
 						testErrorWithMessage.message
 					) }`
 				);
 			} );
 
 			it( 'should return the support link with the error code if the error code is given', () => {
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
 				const url = registry
 					.select( CORE_SITE )
 					.getErrorTroubleshootingLinkURL( testErrorWithCode );
 
 				expect( url ).toBe(
-					`${ baseURL }?error_id=${ encodeURIComponent(
+					`https://example.com/support/?error_id=${ encodeURIComponent(
 						testErrorWithCode.code
 					) }`
 				);
 			} );
 
 			it( 'should return the support link with the error id if the error id is given', () => {
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
 				const url = registry
 					.select( CORE_SITE )
 					.getErrorTroubleshootingLinkURL( testErrorWithID );
 
 				expect( url ).toBe(
-					`${ baseURL }?error_id=${ encodeURIComponent(
+					`https://example.com/support/?error_id=${ encodeURIComponent(
 						testErrorWithID.id
 					) }`
 				);
@@ -187,16 +186,12 @@ describe( 'core/site urls', () => {
 					code: 123,
 				};
 
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
 				const url = registry
 					.select( CORE_SITE )
 					.getErrorTroubleshootingLinkURL( testErrorWithNumericCode );
 
 				expect( url ).toBe(
-					`${ baseURL }?error=${ encodeURIComponent(
+					`https://example.com/support/?error=${ encodeURIComponent(
 						testErrorWithNumericCode.message
 					) }`
 				);
@@ -208,16 +203,12 @@ describe( 'core/site urls', () => {
 					code: '',
 				};
 
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
 				const url = registry
 					.select( CORE_SITE )
 					.getErrorTroubleshootingLinkURL( testErrorWithNumericCode );
 
 				expect( url ).toBe(
-					`${ baseURL }?error=${ encodeURIComponent(
+					`https://example.com/support/?error=${ encodeURIComponent(
 						testErrorWithNumericCode.message
 					) }`
 				);
@@ -229,16 +220,12 @@ describe( 'core/site urls', () => {
 					id: 123,
 				};
 
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
 				const url = registry
 					.select( CORE_SITE )
 					.getErrorTroubleshootingLinkURL( testErrorWithNumericID );
 
 				expect( url ).toBe(
-					`${ baseURL }?error=${ encodeURIComponent(
+					`https://example.com/support/?error=${ encodeURIComponent(
 						testErrorWithNumericID.message
 					) }`
 				);
@@ -250,16 +237,12 @@ describe( 'core/site urls', () => {
 					id: '123',
 				};
 
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
 				const url = registry
 					.select( CORE_SITE )
 					.getErrorTroubleshootingLinkURL( testErrorWithNumericID );
 
 				expect( url ).toBe(
-					`${ baseURL }?error=${ encodeURIComponent(
+					`https://example.com/support/?error=${ encodeURIComponent(
 						testErrorWithNumericID.message
 					) }`
 				);
@@ -271,16 +254,12 @@ describe( 'core/site urls', () => {
 					code: '123',
 				};
 
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
 				const url = registry
 					.select( CORE_SITE )
 					.getErrorTroubleshootingLinkURL( testErrorWithNumericCode );
 
 				expect( url ).toBe(
-					`${ baseURL }?error=${ encodeURIComponent(
+					`https://example.com/support/?error=${ encodeURIComponent(
 						testErrorWithNumericCode.message
 					) }`
 				);
