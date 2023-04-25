@@ -34,7 +34,7 @@ const wpDashboardSearchConsoleOptions = {
 	dimensions: 'date',
 };
 
-const wpDashboardAnalyticsOptionSets = [
+export const wpDashboardAnalyticsOptionSets = [
 	// Mock options for mocking isGatheringData selector's response.
 	{
 		dimensions: [ 'ga:date' ],
@@ -106,6 +106,23 @@ const wpDashboardAnalyticsOptionSets = [
 			},
 		],
 		limit: 5,
+	},
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+		dimensionFilters: {
+			'ga:pagePath': [
+				'/test-post-1/',
+				'/test-post-2/',
+				'/test-post-3/',
+				'/test-post-4/',
+				'/test-post-5/',
+			],
+		},
+		metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+		orderby: [ { fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' } ],
+		limit: 25,
 	},
 ];
 
