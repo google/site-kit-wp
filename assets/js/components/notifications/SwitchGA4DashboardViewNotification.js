@@ -41,7 +41,9 @@ export default function SwitchGA4DashboardViewNotification() {
 	);
 
 	const ga4DocumentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'using-the-site-kit-dashboard-with-ga4'
+		)
 	);
 
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
