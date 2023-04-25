@@ -44,12 +44,14 @@ import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import ProfileSelect from './ProfileSelect';
 import PropertySelect from './PropertySelect';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 const { useSelect, useDispatch } = Data;
 
 export default function EnableUniversalAnalytics( {
 	children,
 	hasModuleAccess = true,
+	showErrors = false,
 } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -125,6 +127,12 @@ export default function EnableUniversalAnalytics( {
 			</div>
 			{ isUAEnabled && (
 				<Fragment>
+					{ showErrors && (
+						<StoreErrorNotices
+							moduleSlug="analytics"
+							storeName={ MODULES_ANALYTICS }
+						/>
+					) }
 					<div className="googlesitekit-setup-module__inputs">
 						<PropertySelect hasModuleAccess={ hasModuleAccess } />
 						<ProfileSelect hasModuleAccess={ hasModuleAccess } />
@@ -162,4 +170,5 @@ export default function EnableUniversalAnalytics( {
 EnableUniversalAnalytics.propTypes = {
 	children: PropTypes.node.isRequired,
 	hasModuleAccess: PropTypes.bool,
+	showErrors: PropTypes.bool,
 };

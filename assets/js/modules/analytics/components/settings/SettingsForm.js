@@ -106,10 +106,12 @@ export default function SettingsForm( {
 	return (
 		<Fragment>
 			<SettingsUACutoffWarning />
-			<StoreErrorNotices
-				moduleSlug="analytics"
-				storeName={ MODULES_ANALYTICS }
-			/>
+			{ ! ga4ReportingEnabled && (
+				<StoreErrorNotices
+					moduleSlug="analytics"
+					storeName={ MODULES_ANALYTICS }
+				/>
+			) }
 			<ExistingGTMPropertyNotice
 				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
 			/>
@@ -143,6 +145,7 @@ export default function SettingsForm( {
 					</h4>
 					<EnableUniversalAnalytics
 						hasModuleAccess={ hasAnalyticsAccess }
+						showErrors
 					>
 						<SettingsUseSnippetSwitch />
 					</EnableUniversalAnalytics>
