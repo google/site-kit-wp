@@ -20,8 +20,8 @@
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	setupAnalyticsGatheringData,
-	setupSearchConsoleAnalyticsMockReports,
-	setupSearchConsoleAnalyticsZeroData,
+	setupAnalyticsMockReports,
+	setupAnalyticsZeroData,
 	widgetDecorators,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -40,7 +40,7 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => (
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupSearchConsoleAnalyticsMockReports,
+	setupRegistry: setupAnalyticsMockReports,
 };
 
 export const GatheringData = Template.bind( {} );
@@ -52,7 +52,7 @@ GatheringData.args = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+	setupRegistry: setupAnalyticsZeroData,
 };
 
 export default {
