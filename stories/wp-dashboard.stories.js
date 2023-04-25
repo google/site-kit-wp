@@ -43,6 +43,7 @@ import {
 } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { provideAnalyticsMockReport } from '../assets/js/modules/analytics/util/data-mock';
 import { provideSearchConsoleMockReport } from '../assets/js/modules/search-console/util/data-mock';
+import { wpDashboardAnalyticsOptionSets } from '../assets/js/components/wp-dashboard/common.stories';
 
 const clicksOptions = {
 	startDate: '2020-12-31',
@@ -65,100 +66,6 @@ const impressionsArgs = {
 	dimensions: 'date',
 };
 
-const reportOptions = [
-	// Mock options for mocking isGatheringData selector's response.
-	{
-		dimensions: [ 'ga:date' ],
-		metrics: [ { expression: 'ga:users' } ],
-		startDate: '2020-12-31',
-		endDate: '2021-01-27',
-	},
-
-	// Mock options for mocking "Total Users" report's response.
-	{
-		startDate: '2020-12-31',
-		endDate: '2021-01-27',
-		compareStartDate: '2020-12-03',
-		compareEndDate: '2020-12-30',
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Total Users',
-			},
-		],
-	},
-
-	// Mock options for mocking "Total Users" chart widget response.
-	{
-		startDate: '2020-12-31',
-		endDate: '2021-01-27',
-		compareStartDate: '2020-12-03',
-		compareEndDate: '2020-12-30',
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Total Users',
-			},
-		],
-		dimensions: [ 'ga:date' ],
-	},
-
-	// Mock options for mocking "Sessions" report's response.
-	{
-		startDate: '2020-12-31',
-		endDate: '2021-01-27',
-		compareStartDate: '2020-12-03',
-		compareEndDate: '2020-12-30',
-		dimensions: 'ga:date',
-		limit: 10,
-		metrics: [
-			{
-				expression: 'ga:avgSessionDuration',
-				alias: 'Average Session Duration',
-			},
-		],
-	},
-
-	// Mock options for mocking "Popular Pages" report's response.
-	{
-		startDate: '2020-12-31',
-		endDate: '2021-01-27',
-		compareStartDate: '2020-12-03',
-		compareEndDate: '2020-12-30',
-		metrics: [
-			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
-			},
-		],
-		dimensions: [ 'ga:pagePath' ],
-		orderby: [
-			{
-				fieldName: 'ga:pageviews',
-				sortOrder: 'DESCENDING',
-			},
-		],
-		limit: 5,
-	},
-	{
-		startDate: '2020-12-31',
-		endDate: '2021-01-27',
-		dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
-		dimensionFilters: {
-			'ga:pagePath': [
-				'/test-post-1/',
-				'/test-post-2/',
-				'/test-post-3/',
-				'/test-post-4/',
-				'/test-post-5/',
-			],
-		},
-		metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
-		orderby: [ { fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' } ],
-		limit: 25,
-	},
-];
-
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
 	provideSiteInfo( registry );
@@ -176,7 +83,7 @@ storiesOf( 'WordPress', module )
 				.receiveGetModules( withConnected( 'analytics' ) );
 			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-			reportOptions.forEach(
+			wpDashboardAnalyticsOptionSets.forEach(
 				provideAnalyticsMockReport.bind( null, registry )
 			);
 
@@ -280,7 +187,7 @@ storiesOf( 'WordPress', module )
 				.receiveGetModules( withActive( 'analytics' ) );
 			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-			reportOptions.forEach( ( options ) => {
+			wpDashboardAnalyticsOptionSets.forEach( ( options ) => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetReport( [], { options } );

@@ -1,7 +1,5 @@
 /**
- * WP Dashboard Session Duration Component Stories.
- *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +25,10 @@ import {
 	widgetDecorators,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import WPDashboardSessionDuration from './WPDashboardSessionDuration';
+import WPDashboardPopularPages from './WPDashboardPopularPages';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardSessionDuration
+	WPDashboardPopularPages
 );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
@@ -58,6 +56,6 @@ ZeroData.args = {
 };
 
 export default {
-	title: 'Views/WPDashboardApp/WPDashboardSessionDuration',
+	title: 'Views/WPDashboardApp/WPDashboardPopularPages',
 	decorators: widgetDecorators,
 };
