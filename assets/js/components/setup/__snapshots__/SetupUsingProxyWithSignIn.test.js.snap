@@ -17,7 +17,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
           <a
             aria-label="Go to dashboard"
             class="googlesitekit-cta-link googlesitekit-header__logo-link"
-            href=""
+            href="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
           >
             <div
               aria-hidden="true"
@@ -69,7 +69,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                   <a
                     aria-label="Fix common issues (opens in a new tab)"
                     class="googlesitekit-cta-link mdc-list-item__text"
-                    href="undefined?doc=fix-common-issues"
+                    href="https://sitekit.withgoogle.com/support/?doc=fix-common-issues"
                     rel="noopener noreferrer"
                     role="menuitem"
                     tabindex="-1"
@@ -171,6 +171,27 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="manage-sites"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage Sites
+                    </span>
                   </div>
                 </li>
                 <li
@@ -285,8 +306,10 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                     <div
                       class="googlesitekit-start-setup-wrap"
                     >
-                      <button
+                      <a
                         class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                        href="https://sitekit.withgoogle.com/site-management/setup/"
+                        role="button"
                         target="_self"
                       >
                         <span
@@ -294,7 +317,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                         >
                           Sign in with Google
                         </span>
-                      </button>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -325,7 +348,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
           <a
             aria-label="Go to dashboard"
             class="googlesitekit-cta-link googlesitekit-header__logo-link"
-            href=""
+            href="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
           >
             <div
               aria-hidden="true"
@@ -377,7 +400,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                   <a
                     aria-label="Fix common issues (opens in a new tab)"
                     class="googlesitekit-cta-link mdc-list-item__text"
-                    href="undefined?doc=fix-common-issues"
+                    href="https://sitekit.withgoogle.com/support/?doc=fix-common-issues"
                     rel="noopener noreferrer"
                     role="menuitem"
                     tabindex="-1"
@@ -479,6 +502,27 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="manage-sites"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage Sites
+                    </span>
                   </div>
                 </li>
                 <li
@@ -649,8 +693,10 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                     <div
                       class="googlesitekit-start-setup-wrap"
                     >
-                      <button
+                      <a
                         class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                        href="https://sitekit.withgoogle.com/site-management/setup/"
+                        role="button"
                         target="_self"
                       >
                         <span
@@ -658,7 +704,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                         >
                           Sign in with Google
                         </span>
-                      </button>
+                      </a>
                     </div>
                   </div>
                 </div>

@@ -23,6 +23,7 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	provideUserCapabilities,
+	provideSiteInfo,
 	muteFetch,
 } from '../../../../tests/js/test-utils';
 import coreModulesFixture from '../../googlesitekit/modules/datastore/__fixtures__';
@@ -47,6 +48,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		provideUserInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
+		provideSiteInfo( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 
 		muteFetch(
