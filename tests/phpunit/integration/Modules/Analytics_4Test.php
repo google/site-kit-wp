@@ -1819,6 +1819,35 @@ class Analytics_4Test extends TestCase {
 		$this->assertStringContainsString( 'window["ga-disable-' . $settings['googleTagID'] . '"] = true', $snippet_html );
 	}
 
+	public function test_register_allow_tracking_disabled() {
+		remove_all_filters( 'googlesitekit_allow_tracking_disabled' );
+		$this->assertFalse( has_filter( 'googlesitekit_allow_tracking_disabled' ) );
+
+		$this->analytics->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_allow_tracking_disabled' ) );
+	}
+
+	public function test_allow_tracking_disabled() {
+		remove_all_filters( 'googlesitekit_allow_tracking_disabled' );
+		$this->analytics->register();
+
+		// Ensure disabling tracking is allowed by default.
+		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', false ) );
+
+		$settings = array(
+			'useSnippet' => false,
+		);
+
+		$this->analytics->get_settings()->merge( $settings );
+
+		// Ensure disabling tracking is disallowed when the snippet is not used.
+		$this->assertFalse( apply_filters( 'googlesitekit_allow_tracking_disabled', false ) );
+
+		// Ensure disabling tracking does not change if its already allowed.
+		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', true ) );
+	}
+
 	/**
 	 * @return Module_With_Scopes
 	 */
@@ -1861,5 +1890,4 @@ class Analytics_4Test extends TestCase {
 	protected function get_module_with_data_available_state() {
 		return $this->analytics;
 	}
-
 }
