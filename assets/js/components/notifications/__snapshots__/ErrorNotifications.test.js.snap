@@ -202,7 +202,7 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
 <div>
   <section
     class="googlesitekit-publisher-win googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open"
-    id="authentication error"
+    id="authentication-error-gte"
   >
     <div
       class="mdc-layout-grid"
@@ -233,7 +233,7 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
               <a
                 aria-label="Learn more (opens in a new tab)"
                 class="googlesitekit-cta-link googlesitekit-cta-link--external"
-                href="https://support.google.com/tagmanager/answer/11994839"
+                href="https://support.google.com/tagmanager/answer/11994839?hl=en-US"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -246,7 +246,7 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
           >
             <a
               class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner mdc-button--raised"
-              href="test-url?redirect=http%3A%2F%2Flocalhost%2F"
+              href="test-url?redirect=http%3A%2F%2Flocalhost%2F&additional_scopes%5B0%5D=gttps%3A%2F%2Fwww.googleapis.com%2Fauth%2Ftagmanager.readonly"
               role="button"
               target="_self"
             >
