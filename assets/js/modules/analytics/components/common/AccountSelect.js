@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,13 +28,18 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
-import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	ACCOUNT_CREATE,
+	FORM_SETUP,
+} from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect( { hasModuleAccess } ) {
@@ -49,8 +54,26 @@ export default function AccountSelect( { hasModuleAccess } ) {
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
+	const properties = useSelect( ( select ) => {
+		if ( ! accountID ) {
+			return [];
+		}
+
+		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
+	} );
+	const isUAEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
+	);
 
 	const { setPropertyID } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	useEffect( () => {
+		if ( isUAEnabled && properties.length === 0 ) {
+			setValues( FORM_SETUP, { enableUA: false } );
+		}
+	}, [ isUAEnabled, properties, setValues ] );
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
