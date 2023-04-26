@@ -50,8 +50,8 @@ export default function StatusMigration() {
 	const adminReauthURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdminReauthURL()
 	);
-	const isNavigatingTo = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
 	);
 
 	const {
@@ -104,8 +104,8 @@ export default function StatusMigration() {
 			CTA={
 				<SpinnerButton
 					onClick={ handleRedoSetup }
-					disabled={ isNavigatingTo }
-					isSaving={ isNavigatingTo }
+					disabled={ isNavigating }
+					isSaving={ isNavigating }
 				>
 					{ __( 'Redo setup', 'google-site-kit' ) }
 				</SpinnerButton>
