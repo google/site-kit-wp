@@ -286,8 +286,8 @@ export default function GoogleChart( props ) {
 			// Align the dotted line with the date for this marker.
 			Object.assign( chartLine.style, {
 				left: `${ dateCoordinateX - 1 }px`,
-				top: `${ Math.floor( chartArea.top ) + iconSize }px`,
-				height: `${ Math.floor( chartArea.height ) - iconSize }px`,
+				top: `${ Math.floor( chartArea.top ) }px`,
+				height: `${ Math.floor( chartArea.height ) }px`,
 				opacity: 1,
 			} );
 
@@ -305,11 +305,23 @@ export default function GoogleChart( props ) {
 				// Align the tooltip component with the date line.
 				Object.assign( tooltip.style, {
 					left: `${ dateCoordinateX - iconSize / 2 }px`,
-					top: `${ Math.floor( chartArea.top ) }px`,
+					top: `${ Math.floor( chartArea.top ) - iconSize }px`,
 					opacity: 1,
 				} );
 			}
 		} );
+
+		const legendElement = document.querySelector(
+			`#googlesitekit-chart-${ instanceID } svg:first-of-type > g:first-of-type > g > g > text`
+		)?.parentElement?.parentElement?.parentElement;
+		const hasLegend =
+			document.querySelectorAll(
+				`#googlesitekit-chart-${ instanceID } svg:first-of-type > g`
+			).length >= 3;
+
+		if ( hasLegend && legendElement ) {
+			legendElement.style.transform = 'translateY(-10px)';
+		}
 	};
 
 	if ( googleChartsCollisionError ) {
@@ -364,6 +376,7 @@ export default function GoogleChart( props ) {
 					`googlesitekit-chart--${ chartType }`,
 					className
 				) }
+				id={ `googlesitekit-chart-${ instanceID }` }
 				tabIndex={ -1 }
 			>
 				<Chart
