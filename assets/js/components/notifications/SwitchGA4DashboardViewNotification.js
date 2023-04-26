@@ -72,7 +72,7 @@ export default function SwitchGA4DashboardViewNotification() {
 			ctaLabel={ __( 'Update dashboard', 'google-site-kit' ) }
 			onCTAClick={ handleCTAClick }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
-			WinImageSVG={ GA4SuccessGreenSVG }
+			WinImageSVG={ () => <GA4SuccessGreenSVG /> }
 			learnMoreLabel={ __( 'Learn what’s new', 'google-site-kit' ) }
 			learnMoreURL={ ga4DocumentationURL }
 		/>
