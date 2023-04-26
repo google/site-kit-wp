@@ -101,7 +101,7 @@ export default function StatusMigration() {
 				'You need to redo setup to complete AdSense configuration',
 				'google-site-kit'
 			) }
-			CTA={
+			CTA={ () => (
 				<SpinnerButton
 					onClick={ handleRedoSetup }
 					disabled={ isNavigating }
@@ -109,7 +109,7 @@ export default function StatusMigration() {
 				>
 					{ __( 'Redo setup', 'google-site-kit' ) }
 				</SpinnerButton>
-			}
+			) }
 		/>
 	);
 }
