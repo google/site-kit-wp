@@ -517,8 +517,11 @@ class AnalyticsTest extends TestCase {
 			// When tracking is active, the `googlesitekit_analytics_tracking_opt_out` action should not be called.
 			$this->assertEquals( 0, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
 		} else {
-			if ( ! empty( $settings['propertyID'] ) ) {
-				// When tracking is disabled, the opt out snippet should be present.
+			if ( empty( $settings['propertyID'] ) ) {
+				// When propertyID is not set, the opt out snippet should not be present.
+				$this->assertStringNotContainsString( 'window["ga-disable-', $head_html );
+			} else {
+				// When tracking is disabled and propertyID is set, the opt out snippet should be present.
 				$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $head_html );
 			}
 
