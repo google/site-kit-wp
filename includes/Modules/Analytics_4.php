@@ -1181,7 +1181,7 @@ final class Analytics_4 extends Module
 		}
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) && $this->get_settings()->get()['useSnippet'] ) {
-				return true;
+			return true;
 		}
 
 		return $allowed;
