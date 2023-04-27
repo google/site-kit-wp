@@ -66,6 +66,9 @@ export default function EnableUniversalAnalytics( {
 	const isUAEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
@@ -102,7 +105,7 @@ export default function EnableUniversalAnalytics( {
 		: __( 'Another admin', 'google-site-kit' );
 
 	useMount( () => {
-		if ( properties.length > 0 ) {
+		if ( propertyID ) {
 			setValues( FORM_SETUP, { enableUA: true } );
 		}
 	} );
