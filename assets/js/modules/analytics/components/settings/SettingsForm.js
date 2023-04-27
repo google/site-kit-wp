@@ -107,15 +107,16 @@ export default function SettingsForm( {
 		<Fragment>
 			<SettingsUACutoffWarning />
 			{ ! ga4ReportingEnabled && (
-				<StoreErrorNotices
-					moduleSlug="analytics"
-					storeName={ MODULES_ANALYTICS }
-				/>
+				<Fragment>
+					<ExistingGTMPropertyNotice
+						gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
+					/>
+					<StoreErrorNotices
+						moduleSlug="analytics"
+						storeName={ MODULES_ANALYTICS }
+					/>
+				</Fragment>
 			) }
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
-			/>
-
 			{ ga4ReportingEnabled && isUAConnected && isUAEnabled && (
 				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 					<h4 className="googlesitekit-settings-module__fields-group-title">

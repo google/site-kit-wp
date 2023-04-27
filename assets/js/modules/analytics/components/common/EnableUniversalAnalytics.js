@@ -46,6 +46,8 @@ import PropertySelect from './PropertySelect';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import ExistingGTMPropertyNotice from './ExistingGTMPropertyNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function EnableUniversalAnalytics( {
@@ -71,6 +73,14 @@ export default function EnableUniversalAnalytics( {
 	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
+	);
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+	);
+	const gtmAnalyticsPropertyID = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -127,6 +137,9 @@ export default function EnableUniversalAnalytics( {
 			</div>
 			{ isUAEnabled && (
 				<Fragment>
+					<ExistingGTMPropertyNotice
+						gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+					/>
 					{ showErrors && (
 						<StoreErrorNotices
 							moduleSlug="analytics"

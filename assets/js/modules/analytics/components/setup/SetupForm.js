@@ -154,12 +154,14 @@ export default function SetupForm( { finishSetup } ) {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
+			{ ! ga4ReportingEnabled && (
+				<ExistingGTMPropertyNotice
+					gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+				/>
+			) }
 			<StoreErrorNotices
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }
-			/>
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
 			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
