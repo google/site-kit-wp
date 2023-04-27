@@ -1832,7 +1832,8 @@ class Analytics_4Test extends TestCase {
 		remove_all_filters( 'googlesitekit_allow_tracking_disabled' );
 		$this->analytics->register();
 
-		// Ensure disabling tracking is allowed by default.
+		// Ensure disabling tracking is allowed when the snippet is used.
+		$this->assertTrue( $this->analytics->get_settings()->get()['useSnippet'] );
 		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', false ) );
 
 		$settings = array(
