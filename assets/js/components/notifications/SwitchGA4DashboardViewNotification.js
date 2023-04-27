@@ -25,13 +25,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
+import GA4SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
 	DASHBOARD_VIEW_GA4,
 	MODULES_ANALYTICS,
 } from '../../modules/analytics/datastore/constants';
-import GA4SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
+import ga4Reporting from '../../feature-tours/ga4-reporting';
+import BannerNotification from './BannerNotification';
 
 const { useDispatch, useSelect } = Data;
 
@@ -46,11 +49,16 @@ export default function SwitchGA4DashboardViewNotification() {
 		)
 	);
 
+	const { setValue } = useDispatch( CORE_UI );
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
-
 	const handleCTAClick = async () => {
+		setValue( 'forceInView', true );
+
 		await setDashboardView( DASHBOARD_VIEW_GA4 );
 		await saveSettings();
+
+		triggerOnDemandTour( ga4Reporting );
 	};
 
 	if ( ! shouldPromptGA4DashboardView ) {
