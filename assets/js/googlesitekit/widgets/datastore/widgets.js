@@ -76,14 +76,15 @@ export const actions = {
 	 * @since 1.9.0
 	 * @since 1.12.0 Added wrapWidget setting.
 	 *
-	 * @param {string}                slug                  Widget's slug.
-	 * @param {Object}                settings              Widget's settings.
-	 * @param {WPComponent}           settings.Component    React component used to display the contents of this widget.
-	 * @param {number}                [settings.priority]   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
-	 * @param {string|Array.<string>} [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
-	 * @param {boolean}               [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
-	 * @param {string|Array.<string>} [settings.modules]    Optional. Widget's associated modules.
-	 * @param {Function}              [settings.isActive]   Optional. Callback function to determine if the widget is active.
+	 * @param {string}                slug                   Widget's slug.
+	 * @param {Object}                settings               Widget's settings.
+	 * @param {WPComponent}           settings.Component     React component used to display the contents of this widget.
+	 * @param {number}                [settings.priority]    Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string|Array.<string>} [settings.width]       Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {boolean}               [settings.wrapWidget]  Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
+	 * @param {string|Array.<string>} [settings.modules]     Optional. Widget's associated modules.
+	 * @param {Function}              [settings.isActive]    Optional. Callback function to determine if the widget is active.
+	 * @param {Function}              [settings.isPreloaded] Optional. Callback function to determine if the widget should be preloaded if not active (requires isActive).
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget(
@@ -95,6 +96,7 @@ export const actions = {
 			wrapWidget = true,
 			modules,
 			isActive,
+			isPreloaded,
 		} = {}
 	) {
 		const allWidths = Object.values( WIDGET_WIDTHS );
@@ -117,6 +119,7 @@ export const actions = {
 					wrapWidget,
 					modules: normalizeWidgetModules( modules ),
 					isActive,
+					isPreloaded,
 				},
 			},
 			type: REGISTER_WIDGET,
@@ -281,6 +284,16 @@ export const selectors = {
 		return widgets[ slug ] !== undefined;
 	},
 
+	isWidgetPreloaded: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const { widgets } = state;
+
+			return !! (
+				widgets[ slug ] && widgets[ slug ].isPreloaded?.( select )
+			);
+		}
+	),
+
 	/**
 	 * Returns all widgets registered for a given widget area.
 	 *
@@ -313,7 +326,13 @@ export const selectors = {
 						if ( typeof widget.isActive !== 'function' ) {
 							return true;
 						}
-						return widget.isActive( select ) === true;
+						if ( widget.isActive( select ) ) {
+							return true;
+						}
+						if ( typeof widget.isPreloaded !== 'function' ) {
+							return false;
+						}
+						return widget.isPreloaded( select );
 					} );
 
 				if ( modules ) {

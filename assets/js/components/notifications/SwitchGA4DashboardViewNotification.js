@@ -33,6 +33,7 @@ import {
 	MODULES_ANALYTICS,
 } from '../../modules/analytics/datastore/constants';
 import BannerNotification from './BannerNotification';
+
 const { useDispatch, useSelect } = Data;
 
 // Avoid console.log in tests.
@@ -56,6 +57,7 @@ export default function SwitchGA4DashboardViewNotification() {
 
 	const { setValue } = useDispatch( CORE_UI );
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
+
 	const handleCTAClick = () => {
 		const date = new Date();
 		log( 'handleCTAClick', date, date.getTime() );
