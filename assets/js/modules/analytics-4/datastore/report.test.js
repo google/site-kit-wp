@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
@@ -320,6 +321,9 @@ describe( 'modules/analytics-4 report', () => {
 							body,
 						}
 					);
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
 				} );
 
 				it( 'should return undefined if getSettings is not resolved yet', async () => {
@@ -424,6 +428,28 @@ describe( 'modules/analytics-4 report', () => {
 					);
 
 					expect( isGatheringData() ).toBe( false );
+				} );
+
+				it( 'should return TRUE without checking for property settings if the report has zero data and user is not authenticated', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: false,
+					} );
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for resolvers to run.
+					await waitForDefaultTimeouts();
+
+					// Verify that isGatheringData now returns TRUE if hasZeroData now returns true but the user is not authenticated.
+					expect( isGatheringData() ).toBe( true );
+					expect( hasZeroData() ).toBe( true );
+
+					await waitForDefaultTimeouts();
 				} );
 			} );
 		} );
