@@ -63,11 +63,11 @@ export default function EnableUniversalAnalytics( {
 
 		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
 	} );
-	const isUAEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
-	);
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const isUAEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
