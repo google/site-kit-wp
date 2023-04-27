@@ -110,9 +110,11 @@ export default function SettingsForm( {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
-			/>
+			{ ! ga4ReportingEnabled && (
+				<ExistingGTMPropertyNotice
+					gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
+				/>
+			) }
 
 			{ ga4ReportingEnabled && isUAConnected && isUAEnabled && (
 				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
