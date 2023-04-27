@@ -53,6 +53,20 @@
 	}
 }
 
+.googlesitekit-chart--LineChart div.google-visualization-tooltip {
+
+	height: fit-content !important;
+	width: fit-content !important;
+
+	.google-visualization-tooltip-item-list {
+		margin: 0.5em 0;
+	}
+
+	.google-visualization-tooltip-item {
+		margin: 0;
+	}
+}
+
 .googlesitekit-chart--PieChart svg {
 	// Required to make sure annotations/labels on the PieChart don't get
 	// cut off in certain viewports.
