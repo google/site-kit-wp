@@ -581,7 +581,7 @@ describe( 'modules/analytics settings', () => {
 					).toBe( false );
 				} );
 
-				it( 'should ignore analytics-4 errors if it fails', async () => {
+				it( 'should surface analytics-4 errors if it fails', async () => {
 					const ga4Settings = {
 						...ga4fixtures.defaultSettings,
 						propertyID: '1000',
@@ -615,7 +615,7 @@ describe( 'modules/analytics settings', () => {
 					const { error: saveChangesError } = await registry
 						.dispatch( MODULES_ANALYTICS )
 						.submitChanges();
-					expect( saveChangesError ).toBeUndefined();
+					expect( saveChangesError ).toEqual( error );
 
 					expect( fetchMock ).toHaveFetched( gaSettingsEndpoint, {
 						body: { data: validSettings },
@@ -635,8 +635,11 @@ describe( 'modules/analytics settings', () => {
 							.haveSettingsChanged()
 					).toBe( true );
 
-					// @TODO: uncomment the following line once GA4 API is stabilized
-					// expect( registry.select( MODULES_ANALYTICS_4 ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getErrorForAction( 'submitChanges' )
+					).toEqual( error );
 					expect( console ).toHaveErrored();
 				} );
 			} );

@@ -43,6 +43,7 @@ import {
 } from '../../../analytics-4/components/common';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4SettingsNotice from './GA4SettingsNotice';
 import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -98,7 +99,10 @@ export default function GA4SettingsControls( props ) {
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'Google Analytics 4', 'google-site-kit' ) }
 			</h4>
-
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
+			/>
 			<PropertyOrWebDataStreamNotAvailableError
 				hasModuleAccess={ hasModuleAccess }
 				isDisabled={ isDisabled }
