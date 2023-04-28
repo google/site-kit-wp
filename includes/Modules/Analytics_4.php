@@ -122,6 +122,8 @@ final class Analytics_4 extends Module
 				$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
 			);
 		}
+
+		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 	}
 
 	/**
@@ -1162,4 +1164,26 @@ final class Analytics_4 extends Module
 		return $sharing_settings;
 	}
 
+	/**
+	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
+	 *
+	 * If the Analytics-4 module is enabled, and the snippet is enabled, then the option to exclude
+	 * the option to exclude certain users from tracking should be displayed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool $allowed Whether to allow tracking exclusion.
+	 * @return bool Filtered value.
+	 */
+	private function filter_analytics_allow_tracking_disabled( $allowed ) {
+		if ( $allowed ) {
+			return $allowed;
+		}
+
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) && $this->get_settings()->get()['useSnippet'] ) {
+			return true;
+		}
+
+		return $allowed;
+	}
 }

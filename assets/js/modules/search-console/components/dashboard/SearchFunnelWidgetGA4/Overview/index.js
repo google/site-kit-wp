@@ -99,18 +99,7 @@ export default function Overview( props ) {
 	} );
 
 	const canShowGA4ReportingFeatureTour = useSelect( ( select ) => {
-		// Don't show the GA4 report feature tour if feature tours are on cooldown.
-		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
-			return false;
-		}
-
-		// Don't show the GA4 report feature tour if we have already shown a feature tour
-		// during the current page view.
-		if ( !! select( CORE_USER ).getShownTour() ) {
-			return false;
-		}
-
-		return true;
+		return select( CORE_UI ).getValue( 'showGA4ReportingTour' );
 	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
@@ -189,7 +178,6 @@ export default function Overview( props ) {
 		! error &&
 		! showRecoverableAnalytics;
 
-	const { setValue } = useDispatch( CORE_UI );
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	useEffect( () => {
 		if (
@@ -200,12 +188,10 @@ export default function Overview( props ) {
 			return;
 		}
 
-		setValue( 'forceInView', true );
 		triggerOnDemandTour( ga4Reporting );
 	}, [
 		showGA4,
 		dashboardType,
-		setValue,
 		triggerOnDemandTour,
 		canShowGA4ReportingFeatureTour,
 	] );
