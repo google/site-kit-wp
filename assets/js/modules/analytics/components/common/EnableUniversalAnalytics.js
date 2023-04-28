@@ -29,6 +29,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	Fragment,
 	useCallback,
+	useEffect,
+	useState,
 	createInterpolateElement,
 } from '@wordpress/element';
 
@@ -36,7 +38,7 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Switch } from 'googlesitekit-components';
+import { ProgressBar, Switch } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS, FORM_SETUP } from '../../datastore/constants';
@@ -82,8 +84,12 @@ export default function EnableUniversalAnalytics( {
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { resetPropertyAndProfileIDs, revertPropertyAndProfileIDs } =
-		useDispatch( MODULES_ANALYTICS );
+	const {
+		resetPropertyAndProfileIDs,
+		revertPropertyAndProfileIDs,
+		findMatchedProperty,
+		selectProperty,
+	} = useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback( () => {
 		if ( isUAEnabled ) {
@@ -98,6 +104,31 @@ export default function EnableUniversalAnalytics( {
 		setValues,
 		resetPropertyAndProfileIDs,
 		revertPropertyAndProfileIDs,
+	] );
+
+	const [ isLookingForMatch, setIsLookingForMatch ] = useState( false );
+
+	useEffect( () => {
+		const setMatchedProperty = async () => {
+			if ( ! propertyID ) {
+				setIsLookingForMatch( true );
+
+				const matchedProperty = await findMatchedProperty( accountID );
+				if ( matchedProperty?.id ) {
+					selectProperty( matchedProperty.id );
+				}
+
+				setIsLookingForMatch( false );
+			}
+		};
+
+		setMatchedProperty();
+	}, [
+		isUAEnabled,
+		propertyID,
+		findMatchedProperty,
+		selectProperty,
+		accountID,
 	] );
 
 	const formattedOwnerName = module?.owner?.login
@@ -139,10 +170,18 @@ export default function EnableUniversalAnalytics( {
 						gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
 					/>
 
-					<div className="googlesitekit-setup-module__inputs">
-						<PropertySelect hasModuleAccess={ hasModuleAccess } />
-						<ProfileSelect hasModuleAccess={ hasModuleAccess } />
-					</div>
+					{ isLookingForMatch && <ProgressBar /> }
+
+					{ ! isLookingForMatch && (
+						<div className="googlesitekit-setup-module__inputs">
+							<PropertySelect
+								hasModuleAccess={ hasModuleAccess }
+							/>
+							<ProfileSelect
+								hasModuleAccess={ hasModuleAccess }
+							/>
+						</div>
+					) }
 
 					{ /* Renders the SetupUseSnippetSwitch or SettingsUseSnippetSwitch */ }
 					{ children }
