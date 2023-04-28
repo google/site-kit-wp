@@ -74,14 +74,22 @@ export default function ReportTable( props ) {
 				<thead className="googlesitekit-table__head">
 					{ hasBadges && (
 						<tr className="googlesitekit-table__head-badges">
-							{ columns.map( ( { badge }, colIndex ) => (
-								<th
-									className="googlesitekit-table__head-item"
-									key={ `googlesitekit-table__head-row-badge-${ colIndex }` }
-								>
-									{ badge }
-								</th>
-							) ) }
+							{ columns.map(
+								( { badge, hideOnMobile }, colIndex ) => (
+									<th
+										className={ classnames(
+											'googlesitekit-table__head-item',
+											{
+												'hidden-on-mobile':
+													hideOnMobile,
+											}
+										) }
+										key={ `googlesitekit-table__head-row-badge-${ colIndex }` }
+									>
+										{ badge }
+									</th>
+								)
+							) }
 						</tr>
 					) }
 					<tr className="googlesitekit-table__head-row">
