@@ -157,6 +157,12 @@ export default function GA4SettingsControls( props ) {
 					) }
 			</div>
 
+			<GA4SettingsNotice
+				isGA4Connected={ isModuleConnected }
+				hasAnalyticsAccess={ hasAnalyticsAccess }
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
+
 			{ isDisabled && (
 				<GA4ActivateSwitch
 					disabled={ ! hasAnalyticsAccess }
@@ -169,12 +175,6 @@ export default function GA4SettingsControls( props ) {
 					<SettingsUseSnippetSwitch />
 				</div>
 			) }
-
-			<GA4SettingsNotice
-				isGA4Connected={ isModuleConnected }
-				hasAnalyticsAccess={ hasAnalyticsAccess }
-				hasAnalytics4Access={ hasAnalytics4Access }
-			/>
 		</div>
 	);
 }
