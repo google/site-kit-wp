@@ -152,6 +152,8 @@ export default function PropertySelect( props ) {
 				className,
 				{
 					'mdc-select--invalid': ! isValidSelection,
+					'googlesitekit-analytics-4__select-property--loaded':
+						! isDisabled && ! isLoading,
 				}
 			) }
 			label={ __( 'Property', 'google-site-kit' ) }

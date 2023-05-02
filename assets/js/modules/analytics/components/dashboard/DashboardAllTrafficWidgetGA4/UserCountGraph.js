@@ -42,6 +42,9 @@ import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate
 import ReportError from '../../../../../components/ReportError';
 import { stringToDate } from '../../../../../util/date-range/string-to-date';
 import { createZeroDataRow } from './utils';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { getDateString } from '../../../../../util';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
@@ -51,6 +54,8 @@ const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
 export default function UserCountGraph( props ) {
 	const { loaded, error, report, gatheringData } = props;
+
+	const isViewOnly = useViewOnly();
 
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -92,6 +97,24 @@ export default function UserCountGraph( props ) {
 			global.removeEventListener( 'resize', updateBreakpoints );
 		};
 	}, [] );
+
+	const property = useSelect( ( select ) => {
+		if ( isViewOnly ) {
+			return null;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( ! propertyID ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+	} );
+
+	const propertyCreatedDate = property?.createTime
+		? getDateString( new Date( property.createTime ) )
+		: null;
 
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
@@ -212,6 +235,19 @@ export default function UserCountGraph( props ) {
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
+				dateMarkers={
+					propertyCreatedDate
+						? [
+								{
+									date: propertyCreatedDate,
+									text: __(
+										'Google Analytics 4 property created',
+										'google-site-kit'
+									),
+								},
+						  ]
+						: undefined
+				}
 				height="368px"
 				loadingHeight="340px"
 				loaded={ loaded }

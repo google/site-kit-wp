@@ -31,11 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import Link from '../../../../../components/Link';
+import SupportLink from '../../../../../components/SupportLink';
 import { trackEvent } from '../../../../../util';
 import { parseAccountID } from '../../../util/parsing';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotices, UserProfile } from '../../common';
 import useViewContext from '../../../../../hooks/useViewContext';
@@ -50,11 +49,6 @@ export default function SetupCreateAccount() {
 	);
 	const signUpURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceCreateAccountURL()
-	);
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/adsense/answer/2659101',
-		} )
 	);
 
 	const createAccountHandler = useCallback(
@@ -113,8 +107,8 @@ export default function SetupCreateAccount() {
 						),
 						{
 							a: (
-								<Link
-									href={ supportURL }
+								<SupportLink
+									path="/adsense/answer/2659101"
 									external
 									aria-label={ __(
 										'Learn more about adding a user to an existing AdSense account',

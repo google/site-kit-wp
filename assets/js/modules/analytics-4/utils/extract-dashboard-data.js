@@ -101,11 +101,7 @@ export function extractAnalytics4DashboardData(
 	],
 	chartDataFormats = [ identity, identity, ( x ) => x * 100, identity ]
 ) {
-	if ( ! Array.isArray( report?.rows ) ) {
-		return false;
-	}
-
-	const rows = [ ...report.rows ]; // Copying it to escape side effects by manipulating with rows.
+	const rows = [ ...( report?.rows || [] ) ]; // Copying it to escape side effects by manipulating with rows.
 	const rowLength = rows.length;
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.

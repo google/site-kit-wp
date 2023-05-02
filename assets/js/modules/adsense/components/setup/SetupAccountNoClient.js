@@ -25,19 +25,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import Link from '../../../../components/Link';
+import SupportLink from '../../../../components/SupportLink';
 import { ErrorNotices } from '../common';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
 
 export default function SetupAccountNoClient() {
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/adsense/answer/6023158',
-		} )
-	);
-
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
@@ -57,8 +48,8 @@ export default function SetupAccountNoClient() {
 			</p>
 
 			<div className="googlesitekit-setup-module__action">
-				<Link
-					href={ supportURL }
+				<SupportLink
+					path="/adsense/answer/6023158"
 					external
 					aria-label={ __(
 						'Learn more about updating your AdSense account',
@@ -66,7 +57,7 @@ export default function SetupAccountNoClient() {
 					) }
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
+				</SupportLink>
 			</div>
 		</Fragment>
 	);

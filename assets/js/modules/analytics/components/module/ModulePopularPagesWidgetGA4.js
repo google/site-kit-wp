@@ -32,14 +32,10 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS,
-} from '../../datastore/constants';
+import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
-import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../components/ReportTable';
@@ -142,7 +138,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 	if ( error ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
-				<WidgetReportError moduleSlug="analytics" error={ error } />
+				<WidgetReportError moduleSlug="analytics-4" error={ error } />
 			</Widget>
 		);
 	}
@@ -160,12 +156,11 @@ function ModulePopularPagesWidgetGA4( props ) {
 						return null;
 					}
 
-					return select( MODULES_ANALYTICS ).getServiceReportURL(
-						'content-drilldown',
+					return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+						'all-pages-and-screens',
 						{
-							'explorer-table.plotKeys': '[]',
-							'_r.drilldown': `analytics.pagePath:${ url }`,
-							...generateDateRangeArgs( dates ),
+							filters: { unifiedPagePathScreen: url },
+							dates,
 						}
 					);
 				} );
@@ -192,6 +187,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			description: __( 'Sessions', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metricValues.1.value',
+			className: 'googlesitekit-table__head-item--sessions',
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
@@ -210,6 +206,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			description: __( 'Engagement Rate', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metricValues.2.value',
+			className: 'googlesitekit-table__head-item--engagement-rate',
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, '%' ) }</span>
 			),
@@ -261,6 +258,6 @@ ModulePopularPagesWidgetGA4.propTypes = {
 	WidgetReportZero: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'analytics' } )(
+export default whenActive( { moduleName: 'analytics-4' } )(
 	ModulePopularPagesWidgetGA4
 );

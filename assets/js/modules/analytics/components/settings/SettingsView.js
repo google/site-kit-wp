@@ -20,12 +20,12 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ExistingGTMPropertyNotice } from '../common';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
@@ -36,9 +36,10 @@ import {
 	DASHBOARD_VIEW_GA4,
 	MODULES_ANALYTICS,
 } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
+import { isValidProfileID, isValidPropertyID } from '../../util';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -46,16 +47,14 @@ export default function SettingsView() {
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
-
-	const isTagManagerAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
 	);
-
-	const gtmAnalyticsPropertyID = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	const profileID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getProfileID()
 	);
+	const isUAConnected =
+		isValidPropertyID( propertyID ) && isValidProfileID( profileID );
 
 	const dashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getDashboardView()
@@ -69,12 +68,12 @@ export default function SettingsView() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
-			{ ga4ReportingEnabled && (
+			{ ga4ReportingEnabled && isUAConnected && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
@@ -100,9 +99,19 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			<UASettingsView />
+			{ ga4ReportingEnabled && (
+				<Fragment>
+					<GA4SettingsView />
+					{ isUAConnected && <UASettingsView /> }
+				</Fragment>
+			) }
 
-			<GA4SettingsView />
+			{ ! ga4ReportingEnabled && (
+				<Fragment>
+					<UASettingsView />
+					<GA4SettingsView />
+				</Fragment>
+			) }
 
 			<OptionalSettingsView />
 		</div>

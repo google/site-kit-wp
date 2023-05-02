@@ -91,13 +91,11 @@ WithUAMatchingTag.decorators = [
 					accountID,
 					propertyID,
 				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.selectProperty( properties[ 0 ].id );
-			const profileName = fixtures.createProfile.name;
-			registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
-				profileName,
-			} );
+			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
+				properties[ 0 ].id,
+				// eslint-disable-next-line sitekit/acronym-case
+				properties[ 0 ].internalWebPropertyId
+			);
 			registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 				enableUA: true,
 			} );

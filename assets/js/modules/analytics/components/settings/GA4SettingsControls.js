@@ -36,19 +36,24 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { GA4ActivateSwitch } from '../common';
+import { AccountSelect, GA4ActivateSwitch } from '../common';
 import {
 	PropertySelect,
 	WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4SettingsNotice from './GA4SettingsNotice';
+import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
+
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { matchAndSelectProperty } = useDispatch( MODULES_ANALYTICS_4 );
@@ -94,8 +99,18 @@ export default function GA4SettingsControls( props ) {
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'Google Analytics 4', 'google-site-kit' ) }
 			</h4>
-
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
+			/>
+			<PropertyOrWebDataStreamNotAvailableError
+				hasModuleAccess={ hasModuleAccess }
+				isDisabled={ isDisabled }
+			/>
 			<div className="googlesitekit-setup-module__inputs">
+				{ ga4ReportingEnabled && (
+					<AccountSelect hasModuleAccess={ hasModuleAccess } />
+				) }
 				<PropertySelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }
@@ -126,7 +141,7 @@ export default function GA4SettingsControls( props ) {
 									zIndex: 9999,
 								},
 							} }
-							target=".googlesitekit-analytics-4__select-property"
+							target=".googlesitekit-analytics-4__select-property--loaded"
 							onDismiss={ onDismissTooltip }
 							cta={
 								<Button
@@ -142,6 +157,12 @@ export default function GA4SettingsControls( props ) {
 					) }
 			</div>
 
+			<GA4SettingsNotice
+				isGA4Connected={ isModuleConnected }
+				hasAnalyticsAccess={ hasAnalyticsAccess }
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
+
 			{ isDisabled && (
 				<GA4ActivateSwitch
 					disabled={ ! hasAnalyticsAccess }
@@ -154,12 +175,6 @@ export default function GA4SettingsControls( props ) {
 					<SettingsUseSnippetSwitch />
 				</div>
 			) }
-
-			<GA4SettingsNotice
-				isGA4Connected={ isModuleConnected }
-				hasAnalyticsAccess={ hasAnalyticsAccess }
-				hasAnalytics4Access={ hasAnalytics4Access }
-			/>
 		</div>
 	);
 }

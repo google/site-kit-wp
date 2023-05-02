@@ -115,31 +115,6 @@ final class Analytics_4 extends Module
 			2
 		);
 
-		// Ensure both Analytics modules always reference the same owner.
-		//
-		// The filter for Analytics (UA) is added in this class, and
-		// and the filter for Analytics 4 is added in Analytics class.
-		// This is to prevent an infinite loop, see:
-		// https://github.com/google/site-kit-wp/issues/6465#issuecomment-1483120333.
-		add_filter(
-			'pre_update_option_' . Analytics_Settings::OPTION,
-			function( $new_value, $old_value ) {
-				if ( $old_value['ownerID'] !== $new_value['ownerID'] ) {
-					$settings = $this->get_settings()->get();
-
-					if ( $settings['ownerID'] && $new_value['ownerID'] !== $settings['ownerID'] ) {
-						$this->get_settings()->merge(
-							array( 'ownerID' => $new_value['ownerID'] )
-						);
-					}
-				}
-
-				return $new_value;
-			},
-			20,
-			2
-		);
-
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// Replicate Analytics settings for Analytics-4 if not set.
 			add_filter(
@@ -147,6 +122,8 @@ final class Analytics_4 extends Module
 				$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
 			);
 		}
+
+		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 	}
 
 	/**
@@ -267,6 +244,10 @@ final class Analytics_4 extends Module
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
 			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
 			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'GET:conversion-events'      => array(
+				'service'   => 'analyticsadmin',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'POST:create-account-ticket' => array(
 				'service'                => 'analyticsprovisioning',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
@@ -287,7 +268,6 @@ final class Analytics_4 extends Module
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
-			'GET:conversion-events'      => array( 'service' => 'analyticsadmin' ),
 		);
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
@@ -685,17 +665,17 @@ final class Analytics_4 extends Module
 
 				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['measurementID'] ) );
 			case 'GET:conversion-events':
-				if ( ! isset( $data['propertyID'] ) ) {
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
+						'missing_required_setting',
+						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
 					);
 				}
 
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
-				$property_id    = self::normalize_property_id( $data['propertyID'] );
+				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
 					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -1185,108 +1165,25 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Validates the report metrics for a shared request.
+	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
 	 *
-	 * @since 1.93.0
-	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
+	 * If the Analytics-4 module is enabled, and the snippet is enabled, then the option to exclude
+	 * the option to exclude certain users from tracking should be displayed.
 	 *
-	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
-	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
+	 * @since n.e.x.t
+	 *
+	 * @param bool $allowed Whether to allow tracking exclusion.
+	 * @return bool Filtered value.
 	 */
-	protected function validate_shared_report_metrics( $metrics ) {
-		$valid_metrics = apply_filters(
-			'googlesitekit_shareable_analytics_4_metrics',
-			array(
-				// TODO: Add metrics to this allow-list as they are used in the plugin.
-			)
-		);
-
-		$invalid_metrics = array_diff(
-			array_map(
-				function ( $metric ) {
-					// If there is an expression, it means the name is there as an alias, otherwise the name should be a valid metric name.
-					// Therefore, the expression takes precedence to the name for the purpose of allow-list validation.
-					return ! empty( $metric->getExpression() ) ? $metric->getExpression() : $metric->getName();
-				},
-				$metrics
-			),
-			$valid_metrics
-		);
-
-		if ( count( $invalid_metrics ) > 0 ) {
-			$message = count( $invalid_metrics ) > 1 ? sprintf(
-				/* translators: %s: is replaced with a comma separated list of the invalid metrics. */
-				__(
-					'Unsupported metrics requested: %s',
-					'google-site-kit'
-				),
-				join(
-					/* translators: used between list items, there is a space after the comma. */
-					__( ', ', 'google-site-kit' ),
-					$invalid_metrics
-				)
-			) : sprintf(
-				/* translators: %s: is replaced with the invalid metric. */
-				__(
-					'Unsupported metric requested: %s',
-					'google-site-kit'
-				),
-				$invalid_metrics[0]
-			);
-
-			throw new Invalid_Report_Metrics_Exception( $message );
+	private function filter_analytics_allow_tracking_disabled( $allowed ) {
+		if ( $allowed ) {
+			return $allowed;
 		}
-	}
 
-	/**
-	 * Validates the report dimensions for a shared request.
-	 *
-	 * @since 1.93.0
-	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
-	 *
-	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
-	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
-	 */
-	protected function validate_shared_report_dimensions( $dimensions ) {
-		$valid_dimensions = apply_filters(
-			'googlesitekit_shareable_analytics_4_dimensions',
-			array(
-				// TODO: Add dimensions to this allow-list as they are used in the plugin.
-			)
-		);
-
-		$invalid_dimensions = array_diff(
-			array_map(
-				function ( $dimension ) {
-					return $dimension->getName();
-				},
-				$dimensions
-			),
-			$valid_dimensions
-		);
-
-		if ( count( $invalid_dimensions ) > 0 ) {
-			$message = count( $invalid_dimensions ) > 1 ? sprintf(
-				/* translators: %s: is replaced with a comma separated list of the invalid dimensions. */
-				__(
-					'Unsupported dimensions requested: %s',
-					'google-site-kit'
-				),
-				join(
-					/* translators: used between list items, there is a space after the comma. */
-					__( ', ', 'google-site-kit' ),
-					$invalid_dimensions
-				)
-			) : sprintf(
-				/* translators: %s: is replaced with the invalid dimension. */
-				__(
-					'Unsupported dimension requested: %s',
-					'google-site-kit'
-				),
-				$invalid_dimensions[0]
-			);
-
-			throw new Invalid_Report_Dimensions_Exception( $message );
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) && $this->get_settings()->get()['useSnippet'] ) {
+			return true;
 		}
+
+		return $allowed;
 	}
 }

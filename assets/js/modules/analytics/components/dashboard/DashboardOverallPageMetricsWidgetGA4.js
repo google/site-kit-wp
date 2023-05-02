@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { _x, sprintf, _n } from '@wordpress/i18n';
+import { _x, sprintf, _n, __ } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
 /**
@@ -40,6 +40,7 @@ import { calculateOverallPageMetricsData } from '../../..//analytics-4/utils/ove
 import { getURLPath } from '../../../../util';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import NewBadge from '../../../../components/NewBadge';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
@@ -132,6 +133,18 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 
+	const sessionsLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/9191807',
+		} )
+	);
+
+	const engagementRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12195621',
+		} )
+	);
+
 	const Header = () => (
 		<WidgetHeaderTitle
 			title={ sprintf(
@@ -174,6 +187,27 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 
 	const data = calculateOverallPageMetricsData( report, dates.startDate );
 
+	const badges = {
+		sessions: (
+			<NewBadge
+				tooltipTitle={ __(
+					'Visitor interactions with your site within a given time frame (30 min by default).',
+					'google-site-kit'
+				) }
+				learnMoreLink={ sessionsLearnMoreURL }
+			/>
+		),
+		engagementRate: (
+			<NewBadge
+				tooltipTitle={ __(
+					'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
+					'google-site-kit'
+				) }
+				learnMoreLink={ engagementRateLearnMoreURL }
+			/>
+		),
+	};
+
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
 			<Grid>
@@ -202,6 +236,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 											gatheringData={ isGatheringData }
 										/>
 									}
+									badge={ badges[ metric ] }
 								/>
 							</Cell>
 						)

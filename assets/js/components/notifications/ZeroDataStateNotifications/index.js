@@ -40,21 +40,23 @@ export default function ZeroDataStateNotifications() {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
-	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected(
-			isGA4DashboardView ? 'analytics-4' : 'analytics'
-		)
-	);
+
+	const analyticsModuleSlug = isGA4DashboardView
+		? 'analytics-4'
+		: 'analytics';
 	const analyticsDataStore = isGA4DashboardView
 		? MODULES_ANALYTICS_4
 		: MODULES_ANALYTICS;
 
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( analyticsModuleSlug )
+	);
 	const canViewSharedAnalytics = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( analyticsModuleSlug );
 	} );
 	const canViewSharedSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
@@ -75,7 +77,9 @@ export default function ZeroDataStateNotifications() {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'analytics' );
+		return Object.keys( recoverableModules ).includes(
+			isGA4DashboardView ? 'analytics-4' : 'analytics'
+		);
 	} );
 	const showRecoverableSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {

@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -30,6 +35,11 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { extractAnalyticsDashboardData } from '../../../analytics/util';
 import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
 import GoogleChart from '../../../../components/GoogleChart';
+import { UA_CUTOFF_DATE } from '../../../analytics/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { getDateString } from '../../../../util';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 /**
@@ -57,15 +67,13 @@ function extractChartData(
 	chartDataFormats
 ) {
 	if ( moduleSlug === 'analytics-4' ) {
-		return (
-			extractAnalytics4DashboardData(
-				data,
-				selectedStats,
-				dateRangeLength,
-				dataLabels,
-				tooltipDataFormats,
-				chartDataFormats
-			) || []
+		return extractAnalytics4DashboardData(
+			data,
+			selectedStats,
+			dateRangeLength,
+			dataLabels,
+			tooltipDataFormats,
+			chartDataFormats
 		);
 	}
 	return (
@@ -94,12 +102,61 @@ export default function AnalyticsStats( props ) {
 		moduleSlug,
 	} = props;
 
+	const isViewOnly = useViewOnly();
+
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( moduleSlug )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( moduleSlug )
 	);
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
+
+	const property = useSelect( ( select ) => {
+		if ( isViewOnly || ! isGA4DashboardView ) {
+			return null;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( ! propertyID ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+	} );
+
+	const propertyCreatedDate = property?.createTime
+		? getDateString( new Date( property.createTime ) )
+		: null;
+
+	let dateMarkers = [];
+
+	if ( isGA4DashboardView && propertyCreatedDate ) {
+		dateMarkers = [
+			{
+				date: propertyCreatedDate,
+				text: __(
+					'Google Analytics 4 property created',
+					'google-site-kit'
+				),
+			},
+		];
+	}
+
+	if ( ! isGA4DashboardView ) {
+		dateMarkers = [
+			{
+				date: UA_CUTOFF_DATE,
+				text: __(
+					'Universal Analytics stopped collecting data',
+					'google-site-kit'
+				),
+			},
+		];
+	}
 
 	if ( ! analyticsModuleActive || ! analyticsModuleConnected ) {
 		return null;
@@ -163,6 +220,7 @@ export default function AnalyticsStats( props ) {
 					<GoogleChart
 						chartType="LineChart"
 						data={ googleChartData }
+						dateMarkers={ dateMarkers }
 						loadingHeight="270px"
 						loadingWidth="100%"
 						options={ options }
