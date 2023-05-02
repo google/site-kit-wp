@@ -87,9 +87,7 @@
 	.googlesitekit-publisher-win__icons {
 		display: flex;
 		height: 100%;
-		justify-content: left;
-		right: 8px;
-		top: 50%;
+		justify-content: right;
 		@media (min-width: $bp-desktop) {
 			right: calc(#{$grid-gap-desktop} * 2);
 		}
