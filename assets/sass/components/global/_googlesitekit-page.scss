@@ -29,3 +29,14 @@
 		margin-top: 25px;
 	}
 }
+
+.showmenu {
+	#adminmenuback,
+	#adminmenuwrap {
+		display: block;
+	}
+
+	#wpbody {
+		right: -16em;
+	}
+}

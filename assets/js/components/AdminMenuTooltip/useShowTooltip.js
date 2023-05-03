@@ -20,7 +20,11 @@ export function useShowTooltip( tooltipStateKey ) {
 			);
 
 			if ( adminMenuToggle ) {
-				adminMenuToggle.click();
+				document
+					.getElementsByTagName( 'body' )[ 0 ]
+					.classList.add( 'showmenu' );
+
+				// adminMenuToggle.click();
 
 				// On iOS, at least, this is necessary, without it the settings menu item
 				// is not scrolled into view when the Tooltip is shown.

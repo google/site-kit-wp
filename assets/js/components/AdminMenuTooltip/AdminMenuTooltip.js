@@ -22,7 +22,11 @@ export function AdminMenuTooltip( { onDismiss, tooltipStateKey, ...props } ) {
 				document.querySelector( '#adminmenu' ).offsetHeight > 0;
 
 			if ( isAdminMenuOpen ) {
-				document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
+				document
+					.getElementsByTagName( 'body' )[ 0 ]
+					.classList.remove( 'showmenu' );
+
+				// document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
 			}
 		}
 
