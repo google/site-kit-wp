@@ -364,6 +364,7 @@ export default function Overview( props ) {
 									}
 									handleStatSelection={ handleStatsSelection }
 									gatheringData={ dataBlock.isGatheringData }
+									fitBadge
 									badge={ dataBlock.badge }
 								/>
 							</Cell>

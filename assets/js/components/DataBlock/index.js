@@ -53,6 +53,7 @@ const DataBlock = ( {
 	invertChangeColor = false,
 	gatheringData = false,
 	gatheringDataNoticeStyle = NOTICE_STYLE.DEFAULT,
+	fitBadge = false,
 	badge,
 } ) => {
 	const handleClick = useCallback( () => {
@@ -79,6 +80,8 @@ const DataBlock = ( {
 	const isButtonContext = 'button' === context;
 	const role = isButtonContext ? 'button' : '';
 
+	const shouldFitBadge = fitBadge || !! badge;
+
 	return (
 		<div
 			className={ classnames(
@@ -99,15 +102,27 @@ const DataBlock = ( {
 			aria-label={ handleStatSelection && title }
 			aria-pressed={ handleStatSelection && selected }
 		>
-			<div className="googlesitekit-data-block__title-datapoint-wrapper">
+			<div
+				className={ classnames(
+					'googlesitekit-data-block__title-datapoint-wrapper',
+					{
+						'googlesitekit-data-block__title-datapoint-wrapper--fit-badge':
+							shouldFitBadge,
+					}
+				) }
+			>
 				<h3
-					className="
-						googlesitekit-subheading-1
-						googlesitekit-data-block__title
-					"
+					className={ classnames(
+						'googlesitekit-subheading-1',
+						'googlesitekit-data-block__title',
+						{
+							'googlesitekit-data-block__title--fit-badge':
+								shouldFitBadge,
+						}
+					) }
 				>
+					{ badge || ( shouldFitBadge && <span></span> ) }
 					{ title }
-					{ badge }
 				</h3>
 
 				{ ! gatheringData && (
@@ -165,6 +180,7 @@ DataBlock.propTypes = {
 	invertChangeColor: PropTypes.bool,
 	gatheringData: PropTypes.bool,
 	gatheringDataNoticeStyle: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
+	fitBadge: PropTypes.bool,
 	badge: PropTypes.node,
 };
 

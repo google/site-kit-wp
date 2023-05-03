@@ -52,6 +52,26 @@
 		}
 	}
 
+	.googlesitekit-data-block__title-datapoint-wrapper--fit-badge {
+		display: flex;
+		flex: 1;
+		flex-flow: column;
+		justify-content: space-between;
+	}
+
+	.googlesitekit-data-block__title--fit-badge {
+		align-items: center;
+		display: grid;
+		grid-template-rows: 40px 1fr;
+
+		// grid-auto-rows: 1fr;
+		justify-content: center;
+
+		.googlesitekit-badge {
+			justify-self: center;
+		}
+	}
+
 	.googlesitekit-data-block__datapoint {
 		color: $c-surfaces-on-surface;
 		font-family: $f-secondary;
@@ -176,6 +196,9 @@
 	flex-direction: column;
 	height: 100%;
 	justify-content: flex-end;
+
+	// justify-content: flex-start;
+	// justify-content: space-between;
 	padding-bottom: $grid-gap-phone;
 	padding-top: $grid-gap-phone + 4px;
 	text-align: center;
