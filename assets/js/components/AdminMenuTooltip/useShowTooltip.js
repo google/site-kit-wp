@@ -24,10 +24,9 @@ export function useShowTooltip( tooltipStateKey ) {
 					.getElementsByTagName( 'body' )[ 0 ]
 					.classList.add( 'showmenu' );
 
-				// adminMenuToggle.click();
-
 				// On iOS, at least, this is necessary, without it the settings menu item
 				// is not scrolled into view when the Tooltip is shown.
+				// This may no longer be needed if we take the CSS approach, we'd need to check this on an iOS device.
 				await new Promise( ( resolve ) => {
 					setTimeout( resolve, 0 );
 				} );
