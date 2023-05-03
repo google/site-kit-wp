@@ -54,7 +54,9 @@
 }
 
 .googlesitekit-chart--LineChart div.google-visualization-tooltip {
-
+	// `!important` is required here because we're overridding inline styles
+	// on a Google Charts SVG element.
+	// This is the only way to have this style override the inline style.
 	height: fit-content !important;
 	width: fit-content !important;
 
