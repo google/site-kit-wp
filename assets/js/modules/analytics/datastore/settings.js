@@ -54,7 +54,6 @@ import {
 	DASHBOARD_VIEW_UA,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { isPermissionScopeError } from '../../../util/errors';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
@@ -80,12 +79,7 @@ async function submitGA4Changes( { select, dispatch } ) {
 		return {};
 	}
 
-	const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
-	if ( isPermissionScopeError( error ) ) {
-		return { error };
-	}
-
-	return {};
+	return await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 }
 
 export async function submitChanges( registry ) {

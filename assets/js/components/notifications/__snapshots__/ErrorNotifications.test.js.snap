@@ -52,7 +52,7 @@ exports[`ErrorNotifications does not render the GTE message if the GTE feature i
           </div>
         </div>
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1"
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1 mdc-layout-grid__cell--order-3-desktop mdc-layout-grid__cell--order-3-tablet mdc-layout-grid__cell--order-3-phone"
         >
           <div
             class="googlesitekit-publisher-win__icons"
@@ -118,7 +118,7 @@ exports[`ErrorNotifications does not render the GTE message if there are multipl
           </div>
         </div>
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1"
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1 mdc-layout-grid__cell--order-3-desktop mdc-layout-grid__cell--order-3-tablet mdc-layout-grid__cell--order-3-phone"
         >
           <div
             class="googlesitekit-publisher-win__icons"
@@ -184,7 +184,7 @@ exports[`ErrorNotifications renders UnsatisfiedScopesAlert when user is authenti
           </div>
         </div>
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1"
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1 mdc-layout-grid__cell--order-3-desktop mdc-layout-grid__cell--order-3-tablet mdc-layout-grid__cell--order-3-phone"
         >
           <div
             class="googlesitekit-publisher-win__icons"
@@ -259,7 +259,7 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
           </div>
         </div>
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1"
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1 mdc-layout-grid__cell--order-3-desktop mdc-layout-grid__cell--order-3-tablet mdc-layout-grid__cell--order-3-phone"
         >
           <div
             class="googlesitekit-publisher-win__icons"

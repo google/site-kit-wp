@@ -78,7 +78,10 @@ export default function ErrorNotice( {
 				reconnectURL={ error.data?.reconnectURL }
 			/>
 			{ shouldDisplayRetry && (
-				<Button onClick={ handleRetry }>
+				<Button
+					className="googlesitekit-error-notice__retry-button"
+					onClick={ handleRetry }
+				>
 					{ __( 'Retry', 'google-site-kit' ) }
 				</Button>
 			) }
