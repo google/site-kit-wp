@@ -98,7 +98,7 @@ PreviewBlock.propTypes = {
 	className: PropTypes.string,
 	width: PropTypes.string,
 	height: PropTypes.string,
-	shape: PropTypes.string,
+	shape: PropTypes.oneOf( [ 'square', 'circular' ] ),
 	padding: PropTypes.bool,
 	smallWidth: PropTypes.string,
 	smallHeight: PropTypes.string,

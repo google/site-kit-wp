@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { useEffect, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,6 +35,7 @@ import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import { ActivateAnalyticsCTA } from '../../../common';
 import CreateConversionCTA from '../CreateConversionCTA';
+import PreviewBlock from '../../../../../../components/PreviewBlock';
 import RecoverableModules from '../../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
@@ -44,6 +45,8 @@ const { useSelect } = Data;
 
 export default function OptionalCells( {
 	canViewSharedAnalytics4,
+	isLoading,
+	dataBlockCount,
 	error,
 	halfCellProps,
 	quarterCellProps,
@@ -62,6 +65,28 @@ export default function OptionalCells( {
 	);
 	const analyticsModuleActiveAndConnected =
 		ga4ModuleActive && ga4ModuleConnected;
+
+	useEffect( () => {
+		if ( ! isLoading ) {
+			global.dispatchEvent( new Event( 'resize' ) );
+		}
+	}, [ isLoading ] );
+
+	if ( isLoading ) {
+		if ( dataBlockCount < 4 ) {
+			// There are always at least two data blocks, so dataBlockCount can only be 2 or 3 at this point.
+			const cellProps =
+				dataBlockCount === 2 ? halfCellProps : quarterCellProps;
+
+			return (
+				<Cell { ...cellProps }>
+					<PreviewBlock width="100%" height="202px" shape="square" />
+				</Cell>
+			);
+		}
+
+		return null;
+	}
 
 	return (
 		<Fragment>
@@ -110,6 +135,8 @@ export default function OptionalCells( {
 
 OptionalCells.propTypes = {
 	canViewSharedAnalytics4: PropTypes.bool.isRequired,
+	isLoading: PropTypes.bool.isRequired,
+	dataBlockCount: PropTypes.number.isRequired,
 	error: PropTypes.object,
 	halfCellProps: PropTypes.object.isRequired,
 	quarterCellProps: PropTypes.object.isRequired,

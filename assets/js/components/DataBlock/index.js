@@ -32,9 +32,11 @@ import { useCallback } from '@wordpress/element';
  */
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
 import { numFmt } from '../../util';
+import PreviewBlock from '../PreviewBlock';
 import Sparkline from './Sparkline';
 import Change from './Change';
 import SourceLink from '../SourceLink';
+import { Fragment } from 'react';
 
 const DataBlock = ( {
 	stat = null,
@@ -51,6 +53,7 @@ const DataBlock = ( {
 	sparkline,
 	handleStatSelection = null,
 	invertChangeColor = false,
+	isLoading = false,
 	gatheringData = false,
 	gatheringDataNoticeStyle = NOTICE_STYLE.DEFAULT,
 	badge,
@@ -110,41 +113,52 @@ const DataBlock = ( {
 					{ badge }
 				</h3>
 
-				{ ! gatheringData && (
+				{ isLoading && <PreviewBlock width="40px" height="40px" /> }
+
+				{ ! isLoading && ! gatheringData && (
 					<div className="googlesitekit-data-block__datapoint">
 						{ datapointFormatted }
 					</div>
 				) }
 			</div>
 
-			{ ! gatheringData && sparkline && (
-				<Sparkline
-					sparkline={ sparkline }
-					invertChangeColor={ invertChangeColor }
-				/>
-			) }
+			{ isLoading && <PreviewBlock width="40px" height="40px" /> }
 
-			{ ! gatheringData && (
-				<div className="googlesitekit-data-block__change-source-wrapper">
-					<Change
-						change={ change }
-						changeDataUnit={ changeDataUnit }
-						period={ period }
-						invertChangeColor={ invertChangeColor }
-					/>
-					{ source && (
-						<SourceLink
-							className="googlesitekit-data-block__source"
-							name={ source.name }
-							href={ source.link }
-							external={ source?.external }
+			{ ! isLoading && (
+				<Fragment>
+					{ ! gatheringData && (
+						<Fragment>
+							{ sparkline && (
+								<Sparkline
+									sparkline={ sparkline }
+									invertChangeColor={ invertChangeColor }
+								/>
+							) }
+							<div className="googlesitekit-data-block__change-source-wrapper">
+								<Change
+									change={ change }
+									changeDataUnit={ changeDataUnit }
+									period={ period }
+									invertChangeColor={ invertChangeColor }
+								/>
+								{ source && (
+									<SourceLink
+										className="googlesitekit-data-block__source"
+										name={ source.name }
+										href={ source.link }
+										external={ source?.external }
+									/>
+								) }
+							</div>
+						</Fragment>
+					) }
+
+					{ gatheringData && (
+						<GatheringDataNotice
+							style={ gatheringDataNoticeStyle }
 						/>
 					) }
-				</div>
-			) }
-
-			{ gatheringData && (
-				<GatheringDataNotice style={ gatheringDataNoticeStyle } />
+				</Fragment>
 			) }
 		</div>
 	);
@@ -163,6 +177,7 @@ DataBlock.propTypes = {
 	selected: PropTypes.bool,
 	handleStatSelection: PropTypes.func,
 	invertChangeColor: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	gatheringData: PropTypes.bool,
 	gatheringDataNoticeStyle: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
 	badge: PropTypes.node,

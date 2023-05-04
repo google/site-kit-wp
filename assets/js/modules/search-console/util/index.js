@@ -79,6 +79,10 @@ function reduceSearchConsoleData( rows ) {
 }
 
 export const extractSearchConsoleDashboardData = ( rows, dateRangeLength ) => {
+	if ( ! rows ) {
+		return {};
+	}
+
 	const { compareRange, currentRange } = partitionReport( rows, {
 		dateRangeLength,
 	} );

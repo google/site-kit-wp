@@ -73,6 +73,7 @@ export default function Overview( props ) {
 		selectedStats,
 		handleStatsSelection,
 		dateRangeLength,
+		isLoading = false,
 		error,
 		WidgetReportError,
 		showRecoverableAnalytics,
@@ -362,6 +363,7 @@ export default function Overview( props ) {
 									selected={
 										selectedStats === dataBlock.stat
 									}
+									isLoading={ isLoading }
 									handleStatSelection={ handleStatsSelection }
 									gatheringData={ dataBlock.isGatheringData }
 									badge={ dataBlock.badge }
@@ -373,6 +375,8 @@ export default function Overview( props ) {
 
 				<OptionalCells
 					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
+					isLoading={ isLoading }
+					dataBlockCount={ dataBlocks.length }
 					error={ error }
 					halfCellProps={ halfCellProps }
 					quarterCellProps={ quarterCellProps }
@@ -393,6 +397,7 @@ Overview.propTypes = {
 	searchConsoleData: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
+	isLoading: PropTypes.bool,
 	error: PropTypes.object,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
