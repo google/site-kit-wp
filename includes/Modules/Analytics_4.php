@@ -138,7 +138,7 @@ final class Analytics_4 extends Module
 							'https://www.googleapis.com/auth/tagmanager.readonly',
 						)
 					) ) {
-								$needs_tagmanager_scope = true;
+						$needs_tagmanager_scope = true;
 					} else {
 						// Ensure the Tag Manager scope is not added as a required scope in the case where the user has
 						// granted the Analytics scope but not the Tag Manager scope, in order to allow the GTE-specific

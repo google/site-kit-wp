@@ -541,8 +541,8 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
-		* @dataProvider data_scopes_gteSupport
-		*/
+	 * @dataProvider data_scopes_gteSupport
+	 */
 	public function test_auth_scopes__gteSupport( array $granted_scopes, array $expected_scopes ) {
 		$this->enable_feature( 'gteSupport' );
 
