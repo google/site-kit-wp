@@ -28,16 +28,10 @@ import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 export default function UnsatisfiedScopesAlertGTE() {
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo(
-			new RegExp( '/o/oauth2|action=googlesitekit_connect', 'i' )
-		)
-	);
 	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ TAGMANAGER_READ_SCOPE ],
@@ -51,7 +45,7 @@ export default function UnsatisfiedScopesAlertGTE() {
 		} )
 	);
 
-	if ( isNavigating || connectURL === undefined ) {
+	if ( connectURL === undefined ) {
 		return null;
 	}
 
