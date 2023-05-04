@@ -25,14 +25,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
+import GA4SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
 	DASHBOARD_VIEW_GA4,
 	MODULES_ANALYTICS,
 } from '../../modules/analytics/datastore/constants';
-import GA4SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
-
+import BannerNotification from './BannerNotification';
 const { useDispatch, useSelect } = Data;
 
 export default function SwitchGA4DashboardViewNotification() {
@@ -41,14 +41,21 @@ export default function SwitchGA4DashboardViewNotification() {
 	);
 
 	const ga4DocumentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'using-the-site-kit-dashboard-with-ga4'
+		)
 	);
 
+	const { setValue } = useDispatch( CORE_UI );
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
+	const handleCTAClick = () => {
+		setValue( 'forceInView', true );
+		setValue( 'showGA4ReportingTour', true );
 
-	const handleCTAClick = async () => {
-		await setDashboardView( DASHBOARD_VIEW_GA4 );
-		await saveSettings();
+		setDashboardView( DASHBOARD_VIEW_GA4 );
+		saveSettings();
+
+		return { dismissOnCTAClick: false };
 	};
 
 	if ( ! shouldPromptGA4DashboardView ) {
@@ -70,7 +77,7 @@ export default function SwitchGA4DashboardViewNotification() {
 			ctaLabel={ __( 'Update dashboard', 'google-site-kit' ) }
 			onCTAClick={ handleCTAClick }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
-			WinImageSVG={ GA4SuccessGreenSVG }
+			WinImageSVG={ () => <GA4SuccessGreenSVG /> }
 			learnMoreLabel={ __( 'Learn what’s new', 'google-site-kit' ) }
 			learnMoreURL={ ga4DocumentationURL }
 		/>

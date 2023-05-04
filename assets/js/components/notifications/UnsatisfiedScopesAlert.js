@@ -33,7 +33,6 @@ import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
@@ -69,11 +68,6 @@ function mapScopesToModuleNames( scopes, modules ) {
 }
 
 export default function UnsatisfiedScopesAlert() {
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo(
-			new RegExp( '/o/oauth2|action=googlesitekit_connect', 'i' )
-		)
-	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getUnsatisfiedScopes()
 	);
@@ -87,11 +81,7 @@ export default function UnsatisfiedScopesAlert() {
 		select( CORE_MODULES ).getModules()
 	);
 
-	if (
-		isNavigating ||
-		! unsatisfiedScopes?.length ||
-		connectURL === undefined
-	) {
+	if ( ! unsatisfiedScopes?.length || connectURL === undefined ) {
 		return null;
 	}
 

@@ -130,6 +130,15 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 			return true;
 		}
 
+		const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+		if ( isAuthenticated === undefined ) {
+			return undefined;
+		}
+		if ( ! isAuthenticated ) {
+			return false;
+		}
+
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 		if ( propertyID === undefined ) {

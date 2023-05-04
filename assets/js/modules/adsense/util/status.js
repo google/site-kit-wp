@@ -46,6 +46,13 @@ export const SITE_STATUS_READY_NO_AUTO_ADS = 'ready-no-auto-ads';
 // V1 and V2 setup flow.
 export const SITE_STATUS_NONE = 'none';
 
+export const legacyAccountStatuses = [
+	ACCOUNT_STATUS_DISAPPROVED,
+	ACCOUNT_STATUS_GRAYLISTED,
+	ACCOUNT_STATUS_PENDING,
+	ACCOUNT_STATUS_APPROVED,
+];
+
 /**
  * Determines the AdSense account status for given input data.
  *

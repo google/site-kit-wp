@@ -150,12 +150,18 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-analytics-setup__form"
 			onSubmit={ submitForm }
 		>
+			{ ! ga4ReportingEnabled && (
+				<ExistingGTMPropertyNotice
+					gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+				/>
+			) }
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
 			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
