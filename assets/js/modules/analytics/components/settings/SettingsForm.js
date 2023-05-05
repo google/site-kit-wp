@@ -120,7 +120,7 @@ export default function SettingsForm( {
 			{ ga4ReportingEnabled && isUAConnected && isUAEnabled && (
 				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Dashboard view', 'google-site-kit' ) }
+						{ __( 'Dashboard View', 'google-site-kit' ) }
 					</h4>
 					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
 						{ isGA4Connected && <GA4DashboardViewToggle /> }
