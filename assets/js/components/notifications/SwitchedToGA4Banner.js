@@ -87,7 +87,7 @@ export default function SwitchedToGA4Banner() {
 			ctaLink="#"
 			onCTAClick={ handleCTAClick }
 			onDismiss={ handleDismissClick }
-			dismiss={ __( 'No, thanks', 'google-site-kit' ) }
+			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			WinImageSVG={ () => <GA4SuccessGreenSVG /> }
 		/>
 	);
