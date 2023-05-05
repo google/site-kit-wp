@@ -15,21 +15,80 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import GA4SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { UA_CUTOFF_DATE } from '../../modules/analytics/constants';
+import { stringToDate } from '../../util';
+import ga4Reporting from '../../feature-tours/ga4-reporting';
 import BannerNotification from './BannerNotification';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SwitchedToGA4Banner() {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 
-	if ( ! isGA4DashboardView ) {
+	const referenceDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
+	);
+
+	const isTourDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isTourDismissed( ga4Reporting.slug )
+	);
+
+	const showGA4ReportingTour = useSelect( ( select ) => {
+		return select( CORE_UI ).getValue( 'showGA4ReportingTour' );
+	} );
+
+	const { setValue } = useDispatch( CORE_UI );
+	const handleCTAClick = () => {
+		setValue( 'showGA4ReportingTour', true );
+	};
+
+	const { dismissTour } = useDispatch( CORE_USER );
+	const handleDismissClick = () => {
+		dismissTour( ga4Reporting.slug );
+	};
+
+	if ( ! isGA4DashboardView || isTourDismissed || showGA4ReportingTour ) {
 		return null;
 	}
 
-	return <BannerNotification />;
+	const description =
+		stringToDate( referenceDate ) >= stringToDate( UA_CUTOFF_DATE )
+			? __(
+					'Universal Analytics, the old version of Google Analytics, stopped collecting data on July 1, 2023.',
+					'google-site-kit'
+			  )
+			: __(
+					'Universal Analytics, the old version of Google Analytics, will stop collecting data on July 1, 2023.',
+					'google-site-kit'
+			  );
+
+	return (
+		<BannerNotification
+			id="switched-ga4-dashboard-view"
+			title={ __(
+				'Your dashboard now displays data from Google Analytics 4, the new version of Analytics',
+				'google-site-kit'
+			) }
+			description={ description }
+			ctaLabel={ __( 'Learn what’s new', 'google-site-kit' ) }
+			ctaLink="#"
+			onCTAClick={ handleCTAClick }
+			onDismiss={ handleDismissClick }
+			dismiss={ __( 'No, thanks', 'google-site-kit' ) }
+			WinImageSVG={ () => <GA4SuccessGreenSVG /> }
+		/>
+	);
 }
