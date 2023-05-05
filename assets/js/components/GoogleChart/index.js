@@ -313,14 +313,17 @@ export default function GoogleChart( props ) {
 
 		const legendElement = document.querySelector(
 			`#googlesitekit-chart-${ instanceID } svg:first-of-type > g:first-of-type > g > g > text`
-		)?.parentElement?.parentElement?.parentElement;
-		const hasLegend =
-			document.querySelectorAll(
-				`#googlesitekit-chart-${ instanceID } svg:first-of-type > g`
-			).length >= 3;
+		)?.parentElement.parentElement.parentElement;
 
-		if ( hasLegend && legendElement ) {
-			legendElement.style.transform = 'translateY(-10px)';
+		if ( legendElement ) {
+			const hasLegend =
+				document.querySelectorAll(
+					`#googlesitekit-chart-${ instanceID } svg:first-of-type > g`
+				).length >= 3;
+
+			if ( hasLegend ) {
+				legendElement.style.transform = 'translateY(-10px)';
+			}
 		}
 	};
 
