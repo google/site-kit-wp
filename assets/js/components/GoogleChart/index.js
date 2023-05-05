@@ -258,6 +258,8 @@ export default function GoogleChart( props ) {
 			return;
 		}
 
+		let hasMovedLegend = false;
+
 		// Add the dotted line and tooltip for each date marker.
 		dateMarkersInRange.forEach( ( dateMarker, index ) => {
 			const dateFromMarker = new Date( dateMarker.date );
@@ -315,7 +317,11 @@ export default function GoogleChart( props ) {
 			`#googlesitekit-chart-${ instanceID } svg:first-of-type > g:first-of-type > g > g > text`
 		)?.parentElement.parentElement.parentElement;
 
-		if ( legendElement ) {
+		// If there is a legend, move it up to make room for the date marker icon.
+		if ( legendElement && ! hasMovedLegend ) {
+			// A legend is present if there are more than three `g` elements; charts
+			// without legends won't have that many `g` elements so we don't need to
+			// modify anything.
 			const hasLegend =
 				document.querySelectorAll(
 					`#googlesitekit-chart-${ instanceID } svg:first-of-type > g`
@@ -323,6 +329,7 @@ export default function GoogleChart( props ) {
 
 			if ( hasLegend ) {
 				legendElement.style.transform = 'translateY(-10px)';
+				hasMovedLegend = true;
 			}
 		}
 	};
