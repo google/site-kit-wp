@@ -351,6 +351,8 @@ final class Screens {
 	 * @return array List of Screen instances.
 	 */
 	private function get_screens() {
+		$show_splash_in_menu = current_user_can( Permissions::VIEW_SPLASH ) && ! current_user_can( Permissions::VIEW_DASHBOARD );
+
 		$screens = array(
 			new Screen(
 				self::PREFIX . 'dashboard',
@@ -398,90 +400,77 @@ final class Screens {
 					},
 				)
 			),
-		);
-
-		$show_splash_in_menu = current_user_can( Permissions::VIEW_SPLASH ) && ! current_user_can( Permissions::VIEW_DASHBOARD );
-
-		$screens[] = new Screen(
-			self::PREFIX . 'splash',
-			array(
-				'title'               => __( 'Dashboard', 'google-site-kit' ),
-				'capability'          => Permissions::VIEW_SPLASH,
-				'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : null,
-				// This callback will redirect to the dashboard on successful authentication.
-				'initialize_callback' => function( Context $context ) {
-					if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-						// Get the dismissed items for this user.
-						$user_options = new User_Options( $context );
-						$dismissed_items = new Dismissed_Items( $user_options );
-					}
-
-					$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
-					$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
-
-					// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
-					if ( ! $reset_session && 'revoked' === $splash_context && $this->authentication->is_authenticated() ) {
-						$this->authentication->disconnect();
-
-						wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
-						exit;
-					}
-
-					// Don't consider redirect if the current user cannot access the dashboard (yet).
-					if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
-						return;
-					}
-
-					// Redirect to dashboard if user is authenticated or if
-					// they have already accessed the shared dashboard.
-					if (
-						$this->authentication->is_authenticated() ||
-						(
-							Feature_Flags::enabled( 'dashboardSharing' ) &&
-							! current_user_can( Permissions::AUTHENTICATE ) &&
-							$dismissed_items->is_dismissed( 'shared_dashboard_splash' ) &&
-							current_user_can( Permissions::VIEW_SHARED_DASHBOARD )
-						)
-					) {
-						wp_safe_redirect(
-							$context->admin_url(
-								'dashboard',
-								array(
-									// Pass through the notification parameter, or removes it if none.
-									'notification' => $context->input()->filter( INPUT_GET, 'notification' ),
-								)
+			new Screen(
+				self::PREFIX . 'splash',
+				array(
+					'title'               => __( 'Dashboard', 'google-site-kit' ),
+					'capability'          => Permissions::VIEW_SPLASH,
+					'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : null,
+					// This callback will redirect to the dashboard on successful authentication.
+					'initialize_callback' => function( Context $context ) {
+						if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+							// Get the dismissed items for this user.
+							$user_options = new User_Options( $context );
+							$dismissed_items = new Dismissed_Items( $user_options );
+						}
+	
+						$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
+						$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
+	
+						// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
+						if ( ! $reset_session && 'revoked' === $splash_context && $this->authentication->is_authenticated() ) {
+							$this->authentication->disconnect();
+	
+							wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
+							exit;
+						}
+	
+						// Don't consider redirect if the current user cannot access the dashboard (yet).
+						if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+							return;
+						}
+	
+						// Redirect to dashboard if user is authenticated or if
+						// they have already accessed the shared dashboard.
+						if (
+							$this->authentication->is_authenticated() ||
+							(
+								Feature_Flags::enabled( 'dashboardSharing' ) &&
+								! current_user_can( Permissions::AUTHENTICATE ) &&
+								$dismissed_items->is_dismissed( 'shared_dashboard_splash' ) &&
+								current_user_can( Permissions::VIEW_SHARED_DASHBOARD )
 							)
-						);
-						exit;
-					}
-				},
-				'enqueue_callback'    => function( Assets $assets ) {
-					$assets->enqueue_asset( 'googlesitekit-splash' );
-				},
-			)
-		);
-
-		$screens[] = new Screen(
-			self::PREFIX . 'settings',
-			array(
-				'title'            => __( 'Settings', 'google-site-kit' ),
-				'capability'       => Permissions::MANAGE_OPTIONS,
-				'enqueue_callback' => function( Assets $assets ) {
-					$assets->enqueue_asset( 'googlesitekit-settings' );
-				},
-			)
+						) {
+							wp_safe_redirect(
+								$context->admin_url(
+									'dashboard',
+									array(
+										// Pass through the notification parameter, or removes it if none.
+										'notification' => $context->input()->filter( INPUT_GET, 'notification' ),
+									)
+								)
+							);
+							exit;
+						}
+					},
+				)
+			),
+			new Screen(
+				self::PREFIX . 'settings',
+				array(
+					'title'      => __( 'Settings', 'google-site-kit' ),
+					'capability' => Permissions::MANAGE_OPTIONS,
+				)
+			),
 		);
 
 		if ( Feature_Flags::enabled( 'userInput' ) ) {
 			$screens[] = new Screen(
 				self::PREFIX . 'user-input',
 				array(
-					'title'            => __( 'User Input', 'google-site-kit' ),
-					'capability'       => Permissions::MANAGE_OPTIONS,
-					'parent_slug'      => null,
-					'enqueue_callback' => function( Assets $assets ) {
-						$assets->enqueue_asset( 'googlesitekit-user-input' );
-					},
+					'title'       => __( 'User Input', 'google-site-kit' ),
+					'capability'  => Permissions::MANAGE_OPTIONS,
+					'parent_slug' => null,
 				)
 			);
 		}
@@ -490,12 +479,9 @@ final class Screens {
 			$screens[] = new Screen(
 				self::PREFIX . 'ad-blocking-recovery',
 				array(
-					'title'            => __( 'Ad Blocking Recovery', 'google-site-kit' ),
-					'capability'       => Permissions::MANAGE_OPTIONS,
-					'parent_slug'      => null,
-					'enqueue_callback' => function( Assets $assets ) {
-						$assets->enqueue_asset( 'googlesitekit-ad-blocking-recovery' );
-					},
+					'title'       => __( 'Ad Blocking Recovery', 'google-site-kit' ),
+					'capability'  => Permissions::MANAGE_OPTIONS,
+					'parent_slug' => null,
 				)
 			);
 		}

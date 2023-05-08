@@ -109,7 +109,7 @@ final class Screen {
 	public function add( Context $context ) {
 		static $menu_slug = null;
 
-		if ( ! $this->args['render_callback'] || ! $this->args['title'] ) {
+		if ( ! $this->args['title'] ) {
 			return '';
 		}
 
@@ -229,10 +229,14 @@ final class Screen {
 	public function enqueue_assets( Assets $assets ) {
 		// Enqueue base admin screen stylesheet.
 		$assets->enqueue_asset( 'googlesitekit-admin-css' );
+		
+		$cb = isset( $this->args['enqueue_callback'] ) && is_callable( $this->args['enqueue_callback'] )
+			? $this->args['enqueue_callback']
+			: function( Assets $assets ) {
+				$assets->enqueue_asset( $this->slug );
+			}; 
 
-		if ( $this->args['enqueue_callback'] ) {
-			call_user_func( $this->args['enqueue_callback'], $assets );
-		}
+		call_user_func( $cb, $assets );
 	}
 
 	/**
