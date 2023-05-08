@@ -111,7 +111,7 @@ export default function EnableUniversalAnalytics( {
 	const [ isLookingForMatch, setIsLookingForMatch ] = useState( false );
 
 	useEffect( () => {
-		const setMatchedProperty = async () => {
+		( async () => {
 			if ( ! propertyID ) {
 				setIsLookingForMatch( true );
 
@@ -122,9 +122,7 @@ export default function EnableUniversalAnalytics( {
 
 				setIsLookingForMatch( false );
 			}
-		};
-
-		setMatchedProperty();
+		} )();
 	}, [
 		isUAEnabled,
 		propertyID,
