@@ -413,23 +413,23 @@ final class Screens {
 							$user_options = new User_Options( $context );
 							$dismissed_items = new Dismissed_Items( $user_options );
 						}
-	
+
 						$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
 						$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
-	
+
 						// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
 						if ( ! $reset_session && 'revoked' === $splash_context && $this->authentication->is_authenticated() ) {
 							$this->authentication->disconnect();
-	
+
 							wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
 							exit;
 						}
-	
+
 						// Don't consider redirect if the current user cannot access the dashboard (yet).
 						if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 							return;
 						}
-	
+
 						// Redirect to dashboard if user is authenticated or if
 						// they have already accessed the shared dashboard.
 						if (

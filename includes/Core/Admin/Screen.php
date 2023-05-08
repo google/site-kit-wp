@@ -229,12 +229,12 @@ final class Screen {
 	public function enqueue_assets( Assets $assets ) {
 		// Enqueue base admin screen stylesheet.
 		$assets->enqueue_asset( 'googlesitekit-admin-css' );
-		
+
 		$cb = isset( $this->args['enqueue_callback'] ) && is_callable( $this->args['enqueue_callback'] )
 			? $this->args['enqueue_callback']
 			: function( Assets $assets ) {
 				$assets->enqueue_asset( $this->slug );
-			}; 
+			};
 
 		call_user_func( $cb, $assets );
 	}
