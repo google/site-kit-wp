@@ -244,6 +244,10 @@ export default function AccountCreate() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
+			/>
 
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }

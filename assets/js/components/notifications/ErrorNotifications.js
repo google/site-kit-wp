@@ -28,13 +28,19 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import AuthError from './AuthError';
 import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
+import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
 import InternalServerError from './InternalServerError';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import BannerNotification from './BannerNotification';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function ErrorNotifications() {
+	const gteSupportEnabled = useFeature( 'gteSupport' );
+
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -54,6 +60,15 @@ export default function ErrorNotifications() {
 			code: setupErrorCode,
 		} )
 	);
+	const ga4ModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const hasTagManagerReadScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE )
+	);
+
+	const showUnsatisfiedScopesAlertGTE =
+		gteSupportEnabled && ga4ModuleConnected && ! hasTagManagerReadScope;
 
 	return (
 		<Fragment>
@@ -79,7 +94,14 @@ export default function ErrorNotifications() {
 				/>
 			) }
 			{ ! setupErrorMessage && isAuthenticated && (
-				<UnsatisfiedScopesAlert />
+				<Fragment>
+					{ ! showUnsatisfiedScopesAlertGTE && (
+						<UnsatisfiedScopesAlert />
+					) }
+					{ showUnsatisfiedScopesAlertGTE && (
+						<UnsatisfiedScopesAlertGTE />
+					) }
+				</Fragment>
 			) }
 		</Fragment>
 	);
