@@ -30,7 +30,6 @@ import {
 	Fragment,
 	useCallback,
 	useEffect,
-	useState,
 	createInterpolateElement,
 } from '@wordpress/element';
 
@@ -108,19 +107,21 @@ export default function EnableUniversalAnalytics( {
 		revertPropertyAndProfileIDs,
 	] );
 
-	const [ isLookingForMatch, setIsLookingForMatch ] = useState( false );
+	const isLookingForMatch = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution(
+				'getProperties',
+				[ accountID ]
+			)
+	);
 
 	useEffect( () => {
 		( async () => {
 			if ( ! propertyID ) {
-				setIsLookingForMatch( true );
-
 				const matchedProperty = await findMatchedProperty( accountID );
 				if ( matchedProperty?.id ) {
 					selectProperty( matchedProperty.id );
 				}
-
-				setIsLookingForMatch( false );
 			}
 		} )();
 	}, [
