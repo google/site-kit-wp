@@ -408,7 +408,6 @@ final class Screens {
 				'title'               => __( 'Dashboard', 'google-site-kit' ),
 				'capability'          => Permissions::VIEW_SPLASH,
 				'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : null,
-
 				// This callback will redirect to the dashboard on successful authentication.
 				'initialize_callback' => function( Context $context ) {
 					if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
@@ -459,13 +458,6 @@ final class Screens {
 				'enqueue_callback'    => function( Assets $assets ) {
 					$assets->enqueue_asset( 'googlesitekit-splash' );
 				},
-				'render_callback'     => function( Context $context ) {
-					?>
-
-					<div id="js-googlesitekit-splash" class="googlesitekit-page"></div>
-
-					<?php
-				},
 			)
 		);
 
@@ -476,13 +468,6 @@ final class Screens {
 				'capability'       => Permissions::MANAGE_OPTIONS,
 				'enqueue_callback' => function( Assets $assets ) {
 					$assets->enqueue_asset( 'googlesitekit-settings' );
-				},
-				'render_callback'  => function( Context $context ) {
-					?>
-
-					<div id="googlesitekit-settings-wrapper" class="googlesitekit-page"></div>
-
-					<?php
 				},
 			)
 		);
@@ -497,9 +482,6 @@ final class Screens {
 					'enqueue_callback' => function( Assets $assets ) {
 						$assets->enqueue_asset( 'googlesitekit-user-input' );
 					},
-					'render_callback'  => function( Context $context ) {
-						echo '<div id="js-googlesitekit-user-input" class="googlesitekit-page"></div>';
-					},
 				)
 			);
 		}
@@ -513,9 +495,6 @@ final class Screens {
 					'parent_slug'      => null,
 					'enqueue_callback' => function( Assets $assets ) {
 						$assets->enqueue_asset( 'googlesitekit-ad-blocking-recovery' );
-					},
-					'render_callback'  => function( Context $context ) {
-						echo '<div id="js-googlesitekit-ad-blocking-recovery" class="googlesitekit-page"></div>';
 					},
 				)
 			);

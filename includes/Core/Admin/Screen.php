@@ -243,18 +243,15 @@ final class Screen {
 	 * @param Context $context Plugin context.
 	 */
 	private function render( Context $context ) {
-		if ( ! $this->args['render_callback'] ) {
-			return;
-		}
+		$cb = isset( $this->args['render_callback'] ) && is_callable( $this->args['render_callback'] )
+			? $this->args['render_callback']
+			: function() {
+				echo '<div id="js-', esc_attr( $this->slug ), '" class="googlesitekit-page"></div>';
+			};
 
-		?>
-		<div class="googlesitekit-plugin">
-			<?php
-				$this->render_noscript_html();
-
-				call_user_func( $this->args['render_callback'], $context );
-			?>
-		</div>
-		<?php
+		echo '<div class="googlesitekit-plugin">';
+			$this->render_noscript_html();
+			call_user_func( $cb, $context );
+		echo '</div>';
 	}
 }
