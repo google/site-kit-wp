@@ -20,6 +20,11 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import {
 	MODULES_ANALYTICS,
 	FORM_SETUP,
@@ -29,8 +34,6 @@ import {
 	DASHBOARD_VIEW_UA,
 	DASHBOARD_VIEW_GA4,
 } from './constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
@@ -51,9 +54,8 @@ import {
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { enabledFeatures, isFeatureEnabled } from '../../../features';
+import ga4Reporting from '../../../feature-tours/ga4-reporting';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -128,6 +130,12 @@ describe( 'modules/analytics settings', () => {
 		} );
 
 		describe( 'submitChanges', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+			} );
+
 			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
