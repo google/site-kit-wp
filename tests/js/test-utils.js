@@ -56,8 +56,12 @@ export function setEnabledFeatures( features ) {
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
+	// Set up enabled features before anything else.
+	// This is necessary for feature-conditional behavior in the datastore
+	// which depends on the enabledFeatures module rather than Context.
+	setEnabledFeatures( options.features || [] );
+
 	const {
-		features = [],
 		setupRegistry = ( r ) => r,
 		registry = createTestRegistry(),
 		history = createMemoryHistory(),
@@ -72,7 +76,6 @@ const customRender = ( ui, options = {} ) => {
 		'options.setupRegistry must be a function.'
 	);
 	setupRegistry( registry );
-	const enabledFeatures = new Set( features );
 	let setInView;
 
 	if ( route ) {
@@ -153,23 +156,22 @@ const customRender = ( ui, options = {} ) => {
  * @param {boolean}  [options.inView]      If the component should consider itself in-view (see `useInView` hook).
  * @return {Object}  Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */
-const customRenderHook = (
-	callback,
-	{
-		features = [],
+const customRenderHook = ( callback, options = {} ) => {
+	setEnabledFeatures( options.features || [] );
+
+	const {
 		viewContext = null,
 		registry = createTestRegistry(),
 		history = createMemoryHistory(),
 		route = undefined,
 		inView = true,
 		...renderHookOptions
-	} = {}
-) => {
+	} = options;
+
 	if ( route ) {
 		history.push( route );
 	}
 
-	const enabledFeatures = new Set( features );
 	let setInView;
 
 	const Wrapper = ( { children } ) => {
