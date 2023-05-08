@@ -20,6 +20,22 @@ import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import InViewProvider from '../../assets/js/components/InViewProvider';
 import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 import { createTestRegistry, createWaitForRegistry } from './utils';
+import { enabledFeatures } from '../../assets/js/features';
+
+/**
+ * Sets the complete list of current enabled features.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Iterable} features List of enabled features.
+ */
+export function setEnabledFeatures( features ) {
+	enabledFeatures.clear();
+
+	for ( const feature of features ) {
+		enabledFeatures.add( feature );
+	}
+}
 
 /**
  * Renders the given UI into a container to make assertions.
