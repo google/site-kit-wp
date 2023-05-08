@@ -498,17 +498,30 @@ final class Screens {
 						$assets->enqueue_asset( 'googlesitekit-user-input' );
 					},
 					'render_callback'  => function( Context $context ) {
-						?>
-
-						<div id="js-googlesitekit-user-input" class="googlesitekit-page"></div>
-
-						<?php
+						echo '<div id="js-googlesitekit-user-input" class="googlesitekit-page"></div>';
 					},
+				)
+			);
+		}
 
+		if ( Feature_Flags::enabled( 'adBlockerDetection' ) ) {
+			$screens[] = new Screen(
+				self::PREFIX . 'ad-blocking-recovery',
+				array(
+					'title'            => __( 'Ad Blocking Recovery', 'google-site-kit' ),
+					'capability'       => Permissions::MANAGE_OPTIONS,
+					'parent_slug'      => null,
+					'enqueue_callback' => function( Assets $assets ) {
+						$assets->enqueue_asset( 'googlesitekit-ad-blocking-recovery' );
+					},
+					'render_callback'  => function( Context $context ) {
+						echo '<div id="js-googlesitekit-ad-blocking-recovery" class="googlesitekit-page"></div>';
+					},
 				)
 			);
 		}
 
 		return $screens;
 	}
+
 }
