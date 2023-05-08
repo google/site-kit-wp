@@ -19,9 +19,18 @@
  */
 import { Fragment } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
+import Header from '../../../../components/Header';
+import HelpMenu from '../../../../components/help/HelpMenu';
+
 export default function AdBlockingRecoveryApp() {
 	return (
 		<Fragment>
+			<Header>
+				<HelpMenu />
+			</Header>
 			<div className="googlesitekit-ad-blocking-recovery">
 				Ad Blocking Recovery
 			</div>

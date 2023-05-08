@@ -23,7 +23,9 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from './googlesitekit/constants';
 import { AdBlockingRecoveryApp } from './modules/adsense/components/settings';
+import Root from './components/Root';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -32,6 +34,11 @@ domReady( () => {
 	);
 
 	if ( renderTarget ) {
-		render( <AdBlockingRecoveryApp />, renderTarget );
+		render(
+			<Root viewContext={ VIEW_CONTEXT_AD_BLOCKING_RECOVERY }>
+				<AdBlockingRecoveryApp />
+			</Root>,
+			renderTarget
+		);
 	}
 } );
