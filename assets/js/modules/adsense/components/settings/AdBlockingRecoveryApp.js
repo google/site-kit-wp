@@ -1,7 +1,5 @@
 /**
- * AdSense Settings components.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +14,17 @@
  * limitations under the License.
  */
 
-export { default as AdBlockingRecoveryApp } from './AdBlockingRecoveryApp';
-export { default as SettingsEdit } from './SettingsEdit';
-export { default as SettingsForm } from './SettingsForm';
-export { default as SettingsSetupIncomplete } from './SettingsSetupIncomplete';
-export { default as SettingsView } from './SettingsView';
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+export default function AdBlockingRecoveryApp() {
+	return (
+		<Fragment>
+			<div className="googlesitekit-ad-blocking-recovery">
+				Ad Blocking Recovery
+			</div>
+		</Fragment>
+	);
+}
