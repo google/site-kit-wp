@@ -55,7 +55,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
 	const properties = useSelect( ( select ) => {
-		if ( ! accountID || ! hasModuleAccess ) {
+		if ( ! accountID || hasModuleAccess === false ) {
 			return [];
 		}
 
