@@ -513,6 +513,107 @@ describe( 'modules/analytics settings', () => {
 				);
 			} );
 
+			describe( 'dismiss ga4Reporting feature tour', () => {
+				const fetchDismissTourRegExp = new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismiss-tour'
+				);
+
+				it( 'should not dismiss the ga4Reporting feature tour if it is wrong dashboard', async () => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetDismissedTours( [] );
+					registry
+						.dispatch( MODULES_ANALYTICS )
+						.setSettings( validSettings );
+
+					fetchMock.postOnce( gaSettingsEndpoint, {
+						body: validSettings,
+					} );
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.isTourDismissed( ga4Reporting.slug )
+					).toBe( false );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS )
+						.submitChanges();
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.isTourDismissed( ga4Reporting.slug )
+					).toBe( false );
+				} );
+
+				it( 'should not dismiss the ga4Reporting feature tour if it is already dismissed', async () => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+					registry
+						.dispatch( MODULES_ANALYTICS )
+						.setSettings( validSettings );
+
+					fetchMock.postOnce( gaSettingsEndpoint, {
+						body: validSettings,
+					} );
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.isTourDismissed( ga4Reporting.slug )
+					).toBe( true );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS )
+						.submitChanges();
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.isTourDismissed( ga4Reporting.slug )
+					).toBe( true );
+
+					expect( fetchMock ).not.toHaveFetched(
+						fetchDismissTourRegExp
+					);
+				} );
+
+				it( 'should dismiss the ga4Reporting feature tour if it has not been dismissed yet', async () => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetDismissedTours( [] );
+					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+						...validSettings,
+						dashboardView: DASHBOARD_VIEW_GA4,
+					} );
+
+					fetchMock.postOnce( gaSettingsEndpoint, {
+						body: validSettings,
+					} );
+					fetchMock.postOnce( fetchDismissTourRegExp, {
+						body: [ ga4Reporting.slug ],
+					} );
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.isTourDismissed( ga4Reporting.slug )
+					).toBe( false );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS )
+						.submitChanges();
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.isTourDismissed( ga4Reporting.slug )
+					).toBe( true );
+				} );
+			} );
+
 			describe( 'analytics-4', () => {
 				beforeEach( () => {
 					registry
