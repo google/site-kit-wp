@@ -107,16 +107,12 @@ const DataBlock = ( {
 			aria-label={ handleStatSelection && title }
 			aria-pressed={ handleStatSelection && selected }
 		>
-			<div
-				className={ classnames(
-					'googlesitekit-data-block__title-datapoint-wrapper'
-				) }
-			>
+			<div className="googlesitekit-data-block__title-datapoint-wrapper">
 				<h3
-					className={ classnames(
-						'googlesitekit-subheading-1',
-						'googlesitekit-data-block__title'
-					) }
+					className="
+						googlesitekit-subheading-1
+						googlesitekit-data-block__title
+					"
 				>
 					{ theBadge }
 					<span className="googlesitekit-data-block__title-inner">
