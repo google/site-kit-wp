@@ -70,6 +70,7 @@ export default function SwitchedToGA4Banner() {
 	if (
 		! isUAConnected ||
 		! isGA4DashboardView ||
+		isTourDismissed === undefined ||
 		isTourDismissed ||
 		showGA4ReportingTour
 	) {
