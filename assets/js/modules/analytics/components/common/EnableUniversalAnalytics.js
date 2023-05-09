@@ -116,14 +116,14 @@ export default function EnableUniversalAnalytics( {
 	);
 
 	useEffect( () => {
-		( async () => {
-			if ( ! propertyID ) {
+		if ( isUAEnabled && ! propertyID ) {
+			( async () => {
 				const matchedProperty = await findMatchedProperty( accountID );
 				if ( matchedProperty?.id ) {
 					selectProperty( matchedProperty.id );
 				}
-			}
-		} )();
+			} )();
+		}
 	}, [
 		isUAEnabled,
 		propertyID,
