@@ -258,8 +258,6 @@ export default function GoogleChart( props ) {
 			return;
 		}
 
-		let hasMovedLegend = false;
-
 		// Add the dotted line and tooltip for each date marker.
 		dateMarkersInRange.forEach( ( dateMarker, index ) => {
 			const dateFromMarker = new Date( dateMarker.date );
@@ -317,20 +315,23 @@ export default function GoogleChart( props ) {
 			`#googlesitekit-chart-${ instanceID } svg:first-of-type > g:first-of-type > g > g > text`
 		)?.parentElement.parentElement.parentElement;
 
-		// If there is a legend, move it up to make room for the date marker icon.
-		if ( legendElement && ! hasMovedLegend ) {
-			// A legend is present if there are more than three `g` elements; charts
-			// without legends won't have that many `g` elements so we don't need to
-			// modify anything.
-			const hasLegend =
-				document.querySelectorAll(
-					`#googlesitekit-chart-${ instanceID } svg:first-of-type > g`
-				).length >= 3;
+		// A legend is present if there are more than three `g` elements; charts
+		// without legends won't have that many `g` elements so we don't need to
+		// modify anything.
+		const hasLegend =
+			!! legendElement &&
+			document.querySelectorAll(
+				`#googlesitekit-chart-${ instanceID } svg:first-of-type > g`
+			).length >= 3;
 
-			if ( hasLegend ) {
-				legendElement.style.transform = 'translateY(-10px)';
-				hasMovedLegend = true;
-			}
+		// If there is a legend, move it up to make room for the date marker icon.
+		if ( hasLegend ) {
+			// `10px` is the best size to use to accommodate the bounding box of the
+			// chart without needing to modify the chart's height.
+			//
+			// It allows the legend and the icon to fit without moving anything else
+			// and without things feeling cramped or being cut off.
+			legendElement.style.transform = 'translateY(-10px)';
 		}
 	};
 
