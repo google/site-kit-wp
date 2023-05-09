@@ -33,6 +33,7 @@ import { useCallback } from '@wordpress/element';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
 import { numFmt } from '../../util';
 import Sparkline from './Sparkline';
+import Badge from '../Badge';
 import Change from './Change';
 import SourceLink from '../SourceLink';
 
@@ -53,7 +54,6 @@ const DataBlock = ( {
 	invertChangeColor = false,
 	gatheringData = false,
 	gatheringDataNoticeStyle = NOTICE_STYLE.DEFAULT,
-	fitBadge = false,
 	badge,
 } ) => {
 	const handleClick = useCallback( () => {
@@ -80,7 +80,12 @@ const DataBlock = ( {
 	const isButtonContext = 'button' === context;
 	const role = isButtonContext ? 'button' : '';
 
-	const shouldFitBadge = fitBadge || !! badge;
+	const theBadge =
+		badge === true ? (
+			<Badge className="googlesitekit-badge--hidden" label="X" />
+		) : (
+			badge
+		);
 
 	return (
 		<div
@@ -104,24 +109,16 @@ const DataBlock = ( {
 		>
 			<div
 				className={ classnames(
-					'googlesitekit-data-block__title-datapoint-wrapper',
-					{
-						'googlesitekit-data-block__title-datapoint-wrapper--fit-badge':
-							shouldFitBadge,
-					}
+					'googlesitekit-data-block__title-datapoint-wrapper'
 				) }
 			>
 				<h3
 					className={ classnames(
 						'googlesitekit-subheading-1',
-						'googlesitekit-data-block__title',
-						{
-							'googlesitekit-data-block__title--fit-badge':
-								shouldFitBadge,
-						}
+						'googlesitekit-data-block__title'
 					) }
 				>
-					{ badge || ( shouldFitBadge && <span></span> ) }
+					{ theBadge }
 					{ title }
 				</h3>
 
@@ -180,8 +177,7 @@ DataBlock.propTypes = {
 	invertChangeColor: PropTypes.bool,
 	gatheringData: PropTypes.bool,
 	gatheringDataNoticeStyle: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
-	fitBadge: PropTypes.bool,
-	badge: PropTypes.node,
+	badge: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.node ] ),
 };
 
 export default DataBlock;

@@ -236,8 +236,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 											gatheringData={ isGatheringData }
 										/>
 									}
-									fitBadge
-									badge={ badges[ metric ] }
+									badge={ badges[ metric ] || true }
 								/>
 							</Cell>
 						)
