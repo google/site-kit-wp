@@ -63,10 +63,14 @@
 		align-items: center;
 		display: grid;
 		grid-template-rows: 40px 1fr;
-		justify-content: center;
+		justify-content: flex-start;
 
 		.googlesitekit-badge {
-			justify-self: center;
+			justify-self: flex-start;
+		}
+
+		.googlesitekit-new-badge {
+			margin-left: 0;
 		}
 	}
 
@@ -202,6 +206,14 @@
 	@media (min-width: $bp-desktop) {
 		padding-bottom: $grid-gap-desktop;
 		padding-top: $grid-gap-desktop + 4px;
+	}
+
+	.googlesitekit-data-block__title--fit-badge {
+		justify-content: center;
+
+		.googlesitekit-badge {
+			justify-self: center;
+		}
 	}
 }
 
