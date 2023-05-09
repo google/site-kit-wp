@@ -74,20 +74,17 @@ export default function PropertySelect( props ) {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	const isResolvingProperties = useSelect( ( select ) => {
-		if ( hasModuleAccess === false || ! accountID ) {
-			return false;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).isResolving( 'getProperties', [
-			accountID,
-		] );
-	} );
-
 	const isLoading = useSelect( ( select ) => {
 		if ( isDisabled ) {
 			return false;
 		}
+
+		const isResolvingProperties =
+			hasModuleAccess === false || ! accountID
+				? false
+				: select( MODULES_ANALYTICS_4 ).isResolving( 'getProperties', [
+						accountID,
+				  ] );
 
 		return (
 			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
