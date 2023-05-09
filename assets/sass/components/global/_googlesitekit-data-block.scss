@@ -32,21 +32,18 @@
 	}
 
 	.googlesitekit-data-block__title {
-		align-items: center;
+		align-items: flex-start;
 		color: $c-surfaces-on-surface-variant;
-		display: grid;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
 		font-family: $f-secondary;
 		font-size: $fs-title-sm;
 		font-weight: $fw-bold;
-		grid-template-rows: auto 1fr;
 		justify-content: flex-start;
 		line-height: $lh-title-sm;
 		margin: 0 0 12px;
 		row-gap: 8px;
-
-		.googlesitekit-badge {
-			justify-self: flex-start;
-		}
 
 		.googlesitekit-new-badge {
 			margin-left: 0;
@@ -65,11 +62,16 @@
 		}
 	}
 
+	.googlesitekit-data-block__title-inner {
+		align-items: center;
+		display: flex;
+		flex: 1;
+	}
+
 	.googlesitekit-data-block__title-datapoint-wrapper {
 		display: flex;
 		flex: 1;
 		flex-flow: column;
-		justify-content: space-between;
 	}
 
 	.googlesitekit-data-block__datapoint {
@@ -208,11 +210,7 @@
 
 	/* stylelint-disable no-descending-specificity */
 	.googlesitekit-data-block__title {
-		justify-content: center;
-
-		.googlesitekit-badge {
-			justify-self: center;
-		}
+		align-items: center;
 	}
 	/* stylelint-enable */
 }

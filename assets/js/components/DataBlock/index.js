@@ -119,7 +119,9 @@ const DataBlock = ( {
 					) }
 				>
 					{ theBadge }
-					{ title }
+					<span className="googlesitekit-data-block__title-inner">
+						{ title }
+					</span>
 				</h3>
 
 				{ ! gatheringData && (
