@@ -58,7 +58,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	);
 
 	const webDataStreams = useSelect( ( select ) =>
-		isValidPropertyID( propertyID )
+		isValidPropertyID( propertyID ) && hasModuleAccess !== false
 			? select(
 					MODULES_ANALYTICS_4
 			  ).getMatchingWebDataStreamsByPropertyID( propertyID )
