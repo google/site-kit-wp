@@ -564,7 +564,12 @@ function BannerNotification( {
 						) }
 
 					{ ( 'win-error' === type || 'win-warning' === type ) && (
-						<Cell size={ 1 }>
+						<Cell
+							size={ 1 }
+							smOrder={ 3 }
+							mdOrder={ 3 }
+							lgOrder={ 3 }
+						>
 							<div className="googlesitekit-publisher-win__icons">
 								{ icon }
 							</div>

@@ -83,6 +83,7 @@ export const actions = {
 	 * @param {string|Array.<string>} [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
 	 * @param {boolean}               [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
 	 * @param {string|Array.<string>} [settings.modules]    Optional. Widget's associated modules.
+	 * @param {Function}              [settings.isActive]   Optional. Callback function to determine if the widget is active.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget(
@@ -93,6 +94,7 @@ export const actions = {
 			width = WIDGET_WIDTHS.QUARTER,
 			wrapWidget = true,
 			modules,
+			isActive,
 		} = {}
 	) {
 		const allWidths = Object.values( WIDGET_WIDTHS );
@@ -114,6 +116,7 @@ export const actions = {
 					width,
 					wrapWidget,
 					modules: normalizeWidgetModules( modules ),
+					isActive,
 				},
 			},
 			type: REGISTER_WIDGET,
@@ -293,31 +296,43 @@ export const selectors = {
 	 * @param {string|Array.<string>} [options.modules] Optional. Widget's associated modules.
 	 * @return {Array} An ordered array of widgets for this area.
 	 */
-	getWidgets( state, widgetAreaSlug, { modules } = {} ) {
-		invariant( widgetAreaSlug, 'widgetAreaSlug is required.' );
+	getWidgets: createRegistrySelector(
+		( select ) =>
+			( state, widgetAreaSlug, { modules } = {} ) => {
+				invariant( widgetAreaSlug, 'widgetAreaSlug is required.' );
 
-		const { areaAssignments } = state;
+				const { areaAssignments } = state;
 
-		let widgets = Object.values( state.widgets ).filter( ( widget ) =>
-			areaAssignments[ widgetAreaSlug ]?.includes( widget.slug )
-		);
+				let widgets = Object.values( state.widgets )
+					.filter( ( widget ) =>
+						areaAssignments[ widgetAreaSlug ]?.includes(
+							widget.slug
+						)
+					)
+					.filter( ( widget ) => {
+						if ( typeof widget.isActive !== 'function' ) {
+							return true;
+						}
+						return widget.isActive( select ) === true;
+					} );
 
-		if ( modules ) {
-			const allowedModules = normalizeWidgetModules( modules );
-			widgets = widgets.filter( ( widget ) => {
-				if ( ! widget.modules?.length ) {
-					return true;
+				if ( modules ) {
+					const allowedModules = normalizeWidgetModules( modules );
+					widgets = widgets.filter( ( widget ) => {
+						if ( ! widget.modules?.length ) {
+							return true;
+						}
+
+						return (
+							intersection( widget.modules, allowedModules )
+								.length === widget.modules.length
+						);
+					} );
 				}
 
-				return (
-					intersection( widget.modules, allowedModules ).length ===
-					widget.modules.length
-				);
-			} );
-		}
-
-		return widgets.sort( ( a, b ) => a.priority - b.priority );
-	},
+				return widgets.sort( ( a, b ) => a.priority - b.priority );
+			}
+	),
 
 	/**
 	 * Returns a single widget, by slug.

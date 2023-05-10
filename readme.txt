@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.2
 Requires PHP:      5.6
-Stable tag:        1.98.0
+Stable tag:        1.99.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -109,6 +109,34 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.99.0 =
+
+**Enhanced**
+
+* Only show the "Google tag mismatch" and "web data stream not available" notifications to the Analytics module owner. See [#6949](https://github.com/google/site-kit-wp/issues/6949).
+* Update source links in the Popular Pages widget for the Analytics 4 version. See [#6871](https://github.com/google/site-kit-wp/issues/6871).
+* Add the Analytics 4 version of the Popular Pages widget on the WordPress dashboard. See [#6868](https://github.com/google/site-kit-wp/issues/6868).
+* Add GA4 version of the Unique Visitors chart on the WP dashboard. See [#6855](https://github.com/google/site-kit-wp/issues/6855).
+* Ensure both Analytics modules always reference the same owner. See [#6846](https://github.com/google/site-kit-wp/issues/6846).
+* Fix zero data notifications on GA4 dashboard. See [#6838](https://github.com/google/site-kit-wp/issues/6838).
+* Update conversion events to always be requested for the connected GA4 property. See [#6836](https://github.com/google/site-kit-wp/issues/6836).
+* Improve handling for Google Analytics 4 reports which have no data for one of the requested date ranges. See [#6835](https://github.com/google/site-kit-wp/issues/6835).
+* Update the dev settings plugin update URL. See [#6823](https://github.com/google/site-kit-wp/issues/6823).
+* Enhance the experience of handling properties and web data streams which are no longer available. See [#6763](https://github.com/google/site-kit-wp/issues/6763).
+* Ensure Dashboard Sharing works without Universal Analytics being enabled. See [#6745](https://github.com/google/site-kit-wp/issues/6745).
+* Allow editing and viewing Analytics settings without saving Universal Analytics settings when GA4 Reporting is enabled. See [#6744](https://github.com/google/site-kit-wp/issues/6744).
+* Ensure Google Analytics 4 charts display correctly with zero data, by padding the data returned from the `runReport` endpoint to add zero-data rows where data is missing in cases where a single `date` dimension is requested. See [#6623](https://github.com/google/site-kit-wp/issues/6623).
+* Indicate key dates in Analytics charts, indicating the Universal Analytics cut-off date, or the Google Analytics 4 property creation date. See [#6572](https://github.com/google/site-kit-wp/issues/6572).
+* Add a feature tour for new metrics that are available on the GA4 version of the dashboard. See [#6554](https://github.com/google/site-kit-wp/issues/6554).
+
+**Fixed**
+
+* Fix a potential error when attempting to autoload a class from a non-existent file. See [#6887](https://github.com/google/site-kit-wp/issues/6887).
+* Ensure Analytics module can be recovered when only GA4 is connected. See [#6861](https://github.com/google/site-kit-wp/issues/6861).
+* Ensure UA settings and Dashboard View toggle settings are saved in Analytics Settings. See [#6828](https://github.com/google/site-kit-wp/issues/6828).
+* Ensure admins can change Analytics settings if they're not the module owner in the scenario where only Google Analytics 4 is connected. See [#6825](https://github.com/google/site-kit-wp/issues/6825).
+* Fix bug that caused Analytics 4 widgets not to appear in shared dashboard. See [#6824](https://github.com/google/site-kit-wp/issues/6824).
 
 = 1.98.0 =
 

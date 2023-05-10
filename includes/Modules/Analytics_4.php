@@ -89,6 +89,7 @@ final class Analytics_4 extends Module
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.30.0
+	 * @since n.e.x.t Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -122,6 +123,46 @@ final class Analytics_4 extends Module
 				$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
 			);
 		}
+
+		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
+			add_filter(
+				'googlesitekit_auth_scopes',
+				function( array $scopes ) {
+					$oauth_client = $this->authentication->get_oauth_client();
+
+					$needs_tagmanager_scope = false;
+
+					if ( $oauth_client->has_sufficient_scopes(
+						array(
+							Analytics::READONLY_SCOPE,
+							'https://www.googleapis.com/auth/tagmanager.readonly',
+						)
+					) ) {
+						$needs_tagmanager_scope = true;
+					} else {
+						// Ensure the Tag Manager scope is not added as a required scope in the case where the user has
+						// granted the Analytics scope but not the Tag Manager scope, in order to allow the GTE-specific
+						// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
+						// modal also appearing.
+						if ( ! $oauth_client->has_sufficient_scopes(
+							array(
+								Analytics::READONLY_SCOPE,
+							)
+						) ) {
+							$needs_tagmanager_scope = true;
+						}
+					}
+
+					if ( $needs_tagmanager_scope ) {
+						$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+					}
+
+					return $scopes;
+				}
+			);
+		}
+
+		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 	}
 
 	/**
@@ -132,13 +173,7 @@ final class Analytics_4 extends Module
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		$scopes = array(
-			Analytics::READONLY_SCOPE,
-		);
-		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
-			$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
-		}
-		return $scopes;
+		return array( Analytics::READONLY_SCOPE );
 	}
 
 	/**
@@ -240,8 +275,22 @@ final class Analytics_4 extends Module
 		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
-			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
-			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'GET:container-lookup'       => array(
+				'service' => 'tagmanager',
+				'scopes'  => array(
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
+			'GET:container-destinations' => array(
+				'service' => 'tagmanager',
+				'scopes'  => array(
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
+			'GET:conversion-events'      => array(
+				'service'   => 'analyticsadmin',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'POST:create-account-ticket' => array(
 				'service'                => 'analyticsprovisioning',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
@@ -262,7 +311,6 @@ final class Analytics_4 extends Module
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
-			'GET:conversion-events'      => array( 'service' => 'analyticsadmin' ),
 		);
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
@@ -1160,108 +1208,25 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Validates the report metrics for a shared request.
+	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
 	 *
-	 * @since 1.93.0
-	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
+	 * If the Analytics-4 module is enabled, and the snippet is enabled, then the option to exclude
+	 * the option to exclude certain users from tracking should be displayed.
 	 *
-	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
-	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
+	 * @since n.e.x.t
+	 *
+	 * @param bool $allowed Whether to allow tracking exclusion.
+	 * @return bool Filtered value.
 	 */
-	protected function validate_shared_report_metrics( $metrics ) {
-		$valid_metrics = apply_filters(
-			'googlesitekit_shareable_analytics_4_metrics',
-			array(
-				// TODO: Add metrics to this allow-list as they are used in the plugin.
-			)
-		);
-
-		$invalid_metrics = array_diff(
-			array_map(
-				function ( $metric ) {
-					// If there is an expression, it means the name is there as an alias, otherwise the name should be a valid metric name.
-					// Therefore, the expression takes precedence to the name for the purpose of allow-list validation.
-					return ! empty( $metric->getExpression() ) ? $metric->getExpression() : $metric->getName();
-				},
-				$metrics
-			),
-			$valid_metrics
-		);
-
-		if ( count( $invalid_metrics ) > 0 ) {
-			$message = count( $invalid_metrics ) > 1 ? sprintf(
-				/* translators: %s: is replaced with a comma separated list of the invalid metrics. */
-				__(
-					'Unsupported metrics requested: %s',
-					'google-site-kit'
-				),
-				join(
-					/* translators: used between list items, there is a space after the comma. */
-					__( ', ', 'google-site-kit' ),
-					$invalid_metrics
-				)
-			) : sprintf(
-				/* translators: %s: is replaced with the invalid metric. */
-				__(
-					'Unsupported metric requested: %s',
-					'google-site-kit'
-				),
-				$invalid_metrics[0]
-			);
-
-			throw new Invalid_Report_Metrics_Exception( $message );
+	private function filter_analytics_allow_tracking_disabled( $allowed ) {
+		if ( $allowed ) {
+			return $allowed;
 		}
-	}
 
-	/**
-	 * Validates the report dimensions for a shared request.
-	 *
-	 * @since 1.93.0
-	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
-	 *
-	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
-	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
-	 */
-	protected function validate_shared_report_dimensions( $dimensions ) {
-		$valid_dimensions = apply_filters(
-			'googlesitekit_shareable_analytics_4_dimensions',
-			array(
-				// TODO: Add dimensions to this allow-list as they are used in the plugin.
-			)
-		);
-
-		$invalid_dimensions = array_diff(
-			array_map(
-				function ( $dimension ) {
-					return $dimension->getName();
-				},
-				$dimensions
-			),
-			$valid_dimensions
-		);
-
-		if ( count( $invalid_dimensions ) > 0 ) {
-			$message = count( $invalid_dimensions ) > 1 ? sprintf(
-				/* translators: %s: is replaced with a comma separated list of the invalid dimensions. */
-				__(
-					'Unsupported dimensions requested: %s',
-					'google-site-kit'
-				),
-				join(
-					/* translators: used between list items, there is a space after the comma. */
-					__( ', ', 'google-site-kit' ),
-					$invalid_dimensions
-				)
-			) : sprintf(
-				/* translators: %s: is replaced with the invalid dimension. */
-				__(
-					'Unsupported dimension requested: %s',
-					'google-site-kit'
-				),
-				$invalid_dimensions[0]
-			);
-
-			throw new Invalid_Report_Dimensions_Exception( $message );
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) && $this->get_settings()->get()['useSnippet'] ) {
+			return true;
 		}
+
+		return $allowed;
 	}
 }

@@ -103,6 +103,65 @@ WithoutUAToggleGA4Enabled.parameters = {
 	features: [ 'ga4Reporting' ],
 };
 
+export const PropertyNotAvailable = Template.bind( null );
+PropertyNotAvailable.storyName =
+	'Settings w/ selected GA4 property not available';
+PropertyNotAvailable.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+PropertyNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+PropertyNotAvailable.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/PropertyNotAvailable',
+	delay: 250,
+};
+
+export const WebDataStreamNotAvailable = Template.bind( null );
+WebDataStreamNotAvailable.storyName =
+	'Settings w/ selected GA4 webDataStream not available';
+WebDataStreamNotAvailable.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+WebDataStreamNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreamsBatch(
+					{ 1000: [] },
+					{
+						propertyIDs: [ '1000' ],
+					}
+				);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WebDataStreamNotAvailable.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WebDataStreamNotAvailable',
+	delay: 250,
+};
+
 export const WithoutUAAndGA4AccessGA4NotConnected = Template.bind( null );
 WithoutUAAndGA4AccessGA4NotConnected.storyName =
 	'Settings w/o UA access, GA4 not connected';
@@ -249,6 +308,10 @@ WithGA4Tag.decorators = [
 		);
 	},
 ];
+WithGA4Tag.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithGA4Tag',
+	delay: 250,
+};
 
 export const WithBothTags = Template.bind( null );
 WithBothTags.storyName =
@@ -334,6 +397,10 @@ WithExistingGTMPropertyMatching.scenario = {
 
 export const WithDashboardViewToggle = Template.bind( null );
 WithDashboardViewToggle.storyName = 'With Dashboard View Toggle';
+WithDashboardViewToggle.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
 WithDashboardViewToggle.parameters = {
 	features: [ 'ga4Reporting' ],
 };
@@ -369,6 +436,10 @@ WithDashboardViewToggle.scenario = {
 
 export const WithDashboardViewLabel = Template.bind( null );
 WithDashboardViewLabel.storyName = 'With Dashboard View Label';
+WithDashboardViewLabel.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
 WithDashboardViewLabel.parameters = {
 	features: [ 'ga4Reporting' ],
 };
@@ -416,7 +487,7 @@ export default {
 	title: 'Modules/Analytics/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			const setupRegistry = async ( registry ) => {
 				provideModules( registry, [
 					{
 						slug: 'analytics',
@@ -481,7 +552,7 @@ export default {
 						{ accountID, propertyID: properties[ 1 ].id }
 					);
 
-				registry
+				await registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
 			};

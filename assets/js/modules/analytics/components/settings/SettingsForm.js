@@ -89,7 +89,7 @@ export default function SettingsForm( {
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
 	const properties = useSelect( ( select ) => {
-		if ( ! accountID ) {
+		if ( ! accountID || ! hasAnalyticsAccess || ! hasAnalytics4Access ) {
 			return [];
 		}
 
@@ -111,14 +111,17 @@ export default function SettingsForm( {
 	return (
 		<Fragment>
 			<SettingsUACutoffWarning />
-			<StoreErrorNotices
-				moduleSlug="analytics"
-				storeName={ MODULES_ANALYTICS }
-			/>
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
-			/>
-
+			{ ! ga4ReportingEnabled && (
+				<Fragment>
+					<ExistingGTMPropertyNotice
+						gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
+					/>
+					<StoreErrorNotices
+						moduleSlug="analytics"
+						storeName={ MODULES_ANALYTICS }
+					/>
+				</Fragment>
+			) }
 			{ ga4ReportingEnabled && isUAConnected && isUAEnabled && (
 				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 					<h4 className="googlesitekit-settings-module__fields-group-title">
@@ -148,6 +151,7 @@ export default function SettingsForm( {
 					</h4>
 					<EnableUniversalAnalytics
 						hasModuleAccess={ hasAnalyticsAccess }
+						showErrors
 					>
 						{ isUAConnected && <SettingsUseSnippetSwitch /> }
 					</EnableUniversalAnalytics>
@@ -163,7 +167,9 @@ export default function SettingsForm( {
 			) }
 
 			{ hasAnalyticsAccess && (
-				<EntityOwnershipChangeNotice slug="analytics" />
+				<EntityOwnershipChangeNotice
+					slug={ [ 'analytics', 'analytics-4' ] }
+				/>
 			) }
 		</Fragment>
 	);

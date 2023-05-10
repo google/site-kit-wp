@@ -36,7 +36,7 @@ const ga4Reporting = {
 	checkRequirements: () => isFeatureEnabled( 'ga4Reporting' ),
 	steps: [
 		{
-			target: '.googlesitekit-data-block--conversions .googlesitekit-data-block__title',
+			target: '.googlesitekit-data-block--conversions .googlesitekit-data-block__title, .googlesitekit-analytics-cta--setup-conversions',
 			title: __(
 				'See the new metrics from Google Analytics 4',
 				'google-site-kit'
@@ -66,9 +66,22 @@ const ga4Reporting = {
 				'"Sessions" has replaced "Unique Pageviews"',
 				'google-site-kit'
 			),
-			content: __(
-				'A session is a period of time during which a user interacts with your website or app.',
-				'google-site-kit'
+			content: createInterpolateElement(
+				__(
+					'A session is a period of time during which a user interacts with your website or app. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<SupportLink
+							path="/analytics/answer/9191807"
+							inverse
+							external
+							hideExternalIndicator
+							standalone
+						/>
+					),
+				}
 			),
 			placement: 'auto',
 		},

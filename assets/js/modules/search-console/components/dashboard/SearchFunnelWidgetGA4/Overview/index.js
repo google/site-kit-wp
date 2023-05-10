@@ -82,12 +82,12 @@ export default function Overview( props ) {
 
 	const viewOnly = useViewOnly();
 
-	const analyticsModuleAvailable = useSelect( ( select ) =>
+	const isAnalytics4ModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( ! analyticsModuleAvailable ) {
+	const canViewSharedAnalytics4 = useSelect( ( select ) => {
+		if ( ! isAnalytics4ModuleAvailable ) {
 			return false;
 		}
 
@@ -95,22 +95,11 @@ export default function Overview( props ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
 	} );
 
 	const canShowGA4ReportingFeatureTour = useSelect( ( select ) => {
-		// Don't show the GA4 report feature tour if feature tours are on cooldown.
-		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
-			return false;
-		}
-
-		// Don't show the GA4 report feature tour if we have already shown a feature tour
-		// during the current page view.
-		if ( !! select( CORE_USER ).getShownTour() ) {
-			return false;
-		}
-
-		return true;
+		return select( CORE_UI ).getValue( 'showGA4ReportingTour' );
 	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
@@ -134,6 +123,11 @@ export default function Overview( props ) {
 	const conversionsRateLearnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/9267568',
+		} )
+	);
+	const engagementRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12195621',
 		} )
 	);
 
@@ -179,12 +173,11 @@ export default function Overview( props ) {
 	}
 
 	const showGA4 =
-		canViewSharedAnalytics &&
+		canViewSharedAnalytics4 &&
 		ga4ModuleConnected &&
 		! error &&
 		! showRecoverableAnalytics;
 
-	const { setValue } = useDispatch( CORE_UI );
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	useEffect( () => {
 		if (
@@ -195,12 +188,10 @@ export default function Overview( props ) {
 			return;
 		}
 
-		setValue( 'forceInView', true );
 		triggerOnDemandTour( ga4Reporting );
 	}, [
 		showGA4,
 		dashboardType,
-		setValue,
 		triggerOnDemandTour,
 		canShowGA4ReportingFeatureTour,
 	] );
@@ -312,6 +303,15 @@ export default function Overview( props ) {
 						datapointUnit: '%',
 						change: ga4EngagementRateChange,
 						isGatheringData: isGA4GatheringData,
+						badge: (
+							<NewBadge
+								tooltipTitle={ __(
+									'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
+									'google-site-kit'
+								) }
+								learnMoreLink={ engagementRateLearnMoreURL }
+							/>
+						),
 					},
 			  ]
 			: [] ),
@@ -372,7 +372,7 @@ export default function Overview( props ) {
 				</Cell>
 
 				<OptionalCells
-					canViewSharedAnalytics={ canViewSharedAnalytics }
+					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
 					error={ error }
 					halfCellProps={ halfCellProps }
 					quarterCellProps={ quarterCellProps }

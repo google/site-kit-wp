@@ -392,7 +392,7 @@ const baseSelectors = {
 	/**
 	 * Gets the feature tour that has been already shown in the current page view.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Shown tour object.
