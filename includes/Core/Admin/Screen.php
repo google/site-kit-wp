@@ -230,7 +230,7 @@ final class Screen {
 		// Enqueue base admin screen stylesheet.
 		$assets->enqueue_asset( 'googlesitekit-admin-css' );
 
-		$cb = isset( $this->args['enqueue_callback'] ) && is_callable( $this->args['enqueue_callback'] )
+		$cb = is_callable( $this->args['enqueue_callback'] )
 			? $this->args['enqueue_callback']
 			: function( Assets $assets ) {
 				$assets->enqueue_asset( $this->slug );
@@ -247,10 +247,10 @@ final class Screen {
 	 * @param Context $context Plugin context.
 	 */
 	private function render( Context $context ) {
-		$cb = isset( $this->args['render_callback'] ) && is_callable( $this->args['render_callback'] )
+		$cb = is_callable( $this->args['render_callback'] )
 			? $this->args['render_callback']
 			: function() {
-				echo '<div id="js-', esc_attr( $this->slug ), '" class="googlesitekit-page"></div>';
+				printf( '<div id="js-%s" class="googlesitekit-page"></div>', esc_attr( $this->slug ) );
 			};
 
 		echo '<div class="googlesitekit-plugin">';
