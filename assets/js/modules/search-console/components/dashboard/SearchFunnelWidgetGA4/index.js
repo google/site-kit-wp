@@ -57,16 +57,6 @@ import useViewOnly from '../../../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 const { useSelect, useInViewSelect } = Data;
 
-/*
-// Avoid console.log in tests.
-const log = process?.stdout
-	? ( ...args ) =>
-			process.stdout.write(
-				args.map( JSON.stringify ).join( ' ' ) + '\n'
-			)
-	: global.console.log;
-*/
-
 // eslint-disable-next-line complexity
 const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
@@ -366,8 +356,6 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		/>
 	);
 
-	// const ref = useRef( { loading: false, render: false } );
-
 	if ( searchConsoleError ) {
 		return (
 			<Widget Header={ Header } Footer={ WidgetFooter }>
@@ -388,13 +376,6 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		isGA4GatheringData === undefined ||
 		isSearchConsoleGatheringData === undefined
 	) {
-		/*
-		if ( ! ref.current.loading ) {
-			const date = new Date();
-			log( 'SearchFunnelWidgetGA4 render loading', date, date.getTime() );
-			ref.current.loading = true;
-		}
-		*/
 		return (
 			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
@@ -402,14 +383,6 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 			</Widget>
 		);
 	}
-
-	/*
-	if ( ! ref.current.render ) {
-		const date = new Date();
-		log( 'SearchFunnelWidgetGA4 render main', date, date.getTime() );
-		ref.current.render = true;
-	}
-	*/
 
 	return (
 		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>

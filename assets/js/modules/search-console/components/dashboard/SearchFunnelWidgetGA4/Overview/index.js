@@ -189,7 +189,6 @@ export default function Overview( props ) {
 
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 
-	// log( { showGA4, canShowGA4ReportingFeatureTour, dashboardType } );
 	useEffect( () => {
 		const date = new Date();
 
@@ -360,15 +359,6 @@ export default function Overview( props ) {
 		3: oneThirdCellProps,
 		4: quarterCellProps,
 	};
-
-	/*
-	const ref = useRef();
-	const date = new Date();
-	if ( ! ref.current ) {
-		log( 'Overview render', date, date.getTime() );
-		ref.current = true;
-	}
-	*/
 
 	return (
 		<Grid>
