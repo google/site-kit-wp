@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -353,12 +353,14 @@ export default function Overview( props ) {
 		4: quarterCellProps,
 	};
 
+	/*
 	const ref = useRef();
 	const date = new Date();
 	if ( ! ref.current ) {
 		log( 'Overview render', date, date.getTime() );
 		ref.current = true;
 	}
+	*/
 
 	return (
 		<Grid>

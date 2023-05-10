@@ -18,17 +18,17 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement, useEffect } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 
 /*
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+// import Data from 'googlesitekit-data';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import SupportLink from '../components/SupportLink';
 import { isFeatureEnabled } from '../features';
-import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-const { useDispatch } = Data;
+// import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+// const { useDispatch } = Data;
 
 // Avoid console.log in tests.
 const log = process?.stdout
@@ -42,11 +42,13 @@ const LoggingSupportLink = ( props ) => {
 	const date = new Date();
 	log( 'LoggingSupportLink', date, date.getTime() );
 
+	/*
 	const { setValue } = useDispatch( CORE_UI );
 
 	useEffect( () => {
 		setValue( 'forceInView', true );
 	}, [ setValue ] );
+	*/
 
 	return <SupportLink { ...props } />;
 };
