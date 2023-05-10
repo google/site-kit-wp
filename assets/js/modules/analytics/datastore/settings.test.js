@@ -531,6 +531,9 @@ describe( 'modules/analytics settings', () => {
 					} );
 
 					expect(
+						registry.select( MODULES_ANALYTICS ).getDashboardView()
+					).toBe( DASHBOARD_VIEW_UA );
+					expect(
 						registry
 							.select( CORE_USER )
 							.isTourDismissed( ga4Reporting.slug )
@@ -551,14 +554,18 @@ describe( 'modules/analytics settings', () => {
 					registry
 						.dispatch( CORE_USER )
 						.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setSettings( validSettings );
+					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+						...validSettings,
+						dashboardView: DASHBOARD_VIEW_GA4,
+					} );
 
 					fetchMock.postOnce( gaSettingsEndpoint, {
 						body: validSettings,
 					} );
 
+					expect(
+						registry.select( MODULES_ANALYTICS ).getDashboardView()
+					).toBe( DASHBOARD_VIEW_GA4 );
 					expect(
 						registry
 							.select( CORE_USER )
