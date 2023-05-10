@@ -81,16 +81,21 @@ export default function WebDataStreamSelect( props ) {
 		const loadedAccounts =
 			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
 
-		const loadedProperties = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getProperties', [ accountID ] );
+		const loadedProperties =
+			hasModuleAccess !== false
+				? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getProperties',
+						[ accountID ]
+				  )
+				: true;
 
-		const loadedWebDataStreams = isValidPropertyID( propertyID )
-			? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getWebDataStreams',
-					[ propertyID ]
-			  )
-			: true;
+		const loadedWebDataStreams =
+			isValidPropertyID( propertyID ) && hasModuleAccess !== false
+				? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getWebDataStreams',
+						[ propertyID ]
+				  )
+				: true;
 
 		const finishedSelectingAccount =
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() !== false;
