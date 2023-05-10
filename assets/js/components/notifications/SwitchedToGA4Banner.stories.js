@@ -81,6 +81,7 @@ export default {
 
 			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+				propertyID: 'UA-99999-9',
 				dashboardView: DASHBOARD_VIEW_GA4,
 			} );
 

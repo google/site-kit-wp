@@ -29,6 +29,7 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { UA_CUTOFF_DATE } from '../../modules/analytics/constants';
 import { stringToDate } from '../../util';
+import { isValidPropertyID } from '../../modules/analytics/util';
 import ga4Reporting from '../../feature-tours/ga4-reporting';
 import BannerNotification from './BannerNotification';
 const { useSelect, useDispatch } = Data;
@@ -50,6 +51,12 @@ export default function SwitchedToGA4Banner() {
 		return select( CORE_UI ).getValue( 'showGA4ReportingTour' );
 	} );
 
+	const isUAConnected = useSelect( ( select ) => {
+		const propertyID = select( MODULES_ANALYTICS ).getPropertyID();
+
+		return isValidPropertyID( propertyID );
+	} );
+
 	const { setValue } = useDispatch( CORE_UI );
 	const handleCTAClick = () => {
 		setValue( 'showGA4ReportingTour', true );
@@ -60,7 +67,13 @@ export default function SwitchedToGA4Banner() {
 		dismissTour( ga4Reporting.slug );
 	};
 
-	if ( ! isGA4DashboardView || isTourDismissed || showGA4ReportingTour ) {
+	if (
+		! isUAConnected ||
+		! isGA4DashboardView ||
+		isTourDismissed === undefined ||
+		isTourDismissed ||
+		showGA4ReportingTour
+	) {
 		return null;
 	}
 
