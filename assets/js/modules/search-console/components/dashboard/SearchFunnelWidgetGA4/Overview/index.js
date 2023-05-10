@@ -64,6 +64,15 @@ function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	};
 }
 
+// Avoid console.log in tests.
+const log = process?.stdout
+	? ( ...args ) =>
+			process.stdout.write(
+				args.map( JSON.stringify ).join( ' ' ) + '\n'
+			)
+	: global.console.log;
+
+// eslint-disable-next-line complexity
 export default function Overview( props ) {
 	const {
 		ga4Data,
@@ -146,31 +155,31 @@ export default function Overview( props ) {
 	let ga4VisitorsDatapoint = null;
 	let ga4VisitorsChange = null;
 
-	if (
-		ga4ModuleActive &&
-		isPlainObject( ga4Data ) &&
-		isPlainObject( ga4VisitorsData )
-	) {
-		( { change: ga4ConversionsChange } = getDatapointAndChange(
-			ga4Data,
-			0,
-			100
-		) );
-		ga4ConversionsDatapoint =
-			ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
+	if ( ga4ModuleActive ) {
+		if ( isPlainObject( ga4Data ) ) {
+			( { change: ga4ConversionsChange } = getDatapointAndChange(
+				ga4Data,
+				0,
+				100
+			) );
+			ga4ConversionsDatapoint =
+				ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
 
-		( {
-			datapoint: ga4EngagementRateDatapoint,
-			change: ga4EngagementRateChange,
-		} = getDatapointAndChange( ga4Data, 1 ) );
+			( {
+				datapoint: ga4EngagementRateDatapoint,
+				change: ga4EngagementRateChange,
+			} = getDatapointAndChange( ga4Data, 1 ) );
+		}
 
-		ga4VisitorsDatapoint =
-			ga4VisitorsData?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
-		( { change: ga4VisitorsChange } = getDatapointAndChange(
-			ga4VisitorsData,
-			0,
-			100
-		) );
+		if ( isPlainObject( ga4VisitorsData ) ) {
+			ga4VisitorsDatapoint =
+				ga4VisitorsData?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
+			( { change: ga4VisitorsChange } = getDatapointAndChange(
+				ga4VisitorsData,
+				0,
+				100
+			) );
+		}
 	}
 
 	const showGA4 =
@@ -181,14 +190,30 @@ export default function Overview( props ) {
 
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	useEffect( () => {
+		const date = new Date();
 		if (
 			! showGA4 ||
 			! canShowGA4ReportingFeatureTour ||
 			dashboardType !== DASHBOARD_TYPE_MAIN
 		) {
+			log(
+				'not showing GA4 reporting feature tour',
+				date,
+				date.getTime()
+			);
 			return;
 		}
 
+		log(
+			'showing GA4 reporting feature tour, target',
+			document.querySelector(
+				'.googlesitekit-data-block--conversions .googlesitekit-data-block__title, .googlesitekit-analytics-cta--setup-conversions'
+			)
+				? 'exists'
+				: 'does not exist',
+			date,
+			date.getTime()
+		);
 		triggerOnDemandTour( ga4Reporting );
 	}, [
 		showGA4,
@@ -206,7 +231,18 @@ export default function Overview( props ) {
 			// GA4 default "purchase" conversion event with no data value.
 			( ga4ConversionsData?.length === 1 &&
 				ga4ConversionsData[ 0 ].eventName === 'purchase' &&
-				ga4ConversionsDatapoint === '0' ) );
+				ga4ConversionsDatapoint === '0' ) ); // Note that ga4ConversionsDatapoint is also needed to determine showConversionsCTA; ga4ConversionsDatapoint is from the main GA4 report.
+
+	/*
+	log( 'Overview', {
+		showConversionsCTA,
+		isAuthenticated,
+		showGA4,
+		dashboardType,
+		ga4ConversionsData,
+		ga4ConversionsDatapoint,
+	} );
+	*/
 
 	const quarterCellProps = {
 		smSize: 2,

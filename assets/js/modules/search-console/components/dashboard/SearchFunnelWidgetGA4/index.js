@@ -249,7 +249,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		);
 	} );
 	const ga4OverviewData = useInViewSelect( ( select ) => {
-		if (
+		/* if (
 			! isGA4Connected ||
 			! canViewSharedAnalytics4 ||
 			showRecoverableAnalytics
@@ -257,7 +257,10 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS_4 ).getReport( ga4OverviewArgs );
+		return select( MODULES_ANALYTICS_4 ).getReport( ga4OverviewArgs ); */
+		return select( MODULES_ANALYTICS_4 ).getSearchFunnelOverviewReport(
+			viewOnly
+		);
 	} );
 	const ga4OverviewError = useSelect( ( select ) => {
 		if ( ! isGA4Connected || showRecoverableAnalytics ) {

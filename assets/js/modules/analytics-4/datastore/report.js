@@ -33,9 +33,11 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../analytics/datastore/constants';
 import { DAY_IN_SECONDS, stringifyObject } from '../../../util';
 import { isValidDateRange } from '../../../util/report-validation';
 import {
@@ -210,6 +212,79 @@ const baseSelectors = {
 		return reports[ stringifyObject( options ) ];
 	},
 
+	getSearchFunnelOverviewReport: createRegistrySelector(
+		( select ) =>
+			( state, { isViewOnly } ) => {
+				const isAnalytics4Available =
+					select( CORE_MODULES ).isModuleAvailable( 'analytics-4' );
+
+				const isGA4Connected =
+					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+				let canViewSharedAnalytics4;
+
+				if ( ! isAnalytics4Available ) {
+					canViewSharedAnalytics4 = false;
+				} else if ( ! isViewOnly ) {
+					canViewSharedAnalytics4 = true;
+				} else {
+					canViewSharedAnalytics4 =
+						select( CORE_USER ).canViewSharedModule(
+							'analytics-4'
+						);
+				}
+
+				let showRecoverableAnalytics;
+
+				if ( ! isViewOnly ) {
+					showRecoverableAnalytics = false;
+				} else {
+					const recoverableModules =
+						select( CORE_MODULES ).getRecoverableModules();
+
+					if ( recoverableModules === undefined ) {
+						showRecoverableAnalytics = undefined;
+					} else {
+						showRecoverableAnalytics =
+							Object.keys( recoverableModules ).includes(
+								'analytics-4'
+							);
+					}
+				}
+
+				const ga4Dates = select( CORE_USER ).getDateRangeDates( {
+					compare: true,
+					offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
+				} );
+
+				const ga4OverviewArgs = {
+					...ga4Dates,
+					metrics: [
+						{
+							name: 'conversions',
+						},
+						{
+							name: 'engagementRate',
+						},
+					],
+					dimensionFilters: {
+						sessionDefaultChannelGrouping: [ 'Organic Search' ],
+					},
+				};
+
+				if (
+					! isGA4Connected ||
+					! canViewSharedAnalytics4 ||
+					showRecoverableAnalytics
+				) {
+					return null;
+				}
+
+				return select( MODULES_ANALYTICS_4 ).getReport(
+					ga4OverviewArgs
+				);
+			}
+	),
 	/**
 	 * Gets a Page title to URL map for the given options.
 	 *

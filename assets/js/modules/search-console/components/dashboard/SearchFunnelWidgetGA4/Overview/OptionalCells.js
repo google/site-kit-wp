@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -42,6 +42,16 @@ import {
 	useBreakpoint,
 } from '../../../../../../hooks/useBreakpoint';
 const { useSelect } = Data;
+
+/*
+// Avoid console.log in tests.
+const log = process?.stdout
+	? ( ...args ) =>
+			process.stdout.write(
+				args.map( JSON.stringify ).join( ' ' ) + '\n'
+			)
+	: global.console.log;
+*/
 
 export default function OptionalCells( {
 	canViewSharedAnalytics4,
@@ -66,13 +76,29 @@ export default function OptionalCells( {
 	const analyticsModuleActiveAndConnected =
 		ga4ModuleActive && ga4ModuleConnected;
 
-	useEffect( () => {
-		if ( ! isLoading ) {
-			global.dispatchEvent( new Event( 'resize' ) );
-		}
-	}, [ isLoading ] );
+	// useEffect( () => {
+	// 	if ( ! isLoading ) {
+	// 		global.dispatchEvent( new Event( 'resize' ) );
+	// 	}
+	// }, [ isLoading ] );
 
-	if ( isLoading ) {
+	/*
+	log( 'OptionalCells', {
+		isLoading,
+		dataBlockCount,
+		canViewSharedAnalytics4,
+		ga4ModuleConnected,
+		ga4ModuleActive,
+		breakpoint,
+		showRecoverableGA4,
+		analyticsModuleActiveAndConnected,
+		error,
+		showGA4,
+		showConversionsCTA,
+	} );
+	*/
+
+	if ( isLoading && ! ( showGA4 && showConversionsCTA ) ) {
 		if ( dataBlockCount < 4 ) {
 			// There are always at least two data blocks, so dataBlockCount can only be 2 or 3 at this point.
 			const cellProps =

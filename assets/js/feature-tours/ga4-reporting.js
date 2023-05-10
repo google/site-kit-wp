@@ -27,6 +27,21 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import SupportLink from '../components/SupportLink';
 import { isFeatureEnabled } from '../features';
 
+// Avoid console.log in tests.
+const log = process?.stdout
+	? ( ...args ) =>
+			process.stdout.write(
+				args.map( JSON.stringify ).join( ' ' ) + '\n'
+			)
+	: global.console.log;
+
+const LoggingSupportLink = ( props ) => {
+	const date = new Date();
+	log( 'LoggingSupportLink', date, date.getTime() );
+
+	return <SupportLink { ...props } />;
+};
+
 const ga4Reporting = {
 	slug: 'ga4Reporting',
 	contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -48,7 +63,7 @@ const ga4Reporting = {
 				),
 				{
 					a: (
-						<SupportLink
+						<LoggingSupportLink
 							path="/analytics/answer/12966437"
 							inverse
 							external

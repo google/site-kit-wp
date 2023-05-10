@@ -32,10 +32,22 @@ import {
 	DASHBOARD_VIEW_GA4,
 	MODULES_ANALYTICS,
 } from '../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import BannerNotification from './BannerNotification';
+import useViewOnly from '../../hooks/useViewOnly';
 const { useDispatch, useSelect } = Data;
 
+// Avoid console.log in tests.
+const log = process?.stdout
+	? ( ...args ) =>
+			process.stdout.write(
+				args.map( JSON.stringify ).join( ' ' ) + '\n'
+			)
+	: global.console.log;
+
 export default function SwitchGA4DashboardViewNotification() {
+	const viewOnly = useViewOnly();
+
 	const shouldPromptGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).shouldPromptGA4DashboardView()
 	);
@@ -48,7 +60,27 @@ export default function SwitchGA4DashboardViewNotification() {
 
 	const { setValue } = useDispatch( CORE_UI );
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
+
+	// Preload conversion events and search funnel overview report to help reduce Search Funnel widget loading time,
+	// in order to reduce the delay in showing the GA4 Reporting feature tour.
+	useSelect( ( select ) =>
+		shouldPromptGA4DashboardView
+			? select( MODULES_ANALYTICS_4 ).getConversionEvents()
+			: null
+	);
+
+	useSelect( ( select ) =>
+		shouldPromptGA4DashboardView
+			? select( MODULES_ANALYTICS_4 ).getSearchFunnelOverviewReport(
+					viewOnly
+			  )
+			: null
+	);
+
 	const handleCTAClick = () => {
+		const date = new Date();
+		log( 'handleCTAClick', date, date.getTime() );
+
 		setValue( 'forceInView', true );
 		setValue( 'showGA4ReportingTour', true );
 
