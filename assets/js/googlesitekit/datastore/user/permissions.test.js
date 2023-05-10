@@ -28,6 +28,11 @@ import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import fetchMock from 'fetch-mock';
+import { enabledFeatures } from '../../../features';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/user authentication', () => {
 	const capabilities = {
@@ -57,6 +62,7 @@ describe( 'core/user authentication', () => {
 			'googlesitekit_read_shared_module_data::["adsense"]': false,
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["analytics"]': true,
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
 		},
 	};
@@ -357,6 +363,73 @@ describe( 'core/user authentication', () => {
 					.getViewableModules();
 
 				expect( viewableModules ).toEqual( [
+					'search-console',
+					'analytics',
+					'pagespeed-insights',
+				] );
+			} );
+
+			it( 'should only show one Analytics module if both are viewable by the user based on the GA4 dashboard view', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities(
+						capabilitiesWithPermission.permissions
+					);
+
+				const modules = FIXTURES.map( ( module ) => {
+					if ( module.slug === 'analytics-4' ) {
+						return {
+							...module,
+							connected: true,
+							active: true,
+						};
+					}
+					return module;
+				} );
+
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: modules, status: 200 }
+				);
+
+				enabledFeatures.add( 'ga4Reporting' );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: DASHBOARD_VIEW_GA4,
+				} );
+
+				const initialViewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( initialViewableModules ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( CORE_USER ).getViewableModules() !==
+						undefined
+				);
+
+				const viewableModulesWithGA4 = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( viewableModulesWithGA4 ).toEqual( [
+					'search-console',
+					'pagespeed-insights',
+					'analytics-4',
+				] );
+
+				// Disable the `ga4Reporting` feature flag and check that
+				// the viewable modules are updated to include the 'analytics'
+				// module instead of 'analytics-4'.
+				enabledFeatures.delete( 'ga4Reporting' );
+
+				const viewableModulesWithUA = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( viewableModulesWithUA ).toEqual( [
 					'search-console',
 					'analytics',
 					'pagespeed-insights',

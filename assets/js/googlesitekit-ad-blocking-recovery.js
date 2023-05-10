@@ -1,7 +1,5 @@
 /**
- * Settings component.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import { HashRouter } from 'react-router-dom';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -30,20 +23,20 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from './googlesitekit/constants';
+import { AdBlockingRecoveryApp } from './modules/adsense/components/settings';
 import Root from './components/Root';
-import SettingsApp from './components/settings/SettingsApp';
-import { VIEW_CONTEXT_SETTINGS } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-settings' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-ad-blocking-recovery'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root viewContext={ VIEW_CONTEXT_SETTINGS }>
-				<HashRouter>
-					<SettingsApp />
-				</HashRouter>
+			<Root viewContext={ VIEW_CONTEXT_AD_BLOCKING_RECOVERY }>
+				<AdBlockingRecoveryApp />
 			</Root>,
 			renderTarget
 		);

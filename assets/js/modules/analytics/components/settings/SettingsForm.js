@@ -88,7 +88,7 @@ export default function SettingsForm( {
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
 	const properties = useSelect( ( select ) => {
-		if ( ! accountID ) {
+		if ( ! accountID || ! hasAnalyticsAccess || ! hasAnalytics4Access ) {
 			return [];
 		}
 

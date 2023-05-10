@@ -397,6 +397,10 @@ WithExistingGTMPropertyMatching.scenario = {
 
 export const WithDashboardViewToggle = Template.bind( null );
 WithDashboardViewToggle.storyName = 'With Dashboard View Toggle';
+WithDashboardViewToggle.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
 WithDashboardViewToggle.parameters = {
 	features: [ 'ga4Reporting' ],
 };
@@ -432,6 +436,10 @@ WithDashboardViewToggle.scenario = {
 
 export const WithDashboardViewLabel = Template.bind( null );
 WithDashboardViewLabel.storyName = 'With Dashboard View Label';
+WithDashboardViewLabel.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
 WithDashboardViewLabel.parameters = {
 	features: [ 'ga4Reporting' ],
 };
