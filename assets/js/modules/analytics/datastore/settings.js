@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
@@ -57,6 +58,7 @@ import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
+import ga4Reporting from '../../../feature-tours/ga4-reporting';
 
 const { createRegistrySelector } = Data;
 
@@ -133,13 +135,14 @@ export async function submitChanges( registry ) {
 
 	// If `ga4Reporting` is enabled, the dashboard view is set to UA
 	// and UA is not enabled, we need to set the dashboard view to GA4.
-	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
+	let dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
 	if (
 		ga4ReportingEnabled &&
 		dashboardView === DASHBOARD_VIEW_UA &&
 		! isUAEnabled
 	) {
 		dispatch( MODULES_ANALYTICS ).setDashboardView( DASHBOARD_VIEW_GA4 );
+		dashboardView = DASHBOARD_VIEW_GA4;
 	}
 
 	const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -159,7 +162,6 @@ export async function submitChanges( registry ) {
 	// but this prevents errors in tests.
 	if ( select( MODULES_ANALYTICS ).haveSettingsChanged() ) {
 		const { error } = await dispatch( MODULES_ANALYTICS ).saveSettings();
-
 		if ( error ) {
 			return { error };
 		}
@@ -170,6 +172,12 @@ export async function submitChanges( registry ) {
 	const { error } = await submitGA4Changes( registry );
 	if ( error ) {
 		return { error };
+	}
+
+	if ( dashboardView === DASHBOARD_VIEW_GA4 ) {
+		if ( ! select( CORE_USER ).isTourDismissed( ga4Reporting.slug ) ) {
+			dispatch( CORE_USER ).dismissTour( ga4Reporting.slug );
+		}
 	}
 
 	return {};
