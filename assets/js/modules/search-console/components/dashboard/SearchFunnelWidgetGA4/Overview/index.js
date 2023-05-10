@@ -233,17 +233,6 @@ export default function Overview( props ) {
 				ga4ConversionsData[ 0 ].eventName === 'purchase' &&
 				ga4ConversionsDatapoint === '0' ) ); // Note that ga4ConversionsDatapoint is also needed to determine showConversionsCTA; ga4ConversionsDatapoint is from the main GA4 report.
 
-	/*
-	log( 'Overview', {
-		showConversionsCTA,
-		isAuthenticated,
-		showGA4,
-		dashboardType,
-		ga4ConversionsData,
-		ga4ConversionsDatapoint,
-	} );
-	*/
-
 	const quarterCellProps = {
 		smSize: 2,
 		mdSize: showConversionsCTA ? 4 : 2,

@@ -25,7 +25,7 @@ import { identity } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useState, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
@@ -55,7 +55,6 @@ import {
 } from '../../../../../hooks/useBreakpoint';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
-import { Fragment } from 'react';
 const { useSelect, useInViewSelect } = Data;
 
 // eslint-disable-next-line complexity
@@ -249,15 +248,16 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		);
 	} );
 	const ga4OverviewData = useInViewSelect( ( select ) => {
-		/* if (
-			! isGA4Connected ||
-			! canViewSharedAnalytics4 ||
-			showRecoverableAnalytics
-		) {
-			return null;
-		}
+		// if (
+		// 	! isGA4Connected ||
+		// 	! canViewSharedAnalytics4 ||
+		// 	showRecoverableAnalytics
+		// ) {
+		// 	return null;
+		// }
 
-		return select( MODULES_ANALYTICS_4 ).getReport( ga4OverviewArgs ); */
+		// return select( MODULES_ANALYTICS_4 ).getReport( ga4OverviewArgs );
+
 		return select( MODULES_ANALYTICS_4 ).getSearchFunnelOverviewReport(
 			viewOnly
 		);
@@ -381,23 +381,22 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		isGA4GatheringData === undefined ||
 		isSearchConsoleGatheringData === undefined;
 
-	/*
-	if (
-		searchConsoleLoading ||
-		ga4OverviewLoading ||
-		ga4StatsLoading ||
-		ga4VisitorsOverviewAndStatsLoading ||
-		ga4ConversionsLoading ||
-		isGA4GatheringData === undefined ||
-		isSearchConsoleGatheringData === undefined
-	) {
-		return (
-			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
-				<PreviewBlock width="100%" height="190px" padding />
-				<PreviewBlock width="100%" height="270px" padding />
-			</Widget>
-		);
-	} */
+	// if (
+	// 	searchConsoleLoading ||
+	// 	ga4OverviewLoading ||
+	// 	ga4StatsLoading ||
+	// 	ga4VisitorsOverviewAndStatsLoading ||
+	// 	ga4ConversionsLoading ||
+	// 	isGA4GatheringData === undefined ||
+	// 	isSearchConsoleGatheringData === undefined
+	// ) {
+	// 	return (
+	// 		<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
+	// 			<PreviewBlock width="100%" height="190px" padding />
+	// 			<PreviewBlock width="100%" height="270px" padding />
+	// 		</Widget>
+	// 	);
+	// }
 
 	return (
 		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>

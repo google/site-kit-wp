@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,7 +36,6 @@ import PreviewBlock from '../PreviewBlock';
 import Sparkline from './Sparkline';
 import Change from './Change';
 import SourceLink from '../SourceLink';
-import { Fragment } from 'react';
 
 const DataBlock = ( {
 	stat = null,
