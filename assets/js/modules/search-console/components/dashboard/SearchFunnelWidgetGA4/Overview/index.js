@@ -64,15 +64,6 @@ function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	};
 }
 
-// Avoid console.log in tests.
-const log = process?.stdout
-	? ( ...args ) =>
-			process.stdout.write(
-				args.map( JSON.stringify ).join( ' ' ) + '\n'
-			)
-	: global.console.log;
-
-// eslint-disable-next-line complexity
 export default function Overview( props ) {
 	const {
 		ga4Data,
@@ -190,31 +181,13 @@ export default function Overview( props ) {
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 
 	useEffect( () => {
-		const date = new Date();
-
 		if (
 			! showGA4 ||
 			! canShowGA4ReportingFeatureTour ||
 			dashboardType !== DASHBOARD_TYPE_MAIN
 		) {
-			log(
-				'not showing GA4 reporting feature tour',
-				date,
-				date.getTime()
-			);
-
 			return;
 		}
-		log(
-			'showing GA4 reporting feature tour, target',
-			document.querySelector(
-				'.googlesitekit-data-block--conversions .googlesitekit-data-block__title, .googlesitekit-analytics-cta--setup-conversions'
-			)
-				? 'exists'
-				: 'does not exist',
-			date,
-			date.getTime()
-		);
 
 		triggerOnDemandTour( ga4Reporting );
 	}, [

@@ -36,14 +36,6 @@ import BannerNotification from './BannerNotification';
 
 const { useDispatch, useSelect } = Data;
 
-// Avoid console.log in tests.
-const log = process?.stdout
-	? ( ...args ) =>
-			process.stdout.write(
-				args.map( JSON.stringify ).join( ' ' ) + '\n'
-			)
-	: global.console.log;
-
 export default function SwitchGA4DashboardViewNotification() {
 	const shouldPromptGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).shouldPromptGA4DashboardView()
@@ -57,10 +49,7 @@ export default function SwitchGA4DashboardViewNotification() {
 
 	const { setValue } = useDispatch( CORE_UI );
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
-
 	const handleCTAClick = () => {
-		const date = new Date();
-		log( 'handleCTAClick', date, date.getTime() );
 		setValue( 'forceInView', true );
 		setValue( 'showGA4ReportingTour', true );
 
