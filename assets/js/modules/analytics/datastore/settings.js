@@ -52,9 +52,11 @@ import {
 	FORM_SETUP,
 	DASHBOARD_VIEW_GA4,
 	DASHBOARD_VIEW_UA,
+	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
 
@@ -170,6 +172,17 @@ export async function submitChanges( registry ) {
 	const { error } = await submitGA4Changes( registry );
 	if ( error ) {
 		return { error };
+	}
+
+	const dismissedItems = await registry
+		.__experimentalResolveSelect( CORE_USER )
+		.getDismissedItems();
+
+	if (
+		! dismissedItems.includes( GA4_DASHBOARD_VIEW_NOTIFICATION_ID ) &&
+		dashboardView === DASHBOARD_VIEW_GA4
+	) {
+		dispatch( CORE_USER ).dismissItem( GA4_DASHBOARD_VIEW_NOTIFICATION_ID );
 	}
 
 	return {};
