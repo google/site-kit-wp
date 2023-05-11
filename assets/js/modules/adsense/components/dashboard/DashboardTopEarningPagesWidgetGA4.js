@@ -83,6 +83,19 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 		/>
 	);
 
+	const InfoIcon = () => (
+		<svg
+			width="16"
+			height="16"
+			viewBox="0 0 2 12"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<g fill="#FFF" fillRule="evenodd">
+				<path d="M0 0h2v7H0zM0 10h2v2H0z" />
+			</g>
+		</svg>
+	);
+
 	const tableColumns = [
 		{
 			title: __( 'Top Earning Pages', 'google-site-kit' ),
@@ -98,6 +111,7 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 
 			<Grid className="googlesitekit-padding-top-0">
 				<SettingsNotice
+					Icon={ InfoIcon }
 					notice={ __(
 						'Top earning pages are not yet available in Google Analytics 4.',
 						'google-site-kit'

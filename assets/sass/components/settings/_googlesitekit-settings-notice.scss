@@ -220,6 +220,12 @@
 
 	.googlesitekit-settings-notice__icon {
 		margin-right: 20px;
+
+		svg {
+			background-color: #161b18;
+			border-radius: 50%;
+			padding: 2px;
+		}
 	}
 
 	.googlesitekit-settings-notice__text {
