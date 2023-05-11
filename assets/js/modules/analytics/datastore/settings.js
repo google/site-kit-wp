@@ -176,16 +176,19 @@ export async function submitChanges( registry ) {
 		return { error };
 	}
 
-	const dismissedItems = await registry
-		.__experimentalResolveSelect( CORE_USER )
-		.getDismissedItems();
-
 	if ( dashboardView === DASHBOARD_VIEW_GA4 ) {
 		if ( ! select( CORE_USER ).isTourDismissed( ga4Reporting.slug ) ) {
 			dispatch( CORE_USER ).dismissTour( ga4Reporting.slug );
 		}
 
-		if ( ! dismissedItems.includes( GA4_DASHBOARD_VIEW_NOTIFICATION_ID ) ) {
+		await registry
+			.__experimentalResolveSelect( CORE_USER )
+			.getDismissedItems();
+		if (
+			! select( CORE_USER ).isItemDismissed(
+				GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+			)
+		) {
 			dispatch( CORE_USER ).dismissItem(
 				GA4_DASHBOARD_VIEW_NOTIFICATION_ID
 			);
