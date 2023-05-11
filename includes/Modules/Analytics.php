@@ -51,7 +51,6 @@ use Google\Site_Kit\Modules\Analytics\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics\Web_Tag;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
-use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\Analytics as Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting as Google_Service_AnalyticsReporting;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\GetReportsRequest as Google_Service_AnalyticsReporting_GetReportsRequest;
@@ -169,11 +168,9 @@ final class Analytics extends Module
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
-		$settings     = $this->get_settings()->get();
-		$ga4_settings = ( new Analytics_4_Settings( $this->options ) )->get();
-
+		$settings = $this->get_settings()->get();
 		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
-		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] || $ga4_settings['useSnippet'] ) ) {
+		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
 			return false;
 		}
 
@@ -1228,7 +1225,7 @@ final class Analytics extends Module
 			return;
 		}
 
-		if ( $this->context->is_amp() && ! empty( $property_id ) ) : ?>
+		if ( $this->context->is_amp() ) : ?>
 			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
 			<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
