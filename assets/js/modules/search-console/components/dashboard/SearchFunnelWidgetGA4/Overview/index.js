@@ -179,7 +179,6 @@ export default function Overview( props ) {
 		! showRecoverableAnalytics;
 
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
-
 	useEffect( () => {
 		if (
 			! showGA4 ||

@@ -33,7 +33,6 @@ import {
 	MODULES_ANALYTICS,
 } from '../../modules/analytics/datastore/constants';
 import BannerNotification from './BannerNotification';
-
 const { useDispatch, useSelect } = Data;
 
 export default function SwitchGA4DashboardViewNotification() {
