@@ -30,7 +30,9 @@ import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import SupportLink from '../../../../components/SupportLink';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 
 const { useSelect, useDispatch } = Data;
 
@@ -45,21 +47,12 @@ export default function AnonymizeIPSwitch() {
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
-	);
 
 	const { setAnonymizeIP } = useDispatch( MODULES_ANALYTICS );
 
-	const isDisabled = isGA4DashboardView && useGA4Snippet && ! useSnippet;
-
 	const onChange = useCallback( () => {
-		if ( isDisabled ) {
-			return;
-		}
-
 		setAnonymizeIP( ! anonymizeIP );
-	}, [ anonymizeIP, isDisabled, setAnonymizeIP ] );
+	}, [ anonymizeIP, setAnonymizeIP ] );
 
 	if (
 		( ! useSnippet && ! useGA4Snippet ) ||
@@ -74,45 +67,39 @@ export default function AnonymizeIPSwitch() {
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'IP addresses', 'google-site-kit' ) }
 			</h4>
-			<div className="googlesitekit-settings-module__meta-item">
-				<div className="googlesitekit-analytics-anonymizeip">
-					<Switch
-						label={ __(
-							'Anonymize IP addresses',
+			<SettingsNotice
+				type={ TYPE_INFO }
+				notice={ __(
+					'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
+					'google-site-kit'
+				) }
+				LearnMore={ () => (
+					<SupportLink
+						path="/analytics/answer/2763052"
+						external
+						aria-label={ __(
+							'Learn more about IP anonymization.',
 							'google-site-kit'
 						) }
-						onClick={ onChange }
-						checked={ isDisabled ? false : anonymizeIP }
-						hideLabel={ false }
-						disabled={ isDisabled }
-					/>
-					<p>
-						{ isDisabled &&
-							createInterpolateElement(
-								__(
-									'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored. <LearnMoreLink />',
-									'google-site-kit'
-								),
-								{
-									LearnMoreLink: (
-										<SupportLink
-											path="/analytics/answer/2763052"
-											external
-											aria-label={ __(
-												'Learn more about IP anonymization.',
-												'google-site-kit'
-											) }
-										>
-											{ __(
-												'Learn more',
-												'google-site-kit'
-											) }
-										</SupportLink>
-									),
-								}
+					>
+						{ __( 'Learn more', 'google-site-kit' ) }
+					</SupportLink>
+				) }
+			/>
+			{ useSnippet && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<div className="googlesitekit-analytics-anonymizeip">
+						<Switch
+							label={ __(
+								'Anonymize IP addresses (Universal Analytics only)',
+								'google-site-kit'
 							) }
-						{ ! isDisabled &&
-							createInterpolateElement(
+							onClick={ onChange }
+							checked={ anonymizeIP }
+							hideLabel={ false }
+						/>
+						<p>
+							{ createInterpolateElement(
 								anonymizeIP
 									? __(
 											'IP addresses will be anonymized. <LearnMoreLink />',
@@ -140,9 +127,10 @@ export default function AnonymizeIPSwitch() {
 									),
 								}
 							) }
-					</p>
+						</p>
+					</div>
 				</div>
-			</div>
+			) }
 		</div>
 	);
 }
