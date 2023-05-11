@@ -94,9 +94,9 @@ describe( 'WidgetRenderer', () => {
 			setupRegistry: setupRegistry( { preloadWidget: true } ),
 		} );
 
-		expect( Object.values( container.firstChild.classList ) ).toEqual( [
-			'googlesitekit-hidden',
-		] );
+		expect( Object.values( container.firstChild.classList ) ).toContain(
+			'googlesitekit-hidden'
+		);
 
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
