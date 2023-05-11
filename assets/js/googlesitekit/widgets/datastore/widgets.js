@@ -309,6 +309,7 @@ export const selectors = {
 	 * the order provided by the selector.
 	 *
 	 * @since 1.9.0
+	 * @since n.e.x.t Allows widgets to override their active state via an isPreloaded() callback.
 	 *
 	 * @param {Object}                state             Data store's state.
 	 * @param {string}                widgetAreaSlug    Widget context to get areas for.
