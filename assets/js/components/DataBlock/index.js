@@ -80,13 +80,6 @@ const DataBlock = ( {
 	const isButtonContext = 'button' === context;
 	const role = isButtonContext ? 'button' : '';
 
-	const theBadge =
-		badge === true ? (
-			<Badge className="googlesitekit-badge--hidden" label="X" />
-		) : (
-			badge
-		);
-
 	return (
 		<div
 			className={ classnames(
@@ -114,7 +107,14 @@ const DataBlock = ( {
 						googlesitekit-data-block__title
 					"
 				>
-					{ theBadge }
+					{ badge === true ? (
+						<Badge
+							className="googlesitekit-badge--hidden"
+							label="X"
+						/>
+					) : (
+						badge
+					) }
 					<span className="googlesitekit-data-block__title-inner">
 						{ title }
 					</span>
