@@ -55,7 +55,8 @@ export default function OptionalSettingsView() {
 
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
-	const showIPAnonymizationSettings = useSnippet && ampMode !== 'primary';
+	const showIPAnonymizationSettings =
+		( useGA4Snippet || useSnippet ) && ampMode !== 'primary';
 
 	const showAdsConversionIDSettings =
 		canUseSnippet && ( useSnippet || useGA4Snippet );
@@ -72,7 +73,7 @@ export default function OptionalSettingsView() {
 							) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
-							{ anonymizeIP && (
+							{ useSnippet && anonymizeIP && (
 								<span>
 									{ __(
 										'IP addresses are being anonymized',
@@ -80,10 +81,18 @@ export default function OptionalSettingsView() {
 									) }
 								</span>
 							) }
-							{ ! anonymizeIP && (
+							{ useSnippet && ! anonymizeIP && (
 								<span>
 									{ __(
 										'IP addresses are not being anonymized',
+										'google-site-kit'
+									) }
+								</span>
+							) }
+							{ ! useSnippet && useGA4Snippet && (
+								<span>
+									{ __(
+										'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
 										'google-site-kit'
 									) }
 								</span>
