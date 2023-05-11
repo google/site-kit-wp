@@ -21,6 +21,7 @@ on:
       - '**/package.json'
       - 'package-lock.json'
       - 'src/tests/backstop/config.js'
+      - 'docker/backstopjs/Dockerfile'
     types:
       - opened
       - reopened
