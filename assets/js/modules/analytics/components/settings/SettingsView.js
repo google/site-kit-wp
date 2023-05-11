@@ -77,7 +77,7 @@ export default function SettingsView() {
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Dashboard view', 'google-site-kit' ) }
+							{ __( 'Dashboard View', 'google-site-kit' ) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting
