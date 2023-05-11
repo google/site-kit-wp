@@ -208,6 +208,14 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		),
 	};
 
+	// Check if any of the data blocks have a badge.
+	//
+	// If no data blocks have a badge, we shouldn't even render an
+	// empty badge container, and save some vertical space in the `DataBlock`.
+	const hasMetricWithBadge = data.some( ( { metric } ) => {
+		return !! badges[ metric ];
+	} );
+
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
 			<Grid>
@@ -236,7 +244,9 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 											gatheringData={ isGatheringData }
 										/>
 									}
-									badge={ badges[ metric ] || true }
+									badge={
+										badges[ metric ] || hasMetricWithBadge
+									}
 								/>
 							</Cell>
 						)
