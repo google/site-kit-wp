@@ -288,9 +288,7 @@ export const selectors = {
 		( select ) => ( state, slug ) => {
 			const { widgets } = state;
 
-			return !! (
-				widgets[ slug ] && widgets[ slug ].isPreloaded?.( select )
-			);
+			return !! widgets[ slug ]?.isPreloaded?.( select );
 		}
 	),
 
