@@ -59,7 +59,7 @@ class ScreenTest extends TestCase {
 		wp_set_current_user( $admin_id );
 		$this->assertTrue( user_can( $admin_id, 'manage_options' ) );
 		// No callback, with user, with permission
-		$this->assertEquals( '', $screen->add( $context ) );
+		$this->assertEquals( 'toplevel_page_test-slug', $screen->add( $context ) );
 
 		// With callback, with user, with permission
 		$screen = new Screen(

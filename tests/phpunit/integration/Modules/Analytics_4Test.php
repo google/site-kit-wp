@@ -540,15 +540,50 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_scopes__gteSupport() {
+	/**
+	 * @dataProvider data_scopes_gteSupport
+	 */
+	public function test_auth_scopes__gteSupport( array $granted_scopes, array $expected_scopes ) {
 		$this->enable_feature( 'gteSupport' );
 
+		remove_all_filters( 'googlesitekit_auth_scopes' );
+		$this->analytics->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes( $granted_scopes );
+
 		$this->assertEqualSets(
-			array(
-				'https://www.googleapis.com/auth/analytics.readonly',
-				'https://www.googleapis.com/auth/tagmanager.readonly',
+			$expected_scopes,
+			apply_filters( 'googlesitekit_auth_scopes', array() )
+		);
+	}
+
+	public function data_scopes_gteSupport() {
+		return array(
+			'with analytics and tag manager scopes granted' => array(
+				array(
+					Analytics::READONLY_SCOPE,
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+				array(
+					Analytics::READONLY_SCOPE,
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
 			),
-			$this->analytics->get_scopes()
+			'with analytics scope granted' => array(
+				array(
+					Analytics::READONLY_SCOPE,
+				),
+				array(
+					Analytics::READONLY_SCOPE,
+				),
+			),
+			'with no scopes granted'       => array(
+				array(),
+				array(
+					Analytics::READONLY_SCOPE,
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
 		);
 	}
 

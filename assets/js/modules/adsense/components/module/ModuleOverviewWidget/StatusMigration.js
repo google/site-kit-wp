@@ -63,7 +63,7 @@ export default function StatusMigration() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	let isReady;
-	if ( afcClient || site ) {
+	if ( afcClient && site ) {
 		if (
 			afcClient.state !== API_STATE_READY ||
 			site.state !== API_STATE_READY ||

@@ -27,6 +27,7 @@ export const VIEW_CONTEXT_ACTIVATION = 'activation';
 export const VIEW_CONTEXT_SPLASH = 'splash';
 export const VIEW_CONTEXT_ADMIN_BAR = 'adminBar';
 export const VIEW_CONTEXT_SETTINGS = 'settings';
+export const VIEW_CONTEXT_AD_BLOCKING_RECOVERY = 'adBlockingRecovery';
 export const VIEW_CONTEXT_MODULE = 'module';
 export const VIEW_CONTEXT_WP_DASHBOARD = 'wpDashboard';
 export const VIEW_CONTEXT_MODULE_SETUP = 'moduleSetup';
