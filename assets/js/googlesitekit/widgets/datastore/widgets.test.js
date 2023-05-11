@@ -516,6 +516,86 @@ describe( 'core/widgets Widgets', () => {
 			} );
 		} );
 
+		describe( 'isWidgetPreloaded', () => {
+			const TEST_STORE = 'test-store';
+
+			it( "returns true if the widget's isPreloaded callback returns true", () => {
+				// Setup a test store with a selector so we can verify the isWidgetPreloaded selector passes
+				// the registry select function through to the widget's isPreloaded callback.
+				registry.registerStore( TEST_STORE, {
+					reducer: ( state ) => state,
+					selectors: {
+						isTestWidgetPreloaded: () => true,
+					},
+				} );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component: () => {
+							return <div>Hello test.</div>;
+						},
+						isPreloaded: ( select ) =>
+							select( TEST_STORE ).isTestWidgetPreloaded(),
+					} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetPreloaded( 'TestWidget' )
+				).toBe( true );
+			} );
+
+			it( "returns false if the widget's isPreloaded callback returns false", () => {
+				registry.registerStore( TEST_STORE, {
+					reducer: ( state ) => state,
+					selectors: {
+						isTestWidgetPreloaded: () => false,
+					},
+				} );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component: () => {
+							return <div>Hello test.</div>;
+						},
+						isPreloaded: ( select ) =>
+							select( TEST_STORE ).isTestWidgetPreloaded(),
+					} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetPreloaded( 'TestWidget' )
+				).toBe( false );
+			} );
+
+			it( 'returns false if the widget does not have an isPreloaded callback', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component: () => {
+							return <div>Hello test.</div>;
+						},
+					} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetPreloaded( 'TestWidget' )
+				).toBe( false );
+			} );
+
+			it( 'returns false if the widget is not registered', () => {
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetPreloaded( 'NotRealWidget' )
+				).toBe( false );
+			} );
+		} );
+
 		describe( 'getWidget', () => {
 			it( 'returns a widget if one exists', () => {
 				registry

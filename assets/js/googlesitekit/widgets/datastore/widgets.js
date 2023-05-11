@@ -284,6 +284,15 @@ export const selectors = {
 		return widgets[ slug ] !== undefined;
 	},
 
+	/**
+	 * Checks if a widget with the given slug is in the preloaded state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget's slug.
+	 * @return {boolean} `true`/`false` based on whether widget is currently in a preloaded state.
+	 */
 	isWidgetPreloaded: createRegistrySelector(
 		( select ) => ( state, slug ) => {
 			const { widgets } = state;
