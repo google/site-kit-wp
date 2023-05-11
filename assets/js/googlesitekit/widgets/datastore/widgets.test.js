@@ -248,6 +248,8 @@ describe( 'core/widgets Widgets', () => {
 	} );
 
 	describe( 'selectors', () => {
+		const TEST_STORE = 'test-store';
+
 		describe( 'getWidgets', () => {
 			it( 'requires a widgetAreaSlug', () => {
 				expect( () => {
@@ -438,6 +440,106 @@ describe( 'core/widgets Widgets', () => {
 				expect( widgets[ 1 ].slug ).toBe( 'TestWidget1' );
 				expect( widgets[ 2 ].slug ).toBe( 'TestWidget4' );
 			} );
+
+			it( 'should return widgets filtered by their isActive callback when specified', () => {
+				// Setup a test store with a selector so we can verify the getWidgets selector passes
+				// the registry select function through to the widget's isActive callback.
+				registry.registerStore( TEST_STORE, {
+					reducer: ( state ) => state,
+					selectors: {
+						isTestWidgetActive: () => false,
+					},
+				} );
+
+				const Component = () => <div>Hello test.</div>;
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidgetArea( 'dashboard-header', 'dashboard' );
+
+				[
+					{
+						Component,
+					},
+					{
+						Component,
+						isActive: ( select ) =>
+							select( TEST_STORE ).isTestWidgetActive(),
+					},
+					{
+						Component,
+					},
+				].forEach( ( widget, i ) => {
+					const slug = `TestWidget${ i }`;
+
+					registry
+						.dispatch( CORE_WIDGETS )
+						.registerWidget( slug, widget );
+					registry
+						.dispatch( CORE_WIDGETS )
+						.assignWidget( slug, 'dashboard-header' );
+				} );
+
+				const widgets = registry
+					.select( CORE_WIDGETS )
+					.getWidgets( 'dashboard-header' );
+
+				expect( widgets ).toHaveLength( 2 );
+				expect( widgets[ 0 ].slug ).toBe( 'TestWidget0' );
+				expect( widgets[ 1 ].slug ).toBe( 'TestWidget2' );
+			} );
+
+			it( "should override the value of a widget's isActive callback with the result of its isPreloaded callback when specified", () => {
+				// Setup a test store with selectors so we can verify the getWidgets selector passes
+				// the registry select function through to the widget's isActive and isPreloaded callbacks.
+				registry.registerStore( TEST_STORE, {
+					reducer: ( state ) => state,
+					selectors: {
+						isTestWidgetActive: () => false,
+						isTestWidgetPreloaded: () => true,
+					},
+				} );
+
+				const Component = () => <div>Hello test.</div>;
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidgetArea( 'dashboard-header', 'dashboard' );
+
+				[
+					{
+						Component,
+					},
+					{
+						Component,
+						isActive: ( select ) =>
+							select( TEST_STORE ).isTestWidgetActive(),
+						isPreloaded: ( select ) =>
+							select( TEST_STORE ).isTestWidgetPreloaded(),
+					},
+					{
+						Component,
+					},
+				].forEach( ( widget, i ) => {
+					const slug = `TestWidget${ i }`;
+
+					registry
+						.dispatch( CORE_WIDGETS )
+						.registerWidget( slug, widget );
+					registry
+						.dispatch( CORE_WIDGETS )
+						.assignWidget( slug, 'dashboard-header' );
+				} );
+
+				const widgets = registry
+					.select( CORE_WIDGETS )
+					.getWidgets( 'dashboard-header' );
+
+				expect( widgets ).toHaveLength( 3 );
+				expect( widgets[ 0 ].slug ).toBe( 'TestWidget0' );
+				expect( widgets[ 1 ].slug ).toBe( 'TestWidget1' );
+				expect( widgets[ 2 ].slug ).toBe( 'TestWidget2' );
+			} );
 		} );
 
 		describe( 'isWidgetActive', () => {
@@ -512,6 +614,84 @@ describe( 'core/widgets Widgets', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( 'NotRealWidget' )
+				).toBe( false );
+			} );
+		} );
+
+		describe( 'isWidgetPreloaded', () => {
+			it( "returns true if the widget's isPreloaded callback returns true", () => {
+				// Setup a test store with a selector so we can verify the isWidgetPreloaded selector passes
+				// the registry select function through to the widget's isPreloaded callback.
+				registry.registerStore( TEST_STORE, {
+					reducer: ( state ) => state,
+					selectors: {
+						isTestWidgetPreloaded: () => true,
+					},
+				} );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component: () => {
+							return <div>Hello test.</div>;
+						},
+						isPreloaded: ( select ) =>
+							select( TEST_STORE ).isTestWidgetPreloaded(),
+					} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetPreloaded( 'TestWidget' )
+				).toBe( true );
+			} );
+
+			it( "returns false if the widget's isPreloaded callback returns false", () => {
+				registry.registerStore( TEST_STORE, {
+					reducer: ( state ) => state,
+					selectors: {
+						isTestWidgetPreloaded: () => false,
+					},
+				} );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component: () => {
+							return <div>Hello test.</div>;
+						},
+						isPreloaded: ( select ) =>
+							select( TEST_STORE ).isTestWidgetPreloaded(),
+					} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetPreloaded( 'TestWidget' )
+				).toBe( false );
+			} );
+
+			it( 'returns false if the widget does not have an isPreloaded callback', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component: () => {
+							return <div>Hello test.</div>;
+						},
+					} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetPreloaded( 'TestWidget' )
+				).toBe( false );
+			} );
+
+			it( 'returns false if the widget is not registered', () => {
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetPreloaded( 'NotRealWidget' )
 				).toBe( false );
 			} );
 		} );
