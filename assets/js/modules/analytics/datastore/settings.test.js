@@ -33,6 +33,7 @@ import {
 	PROFILE_CREATE,
 	DASHBOARD_VIEW_UA,
 	DASHBOARD_VIEW_GA4,
+	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
 import * as fixtures from './__fixtures__';
 import {
@@ -134,6 +135,11 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [
+						GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
+					] );
 			} );
 
 			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
@@ -621,6 +627,132 @@ describe( 'modules/analytics settings', () => {
 				} );
 			} );
 
+			describe( 'dismiss switch ga4 dashboard view notification', () => {
+				const fetchDismissItemRegExp = new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismiss-item'
+				);
+
+				it( 'should not dismiss the switch ga4 dashboard view notification if it is a UA dashboard view', async () => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetDismissedItems( [] );
+					registry
+						.dispatch( MODULES_ANALYTICS )
+						.setSettings( validSettings );
+
+					fetchMock.postOnce( gaSettingsEndpoint, {
+						body: validSettings,
+					} );
+
+					expect(
+						registry.select( MODULES_ANALYTICS ).getDashboardView()
+					).toBe( DASHBOARD_VIEW_UA );
+					expect(
+						registry
+							.select( CORE_USER )
+							.isItemDismissed(
+								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+							)
+					).toBe( false );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS )
+						.submitChanges();
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.isItemDismissed(
+								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+							)
+					).toBe( false );
+				} );
+
+				it( 'should not dismiss the switch ga4 dashboard view notification if it is already dismissed', async () => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetDismissedItems( [
+							GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
+						] );
+					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+						...validSettings,
+						dashboardView: DASHBOARD_VIEW_GA4,
+					} );
+
+					fetchMock.postOnce( gaSettingsEndpoint, {
+						body: validSettings,
+					} );
+
+					expect(
+						registry.select( MODULES_ANALYTICS ).getDashboardView()
+					).toBe( DASHBOARD_VIEW_GA4 );
+					expect(
+						registry
+							.select( CORE_USER )
+							.isItemDismissed(
+								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+							)
+					).toBe( true );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS )
+						.submitChanges();
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.isItemDismissed(
+								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+							)
+					).toBe( true );
+
+					expect( fetchMock ).not.toHaveFetched(
+						fetchDismissItemRegExp
+					);
+				} );
+
+				it( 'should dismiss the switch ga4 dashboard view notification if it has not been dismissed yet', async () => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetDismissedItems( [] );
+					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+						...validSettings,
+						dashboardView: DASHBOARD_VIEW_GA4,
+					} );
+
+					fetchMock.postOnce( gaSettingsEndpoint, {
+						body: validSettings,
+					} );
+					fetchMock.post( fetchDismissItemRegExp, {
+						body: [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ],
+					} );
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.isItemDismissed(
+								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+							)
+					).toBe( false );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS )
+						.submitChanges();
+
+					// Wait for resolvers to run.
+					await waitForDefaultTimeouts();
+
+					expect( fetchMock ).toHaveFetched( fetchDismissItemRegExp );
+					expect(
+						registry
+							.select( CORE_USER )
+							.isItemDismissed(
+								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+							)
+					).toBe( true );
+				} );
+			} );
+
 			describe( 'analytics-4', () => {
 				beforeEach( () => {
 					registry
@@ -768,6 +900,11 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetSettings( validSettings );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [
+						GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
+					] );
 				expect(
 					registry.select( MODULES_ANALYTICS ).haveSettingsChanged()
 				).toBe( false );
