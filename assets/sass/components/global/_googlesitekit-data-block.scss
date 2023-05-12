@@ -48,15 +48,23 @@
 		.googlesitekit-new-badge {
 			margin-left: 0;
 		}
+	}
 
-		.googlesitekit-adminbar & {
+	&.googlesitekit-data-block--button .googlesitekit-data-block__title {
+		align-items: center;
+	}
+
+	.googlesitekit-adminbar & {
+		.googlesitekit-data-block__title {
 			font-size: $fs-body-lg;
 			font-weight: $fw-bold;
 			letter-spacing: $ls-m;
 			margin-bottom: 5px;
 		}
+	}
 
-		#dashboard-widgets .googlesitekit-wp-dashboard & {
+	#dashboard-widgets .googlesitekit-wp-dashboard & {
+		.googlesitekit-data-block__title {
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 		}
@@ -207,12 +215,6 @@
 		padding-bottom: $grid-gap-desktop;
 		padding-top: $grid-gap-desktop + 4px;
 	}
-
-	/* stylelint-disable no-descending-specificity */
-	.googlesitekit-data-block__title {
-		align-items: center;
-	}
-	/* stylelint-enable */
 }
 
 .googlesitekit-data-block--button::before {
