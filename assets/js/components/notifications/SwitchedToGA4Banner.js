@@ -59,6 +59,7 @@ export default function SwitchedToGA4Banner() {
 
 	const { setValue } = useDispatch( CORE_UI );
 	const handleCTAClick = () => {
+		setValue( 'forceInView', true );
 		setValue( 'showGA4ReportingTour', true );
 	};
 
