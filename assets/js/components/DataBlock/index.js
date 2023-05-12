@@ -109,8 +109,9 @@ const DataBlock = ( {
 				>
 					{ badge === true ? (
 						<Badge
+							aria-hidden="true"
 							className="googlesitekit-badge--hidden"
-							label="X"
+							label="X" // This is a minimal placeholder value to provide the correct height without too much width.
 						/>
 					) : (
 						badge
