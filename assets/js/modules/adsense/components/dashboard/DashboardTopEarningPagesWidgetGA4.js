@@ -44,6 +44,7 @@ import SettingsNotice from '../../../../components/SettingsNotice';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import ReportTable from '../../../../components/ReportTable';
 import Null from '../../../../components/Null';
+import InfoIcon from '../../../../../svg/icons/info-circle.svg';
 import { Grid } from '../../../../material-components';
 const { useSelect } = Data;
 
@@ -81,19 +82,6 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 			href={ analyticsMainURL }
 			external
 		/>
-	);
-
-	const InfoIcon = () => (
-		<svg
-			width="16"
-			height="16"
-			viewBox="0 0 2 12"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<g fill="#FFF" fillRule="evenodd">
-				<path d="M0 0h2v7H0zM0 10h2v2H0z" />
-			</g>
-		</svg>
 	);
 
 	const tableColumns = [
