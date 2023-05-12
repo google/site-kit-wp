@@ -37,6 +37,7 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { AccountSelect, GA4ActivateSwitch } from '../common';
+import { isValidPropertyID } from '../..//util';
 import {
 	PropertySelect,
 	WebDataStreamSelect,
@@ -48,6 +49,9 @@ import GA4SettingsNotice from './GA4SettingsNotice';
 import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import SupportLink from '../../../../components/SupportLink';
+import { TYPE_INFO } from '../../../../components/SettingsNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
@@ -81,6 +85,16 @@ export default function GA4SettingsControls( props ) {
 		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
 	);
 
+	const uaPropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const isUAConnected = isValidPropertyID( uaPropertyID );
+
+	const anonymizeIP = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAnonymizeIP()
+	);
+	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
+
 	const onActivate = useCallback( () => {
 		matchAndSelectProperty( accountID );
 	}, [ matchAndSelectProperty, accountID ] );
@@ -93,6 +107,9 @@ export default function GA4SettingsControls( props ) {
 
 	const isDisabled = ! propertyID && ! enableGA4;
 	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
+
+	const showAnonymizeIPNotice =
+		isUAConnected && ampMode !== 'primary' && anonymizeIP !== undefined;
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
@@ -174,6 +191,27 @@ export default function GA4SettingsControls( props ) {
 				<div className="googlesitekit-settings-module__meta-item">
 					<SettingsUseSnippetSwitch />
 				</div>
+			) }
+			{ showAnonymizeIPNotice && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					notice={ __(
+						'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
+						'google-site-kit'
+					) }
+					LearnMore={ () => (
+						<SupportLink
+							path="/analytics/answer/2763052"
+							external
+							aria-label={ __(
+								'Learn more about IP anonymization.',
+								'google-site-kit'
+							) }
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</SupportLink>
+					) }
+				/>
 			) }
 		</div>
 	);

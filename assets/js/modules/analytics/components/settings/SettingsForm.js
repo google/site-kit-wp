@@ -139,13 +139,13 @@ export default function SettingsForm( {
 						showErrors
 					>
 						{ isUAConnected && <SettingsUseSnippetSwitch /> }
+						{ isUAConnected && <AnonymizeIPSwitch /> }
 					</EnableUniversalAnalytics>
 				</div>
 			) }
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
-					<AnonymizeIPSwitch />
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
 				</Fragment>
