@@ -113,7 +113,7 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 				<SettingsNotice
 					Icon={ InfoIcon }
 					notice={ __(
-						'Top earning pages are not yet available in Google Analytics 4.',
+						'Top earning pages are not yet available in Google Analytics 4',
 						'google-site-kit'
 					) }
 					dismiss={ DISMISSED_KEY }
