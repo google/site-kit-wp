@@ -52,7 +52,7 @@
 	.googlesitekit-settings-notice__text {
 		flex-grow: 1;
 		line-height: 20px; // Match icon height.
-		max-width: 1098px;
+		max-width: $max-width-settings-notice-content;
 	}
 
 	.mdc-select:not(.mdc-select--disabled),
@@ -130,7 +130,7 @@
 	}
 
 	.googlesitekit-settings-notice__inner-row {
-		max-width: 1098px;
+		max-width: $max-width-settings-notice-content;
 		padding-top: $grid-gap-phone;
 
 		@media (min-width: $bp-tablet) {
@@ -184,7 +184,7 @@
 #googlesitekit-settings-wrapper {
 
 	.googlesitekit-settings-notice {
-		max-width: 1098px;
+		max-width: $max-width-settings-notice-content;
 	}
 }
 
