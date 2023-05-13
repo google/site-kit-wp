@@ -194,6 +194,24 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( isset( $option['autoAdsDisabled'] ) ) {
 					$option['autoAdsDisabled'] = (array) $option['autoAdsDisabled'];
 				}
+
+				if ( Feature_Flags::enabled( 'adBlockerDetection' ) ) {
+					if ( isset( $option['useAdBlockerDetectionSnippet'] ) ) {
+						$option['useAdBlockerDetectionSnippet'] = (bool) $option['useAdBlockerDetectionSnippet'];
+					}
+					if ( isset( $option['useAdBlockerDetectionErrorSnippet'] ) ) {
+						$option['useAdBlockerDetectionErrorSnippet'] = (bool) $option['useAdBlockerDetectionErrorSnippet'];
+					}
+					if ( isset( $option['adBlockingRecoverySetupStatus'] ) ) {
+						if ( ! in_array(
+							$option['adBlockingRecoverySetupStatus'],
+							array( 'tag-placed', 'setup-confirmed' ),
+							true
+						) ) {
+							$option['adBlockingRecoverySetupStatus'] = $this->get()['adBlockingRecoverySetupStatus'];
+						}
+					}
+				}
 			}
 			return $option;
 		};
