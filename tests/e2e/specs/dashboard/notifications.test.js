@@ -27,12 +27,18 @@ describe( 'core site notifications', () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			const url = request.url();
-			if ( url.match( 'search-console/data/searchanalytics' ) ) {
-				request.respond( { status: 200, body: '[]' } );
-			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
+			if (
+				url.match( 'pagespeed-insights/data/pagespeed' ) ||
+				url.match( 'user/data/survey-trigger' )
+			) {
 				request.respond( { status: 200, body: '{}' } );
-			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
+			} else if (
+				url.match( 'search-console/data/searchanalytics' ) ||
+				url.match( 'user/data/survey-timeouts' )
+			) {
 				request.respond( { status: 200, body: '[]' } );
+			} else if ( url.match( 'user/data/survey' ) ) {
+				request.respond( { status: 200, body: '{"survey":null}' } );
 			} else {
 				request.continue();
 			}

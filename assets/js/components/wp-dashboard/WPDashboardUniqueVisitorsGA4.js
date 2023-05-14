@@ -80,8 +80,8 @@ const WPDashboardUniqueVisitorsGA4 = ( { WidgetReportError } ) => {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	const totalUsers = data?.totals?.[ 1 ]?.metricValues?.[ 0 ]?.value;
-	const previousTotalUsers = data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
+	const totalUsers = data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
+	const previousTotalUsers = data?.totals?.[ 1 ]?.metricValues?.[ 0 ]?.value;
 
 	const gatheringDataProps = {
 		gatheringData: isGatheringData,

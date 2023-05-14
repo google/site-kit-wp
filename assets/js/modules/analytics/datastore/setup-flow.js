@@ -27,11 +27,13 @@ import {
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 	ACCOUNT_CREATE,
 	FORM_SETUP,
+	SETUP_FLOW_MODE_GA4_LEGACY,
 } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
 
 const { createRegistrySelector } = Data;
 
@@ -52,6 +54,10 @@ const baseSelectors = {
 		// See: https://github.com/google/site-kit-wp/pull/3260#discussion_r623924928
 		if ( select( MODULES_ANALYTICS ).getSettings() === undefined ) {
 			return undefined;
+		}
+
+		if ( isFeatureEnabled( 'ga4Reporting' ) ) {
+			return SETUP_FLOW_MODE_GA4;
 		}
 
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
@@ -84,7 +90,7 @@ const baseSelectors = {
 
 		// If no UA properties exist and there are GA4 properties, use GA4-only.
 		if ( uaProperties.length === 0 ) {
-			return SETUP_FLOW_MODE_GA4;
+			return SETUP_FLOW_MODE_GA4_LEGACY;
 		}
 
 		// There are UA and GA4 properties, so use the transitional mode.

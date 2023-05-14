@@ -30,6 +30,7 @@ import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import {
+	WebDataStreamSelect,
 	PropertySelect,
 	UseSnippetSwitch,
 } from '../../../../analytics-4/components/common';
@@ -326,12 +327,8 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		ctaLabel = __( 'Connect', 'google-site-kit' );
 		children = (
 			<div className="googlesitekit-ga4-setup-banner__field-group">
-				<PropertySelect
-					label={ __(
-						'Google Analytics 4 Property',
-						'google-site-kit'
-					) }
-				/>
+				<PropertySelect />
+				<WebDataStreamSelect />
 
 				{ existingTag && (
 					<UseSnippetSwitch

@@ -49,13 +49,24 @@
 		}
 
 		.googlesitekit-publisher-win__secondary-pane {
+			margin: 0;
 
-			ul {
-				list-style-image: $icon-tick;
+			.googlesitekit-publisher-win__secondary-pane-title {
+				font-family: $f-primary;
+				font-size: $fs-title-sm;
+				font-weight: $fw-medium;
+				margin: 8px 0 0;
+			}
 
-				li {
-					margin-left: $grid-gap-phone;
-					padding-left: $grid-gap-phone;
+			.googlesitekit-publisher-win__secondary-pane-list li {
+				color: $c-boulder;
+				display: flex;
+				max-width: 22rem;
+
+				svg {
+					fill: currentColor;
+					flex: none;
+					margin-right: $grid-gap-phone / 2;
 				}
 			}
 		}

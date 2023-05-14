@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
 import {
@@ -248,7 +249,7 @@ EntityDashboardZeroData.args = {
 		// Set the property creation timestamp to two days ago, so that
 		// the property is not considered to be in the gathering data state.
 		const createTime = new Date(
-			Date.now() - DAY_IN_SECONDS * 2 * 1000
+			Date.now() - DAY_IN_SECONDS * 3 * 1000
 		).toISOString();
 
 		const property = {
@@ -333,6 +334,7 @@ export default {
 
 			// Set some site information.
 			provideSiteInfo( registry );
+			provideUserAuthentication( registry );
 
 			provideSiteInfo( registry, {
 				currentEntityURL: 'https://www.elasticpress.io/features/',

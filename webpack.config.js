@@ -315,6 +315,8 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
 				'./assets/js/googlesitekit-user-input.js',
+			'googlesitekit-ad-blocking-recovery':
+				'./assets/js/googlesitekit-ad-blocking-recovery.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			'googlesitekit-components-gm2':
 				'./assets/js/googlesitekit-components-gm2.js',

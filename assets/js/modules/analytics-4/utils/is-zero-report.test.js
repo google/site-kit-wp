@@ -115,6 +115,49 @@ describe( 'isZeroReport', () => {
 				totals: [ { metricValues: [ { value: '123' } ] } ],
 			},
 		],
+		[
+			false,
+			'a report that has a single row with no metricValues but another with data',
+			{
+				rows: [ {}, {}, {} ],
+				totals: [
+					{},
+					{ metricValues: [ { value: '123' }, { value: '234' } ] },
+				],
+			},
+		],
+		[
+			true,
+			'a report that has multiple rows that have no metricValues, and no rows with data',
+			{
+				rows: [ {}, {}, {} ],
+				totals: [ {}, {} ],
+			},
+		],
+		[
+			false,
+			'a report that has metric values and dimension values',
+			{
+				rows: [ {} ],
+				totals: [
+					{
+						dimensionValues: [
+							{
+								value: 'RESERVED_TOTAL',
+							},
+							{
+								value: 'date_range_1',
+							},
+						],
+						metricValues: [
+							{
+								value: '1',
+							},
+						],
+					},
+				],
+			},
+		],
 	] )( 'returns %s when %s is passed', ( expectedValue, _, report ) => {
 		expect( isZeroReport( report ) ).toBe( expectedValue );
 	} );

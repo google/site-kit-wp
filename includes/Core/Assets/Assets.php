@@ -333,8 +333,7 @@ final class Assets {
 			return $this->assets;
 		}
 
-		$base_url = $this->context->url( 'dist/assets/' );
-
+		$base_url     = $this->context->url( 'dist/assets/' );
 		$dependencies = $this->get_asset_dependencies();
 
 		// Register plugin scripts.
@@ -615,6 +614,13 @@ final class Assets {
 					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
+			new Script(
+				'googlesitekit-ad-blocking-recovery',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-ad-blocking-recovery.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+				)
+			),
 			new Stylesheet(
 				'googlesitekit-admin-css',
 				array(
@@ -716,6 +722,7 @@ final class Assets {
 			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
 			'postTypes'        => $this->get_post_types(),
 			'storagePrefix'    => $this->get_storage_prefix(),
+			'referenceDate'    => apply_filters( 'googlesitekit_reference_date', null ),
 		);
 
 		/**
@@ -946,7 +953,6 @@ final class Assets {
 		return apply_filters( 'googlesitekit_inline_modules_data', array() );
 	}
 
-
 	/**
 	 * Adds support for async and defer attributes to enqueued scripts.
 	 *
@@ -1055,4 +1061,5 @@ final class Assets {
 
 		return wp_hash( $current_user->user_login . '|' . $session_token . '|' . $blog_id );
 	}
+
 }

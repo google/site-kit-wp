@@ -1,5 +1,5 @@
 /**
- * DashboardAuthAlert component.
+ * UnsatisfiedScopesAlert component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -33,9 +33,7 @@ import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
@@ -46,7 +44,6 @@ const scopeIDToSlug = {
 const MESSAGE_MULTIPLE = 'multiple';
 const MESSAGE_SINGULAR = 'single';
 const MESSAGE_GENERIC = 'generic';
-const MESSAGE_GTE = 'gte';
 
 function mapScopesToModuleNames( scopes, modules ) {
 	if ( modules === undefined ) {
@@ -71,11 +68,6 @@ function mapScopesToModuleNames( scopes, modules ) {
 }
 
 export default function UnsatisfiedScopesAlert() {
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo(
-			/(\/o\/oauth2)|(action=googlesitekit_connect)/i
-		)
-	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getUnsatisfiedScopes()
 	);
@@ -89,26 +81,13 @@ export default function UnsatisfiedScopesAlert() {
 		select( CORE_MODULES ).getModules()
 	);
 
-	const gteSupportEnabled = useFeature( 'gteSupport' );
-
-	if (
-		isNavigating ||
-		! unsatisfiedScopes?.length ||
-		connectURL === undefined
-	) {
+	if ( ! unsatisfiedScopes?.length || connectURL === undefined ) {
 		return null;
 	}
 
 	let messageID;
 	let moduleNames;
 	if (
-		gteSupportEnabled &&
-		unsatisfiedScopes.length === 1 &&
-		unsatisfiedScopes[ 0 ] ===
-			'https://www.googleapis.com/auth/tagmanager.readonly'
-	) {
-		messageID = MESSAGE_GTE;
-	} else if (
 		// Determine if all scopes are in Google API format, otherwise use generic message.
 		unsatisfiedScopes.some(
 			( scope ) =>
@@ -132,10 +111,11 @@ export default function UnsatisfiedScopesAlert() {
 	}
 
 	let message;
-	let title = __( 'Site Kit can’t access necessary data', 'google-site-kit' );
-	let ctaLabel = __( 'Redo setup', 'google-site-kit' );
-	let learnMoreLabel;
-	let learnMoreURL;
+	const title = __(
+		'Site Kit can’t access necessary data',
+		'google-site-kit'
+	);
+	const ctaLabel = __( 'Redo setup', 'google-site-kit' );
 
 	switch ( messageID ) {
 		case MESSAGE_MULTIPLE:
@@ -164,21 +144,6 @@ export default function UnsatisfiedScopesAlert() {
 				'google-site-kit'
 			);
 			break;
-		case MESSAGE_GTE:
-			title = __(
-				'Site Kit needs additional permissions to detect updates to tags on your site',
-				'google-site-kit'
-			);
-			message = __(
-				'To continue using Analytics with Site Kit, you need to grant permission to check for any changes in your Google tag’s target Analytics property. Recent updates to the Google tag enable changing which Analytics property it’s connected to without editing the code on the site, so Site Kit must regularly check if the tag on your site matches the Analytics property destination.',
-				'google-site-kit'
-			);
-			learnMoreLabel = __( 'Learn more', 'google-site-kit' );
-			learnMoreURL =
-				'https://support.google.com/tagmanager/answer/11994839';
-
-			ctaLabel = __( 'Grant permission', 'google-site-kit' );
-			break;
 	}
 
 	return (
@@ -191,8 +156,6 @@ export default function UnsatisfiedScopesAlert() {
 			isDismissible={ false }
 			ctaLink={ connectURL }
 			ctaLabel={ ctaLabel }
-			learnMoreLabel={ learnMoreLabel }
-			learnMoreURL={ learnMoreURL }
 		/>
 	);
 }

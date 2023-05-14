@@ -27,20 +27,26 @@ const Template = () => <SuccessBanner />;
 
 export const Default = Template.bind( {} );
 Default.storyName = 'SuccessBanner';
-Default.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			provideSiteInfo( registry );
-		};
 
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
+export const WithGA4ReportingEnabled = Template.bind( {} );
+WithGA4ReportingEnabled.storyName = 'SuccessBanner with GA4 Reporting Enabled';
+WithGA4ReportingEnabled.parameters = {
+	features: [ 'ga4Reporting' ],
+};
 
 export default {
 	title: 'Modules/Analytics4/SuccessBanner',
+	decorators: [
+		( Story ) => {
+			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };

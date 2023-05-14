@@ -21,6 +21,7 @@
  */
 import { setDefaultOptions } from 'expect-puppeteer';
 import { get } from 'lodash';
+import { ConsoleMessage } from 'puppeteer';
 
 /**
  * WordPress dependencies
@@ -220,7 +221,16 @@ function observeConsoleLogging() {
 			return;
 		}
 
-		const logFunction = OBSERVED_CONSOLE_MESSAGE_TYPES[ type ];
+		let logFunction = OBSERVED_CONSOLE_MESSAGE_TYPES[ type ];
+
+		// At this point, any unexpected message will result in a test failure.
+
+		// Check if it's raised by the AMP plugin.
+		if ( isPluginConsoleMessage( 'amp', message ) ) {
+			// Convert console messages originating from AMP to debug statements.
+			// This avoids failing tests from console errors we don't have control of.
+			logFunction = 'debug';
+		}
 
 		// As of Puppeteer 1.6.1, `message.text()` wrongly returns an object of
 		// type JSHandle for error logging, instead of the expected string.
@@ -247,6 +257,25 @@ function observeConsoleLogging() {
 		// eslint-disable-next-line no-console
 		console[ logFunction ]( text );
 	} );
+}
+
+/**
+ * Checks if the given console message is coming from a specific plugin.
+ *
+ * @since 1.98.0
+ *
+ * @param {string}         pluginSlug Plugin slug.
+ * @param {ConsoleMessage} message    Console message.
+ * @return {boolean} Whether or not a match was found.
+ */
+function isPluginConsoleMessage( pluginSlug, message ) {
+	return message
+		.stackTrace()
+		.some( ( { url } ) =>
+			url.match(
+				`${ process.env.WP_BASE_URL }/wp-content/plugins/${ pluginSlug }/`
+			)
+		);
 }
 
 /**

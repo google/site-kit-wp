@@ -58,6 +58,7 @@ import {
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import { singleQuestionSurvey } from '../../assets/js/components/surveys/__fixtures__';
 import InViewProvider from '../../assets/js/components/InViewProvider';
 
 const allCoreStores = [
@@ -376,22 +377,28 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
  * Provides the current survey data to the given registry.
  *
  * @since 1.42.0
+ * @since 1.98.0 Removed tracking enabling side effect.
  *
- * @param {Object}  registry             Registry object to dispatch to.
- * @param {Object}  data                 List of module registration data objects to be merged with defaults. Default empty array.
- * @param {Object}  args                 Optional arguments.
- * @param {boolean} args.trackingEnabled Optional. Whether the tracking should be enabled or not.
- * @param {string}  args.triggerID       Optional. Survey trigger ID.
+ * @param {Object} registry Registry object to dispatch to.
+ * @param {Object} survey   The current survey.
  */
 export function provideCurrentSurvey(
 	registry,
-	data,
-	{ triggerID = 'testSurvey', trackingEnabled = true } = {}
+	survey = singleQuestionSurvey
 ) {
-	registry.dispatch( CORE_USER ).receiveTriggerSurvey( data, { triggerID } );
-	registry
-		.dispatch( CORE_USER )
-		.receiveGetTracking( { enabled: trackingEnabled } );
+	registry.dispatch( CORE_USER ).receiveGetSurvey( { survey } );
+}
+
+/**
+ * Provides user tracking consent state.
+ *
+ * @since 1.98.0
+ *
+ * @param {Object}  registry Registry object to dispatch to.
+ * @param {boolean} enabled  Optional. Whether tracking consent has been granted. Defaults to `true`.
+ */
+export function provideTracking( registry, enabled = true ) {
+	registry.dispatch( CORE_USER ).receiveGetTracking( { enabled } );
 }
 
 /**

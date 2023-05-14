@@ -32,7 +32,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
-import { getHeaderHeight } from '../../../util/scroll';
+import { getStickyHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
 import { CORE_UI, ACTIVE_CONTEXT_ID } from '../../datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
@@ -68,9 +68,9 @@ function getRootMargin( breakpoint ) {
 	};
 
 	const gap = gridGaps[ breakpoint ];
-	const top = Math.abs( getHeaderHeight( breakpoint ) + gap );
+	const top = Math.abs( getStickyHeaderHeight( breakpoint ) + gap );
 
-	return `-${ top }px -${ gap }px -${ gap }px -${ gap }px`;
+	return `${ -top }px ${ -gap }px ${ -gap }px ${ -gap }px`;
 }
 
 export default function WidgetAreaRenderer( { slug, contextID } ) {

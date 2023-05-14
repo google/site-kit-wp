@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
@@ -323,6 +324,10 @@ describe( 'modules/analytics-4 report', () => {
 				} );
 
 				it( 'should return undefined if getSettings is not resolved yet', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
+
 					freezeFetch(
 						new RegExp(
 							'^/google-site-kit/v1/modules/analytics-4/data/settings'
@@ -346,10 +351,14 @@ describe( 'modules/analytics-4 report', () => {
 					await waitForDefaultTimeouts();
 				} );
 
-				it( 'should return TRUE if the connnected GA4 property is under two days old', async () => {
-					// Create a timestamp that is one and a half days ago.
+				it( 'should return TRUE if the connnected GA4 property is under three days old', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
+
+					// Create a timestamp that is two and a half days ago.
 					const createTime = new Date(
-						Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+						Date.now() - DAY_IN_SECONDS * 2.5 * 1000
 					).toISOString();
 
 					const property = {
@@ -383,16 +392,20 @@ describe( 'modules/analytics-4 report', () => {
 					expect( isGatheringData() ).toBe( true );
 				} );
 
-				it( 'should return FALSE if the connnected GA4 property is older than two days', async () => {
+				it( 'should return FALSE if the connnected GA4 property is older than three days', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
+
 					muteFetch(
 						new RegExp(
 							'^/google-site-kit/v1/modules/analytics-4/data/data-available'
 						)
 					);
 
-					// Create a timestamp that is two days ago.
+					// Create a timestamp that is three days ago.
 					const createTime = new Date(
-						Date.now() - DAY_IN_SECONDS * 2 * 1000
+						Date.now() - DAY_IN_SECONDS * 3 * 1000
 					).toISOString();
 
 					const property = {
@@ -424,6 +437,66 @@ describe( 'modules/analytics-4 report', () => {
 					);
 
 					expect( isGatheringData() ).toBe( false );
+				} );
+
+				it( 'should return TRUE without checking for property settings if the report has zero data and user is not authenticated', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: false,
+					} );
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for resolvers to run.
+					await waitForDefaultTimeouts();
+
+					// Verify that isGatheringData now returns TRUE if hasZeroData now returns true but the user is not authenticated.
+					expect( isGatheringData() ).toBe( true );
+					expect( hasZeroData() ).toBe( true );
+
+					await waitForDefaultTimeouts();
+				} );
+
+				it( 'should return undefined if getAuthentication is not resolved yet', async () => {
+					fetchMock.getOnce(
+						new RegExp(
+							'^/google-site-kit/v1/core/user/data/authentication'
+						),
+						{
+							authenticated: false,
+						}
+					);
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for the next tick to allow getReport to resolve. We don't use waitForDefaultTimeouts as the longer timeout in that function
+					// can allow the getAuthenticated call to resolve too, which we don't want here.
+					await new Promise( ( resolve ) => {
+						setTimeout( resolve, 1 );
+					} );
+
+					// The second call to isGatheringData returns undefined because the call to isAuthenticated returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					// This confirms that hasZeroData is now resolved.
+					expect( hasZeroData() ).toBe( true );
+
+					await untilResolved(
+						registry,
+						CORE_USER
+					).getAuthentication();
+
+					// Verify that isGatheringData now returns TRUE as the call to getAuthentication has resolved and user is not authenticated.
+					expect( isGatheringData() ).toBe( true );
+					expect( hasZeroData() ).toBe( true );
 				} );
 			} );
 		} );

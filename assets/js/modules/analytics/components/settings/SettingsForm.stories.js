@@ -21,7 +21,11 @@
  */
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import {
+	DASHBOARD_VIEW_GA4,
+	FORM_SETUP,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { createBuildAndReceivers } from '../../../../modules/tagmanager/datastore/__factories__/utils';
 import {
@@ -32,6 +36,7 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 
 const account = fixtures.accountsPropertiesProfiles.accounts[ 0 ];
 const properties = [
@@ -73,6 +78,90 @@ WithGA4andUASnippet.scenario = {
 	delay: 250,
 };
 
+export const WithoutUAToggleGA4Enabled = Template.bind( null );
+WithoutUAToggleGA4Enabled.storyName = 'Settings w/o UA toggle, GA4 enabled';
+WithoutUAToggleGA4Enabled.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetProperties( [], { accountID } );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithoutUAToggleGA4Enabled.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithoutUAToggleGA4Enabled',
+	delay: 250,
+};
+WithoutUAToggleGA4Enabled.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+
+export const PropertyNotAvailable = Template.bind( null );
+PropertyNotAvailable.storyName =
+	'Settings w/ selected GA4 property not available';
+PropertyNotAvailable.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+PropertyNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+PropertyNotAvailable.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/PropertyNotAvailable',
+	delay: 250,
+};
+
+export const WebDataStreamNotAvailable = Template.bind( null );
+WebDataStreamNotAvailable.storyName =
+	'Settings w/ selected GA4 webDataStream not available';
+WebDataStreamNotAvailable.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+WebDataStreamNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreamsBatch(
+					{ 1000: [] },
+					{
+						propertyIDs: [ '1000' ],
+					}
+				);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WebDataStreamNotAvailable.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WebDataStreamNotAvailable',
+	delay: 250,
+};
+
 export const WithoutUAAndGA4AccessGA4NotConnected = Template.bind( null );
 WithoutUAAndGA4AccessGA4NotConnected.storyName =
 	'Settings w/o UA access, GA4 not connected';
@@ -96,7 +185,7 @@ WithoutUAAndGA4AccessGA4NotConnected.decorators = [
 					connected: false,
 				},
 			] );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		};
 
 		return (
@@ -129,7 +218,7 @@ WithoutUAAndGA4AccessFallbackOwnerName.decorators = [
 					connected: false,
 				},
 			] );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		};
 
 		return (
@@ -219,6 +308,10 @@ WithGA4Tag.decorators = [
 		);
 	},
 ];
+WithGA4Tag.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithGA4Tag',
+	delay: 250,
+};
 
 export const WithBothTags = Template.bind( null );
 WithBothTags.storyName =
@@ -302,11 +395,99 @@ WithExistingGTMPropertyMatching.scenario = {
 	delay: 250,
 };
 
+export const WithDashboardViewToggle = Template.bind( null );
+WithDashboardViewToggle.storyName = 'With Dashboard View Toggle';
+WithDashboardViewToggle.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+WithDashboardViewToggle.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+WithDashboardViewToggle.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setDashboardView( DASHBOARD_VIEW_GA4 );
+
+			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
+				properties[ 0 ].id,
+				// eslint-disable-next-line sitekit/acronym-case
+				properties[ 0 ].internalWebPropertyId
+			);
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( FORM_SETUP, { enableUA: true } );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithDashboardViewToggle.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithDashboardViewToggle',
+	delay: 250,
+};
+
+export const WithDashboardViewLabel = Template.bind( null );
+WithDashboardViewLabel.storyName = 'With Dashboard View Label';
+WithDashboardViewLabel.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+WithDashboardViewLabel.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+WithDashboardViewLabel.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			// Ensure the analytics-4 module is not connected so that the Dashboard View label is shown rather than the toggle.
+			provideModules( registry, [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+				},
+			] );
+
+			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
+				properties[ 0 ].id,
+				// eslint-disable-next-line sitekit/acronym-case
+				properties[ 0 ].internalWebPropertyId
+			);
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( FORM_SETUP, { enableUA: true } );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithDashboardViewLabel.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithDashboardViewLabel',
+	delay: 250,
+};
+
 export default {
 	title: 'Modules/Analytics/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			const setupRegistry = async ( registry ) => {
 				provideModules( registry, [
 					{
 						slug: 'analytics',
@@ -371,7 +552,7 @@ export default {
 						{ accountID, propertyID: properties[ 1 ].id }
 					);
 
-				registry
+				await registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
 			};

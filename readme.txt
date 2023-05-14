@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.1
+Tested up to:      6.2
 Requires PHP:      5.6
-Stable tag:        1.96.0
+Stable tag:        1.99.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -100,13 +100,91 @@ You can find more information on how Site Kit works with AdSense in our [Managin
 
 When using Site Kit, site owners are responsible for managing notice and consent requirements – including GDPR requirements – as described in [Google’s Terms of Service](https://policies.google.com/terms).
 
-By default, Site Kit does anonymize IP addresses upon activation of the Google Analytics module. In addition, Site Kit provides a mechanism in the form of a simple API for cookie consent plugins to integrate with Site Kit and prevent Site Kit's Google service snippets from being rendered on a page if the user has not granted consent. More information about how this API works is available in [this GitHub issue](https://github.com/google/site-kit-wp/issues/2087).
+By default, Site Kit does anonymize IP addresses upon activation of the Google Analytics module. This setting can be turned off in **Site Kit > Settings > Analytics > Anonymize IP addresses**.
+
+There are a number of third-party plugins that allow you to block Google Analytics, Tag Manager, or AdSense from capturing data until a visitor to the site consents. Some of these work natively with Site Kit by providing plugin-specific configurations. You can find out more about these by visiting our [GDPR compliance and privacy page](https://sitekit.withgoogle.com/documentation/using-site-kit/gdpr-compliance-and-privacy/).
 
 = Where can I get additional support? =
 
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.99.0 =
+
+**Enhanced**
+
+* Only show the "Google tag mismatch" and "web data stream not available" notifications to the Analytics module owner. See [#6949](https://github.com/google/site-kit-wp/issues/6949).
+* Update source links in the Popular Pages widget for the Analytics 4 version. See [#6871](https://github.com/google/site-kit-wp/issues/6871).
+* Add the Analytics 4 version of the Popular Pages widget on the WordPress dashboard. See [#6868](https://github.com/google/site-kit-wp/issues/6868).
+* Add GA4 version of the Unique Visitors chart on the WP dashboard. See [#6855](https://github.com/google/site-kit-wp/issues/6855).
+* Ensure both Analytics modules always reference the same owner. See [#6846](https://github.com/google/site-kit-wp/issues/6846).
+* Fix zero data notifications on GA4 dashboard. See [#6838](https://github.com/google/site-kit-wp/issues/6838).
+* Update conversion events to always be requested for the connected GA4 property. See [#6836](https://github.com/google/site-kit-wp/issues/6836).
+* Improve handling for Google Analytics 4 reports which have no data for one of the requested date ranges. See [#6835](https://github.com/google/site-kit-wp/issues/6835).
+* Update the dev settings plugin update URL. See [#6823](https://github.com/google/site-kit-wp/issues/6823).
+* Enhance the experience of handling properties and web data streams which are no longer available. See [#6763](https://github.com/google/site-kit-wp/issues/6763).
+* Ensure Dashboard Sharing works without Universal Analytics being enabled. See [#6745](https://github.com/google/site-kit-wp/issues/6745).
+* Allow editing and viewing Analytics settings without saving Universal Analytics settings when GA4 Reporting is enabled. See [#6744](https://github.com/google/site-kit-wp/issues/6744).
+* Ensure Google Analytics 4 charts display correctly with zero data, by padding the data returned from the `runReport` endpoint to add zero-data rows where data is missing in cases where a single `date` dimension is requested. See [#6623](https://github.com/google/site-kit-wp/issues/6623).
+* Indicate key dates in Analytics charts, indicating the Universal Analytics cut-off date, or the Google Analytics 4 property creation date. See [#6572](https://github.com/google/site-kit-wp/issues/6572).
+* Add a feature tour for new metrics that are available on the GA4 version of the dashboard. See [#6554](https://github.com/google/site-kit-wp/issues/6554).
+
+**Fixed**
+
+* Fix a potential error when attempting to autoload a class from a non-existent file. See [#6887](https://github.com/google/site-kit-wp/issues/6887).
+* Ensure Analytics module can be recovered when only GA4 is connected. See [#6861](https://github.com/google/site-kit-wp/issues/6861).
+* Ensure UA settings and Dashboard View toggle settings are saved in Analytics Settings. See [#6828](https://github.com/google/site-kit-wp/issues/6828).
+* Ensure admins can change Analytics settings if they're not the module owner in the scenario where only Google Analytics 4 is connected. See [#6825](https://github.com/google/site-kit-wp/issues/6825).
+* Fix bug that caused Analytics 4 widgets not to appear in shared dashboard. See [#6824](https://github.com/google/site-kit-wp/issues/6824).
+
+= 1.98.0 =
+
+**Enhanced**
+
+* Provide reference date to client on page load, in order to be able to model given dates for testing. See [#6782](https://github.com/google/site-kit-wp/issues/6782).
+* Ensure report requests are only made to the active Analytics module (UA/GA4). See [#6746](https://github.com/google/site-kit-wp/issues/6746).
+* Update settings validation and requirements when `ga4Reporting` is enabled. See [#6742](https://github.com/google/site-kit-wp/issues/6742).
+* Prevent creation of Universal Analytics when `ga4Reporting` is enabled. See [#6740](https://github.com/google/site-kit-wp/issues/6740).
+* Add Google Analytics setup flow that prioritises Google Analytics 4 when GA4 Reporting is enabled. See [#6738](https://github.com/google/site-kit-wp/issues/6738).
+* Update Analytics connection logic when `ga4Reporting` is enabled. See [#6737](https://github.com/google/site-kit-wp/issues/6737).
+* Use new GA account provisioning API when `ga4Reporting` is enabled. See [#6733](https://github.com/google/site-kit-wp/issues/6733).
+* Create backend infrastructure to support the new Google Analytics account provisioning endpoint. See [#6732](https://github.com/google/site-kit-wp/issues/6732).
+* Update the Analytics 4 Search Funnel component to use the "Engagement Rate" metric instead of "Engaged Sessions". See [#6724](https://github.com/google/site-kit-wp/issues/6724).
+* Update the "Engaged Sessions" metric title to read "Engagement Rate" in the new GA4 widgets. See [#6693](https://github.com/google/site-kit-wp/issues/6693).
+* Update Analytics source links on the GA4 version of the dashboard. See [#6639](https://github.com/google/site-kit-wp/issues/6639).
+* Add checks for Google Analytics 4 metric names to Analytics report handling. See [#6615](https://github.com/google/site-kit-wp/issues/6615).
+* Add trigger for a survey to track the usage of the new GA4 dashboard view. See [#6574](https://github.com/google/site-kit-wp/issues/6574).
+* Add the new GA4 version of the Top Earning Pages widget. See [#6573](https://github.com/google/site-kit-wp/issues/6573).
+* Add a new post UA cut-off warning. See [#6557](https://github.com/google/site-kit-wp/issues/6557).
+* Warn about upcoming Universal Analytics cut-off in Analytics settings. See [#6556](https://github.com/google/site-kit-wp/issues/6556).
+* Add badges to highlight new metrics on the Analytics 4 version of the dashboard. See [#6552](https://github.com/google/site-kit-wp/issues/6552).
+* Update conditions for showing the "Create Conversion" CTA, and update the support URL it links to. See [#6551](https://github.com/google/site-kit-wp/issues/6551).
+* Ensure that Analytics 4 widgets are only displayed when the dashboard view is in Analytics 4 mode. See [#6550](https://github.com/google/site-kit-wp/issues/6550).
+* Conditionally adds a toggle to the Analytics settings to control the version of Analytics used on the dashboard. See [#6547](https://github.com/google/site-kit-wp/issues/6547).
+* Add the “Switch to Google Analytics 4 Dashboard View” notification banner. See [#6544](https://github.com/google/site-kit-wp/issues/6544).
+* Add the new `isGA4DashboardView` selector to the Analytics module. See [#6541](https://github.com/google/site-kit-wp/issues/6541).
+* Update the graphic and copy on the GA4 Activation Success Banner. See [#6539](https://github.com/google/site-kit-wp/issues/6539).
+* Update design and text of GA4 Reminder Banner. See [#6538](https://github.com/google/site-kit-wp/issues/6538).
+* Follow API naming conventions for Analytics 4 field names. See [#6484](https://github.com/google/site-kit-wp/issues/6484).
+* Update logic for handling Google Tag detection. See [#6374](https://github.com/google/site-kit-wp/issues/6374).
+* Add a notification for users when their Google tag associations change. See [#6373](https://github.com/google/site-kit-wp/issues/6373).
+* Add a dedicated control for the Google Analytics 4 web data stream instead of a single property select. See [#6330](https://github.com/google/site-kit-wp/issues/6330).
+* Enhance survey infrastructure to be more flexible. See [#6306](https://github.com/google/site-kit-wp/issues/6306).
+* Conditionally render GA4 metrics in the Site Kit Admin Bar integration. See [#6221](https://github.com/google/site-kit-wp/issues/6221).
+* Update styling of entity search close button to not overlap with the input's border. Props itsaladin. See [#5980](https://github.com/google/site-kit-wp/issues/5980).
+* Enhance mechanism for dashboard sharing request context. See [#5780](https://github.com/google/site-kit-wp/issues/5780).
+
+**Changed**
+
+* Upgrade Guzzle, with `guzzlehttp/guzzle` updated to v6.5.8. See [#1146](https://github.com/google/site-kit-wp/issues/1146).
+
+**Fixed**
+
+* Fix bug where Google Tag settings were not being saved when creating a new tag via the Analytics Settings page. See [#6767](https://github.com/google/site-kit-wp/issues/6767).
+* Fix placement order of Google Tag banner notification. See [#6766](https://github.com/google/site-kit-wp/issues/6766).
+* Prevent triggering Google Tag lookups until scope is granted. See [#6764](https://github.com/google/site-kit-wp/issues/6764).
+* Fix potential `IntersectionObserver` error in banner notifications. See [#6674](https://github.com/google/site-kit-wp/issues/6674).
 
 = 1.96.0 =
 

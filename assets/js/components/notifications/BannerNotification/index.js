@@ -47,7 +47,7 @@ import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
 import {
 	getContextScrollTop,
-	getHeaderHeightWithoutNav,
+	getStickyHeaderHeightWithoutNav,
 } from '../../../util/scroll';
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
@@ -66,6 +66,7 @@ import {
 	getImageCellOrderProperties,
 } from './utils';
 import { stringToDate } from '../../../util/date-range/string-to-date';
+import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
@@ -140,8 +141,8 @@ function BannerNotification( {
 
 	const bannerNotificationRef = useRef();
 	const intersectionEntry = useIntersection( bannerNotificationRef, {
-		rootMargin: `-${ getHeaderHeightWithoutNav(
-			breakpoint
+		rootMargin: `${ -finiteNumberOrZero(
+			getStickyHeaderHeightWithoutNav( breakpoint )
 		) }px 0px 0px 0px`,
 		threshold: 0,
 	} );
@@ -563,7 +564,12 @@ function BannerNotification( {
 						) }
 
 					{ ( 'win-error' === type || 'win-warning' === type ) && (
-						<Cell size={ 1 }>
+						<Cell
+							size={ 1 }
+							smOrder={ 3 }
+							mdOrder={ 3 }
+							lgOrder={ 3 }
+						>
 							<div className="googlesitekit-publisher-win__icons">
 								{ icon }
 							</div>
@@ -573,7 +579,7 @@ function BannerNotification( {
 			</Grid>
 			{ secondaryPane && (
 				<Fragment>
-					<div className="googlesitekit-publisher-win__secondary-pane-divider"></div>
+					<div className="googlesitekit-publisher-win__secondary-pane-divider" />
 					<Grid className="googlesitekit-publisher-win__secondary-pane">
 						<Row>
 							<Cell

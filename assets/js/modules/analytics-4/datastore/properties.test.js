@@ -45,6 +45,7 @@ import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
+	let store;
 
 	const createPropertyEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
@@ -71,6 +72,8 @@ describe( 'modules/analytics-4 properties', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
+
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
@@ -456,6 +459,20 @@ describe( 'modules/analytics-4 properties', () => {
 					measurementID,
 				} );
 			} );
+
+			it( 'should update the isMatchingAccountProperty property', async () => {
+				const promise = registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.matchAndSelectProperty( accountID );
+
+				expect( store.getState().isMatchingAccountProperty ).toBe(
+					true
+				);
+				await promise;
+				expect( store.getState().isMatchingAccountProperty ).toBe(
+					false
+				);
+			} );
 		} );
 
 		describe( 'matchPropertyByURL', () => {
@@ -640,6 +657,28 @@ describe( 'modules/analytics-4 properties', () => {
 					.hasMismatchedGoogleTagID();
 
 				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+			} );
+		} );
+
+		describe( 'setIsWebDataStreamAvailable', () => {
+			it( 'sets the value of isWebDataStreamAvailable', async () => {
+				const isWebDataStreamAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamAvailable();
+
+				// It is true by default.
+				expect( isWebDataStreamAvailable ).toBe( true );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setIsWebDataStreamAvailable( false );
+
+				const updatedIsWebDataStreamAvailable = registry
+
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamAvailable();
+
+				expect( updatedIsWebDataStreamAvailable ).toBe( false );
 			} );
 		} );
 
@@ -872,6 +911,92 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( googleTagID );
 			} );
 
+			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const googleTagID = 'GT-NBQN9V3';
+				const containerMock = JSON.stringify( null );
+
+				const { googleTagAccountID, googleTagContainerID } =
+					fixtures.googleTagSettings;
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.getOnce( containerLookupEndpoint, {
+					body: containerMock,
+					status: 200,
+				} );
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
+					query: {
+						destinationID: measurementID,
+					},
+					body: containerMock,
+				} );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isWebDataStreamAvailable()
+				).toBe( false );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasMismatchedGoogleTagID()
+				).toBe( false );
+			} );
+
 			it( 'should check for mismatched Google Tag ID if Google Tag settings already exist', async () => {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
@@ -945,6 +1070,14 @@ describe( 'modules/analytics-4 properties', () => {
 					method: 'POST',
 				} );
 
+				// The web data stream is available.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isWebDataStreamAvailable()
+				).toBe( true );
+
+				// but the Google Tag ID is mismatched.
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
@@ -1159,6 +1292,27 @@ describe( 'modules/analytics-4 properties', () => {
 					.hasMismatchedGoogleTagID();
 
 				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+			} );
+		} );
+
+		describe( 'isWebDataStreamAvailable', () => {
+			it( 'returns a specific key in state', () => {
+				const isWebDataStreamAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamAvailable();
+
+				// It is true by default.
+				expect( isWebDataStreamAvailable ).toBe( true );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setIsWebDataStreamAvailable( false );
+
+				const updatedIsWebDataStreamAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamAvailable();
+
+				expect( updatedIsWebDataStreamAvailable ).toBe( false );
 			} );
 		} );
 	} );

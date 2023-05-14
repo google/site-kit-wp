@@ -68,7 +68,7 @@ const ga4ReportArgs = [
 				name: 'conversions',
 			},
 			{
-				name: 'engagedSessions',
+				name: 'engagementRate',
 			},
 		],
 		dimensionFilters: {
@@ -90,7 +90,7 @@ const ga4ReportArgs = [
 				name: 'conversions',
 			},
 			{
-				name: 'engagedSessions',
+				name: 'engagementRate',
 			},
 		],
 		dimensionFilters: {
@@ -320,17 +320,15 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 	},
 };
 
-export const ReadyWithSetupConversionsCTA = Template.bind( {} );
-ReadyWithSetupConversionsCTA.storyName = 'Ready with Set up Conversions CTA';
-ReadyWithSetupConversionsCTA.args = {
+export const ReadyWithCreateConversionCTA = Template.bind( {} );
+ReadyWithCreateConversionCTA.storyName = 'Ready with Set up Conversions CTA';
+ReadyWithCreateConversionCTA.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetConversionEvents( [], {
-				propertyID,
-			} );
+			.receiveGetConversionEvents( [], {} );
 
 		for ( const options of ga4ReportArgs ) {
 			provideAnalytics4MockReport( registry, options );
@@ -338,8 +336,8 @@ ReadyWithSetupConversionsCTA.args = {
 	},
 };
 
-ReadyWithSetupConversionsCTA.scenario = {
-	label: 'SearchConsole/SearchFunnelWidgetGA4/ReadyWithSetupConversionsCTA',
+ReadyWithCreateConversionCTA.scenario = {
+	label: 'SearchConsole/SearchFunnelWidgetGA4/ReadyWithCreateConversionCTA',
 	delay: 3000,
 };
 
@@ -543,9 +541,7 @@ export default {
 				.setPropertyID( propertyID );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetConversionEvents( fixtures.conversionEvents, {
-					propertyID,
-				} );
+				.receiveGetConversionEvents( fixtures.conversionEvents, {} );
 
 			return (
 				<WithTestRegistry

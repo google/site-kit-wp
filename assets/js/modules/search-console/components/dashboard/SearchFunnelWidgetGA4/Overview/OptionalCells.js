@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import { ActivateAnalyticsCTA } from '../../../common';
-import SetupConversionsCTA from '../SetupConversionsCTA';
+import CreateConversionCTA from '../CreateConversionCTA';
 import RecoverableModules from '../../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
@@ -43,7 +43,7 @@ import {
 const { useSelect } = Data;
 
 export default function OptionalCells( {
-	canViewSharedAnalytics,
+	canViewSharedAnalytics4,
 	error,
 	halfCellProps,
 	quarterCellProps,
@@ -65,7 +65,7 @@ export default function OptionalCells( {
 
 	return (
 		<Fragment>
-			{ canViewSharedAnalytics &&
+			{ canViewSharedAnalytics4 &&
 				( ! ga4ModuleConnected || ! ga4ModuleActive ) && (
 					<Cell { ...halfCellProps }>
 						{ BREAKPOINT_SMALL !== breakpoint && (
@@ -80,7 +80,7 @@ export default function OptionalCells( {
 				) }
 
 			{ ! showRecoverableGA4 &&
-				canViewSharedAnalytics &&
+				canViewSharedAnalytics4 &&
 				analyticsModuleActiveAndConnected &&
 				error && (
 					<Cell { ...halfCellProps }>
@@ -93,11 +93,11 @@ export default function OptionalCells( {
 
 			{ showGA4 && (
 				<Cell { ...quarterCellProps } smSize={ 4 }>
-					{ showConversionsCTA && <SetupConversionsCTA /> }
+					{ showConversionsCTA && <CreateConversionCTA /> }
 				</Cell>
 			) }
 
-			{ canViewSharedAnalytics &&
+			{ canViewSharedAnalytics4 &&
 				analyticsModuleActiveAndConnected &&
 				showRecoverableGA4 && (
 					<Cell { ...halfCellProps }>
@@ -109,7 +109,7 @@ export default function OptionalCells( {
 }
 
 OptionalCells.propTypes = {
-	canViewSharedAnalytics: PropTypes.bool.isRequired,
+	canViewSharedAnalytics4: PropTypes.bool.isRequired,
 	error: PropTypes.object,
 	halfCellProps: PropTypes.object.isRequired,
 	quarterCellProps: PropTypes.object.isRequired,

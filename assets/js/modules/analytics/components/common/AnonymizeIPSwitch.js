@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
+import SupportLink from '../../../../components/SupportLink';
 
 const { useSelect, useDispatch } = Data;
 
@@ -41,11 +41,7 @@ export default function AnonymizeIPSwitch() {
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/2763052',
-		} )
-	);
+
 	const { setAnonymizeIP } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback( () => {
 		setAnonymizeIP( ! anonymizeIP );
@@ -84,8 +80,8 @@ export default function AnonymizeIPSwitch() {
 								  ),
 							{
 								LearnMoreLink: (
-									<Link
-										href={ supportURL }
+									<SupportLink
+										path="/analytics/answer/2763052"
 										external
 										aria-label={ __(
 											'Learn more about IP anonymization.',
@@ -96,7 +92,7 @@ export default function AnonymizeIPSwitch() {
 											'Learn more',
 											'google-site-kit'
 										) }
-									</Link>
+									</SupportLink>
 								),
 							}
 						) }

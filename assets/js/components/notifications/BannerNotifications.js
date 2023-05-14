@@ -27,6 +27,11 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
@@ -34,11 +39,13 @@ import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
 import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
+import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
+import SwitchedToGA4Banner from './SwitchedToGA4Banner';
+import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 
 const { useSelect } = Data;
 
@@ -47,6 +54,7 @@ export default function BannerNotifications() {
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 	const gteSupportEnabled = useFeature( 'gteSupport' );
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewOnly = useViewOnly();
 
@@ -57,31 +65,66 @@ export default function BannerNotifications() {
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
 
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+	const ga4ModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const hasGTMScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( GTM_SCOPE )
+	);
+
+	const isGA4ModuleOwner = useSelect( ( select ) => {
+		// Bail early if we're in view-only dashboard or the GA4 module is not connected.
+		if ( viewOnly || ! ga4ModuleConnected ) {
+			return false;
+		}
+
+		const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+
+		const loggedInUserID = select( CORE_USER ).getID();
+
+		if ( ga4OwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
+
+		return ga4OwnerID === loggedInUserID;
+	} );
+
 	const [ notification ] = useQueryArg( 'notification' );
+
+	if ( viewOnly ) {
+		return <ZeroDataStateNotifications />;
+	}
 
 	return (
 		<Fragment>
-			{ ! viewOnly && (
-				<Fragment>
-					{ ( 'authentication_success' === notification ||
-						'user_input_success' === notification ) && (
-						<SetupSuccessBannerNotification />
-					) }
-					<EnableAutoUpdateBannerNotification />
-					{ isAuthenticated && <CoreSiteBannerNotifications /> }
-					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
-					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-				</Fragment>
+			{ ( 'authentication_success' === notification ||
+				'user_input_success' === notification ) && (
+				<SetupSuccessBannerNotification />
 			) }
+			<EnableAutoUpdateBannerNotification />
+			{ isAuthenticated && <CoreSiteBannerNotifications /> }
+			{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
+			{ ga4ReportingEnabled &&
+				analyticsModuleConnected &&
+				ga4ModuleConnected && <SwitchedToGA4Banner /> }
+			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
+			{ gteSupportEnabled &&
+				ga4ModuleConnected &&
+				hasGTMScope &&
+				isGA4ModuleOwner && (
+					<Fragment>
+						<GoogleTagIDMismatchNotification />
+						<WebDataStreamNotAvailableNotification />
+					</Fragment>
+				) }
 			<ZeroDataStateNotifications />
-			{ ! viewOnly && (
-				<Fragment>
-					{ userInputEnabled && (
-						<UserInputPromptBannerNotification />
-					) }
-					{ adSenseModuleActive && <AdSenseAlerts /> }
-					{ gteSupportEnabled && <GoogleTagIDMismatchNotification /> }
-				</Fragment>
+			{ userInputEnabled && <UserInputPromptBannerNotification /> }
+			{ adSenseModuleActive && <AdSenseAlerts /> }
+			{ ga4ReportingEnabled && analyticsModuleConnected && (
+				<SwitchGA4DashboardViewNotification />
 			) }
 		</Fragment>
 	);

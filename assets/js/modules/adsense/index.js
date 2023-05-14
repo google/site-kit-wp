@@ -36,6 +36,7 @@ import {
 	DashboardTopEarningPagesWidget,
 	AdBlockerWarningWidget,
 	AdSenseConnectCTAWidget,
+	DashboardTopEarningPagesWidgetGA4,
 } from './components/dashboard';
 import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/graphics/adsense.svg';
@@ -45,6 +46,8 @@ import {
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
 import { isFeatureEnabled } from '../../features';
+import { negateDefined } from '../../util/negate';
+import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -84,6 +87,11 @@ export const registerModule = ( modules ) => {
 	} );
 };
 
+const isAnalyticsActive = ( select ) =>
+	negateDefined( select( MODULES_ANALYTICS ).isGA4DashboardView() );
+const isAnalytics4Active = ( select ) =>
+	select( MODULES_ANALYTICS ).isGA4DashboardView();
+
 export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'adBlockerWarning',
@@ -121,6 +129,7 @@ export const registerWidgets = ( widgets ) => {
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
 
+	// Register widget reliant on Analytics (UA).
 	widgets.registerWidget(
 		'adsenseTopEarningPages',
 		{
@@ -129,6 +138,21 @@ export const registerWidgets = ( widgets ) => {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ 'adsense', 'analytics' ],
+			isActive: isAnalyticsActive,
+		},
+		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+	);
+
+	// Register widget reliant on Analytics 4 (GA4).
+	widgets.registerWidget(
+		'adsenseTopEarningPagesGA4',
+		{
+			Component: DashboardTopEarningPagesWidgetGA4,
+			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
+			priority: 3,
+			wrapWidget: false,
+			modules: [ 'adsense', 'analytics-4' ],
+			isActive: isAnalytics4Active,
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
