@@ -60,7 +60,7 @@ export default function EnableUniversalAnalytics( {
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const properties = useSelect( ( select ) => {
-		if ( ! accountID ) {
+		if ( ! accountID || ! hasModuleAccess ) {
 			return [];
 		}
 
@@ -107,12 +107,13 @@ export default function EnableUniversalAnalytics( {
 		revertPropertyAndProfileIDs,
 	] );
 
-	const isLookingForMatch = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution(
-				'getProperties',
-				[ accountID ]
-			)
+	const loadedProperties = useSelect( ( select ) =>
+		hasModuleAccess !== false
+			? select( MODULES_ANALYTICS ).hasFinishedResolution(
+					'getProperties',
+					[ accountID ]
+			  )
+			: true
 	);
 
 	useEffect( () => {
@@ -142,7 +143,7 @@ export default function EnableUniversalAnalytics( {
 		}
 	} );
 
-	if ( properties.length === 0 ) {
+	if ( hasModuleAccess !== false && properties.length === 0 ) {
 		return null;
 	}
 
@@ -177,9 +178,9 @@ export default function EnableUniversalAnalytics( {
 						/>
 					) }
 
-					{ isLookingForMatch && <ProgressBar /> }
+					{ ! loadedProperties && <ProgressBar /> }
 
-					{ ! isLookingForMatch && (
+					{ loadedProperties && (
 						<div className="googlesitekit-setup-module__inputs">
 							<PropertySelect
 								hasModuleAccess={ hasModuleAccess }
