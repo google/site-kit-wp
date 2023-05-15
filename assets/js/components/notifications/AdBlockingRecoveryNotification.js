@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
+import SuccessSVG from '../../../svg/graphics/ad-blocking-recovery-success.svg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 const { useDispatch, useSelect } = Data;
@@ -61,9 +62,11 @@ export default function AdBlockingRecoveryNotification() {
 				'Make sure to also create the message in AdSense, otherwise this feature won’t work.',
 				'google-site-kit'
 			) }
+			ctaLink="#"
 			ctaLabel={ __( 'OK, Got it!', 'google-site-kit' ) }
 			onCTAClick={ () => dismissItem( NOTIFICATION_ID ) }
 			type="win-success"
+			WinImageSVG={ () => <SuccessSVG /> }
 		/>
 	);
 }
