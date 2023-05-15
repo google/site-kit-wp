@@ -67,6 +67,10 @@ const isAnalytics4Active = ( select ) =>
 	select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 export const registerWidgets = ( widgets ) => {
+	const isPreloaded = ( select ) => {
+		return select( MODULES_ANALYTICS ).shouldPromptGA4DashboardView();
+	};
+
 	// Register Analytics (UA) Widgets.
 	widgets.registerWidget(
 		'analyticsAllTraffic',
@@ -120,6 +124,7 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'analytics-4' ],
 			isActive: isAnalytics4Active,
+			isPreloaded,
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -136,6 +141,7 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'analytics-4' ],
 			isActive: isAnalytics4Active,
+			isPreloaded,
 		},
 		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
 	);
@@ -149,6 +155,7 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'analytics-4' ],
 			isActive: isAnalytics4Active,
+			isPreloaded,
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);

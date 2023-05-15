@@ -145,7 +145,7 @@ export default function ReminderBanner( {
 
 	let title;
 	let description = __(
-		'Your current Universal Analytics will stop recording stats on July 1st, 2023.',
+		'Google Analytics 4 is the newest version of Google Analytics. It will replace Universal Analytics on July 1, 2023. After that, Universal Analytics properties will no longer collect new data.',
 		'google-site-kit'
 	);
 	let descriptionIcon = null;

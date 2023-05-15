@@ -88,7 +88,7 @@ export default function SettingsForm( {
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
 	const properties = useSelect( ( select ) => {
-		if ( ! accountID ) {
+		if ( ! accountID || ! hasAnalyticsAccess || ! hasAnalytics4Access ) {
 			return [];
 		}
 
@@ -106,18 +106,21 @@ export default function SettingsForm( {
 	return (
 		<Fragment>
 			<SettingsUACutoffWarning />
-			<StoreErrorNotices
-				moduleSlug="analytics"
-				storeName={ MODULES_ANALYTICS }
-			/>
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
-			/>
-
+			{ ! ga4ReportingEnabled && (
+				<Fragment>
+					<ExistingGTMPropertyNotice
+						gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
+					/>
+					<StoreErrorNotices
+						moduleSlug="analytics"
+						storeName={ MODULES_ANALYTICS }
+					/>
+				</Fragment>
+			) }
 			{ ga4ReportingEnabled && isUAConnected && isUAEnabled && (
 				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Dashboard view', 'google-site-kit' ) }
+						{ __( 'Dashboard View', 'google-site-kit' ) }
 					</h4>
 					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
 						{ isGA4Connected && <GA4DashboardViewToggle /> }
@@ -143,6 +146,7 @@ export default function SettingsForm( {
 					</h4>
 					<EnableUniversalAnalytics
 						hasModuleAccess={ hasAnalyticsAccess }
+						showErrors
 					>
 						<SettingsUseSnippetSwitch />
 					</EnableUniversalAnalytics>
@@ -158,7 +162,9 @@ export default function SettingsForm( {
 			) }
 
 			{ hasAnalyticsAccess && (
-				<EntityOwnershipChangeNotice slug="analytics" />
+				<EntityOwnershipChangeNotice
+					slug={ [ 'analytics', 'analytics-4' ] }
+				/>
 			) }
 		</Fragment>
 	);

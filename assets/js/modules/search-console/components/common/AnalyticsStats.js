@@ -115,7 +115,7 @@ export default function AnalyticsStats( props ) {
 	);
 
 	const property = useSelect( ( select ) => {
-		if ( isViewOnly || isGA4DashboardView ) {
+		if ( isViewOnly || ! isGA4DashboardView ) {
 			return null;
 		}
 

@@ -27,6 +27,7 @@ import coreModulesFixture from '../../googlesitekit/modules/datastore/__fixtures
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import AdminBarWidgets from './AdminBarWidgets';
 
 describe( 'AdminBarWidgets', () => {
@@ -107,5 +108,34 @@ describe( 'AdminBarWidgets', () => {
 		expect(
 			queryByText( /Set up Google Analytics/ )
 		).not.toBeInTheDocument();
+	} );
+
+	describe( 'ga4Reporting', () => {
+		beforeEach( () => {
+			provideModules( registry, [
+				{ slug: 'analytics', active: true, connected: true },
+				{ slug: 'analytics-4', active: true, connected: true },
+			] );
+		} );
+
+		it( 'requests no GA reports while dashboard view is `undefined`', async () => {
+			registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+			expect(
+				registry.select( MODULES_ANALYTICS ).getDashboardView()
+			).toBeUndefined();
+
+			const { waitForRegistry } = render( <AdminBarWidgets />, {
+				registry,
+				features: [ 'ga4Reporting' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).not.toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics(-4)/data/report'
+				)
+			);
+		} );
 	} );
 } );

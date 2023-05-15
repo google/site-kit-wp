@@ -12,6 +12,7 @@ exports[`core/widgets Widgets selectors getWidget returns a widget if one exists
 Object {
   "Component": [Function],
   "isActive": undefined,
+  "isPreloaded": undefined,
   "modules": Array [],
   "priority": 10,
   "slug": "TestWidget",

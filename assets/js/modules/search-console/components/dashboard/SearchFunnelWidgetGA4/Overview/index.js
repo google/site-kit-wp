@@ -99,18 +99,7 @@ export default function Overview( props ) {
 	} );
 
 	const canShowGA4ReportingFeatureTour = useSelect( ( select ) => {
-		// Don't show the GA4 report feature tour if feature tours are on cooldown.
-		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
-			return false;
-		}
-
-		// Don't show the GA4 report feature tour if we have already shown a feature tour
-		// during the current page view.
-		if ( !! select( CORE_USER ).getShownTour() ) {
-			return false;
-		}
-
-		return true;
+		return select( CORE_UI ).getValue( 'showGA4ReportingTour' );
 	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
@@ -134,6 +123,11 @@ export default function Overview( props ) {
 	const conversionsRateLearnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/9267568',
+		} )
+	);
+	const engagementRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12195621',
 		} )
 	);
 
@@ -184,7 +178,6 @@ export default function Overview( props ) {
 		! error &&
 		! showRecoverableAnalytics;
 
-	const { setValue } = useDispatch( CORE_UI );
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	useEffect( () => {
 		if (
@@ -195,12 +188,10 @@ export default function Overview( props ) {
 			return;
 		}
 
-		setValue( 'forceInView', true );
 		triggerOnDemandTour( ga4Reporting );
 	}, [
 		showGA4,
 		dashboardType,
-		setValue,
 		triggerOnDemandTour,
 		canShowGA4ReportingFeatureTour,
 	] );
@@ -312,6 +303,15 @@ export default function Overview( props ) {
 						datapointUnit: '%',
 						change: ga4EngagementRateChange,
 						isGatheringData: isGA4GatheringData,
+						badge: (
+							<NewBadge
+								tooltipTitle={ __(
+									'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
+									'google-site-kit'
+								) }
+								learnMoreLink={ engagementRateLearnMoreURL }
+							/>
+						),
 					},
 			  ]
 			: [] ),
@@ -331,6 +331,14 @@ export default function Overview( props ) {
 		3: oneThirdCellProps,
 		4: quarterCellProps,
 	};
+
+	// Check if any of the data blocks have a badge.
+	//
+	// If no data blocks have a badge, we shouldn't even render an
+	// empty badge container, and save some vertical space in the `DataBlock`.
+	const hasMetricWithBadge = dataBlocks.some( ( { badge } ) => {
+		return !! badge;
+	} );
 
 	return (
 		<Grid>
@@ -364,7 +372,9 @@ export default function Overview( props ) {
 									}
 									handleStatSelection={ handleStatsSelection }
 									gatheringData={ dataBlock.isGatheringData }
-									badge={ dataBlock.badge }
+									badge={
+										dataBlock.badge || hasMetricWithBadge
+									}
 								/>
 							</Cell>
 						) ) }

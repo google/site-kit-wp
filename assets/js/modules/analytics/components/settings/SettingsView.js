@@ -26,7 +26,6 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ExistingGTMPropertyNotice } from '../common';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
@@ -37,7 +36,7 @@ import {
 	DASHBOARD_VIEW_GA4,
 	MODULES_ANALYTICS,
 } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 import { isValidProfileID, isValidPropertyID } from '../../util';
@@ -57,16 +56,6 @@ export default function SettingsView() {
 	const isUAConnected =
 		isValidPropertyID( propertyID ) && isValidProfileID( profileID );
 
-	const isTagManagerAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
-	);
-
-	const gtmAnalyticsPropertyID = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
-
 	const dashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getDashboardView()
 	);
@@ -79,16 +68,16 @@ export default function SettingsView() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
 			{ ga4ReportingEnabled && isUAConnected && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Dashboard view', 'google-site-kit' ) }
+							{ __( 'Dashboard View', 'google-site-kit' ) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting

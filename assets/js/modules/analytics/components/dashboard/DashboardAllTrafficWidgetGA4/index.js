@@ -68,6 +68,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
+	const gatheringDataLoaded = isGatheringData !== undefined;
 
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
@@ -335,7 +336,11 @@ function DashboardAllTrafficWidgetGA4( props ) {
 						mdSize={ 8 }
 					>
 						<TotalUserCount
-							loaded={ totalUsersLoaded && ! firstLoad }
+							loaded={
+								gatheringDataLoaded &&
+								totalUsersLoaded &&
+								! firstLoad
+							}
 							report={ totalUsersReport }
 							error={ totalUsersError }
 							dimensionValue={ dimensionValue }
@@ -343,7 +348,11 @@ function DashboardAllTrafficWidgetGA4( props ) {
 						/>
 
 						<UserCountGraph
-							loaded={ userCountGraphLoaded && ! firstLoad }
+							loaded={
+								gatheringDataLoaded &&
+								userCountGraphLoaded &&
+								! firstLoad
+							}
 							error={ userCountGraphError }
 							report={ userCountGraphReport }
 							gatheringData={ isGatheringData }
@@ -356,7 +365,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 						mdSize={ 8 }
 					>
 						<DimensionTabs
-							loaded={ ! firstLoad }
+							loaded={ gatheringDataLoaded && ! firstLoad }
 							dimensionName={ dimensionName }
 							gatheringData={ isGatheringData }
 							isZeroData={ pieChartReportIsZero }
@@ -365,7 +374,11 @@ function DashboardAllTrafficWidgetGA4( props ) {
 							dimensionName={ dimensionName }
 							dimensionValue={ dimensionValue }
 							gatheringData={ isGatheringData }
-							loaded={ pieChartLoaded && ! firstLoad }
+							loaded={
+								gatheringDataLoaded &&
+								pieChartLoaded &&
+								! firstLoad
+							}
 							report={ pieChartReport }
 						/>
 					</Cell>

@@ -29,6 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	Fragment,
 	useCallback,
+	useEffect,
 	createInterpolateElement,
 } from '@wordpress/element';
 
@@ -36,7 +37,7 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Switch } from 'googlesitekit-components';
+import { ProgressBar, Switch } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS, FORM_SETUP } from '../../datastore/constants';
@@ -44,12 +45,16 @@ import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import ProfileSelect from './ProfileSelect';
 import PropertySelect from './PropertySelect';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import ExistingGTMPropertyNotice from './ExistingGTMPropertyNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function EnableUniversalAnalytics( {
 	children,
 	hasModuleAccess = true,
+	showErrors = false,
 } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -70,10 +75,22 @@ export default function EnableUniversalAnalytics( {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+	);
+	const gtmAnalyticsPropertyID = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { resetPropertyAndProfileIDs, revertPropertyAndProfileIDs } =
-		useDispatch( MODULES_ANALYTICS );
+	const {
+		resetPropertyAndProfileIDs,
+		revertPropertyAndProfileIDs,
+		findMatchedProperty,
+		selectProperty,
+	} = useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback( () => {
 		if ( isUAEnabled ) {
@@ -88,6 +105,31 @@ export default function EnableUniversalAnalytics( {
 		setValues,
 		resetPropertyAndProfileIDs,
 		revertPropertyAndProfileIDs,
+	] );
+
+	const isLookingForMatch = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution(
+				'getProperties',
+				[ accountID ]
+			)
+	);
+
+	useEffect( () => {
+		if ( isUAEnabled && ! propertyID ) {
+			( async () => {
+				const matchedProperty = await findMatchedProperty( accountID );
+				if ( matchedProperty?.id ) {
+					selectProperty( matchedProperty.id );
+				}
+			} )();
+		}
+	}, [
+		isUAEnabled,
+		propertyID,
+		findMatchedProperty,
+		selectProperty,
+		accountID,
 	] );
 
 	const formattedOwnerName = module?.owner?.login
@@ -125,10 +167,28 @@ export default function EnableUniversalAnalytics( {
 			</div>
 			{ isUAEnabled && (
 				<Fragment>
-					<div className="googlesitekit-setup-module__inputs">
-						<PropertySelect hasModuleAccess={ hasModuleAccess } />
-						<ProfileSelect hasModuleAccess={ hasModuleAccess } />
-					</div>
+					<ExistingGTMPropertyNotice
+						gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+					/>
+					{ showErrors && (
+						<StoreErrorNotices
+							moduleSlug="analytics"
+							storeName={ MODULES_ANALYTICS }
+						/>
+					) }
+
+					{ isLookingForMatch && <ProgressBar /> }
+
+					{ ! isLookingForMatch && (
+						<div className="googlesitekit-setup-module__inputs">
+							<PropertySelect
+								hasModuleAccess={ hasModuleAccess }
+							/>
+							<ProfileSelect
+								hasModuleAccess={ hasModuleAccess }
+							/>
+						</div>
+					) }
 
 					{ /* Renders the SetupUseSnippetSwitch or SettingsUseSnippetSwitch */ }
 					{ children }
@@ -162,4 +222,5 @@ export default function EnableUniversalAnalytics( {
 EnableUniversalAnalytics.propTypes = {
 	children: PropTypes.node.isRequired,
 	hasModuleAccess: PropTypes.bool,
+	showErrors: PropTypes.bool,
 };

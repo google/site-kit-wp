@@ -46,6 +46,7 @@ import Footer from './ModulePopularPagesWidget/Footer';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import NewBadge from '../../../../components/NewBadge';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidgetGA4( props ) {
@@ -127,7 +128,14 @@ function ModulePopularPagesWidgetGA4( props ) {
 		} )
 	);
 
-	if ( ! loaded || isGatheringData === undefined ) {
+	const isGA4ReportingTourActive = useSelect(
+		( select ) => select( CORE_USER ).getCurrentTour() === ga4ReportingTour
+	);
+
+	const loading = ! loaded || isGatheringData === undefined;
+
+	// Bypass loading state if showing GA4 tour.
+	if ( loading && ! isGA4ReportingTourActive ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer } noPadding>
 				<PreviewTable padding />
@@ -231,12 +239,20 @@ function ModulePopularPagesWidgetGA4( props ) {
 		},
 	];
 
-	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
-	// Combine the titles from the pageTitles with the rows from the metrics report.
-	rows.forEach( ( row ) => {
-		const url = row.dimensionValues[ 0 ].value;
-		row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
-	} );
+	let rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
+	let ZeroState = ZeroDataMessage;
+	// Use a custom zero state when the GA4 reporting tour is active
+	// while data is still loading.
+	if ( loading && isGA4ReportingTourActive ) {
+		rows = [];
+		ZeroState = () => <PreviewTable rows={ rows.length || 10 } />;
+	} else {
+		// Combine the titles from the pageTitles with the rows from the metrics report.
+		rows.forEach( ( row ) => {
+			const url = row.dimensionValues[ 0 ].value;
+			row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
+		} );
+	}
 
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
@@ -244,7 +260,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 				<ReportTable
 					rows={ rows }
 					columns={ tableColumns }
-					zeroState={ ZeroDataMessage }
+					zeroState={ ZeroState }
 					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
