@@ -242,7 +242,8 @@ function ModulePopularPagesWidgetGA4( props ) {
 	let rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
 	let ZeroState = ZeroDataMessage;
 	// Use a custom zero state when the GA4 reporting tour is active
-	if ( isGA4ReportingTourActive ) {
+	// while data is still loading.
+	if ( loading && isGA4ReportingTourActive ) {
 		rows = [];
 		ZeroState = () => <PreviewTable rows={ rows.length || 10 } />;
 	} else {
