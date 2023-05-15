@@ -27,6 +27,11 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import SupportLink from '../components/SupportLink';
 import { isFeatureEnabled } from '../features';
 
+const spotlightStyles = {
+	border: 0,
+	padding: '0 0 15px 0',
+};
+
 const ga4Reporting = {
 	slug: 'ga4Reporting',
 	contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -37,6 +42,7 @@ const ga4Reporting = {
 	steps: [
 		{
 			target: '.googlesitekit-data-block--conversions .googlesitekit-data-block__title, .googlesitekit-analytics-cta--setup-conversions',
+			styles: spotlightStyles,
 			title: __(
 				'See the new metrics from Google Analytics 4',
 				'google-site-kit'
@@ -61,7 +67,8 @@ const ga4Reporting = {
 			placement: 'auto',
 		},
 		{
-			target: '.googlesitekit-table__head-item--sessions',
+			target: '.googlesitekit-table__head-item--sessions:not(.googlesitekit-table__head-item--badge)',
+			styles: spotlightStyles,
 			title: __(
 				'"Sessions" has replaced "Unique Pageviews"',
 				'google-site-kit'
@@ -86,8 +93,9 @@ const ga4Reporting = {
 			placement: 'auto',
 		},
 		{
-			target: '.googlesitekit-table__head-item--engagement-rate',
+			target: '.googlesitekit-table__head-item--engagement-rate:not(.googlesitekit-table__head-item--badge)',
 			title: __( 'New metric: engagement rate', 'google-site-kit' ),
+			styles: spotlightStyles,
 			content: createInterpolateElement(
 				__(
 					'Engagement rate shows the percentage of engaged sessions, the opposite of bounce rate. <a>Learn more</a>',

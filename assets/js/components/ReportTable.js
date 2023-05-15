@@ -97,6 +97,7 @@ export default function ReportTable( props ) {
 									<th
 										className={ classnames(
 											'googlesitekit-table__head-item',
+											'googlesitekit-table__head-item--badge',
 											{
 												'googlesitekit-table__head-item--primary':
 													primary,
