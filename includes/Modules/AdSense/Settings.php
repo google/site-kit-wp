@@ -29,6 +29,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	const OPTION = 'googlesitekit_adsense_settings';
 
 	/**
+	 * Various ad blocking recovery setup statuses.
+	 */
+	const AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED      = 'tag-placed';
+	const AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED = 'setup-confirmed';
+
+	/**
 	 * Legacy account statuses to be migrated on-the-fly.
 	 *
 	 * @since 1.9.0
@@ -202,14 +208,18 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					if ( isset( $option['useAdBlockerDetectionErrorSnippet'] ) ) {
 						$option['useAdBlockerDetectionErrorSnippet'] = (bool) $option['useAdBlockerDetectionErrorSnippet'];
 					}
-					if ( isset( $option['adBlockingRecoverySetupStatus'] ) ) {
-						if ( ! in_array(
+					if (
+						isset( $option['adBlockingRecoverySetupStatus'] ) &&
+						! in_array(
 							$option['adBlockingRecoverySetupStatus'],
-							array( 'tag-placed', 'setup-confirmed' ),
+							array(
+								self::AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+								self::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+							),
 							true
-						) ) {
-							$option['adBlockingRecoverySetupStatus'] = $this->get()['adBlockingRecoverySetupStatus'];
-						}
+						)
+					) {
+						$option['adBlockingRecoverySetupStatus'] = $this->get()['adBlockingRecoverySetupStatus'];
 					}
 				}
 			}
