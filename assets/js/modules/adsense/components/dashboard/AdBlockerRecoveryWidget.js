@@ -48,7 +48,7 @@ export default function AdBlockerRecoveryWidget( { Widget } ) {
 	return (
 		<Widget>
 			<Banner>
-				<Cell lgSize={ 8 }>
+				<Cell lgSize={ 7 }>
 					<BannerTitle
 						title={ __(
 							'Recover revenue lost to ad blockers',
@@ -79,7 +79,7 @@ export default function AdBlockerRecoveryWidget( { Widget } ) {
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 					/>
 				</Cell>
-				<Cell lgSize={ 4 }>
+				<Cell lgSize={ 5 }>
 					<GA4SuccessGreenSVG />
 					<p>
 						{ __(
