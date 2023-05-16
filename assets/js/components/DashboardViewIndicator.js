@@ -19,7 +19,8 @@
 const DashboardViewIndicator = () => {
 	return (
 		<div>
-			<p>Dashboard View</p>
+			<p>UA Dashboard View</p>
+			<p>GA4 Dashboard View</p>
 		</div>
 	);
 };
