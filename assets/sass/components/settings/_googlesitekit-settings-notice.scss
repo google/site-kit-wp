@@ -215,8 +215,10 @@
 
 .googlesitekit-settings-notice-adsense-top-earning-pages-widget {
 	align-items: center;
+	flex-wrap: wrap;
 	padding-bottom: 24px;
 	padding-top: 24px;
+	row-gap: 15px;
 
 	.googlesitekit-settings-notice__icon {
 		margin-right: 20px;
