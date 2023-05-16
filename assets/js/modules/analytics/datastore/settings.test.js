@@ -627,12 +627,12 @@ describe( 'modules/analytics settings', () => {
 				} );
 			} );
 
-			describe( 'dismiss switch ga4 dashboard view notification', () => {
+			describe( 'dismiss the switch to GA4 dashboard view notification', () => {
 				const fetchDismissItemRegExp = new RegExp(
 					'^/google-site-kit/v1/core/user/data/dismiss-item'
 				);
 
-				it( 'should not dismiss the switch ga4 dashboard view notification if it is a UA dashboard view', async () => {
+				it( 'should not dismiss the switch to GA4 dashboard view notification when setting the dashboard view to UA', async () => {
 					registry
 						.dispatch( CORE_USER )
 						.receiveGetDismissedItems( [] );
@@ -659,6 +659,9 @@ describe( 'modules/analytics settings', () => {
 						.dispatch( MODULES_ANALYTICS )
 						.submitChanges();
 
+					// Wait for resolvers to run.
+					await waitForDefaultTimeouts();
+
 					expect(
 						registry
 							.select( CORE_USER )
@@ -668,7 +671,7 @@ describe( 'modules/analytics settings', () => {
 					).toBe( false );
 				} );
 
-				it( 'should not dismiss the switch ga4 dashboard view notification if it is already dismissed', async () => {
+				it( 'should not dismiss the switch to GA4 dashboard view notification if it is already dismissed', async () => {
 					registry
 						.dispatch( CORE_USER )
 						.receiveGetDismissedItems( [
@@ -698,6 +701,9 @@ describe( 'modules/analytics settings', () => {
 						.dispatch( MODULES_ANALYTICS )
 						.submitChanges();
 
+					// Wait for resolvers to run.
+					await waitForDefaultTimeouts();
+
 					expect(
 						registry
 							.select( CORE_USER )
@@ -711,7 +717,7 @@ describe( 'modules/analytics settings', () => {
 					);
 				} );
 
-				it( 'should dismiss the switch ga4 dashboard view notification if it has not been dismissed yet', async () => {
+				it( 'should dismiss the switch to GA4 dashboard view notification if it has not been dismissed yet when setting the dashboard view to GA4', async () => {
 					registry
 						.dispatch( CORE_USER )
 						.receiveGetDismissedItems( [] );
