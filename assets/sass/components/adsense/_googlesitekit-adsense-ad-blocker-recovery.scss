@@ -20,9 +20,20 @@
 
 		.googlesitekit-publisher-win,
 		.mdc-layout-grid {
-			padding-bottom: 0;
-			padding-left: 0;
-			padding-top: 0;
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-widget--adBlockerRecovery__content {
+		margin-bottom: 30px;
+	}
+
+	.googlesitekit-widget--adBlockerRecovery__graphics {
+		text-align: center;
+
+		p {
+			font-size: 12px;
+			margin: 0 34px;
 		}
 	}
 }

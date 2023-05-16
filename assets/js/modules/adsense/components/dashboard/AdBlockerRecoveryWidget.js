@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import GA4SuccessGreenSVG from '../../../../../svg/graphics/ga4-success-green.svg';
+import AdsenseAdBlockerRecoverySVG from '../../../../../svg/graphics/adsense-ad-blocker-recovery.svg';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { Cell } from '../../../../material-components';
 import BannerTitle from '../../../../components/notifications/BannerNotification/BannerTitle';
@@ -56,21 +56,24 @@ export default function AdBlockerRecoveryWidget( { Widget } ) {
 						) }
 					/>
 
-					<p>
-						{ __(
-							'Display a message to give site visitors with an ad blocker the option to allow ads on your site. Site Kit will place an ad blocking recovery tag on your site.',
-							'google-site-kit'
-						) }{ ' ' }
-						<a href={ learnMore }>
-							{ __( 'Learn more', 'google-site-kit' ) }
-						</a>
-					</p>
-					<p>
-						{ __(
-							'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message*',
-							'google-site-kit'
-						) }
-					</p>
+					<div className="googlesitekit-widget--adBlockerRecovery__content">
+						<p>
+							{ __(
+								'Display a message to give site visitors with an ad blocker the option to allow ads on your site. Site Kit will place an ad blocking recovery tag on your site.',
+								'google-site-kit'
+							) }{ ' ' }
+							<a href={ learnMore }>
+								{ __( 'Learn more', 'google-site-kit' ) }
+							</a>
+						</p>
+						<p>
+							{ __(
+								'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message',
+								'google-site-kit'
+							) }{ ' ' }
+							<sup>*</sup>
+						</p>
+					</div>
 
 					<BannerActions
 						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
@@ -79,11 +82,20 @@ export default function AdBlockerRecoveryWidget( { Widget } ) {
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 					/>
 				</Cell>
-				<Cell lgSize={ 5 }>
-					<GA4SuccessGreenSVG />
+				<Cell
+					className="googlesitekit-widget--adBlockerRecovery__graphics"
+					lgSize={ 5 }
+				>
+					<AdsenseAdBlockerRecoverySVG
+						style={ {
+							maxHeight: '172px',
+						} }
+					/>
+
 					<p>
+						<sup>*</sup>{ ' ' }
 						{ __(
-							'* Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop',
+							'Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop',
 							'google-site-kit'
 						) }
 					</p>
