@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,16 +35,21 @@ import { Cell } from '../../../../material-components';
 import BannerTitle from '../../../../components/notifications/BannerNotification/BannerTitle';
 import BannerActions from '../../../../components/notifications/BannerNotification/BannerActions';
 import Banner from '../../../../components/notifications/BannerNotification/Banner';
+import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function AdBlockerRecoveryWidget( { Widget } ) {
-	const learnMore = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( '/adsense/answer/11576589' )
+	const learnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/adsense/answer/11576589',
+		} )
 	);
 
-	const pageURL = useSelect( ( select ) =>
+	const recoveryPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
 	);
+
+	const dismissCallback = () => {};
 
 	return (
 		<Widget>
@@ -58,27 +64,28 @@ export default function AdBlockerRecoveryWidget( { Widget } ) {
 
 					<div className="googlesitekit-widget--adBlockerRecovery__content">
 						<p>
-							{ __(
-								'Display a message to give site visitors with an ad blocker the option to allow ads on your site. Site Kit will place an ad blocking recovery tag on your site.',
-								'google-site-kit'
-							) }{ ' ' }
-							<a href={ learnMore }>
-								{ __( 'Learn more', 'google-site-kit' ) }
-							</a>
+							{ createInterpolateElement(
+								__(
+									'Display a message to give site visitors with an ad blocker the option to allow ads on your site. Site Kit will place an ad blocking recovery tag on your site. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: <Link href={ learnMoreURL } external />,
+								}
+							) }
 						</p>
 						<p>
 							{ __(
-								'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message',
+								'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message *',
 								'google-site-kit'
-							) }{ ' ' }
-							<sup>*</sup>
+							) }
 						</p>
 					</div>
 
 					<BannerActions
 						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
-						ctaLink={ pageURL }
-						dismissCallback={ () => {} }
+						ctaLink={ recoveryPageURL }
+						dismissCallback={ dismissCallback }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 					/>
 				</Cell>
@@ -93,9 +100,8 @@ export default function AdBlockerRecoveryWidget( { Widget } ) {
 					/>
 
 					<p>
-						<sup>*</sup>{ ' ' }
 						{ __(
-							'Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop',
+							'* Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop',
 							'google-site-kit'
 						) }
 					</p>
