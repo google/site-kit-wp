@@ -59,6 +59,7 @@ export default function StatusMigration() {
 		setSiteStatus,
 		setAccountSetupComplete,
 		setSiteSetupComplete,
+		saveSettings,
 	} = useDispatch( MODULES_ADSENSE );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -76,17 +77,19 @@ export default function StatusMigration() {
 	}
 
 	useEffect( () => {
-		if ( ! isReady ) {
-			return;
+		if ( isReady ) {
+			( async () => {
+				await setAccountStatus( ACCOUNT_STATUS_READY );
+				await setSiteStatus( SITE_STATUS_READY );
+				await saveSettings();
+			} )();
 		}
-
-		setAccountStatus( ACCOUNT_STATUS_READY );
-		setSiteStatus( SITE_STATUS_READY );
-	}, [ isReady, setAccountStatus, setSiteStatus ] );
+	}, [ isReady, saveSettings, setAccountStatus, setSiteStatus ] );
 
 	const handleRedoSetup = async () => {
 		await setAccountSetupComplete( false );
 		await setSiteSetupComplete( false );
+		await saveSettings();
 		navigateTo( adminReauthURL );
 	};
 
