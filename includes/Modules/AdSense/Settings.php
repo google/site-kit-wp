@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class for AdSense settings.
@@ -26,6 +27,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	use Setting_With_Legacy_Keys_Trait, Setting_With_Owned_Keys_Trait;
 
 	const OPTION = 'googlesitekit_adsense_settings';
+
+	/**
+	 * Various ad blocking recovery setup statuses.
+	 */
+	const AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED      = 'tag-placed';
+	const AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED = 'setup-confirmed';
 
 	/**
 	 * Legacy account statuses to be migrated on-the-fly.
@@ -149,7 +156,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array
 	 */
 	protected function get_default() {
-		return array(
+		$settings = array(
 			'ownerID'              => 0,
 			'accountID'            => '',
 			'autoAdsDisabled'      => array(),
@@ -161,6 +168,14 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'useSnippet'           => true,
 			'webStoriesAdUnit'     => '',
 		);
+
+		if ( Feature_Flags::enabled( 'adBlockerDetection' ) ) {
+			$settings['useAdBlockerDetectionSnippet']      = false;
+			$settings['useAdBlockerDetectionErrorSnippet'] = false;
+			$settings['adBlockingRecoverySetupStatus']     = '';
+		}
+
+		return $settings;
 	}
 
 	/**
@@ -184,6 +199,28 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				}
 				if ( isset( $option['autoAdsDisabled'] ) ) {
 					$option['autoAdsDisabled'] = (array) $option['autoAdsDisabled'];
+				}
+
+				if ( Feature_Flags::enabled( 'adBlockerDetection' ) ) {
+					if ( isset( $option['useAdBlockerDetectionSnippet'] ) ) {
+						$option['useAdBlockerDetectionSnippet'] = (bool) $option['useAdBlockerDetectionSnippet'];
+					}
+					if ( isset( $option['useAdBlockerDetectionErrorSnippet'] ) ) {
+						$option['useAdBlockerDetectionErrorSnippet'] = (bool) $option['useAdBlockerDetectionErrorSnippet'];
+					}
+					if (
+						isset( $option['adBlockingRecoverySetupStatus'] ) &&
+						! in_array(
+							$option['adBlockingRecoverySetupStatus'],
+							array(
+								self::AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+								self::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+							),
+							true
+						)
+					) {
+						$option['adBlockingRecoverySetupStatus'] = $this->get()['adBlockingRecoverySetupStatus'];
+					}
 				}
 			}
 			return $option;
