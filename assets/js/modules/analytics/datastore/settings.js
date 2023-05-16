@@ -85,54 +85,50 @@ async function submitGA4Changes( { select, dispatch } ) {
 	return await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 }
 
-// eslint-disable-next-line complexity
 export async function submitChanges( registry ) {
 	const { select, dispatch } = registry;
 
 	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
 
 	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
-	let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
-	if (
-		( ! ga4ReportingEnabled || isUAEnabled ) &&
-		propertyID === PROPERTY_CREATE
-	) {
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-		const { response: property, error } = await dispatch(
-			MODULES_ANALYTICS
-		).createProperty( accountID );
 
-		if ( error ) {
-			return { error };
+	if ( ! ga4ReportingEnabled || isUAEnabled ) {
+		let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
+		if ( propertyID === PROPERTY_CREATE ) {
+			const accountID = select( MODULES_ANALYTICS ).getAccountID();
+			const { response: property, error } = await dispatch(
+				MODULES_ANALYTICS
+			).createProperty( accountID );
+
+			if ( error ) {
+				return { error };
+			}
+
+			propertyID = property.id;
+			dispatch( MODULES_ANALYTICS ).setPropertyID( property.id );
+			dispatch( MODULES_ANALYTICS ).setInternalWebPropertyID(
+				// eslint-disable-next-line sitekit/acronym-case
+				property.internalWebPropertyId
+			);
 		}
 
-		propertyID = property.id;
-		dispatch( MODULES_ANALYTICS ).setPropertyID( property.id );
-		dispatch( MODULES_ANALYTICS ).setInternalWebPropertyID(
-			// eslint-disable-next-line sitekit/acronym-case
-			property.internalWebPropertyId
-		);
-	}
+		const profileID = select( MODULES_ANALYTICS ).getProfileID();
+		if ( profileID === PROFILE_CREATE ) {
+			const profileName = select( CORE_FORMS ).getValue(
+				FORM_SETUP,
+				'profileName'
+			);
+			const accountID = select( MODULES_ANALYTICS ).getAccountID();
+			const { response: profile, error } = await dispatch(
+				MODULES_ANALYTICS
+			).createProfile( accountID, propertyID, { profileName } );
 
-	const profileID = select( MODULES_ANALYTICS ).getProfileID();
-	if (
-		( ! ga4ReportingEnabled || isUAEnabled ) &&
-		profileID === PROFILE_CREATE
-	) {
-		const profileName = select( CORE_FORMS ).getValue(
-			FORM_SETUP,
-			'profileName'
-		);
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-		const { response: profile, error } = await dispatch(
-			MODULES_ANALYTICS
-		).createProfile( accountID, propertyID, { profileName } );
+			if ( error ) {
+				return { error };
+			}
 
-		if ( error ) {
-			return { error };
+			dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 		}
-
-		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
 	// If `ga4Reporting` is enabled, the dashboard view is set to UA
