@@ -53,6 +53,7 @@ export default {
 			] );
 
 			registry.dispatch( MODULES_ADSENSE ).setSettings( {
+				accountID: 'pub-123456',
 				adBlockingRecoverySetupStatus: 'setup-confirmed',
 			} );
 

@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -26,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
+import Link from '../Link';
 import SuccessSVG from '../../../svg/graphics/ad-blocking-recovery-success.svg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
@@ -40,6 +42,16 @@ export default function AdBlockingRecoveryNotification() {
 
 	const isNotificationDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( NOTIFICATION_ID )
+	);
+
+	const adsenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
+	const privacyMessagingURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getServiceURL( {
+			path: `/${ adsenseAccountID }/privacymessaging/ad_blocking`,
+		} )
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -58,9 +70,20 @@ export default function AdBlockingRecoveryNotification() {
 				'You successfully added the ad blocking recovery tag',
 				'google-site-kit'
 			) }
-			description={ __(
-				'Make sure to also create the message in AdSense, otherwise this feature won’t work.',
-				'google-site-kit'
+			description={ createInterpolateElement(
+				__(
+					'Make sure to also create the message in <link>AdSense</link>, otherwise this feature won’t work.',
+					'google-site-kit'
+				),
+				{
+					link: (
+						<Link
+							href={ privacyMessagingURL }
+							external
+							hideExternalIndicator
+						/>
+					),
+				}
 			) }
 			ctaLink="#"
 			ctaLabel={ __( 'OK, Got it!', 'google-site-kit' ) }
