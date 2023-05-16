@@ -38,11 +38,13 @@ import BannerTitle from '../../../../components/notifications/BannerNotification
 import BannerActions from '../../../../components/notifications/BannerNotification/BannerActions';
 import Banner from '../../../../components/notifications/BannerNotification/Banner';
 import Link from '../../../../components/Link';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockerRecoveryWidget( { Widget, WidgetNull } ) {
 	const notificationSlug = 'ad-blocker-recovery-notification';
 	const windowWidth = useWindowWidth();
+	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( notificationSlug )
@@ -63,7 +65,7 @@ export default function AdBlockerRecoveryWidget( { Widget, WidgetNull } ) {
 		dismissItem( notificationSlug );
 	};
 
-	if ( isDismissed ) {
+	if ( isDismissed || ! adBlockerDetectionEnabled ) {
 		return <WidgetNull />;
 	}
 

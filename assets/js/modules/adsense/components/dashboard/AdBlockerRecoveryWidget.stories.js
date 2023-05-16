@@ -28,8 +28,11 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 
 const Template = () => <WidgetWithComponentProps />;
 
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Ready';
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.parameters = {
+	features: [ 'adBlockerDetection' ],
+};
 
 export default {
 	title: 'Modules/AdSense/Widgets/AdBlockerRecoveryWidget',
