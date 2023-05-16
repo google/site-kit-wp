@@ -55,30 +55,6 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'            => '',
-				'clientID'             => '',
-				'accountStatus'        => '',
-				'siteStatus'           => '',
-				'accountSetupComplete' => false,
-				'siteSetupComplete'    => false,
-				'useSnippet'           => true,
-				'ownerID'              => 0,
-				'webStoriesAdUnit'     => '',
-				'autoAdsDisabled'      => array(),
-			),
-			get_option( Settings::OPTION )
-		);
-	}
-
-	public function test_get_default_with_ad_blocker_detection() {
-		// Enable the `adBlockerDetection` feature flag.
-		$this->enable_feature( 'adBlockerDetection' );
-
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$settings->register();
-
-		$this->assertEqualSetsWithIndex(
-			array(
 				'accountID'                         => '',
 				'clientID'                          => '',
 				'accountStatus'                     => '',

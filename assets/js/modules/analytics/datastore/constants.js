@@ -54,3 +54,5 @@ export const PROPERTY_TYPE_GA4 = 'ga4';
 
 export const DASHBOARD_VIEW_GA4 = 'google-analytics-4';
 export const DASHBOARD_VIEW_UA = 'universal-analytics';
+
+export const GA4_DASHBOARD_VIEW_NOTIFICATION_ID = 'switch-ga4-dashboard-view';
