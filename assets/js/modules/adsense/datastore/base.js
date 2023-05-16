@@ -37,6 +37,7 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 		'ownerID',
 		'webStoriesAdUnit',
 		'autoAdsDisabled',
+		'setupCompletedTimestamp',
 	],
 	validateCanSubmitChanges,
 	validateIsSetupBlocked: ( select ) => {
