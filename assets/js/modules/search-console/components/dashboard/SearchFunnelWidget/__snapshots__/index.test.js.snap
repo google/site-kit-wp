@@ -45,7 +45,11 @@ exports[`SearchFunnelWidget should not render the Activate Analytics CTA when th
                     <h3
                       class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
                     >
-                      Total Impressions
+                      <span
+                        class="googlesitekit-data-block__title-inner"
+                      >
+                        Total Impressions
+                      </span>
                     </h3>
                     <div
                       class="googlesitekit-data-block__datapoint"
@@ -84,7 +88,11 @@ exports[`SearchFunnelWidget should not render the Activate Analytics CTA when th
                     <h3
                       class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
                     >
-                      Total Clicks
+                      <span
+                        class="googlesitekit-data-block__title-inner"
+                      >
+                        Total Clicks
+                      </span>
                     </h3>
                     <div
                       class="googlesitekit-data-block__datapoint"
@@ -209,7 +217,11 @@ exports[`SearchFunnelWidget should render the Search Funnel Widget, including th
                     <h3
                       class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
                     >
-                      Total Impressions
+                      <span
+                        class="googlesitekit-data-block__title-inner"
+                      >
+                        Total Impressions
+                      </span>
                     </h3>
                     <div
                       class="googlesitekit-data-block__datapoint"
@@ -248,7 +260,11 @@ exports[`SearchFunnelWidget should render the Search Funnel Widget, including th
                     <h3
                       class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
                     >
-                      Total Clicks
+                      <span
+                        class="googlesitekit-data-block__title-inner"
+                      >
+                        Total Clicks
+                      </span>
                     </h3>
                     <div
                       class="googlesitekit-data-block__datapoint"
