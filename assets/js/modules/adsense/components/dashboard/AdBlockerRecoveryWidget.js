@@ -18,6 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
  * WordPress dependencies
@@ -31,14 +32,22 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import AdsenseAdBlockerRecoverySVG from '../../../../../svg/graphics/adsense-ad-blocker-recovery.svg';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { Cell } from '../../../../material-components';
 import BannerTitle from '../../../../components/notifications/BannerNotification/BannerTitle';
 import BannerActions from '../../../../components/notifications/BannerNotification/BannerActions';
 import Banner from '../../../../components/notifications/BannerNotification/Banner';
 import Link from '../../../../components/Link';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
-export default function AdBlockerRecoveryWidget( { Widget } ) {
+export default function AdBlockerRecoveryWidget( { Widget, WidgetNull } ) {
+	const notificationSlug = 'ad-blocker-recovery-notification';
+	const windowWidth = useWindowWidth();
+
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( notificationSlug )
+	);
+
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/11576589',
@@ -49,12 +58,19 @@ export default function AdBlockerRecoveryWidget( { Widget } ) {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
 	);
 
-	const dismissCallback = () => {};
+	const { dismissItem } = useDispatch( CORE_USER );
+	const dismissCallback = () => {
+		dismissItem( notificationSlug );
+	};
+
+	if ( isDismissed ) {
+		return <WidgetNull />;
+	}
 
 	return (
 		<Widget>
 			<Banner>
-				<Cell lgSize={ 7 }>
+				<Cell smSize={ 8 } mdSize={ 4 } lgSize={ 7 }>
 					<BannerTitle
 						title={ __(
 							'Recover revenue lost to ad blockers',
@@ -89,15 +105,20 @@ export default function AdBlockerRecoveryWidget( { Widget } ) {
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 					/>
 				</Cell>
+
 				<Cell
 					className="googlesitekit-widget--adBlockerRecovery__graphics"
+					smSize={ 8 }
+					mdSize={ 4 }
 					lgSize={ 5 }
 				>
-					<AdsenseAdBlockerRecoverySVG
-						style={ {
-							maxHeight: '172px',
-						} }
-					/>
+					{ windowWidth > 600 && (
+						<AdsenseAdBlockerRecoverySVG
+							style={ {
+								maxHeight: '172px',
+							} }
+						/>
+					) }
 
 					<p>
 						{ __(
@@ -113,4 +134,5 @@ export default function AdBlockerRecoveryWidget( { Widget } ) {
 
 AdBlockerRecoveryWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
 };
