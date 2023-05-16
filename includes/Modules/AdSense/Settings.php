@@ -125,6 +125,21 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				return $option;
 			}
 		);
+
+		add_filter(
+			'pre_update_option_' . self::OPTION,
+			function( $value, $old_value ) {
+				if ( ! isset( $old_value['setupCompletedTimestamp'] ) || null === $old_value['setupCompletedTimestamp'] ) {
+					if ( 'ready' === $old_value['accountStatus'] && 'ready' === $old_value['siteStatus'] ) {
+						$value['setupCompletedTimestamp'] = strtotime( '-1 month' );
+					} elseif ( 'ready' === $value['accountStatus'] && 'ready' === $value['siteStatus'] ) {
+						$value['setupCompletedTimestamp'] = time();
+					}
+				}
+
+				return $value;
+			}
+		);
 	}
 
 	/**
@@ -150,16 +165,17 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'              => 0,
-			'accountID'            => '',
-			'autoAdsDisabled'      => array(),
-			'clientID'             => '',
-			'accountStatus'        => '',
-			'siteStatus'           => '',
-			'accountSetupComplete' => false,
-			'siteSetupComplete'    => false,
-			'useSnippet'           => true,
-			'webStoriesAdUnit'     => '',
+			'ownerID'                 => 0,
+			'accountID'               => '',
+			'autoAdsDisabled'         => array(),
+			'clientID'                => '',
+			'accountStatus'           => '',
+			'siteStatus'              => '',
+			'accountSetupComplete'    => false,
+			'siteSetupComplete'       => false,
+			'useSnippet'              => true,
+			'webStoriesAdUnit'        => '',
+			'setupCompletedTimestamp' => null,
 		);
 	}
 
