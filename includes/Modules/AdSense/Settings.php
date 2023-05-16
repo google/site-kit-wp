@@ -152,30 +152,26 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the default value.
 	 *
 	 * @since 1.2.0
+	 * @since n.e.x.t Added settings for the AdSense Blocker Detection feature.
 	 *
 	 * @return array
 	 */
 	protected function get_default() {
-		$settings = array(
-			'ownerID'              => 0,
-			'accountID'            => '',
-			'autoAdsDisabled'      => array(),
-			'clientID'             => '',
-			'accountStatus'        => '',
-			'siteStatus'           => '',
-			'accountSetupComplete' => false,
-			'siteSetupComplete'    => false,
-			'useSnippet'           => true,
-			'webStoriesAdUnit'     => '',
+		return array(
+			'ownerID'                           => 0,
+			'accountID'                         => '',
+			'autoAdsDisabled'                   => array(),
+			'clientID'                          => '',
+			'accountStatus'                     => '',
+			'siteStatus'                        => '',
+			'accountSetupComplete'              => false,
+			'siteSetupComplete'                 => false,
+			'useSnippet'                        => true,
+			'webStoriesAdUnit'                  => '',
+			'useAdBlockerDetectionSnippet'      => false,
+			'useAdBlockerDetectionErrorSnippet' => false,
+			'adBlockingRecoverySetupStatus'     => '',
 		);
-
-		if ( Feature_Flags::enabled( 'adBlockerDetection' ) ) {
-			$settings['useAdBlockerDetectionSnippet']      = false;
-			$settings['useAdBlockerDetectionErrorSnippet'] = false;
-			$settings['adBlockingRecoverySetupStatus']     = '';
-		}
-
-		return $settings;
 	}
 
 	/**
