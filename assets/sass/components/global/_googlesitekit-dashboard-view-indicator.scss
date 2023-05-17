@@ -17,36 +17,28 @@
  */
 
 .googlesitekit-dashboard-view-indicator__wrapper {
-	margin: auto;
 	position: relative;
 }
 
 .googlesitekit-dashboard-view-indicator__badge {
 	background-color: $c-content-primary-container;
 	color: $c-surfaces-on-background;
-	display: inline-block;
 	left: 16px;
-	line-height: 1.33;
+	line-height: $lh-label-sm;
 	margin: 0 0 15px;
 	padding: 4px 8px;
 	position: relative;
 	text-transform: none;
 	top: 22px;
 
-	@media (min-width: $bp-mobileOnly) {
+	@media (min-width: $bp-tablet) {
 		left: 25px;
 		top: 22px;
 	}
 
-	@media (min-width: $bp-tablet) {
-		left: auto;
-		margin: 0;
-		position: absolute;
-		right: 25px;
-		top: 32px;
-	}
-
 	@media (min-width: $bp-desktop) {
+		left: auto;
+		position: absolute;
 		right: 35px;
 		top: 37px;
 	}
