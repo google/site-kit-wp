@@ -79,16 +79,7 @@ export default {
 
 			return (
 				<WithTestRegistry registry={ registry }>
-					<div
-						style={ {
-							display: 'flex',
-							justifyContent: 'center',
-							alignItems: 'flex-end',
-							height: '200px',
-						} }
-					>
-						<Story />
-					</div>
+					<Story />
 				</WithTestRegistry>
 			);
 		},
