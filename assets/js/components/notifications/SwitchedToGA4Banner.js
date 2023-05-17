@@ -110,13 +110,11 @@ export default function SwitchedToGA4Banner() {
 			}
 			ctaLink="#"
 			onCTAClick={
-				screenIsLargeEnoughForFeatureTour ? handleCTAClick : undefined
-			}
-			onDismiss={
 				screenIsLargeEnoughForFeatureTour
-					? handleDismissClick
-					: undefined
+					? handleCTAClick
+					: handleDismissClick
 			}
+			onDismiss={ handleDismissClick }
 			dismiss={
 				screenIsLargeEnoughForFeatureTour
 					? __( 'OK, Got it!', 'google-site-kit' )
