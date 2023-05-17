@@ -24,6 +24,7 @@ import { uniq } from 'lodash';
 /**
  * WordPress dependencies
  */
+import { useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -33,6 +34,7 @@ import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
@@ -68,6 +70,12 @@ function mapScopesToModuleNames( scopes, modules ) {
 }
 
 export default function UnsatisfiedScopesAlert() {
+	const doingCTARef = useRef();
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo(
+			/(\/o\/oauth2)|(action=googlesitekit_connect)/i
+		)
+	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getUnsatisfiedScopes()
 	);
@@ -81,7 +89,12 @@ export default function UnsatisfiedScopesAlert() {
 		select( CORE_MODULES ).getModules()
 	);
 
-	if ( ! unsatisfiedScopes?.length || connectURL === undefined ) {
+	if (
+		// Don't unmount due when following the navigation via its own CTA
+		( isNavigating && ! doingCTARef.current ) ||
+		! unsatisfiedScopes?.length ||
+		connectURL === undefined
+	) {
 		return null;
 	}
 
@@ -155,6 +168,11 @@ export default function UnsatisfiedScopesAlert() {
 			type="win-error"
 			isDismissible={ false }
 			ctaLink={ connectURL }
+			onCTAClick={ () => {
+				doingCTARef.current = true;
+				// Return a promise that never resolves to keep spinner going.
+				return new Promise( () => {} );
+			} }
 			ctaLabel={ ctaLabel }
 		/>
 	);
