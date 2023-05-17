@@ -32,12 +32,13 @@ import SuccessSVG from '../../../svg/graphics/ad-blocking-recovery-success.svg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
 	MODULES_ADSENSE,
 } from '../../modules/adsense/datastore/constants';
 const { useDispatch, useSelect } = Data;
 
 export default function AdBlockingRecoveryNotification() {
-	const NOTIFICATION_ID = 'ad-blocking-recovery-setup-success';
+	const NOTIFICATION_ID = AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID;
 
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()

@@ -30,6 +30,7 @@ import {
 	MODULES_ADSENSE,
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '../../modules/adsense/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
@@ -78,7 +79,7 @@ describe( 'AdBlockingRecoveryNotification', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
-				'ad-blocking-recovery-setup-success',
+				AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
 			] );
 
 		const { container } = render( <AdBlockingRecoveryNotification />, {
