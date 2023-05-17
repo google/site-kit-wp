@@ -25,7 +25,7 @@ import { enabledFeatures } from '../../assets/js/features';
 /**
  * Sets the complete list of current enabled features.
  *
- * @since n.e.x.t
+ * @since 1.101.0
  *
  * @param {Iterable} features List of enabled features.
  */
