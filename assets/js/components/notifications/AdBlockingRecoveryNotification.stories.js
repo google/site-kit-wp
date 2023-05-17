@@ -24,7 +24,6 @@ import {
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 } from '../../modules/adsense/datastore/constants';
 import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
-import { enabledFeatures } from '../../features';
 import {
 	WithTestRegistry,
 	createTestRegistry,
@@ -44,7 +43,6 @@ export default {
 	component: AdBlockingRecoveryNotification,
 	decorators: [
 		( Story ) => {
-			enabledFeatures.add( 'adBlockerDetection' );
 			const registry = createTestRegistry();
 			provideSiteInfo( registry );
 			provideModules( registry, [
