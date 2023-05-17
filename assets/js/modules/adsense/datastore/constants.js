@@ -25,3 +25,8 @@ export const API_STATE_READY = 'READY';
 export const API_STATE_NEEDS_ATTENTION = 'NEEDS_ATTENTION';
 export const API_STATE_REQUIRES_REVIEW = 'REQUIRES_REVIEW';
 export const API_STATE_GETTING_READY = 'GETTING_READY';
+
+// Various ad blocking recovery setup statues.
+export const AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED = 'tag-placed';
+export const AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED =
+	'setup-confirmed';

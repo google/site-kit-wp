@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+import {
+	MODULES_ADSENSE,
+	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+} from '../../modules/adsense/datastore/constants';
 import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
 import { enabledFeatures } from '../../features';
 import {
@@ -54,7 +57,8 @@ export default {
 
 			registry.dispatch( MODULES_ADSENSE ).setSettings( {
 				accountID: 'pub-123456',
-				adBlockingRecoverySetupStatus: 'setup-confirmed',
+				adBlockingRecoverySetupStatus:
+					AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 			} );
 
 			return (
