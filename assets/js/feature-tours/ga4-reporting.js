@@ -37,7 +37,7 @@ const reportTableStyles = {
 		// The `15px` margins on the top and bottom, plus half of the padding
 		// added in these styles.
 		margin: '-42px 0 0 6px',
-		padding: '12px 0',
+		padding: '12px 0 20px 0',
 	},
 };
 
