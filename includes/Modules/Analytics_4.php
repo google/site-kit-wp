@@ -89,7 +89,7 @@ final class Analytics_4 extends Module
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.30.0
-	 * @since n.e.x.t Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
+	 * @since 1.101.0 Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -1213,7 +1213,7 @@ final class Analytics_4 extends Module
 	 * If the Analytics-4 module is enabled, and the snippet is enabled, then the option to exclude
 	 * the option to exclude certain users from tracking should be displayed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.101.0
 	 *
 	 * @param bool $allowed Whether to allow tracking exclusion.
 	 * @return bool Filtered value.
