@@ -40,7 +40,9 @@ import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { EXPERIMENTAL_MODULES } from '../dashboard-sharing/DashboardSharingSettings/constants';
+import { SKIP_UNSATISFIED_SCOPES_ALERT_KEY } from '../notifications/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -53,6 +55,7 @@ export default function SetupModule( { slug, name, description } ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
+	const { setValue } = useDispatch( CORE_UI );
 
 	const onSetup = useCallback( async () => {
 		setIsSaving( true );
@@ -65,6 +68,7 @@ export default function SetupModule( { slug, name, description } ) {
 				slug
 			);
 
+			setValue( SKIP_UNSATISFIED_SCOPES_ALERT_KEY, true );
 			navigateTo( response.moduleReauthURL );
 		} else {
 			setInternalServerError( {
@@ -77,6 +81,7 @@ export default function SetupModule( { slug, name, description } ) {
 		activateModule,
 		navigateTo,
 		setInternalServerError,
+		setValue,
 		slug,
 		viewContext,
 	] );

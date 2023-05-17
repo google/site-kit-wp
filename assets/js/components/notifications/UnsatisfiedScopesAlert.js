@@ -34,6 +34,8 @@ import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { SKIP_UNSATISFIED_SCOPES_ALERT_KEY } from './constants';
 const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
@@ -81,7 +83,15 @@ export default function UnsatisfiedScopesAlert() {
 		select( CORE_MODULES ).getModules()
 	);
 
-	if ( ! unsatisfiedScopes?.length || connectURL === undefined ) {
+	const skipAlert = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( SKIP_UNSATISFIED_SCOPES_ALERT_KEY )
+	);
+
+	if (
+		skipAlert ||
+		! unsatisfiedScopes?.length ||
+		connectURL === undefined
+	) {
 		return null;
 	}
 
