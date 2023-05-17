@@ -16,10 +16,38 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import Badge from './Badge';
+import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+const { useSelect } = Data;
+
 const DashboardViewIndicator = () => {
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
+
+	if ( isGA4DashboardView === undefined ) {
+		return null;
+	}
+
+	const badgeLabel = isGA4DashboardView
+		? __( 'Google Analytics 4 view', 'google-site-kit' )
+		: __( 'Universal Analytics view', 'google-site-kit' );
+
 	return (
-		<div>
-			<p>UA Dashboard View</p>
+		<div className="googlesitekit-dashboard-view-indicator__wrapper">
+			<Badge
+				className="googlesitekit-dashboard-view-indicator__badge"
+				label={ badgeLabel }
+			/>
 		</div>
 	);
 };
