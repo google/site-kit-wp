@@ -76,11 +76,11 @@ export default function AdBlockingRecoveryNotification() {
 			) }
 			description={ createInterpolateElement(
 				__(
-					'Make sure to also create the message in <link>AdSense</link>, otherwise this feature won’t work.',
+					'Make sure to also create the message in <a>AdSense</a>, otherwise this feature won’t work.',
 					'google-site-kit'
 				),
 				{
-					link: (
+					a: (
 						<Link
 							href={ privacyMessagingURL }
 							external
