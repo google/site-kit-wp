@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
+import { KM_ANALYTICS_NEW_VISITORS } from '../../../../googlesitekit/widgets/datastore/constants';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	coreKeyMetricsEndpointRegExp,
 	setupRegistryKeyMetricsWidgetHidden,
@@ -28,15 +30,19 @@ import {
 import NewVisitorsWidget from './NewVisitorsWidget';
 
 describe( 'NewVisitorsWidget', () => {
+	const WidgetWithComponentProps = withWidgetComponentProps(
+		KM_ANALYTICS_NEW_VISITORS
+	)( NewVisitorsWidget );
+
 	it( 'should not render anything when isKeyMetricsWidgetHidden is not loaded', () => {
 		freezeFetch( coreKeyMetricsEndpointRegExp );
-		const { container } = render( <NewVisitorsWidget /> );
+		const { container } = render( <WidgetWithComponentProps /> );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should not render anything when isKeyMetricsWidgetHidden is true', () => {
-		const { container } = render( <NewVisitorsWidget />, {
+		const { container } = render( <WidgetWithComponentProps />, {
 			setupRegistry: setupRegistryKeyMetricsWidgetHidden,
 		} );
 
@@ -44,7 +50,7 @@ describe( 'NewVisitorsWidget', () => {
 	} );
 
 	it( 'should render the widget when isKeyMetricsWidgetHidden is false', () => {
-		const { getByText } = render( <NewVisitorsWidget />, {
+		const { getByText } = render( <WidgetWithComponentProps />, {
 			setupRegistry: setupRegistryKeyMetricsWidgetNotHidden,
 		} );
 

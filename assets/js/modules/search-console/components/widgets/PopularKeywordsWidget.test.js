@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
+import { KM_SEARCH_CONSOLE_POPULAR_KEYWORDS } from '../../../../googlesitekit/widgets/datastore/constants';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	coreKeyMetricsEndpointRegExp,
 	setupRegistryKeyMetricsWidgetHidden,
@@ -28,15 +30,19 @@ import {
 import PopularKeywordsWidget from './PopularKeywordsWidget';
 
 describe( 'PopularKeywordsWidget', () => {
+	const WidgetWithComponentProps = withWidgetComponentProps(
+		KM_SEARCH_CONSOLE_POPULAR_KEYWORDS
+	)( PopularKeywordsWidget );
+
 	it( 'should not render anything when isKeyMetricsWidgetHidden is not loaded', () => {
 		freezeFetch( coreKeyMetricsEndpointRegExp );
-		const { container } = render( <PopularKeywordsWidget /> );
+		const { container } = render( <WidgetWithComponentProps /> );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should not render anything when isKeyMetricsWidgetHidden is true', () => {
-		const { container } = render( <PopularKeywordsWidget />, {
+		const { container } = render( <WidgetWithComponentProps />, {
 			setupRegistry: setupRegistryKeyMetricsWidgetHidden,
 		} );
 
@@ -44,7 +50,7 @@ describe( 'PopularKeywordsWidget', () => {
 	} );
 
 	it( 'should render the widget when isKeyMetricsWidgetHidden is false', () => {
-		const { getByText } = render( <PopularKeywordsWidget />, {
+		const { getByText } = render( <WidgetWithComponentProps />, {
 			setupRegistry: setupRegistryKeyMetricsWidgetNotHidden,
 		} );
 

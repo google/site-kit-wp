@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
+import { KM_ANALYTICS_TOP_CITIES } from '../../../../googlesitekit/widgets/datastore/constants';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	coreKeyMetricsEndpointRegExp,
 	setupRegistryKeyMetricsWidgetHidden,
@@ -28,15 +30,19 @@ import {
 import TopCitiesWidget from './TopCitiesWidget';
 
 describe( 'TopCitiesWidget', () => {
+	const WidgetWithComponentProps = withWidgetComponentProps(
+		KM_ANALYTICS_TOP_CITIES
+	)( TopCitiesWidget );
+
 	it( 'should not render anything when isKeyMetricsWidgetHidden is not loaded', () => {
 		freezeFetch( coreKeyMetricsEndpointRegExp );
-		const { container } = render( <TopCitiesWidget /> );
+		const { container } = render( <WidgetWithComponentProps /> );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should not render anything when isKeyMetricsWidgetHidden is true', () => {
-		const { container } = render( <TopCitiesWidget />, {
+		const { container } = render( <WidgetWithComponentProps />, {
 			setupRegistry: setupRegistryKeyMetricsWidgetHidden,
 		} );
 
@@ -44,7 +50,7 @@ describe( 'TopCitiesWidget', () => {
 	} );
 
 	it( 'should render the widget when isKeyMetricsWidgetHidden is false', () => {
-		const { getByText } = render( <TopCitiesWidget />, {
+		const { getByText } = render( <WidgetWithComponentProps />, {
 			setupRegistry: setupRegistryKeyMetricsWidgetNotHidden,
 		} );
 
