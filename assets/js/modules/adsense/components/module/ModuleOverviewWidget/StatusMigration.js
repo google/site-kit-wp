@@ -25,12 +25,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
+import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import SettingsNotice, {
 	TYPE_WARNING,
 } from '../../../../../components/SettingsNotice';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
+import { Cell, Grid, Row } from '../../../../../material-components/layout';
 import { API_STATE_READY, MODULES_ADSENSE } from '../../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../../util/status';
 
@@ -93,26 +94,36 @@ export default function StatusMigration() {
 		navigateTo( adminReauthURL );
 	};
 
-	if ( isReady === undefined || isReady === true ) {
+	if ( isReady === true ) {
 		return null;
 	}
 
 	return (
-		<SettingsNotice
-			type={ TYPE_WARNING }
-			notice={ __(
-				'You need to redo setup to complete AdSense configuration',
-				'google-site-kit'
-			) }
-			CTA={ () => (
-				<SpinnerButton
-					onClick={ handleRedoSetup }
-					disabled={ isNavigating }
-					isSaving={ isNavigating }
-				>
-					{ __( 'Redo setup', 'google-site-kit' ) }
-				</SpinnerButton>
-			) }
-		/>
+		<Grid>
+			<Row>
+				<Cell size={ 12 }>
+					{ isReady === undefined && <ProgressBar /> }
+					{ isReady === false && (
+						<SettingsNotice
+							className="googlesitekit-settings-notice-adsense-status-migration"
+							type={ TYPE_WARNING }
+							notice={ __(
+								'You need to redo setup to complete AdSense configuration',
+								'google-site-kit'
+							) }
+							CTA={ () => (
+								<SpinnerButton
+									onClick={ handleRedoSetup }
+									disabled={ isNavigating }
+									isSaving={ isNavigating }
+								>
+									{ __( 'Redo setup', 'google-site-kit' ) }
+								</SpinnerButton>
+							) }
+						/>
+					) }
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }

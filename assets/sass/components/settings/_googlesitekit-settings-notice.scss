@@ -180,9 +180,8 @@
 	color: $c-text-notice-suggestion;
 }
 
-// This is a bit of temporary styling to improve the look of the initial implementation of the UA cutoff warning.
-// It should be reviewed and possibly removed as part of https://github.com/google/site-kit-wp/issues/6702.
-.googlesitekit-settings-notice-ua-cutoff-warning {
+.googlesitekit-settings-notice-ua-cutoff-warning,
+.googlesitekit-settings-notice-adsense-status-migration {
 	max-width: none;
 
 	.googlesitekit-settings-notice__icon {
