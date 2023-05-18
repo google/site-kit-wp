@@ -73,7 +73,7 @@ export default function UnsatisfiedScopesAlert() {
 	const doingCTARef = useRef();
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo(
-			/(\/o\/oauth2)|(action=googlesitekit_connect)/i
+			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
 		)
 	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
@@ -90,7 +90,7 @@ export default function UnsatisfiedScopesAlert() {
 	);
 
 	if (
-		// Don't unmount due when following the navigation via its own CTA
+		// Still render the banner when following the navigation via its own CTA.
 		( isNavigating && ! doingCTARef.current ) ||
 		! unsatisfiedScopes?.length ||
 		connectURL === undefined
