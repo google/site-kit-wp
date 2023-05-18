@@ -89,8 +89,11 @@ export default function UnsatisfiedScopesAlert() {
 		select( CORE_MODULES ).getModules()
 	);
 
+	// Some external scenarios where we navigate to the OAuth service or connect URL may coincide with a request which populates the
+	// list of unsatisfied scopes. In these scenarios we want to avoid showing this banner as the user is already being directed to
+	// address the missing scopes. However, we want to ensure we still do show this banner while navigating to the connect URL as a
+	// result of its own CTA.
 	if (
-		// Still render the banner when following the navigation via its own CTA.
 		( isNavigating && ! doingCTARef.current ) ||
 		! unsatisfiedScopes?.length ||
 		connectURL === undefined
