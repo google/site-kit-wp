@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -89,6 +94,9 @@ export default function SettingsForm( {
 
 	const showTrackingExclusion = isGA4Connected || isUAConnected;
 
+	const showDashboardView =
+		ga4ReportingEnabled && isUAConnected && isUAEnabled;
+
 	if ( ! gtmContainersResolved ) {
 		return <ProgressBar />;
 	}
@@ -107,18 +115,23 @@ export default function SettingsForm( {
 					/>
 				</Fragment>
 			) }
-			{ ga4ReportingEnabled && isUAConnected && isUAEnabled && (
-				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
-					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Dashboard view', 'google-site-kit' ) }
-					</h4>
-					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
-						{ isGA4Connected && <GA4DashboardViewToggle /> }
-						{ ! isGA4Connected &&
-							__( 'Universal Analytics', 'google-site-kit' ) }
-					</div>
+			<div
+				className={ classnames(
+					'googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border',
+					{
+						'googlesitekit-visibility-hidden': ! showDashboardView,
+					}
+				) }
+			>
+				<h4 className="googlesitekit-settings-module__fields-group-title">
+					{ __( 'Dashboard view', 'google-site-kit' ) }
+				</h4>
+				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
+					{ isGA4Connected && <GA4DashboardViewToggle /> }
+					{ ! isGA4Connected &&
+						__( 'Universal Analytics', 'google-site-kit' ) }
 				</div>
-			) }
+			</div>
 
 			{ ! ga4ReportingEnabled && (
 				<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />

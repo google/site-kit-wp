@@ -68,7 +68,7 @@ export default function OptionalSettingsView() {
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __(
-								'IP Address Anonymization',
+								'Universal Analytics IP Address Anonymization',
 								'google-site-kit'
 							) }
 						</h5>
@@ -85,14 +85,6 @@ export default function OptionalSettingsView() {
 								<span>
 									{ __(
 										'IP addresses are not being anonymized',
-										'google-site-kit'
-									) }
-								</span>
-							) }
-							{ ! useSnippet && useGA4Snippet && (
-								<span>
-									{ __(
-										'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
 										'google-site-kit'
 									) }
 								</span>

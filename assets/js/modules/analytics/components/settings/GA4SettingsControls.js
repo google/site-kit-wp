@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -192,27 +193,28 @@ export default function GA4SettingsControls( props ) {
 					<SettingsUseSnippetSwitch />
 				</div>
 			) }
-			{ showAnonymizeIPNotice && (
-				<SettingsNotice
-					type={ TYPE_INFO }
-					notice={ __(
-						'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
-						'google-site-kit'
-					) }
-					LearnMore={ () => (
-						<SupportLink
-							path="/analytics/answer/2763052"
-							external
-							aria-label={ __(
-								'Learn more about IP anonymization.',
-								'google-site-kit'
-							) }
-						>
-							{ __( 'Learn more', 'google-site-kit' ) }
-						</SupportLink>
-					) }
-				/>
-			) }
+			<SettingsNotice
+				className={ classnames( {
+					'googlesitekit-visibility-hidden': ! showAnonymizeIPNotice,
+				} ) }
+				type={ TYPE_INFO }
+				notice={ __(
+					'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
+					'google-site-kit'
+				) }
+				LearnMore={ () => (
+					<SupportLink
+						path="/analytics/answer/2763052"
+						external
+						aria-label={ __(
+							'Learn more about IP anonymization.',
+							'google-site-kit'
+						) }
+					>
+						{ __( 'Learn more', 'google-site-kit' ) }
+					</SupportLink>
+				) }
+			/>
 		</div>
 	);
 }
