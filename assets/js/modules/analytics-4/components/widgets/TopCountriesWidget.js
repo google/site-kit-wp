@@ -24,14 +24,18 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const { useSelect } = Data;
 
-export default function TopCountriesWidget() {
+export default function TopCountriesWidget( { Widget, WidgetNull } ) {
 	const keyMetricsWidgetHidden = useSelect( ( select ) =>
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
 	if ( keyMetricsWidgetHidden !== false ) {
-		return null;
+		return <WidgetNull />;
 	}
 
-	return <div>TODO: UI for TopCountriesWidget</div>;
+	return (
+		<Widget>
+			<div>TODO: UI for TopCountriesWidget</div>
+		</Widget>
+	);
 }

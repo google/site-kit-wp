@@ -24,14 +24,21 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const { useSelect } = Data;
 
-export default function TopConvertingTrafficSourceWidget() {
+export default function TopConvertingTrafficSourceWidget( {
+	Widget,
+	WidgetNull,
+} ) {
 	const keyMetricsWidgetHidden = useSelect( ( select ) =>
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
 	if ( keyMetricsWidgetHidden !== false ) {
-		return null;
+		return <WidgetNull />;
 	}
 
-	return <div>TODO: UI for TopConvertingTrafficSourceWidget</div>;
+	return (
+		<Widget>
+			<div>TODO: UI for TopConvertingTrafficSourceWidget</div>
+		</Widget>
+	);
 }
