@@ -170,8 +170,6 @@ export default function UnsatisfiedScopesAlert() {
 			ctaLink={ connectURL }
 			onCTAClick={ () => {
 				doingCTARef.current = true;
-				// Return a promise that never resolves to keep spinner going.
-				return new Promise( () => {} );
 			} }
 			ctaLabel={ ctaLabel }
 		/>

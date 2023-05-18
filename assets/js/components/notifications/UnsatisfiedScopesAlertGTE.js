@@ -64,10 +64,6 @@ export default function UnsatisfiedScopesAlertGTE() {
 			type="win-error"
 			isDismissible={ false }
 			ctaLink={ connectURL }
-			onCTAClick={ () => {
-				// Return a promise that never resolves to keep spinner going.
-				return new Promise( () => {} );
-			} }
 			ctaLabel={ __( 'Grant permission', 'google-site-kit' ) }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			learnMoreURL={ googleTagLearnMoreURL }
