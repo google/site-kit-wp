@@ -115,23 +115,22 @@ export default function SettingsForm( {
 					/>
 				</Fragment>
 			) }
-			<div
-				className={ classnames(
-					'googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border',
-					{
-						'googlesitekit-visibility-hidden': ! showDashboardView,
-					}
-				) }
-			>
-				<h4 className="googlesitekit-settings-module__fields-group-title">
-					{ __( 'Dashboard view', 'google-site-kit' ) }
-				</h4>
-				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
-					{ isGA4Connected && <GA4DashboardViewToggle /> }
-					{ ! isGA4Connected &&
-						__( 'Universal Analytics', 'google-site-kit' ) }
+			{ showDashboardView && (
+				<div
+					className={ classnames(
+						'googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border'
+					) }
+				>
+					<h4 className="googlesitekit-settings-module__fields-group-title">
+						{ __( 'Dashboard view', 'google-site-kit' ) }
+					</h4>
+					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
+						{ isGA4Connected && <GA4DashboardViewToggle /> }
+						{ ! isGA4Connected &&
+							__( 'Universal Analytics', 'google-site-kit' ) }
+					</div>
 				</div>
-			</div>
+			) }
 
 			{ ! ga4ReportingEnabled && (
 				<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />

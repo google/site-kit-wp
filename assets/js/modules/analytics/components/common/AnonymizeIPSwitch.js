@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, createInterpolateElement } from '@wordpress/element';
+import {
+	useCallback,
+	createInterpolateElement,
+	Fragment,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -30,6 +34,8 @@ import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SupportLink from '../../../../components/SupportLink';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { TYPE_INFO } from '../../../../components/SettingsNotice';
 
 const { useSelect, useDispatch } = Data;
 
@@ -58,49 +64,70 @@ export default function AnonymizeIPSwitch() {
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			{ useSnippet && (
-				<div className="googlesitekit-settings-module__meta-item">
-					<div className="googlesitekit-analytics-anonymizeip">
-						<Switch
-							label={ __(
-								'Anonymize IP addresses',
-								'google-site-kit'
-							) }
-							onClick={ onChange }
-							checked={ anonymizeIP }
-							hideLabel={ false }
-						/>
-						<p>
-							{ createInterpolateElement(
-								anonymizeIP
-									? __(
-											'IP addresses will be anonymized. <LearnMoreLink />',
-											'google-site-kit'
-									  )
-									: __(
-											'IP addresses will not be anonymized. <LearnMoreLink />',
-											'google-site-kit'
-									  ),
-								{
-									LearnMoreLink: (
-										<SupportLink
-											path="/analytics/answer/2763052"
-											external
-											aria-label={ __(
-												'Learn more about IP anonymization.',
+				<Fragment>
+					<div className="googlesitekit-settings-module__meta-item">
+						<div className="googlesitekit-analytics-anonymizeip">
+							<Switch
+								label={ __(
+									'Anonymize IP addresses',
+									'google-site-kit'
+								) }
+								onClick={ onChange }
+								checked={ anonymizeIP }
+								hideLabel={ false }
+							/>
+							<p>
+								{ createInterpolateElement(
+									anonymizeIP
+										? __(
+												'IP addresses will be anonymized. <LearnMoreLink />',
 												'google-site-kit'
-											) }
-										>
-											{ __(
-												'Learn more',
+										  )
+										: __(
+												'IP addresses will not be anonymized. <LearnMoreLink />',
 												'google-site-kit'
-											) }
-										</SupportLink>
-									),
-								}
-							) }
-						</p>
+										  ),
+									{
+										LearnMoreLink: (
+											<SupportLink
+												path="/analytics/answer/2763052"
+												external
+												aria-label={ __(
+													'Learn more about IP anonymization.',
+													'google-site-kit'
+												) }
+											>
+												{ __(
+													'Learn more',
+													'google-site-kit'
+												) }
+											</SupportLink>
+										),
+									}
+								) }
+							</p>
+						</div>
 					</div>
-				</div>
+					<SettingsNotice
+						type={ TYPE_INFO }
+						notice={ __(
+							'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
+							'google-site-kit'
+						) }
+						LearnMore={ () => (
+							<SupportLink
+								path="/analytics/answer/2763052"
+								external
+								aria-label={ __(
+									'Learn more about IP anonymization.',
+									'google-site-kit'
+								) }
+							>
+								{ __( 'Learn more', 'google-site-kit' ) }
+							</SupportLink>
+						) }
+					/>
+				</Fragment>
 			) }
 		</div>
 	);
