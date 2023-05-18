@@ -20,7 +20,16 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_WIDGETS } from './constants';
+import {
+	CORE_WIDGETS,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_USER } from '../../datastore/user/constants';
 
@@ -72,34 +81,34 @@ const selectors = {
 			case 'publish_blog':
 			case 'publish_news':
 				return [
-					'kmAnalyticsLoyalVisitors',
-					'kmAnalyticsNewVisitors',
-					'kmAnalyticsTopTrafficSource',
-					'kmAnalyticsEngagedTrafficSource',
+					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 				];
 			case 'monetize_content':
 				return [
-					'kmAnalyticsPopularContent',
-					'kmAnalyticsEngagedTrafficSource',
-					'kmAnalyticsNewVisitors',
-					'kmAnalyticsTopTrafficSource',
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				];
 			case 'sell_products_or_service':
 				return [
 					hasProductPostType()
-						? 'kmTopPopularProducts'
-						: 'kmAnalyticsPopularContent',
-					'kmAnalyticsEngagedTrafficSource',
-					'kmSearchConsolePopularKeywords',
-					'kmAnalyticsTopTrafficSource',
+						? KM_ANALYTICS_POPULAR_PRODUCTS
+						: KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				];
 
 			case 'share_portfolio':
 				return [
-					'kmAnalyticsNewVisitors',
-					'kmAnalyticsTopTrafficSource',
-					'kmAnalyticsEngagedTrafficSource',
-					'kmSearchConsolePopularKeywords',
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 				];
 			default:
 				return [];

@@ -29,7 +29,16 @@ import {
 } from '../../../../../tests/js/utils';
 import { coreKeyMetricsEndpointRegExp } from '../../../util/key-metrics';
 import { CORE_USER } from '../../datastore/user/constants';
-import { CORE_WIDGETS } from './constants';
+import {
+	CORE_WIDGETS,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from './constants';
 
 let registry;
 
@@ -87,10 +96,10 @@ describe( 'core/widgets key metrics', () => {
 				expect(
 					registry.select( CORE_WIDGETS ).getKeyMetrics()
 				).toMatchObject( [
-					'kmAnalyticsLoyalVisitors',
-					'kmAnalyticsNewVisitors',
-					'kmAnalyticsTopTrafficSource',
-					'kmAnalyticsEngagedTrafficSource',
+					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 				] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
@@ -99,7 +108,7 @@ describe( 'core/widgets key metrics', () => {
 			it( 'should use the user-selected key metrics if the user has selected any widgets', async () => {
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: {
-						widgetSlugs: [ 'kmAnalyticsLoyalVisitors' ],
+						widgetSlugs: [ KM_ANALYTICS_LOYAL_VISITORS ],
 						isWidgetHidden: false,
 					},
 					status: 200,
@@ -114,7 +123,7 @@ describe( 'core/widgets key metrics', () => {
 
 				expect(
 					registry.select( CORE_WIDGETS ).getKeyMetrics()
-				).toMatchObject( [ 'kmAnalyticsLoyalVisitors' ] );
+				).toMatchObject( [ KM_ANALYTICS_LOYAL_VISITORS ] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -162,46 +171,46 @@ describe( 'core/widgets key metrics', () => {
 				[
 					'publish_blog',
 					[
-						'kmAnalyticsLoyalVisitors',
-						'kmAnalyticsNewVisitors',
-						'kmAnalyticsTopTrafficSource',
-						'kmAnalyticsEngagedTrafficSource',
+						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 					],
 				],
 				[
 					'publish_news',
 					[
-						'kmAnalyticsLoyalVisitors',
-						'kmAnalyticsNewVisitors',
-						'kmAnalyticsTopTrafficSource',
-						'kmAnalyticsEngagedTrafficSource',
+						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 					],
 				],
 				[
 					'monetize_content',
 					[
-						'kmAnalyticsPopularContent',
-						'kmAnalyticsEngagedTrafficSource',
-						'kmAnalyticsNewVisitors',
-						'kmAnalyticsTopTrafficSource',
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					],
 				],
 				[
 					'sell_products_or_service',
 					[
-						'kmAnalyticsPopularContent',
-						'kmAnalyticsEngagedTrafficSource',
-						'kmSearchConsolePopularKeywords',
-						'kmAnalyticsTopTrafficSource',
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					],
 				],
 				[
 					'share_portfolio',
 					[
-						'kmAnalyticsNewVisitors',
-						'kmAnalyticsTopTrafficSource',
-						'kmAnalyticsEngagedTrafficSource',
-						'kmSearchConsolePopularKeywords',
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
 				],
 			] )(
@@ -231,10 +240,10 @@ describe( 'core/widgets key metrics', () => {
 				expect(
 					registry.select( CORE_WIDGETS ).getAnswerBasedMetrics()
 				).toEqual( [
-					'kmTopPopularProducts',
-					'kmAnalyticsEngagedTrafficSource',
-					'kmSearchConsolePopularKeywords',
-					'kmAnalyticsTopTrafficSource',
+					KM_ANALYTICS_POPULAR_PRODUCTS,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				] );
 			} );
 		} );
