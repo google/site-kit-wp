@@ -133,17 +133,13 @@ export default function SettingsForm( {
 			/>
 
 			{ ga4ReportingEnabled && (
-				<div className="googlesitekit-settings-module__fields-group">
-					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Universal Analytics', 'google-site-kit' ) }
-					</h4>
-					<EnableUniversalAnalytics
-						hasModuleAccess={ hasAnalyticsAccess }
-						showErrors
-					>
-						<SettingsUseSnippetSwitch />
-					</EnableUniversalAnalytics>
-				</div>
+				<EnableUniversalAnalytics
+					hasModuleAccess={ hasAnalyticsAccess }
+					showErrors
+					showTitle
+				>
+					<SettingsUseSnippetSwitch />
+				</EnableUniversalAnalytics>
 			) }
 
 			{ isValidAccountID( accountID ) && (

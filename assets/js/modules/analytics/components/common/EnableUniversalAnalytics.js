@@ -55,6 +55,7 @@ export default function EnableUniversalAnalytics( {
 	children,
 	hasModuleAccess = true,
 	showErrors = false,
+	showTitle = false,
 } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -148,7 +149,13 @@ export default function EnableUniversalAnalytics( {
 	}
 
 	return (
-		<Fragment>
+		<div className="googlesitekit-settings-module__fields-group">
+			{ showTitle && (
+				<h4 className="googlesitekit-settings-module__fields-group-title">
+					{ __( 'Universal Analytics', 'google-site-kit' ) }
+				</h4>
+			) }
+
 			<div className="googlesitekit-analytics-enable">
 				<Switch
 					label={ __(
@@ -216,7 +223,7 @@ export default function EnableUniversalAnalytics( {
 					) }
 				</Fragment>
 			) }
-		</Fragment>
+		</div>
 	);
 }
 
