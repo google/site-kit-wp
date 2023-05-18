@@ -27,12 +27,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { Grid, Row, Cell } from '../../../../../material-components/layout';
-
 import SettingsNotice, {
 	TYPE_WARNING,
 } from '../../../../../components/SettingsNotice';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
+import { Cell, Grid, Row } from '../../../../../material-components/layout';
 import { API_STATE_READY, MODULES_ADSENSE } from '../../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../../util/status';
 
