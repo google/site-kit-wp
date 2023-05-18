@@ -27,6 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
+import { Grid, Row, Cell } from '../../../../../material-components/layout';
+
 import SettingsNotice, {
 	TYPE_WARNING,
 } from '../../../../../components/SettingsNotice';
@@ -98,21 +100,28 @@ export default function StatusMigration() {
 	}
 
 	return (
-		<SettingsNotice
-			type={ TYPE_WARNING }
-			notice={ __(
-				'You need to redo setup to complete AdSense configuration',
-				'google-site-kit'
-			) }
-			CTA={ () => (
-				<SpinnerButton
-					onClick={ handleRedoSetup }
-					disabled={ isNavigating }
-					isSaving={ isNavigating }
-				>
-					{ __( 'Redo setup', 'google-site-kit' ) }
-				</SpinnerButton>
-			) }
-		/>
+		<Grid>
+			<Row>
+				<Cell size={ 12 }>
+					<SettingsNotice
+						className="googlesitekit-settings-notice-adsense-status-migration"
+						type={ TYPE_WARNING }
+						notice={ __(
+							'You need to redo setup to complete AdSense configuration',
+							'google-site-kit'
+						) }
+						CTA={ () => (
+							<SpinnerButton
+								onClick={ handleRedoSetup }
+								disabled={ isNavigating }
+								isSaving={ isNavigating }
+							>
+								{ __( 'Redo setup', 'google-site-kit' ) }
+							</SpinnerButton>
+						) }
+					/>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
