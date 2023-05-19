@@ -55,12 +55,13 @@ export default function EnableUniversalAnalytics( {
 	children,
 	hasModuleAccess = true,
 	showErrors = false,
+	showTitle = false,
 } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const properties = useSelect( ( select ) => {
-		if ( ! accountID ) {
+		if ( ! accountID || ! hasModuleAccess ) {
 			return [];
 		}
 
@@ -107,12 +108,13 @@ export default function EnableUniversalAnalytics( {
 		revertPropertyAndProfileIDs,
 	] );
 
-	const isLookingForMatch = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution(
-				'getProperties',
-				[ accountID ]
-			)
+	const loadedProperties = useSelect( ( select ) =>
+		hasModuleAccess !== false
+			? select( MODULES_ANALYTICS ).hasFinishedResolution(
+					'getProperties',
+					[ accountID ]
+			  )
+			: true
 	);
 
 	useEffect( () => {
@@ -142,12 +144,18 @@ export default function EnableUniversalAnalytics( {
 		}
 	} );
 
-	if ( properties.length === 0 ) {
+	if ( hasModuleAccess !== false && properties.length === 0 ) {
 		return null;
 	}
 
 	return (
-		<Fragment>
+		<div className="googlesitekit-settings-module__fields-group">
+			{ showTitle && (
+				<h4 className="googlesitekit-settings-module__fields-group-title">
+					{ __( 'Universal Analytics', 'google-site-kit' ) }
+				</h4>
+			) }
+
 			<div className="googlesitekit-analytics-enable">
 				<Switch
 					label={ __(
@@ -157,6 +165,7 @@ export default function EnableUniversalAnalytics( {
 					checked={ isUAEnabled }
 					onClick={ onChange }
 					hideLabel={ false }
+					disabled={ ! hasModuleAccess }
 				/>
 				<p>
 					{ __(
@@ -177,9 +186,9 @@ export default function EnableUniversalAnalytics( {
 						/>
 					) }
 
-					{ isLookingForMatch && <ProgressBar /> }
+					{ ! loadedProperties && <ProgressBar /> }
 
-					{ ! isLookingForMatch && (
+					{ loadedProperties && (
 						<div className="googlesitekit-setup-module__inputs">
 							<PropertySelect
 								hasModuleAccess={ hasModuleAccess }
@@ -215,7 +224,7 @@ export default function EnableUniversalAnalytics( {
 					) }
 				</Fragment>
 			) }
-		</Fragment>
+		</div>
 	);
 }
 
@@ -223,4 +232,5 @@ EnableUniversalAnalytics.propTypes = {
 	children: PropTypes.node.isRequired,
 	hasModuleAccess: PropTypes.bool,
 	showErrors: PropTypes.bool,
+	showTitle: PropTypes.bool,
 };
