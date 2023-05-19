@@ -1,9 +1,0 @@
-name: Setup GCLOUD
-description: Authenticates and sets up gcloud.
-runs:
-  using: "composite"
-  steps:
-    - uses: google-github-actions/auth@v1
-      with:
-        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-    - uses: google-github-actions/setup-gcloud@v1

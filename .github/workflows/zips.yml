@@ -121,28 +121,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-zips
     steps:
-      - uses: actions/checkout@v3
-      - id: target-dir
-        uses: ./.github/actions/target-dir
+      - name: Set branch environment variables
+        id: branch-target
+        if: github.event_name != 'pull_request'
+        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+      - name: Set PR environment variables
+        id: pr-target
+        if: github.event_name == 'pull_request'
+        run: echo "dir=pull/${{ github.event.number }}" >> $GITHUB_OUTPUT
       - uses: actions/download-artifact@v3
         with:
           name: zip-files
           path: ${{ github.ref }}
-      - uses: ./.github/actions/setup-gcloud
+      - uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - uses: google-github-actions/setup-gcloud@v1
       - name: Upload PR files
-        run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.BUCKET_NAME }}/builds/${{ steps.target-dir.outputs.target-dir }}
-
-  comment-on-pr:
-    name: Comment on PR
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    needs: upload-to-cloud-storage
-    outputs:
-      comment_body: ${{ steps.get-comment-body.outputs.body }}
-    steps:
-      - uses: actions/checkout@v3
-      - id: target-dir
-        uses: ./.github/actions/target-dir
+        run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}
+        env:
+          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
       - name: Check the comment exists
         id: find-comment
         uses: peter-evans/find-comment@v2
@@ -155,12 +153,14 @@ jobs:
         # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
         run: |
           body="Plugin builds for ${{ github.event.pull_request.head.sha }} are ready :bellhop_bell:!
-          - Download [development build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/${{ steps.target-dir.outputs.target-dir }}/google-site-kit-dev.zip?${{ github.sha }})
-          - Download [production build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/${{ steps.target-dir.outputs.target-dir }}/google-site-kit.zip?${{ github.sha }})"
+          - Download [development build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/google-site-kit-dev.zip?${{ github.sha }})
+          - Download [production build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/google-site-kit.zip?${{ github.sha }})"
           delimiter="${body//$'\n'/'%0A'}"
           echo "body<<${delimiter}" >> $GITHUB_OUTPUT
           echo "$body" >> $GITHUB_OUTPUT
           echo "${delimiter}" >> $GITHUB_OUTPUT
+        env:
+          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
       - name: Create comment on PR with links to plugin builds
         if: ${{ steps.find-comment.outputs.comment-id == '' }}
         uses: peter-evans/create-or-update-comment@v2
@@ -181,9 +181,19 @@ jobs:
     timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     steps:
-      - uses: actions/checkout@v3
-      - id: target-dir
-        uses: ./.github/actions/target-dir
-      - uses: ./.github/actions/setup-gcloud
+      - name: Set branch environment variables
+        id: branch-target
+        if: github.event_name != 'pull_request'
+        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+      - name: Set PR environment variables
+        id: pr-target
+        if: github.event_name == 'pull_request'
+        run: echo "dir=pull/${{ github.event.number }}" >> $GITHUB_OUTPUT
+      - uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - uses: google-github-actions/setup-gcloud@v1
       - name: Prune PR files
-        run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/${{ steps.target-dir.outputs.target-dir }}/**
+        run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/**
+        env:
+          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
