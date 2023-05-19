@@ -124,11 +124,11 @@ jobs:
       - name: Set branch environment variables
         id: branch-target
         if: github.event_name != 'pull_request'
-        run: echo 'dir=${GITHUB_REF##*/}' >> $GITHUB_OUTPUT
+        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
       - name: Set PR environment variables
         id: pr-target
         if: github.event_name == 'pull_request'
-        run: echo 'dir=pull/${{ github.event.number }}' >> $GITHUB_OUTPUT
+        run: echo "dir=pull/${{ github.event.number }}" >> $GITHUB_OUTPUT
       - uses: actions/download-artifact@v3
         with:
           name: zip-files
@@ -151,16 +151,16 @@ jobs:
       - name: Set branch environment variables
         id: branch-target
         if: github.event_name != 'pull_request'
-        run: echo 'dir=${GITHUB_REF##*/}' >> $GITHUB_OUTPUT
+        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
       - name: Set PR environment variables
         id: pr-target
         if: github.event_name == 'pull_request'
-        run: echo 'dir=pull/${{ github.event.number }}' >> $GITHUB_OUTPUT
+        run: echo "dir=pull/${{ github.event.number }}" >> $GITHUB_OUTPUT
       - uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/setup-gcloud@v1
       - name: Prune PR files
-        run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/*
+        run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/**
         env:
           TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
