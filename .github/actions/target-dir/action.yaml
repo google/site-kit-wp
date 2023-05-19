@@ -1,0 +1,17 @@
+name: Target Directory
+description: Composes the target directory name for the workflow jobs.
+outputs:
+  target-dir:
+    description: The target directory name
+    value: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
+runs:
+  using: "composite"
+  steps:
+    - name: Set branch environment variables
+      id: branch-target
+      if: github.event_name != 'pull_request'
+      run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+    - name: Set PR environment variables
+      id: pr-target
+      if: github.event_name == 'pull_request'
+      run: echo "dir=pull/${{ github.event.number }}" >> $GITHUB_OUTPUT
