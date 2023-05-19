@@ -147,10 +147,13 @@ class REST_User_Surveys_Controller {
 						$proxy        = $this->authentication->get_google_proxy();
 						$creds        = $this->authentication->credentials();
 						$access_token = (string) $this->authentication->get_oauth_client()->get_access_token();
-						$data         = $request->get_param( 'data' );
+
+						$data = $request->get_param( 'data' );
+						if ( isset( $data['event']['survey_shown'] ) ) {
+							$this->timeouts->set_global_timeout();
+						}
 
 						$response = $proxy->send_survey_event( $creds, $access_token, $data['session'], $data['event'] );
-
 						if ( ! is_wp_error( $response ) ) {
 							$is_survey_closed    = isset( $data['event']['survey_closed'] );
 							$is_completion_shown = isset( $data['event']['completion_shown'] );
@@ -159,10 +162,6 @@ class REST_User_Surveys_Controller {
 								if ( ! empty( $survey ) ) {
 									$this->queue->dequeue( $survey['survey_id'] );
 								}
-							}
-
-							if ( isset( $data['event']['survey_shown'] ) ) {
-								$this->timeouts->set_global_timeout();
 							}
 						}
 
