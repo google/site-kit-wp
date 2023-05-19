@@ -128,6 +128,7 @@ jobs:
       - uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - uses: google-github-actions/setup-gcloud@v1
       - name: Upload PR files
         run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.BUCKET_NAME }}/builds/${{ github.event.pull_request.number }}/*
 
