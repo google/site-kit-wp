@@ -127,8 +127,7 @@ jobs:
           path: ${{ github.ref }}
       - uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/upload-cloud-storage@v1
         with:
           path: ${{ github.ref }}
@@ -142,8 +141,7 @@ jobs:
     steps:
       - uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/setup-gcloud@v1
       - name: Prune PR files
         run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/${{ github.event.pull_request.number }}/*
