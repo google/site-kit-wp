@@ -7,13 +7,11 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Set branch environment variables
-      id: branch-target
+    - id: branch-target
       if: github.event_name != 'pull_request'
       run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
       shell: bash
-    - name: Set PR environment variables
-      id: pr-target
+    - id: pr-target
       if: github.event_name == 'pull_request'
       run: echo "dir=pull/${{ github.event.number }}" >> $GITHUB_OUTPUT
       shell: bash
