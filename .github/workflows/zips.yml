@@ -124,13 +124,11 @@ jobs:
       - name: Set branch environment variables
         id: branch-target
         if: github.event_name != 'pull_request'
-        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        run: echo 'dir=${GITHUB_REF##*/}' >> $GITHUB_OUTPUT
       - name: Set PR environment variables
         id: pr-target
         if: github.event_name == 'pull_request'
-        env:
-          PULL_REQUEST_NUMBER: ${{ github.event.number }}
-        run: echo "dir=pull/${PULL_REQUEST_NUMBER}" >> $GITHUB_OUTPUT
+        run: echo 'dir=pull/${{ github.event.number }}' >> $GITHUB_OUTPUT
       - uses: actions/download-artifact@v3
         with:
           name: zip-files
@@ -153,13 +151,11 @@ jobs:
       - name: Set branch environment variables
         id: branch-target
         if: github.event_name != 'pull_request'
-        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        run: echo 'dir=${GITHUB_REF##*/}' >> $GITHUB_OUTPUT
       - name: Set PR environment variables
         id: pr-target
         if: github.event_name == 'pull_request'
-        env:
-          PULL_REQUEST_NUMBER: ${{ github.event.number }}
-        run: echo "dir=pull/${PULL_REQUEST_NUMBER}" >> $GITHUB_OUTPUT
+        run: echo 'dir=pull/${{ github.event.number }}' >> $GITHUB_OUTPUT
       - uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
