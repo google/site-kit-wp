@@ -231,4 +231,5 @@ EnableUniversalAnalytics.propTypes = {
 	children: PropTypes.node.isRequired,
 	hasModuleAccess: PropTypes.bool,
 	showErrors: PropTypes.bool,
+	showTitle: PropTypes.bool,
 };
