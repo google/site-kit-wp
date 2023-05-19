@@ -87,9 +87,7 @@ export default function SettingsAdmin() {
 						rounded
 					>
 						<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
-							<Grid>
-								<SettingsKeyMetrics />
-							</Grid>
+							<SettingsKeyMetrics />
 							<Grid>
 								{ isUserInputCompleted && (
 									<UserInputPreview

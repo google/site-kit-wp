@@ -29,6 +29,7 @@ import { Switch } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
+import { Grid } from '../../material-components';
 
 const { useSelect, useDispatch } = Data;
 
@@ -58,14 +59,16 @@ export default function SettingsKeyMetrics() {
 	}
 
 	return (
-		<Switch
-			label={ __(
-				'Display key metrics in dashboard',
-				'google-site-kit'
-			) }
-			checked={ ! keyMetricsWidgetHidden }
-			onClick={ handleKeyMetricsToggle }
-			hideLabel={ false }
-		/>
+		<Grid>
+			<Switch
+				label={ __(
+					'Display key metrics in dashboard',
+					'google-site-kit'
+				) }
+				checked={ ! keyMetricsWidgetHidden }
+				onClick={ handleKeyMetricsToggle }
+				hideLabel={ false }
+			/>
+		</Grid>
 	);
 }
