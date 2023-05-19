@@ -121,6 +121,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-zips
     steps:
+      - name: Set branch environment variables
+        id: branch-target
+        if: github.event_name != 'pull_request'
+        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+      - name: Set PR environment variables
+        id: pr-target
+        if: github.event_name == 'pull_request'
+        env:
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+        run: echo "dir=pull/${PULL_REQUEST_NUMBER}" >> $GITHUB_OUTPUT
       - uses: actions/download-artifact@v3
         with:
           name: zip-files
@@ -130,7 +140,9 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/setup-gcloud@v1
       - name: Upload PR files
-        run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.BUCKET_NAME }}/builds/${{ github.event.pull_request.number }}/*
+        run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}
+        env:
+          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
 
   remove-pr:
     name: Remove Zips
@@ -138,9 +150,21 @@ jobs:
     timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     steps:
+      - name: Set branch environment variables
+        id: branch-target
+        if: github.event_name != 'pull_request'
+        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+      - name: Set PR environment variables
+        id: pr-target
+        if: github.event_name == 'pull_request'
+        env:
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+        run: echo "dir=pull/${PULL_REQUEST_NUMBER}" >> $GITHUB_OUTPUT
       - uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/setup-gcloud@v1
       - name: Prune PR files
-        run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/${{ github.event.pull_request.number }}/*
+        run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/*
+        env:
+          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
