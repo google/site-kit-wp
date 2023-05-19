@@ -147,7 +147,7 @@ class REST_User_Surveys_Controller {
 						$proxy        = $this->authentication->get_google_proxy();
 						$creds        = $this->authentication->credentials();
 						$access_token = (string) $this->authentication->get_oauth_client()->get_access_token();
-						
+
 						$data = $request->get_param( 'data' );
 						if ( isset( $data['event']['survey_shown'] ) ) {
 							$this->timeouts->set_global_timeout();
