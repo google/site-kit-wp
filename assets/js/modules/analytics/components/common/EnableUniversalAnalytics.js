@@ -165,6 +165,7 @@ export default function EnableUniversalAnalytics( {
 					checked={ isUAEnabled }
 					onClick={ onChange }
 					hideLabel={ false }
+					disabled={ ! hasModuleAccess }
 				/>
 				<p>
 					{ __(
