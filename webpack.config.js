@@ -154,6 +154,7 @@ const siteKitExternals = {
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
 	'googlesitekit-components': [ 'googlesitekit', 'components' ],
+	'googlesitekit-notifications': [ 'googlesitekit', 'notifications' ],
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
@@ -299,6 +300,8 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-datastore-ui.js',
 			'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 			'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
+			'googlesitekit-notifications':
+				'./assets/js/googlesitekit-notifications.js',
 			'googlesitekit-modules-adsense':
 				'./assets/js/googlesitekit-modules-adsense.js',
 			'googlesitekit-modules-analytics':

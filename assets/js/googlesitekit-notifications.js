@@ -1,4 +1,6 @@
 /**
+ * Public Notifications API entrypoint.
+ *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +19,21 @@
 /**
  * Internal dependencies
  */
-import { CORE_NOTIFICATIONS } from './datastore/constants';
+import Data from 'googlesitekit-data';
+import {
+	registerStore,
+	createNotifications,
+} from './googlesitekit/notifications';
 
-export { registerStore } from './datastore';
+registerStore( Data );
 
-export function createNotifications( registry ) {
-	const { dispatch } = registry;
+const Notifications = createNotifications( Data );
 
-	const Notifications = {
-		registerNotification( id, settings ) {
-			dispatch( CORE_NOTIFICATIONS ).registerNotification( id, settings );
-		},
-	};
-
-	return Notifications;
+if ( typeof global.googlesitekit === 'undefined' ) {
+	global.googlesitekit = {};
 }
+
+global.googlesitekit.notifications = Notifications;
+
+// This is only exported for Jest and is not used in production.
+export default Notifications;

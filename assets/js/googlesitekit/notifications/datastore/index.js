@@ -19,8 +19,9 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from './constants';
+import notifications from './notifications';
 
-const store = Data.combineStores( Data.commonStore );
+const store = Data.combineStores( Data.commonStore, notifications );
 
 export const registerStore = ( registry ) => {
 	registry.registerStore( CORE_NOTIFICATIONS, store );
