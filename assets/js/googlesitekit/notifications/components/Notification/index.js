@@ -14,6 +14,54 @@
  * limitations under the License.
  */
 
-export default function Notification() {
-	return 'Placeholder notification';
+/**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect, useRef } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import ViewedStateObserver from './ViewedStateObserver';
+import { trackEvent } from '../../../../util';
+import { useHasBeenViewed } from '../useHasBeenViewed';
+
+export default function Notification( {
+	className,
+	type,
+	id,
+	eventCategory,
+	children,
+} ) {
+	const ref = useRef();
+	const viewed = useHasBeenViewed( id );
+
+	// Track view once.
+	useEffect( () => {
+		if ( viewed ) {
+			trackEvent( eventCategory, 'view_notification' );
+		}
+	}, [ viewed, eventCategory ] );
+
+	return (
+		<div
+			ref={ ref }
+			className={ classnames(
+				'googlesitekit-notification',
+				`googlesitekit-notification--${ type }`,
+				className
+			) }
+		>
+			{ children }
+			{ /* Encapsulate observer to dispose when no longer needed. */ }
+			{ ! viewed && (
+				<ViewedStateObserver observeRef={ ref } threshold={ 0.5 } />
+			) }
+		</div>
+	);
 }
