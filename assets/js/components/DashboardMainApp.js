@@ -46,6 +46,7 @@ import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
+import Notifications from './notifications/Notifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
@@ -142,7 +143,15 @@ export default function DashboardMainApp() {
 		<Fragment>
 			<ScrollEffect />
 
-			<Header subHeader={ <BannerNotifications /> } showNavigation>
+			<Header
+				subHeader={
+					<Fragment>
+						<BannerNotifications />
+						<Notifications />
+					</Fragment>
+				}
+				showNavigation
+			>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				{ dashboardSharingEnabled && ! viewOnlyDashboard && (

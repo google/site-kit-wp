@@ -22,6 +22,9 @@
 import Data from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import { CORE_NOTIFICATIONS } from './constants';
+import { CORE_USER } from '../../datastore/user/constants';
+
+const { createRegistrySelector } = Data;
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_ACTIVE_IDS = 'RECEIVE_ACTIVE_IDS';
@@ -32,7 +35,10 @@ export const initialState = {
 };
 
 export const actions = {
-	registerNotification( id, { type, shouldDisplay, Component } ) {
+	registerNotification(
+		id,
+		{ type, shouldDisplay, Component, dismissable }
+	) {
 		return {
 			payload: {
 				id,
@@ -40,6 +46,7 @@ export const actions = {
 					type,
 					shouldDisplay,
 					Component,
+					dismissable,
 				},
 			},
 			type: REGISTER_NOTIFICATION,
@@ -112,13 +119,24 @@ export const resolvers = {
 };
 
 export const selectors = {
-	getNotifications( state ) {
+	getNotifications: createRegistrySelector( ( select ) => ( state ) => {
 		const order = [ 'error', 'warning', 'info' ];
 
-		return Object.values( state.notifications ).sort( ( a, b ) => {
-			return order.indexOf( a.type ) - order.indexOf( b.type );
-		} );
-	},
+		return Object.values( state.notifications )
+			.filter( ( notification ) => {
+				if (
+					notification.dismissable &&
+					select( CORE_USER ).isItemDismissed( notification.id )
+				) {
+					return false;
+				}
+
+				return true;
+			} )
+			.sort( ( a, b ) => {
+				return order.indexOf( a.type ) - order.indexOf( b.type );
+			} );
+	} ),
 
 	getActiveNotifications: ( state ) => {
 		if ( state.activeIDs === undefined ) {

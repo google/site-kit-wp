@@ -4,11 +4,10 @@ export function registerNotifications( notificationsAPI ) {
 	notificationsAPI.registerNotification( 'test-warning-notification', {
 		type: 'warning',
 		shouldDisplay: ( { select } ) => {
-			return select( CORE_MODULES ).isModuleConnected( 'analytics' );
+			return select( CORE_MODULES ).isModuleConnected( 'search-console' );
 		},
-		Component: () => {
-			<h1>Hello world</h1>;
-		},
+		Component: () => <h1>This is a warning</h1>,
+		dismissable: true,
 	} );
 
 	notificationsAPI.registerNotification( 'test-info-notification', {
@@ -16,9 +15,8 @@ export function registerNotifications( notificationsAPI ) {
 		shouldDisplay: ( { select } ) => {
 			return select( CORE_MODULES ).isModuleConnected( 'search-console' );
 		},
-		Component: () => {
-			<h1>Hello world</h1>;
-		},
+		Component: () => <h1>This is an info</h1>,
+		dismissable: true,
 	} );
 
 	notificationsAPI.registerNotification( 'test-error-notification', {
@@ -26,8 +24,7 @@ export function registerNotifications( notificationsAPI ) {
 		shouldDisplay: ( { select } ) => {
 			return select( CORE_MODULES ).isModuleConnected( 'adsense' );
 		},
-		Component: () => {
-			<h1>Hello world</h1>;
-		},
+		Component: () => <h1>This is an error</h1>,
+		dismissable: false,
 	} );
 }
