@@ -3,7 +3,7 @@ import { CORE_MODULES } from '../modules/datastore/constants';
 export function registerNotifications( notificationsAPI ) {
 	notificationsAPI.registerNotification( 'test-warning-notification', {
 		type: 'warning',
-		shouldDisplay: ( select ) => {
+		shouldDisplay: ( { select } ) => {
 			return select( CORE_MODULES ).isModuleConnected( 'analytics' );
 		},
 		Component: () => {
@@ -13,7 +13,7 @@ export function registerNotifications( notificationsAPI ) {
 
 	notificationsAPI.registerNotification( 'test-info-notification', {
 		type: 'info',
-		shouldDisplay: ( select ) => {
+		shouldDisplay: ( { select } ) => {
 			return select( CORE_MODULES ).isModuleConnected( 'search-console' );
 		},
 		Component: () => {
@@ -23,7 +23,7 @@ export function registerNotifications( notificationsAPI ) {
 
 	notificationsAPI.registerNotification( 'test-error-notification', {
 		type: 'error',
-		shouldDisplay: ( select ) => {
+		shouldDisplay: ( { select } ) => {
 			return select( CORE_MODULES ).isModuleConnected( 'adsense' );
 		},
 		Component: () => {

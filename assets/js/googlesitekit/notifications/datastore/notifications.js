@@ -21,13 +21,14 @@
  */
 import Data from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
-
-const { createRegistrySelector } = Data;
+import { CORE_NOTIFICATIONS } from './constants';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
+const RECEIVE_ACTIVE_IDS = 'RECEIVE_ACTIVE_IDS';
 
 export const initialState = {
 	notifications: {},
+	activeIDs: undefined,
 };
 
 export const actions = {
@@ -42,6 +43,15 @@ export const actions = {
 				},
 			},
 			type: REGISTER_NOTIFICATION,
+		};
+	},
+
+	receiveActiveIDs( activeIDs ) {
+		return {
+			payload: {
+				activeIDs,
+			},
+			type: RECEIVE_ACTIVE_IDS,
 		};
 	},
 };
@@ -64,12 +74,42 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			break;
 		}
 
+		case RECEIVE_ACTIVE_IDS: {
+			state.activeIDs = payload.activeIDs;
+			break;
+		}
+
 		default:
 			break;
 	}
 } );
 
-export const resolvers = {};
+export const resolvers = {
+	*getActiveNotifications() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const notifications = registry
+			.select( CORE_NOTIFICATIONS )
+			.getNotifications();
+
+		const resolved = yield Data.commonActions.await(
+			Promise.all(
+				notifications.map( ( notification ) =>
+					notification.shouldDisplay( registry )
+				)
+			)
+		);
+
+		const activeIDs = [];
+		notifications.forEach( ( notification, idx ) => {
+			if ( resolved[ idx ] ) {
+				activeIDs.push( notification.id );
+			}
+		} );
+
+		yield actions.receiveActiveIDs( activeIDs );
+	},
+};
 
 export const selectors = {
 	getNotifications( state ) {
@@ -80,13 +120,13 @@ export const selectors = {
 		} );
 	},
 
-	getActiveNotifications: createRegistrySelector( ( select ) => ( state ) => {
+	getActiveNotifications: ( state ) => {
 		return selectors
 			.getNotifications( state )
-			.filter(
-				( notification ) => !! notification.shouldDisplay( select )
+			.filter( ( notification ) =>
+				state.activeIDs.includes( notification.id )
 			);
-	} ),
+	},
 };
 
 export default {
