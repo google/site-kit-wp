@@ -56,17 +56,15 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 				global.console.warn(
 					`Could not register notification with ID "${ id }". Notification "${ id }" is already registered.`
 				);
-
-				return state;
+			} else {
+				state.notifications[ id ] = { ...settings, id };
 			}
 
-			state.notifications[ id ] = { ...settings, id };
-			return state;
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
 } );
 
