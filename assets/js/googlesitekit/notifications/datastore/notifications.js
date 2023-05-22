@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
+
+const { createRegistrySelector } = Data;
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 
@@ -41,8 +44,6 @@ export const actions = {
 			type: REGISTER_NOTIFICATION,
 		};
 	},
-
-	dismissNotification() {},
 };
 
 export const controls = {};
@@ -72,8 +73,20 @@ export const resolvers = {};
 
 export const selectors = {
 	getNotifications( state ) {
-		return state.notifications;
+		const order = [ 'error', 'warning', 'info' ];
+
+		return Object.values( state.notifications ).sort( ( a, b ) => {
+			return order.indexOf( a.type ) - order.indexOf( b.type );
+		} );
 	},
+
+	getActiveNotifications: createRegistrySelector( ( select ) => ( state ) => {
+		return selectors
+			.getNotifications( state )
+			.filter(
+				( notification ) => !! notification.shouldDisplay( select )
+			);
+	} ),
 };
 
 export default {

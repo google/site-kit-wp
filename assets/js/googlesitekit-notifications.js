@@ -23,11 +23,13 @@ import Data from 'googlesitekit-data';
 import {
 	registerStore,
 	createNotifications,
+	registerNotifications,
 } from './googlesitekit/notifications';
 
 registerStore( Data );
 
 const Notifications = createNotifications( Data );
+registerNotifications( Notifications );
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
