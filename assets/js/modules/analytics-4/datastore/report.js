@@ -311,8 +311,10 @@ const baseSelectors = {
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
 	 * @since 1.95.0
+	 * @since 1.96.0 Returns `undefined` if the underlying report errors.
 	 *
-	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
+	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`.
+	 *                             Returns `undefined` while resolving or in the event of an error.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
@@ -346,11 +348,9 @@ const baseSelectors = {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ args ] );
 
-		// If there is an error, return false, to be aligned with the behaviour of the UA isGatheringData selector,
-		// but with a more explicit check, i.e. checking for a report error rather than a non-successful response shape.
-		// TODO: In future we should consider changing this selector so it returns a distinct value for errors, or throws an error.
+		// If there is an error, return `undefined` since we don't know if there is data or not.
 		if ( hasReportError ) {
-			return false;
+			return undefined;
 		}
 
 		return isZeroReport( report );
