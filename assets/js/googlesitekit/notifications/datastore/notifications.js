@@ -121,6 +121,10 @@ export const selectors = {
 	},
 
 	getActiveNotifications: ( state ) => {
+		if ( state.activeIDs === undefined ) {
+			return undefined;
+		}
+
 		return selectors
 			.getNotifications( state )
 			.filter( ( notification ) =>
