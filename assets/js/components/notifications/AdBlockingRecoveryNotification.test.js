@@ -69,6 +69,22 @@ describe( 'AdBlockingRecoveryNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
+	it( 'should run the test', () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.setAdBlockingRecoverySetupStatus(
+				AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED
+			);
+
+		const { container } = render( <AdBlockingRecoveryNotification />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
 	it( 'should not render notification if it is already dismissed', () => {
 		registry
 			.dispatch( MODULES_ADSENSE )
