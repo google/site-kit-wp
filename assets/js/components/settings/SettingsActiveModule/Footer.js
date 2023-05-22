@@ -211,6 +211,11 @@ export default function Footer( props ) {
 				className="googlesitekit-settings-module__edit-button"
 				to={ `/connected-services/${ slug }/edit` }
 				onClick={ handleEdit }
+				aria-label={ sprintf(
+					/* translators: %s: module name */
+					__( 'Edit %s settings', 'google-site-kit' ),
+					name
+				) }
 			>
 				{ __( 'Edit', 'google-site-kit' ) }
 				<PencilIcon
