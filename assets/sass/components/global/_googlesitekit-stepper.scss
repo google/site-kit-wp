@@ -26,6 +26,12 @@
 	.googlesitekit-stepper__step {
 		display: flex;
 		gap: 10px;
+		margin: 0;
+	}
+
+	.googlesitekit-stepper__step-progress {
+		display: flex;
+		flex-direction: column;
 	}
 
 	.googlesitekit-stepper__step-number {
@@ -51,6 +57,15 @@
 
 	.googlesitekit-stepper__step-number--upcoming {
 		background-color: $c-surfaces-on-surface-variant;
+	}
+
+	.googlesitekit-stepper__step-progress-line {
+		background-color: $c-surfaces-surface-2;
+		flex: 1;
+		height: 100%;
+		margin: 5px auto;
+		min-height: 30px;
+		width: 1px;
 	}
 
 	.googlesitekit-step__title {

@@ -50,6 +50,8 @@ export default function Stepper( { children, activeStep } ) {
 		return STEP_STATUS.UPCOMING;
 	}
 
+	const childCount = Children.count( children );
+
 	return (
 		<ol className="googlesitekit-stepper">
 			{ Children.map( children, ( child, childIndex ) => {
@@ -67,7 +69,7 @@ export default function Stepper( { children, activeStep } ) {
 										'google-site-kit'
 									),
 									childIndex + 1,
-									Children.count( children ),
+									childCount,
 									STEP_STATUS_LABEL[ stepStatus ]
 								) }
 							>
@@ -77,6 +79,9 @@ export default function Stepper( { children, activeStep } ) {
 									childIndex + 1
 								) }
 							</span>
+							{ childIndex < childCount - 1 && (
+								<div className="googlesitekit-stepper__step-progress-line"></div>
+							) }
 						</div>
 						{ cloneElement( child, { stepStatus } ) }
 					</li>

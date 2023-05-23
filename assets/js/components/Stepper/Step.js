@@ -34,7 +34,9 @@ export default function Step( { children, title, stepStatus } ) {
 			>
 				{ title }
 			</h2>
-			{ stepStatus === STEP_STATUS.ACTIVE && children }
+			{ stepStatus === STEP_STATUS.ACTIVE && (
+				<div className="googlesitekit-step__content">{ children }</div>
+			) }
 		</div>
 	);
 }
