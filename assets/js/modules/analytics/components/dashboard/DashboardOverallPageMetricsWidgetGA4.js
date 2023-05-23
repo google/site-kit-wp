@@ -21,6 +21,7 @@
  */
 import { _x, sprintf, _n, __ } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,9 +38,10 @@ import Sparkline from '../../../../components/Sparkline';
 import SourceLink from '../../../../components/SourceLink';
 import whenActive from '../../../../util/when-active';
 import { calculateOverallPageMetricsData } from '../../..//analytics-4/utils/overall-page-metrics';
-import { getURLPath } from '../../../../util';
+import { getURLPath, trackEvent } from '../../../../util';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import useViewContext from '../../../../hooks/useViewContext';
 import NewBadge from '../../../../components/NewBadge';
 const { useSelect, useInViewSelect } = Data;
 
@@ -49,6 +51,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	);
 
 	const viewOnlyDashboard = useViewOnly();
+	const viewContext = useViewContext();
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -169,6 +172,13 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		/>
 	);
 
+	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }__ga4-new-badge`,
+			'click_learn_more_link'
+		);
+	}, [ viewContext ] );
+
 	if ( isLoading || isGatheringData === undefined ) {
 		return (
 			<Widget Footer={ Footer }>
@@ -195,6 +205,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 					'google-site-kit'
 				) }
 				learnMoreLink={ sessionsLearnMoreURL }
+				onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
 			/>
 		),
 		engagementRate: (
@@ -204,6 +215,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 					'google-site-kit'
 				) }
 				learnMoreLink={ engagementRateLearnMoreURL }
+				onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
 			/>
 		),
 	};
