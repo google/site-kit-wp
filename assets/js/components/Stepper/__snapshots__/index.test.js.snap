@@ -1,0 +1,127 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Stepper should render the active step content 1`] = `
+<div>
+  <ol
+    class="googlesitekit-stepper"
+  >
+    <li
+      class="googlesitekit-stepper__step"
+    >
+      <div
+        class="googlesitekit-stepper__step-progress"
+      >
+        <span
+          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--active"
+          title="Step 1 of 2 (active)."
+        >
+          1
+        </span>
+        <div
+          class="googlesitekit-stepper__step-progress-line"
+        />
+      </div>
+      <div
+        class="googlesitekit-step"
+      >
+        <h2
+          class="googlesitekit-step__title googlesitekit-step__title--active"
+        >
+          Step 1
+        </h2>
+        <div
+          class="googlesitekit-step__content"
+        >
+          This is step 1.
+        </div>
+      </div>
+    </li>
+    <li
+      class="googlesitekit-stepper__step"
+    >
+      <div
+        class="googlesitekit-stepper__step-progress"
+      >
+        <span
+          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--upcoming"
+          title="Step 2 of 2 (upcoming)."
+        >
+          2
+        </span>
+      </div>
+      <div
+        class="googlesitekit-step"
+      >
+        <h2
+          class="googlesitekit-step__title googlesitekit-step__title--upcoming"
+        >
+          Step 2
+        </h2>
+      </div>
+    </li>
+  </ol>
+</div>
+`;
+
+exports[`Stepper should render the active step content 2`] = `
+<div>
+  <ol
+    class="googlesitekit-stepper"
+  >
+    <li
+      class="googlesitekit-stepper__step"
+    >
+      <div
+        class="googlesitekit-stepper__step-progress"
+      >
+        <span
+          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--completed"
+          title="Step 1 of 2 (completed)."
+        >
+          <svg />
+        </span>
+        <div
+          class="googlesitekit-stepper__step-progress-line"
+        />
+      </div>
+      <div
+        class="googlesitekit-step"
+      >
+        <h2
+          class="googlesitekit-step__title googlesitekit-step__title--completed"
+        >
+          Step 1
+        </h2>
+      </div>
+    </li>
+    <li
+      class="googlesitekit-stepper__step"
+    >
+      <div
+        class="googlesitekit-stepper__step-progress"
+      >
+        <span
+          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--active"
+          title="Step 2 of 2 (active)."
+        >
+          2
+        </span>
+      </div>
+      <div
+        class="googlesitekit-step"
+      >
+        <h2
+          class="googlesitekit-step__title googlesitekit-step__title--active"
+        >
+          Step 2
+        </h2>
+        <div
+          class="googlesitekit-step__content"
+        >
+          This is step 2.
+        </div>
+      </div>
+    </li>
+  </ol>
+</div>
+`;
