@@ -17,32 +17,34 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import useLatestIntersection from '../../../../hooks/useLatestIntersection';
-import { CORE_UI } from '../../../datastore/ui/constants';
-import { useHasBeenViewed } from '../useHasBeenViewed';
-
+import useNotificationEvents from '../useNotificationEvents';
+import { CORE_NOTIFICATIONS } from '../../datastore/constants';
+import Link from '../../../../components/Link';
+import { Button } from 'googlesitekit-components';
 const { useDispatch } = Data;
 
-export default function ViewedStateObserver( { id, observeRef, threshold } ) {
-	const intersectionEntry = useLatestIntersection( observeRef, {
-		threshold,
-	} );
+export default function Dismiss( {
+	id,
+	primary,
+	Component = primary ? Button : Link,
+	text = __( 'OK, Got it!', 'google-site-kit' ),
+	onDismiss = () => {},
+} ) {
+	const trackEvents = useNotificationEvents( id );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const handleDismiss = async () => {
+		await Promise.all( [
+			trackEvents.dismiss(),
+			dismissNotification( id ),
+		] );
+		onDismiss();
+	};
 
-	const { setValue } = useDispatch( CORE_UI );
-	const isInView = !! intersectionEntry?.isIntersecting;
-	const viewed = useHasBeenViewed( id );
-
-	useEffect( () => {
-		if ( ! viewed && isInView ) {
-			setValue( useHasBeenViewed.getKey( id ), true );
-		}
-	}, [ viewed, isInView, setValue, id ] );
-
-	return null;
+	return <Component onClick={ handleDismiss }>{ text }</Component>;
 }

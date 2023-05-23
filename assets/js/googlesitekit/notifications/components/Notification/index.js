@@ -28,25 +28,27 @@ import { useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import ViewedStateObserver from './ViewedStateObserver';
-import { trackEvent } from '../../../../util';
 import { useHasBeenViewed } from '../useHasBeenViewed';
+import useNotificationEvents from '../useNotificationEvents';
 
 export default function Notification( {
 	className,
 	type,
 	id,
-	eventCategory,
+	title,
 	children,
+	dismiss,
 } ) {
 	const ref = useRef();
 	const viewed = useHasBeenViewed( id );
+	const trackEvents = useNotificationEvents( id );
 
 	// Track view once.
 	useEffect( () => {
 		if ( viewed ) {
-			trackEvent( eventCategory, 'view_notification' );
+			trackEvents.view();
 		}
-	}, [ viewed, eventCategory ] );
+	}, [ viewed, trackEvents ] );
 
 	return (
 		<div
@@ -57,7 +59,9 @@ export default function Notification( {
 				className
 			) }
 		>
+			{ title }
 			{ children }
+			{ dismiss }
 			{ /* Encapsulate observer to dispose when no longer needed. */ }
 			{ ! viewed && (
 				<ViewedStateObserver observeRef={ ref } threshold={ 0.5 } />

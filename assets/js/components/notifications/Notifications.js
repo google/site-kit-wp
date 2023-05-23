@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { getNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 const { useSelect } = Data;
 
@@ -29,11 +30,15 @@ export default function Notifications() {
 		select( CORE_NOTIFICATIONS ).getActiveNotifications()
 	);
 
-	if ( activeNotifications === undefined ) {
+	if ( activeNotifications?.[ 0 ] === undefined ) {
 		return null;
 	}
 
-	const ActiveNotification = activeNotifications[ 0 ].Component;
+	const { id, Component: ActiveNotification } = activeNotifications[ 0 ];
+	const props = {
+		id,
+		...getNotificationComponentProps( id ),
+	};
 
-	return <ActiveNotification />;
+	return <ActiveNotification { ...props } />;
 }
