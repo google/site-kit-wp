@@ -17,7 +17,7 @@
  */
 
 export const STEP_STATUS = {
-	COMPLETED: 'completed',
-	ACTIVE: 'active',
 	UPCOMING: 'upcoming',
+	ACTIVE: 'active',
+	COMPLETED: 'completed',
 };

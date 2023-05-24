@@ -35,9 +35,9 @@ import { STEP_STATUS } from './constants';
 
 // English-language names for the step statuses.
 const STEP_STATUS_NAMES = {
-	[ STEP_STATUS.COMPLETED ]: 'completed',
-	[ STEP_STATUS.ACTIVE ]: 'active',
 	[ STEP_STATUS.UPCOMING ]: 'upcoming',
+	[ STEP_STATUS.ACTIVE ]: 'active',
+	[ STEP_STATUS.COMPLETED ]: 'completed',
 };
 
 export default function Stepper( { children, activeStep } ) {
