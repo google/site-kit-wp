@@ -147,12 +147,12 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: github-actions[bot]
-          body-includes: Plugin builds for
+          body-includes: Build files for
       - name: Get comment body
         id: get-comment-body
         # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
         run: |
-          body="Plugin builds for ${{ github.event.pull_request.head.sha }} are ready :bellhop_bell:!
+          body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
           - Download [development build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/google-site-kit-dev.zip?${{ github.sha }})
           - Download [production build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/google-site-kit.zip?${{ github.sha }})"
           delimiter="${body//$'\n'/'%0A'}"
@@ -161,13 +161,13 @@ jobs:
           echo "${delimiter}" >> $GITHUB_OUTPUT
         env:
           TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
-      - name: Create comment on PR with links to plugin builds
+      - name: Create comment on PR with links to build files
         if: ${{ steps.find-comment.outputs.comment-id == '' }}
         uses: peter-evans/create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.get-comment-body.outputs.body }}
-      - name: Update comment on PR with links to plugin builds
+      - name: Update comment on PR with links to build files
         if: ${{ steps.find-comment.outputs.comment-id != '' }}
         uses: peter-evans/create-or-update-comment@v2
         with:
@@ -197,3 +197,27 @@ jobs:
         run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/**
         env:
           TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
+      - name: Check the comment exists
+        id: find-comment
+        uses: peter-evans/find-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: github-actions[bot]
+          body-includes: Build files for
+      - name: Get comment body
+        id: get-comment-body
+        run: |
+          body="Build files for ${{ github.event.pull_request.head.sha }} have been deleted."
+          delimiter="${body//$'\n'/'%0A'}"
+          echo "body<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
+        env:
+          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
+      - name: Update comment on PR with links to plugin builds
+        if: ${{ steps.find-comment.outputs.comment-id != '' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          edit-mode: replace
+          body: ${{ steps.get-comment-body.outputs.body }}
