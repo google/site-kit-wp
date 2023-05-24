@@ -37,8 +37,10 @@ const ChangeBadge = ( { previousValue, currentValue } ) => {
 				'googlesitekit-change-badge--negative': isNegative,
 			} ) }
 		>
-			{ isNegative ? '' : '+' }
-			{ numFmt( change, '%' ) }
+			{ numFmt( change, {
+				style: 'percent',
+				signDisplay: 'exceptZero',
+			} ) }
 		</div>
 	);
 };
