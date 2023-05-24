@@ -24,7 +24,57 @@ import Step from './Step';
 import Stepper from '.';
 
 describe( 'Stepper', () => {
-	it( 'should render the active step content', () => {
+	it.each( [
+		[ 'not provided', undefined ],
+		[ 'negative', -1 ],
+	] )(
+		'should render all steps as upcoming when activeStep is %s',
+		( _, activeStep ) => {
+			const { container } = render(
+				<Stepper activeStep={ activeStep }>
+					<Step title="Step 1">This is step 1.</Step>
+					<Step title="Step 2">This is step 2.</Step>
+				</Stepper>
+			);
+
+			expect( container ).toMatchSnapshot();
+
+			// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-step__title--upcoming'
+				).length
+			).toBe( 2 );
+
+			expect(
+				container.querySelector( '.googlesitekit-step__content' )
+			).not.toBeInTheDocument();
+		}
+	);
+
+	it( 'should render all steps as completed when activeStep is greater than the number of steps - 1', () => {
+		const { container } = render(
+			<Stepper activeStep={ 2 }>
+				<Step title="Step 1">This is step 1.</Step>
+				<Step title="Step 2">This is step 2.</Step>
+			</Stepper>
+		);
+
+		expect( container ).toMatchSnapshot();
+
+		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
+		expect(
+			container.querySelectorAll(
+				'.googlesitekit-step__title--completed'
+			).length
+		).toBe( 2 );
+
+		expect(
+			container.querySelector( '.googlesitekit-step__content' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the active step as active and display its content', () => {
 		const { container, rerender } = render(
 			<Stepper activeStep={ 0 }>
 				<Step title="Step 1">This is step 1.</Step>
@@ -33,6 +83,13 @@ describe( 'Stepper', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
+
+		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
+		expect(
+			container.querySelector(
+				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-step__title--active'
+			)
+		).toBeInTheDocument();
 
 		expect(
 			container.querySelector(
@@ -55,11 +112,18 @@ describe( 'Stepper', () => {
 
 		expect( container ).toMatchSnapshot();
 
+		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 		expect(
 			container.querySelector(
 				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-step__content'
 			)
 		).not.toBeInTheDocument();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-step__title--active'
+			)
+		).toBeInTheDocument();
 
 		expect(
 			container.querySelector(
