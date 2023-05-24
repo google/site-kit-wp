@@ -27,11 +27,14 @@ import PropTypes from 'prop-types';
 import { Children, cloneElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
 import Tick from '../../../svg/icons/tick.svg';
 import { STEP_STATUS } from './constants';
 
-// English-language labels for the step statuses.
-const STEP_STATUS_LABEL = {
+// English-language names for the step statuses.
+const STEP_STATUS_NAMES = {
 	[ STEP_STATUS.COMPLETED ]: 'completed',
 	[ STEP_STATUS.ACTIVE ]: 'active',
 	[ STEP_STATUS.UPCOMING ]: 'upcoming',
@@ -57,6 +60,8 @@ export default function Stepper( { children, activeStep } ) {
 			{ Children.map( children, ( child, childIndex ) => {
 				const stepStatus = getStepStatus( childIndex, activeStep );
 
+				const childNumber = childIndex + 1;
+
 				return (
 					<li className="googlesitekit-stepper__step">
 						<div className="googlesitekit-stepper__step-progress">
@@ -68,18 +73,18 @@ export default function Stepper( { children, activeStep } ) {
 										'Step %1$s of %2$s (%3$s).',
 										'google-site-kit'
 									),
-									childIndex + 1,
+									childNumber,
 									childCount,
-									STEP_STATUS_LABEL[ stepStatus ]
+									STEP_STATUS_NAMES[ stepStatus ]
 								) }
 							>
 								{ stepStatus === STEP_STATUS.COMPLETED ? (
 									<Tick />
 								) : (
-									childIndex + 1
+									childNumber
 								) }
 							</span>
-							{ childIndex < childCount - 1 && (
+							{ childNumber < childCount && (
 								<div className="googlesitekit-stepper__step-progress-line"></div>
 							) }
 						</div>
@@ -93,6 +98,6 @@ export default function Stepper( { children, activeStep } ) {
 
 Stepper.propTypes = {
 	children: PropTypes.node.isRequired,
-	// The index of the active step. If omitted or negative, all steps are in the upcoming state. If greater than the number of steps - 1, all steps are complete.
+	// The zero-based index of the active step. If omitted or negative, all steps are in the upcoming state. If greater than the number of steps - 1, all steps are complete.
 	activeStep: PropTypes.number,
 };

@@ -28,5 +28,6 @@
 	},
 	"phpcs.enable": true,
 	"phpcs.executablePath": "vendor/bin/phpcs",
-	"stylelint.validate": [ "css", "scss" ]
+	"stylelint.validate": [ "css", "scss" ],
+	"github.copilot.inlineSuggest.enable": false
 }

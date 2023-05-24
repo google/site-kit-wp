@@ -17,13 +17,13 @@
  */
 
 /**
- * Internal dependencies
- */
-
-/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
 import { STEP_STATUS } from './constants';
 
 export default function Step( { children, title, stepStatus } ) {
