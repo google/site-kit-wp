@@ -66,22 +66,12 @@ env:
   BUCKET_NAME: site-kit-github-artifacts
 
 jobs:
-  test-context:
-    name: Test context
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump GitHub context
-        id: github_context_step
-        run: echo '${{ toJSON(github) }}' && exit 1
-
   build-zips:
     name: Build Zips
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
-      - name: Dump matrix context
-        run: echo '${{ toJSON(matrix) }}' && exit 1
       - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
         with:
