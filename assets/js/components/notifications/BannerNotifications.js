@@ -47,6 +47,7 @@ import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotifica
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
+import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 
 const { useSelect } = Data;
 
@@ -122,6 +123,7 @@ export default function BannerNotifications() {
 						<WebDataStreamNotAvailableNotification />
 					</Fragment>
 				) }
+			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
 			{ adBlockerDetectionEnabled && <AdBlockingRecoveryNotification /> }
 			{ userInputEnabled && <UserInputPromptBannerNotification /> }
