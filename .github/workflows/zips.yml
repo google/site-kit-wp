@@ -204,20 +204,10 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: github-actions[bot]
           body-includes: Build files for
-      - name: Get comment body
-        id: get-comment-body
-        run: |
-          body="Build files for ${{ github.event.pull_request.head.sha }} have been deleted."
-          delimiter="${body//$'\n'/'%0A'}"
-          echo "body<<${delimiter}" >> $GITHUB_OUTPUT
-          echo "$body" >> $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
-        env:
-          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
       - name: Update comment on PR with links to plugin builds
         if: ${{ steps.find-comment.outputs.comment-id != '' }}
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           edit-mode: replace
-          body: ${{ steps.get-comment-body.outputs.body }}
+          body: Build files for ${{ github.event.pull_request.head.sha }} have been deleted.
