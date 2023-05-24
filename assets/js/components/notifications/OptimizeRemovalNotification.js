@@ -27,7 +27,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function OptimizeRemovalNotification() {
 	const bannerID = 'optimize-removal-notification';
@@ -46,7 +46,10 @@ export default function OptimizeRemovalNotification() {
 		} )
 	);
 
-	const onDismiss = () => {};
+	const { dismissItem } = useDispatch( CORE_USER );
+	const onDismiss = () => {
+		dismissItem( bannerID );
+	};
 
 	if ( ! connected || isDismissed ) {
 		return null;
@@ -64,6 +67,7 @@ export default function OptimizeRemovalNotification() {
 				'google-site-kit'
 			) }
 			ctaLabel={ __( 'OK, Got it!', 'google-site-kit' ) }
+			ctaLink="#"
 			onCTAClick={ onDismiss }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			learnMoreTarget={ LEARN_MORE_TARGET.EXTERNAL }
