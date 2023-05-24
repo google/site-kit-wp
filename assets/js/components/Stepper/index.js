@@ -38,7 +38,7 @@ const STEP_STATUS_LABEL = {
 };
 
 export default function Stepper( { children, activeStep } ) {
-	function getStepStatus( index ) {
+	function getStepStatus( index = -1 ) {
 		if ( index < activeStep ) {
 			return STEP_STATUS.COMPLETED;
 		}
@@ -93,5 +93,6 @@ export default function Stepper( { children, activeStep } ) {
 
 Stepper.propTypes = {
 	children: PropTypes.node.isRequired,
-	activeStep: PropTypes.number.isRequired,
+	// The index of the active step. If omitted or negative, all steps are in the upcoming state. If greater than the number of steps - 1, all steps are complete.
+	activeStep: PropTypes.number,
 };

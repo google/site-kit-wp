@@ -43,17 +43,23 @@ function Template( { activeStep: initialActiveStep } ) {
 			</Step>
 			<Step title="Last Step">
 				<p>This is the last step.</p>
-				<Button onClick={ () => setActiveStep( 0 ) }>Top</Button>
+				<Button onClick={ () => setActiveStep( 3 ) }>Done</Button>
 			</Step>
 		</Stepper>
 	);
 }
 
+export const Inactive = Template.bind( {} );
+Inactive.storyName = 'Inactive';
+Inactive.scenario = {
+	label: 'Components/Stepper/Inactive',
+};
+
 export const FirstStepActive = Template.bind( {} );
 FirstStepActive.storyName = 'First Step Active';
 FirstStepActive.args = { activeStep: 0 };
 FirstStepActive.scenario = {
-	label: 'Components/Stepper/Default',
+	label: 'Components/Stepper/FirstStepActive',
 };
 
 export const MiddleStepActive = Template.bind( {} );
@@ -67,7 +73,14 @@ export const LastStepActive = Template.bind( {} );
 LastStepActive.storyName = 'Last Step Active';
 LastStepActive.args = { activeStep: 2 };
 LastStepActive.scenario = {
-	label: 'Components/Stepper/ThirdStepActive',
+	label: 'Components/Stepper/LastStepActive',
+};
+
+export const Complete = Template.bind( {} );
+Complete.storyName = 'Complete';
+Complete.args = { activeStep: 3 };
+Complete.scenario = {
+	label: 'Components/Stepper/Complete',
 };
 
 export default {
