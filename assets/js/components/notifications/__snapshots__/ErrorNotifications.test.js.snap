@@ -3,7 +3,7 @@
 exports[`ErrorNotifications does not render the GTE message if the GTE feature is not enabled 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open"
+    class="googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
     id="authentication error"
   >
     <div
@@ -69,7 +69,7 @@ exports[`ErrorNotifications does not render the GTE message if the GTE feature i
 exports[`ErrorNotifications does not render the GTE message if there are multiple unsatisfied scopes 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open"
+    class="googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
     id="authentication error"
   >
     <div
@@ -135,7 +135,7 @@ exports[`ErrorNotifications does not render the GTE message if there are multipl
 exports[`ErrorNotifications renders UnsatisfiedScopesAlert when user is authenticated 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open"
+    class="googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
     id="authentication error"
   >
     <div
@@ -201,7 +201,7 @@ exports[`ErrorNotifications renders UnsatisfiedScopesAlert when user is authenti
 exports[`ErrorNotifications renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open"
+    class="googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
     id="authentication-error-gte"
   >
     <div

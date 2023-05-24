@@ -168,11 +168,21 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->assertEqualSets( $survey, $this->queue->front() );
 	}
 
-	public function test_survey_event_survey_shown() {
+	public function data_survey_event_response_codes() {
+		return array(
+			'successful' => array( 200 ),
+			'timeout'    => array( 502 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_survey_event_response_codes
+	 */
+	public function test_survey_event_survey_shown( $code ) {
 		$this->subscribe_to_wp_http_requests(
 			function() {},
 			array(
-				'response' => array( 'code' => 200 ),
+				'response' => array( 'code' => $code ),
 				'headers'  => array(),
 				'body'     => '{}',
 			)

@@ -60,6 +60,7 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
+import DashboardViewIndicator from './DashboardViewIndicator';
 const { useSelect } = Data;
 
 export default function DashboardMainApp() {
@@ -149,6 +150,7 @@ export default function DashboardMainApp() {
 				) }
 				<HelpMenu />
 			</Header>
+			<DashboardViewIndicator />
 			{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally
