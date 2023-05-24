@@ -99,7 +99,7 @@ export default function Footer( props ) {
 	} );
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
-	const { clearErrors } = useDispatch( `modules/${ slug }` );
+	const { clearErrors } = useDispatch( module?.storeName );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
