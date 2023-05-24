@@ -141,6 +141,13 @@ jobs:
         run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}
         env:
           TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
+
+  add-comment-to-pr:
+    name: Add comment to PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: upload-to-cloud-storage
+    steps:
       - name: Check the comment exists
         id: find-comment
         uses: peter-evans/find-comment@v2
@@ -153,14 +160,12 @@ jobs:
         # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
         run: |
           body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
-          - Download [development build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/google-site-kit-dev.zip?${{ github.sha }})
-          - Download [production build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/google-site-kit.zip?${{ github.sha }})"
+          - Download [development build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/pull/${{ github.event.number }}/google-site-kit-dev.zip?${{ github.sha }})
+          - Download [production build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/pull/${{ github.event.number }}/google-site-kit.zip?${{ github.sha }})"
           delimiter="${body//$'\n'/'%0A'}"
           echo "body<<${delimiter}" >> $GITHUB_OUTPUT
           echo "$body" >> $GITHUB_OUTPUT
           echo "${delimiter}" >> $GITHUB_OUTPUT
-        env:
-          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
       - name: Create comment on PR with links to build files
         if: ${{ steps.find-comment.outputs.comment-id == '' }}
         uses: peter-evans/create-or-update-comment@v2
@@ -181,22 +186,19 @@ jobs:
     timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     steps:
-      - name: Set branch environment variables
-        id: branch-target
-        if: github.event_name != 'pull_request'
-        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
-      - name: Set PR environment variables
-        id: pr-target
-        if: github.event_name == 'pull_request'
-        run: echo "dir=pull/${{ github.event.number }}" >> $GITHUB_OUTPUT
       - uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/setup-gcloud@v1
       - name: Prune PR files
-        run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}/**
-        env:
-          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
+        run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/pull/${{ github.event.number }}/**
+
+  update-after-removal:
+    name: Upload comment after removal
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: remove-zips
+    steps:
       - name: Check the comment exists
         id: find-comment
         uses: peter-evans/find-comment@v2
