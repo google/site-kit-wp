@@ -21,11 +21,9 @@ exports[`Stepper should render all steps as completed when activeStep is greater
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--completed"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--completed"
         >
           Step 1
         </h2>
@@ -44,11 +42,9 @@ exports[`Stepper should render all steps as completed when activeStep is greater
           <svg />
         </span>
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--completed"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--completed"
         >
           Step 2
         </h2>
@@ -79,11 +75,9 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--upcoming"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
         >
           Step 1
         </h2>
@@ -102,11 +96,9 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
           2
         </span>
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--upcoming"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
         >
           Step 2
         </h2>
@@ -137,11 +129,9 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--upcoming"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
         >
           Step 1
         </h2>
@@ -160,11 +150,9 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
           2
         </span>
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--upcoming"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
         >
           Step 2
         </h2>
@@ -195,16 +183,14 @@ exports[`Stepper should render the active step as active and display its content
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--active"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--active"
         >
           Step 1
         </h2>
         <div
-          class="googlesitekit-step__content"
+          class="googlesitekit-stepper__step-content"
         >
           This is step 1.
         </div>
@@ -223,11 +209,9 @@ exports[`Stepper should render the active step as active and display its content
           2
         </span>
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--upcoming"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
         >
           Step 2
         </h2>
@@ -258,11 +242,9 @@ exports[`Stepper should render the active step as active and display its content
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--completed"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--completed"
         >
           Step 1
         </h2>
@@ -281,16 +263,14 @@ exports[`Stepper should render the active step as active and display its content
           2
         </span>
       </div>
-      <div
-        class="googlesitekit-step"
-      >
+      <div>
         <h2
-          class="googlesitekit-step__title googlesitekit-step__title--active"
+          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--active"
         >
           Step 2
         </h2>
         <div
-          class="googlesitekit-step__content"
+          class="googlesitekit-stepper__step-content"
         >
           This is step 2.
         </div>

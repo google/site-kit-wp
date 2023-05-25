@@ -68,7 +68,7 @@
 		width: 1px;
 	}
 
-	.googlesitekit-step__title {
+	.googlesitekit-stepper__step-title {
 		align-items: center;
 		color: $c-surfaces-on-surface;
 		display: flex;
@@ -79,16 +79,16 @@
 		margin: 0;
 	}
 
-	.googlesitekit-step__title--upcoming {
+	.googlesitekit-stepper__step-title--upcoming {
 		color: $c-surfaces-on-surface-variant;
 	}
 
-	.googlesitekit-step__content {
+	.googlesitekit-stepper__step-content {
 		margin-bottom: 24px;
 	}
 
 	.googlesitekit-stepper__step:last-child {
-		.googlesitekit-step__content {
+		.googlesitekit-stepper__step-content {
 			margin-bottom: 0;
 		}
 	}

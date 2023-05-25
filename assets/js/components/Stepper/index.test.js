@@ -42,12 +42,14 @@ describe( 'Stepper', () => {
 			// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 			expect(
 				container.querySelectorAll(
-					'.googlesitekit-step__title--upcoming'
+					'.googlesitekit-stepper__step-title--upcoming'
 				).length
 			).toBe( 2 );
 
 			expect(
-				container.querySelector( '.googlesitekit-step__content' )
+				container.querySelector(
+					'.googlesitekit-stepper__step-content'
+				)
 			).not.toBeInTheDocument();
 		}
 	);
@@ -65,12 +67,12 @@ describe( 'Stepper', () => {
 		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 		expect(
 			container.querySelectorAll(
-				'.googlesitekit-step__title--completed'
+				'.googlesitekit-stepper__step-title--completed'
 			).length
 		).toBe( 2 );
 
 		expect(
-			container.querySelector( '.googlesitekit-step__content' )
+			container.querySelector( '.googlesitekit-stepper__step-content' )
 		).not.toBeInTheDocument();
 	} );
 
@@ -87,19 +89,19 @@ describe( 'Stepper', () => {
 		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-step__title--active'
+				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-title--active'
 			)
 		).toBeInTheDocument();
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-step__content'
+				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-content'
 			)
 		).toBeInTheDocument();
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-step__content'
+				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-content'
 			)
 		).not.toBeInTheDocument();
 
@@ -115,19 +117,19 @@ describe( 'Stepper', () => {
 		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-step__content'
+				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-content'
 			)
 		).not.toBeInTheDocument();
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-step__title--active'
+				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-title--active'
 			)
 		).toBeInTheDocument();
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-step__content'
+				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-content'
 			)
 		).toBeInTheDocument();
 	} );
