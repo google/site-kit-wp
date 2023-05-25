@@ -65,6 +65,7 @@ class SettingsTest extends SettingsTestCase {
 				'ownerID'                           => 0,
 				'webStoriesAdUnit'                  => '',
 				'autoAdsDisabled'                   => array(),
+				'setupCompletedTimestamp'           => null,
 				'useAdBlockerDetectionSnippet'      => false,
 				'useAdBlockerDetectionErrorSnippet' => false,
 				'adBlockingRecoverySetupStatus'     => '',
