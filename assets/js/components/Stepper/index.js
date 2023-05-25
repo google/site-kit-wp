@@ -33,14 +33,9 @@ import { __, sprintf } from '@wordpress/i18n';
 import Tick from '../../../svg/icons/tick.svg';
 import { STEP_STATUS } from './constants';
 
-// English-language names for the step statuses.
-const STEP_STATUS_NAMES = {
-	[ STEP_STATUS.UPCOMING ]: 'upcoming',
-	[ STEP_STATUS.ACTIVE ]: 'active',
-	[ STEP_STATUS.COMPLETED ]: 'completed',
-};
-
 export default function Stepper( { children, activeStep } ) {
+	const childCount = Children.count( children );
+
 	function getStepStatus( index = -1 ) {
 		if ( index < activeStep ) {
 			return STEP_STATUS.COMPLETED;
@@ -53,7 +48,31 @@ export default function Stepper( { children, activeStep } ) {
 		return STEP_STATUS.UPCOMING;
 	}
 
-	const childCount = Children.count( children );
+	function getNumberTitle( childNumber, stepStatus ) {
+		switch ( stepStatus ) {
+			case STEP_STATUS.UPCOMING:
+				return sprintf(
+					/* translators: 1: The number of the current step. 2: The total number of steps. */
+					__( 'Step %1$s of %2$s (upcoming).', 'google-site-kit' ),
+					childNumber,
+					childCount
+				);
+			case STEP_STATUS.ACTIVE:
+				return sprintf(
+					/* translators: 1: The number of the current step. 2: The total number of steps. */
+					__( 'Step %1$s of %2$s (active).', 'google-site-kit' ),
+					childNumber,
+					childCount
+				);
+			case STEP_STATUS.COMPLETED:
+				return sprintf(
+					/* translators: 1: The number of the current step. 2: The total number of steps. */
+					__( 'Step %1$s of %2$s (completed).', 'google-site-kit' ),
+					childNumber,
+					childCount
+				);
+		}
+	}
 
 	return (
 		<ol className="googlesitekit-stepper">
@@ -67,15 +86,9 @@ export default function Stepper( { children, activeStep } ) {
 						<div className="googlesitekit-stepper__step-progress">
 							<span
 								className={ `googlesitekit-stepper__step-number googlesitekit-stepper__step-number--${ stepStatus }` }
-								title={ sprintf(
-									/* translators: 1: The number of the current step. 2: The total number of steps. 3: The status of the step ("completed", "active" or "upcoming"). */
-									__(
-										'Step %1$s of %2$s (%3$s).',
-										'google-site-kit'
-									),
+								title={ getNumberTitle(
 									childNumber,
-									childCount,
-									STEP_STATUS_NAMES[ stepStatus ]
+									stepStatus
 								) }
 							>
 								{ stepStatus === STEP_STATUS.COMPLETED ? (
