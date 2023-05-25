@@ -116,6 +116,43 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertArrayNotHasKey( 'account_id', $option );
 	}
 
+	public function test_setup_completed_timestamp() {
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
+
+		$this->assertNull( $settings->get()['setupCompletedTimestamp'] );
+
+		// Change only account status.
+		$settings->merge(
+			array(
+				'accountStatus' => 'ready',
+			)
+		);
+
+		$this->assertNull( $settings->get()['setupCompletedTimestamp'] );
+
+		// Change only site status.
+		$settings->merge(
+			array(
+				'accountStatus' => '',
+				'siteStatus'    => 'ready',
+			)
+		);
+
+		$this->assertNull( $settings->get()['setupCompletedTimestamp'] );
+
+		// Change both account and site status.
+		$settings->merge(
+			array(
+				'accountStatus' => 'ready',
+				'siteStatus'    => 'ready',
+			)
+		);
+
+		$this->assertTrue( gmdate( 'Ymd' ) === gmdate( 'Ymd', $settings->get()['setupCompletedTimestamp'] ) );
+
+	}
+
 	protected function get_testcase() {
 		return $this;
 	}
