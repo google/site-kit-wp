@@ -28,8 +28,8 @@ import { fireEvent, render } from '../../../../tests/js/test-utils';
 import Checkbox from './Checkbox';
 
 describe( 'Checkbox', () => {
-	it( 'should render the checkbox', () => {
-		const { container } = render(
+	it( 'should render the checkbox', async () => {
+		const { container, getByRole } = render(
 			<Checkbox
 				id="checkbox-id"
 				name="checkbox-name"
@@ -39,11 +39,26 @@ describe( 'Checkbox', () => {
 				Checkbox Label
 			</Checkbox>
 		);
+
+		const checkbox = getByRole( 'checkbox' );
+
+		await checkbox.updateComplete;
+
 		expect( container ).toMatchSnapshot();
+
+		const input = checkbox.shadowRoot.querySelector( 'input' );
+
+		// Verify that the name and value attributes are passed through to the underlying input element.
+		expect( input ).toHaveAttribute( 'name', 'checkbox-name' );
+		expect( input ).toHaveAttribute( 'value', 'checkbox-value' );
+
+		// Verify that the underlying input element is not checked or disabled.
+		expect( input ).not.toHaveAttribute( 'checked' );
+		expect( input ).not.toHaveAttribute( 'disabled' );
 	} );
 
-	it( 'should render the checkbox with checked state', () => {
-		const { container } = render(
+	it( 'should render the checkbox with checked state', async () => {
+		const { container, getByRole } = render(
 			<Checkbox
 				id="checkbox-id"
 				name="checkbox-name"
@@ -54,11 +69,21 @@ describe( 'Checkbox', () => {
 				Checkbox Label
 			</Checkbox>
 		);
+
+		const checkbox = getByRole( 'checkbox' );
+
+		await checkbox.updateComplete;
+
 		expect( container ).toMatchSnapshot();
+
+		const input = checkbox.shadowRoot.querySelector( 'input' );
+
+		// Verify that the checked attribute is passed through to the underlying input element.
+		expect( input ).toHaveAttribute( 'checked' );
 	} );
 
-	it( 'should render the checkbox with disabled state', () => {
-		const { container } = render(
+	it( 'should render the checkbox with disabled state', async () => {
+		const { container, getByRole } = render(
 			<Checkbox
 				id="checkbox-id"
 				name="checkbox-name"
@@ -69,7 +94,17 @@ describe( 'Checkbox', () => {
 				Checkbox Label
 			</Checkbox>
 		);
+
+		const checkbox = getByRole( 'checkbox' );
+
+		await checkbox.updateComplete;
+
 		expect( container ).toMatchSnapshot();
+
+		const input = checkbox.shadowRoot.querySelector( 'input' );
+
+		// Verify that the disabled attribute is passed through to the underlying input element.
+		expect( input ).toHaveAttribute( 'disabled' );
 	} );
 
 	it( 'should render the checkbox with loading state', () => {
@@ -84,11 +119,12 @@ describe( 'Checkbox', () => {
 				Checkbox Label
 			</Checkbox>
 		);
+
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render the checkbox with a complex label', () => {
-		const { container } = render(
+	it( 'should render the checkbox with a complex label', async () => {
+		const { container, getByRole } = render(
 			<Checkbox
 				id="checkbox-id"
 				name="checkbox-name"
@@ -107,6 +143,9 @@ describe( 'Checkbox', () => {
 				</div>
 			</Checkbox>
 		);
+
+		await getByRole( 'checkbox' ).updateComplete;
+
 		expect( container ).toMatchSnapshot();
 		expect(
 			container

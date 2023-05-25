@@ -10,7 +10,6 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -32,7 +31,6 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -53,7 +51,6 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -75,7 +72,6 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -97,7 +93,6 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -118,7 +113,6 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -139,7 +133,6 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -160,7 +153,6 @@ exports[`Checkbox controlled input behaviour for label should allow updating of 
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -182,7 +174,6 @@ exports[`Checkbox controlled input behaviour for label should allow updating of 
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -203,7 +194,6 @@ exports[`Checkbox controlled input behaviour for label should allow updating of 
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -225,7 +215,6 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -247,7 +236,6 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -268,7 +256,6 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -289,7 +276,6 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -310,7 +296,6 @@ exports[`Checkbox should render the checkbox 1`] = `
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -331,7 +316,6 @@ exports[`Checkbox should render the checkbox with a complex label 1`] = `
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -366,12 +350,11 @@ exports[`Checkbox should render the checkbox with checked state 1`] = `
     class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
-      checked="true"
+      checked=""
       data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
@@ -389,11 +372,10 @@ exports[`Checkbox should render the checkbox with disabled state 1`] = `
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
-      disabled="true"
+      disabled=""
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
-      value="checkbox-value"
     />
     <label
       for="checkbox-id"
