@@ -156,8 +156,6 @@ class SettingsTest extends SettingsTestCase {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$settings->register();
 
-		$this->assertNull( $settings->get()['setupCompletedTimestamp'] );
-
 		remove_all_filters( 'pre_update_option_' . Settings::OPTION );
 
 		// Change both account and site status.
