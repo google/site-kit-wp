@@ -63,7 +63,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  BUCKET_NAME: site-kit-github-artifacts
+  GCS_UPLOADS_PATH: site-kit-github-artifacts/builds/${{ github.ref }}
 
 jobs:
   build-zips:
@@ -121,14 +121,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-zips
     steps:
-      - name: Set branch environment variables
-        id: branch-target
-        if: github.event_name != 'pull_request'
-        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
-      - name: Set PR environment variables
-        id: pr-target
-        if: github.event_name == 'pull_request'
-        run: echo "dir=pull/${{ github.event.number }}" >> $GITHUB_OUTPUT
       - uses: actions/download-artifact@v3
         with:
           name: zip-files
@@ -138,9 +130,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/setup-gcloud@v1
       - name: Upload PR files
-        run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.BUCKET_NAME }}/builds/${TARGET_DIR}
-        env:
-          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
+        run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.GCS_UPLOADS_PATH }}
 
   add-comment-to-pr:
     name: Add comment to PR
@@ -160,8 +150,8 @@ jobs:
         # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
         run: |
           body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
-          - Download [development build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/pull/${{ github.event.number }}/google-site-kit-dev.zip?${{ github.sha }})
-          - Download [production build](https://storage.googleapis.com/${{ env.BUCKET_NAME }}/builds/pull/${{ github.event.number }}/google-site-kit.zip?${{ github.sha }})"
+          - Download [development build](https://storage.googleapis.com/${{ env.GCS_UPLOADS_PATH }}/google-site-kit-dev.zip?${{ github.sha }})
+          - Download [production build](https://storage.googleapis.com/${{ env.GCS_UPLOADS_PATH }}/google-site-kit.zip?${{ github.sha }})"
           delimiter="${body//$'\n'/'%0A'}"
           echo "body<<${delimiter}" >> $GITHUB_OUTPUT
           echo "$body" >> $GITHUB_OUTPUT
@@ -191,7 +181,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/setup-gcloud@v1
       - name: Prune PR files
-        run: gcloud storage rm gs://${{ env.BUCKET_NAME }}/builds/pull/${{ github.event.number }}/**
+        run: gcloud storage rm gs://${{ env.GCS_UPLOADS_PATH }}/**
 
   update-after-removal:
     name: Upload comment after removal
