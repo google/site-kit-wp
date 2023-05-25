@@ -89,9 +89,9 @@ describe( 'Stepper', () => {
 		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-title--active'
+				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-title'
 			)
-		).toBeInTheDocument();
+		).toHaveClass( 'googlesitekit-stepper__step-title--active' );
 
 		expect(
 			container.querySelector(
@@ -123,9 +123,9 @@ describe( 'Stepper', () => {
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-title--active'
+				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-title'
 			)
-		).toBeInTheDocument();
+		).toHaveClass( 'googlesitekit-stepper__step-title--active' );
 
 		expect(
 			container.querySelector(
