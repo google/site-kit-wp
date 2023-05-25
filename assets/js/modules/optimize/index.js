@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import SupportLink from '../../components/SupportLink';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import OptimizeIcon from '../../../svg/graphics/optimize.svg';
@@ -43,5 +44,21 @@ export const registerModule = ( modules ) => {
 			__( 'Improvement tracking', 'google-site-kit' ),
 			__( 'Probability and confidence calculations', 'google-site-kit' ),
 		],
+		checkRequirements() {
+			throw {
+				message: (
+					<div>
+						{ __(
+							'Optimize will no longer work after September 30, 2023.',
+							'google-site-kit'
+						) }{ ' ' }
+						<SupportLink path="/optimize/answer/12979939" external>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</SupportLink>
+					</div>
+				),
+				canActivate: true,
+			};
+		},
 	} );
 };
