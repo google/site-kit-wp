@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -32,38 +27,24 @@ import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
 const fetchGetConversionEventsStore = createFetchStore( {
 	baseName: 'getConversionEvents',
-	controlCallback: ( { propertyID } ) => {
-		return API.get( 'modules', 'analytics-4', 'conversion-events', {
-			propertyID,
-		} );
+	controlCallback: () => {
+		return API.get( 'modules', 'analytics-4', 'conversion-events', {} );
 	},
-	reducerCallback: createReducer(
-		( state, conversionEvents, { propertyID } ) => {
-			state.conversionEvents[ propertyID ] = conversionEvents;
-		}
-	),
-	argsToParams( propertyID ) {
-		return { propertyID };
-	},
-	validateParams( { propertyID } = {} ) {
-		invariant( propertyID, 'propertyID is required.' );
-	},
+	reducerCallback: createReducer( ( state, conversionEvents ) => {
+		state.conversionEvents = conversionEvents;
+	} ),
 } );
 
 const baseInitialState = {
-	conversionEvents: {},
+	conversionEvents: undefined,
 };
 
 const baseResolvers = {
-	*getConversionEvents( propertyID ) {
-		if ( propertyID === undefined ) {
-			return;
-		}
-
+	*getConversionEvents() {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingConversionEvents = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getConversionEvents( propertyID );
+			.getConversionEvents();
 
 		// If there are already `conversionEvents` loaded in state, consider it fulfilled
 		// and don't make an API request.
@@ -71,9 +52,7 @@ const baseResolvers = {
 			return;
 		}
 
-		yield fetchGetConversionEventsStore.actions.fetchGetConversionEvents(
-			propertyID
-		);
+		yield fetchGetConversionEventsStore.actions.fetchGetConversionEvents();
 	},
 };
 
@@ -82,17 +61,13 @@ const baseSelectors = {
 	 * Gets GA4 conversion events.
 	 *
 	 * @since 1.96.0
+	 * @since 1.99.0 Removed the `propertyID` parameter.
 	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} propertyID GA4 property ID.
+	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} GA4 conversion events; `undefined` if not loaded.
 	 */
-	getConversionEvents( state, propertyID ) {
-		if ( propertyID === undefined ) {
-			return undefined;
-		}
-
-		return state.conversionEvents[ propertyID ];
+	getConversionEvents( state ) {
+		return state.conversionEvents;
 	},
 };
 

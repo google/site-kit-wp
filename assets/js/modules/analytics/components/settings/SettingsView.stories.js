@@ -21,7 +21,10 @@
  */
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	provideModules,
@@ -31,6 +34,19 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+
+const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
+const properties = [
+	{
+		...fixtures.accountsPropertiesProfiles.properties[ 0 ],
+		websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+	},
+	{
+		...fixtures.accountsPropertiesProfiles.properties[ 1 ],
+	},
+];
+
+const accountID = accounts[ 0 ].id;
 
 function Template( { setupRegistry = () => {}, ...args } ) {
 	return (
@@ -65,25 +81,34 @@ WithGA4Snippet.args = {
 	},
 };
 
+export const WithDashboardView = Template.bind( null );
+WithDashboardView.storyName = 'Settings with Dashboard View';
+WithDashboardView.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS ).selectProperty(
+			properties[ 0 ].id,
+			// eslint-disable-next-line sitekit/acronym-case
+			properties[ 0 ].internalWebPropertyId
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setDashboardView( DASHBOARD_VIEW_GA4 );
+	},
+};
+WithDashboardView.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+WithDashboardView.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsView/WithDashboardView',
+	delay: 250,
+};
+
 export default {
 	title: 'Modules/Analytics/Settings/SettingsView',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const accounts =
-					fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
-				const properties = [
-					{
-						...fixtures.accountsPropertiesProfiles.properties[ 0 ],
-						websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-					},
-					{
-						...fixtures.accountsPropertiesProfiles.properties[ 1 ],
-					},
-				];
-
-				const accountID = accounts[ 0 ].id;
-
 				provideModules( registry, [
 					{
 						slug: 'analytics',

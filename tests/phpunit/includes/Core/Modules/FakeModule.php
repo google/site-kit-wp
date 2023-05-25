@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
@@ -27,6 +28,7 @@ use Exception;
 class FakeModule extends Module
 	implements Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
 
+	use Module_With_Owner_Trait;
 	use Module_With_Settings_Trait;
 
 	public $owner_id = 0;
@@ -37,6 +39,13 @@ class FakeModule extends Module
 	 * @var bool
 	 */
 	protected $is_registered = false;
+
+	/**
+	 * Whether or not the latest request was made as a shared data request.
+	 *
+	 * @var bool|null
+	 */
+	protected $made_shared_data_request = null;
 
 	/**
 	 * Callback to invoke on activation.
@@ -143,6 +152,8 @@ class FakeModule extends Module
 		$method    = $data->method;
 		$datapoint = $data->datapoint;
 
+		$this->made_shared_data_request = $this->is_shared_data_request( $data );
+
 		switch ( "$method:$datapoint" ) {
 			// Intentional fallthrough.
 			case 'GET:test-request':
@@ -155,6 +166,17 @@ class FakeModule extends Module
 
 		return function () {
 		};
+	}
+
+	/**
+	 * Gets whether or not the latest request was made as a shared data request.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @return bool|null True if the latest request was made as a shared data request, false if not, or null if no request has been made yet.
+	 */
+	public function made_shared_data_request() {
+		return $this->made_shared_data_request;
 	}
 
 	/**
@@ -223,27 +245,6 @@ class FakeModule extends Module
 	 */
 	public function exception_to_error( Exception $e, $datapoint = '' ) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
 		return parent::exception_to_error( $e, $datapoint );
-	}
-
-
-	/**
-	 * Parses a date range string into a start date and an end date.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $range         Date range string. Either 'last-7-days', 'last-14-days', 'last-90-days', or
-	 *                              'last-28-days' (default).
-	 * @param string $multiplier    Optional. How many times the date range to get. This value can be specified if the
-	 *                              range should be request multiple times back. Default 1.
-	 * @param int    $offset        Days the range should be offset by. Default 1. Used by Search Console where
-	 *                              data is delayed by two days.
-	 * @param bool   $previous      Whether to select the previous period. Default false.
-	 *
-	 * @return array List with two elements, the first with the start date and the second with the end date, both as
-	 *               'Y-m-d'.
-	 */
-	public function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false ) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
-		return parent::parse_date_range( $range, $multiplier, $offset, $previous );
 	}
 
 	/**

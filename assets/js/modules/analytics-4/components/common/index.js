@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
+export { default as WebDataStreamSelect } from './WebDataStreamSelect';
 export { default as PropertySelect } from './PropertySelect';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';

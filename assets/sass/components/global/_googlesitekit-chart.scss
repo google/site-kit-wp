@@ -25,6 +25,48 @@
 		letter-spacing: $ls-xs;
 		margin-top: $grid-gap-phone;
 	}
+
+	.googlesitekit-chart__date-marker-line {
+		border-left: 1px dashed $c-woodsmoke;
+		height: 100%;
+		left: 0;
+
+		// Needed to align the line with any line added by Google Charts'
+		// hover state.
+		margin-left: 0.5px;
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		transition: opacity 180ms ease-in;
+		width: 0;
+	}
+
+	.googlesitekit-chart__date-marker-tooltip {
+		color: $c-content-secondary;
+		height: 18px;
+		left: 0;
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		transition: opacity 180ms ease-in;
+		width: 18px;
+	}
+}
+
+.googlesitekit-chart--LineChart div.google-visualization-tooltip {
+	// `!important` is required here because we're overridding inline styles
+	// on a Google Charts SVG element.
+	// This is the only way to have this style override the inline style.
+	height: fit-content !important;
+	width: fit-content !important;
+
+	.google-visualization-tooltip-item-list {
+		margin: 0.5em 0;
+	}
+
+	.google-visualization-tooltip-item {
+		margin: 0;
+	}
 }
 
 .googlesitekit-chart--PieChart svg {

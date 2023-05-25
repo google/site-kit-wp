@@ -28,26 +28,49 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
 
 /**
  * Verifies that provided metrics match allowed values. Metrics can be a string,
- * an array of string, an array of objects or mix of strings and objects. Objects
- * must have an "name" property in order to be considered as valid, and they
- * can optionally include an "expression" property.
+ * an array of string, an array of objects or mix of strings and objects.
+ * Objects must have a "name" property that matches the regex `/^[a-zA-Z0-9_]+$/`
+ * to be valid. Objects can optionally include an "expression" property.
+ *
+ * When a single string is provided, it must be a metric name or a comma-separated
+ * list of metric names.
+ *
+ * A metric name must match the regular expression `/^[a-zA-Z0-9_]+$/`.
  *
  * @since 1.94.0
+ * @since 1.98.0 Added a regular expression to validate metric names, in keeping with the GA4 API.
  *
  * @param {string|string[]|Object|Object[]} metrics The metrics to check.
  * @return {boolean} TRUE if metrics are valid, otherwise FALSE.
  */
 export function isValidMetrics( metrics ) {
-	return isValidStringsOrObjects( metrics, ( metric ) => {
-		const validName =
-			metric.hasOwnProperty( 'name' ) && typeof metric.name === 'string';
+	const isValidName = ( metricName ) =>
+		typeof metricName === 'string' && /^[a-zA-Z0-9_]+$/.test( metricName );
 
-		// 'expression' is optional; if provided, it must be a string.
-		const validExpression =
-			! metric.hasOwnProperty( 'expression' ) ||
-			typeof metric.expression === 'string';
-		return validName && validExpression;
-	} );
+	if ( typeof metrics === 'string' ) {
+		const metricNames = metrics.split( ',' );
+		return metricNames.every( isValidName );
+	}
+
+	return isValidStringsOrObjects(
+		metrics,
+		( metric ) => {
+			const validName =
+				metric.hasOwnProperty( 'name' ) && isValidName( metric.name );
+
+			// 'expression' is optional, so if it wasn't provided, we can
+			// return early.
+			if ( ! metric.hasOwnProperty( 'expression' ) ) {
+				return validName;
+			}
+
+			// 'expression', if provided, must be a string.
+			const validExpression = typeof metric.expression === 'string';
+
+			return validName && validExpression;
+		},
+		isValidName
+	);
 }
 
 /**

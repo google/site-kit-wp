@@ -34,7 +34,10 @@ import {
 	PROPERTY_TYPE_GA4,
 	ACCOUNT_CREATE,
 } from '../../datastore/constants';
-import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
+import {
+	PropertySelect as GA4PropertySelect,
+	WebDataStreamSelect as GA4WebDataStreamSelect,
+} from '../../../analytics-4/components/common';
 import {
 	AccountSelect,
 	ProfileSelect,
@@ -102,10 +105,11 @@ export default function SetupFormGA4Transitional() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
-
 				<PropertySelectIncludingGA4 />
-
 				{ propertyType === PROPERTY_TYPE_UA && <ProfileSelect /> }
+				{ propertyType === PROPERTY_TYPE_GA4 && (
+					<GA4WebDataStreamSelect />
+				) }
 			</div>
 
 			{ profileID === PROFILE_CREATE &&
@@ -142,6 +146,7 @@ export default function SetupFormGA4Transitional() {
 						<Fragment>
 							<div className="googlesitekit-setup-module__inputs">
 								<GA4PropertySelect />
+								<GA4WebDataStreamSelect />
 							</div>
 
 							{ hasExistingGA4Tag && (

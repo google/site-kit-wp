@@ -92,6 +92,7 @@
 @import "components/global/googlesitekit-cta";
 @import "components/global/googlesitekit-cta-link";
 @import "components/global/googlesitekit-dashboard-navigation";
+@import "components/global/googlesitekit-dashboard-view-indicator";
 @import "components/global/googlesitekit-data-block";
 @import "components/global/googlesitekit-dialog";
 @import "components/global/googlesitekit-DeviceSizeTabBar";
@@ -110,6 +111,7 @@
 @import "components/global/googlesitekit-module-outro";
 @import "components/global/googlesitekit-module-page";
 @import "components/global/googlesitekit-module-recovery-errors";
+@import "components/global/googlesitekit-new-badge";
 @import "components/global/googlesitekit-noscript";
 @import "components/global/googlesitekit-opt-in";
 @import "components/global/googlesitekit-overlay";
@@ -179,6 +181,7 @@
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
 
 // Modules
+@import "components/adsense";
 @import "components/analytics-4";
 
 // User Feedback
@@ -191,6 +194,7 @@
 @import "widgets/googlesitekit-widget-adsense-performance";
 @import "widgets/googlesitekit-widget-analyticsAllTraffic";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
+@import "widgets/googlesitekit-widget-overallPageMetrics";
 
 // Utilities
 @import "utilities/alignment";

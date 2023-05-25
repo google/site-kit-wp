@@ -25,6 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,17 +36,21 @@ import { Grid, Row, Cell } from '../../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../../util';
 import { calculateChange } from '../../../../../../util';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 	DASHBOARD_TYPE_ENTITY,
 } from '../../../../../../hooks/useDashboardType';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/constants';
 import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import OptionalCells from './OptionalCells';
-const { useSelect, useInViewSelect } = Data;
+import NewBadge from '../../../../../../components/NewBadge';
+import ga4Reporting from '../../../../../../feature-tours/ga4-reporting';
+const { useSelect, useDispatch, useInViewSelect } = Data;
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	return {
@@ -59,28 +64,30 @@ function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	};
 }
 
-const Overview = ( {
-	ga4Data,
-	ga4ConversionsData,
-	ga4VisitorsData,
-	searchConsoleData,
-	selectedStats,
-	handleStatsSelection,
-	dateRangeLength,
-	error,
-	WidgetReportError,
-	showRecoverableAnalytics,
-} ) => {
+export default function Overview( props ) {
+	const {
+		ga4Data,
+		ga4ConversionsData,
+		ga4VisitorsData,
+		searchConsoleData,
+		selectedStats,
+		handleStatsSelection,
+		dateRangeLength,
+		error,
+		WidgetReportError,
+		showRecoverableAnalytics,
+	} = props;
+
 	const dashboardType = useDashboardType();
 
 	const viewOnly = useViewOnly();
 
-	const analyticsModuleAvailable = useSelect( ( select ) =>
+	const isAnalytics4ModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( ! analyticsModuleAvailable ) {
+	const canViewSharedAnalytics4 = useSelect( ( select ) => {
+		if ( ! isAnalytics4ModuleAvailable ) {
 			return false;
 		}
 
@@ -88,7 +95,11 @@ const Overview = ( {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+	} );
+
+	const canShowGA4ReportingFeatureTour = useSelect( ( select ) => {
+		return select( CORE_UI ).getValue( 'showGA4ReportingTour' );
 	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
@@ -109,6 +120,17 @@ const Overview = ( {
 		select( CORE_USER ).isAuthenticated()
 	);
 
+	const conversionsRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/9267568',
+		} )
+	);
+	const engagementRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12195621',
+		} )
+	);
+
 	const {
 		totalClicks,
 		totalImpressions,
@@ -118,8 +140,8 @@ const Overview = ( {
 
 	let ga4ConversionsChange = null;
 	let ga4ConversionsDatapoint = null;
-	let ga4EngagedSessionsDatapoint = null;
-	let ga4EngagedSessionsChange = null;
+	let ga4EngagementRateDatapoint = null;
+	let ga4EngagementRateChange = null;
 	let ga4VisitorsDatapoint = null;
 	let ga4VisitorsChange = null;
 
@@ -137,8 +159,8 @@ const Overview = ( {
 			ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 		( {
-			datapoint: ga4EngagedSessionsDatapoint,
-			change: ga4EngagedSessionsChange,
+			datapoint: ga4EngagementRateDatapoint,
+			change: ga4EngagementRateChange,
 		} = getDatapointAndChange( ga4Data, 1 ) );
 
 		ga4VisitorsDatapoint =
@@ -151,16 +173,39 @@ const Overview = ( {
 	}
 
 	const showGA4 =
-		canViewSharedAnalytics &&
+		canViewSharedAnalytics4 &&
 		ga4ModuleConnected &&
 		! error &&
 		! showRecoverableAnalytics;
+
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+	useEffect( () => {
+		if (
+			! showGA4 ||
+			! canShowGA4ReportingFeatureTour ||
+			dashboardType !== DASHBOARD_TYPE_MAIN
+		) {
+			return;
+		}
+
+		triggerOnDemandTour( ga4Reporting );
+	}, [
+		showGA4,
+		dashboardType,
+		triggerOnDemandTour,
+		canShowGA4ReportingFeatureTour,
+	] );
 
 	const showConversionsCTA =
 		isAuthenticated &&
 		showGA4 &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
-		! ga4ConversionsData?.length;
+		( ! ga4ConversionsData?.length ||
+			// Show the CTA if the sole conversion set up is the
+			// GA4 default "purchase" conversion event with no data value.
+			( ga4ConversionsData?.length === 1 &&
+				ga4ConversionsData[ 0 ].eventName === 'purchase' &&
+				ga4ConversionsDatapoint === '0' ) );
 
 	const quarterCellProps = {
 		smSize: 2,
@@ -227,7 +272,7 @@ const Overview = ( {
 			: [] ),
 		...( showGA4 &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
-		ga4ConversionsData?.length > 0
+		! showConversionsCTA
 			? [
 					{
 						id: 'conversions',
@@ -236,18 +281,37 @@ const Overview = ( {
 						datapoint: ga4ConversionsDatapoint,
 						change: ga4ConversionsChange,
 						isGatheringData: isGA4GatheringData,
+						badge: (
+							<NewBadge
+								tooltipTitle={ __(
+									'Conversions is a new Google Analytics 4 metric replacing the Goals metric.',
+									'google-site-kit'
+								) }
+								learnMoreLink={ conversionsRateLearnMoreURL }
+							/>
+						),
 					},
 			  ]
 			: [] ),
 		...( showGA4 && dashboardType === DASHBOARD_TYPE_ENTITY
 			? [
 					{
-						id: 'engaged-sessions',
+						id: 'engagement-rate',
 						stat: 4,
-						title: __( 'Engaged Sessions', 'google-site-kit' ),
-						datapoint: ga4EngagedSessionsDatapoint,
-						change: ga4EngagedSessionsChange,
+						title: __( 'Engagement Rate', 'google-site-kit' ),
+						datapoint: ga4EngagementRateDatapoint,
+						datapointUnit: '%',
+						change: ga4EngagementRateChange,
 						isGatheringData: isGA4GatheringData,
+						badge: (
+							<NewBadge
+								tooltipTitle={ __(
+									'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
+									'google-site-kit'
+								) }
+								learnMoreLink={ engagementRateLearnMoreURL }
+							/>
+						),
 					},
 			  ]
 			: [] ),
@@ -267,6 +331,14 @@ const Overview = ( {
 		3: oneThirdCellProps,
 		4: quarterCellProps,
 	};
+
+	// Check if any of the data blocks have a badge.
+	//
+	// If no data blocks have a badge, we shouldn't even render an
+	// empty badge container, and save some vertical space in the `DataBlock`.
+	const hasMetricWithBadge = dataBlocks.some( ( { badge } ) => {
+		return !! badge;
+	} );
 
 	return (
 		<Grid>
@@ -300,6 +372,9 @@ const Overview = ( {
 									}
 									handleStatSelection={ handleStatsSelection }
 									gatheringData={ dataBlock.isGatheringData }
+									badge={
+										dataBlock.badge || hasMetricWithBadge
+									}
 								/>
 							</Cell>
 						) ) }
@@ -307,7 +382,7 @@ const Overview = ( {
 				</Cell>
 
 				<OptionalCells
-					canViewSharedAnalytics={ canViewSharedAnalytics }
+					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
 					error={ error }
 					halfCellProps={ halfCellProps }
 					quarterCellProps={ quarterCellProps }
@@ -319,7 +394,7 @@ const Overview = ( {
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Overview.propTypes = {
 	ga4Data: PropTypes.object,
@@ -331,5 +406,3 @@ Overview.propTypes = {
 	error: PropTypes.object,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default Overview;

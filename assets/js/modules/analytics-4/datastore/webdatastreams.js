@@ -289,11 +289,33 @@ const baseSelectors = {
 	 * @return {(Object|null)} A web data stream object if found, otherwise null.
 	 */
 	getMatchingWebDataStream: createRegistrySelector(
-		( select ) => ( _state, datastreams ) => {
+		( select ) => ( state, datastreams ) => {
+			const matchedWebDataStreams =
+				select( MODULES_ANALYTICS_4 ).getMatchingWebDataStreams(
+					datastreams
+				);
+
+			return matchedWebDataStreams[ 0 ] || null;
+		}
+	),
+
+	/**
+	 * Gets web data streams that match the current reference URL.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @param {Object} state       Data store's state.
+	 * @param {Array}  datastreams A list of web data streams.
+	 * @return {Array.<Object>} An array of found matched web data streams.
+	 */
+	getMatchingWebDataStreams: createRegistrySelector(
+		( select ) => ( state, datastreams ) => {
 			invariant(
 				Array.isArray( datastreams ),
 				'datastreams must be an array.'
 			);
+
+			const matchedWebDataStreams = [];
 
 			for ( const datastream of datastreams ) {
 				if (
@@ -302,11 +324,11 @@ const baseSelectors = {
 						datastream.webStreamData?.defaultUri
 					)
 				) {
-					return datastream;
+					matchedWebDataStreams.push( datastream );
 				}
 			}
 
-			return null;
+			return matchedWebDataStreams;
 		}
 	),
 
@@ -323,7 +345,6 @@ const baseSelectors = {
 		( select ) => ( _state, propertyID ) => {
 			const datastreams =
 				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
-
 			if ( datastreams === undefined ) {
 				return undefined;
 			}
@@ -334,6 +355,29 @@ const baseSelectors = {
 				);
 
 			return matchingDataStream || null;
+		}
+	),
+
+	/**
+	 * Gets matched web data streams for selected property.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
+	 * @return {(Array.<Object>|undefined)} A web data stream objects if found, `undefined` if web data streams are not loaded.
+	 */
+	getMatchingWebDataStreamsByPropertyID: createRegistrySelector(
+		( select ) => ( _state, propertyID ) => {
+			const datastreams =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+			if ( datastreams === undefined ) {
+				return undefined;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).getMatchingWebDataStreams(
+				datastreams
+			);
 		}
 	),
 

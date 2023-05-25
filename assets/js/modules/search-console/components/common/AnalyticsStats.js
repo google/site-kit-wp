@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -30,19 +35,26 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { extractAnalyticsDashboardData } from '../../../analytics/util';
 import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
 import GoogleChart from '../../../../components/GoogleChart';
+import { UA_CUTOFF_DATE } from '../../../analytics/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { getDateString } from '../../../../util';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 /**
  * Extracts chart data from analytics row data.
  *
  * @since 1.96.0
+ * @since 1.98.0 Added chartDataFormats parameter.
  *
- * @param {string} moduleSlug      The module slug.
- * @param {Object} data            The data returned from the Analytics API call.
- * @param {Array}  selectedStats   The currently selected stat we need to return data for.
- * @param {number} dateRangeLength The number of days to extract data for. Pads empty data days.
- * @param {Array}  dataLabels      The labels to be displayed.
- * @param {Array}  dataFormats     The formats to be used for the data.
+ * @param {string} moduleSlug         The module slug.
+ * @param {Object} data               The data returned from the Analytics API call.
+ * @param {Array}  selectedStats      The currently selected stat we need to return data for.
+ * @param {number} dateRangeLength    The number of days to extract data for. Pads empty data days.
+ * @param {Array}  dataLabels         The labels to be displayed.
+ * @param {Array}  tooltipDataFormats The formats to be used for the tooltip data.
+ * @param {Array}  chartDataFormats   The formats to be used for the chart data (GA4 only).
  * @return {Array} The dataMap ready for charting.
  */
 function extractChartData(
@@ -51,17 +63,17 @@ function extractChartData(
 	selectedStats,
 	dateRangeLength,
 	dataLabels,
-	dataFormats
+	tooltipDataFormats,
+	chartDataFormats
 ) {
 	if ( moduleSlug === 'analytics-4' ) {
-		return (
-			extractAnalytics4DashboardData(
-				data,
-				selectedStats,
-				dateRangeLength,
-				dataLabels,
-				dataFormats
-			) || []
+		return extractAnalytics4DashboardData(
+			data,
+			selectedStats,
+			dateRangeLength,
+			dataLabels,
+			tooltipDataFormats,
+			chartDataFormats
 		);
 	}
 	return (
@@ -72,7 +84,7 @@ function extractChartData(
 			0,
 			1,
 			dataLabels,
-			dataFormats
+			tooltipDataFormats
 		) || []
 	);
 }
@@ -83,11 +95,14 @@ export default function AnalyticsStats( props ) {
 		selectedStats,
 		dateRangeLength,
 		dataLabels,
-		dataFormats,
+		tooltipDataFormats,
+		chartDataFormats,
 		statsColor,
 		gatheringData,
 		moduleSlug,
 	} = props;
+
+	const isViewOnly = useViewOnly();
 
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( moduleSlug )
@@ -95,6 +110,53 @@ export default function AnalyticsStats( props ) {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( moduleSlug )
 	);
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
+
+	const property = useSelect( ( select ) => {
+		if ( isViewOnly || ! isGA4DashboardView ) {
+			return null;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( ! propertyID ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+	} );
+
+	const propertyCreatedDate = property?.createTime
+		? getDateString( new Date( property.createTime ) )
+		: null;
+
+	let dateMarkers = [];
+
+	if ( isGA4DashboardView && propertyCreatedDate ) {
+		dateMarkers = [
+			{
+				date: propertyCreatedDate,
+				text: __(
+					'Google Analytics 4 property created',
+					'google-site-kit'
+				),
+			},
+		];
+	}
+
+	if ( ! isGA4DashboardView ) {
+		dateMarkers = [
+			{
+				date: UA_CUTOFF_DATE,
+				text: __(
+					'Universal Analytics stopped collecting data',
+					'google-site-kit'
+				),
+			},
+		];
+	}
 
 	if ( ! analyticsModuleActive || ! analyticsModuleConnected ) {
 		return null;
@@ -106,7 +168,8 @@ export default function AnalyticsStats( props ) {
 		selectedStats,
 		dateRangeLength,
 		dataLabels,
-		dataFormats
+		tooltipDataFormats,
+		chartDataFormats
 	);
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
@@ -157,6 +220,7 @@ export default function AnalyticsStats( props ) {
 					<GoogleChart
 						chartType="LineChart"
 						data={ googleChartData }
+						dateMarkers={ dateMarkers }
 						loadingHeight="270px"
 						loadingWidth="100%"
 						options={ options }
@@ -176,7 +240,7 @@ AnalyticsStats.propTypes = {
 	dateRangeLength: PropTypes.number.isRequired,
 	selectedStats: PropTypes.number.isRequired,
 	dataLabels: PropTypes.arrayOf( PropTypes.string ).isRequired,
-	dataFormats: PropTypes.arrayOf( PropTypes.func ).isRequired,
+	tooltipDataFormats: PropTypes.arrayOf( PropTypes.func ).isRequired,
 	statsColor: PropTypes.string.isRequired,
 	gatheringData: PropTypes.bool,
 	moduleSlug: PropTypes.string.isRequired,

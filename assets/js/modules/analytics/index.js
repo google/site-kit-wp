@@ -42,11 +42,9 @@ import {
 	ModulePopularPagesWidget,
 	ModulePopularPagesWidgetGA4,
 } from './components/module';
-import { isFeatureEnabled } from '../../features';
+import { negateDefined } from '../../util/negate';
 
 export { registerStore } from './datastore';
-
-const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
 
 export const registerModule = ( modules ) => {
 	modules.registerModule( 'analytics', {
@@ -63,17 +61,26 @@ export const registerModule = ( modules ) => {
 	} );
 };
 
+const isAnalyticsActive = ( select ) =>
+	negateDefined( select( MODULES_ANALYTICS ).isGA4DashboardView() );
+const isAnalytics4Active = ( select ) =>
+	select( MODULES_ANALYTICS ).isGA4DashboardView();
+
 export const registerWidgets = ( widgets ) => {
+	const isPreloaded = ( select ) => {
+		return select( MODULES_ANALYTICS ).shouldPromptGA4DashboardView();
+	};
+
+	// Register Analytics (UA) Widgets.
 	widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
-			Component: ga4ReportingEnabled
-				? DashboardAllTrafficWidgetGA4
-				: DashboardAllTrafficWidget,
+			Component: DashboardAllTrafficWidget,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
 			modules: [ 'analytics' ],
+			isActive: isAnalyticsActive,
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -84,13 +91,12 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsOverallPageMetrics',
 		{
-			Component: ga4ReportingEnabled
-				? DashboardOverallPageMetricsWidgetGA4
-				: DashboardOverallPageMetricsWidget,
+			Component: DashboardOverallPageMetricsWidget,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 3,
 			wrapWidget: false,
 			modules: [ 'analytics' ],
+			isActive: isAnalyticsActive,
 		},
 		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
 	);
@@ -98,13 +104,58 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsModulePopularPages',
 		{
-			Component: ga4ReportingEnabled
-				? ModulePopularPagesWidgetGA4
-				: ModulePopularPagesWidget,
+			Component: ModulePopularPagesWidget,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 4,
 			wrapWidget: false,
 			modules: [ 'analytics' ],
+			isActive: isAnalyticsActive,
+		},
+		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
+	);
+
+	// Register Analytics 4 (GA4) Widgets.
+	widgets.registerWidget(
+		'analyticsAllTrafficGA4',
+		{
+			Component: DashboardAllTrafficWidgetGA4,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: isAnalytics4Active,
+			isPreloaded,
+		},
+		[
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+		]
+	);
+
+	widgets.registerWidget(
+		'analyticsOverallPageMetricsGA4',
+		{
+			Component: DashboardOverallPageMetricsWidgetGA4,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 3,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: isAnalytics4Active,
+			isPreloaded,
+		},
+		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		'analyticsModulePopularPagesGA4',
+		{
+			Component: ModulePopularPagesWidgetGA4,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 4,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: isAnalytics4Active,
+			isPreloaded,
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);

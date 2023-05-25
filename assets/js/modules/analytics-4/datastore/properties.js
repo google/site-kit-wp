@@ -162,12 +162,16 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
+const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
 	hasMismatchedTag: false,
+	isMatchingAccountProperty: false,
+	isWebDataStreamAvailable: true,
 };
 
 const baseActions = {
@@ -314,11 +318,21 @@ const baseActions = {
 	 * @return {Object|null} Matched property object on success, otherwise NULL.
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
+		yield {
+			payload: { isMatchingAccountProperty: true },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
+
 		const property = yield baseActions.matchAccountProperty( accountID );
 		const propertyID = property?._id || fallbackPropertyID;
 		if ( propertyID ) {
 			yield baseActions.selectProperty( propertyID );
 		}
+
+		yield {
+			payload: { isMatchingAccountProperty: false },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
 
 		return property;
 	},
@@ -465,13 +479,11 @@ const baseActions = {
 		}
 
 		if ( ! measurementID ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagAccountID( '' );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagContainerID( '' );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( '' );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				googleTagAccountID: '',
+				googleTagContainerID: '',
+				googleTagID: '',
+			} );
 			return;
 		}
 
@@ -487,13 +499,17 @@ const baseActions = {
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
 			response;
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setGoogleTagAccountID( googleTagAccountID );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setGoogleTagContainerID( googleTagContainerID );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
+		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
+		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
+		// individual setter actions for the `googleTagAccountID`, `googleTagContainerID` and `googleTagID` settings each resulted in a rerender of the
+		// GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with mismatched settings. To mitigate this, we
+		// dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
+		// See issue https://github.com/google/site-kit-wp/issues/6784 and the PR https://github.com/google/site-kit-wp/pull/6814.
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			googleTagAccountID,
+			googleTagContainerID,
+			googleTagID,
+		} );
 	},
 
 	/**
@@ -508,6 +524,21 @@ const baseActions = {
 		return {
 			type: SET_HAS_MISMATCHED_TAG,
 			payload: { hasMismatchedTag },
+		};
+	},
+
+	/**
+	 * Sets whether the Web Data Stream is available.
+	 *
+	 * @since 1.99.0
+	 *
+	 * @param {boolean} isWebDataStreamAvailable Whether the Web Data Stream is available.
+	 * @return {Object} Redux-style action.
+	 */
+	*setIsWebDataStreamAvailable( isWebDataStreamAvailable ) {
+		return {
+			type: SET_IS_WEBDATASTREAM_AVAILABLE,
+			payload: { isWebDataStreamAvailable },
 		};
 	},
 
@@ -576,10 +607,8 @@ const baseActions = {
 			);
 
 			if ( ! googleTagContainer ) {
-				return;
-			}
-
-			if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
+				yield baseActions.setIsWebDataStreamAvailable( false );
+			} else if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
 				yield baseActions.setHasMismatchedGoogleTagID( true );
 			}
 		} else {
@@ -609,12 +638,18 @@ const baseControls = {
 
 function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
+		case MATCHING_ACCOUNT_PROPERTY:
+			return { ...state, ...payload };
 		case SET_HAS_MISMATCHED_TAG:
 			return {
 				...state,
 				hasMismatchedTag: payload.hasMismatchedTag,
 			};
-
+		case SET_IS_WEBDATASTREAM_AVAILABLE:
+			return {
+				...state,
+				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
+			};
 		default:
 			return state;
 	}
@@ -676,6 +711,18 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Determines whether we are matching account property or not.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if we matching account property right now, otherwise FALSE.
+	 */
+	isMatchingAccountProperty( state ) {
+		return state.isMatchingAccountProperty;
+	},
+
+	/**
 	 * Checks if GA4 has mismatched Google Tag ID.
 	 *
 	 * @since 1.96.0
@@ -685,6 +732,18 @@ const baseSelectors = {
 	 */
 	hasMismatchedGoogleTagID( state ) {
 		return state.hasMismatchedTag;
+	},
+
+	/**
+	 * Checks if the Web Data Stream is available.
+	 *
+	 * @since 1.99.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the Web Data Stream is available, otherwise FALSE.
+	 */
+	isWebDataStreamAvailable( state ) {
+		return state.isWebDataStreamAvailable;
 	},
 };
 

@@ -154,6 +154,28 @@ describe( 'ProfileSelect', () => {
 		expect( listItems ).toHaveLength(
 			fixtures.propertiesProfiles.profiles.length + 1
 		);
+		expect(
+			listItems.some(
+				( { dataset } ) => dataset.value === PROFILE_CREATE
+			)
+		).toBe( true );
+	} );
+
+	it( 'should not render an option to "Set up a new profile" if the GA4 Reporting feature flag is enabled.', () => {
+		const { getAllByRole } = render( <ProfileSelect />, {
+			setupRegistry,
+			features: [ 'ga4Reporting' ],
+		} );
+
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		expect( listItems ).toHaveLength(
+			fixtures.propertiesProfiles.profiles.length
+		);
+		expect(
+			listItems.some(
+				( { dataset } ) => dataset.value === PROFILE_CREATE
+			)
+		).toBe( false );
 	} );
 
 	it( 'should display profile options of an existing account when present, and not be disabled.', () => {

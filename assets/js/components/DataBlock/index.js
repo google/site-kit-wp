@@ -33,6 +33,7 @@ import { useCallback } from '@wordpress/element';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
 import { numFmt } from '../../util';
 import Sparkline from './Sparkline';
+import Badge from '../Badge';
 import Change from './Change';
 import SourceLink from '../SourceLink';
 
@@ -53,6 +54,7 @@ const DataBlock = ( {
 	invertChangeColor = false,
 	gatheringData = false,
 	gatheringDataNoticeStyle = NOTICE_STYLE.DEFAULT,
+	badge,
 } ) => {
 	const handleClick = useCallback( () => {
 		if ( ! gatheringData && handleStatSelection ) {
@@ -105,7 +107,18 @@ const DataBlock = ( {
 						googlesitekit-data-block__title
 					"
 				>
-					{ title }
+					{ badge === true ? (
+						<Badge
+							aria-hidden="true"
+							className="googlesitekit-badge--hidden"
+							label="X" // This is a minimal placeholder value to provide the correct height without too much width.
+						/>
+					) : (
+						badge
+					) }
+					<span className="googlesitekit-data-block__title-inner">
+						{ title }
+					</span>
 				</h3>
 
 				{ ! gatheringData && (
@@ -163,6 +176,7 @@ DataBlock.propTypes = {
 	invertChangeColor: PropTypes.bool,
 	gatheringData: PropTypes.bool,
 	gatheringDataNoticeStyle: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
+	badge: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.node ] ),
 };
 
 export default DataBlock;

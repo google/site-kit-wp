@@ -308,6 +308,18 @@ describe( 'core/user date-range', () => {
 					registry.select( CORE_USER ).getReferenceDate()
 				).toEqual( getDateString( new Date() ) );
 			} );
+
+			it( 'should return the reference date defined in global base data when available', () => {
+				global._googlesitekitBaseData = {
+					referenceDate: '2023-09-01',
+				};
+
+				registry = createTestRegistry();
+
+				expect(
+					registry.select( CORE_USER ).getReferenceDate()
+				).toEqual( '2023-09-01' );
+			} );
 		} );
 	} );
 } );

@@ -24,7 +24,8 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
+import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -46,6 +47,7 @@ import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
+import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
 import {
 	ANCHOR_ID_CONTENT,
@@ -58,12 +60,22 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
+import DashboardViewIndicator from './DashboardViewIndicator';
 const { useSelect } = Data;
 
-function DashboardMainApp() {
+export default function DashboardMainApp() {
+	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
+
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const viewOnlyDashboard = useViewOnly();
+
+	useMount( () => {
+		if ( ! viewOnlyDashboard ) {
+			// Render the current survey portal in 5 seconds after the initial rendering.
+			setTimeout( () => setShowSurveyPortal( true ), 5000 );
+		}
+	} );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -138,6 +150,7 @@ function DashboardMainApp() {
 				) }
 				<HelpMenu />
 			</Header>
+			<DashboardViewIndicator />
 			{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally
@@ -195,8 +208,8 @@ function DashboardMainApp() {
 				triggerID="view_dashboard"
 				ttl={ DAY_IN_SECONDS }
 			/>
+
+			{ showSurveyPortal && <CurrentSurveyPortal /> }
 		</Fragment>
 	);
 }
-
-export default DashboardMainApp;

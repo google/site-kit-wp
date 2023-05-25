@@ -55,16 +55,19 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'            => '',
-				'clientID'             => '',
-				'accountStatus'        => '',
-				'siteStatus'           => '',
-				'accountSetupComplete' => false,
-				'siteSetupComplete'    => false,
-				'useSnippet'           => true,
-				'ownerID'              => 0,
-				'webStoriesAdUnit'     => '',
-				'autoAdsDisabled'      => array(),
+				'accountID'                         => '',
+				'clientID'                          => '',
+				'accountStatus'                     => '',
+				'siteStatus'                        => '',
+				'accountSetupComplete'              => false,
+				'siteSetupComplete'                 => false,
+				'useSnippet'                        => true,
+				'ownerID'                           => 0,
+				'webStoriesAdUnit'                  => '',
+				'autoAdsDisabled'                   => array(),
+				'useAdBlockerDetectionSnippet'      => false,
+				'useAdBlockerDetectionErrorSnippet' => false,
+				'adBlockingRecoverySetupStatus'     => '',
 			),
 			get_option( Settings::OPTION )
 		);

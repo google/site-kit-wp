@@ -39,22 +39,11 @@
 		}
 
 		.googlesitekit-entity-search__close {
-			height: 32px;
-			min-height: 36px;
-			padding: 0;
+			height: 30px;
+			width: 30px;
 
 			@media (max-width: $bp-desktop) {
 				border-radius: 50%;
-			}
-		}
-
-		.mdc-button.googlesitekit-entity-search__close {
-			border-radius: 50%;
-			min-width: 36px;
-
-			@media (min-width: $bp-tablet) {
-				min-height: 31px;
-				min-width: 31px;
 			}
 		}
 

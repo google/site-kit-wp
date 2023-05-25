@@ -19,17 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { _x, sprintf, _n } from '@wordpress/i18n';
+import { _x, sprintf, _n, __ } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS,
-} from '../../datastore/constants';
+import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
@@ -39,11 +36,11 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import SourceLink from '../../../../components/SourceLink';
 import whenActive from '../../../../util/when-active';
-import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { calculateOverallPageMetricsData } from '../../..//analytics-4/utils/overall-page-metrics';
 import { getURLPath } from '../../../../util';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import NewBadge from '../../../../components/NewBadge';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
@@ -91,13 +88,16 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		url,
 	};
 
-	const reportArgs = generateDateRangeArgs( dates );
+	const reportArgs = {
+		dates,
+		// eslint-disable-next-line sitekit/acronym-case
+		otherArgs: { collectionId: 'life-cycle' },
+	};
 
 	if ( isURL( url ) ) {
-		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
-		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
-			url
-		) }`;
+		reportArgs.filters = {
+			unifiedPagePathScreen: getURLPath( url ),
+		};
 	}
 
 	const isLoading = useSelect(
@@ -119,8 +119,8 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getServiceReportURL(
-			'visitors-overview',
+		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+			'all-pages-and-screens',
 			reportArgs
 		);
 	} );
@@ -131,6 +131,18 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
+
+	const sessionsLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/9191807',
+		} )
+	);
+
+	const engagementRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12195621',
+		} )
 	);
 
 	const Header = () => (
@@ -175,6 +187,35 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 
 	const data = calculateOverallPageMetricsData( report, dates.startDate );
 
+	const badges = {
+		sessions: (
+			<NewBadge
+				tooltipTitle={ __(
+					'Visitor interactions with your site within a given time frame (30 min by default).',
+					'google-site-kit'
+				) }
+				learnMoreLink={ sessionsLearnMoreURL }
+			/>
+		),
+		engagementRate: (
+			<NewBadge
+				tooltipTitle={ __(
+					'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
+					'google-site-kit'
+				) }
+				learnMoreLink={ engagementRateLearnMoreURL }
+			/>
+		),
+	};
+
+	// Check if any of the data blocks have a badge.
+	//
+	// If no data blocks have a badge, we shouldn't even render an
+	// empty badge container, and save some vertical space in the `DataBlock`.
+	const hasMetricWithBadge = data.some( ( { metric } ) => {
+		return !! badges[ metric ];
+	} );
+
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
 			<Grid>
@@ -202,6 +243,9 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 											change={ change }
 											gatheringData={ isGatheringData }
 										/>
+									}
+									badge={
+										badges[ metric ] || hasMetricWithBadge
 									}
 								/>
 							</Cell>

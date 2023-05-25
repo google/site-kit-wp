@@ -22,10 +22,11 @@
     "ext-openssl": "*",
     "google/apiclient": "^2.12.2",
     "google/apiclient-services": "0.277.*",
-    "guzzlehttp/guzzle": "^5.3.3",
+    "guzzlehttp/guzzle": "^6.5.8",
     "true/punycode": "^2.0 <2.1.1"
   },
   "replace": {
+    "paragonie/random_compat": ">=2",
     "phpseclib/phpseclib": "*"
   },
   "autoload": {

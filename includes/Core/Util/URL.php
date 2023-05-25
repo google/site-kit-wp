@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Util;
 
+use Google\Site_Kit_Dependencies\TrueBV\Punycode;
+
 /**
  * Class for custom URL parsing methods.
  *
@@ -95,4 +97,70 @@ class URL {
 
 		return $parts;
 	}
+
+	/**
+	 * Permutes site URL to cover all different variants of it (not considering the path).
+	 *
+	 * @since 1.99.0
+	 *
+	 * @param string $site_url Site URL to get permutations for.
+	 * @return array List of permutations.
+	 */
+	public static function permute_site_url( $site_url ) {
+		$hostname = self::parse( $site_url, PHP_URL_HOST );
+		$path     = self::parse( $site_url, PHP_URL_PATH );
+
+		return array_reduce(
+			self::permute_site_hosts( $hostname ),
+			function ( $urls, $host ) use ( $path ) {
+				$host_with_path = $host . $path;
+				array_push( $urls, "https://$host_with_path", "http://$host_with_path" );
+				return $urls;
+			},
+			array()
+		);
+	}
+
+	/**
+	 * Generates common variations of the given hostname.
+	 *
+	 * Returns a list of hostnames that includes:
+	 * - (if IDN) in Punycode encoding
+	 * - (if IDN) in Unicode encoding
+	 * - with and without www. subdomain (including IDNs)
+	 *
+	 * @since 1.99.0
+	 *
+	 * @param string $hostname Hostname to generate variations of.
+	 * @return string[] Hostname variations.
+	 */
+	public static function permute_site_hosts( $hostname ) {
+		$punycode = new Punycode();
+		// See \Requests_IDNAEncoder::is_ascii.
+		$is_ascii = preg_match( '/(?:[^\x00-\x7F])/', $hostname ) !== 1;
+		$is_www   = 0 === strpos( $hostname, 'www.' );
+		// Normalize hostname without www.
+		$hostname = $is_www ? substr( $hostname, strlen( 'www.' ) ) : $hostname;
+		$hosts    = array( $hostname, "www.$hostname" );
+
+		try {
+			// An ASCII hostname can only be non-IDN or punycode-encoded.
+			if ( $is_ascii ) {
+				// If the hostname is in punycode encoding, add the decoded version to the list of hosts.
+				if ( 0 === strpos( $hostname, Punycode::PREFIX ) || false !== strpos( $hostname, '.' . Punycode::PREFIX ) ) {
+					$host_decoded = $punycode->decode( $hostname );
+					array_push( $hosts, $host_decoded, "www.$host_decoded" );
+				}
+			} else {
+				// If it's not ASCII, then add the punycode encoded version.
+				$host_encoded = $punycode->encode( $hostname );
+				array_push( $hosts, $host_encoded, "www.$host_encoded" );
+			}
+		} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Do nothing.
+		}
+
+		return $hosts;
+	}
+
 }

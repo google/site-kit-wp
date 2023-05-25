@@ -90,7 +90,7 @@ const fetchGetReportStore = createFetchStore( {
 		);
 		invariant(
 			isValidMetrics( metrics ),
-			'metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property.'
+			'metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property. Metric names must match the expression ^[a-zA-Z0-9_]+$.'
 		);
 
 		if ( dimensions ) {
@@ -130,6 +130,15 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 			return true;
 		}
 
+		const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+		if ( isAuthenticated === undefined ) {
+			return undefined;
+		}
+		if ( ! isAuthenticated ) {
+			return false;
+		}
+
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 		if ( propertyID === undefined ) {
@@ -145,8 +154,8 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 
 		const createTime = new Date( property.createTime ).getTime();
 
-		// If the property was created within the last two days and has no data, assume it's still gathering data.
-		if ( createTime > Date.now() - DAY_IN_SECONDS * 2 * 1000 ) {
+		// If the property was created within the last three days and has no data, assume it's still gathering data.
+		if ( createTime > Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
 			return false;
 		}
 

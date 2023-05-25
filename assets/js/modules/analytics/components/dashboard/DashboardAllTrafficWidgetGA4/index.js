@@ -32,7 +32,6 @@ import {
 	UI_DIMENSION_VALUE,
 	DATE_RANGE_OFFSET,
 	UI_ALL_TRAFFIC_LOADED,
-	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
 import { isZeroReport } from '../../../../../modules/analytics-4/utils';
@@ -40,8 +39,7 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-import { getURLPath } from '../../../../../util';
+import { DAY_IN_SECONDS, getURLPath } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
 import TotalUserCount from './TotalUserCount';
@@ -49,6 +47,7 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import useViewOnly from '../../../../../hooks/useViewOnly';
+import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidgetGA4( props ) {
@@ -56,19 +55,20 @@ function DashboardAllTrafficWidgetGA4( props ) {
 
 	const viewOnly = useViewOnly();
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
+	const canViewSharedAnalytics4 = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
 	} );
 
 	const isGatheringData = useInViewSelect(
 		( select ) =>
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
+	const gatheringDataLoaded = isGatheringData !== undefined;
 
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
@@ -149,7 +149,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 
 	const pieChartLoaded = useSelect(
 		( select ) =>
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				pieArgs,
 			] )
@@ -161,14 +161,14 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	);
 	const pieChartReport = useInViewSelect( ( select ) => {
 		return (
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
 		);
 	} );
 
 	const userCountGraphLoaded = useSelect(
 		( select ) =>
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				graphArgs,
 			] )
@@ -180,14 +180,14 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	);
 	const userCountGraphReport = useInViewSelect( ( select ) => {
 		return (
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
 		);
 	} );
 
 	const totalUsersLoaded = useSelect(
 		( select ) =>
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				totalsArgs,
 			] )
@@ -199,37 +199,52 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	);
 	const totalUsersReport = useInViewSelect( ( select ) => {
 		return (
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
 		);
 	} );
 
+	const reportArgs = {
+		dates: {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+		},
+	};
+
 	let reportType;
 	switch ( dimensionName ) {
 		case 'country':
-			reportType = 'visitors-geo';
+			reportType = 'user-demographics-detail';
+			reportArgs.details = {
+				metric: 'activeUsers',
+				dimension: 'country',
+			};
+			// eslint-disable-next-line sitekit/acronym-case
+			reportArgs.otherArgs = { collectionId: 'user' };
 			break;
 		case 'deviceCategory':
-			reportType = 'visitors-mobile-overview';
+			reportType = 'user-technology-detail';
+			reportArgs.details = {
+				metric: 'activeUsers',
+				dimension: 'deviceCategory',
+			};
+			// eslint-disable-next-line sitekit/acronym-case
+			reportArgs.otherArgs = { collectionId: 'user' };
 			break;
 		case 'sessionDefaultChannelGrouping':
 		default:
-			reportType = 'trafficsources-overview';
+			reportType = 'lifecycle-traffic-acquisition-v2';
+			// eslint-disable-next-line sitekit/acronym-case
+			reportArgs.otherArgs = { collectionId: 'life-cycle' };
 			break;
 	}
 
-	const reportArgs = generateDateRangeArgs( {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-	} );
-
 	if ( isURL( entityURL ) ) {
-		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
-		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
-			entityURL
-		) }`;
+		reportArgs.filters = {
+			unifiedPagePathScreen: getURLPath( entityURL ),
+		};
 	}
 
 	const serviceReportURL = useSelect( ( select ) => {
@@ -237,7 +252,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getServiceReportURL(
+		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
 			reportType,
 			reportArgs
 		);
@@ -321,7 +336,11 @@ function DashboardAllTrafficWidgetGA4( props ) {
 						mdSize={ 8 }
 					>
 						<TotalUserCount
-							loaded={ totalUsersLoaded && ! firstLoad }
+							loaded={
+								gatheringDataLoaded &&
+								totalUsersLoaded &&
+								! firstLoad
+							}
 							report={ totalUsersReport }
 							error={ totalUsersError }
 							dimensionValue={ dimensionValue }
@@ -329,7 +348,11 @@ function DashboardAllTrafficWidgetGA4( props ) {
 						/>
 
 						<UserCountGraph
-							loaded={ userCountGraphLoaded && ! firstLoad }
+							loaded={
+								gatheringDataLoaded &&
+								userCountGraphLoaded &&
+								! firstLoad
+							}
 							error={ userCountGraphError }
 							report={ userCountGraphReport }
 							gatheringData={ isGatheringData }
@@ -342,7 +365,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 						mdSize={ 8 }
 					>
 						<DimensionTabs
-							loaded={ ! firstLoad }
+							loaded={ gatheringDataLoaded && ! firstLoad }
 							dimensionName={ dimensionName }
 							gatheringData={ isGatheringData }
 							isZeroData={ pieChartReportIsZero }
@@ -351,12 +374,23 @@ function DashboardAllTrafficWidgetGA4( props ) {
 							dimensionName={ dimensionName }
 							dimensionValue={ dimensionValue }
 							gatheringData={ isGatheringData }
-							loaded={ pieChartLoaded && ! firstLoad }
+							loaded={
+								gatheringDataLoaded &&
+								pieChartLoaded &&
+								! firstLoad
+							}
 							report={ pieChartReport }
 						/>
 					</Cell>
 				</Row>
 			</Grid>
+
+			{ ! viewOnly && (
+				<SurveyViewTrigger
+					triggerID="view_ga4_dashboard"
+					ttl={ DAY_IN_SECONDS }
+				/>
+			) }
 		</Widget>
 	);
 }

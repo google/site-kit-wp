@@ -21,7 +21,7 @@
  */
 import compareVersions from 'compare-versions';
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isPlainObject, isNull } from 'lodash';
 
 /**
  * Internal dependencies
@@ -79,12 +79,10 @@ const fetchDismissTourStore = createFetchStore( {
 
 const baseInitialState = {
 	lastDismissedAt: undefined,
-	// Array of dismissed tour slugs.
 	dismissedTourSlugs: undefined,
-	// Array of tour objects.
 	tours: featureTours,
-	// Current active tour
-	currentTour: null,
+	currentTour: undefined,
+	shownTour: undefined,
 };
 
 const baseActions = {
@@ -124,7 +122,10 @@ const baseActions = {
 	),
 
 	receiveCurrentTour( tour ) {
-		invariant( isPlainObject( tour ), 'tour must be a plain object.' );
+		invariant(
+			isPlainObject( tour ) || isNull( tour ),
+			'tour must be a plain object or null.'
+		);
 		return {
 			payload: { tour },
 			type: RECEIVE_CURRENT_TOUR,
@@ -213,9 +214,13 @@ const baseActions = {
 			};
 
 			if ( tourQualifies ) {
-				return yield baseActions.triggerTour( tour );
+				yield baseActions.triggerTour( tour );
+				return tour;
 			}
 		}
+
+		yield baseActions.receiveCurrentTour( null );
+		return null;
 	},
 };
 
@@ -317,6 +322,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				currentTour: payload.tour,
+				shownTour: payload.tour,
 			};
 		}
 
@@ -381,6 +387,18 @@ const baseSelectors = {
 	 */
 	getCurrentTour( state ) {
 		return state.currentTour;
+	},
+
+	/**
+	 * Gets the feature tour that has been already shown in the current page view.
+	 *
+	 * @since 1.99.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Shown tour object.
+	 */
+	getShownTour( state ) {
+		return state.shownTour;
 	},
 
 	/**

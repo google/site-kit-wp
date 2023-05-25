@@ -103,6 +103,10 @@ describe( 'Analytics 4 Reporting API validation', () => {
 			expect( isValidMetrics( 'test' ) ).toBe( true );
 		} );
 
+		it( 'should return TRUE if a comma separated list of strings is passed', () => {
+			expect( isValidMetrics( 'test1,test2,test3' ) ).toBe( true );
+		} );
+
 		it( 'should return TRUE if a valid object is passed', () => {
 			expect(
 				isValidMetrics( {
@@ -156,6 +160,45 @@ describe( 'Analytics 4 Reporting API validation', () => {
 					},
 				] )
 			).toBe( false );
+		} );
+
+		it( "should return FALSE if a metric name is passed that doesn't match the required regular expression ^[a-zA-Z0-9_]+$", () => {
+			// Test the empty string cases.
+			expect( isValidMetrics( '' ) ).toBe( false );
+			expect( isValidMetrics( ',test' ) ).toBe( false );
+			expect( isValidMetrics( 'test,' ) ).toBe( false );
+			expect( isValidMetrics( { name: '' } ) ).toBe( false );
+			expect( isValidMetrics( [ { name: '' } ] ) ).toBe( false );
+			expect( isValidMetrics( [ { name: 'test' }, '' ] ) ).toBe( false );
+			expect(
+				isValidMetrics( [ { name: '', expression: 'test' } ] )
+			).toBe( false );
+
+			// Test the invalid character cases.
+			// Please note this is not a comprehensive list of invalid characters, as that would be a very long list. This is just a representative sample.
+			const invalidCharacters =
+				' !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïð';
+
+			invalidCharacters.split( '' ).forEach( ( character ) => {
+				const invalidName = `test${ character }`;
+
+				expect( isValidMetrics( invalidName ) ).toBe( false );
+				expect( isValidMetrics( `test,${ invalidName }` ) ).toBe(
+					false
+				);
+				expect( isValidMetrics( { name: invalidName } ) ).toBe( false );
+				expect( isValidMetrics( [ { name: invalidName } ] ) ).toBe(
+					false
+				);
+				expect(
+					isValidMetrics( [ { name: 'test' }, invalidName ] )
+				).toBe( false );
+				expect(
+					isValidMetrics( [
+						{ name: invalidName, expression: 'test' },
+					] )
+				).toBe( false );
+			} );
 		} );
 	} );
 
