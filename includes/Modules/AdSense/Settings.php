@@ -136,12 +136,14 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		add_filter(
 			'pre_update_option_' . self::OPTION,
 			function ( $value, $old_value ) {
-				if ( ! isset( $old_value['setupCompletedTimestamp'] ) ) {
-					if ( ! empty( $old_value['accountStatus'] ) && ! empty( $old_value['siteStatus'] ) && 'ready' === $old_value['accountStatus'] && 'ready' === $old_value['siteStatus'] ) {
-						$value['setupCompletedTimestamp'] = strtotime( '-1 month' );
-					} elseif ( ! empty( $value['accountStatus'] ) && ! empty( $value['siteStatus'] ) && 'ready' === $value['accountStatus'] && 'ready' === $value['siteStatus'] ) {
-						$value['setupCompletedTimestamp'] = time();
-					}
+				if ( isset( $old_value['setupCompletedTimestamp'] ) ) {
+					return $value;
+				}
+
+				if ( ! empty( $old_value['accountStatus'] ) && ! empty( $old_value['siteStatus'] ) && 'ready' === $old_value['accountStatus'] && 'ready' === $old_value['siteStatus'] ) {
+					$value['setupCompletedTimestamp'] = strtotime( '-1 month' );
+				} elseif ( ! empty( $value['accountStatus'] ) && ! empty( $value['siteStatus'] ) && 'ready' === $value['accountStatus'] && 'ready' === $value['siteStatus'] ) {
+					$value['setupCompletedTimestamp'] = time();
 				}
 
 				return $value;
