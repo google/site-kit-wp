@@ -63,7 +63,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GCS_UPLOADS_PATH: site-kit-github-artifacts/builds/${{ github.ref }}
+  GCS_BUCKET: site-kit-github-artifacts
+  GCS_ROOT_PATH: builds
 
 jobs:
   build-zips:
@@ -130,7 +131,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/setup-gcloud@v1
       - name: Upload PR files
-        run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.GCS_UPLOADS_PATH }}
+        run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/
 
   add-comment-to-pr:
     name: Add comment to PR
@@ -150,8 +151,8 @@ jobs:
         # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
         run: |
           body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
-          - Download [development build](https://storage.googleapis.com/${{ env.GCS_UPLOADS_PATH }}/google-site-kit-dev.zip?${{ github.sha }})
-          - Download [production build](https://storage.googleapis.com/${{ env.GCS_UPLOADS_PATH }}/google-site-kit.zip?${{ github.sha }})"
+          - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
+          - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})"
           delimiter="${body//$'\n'/'%0A'}"
           echo "body<<${delimiter}" >> $GITHUB_OUTPUT
           echo "$body" >> $GITHUB_OUTPUT
@@ -181,7 +182,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - uses: google-github-actions/setup-gcloud@v1
       - name: Prune PR files
-        run: gcloud storage rm gs://${{ env.GCS_UPLOADS_PATH }}/**
+        run: gcloud storage rm gs://${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/refs/pull/${{ github.event.pull_request.number }}/**
 
   update-after-removal:
     name: Update comment after removal
