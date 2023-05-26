@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useWindowWidth } from '@react-hook/window-size/throttled';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -35,6 +40,11 @@ import BannerNotification from './BannerNotification';
 const { useSelect, useDispatch } = Data;
 
 export default function SwitchedToGA4Banner() {
+	// Get the window width and don't show the button to start
+	// the feature tour if the user isn't on a large enough screen.
+	const windowWidth = useWindowWidth();
+	const screenIsLargeEnoughForFeatureTour = windowWidth >= 783;
+
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
@@ -97,11 +107,23 @@ export default function SwitchedToGA4Banner() {
 				'google-site-kit'
 			) }
 			description={ description }
-			ctaLabel={ __( 'Learn what’s new', 'google-site-kit' ) }
+			ctaLabel={
+				screenIsLargeEnoughForFeatureTour
+					? __( 'Learn what’s new', 'google-site-kit' )
+					: __( 'OK, Got it!', 'google-site-kit' )
+			}
 			ctaLink="#"
-			onCTAClick={ handleCTAClick }
+			onCTAClick={
+				screenIsLargeEnoughForFeatureTour
+					? handleCTAClick
+					: handleDismissClick
+			}
 			onDismiss={ handleDismissClick }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+			dismiss={
+				screenIsLargeEnoughForFeatureTour
+					? __( 'OK, Got it!', 'google-site-kit' )
+					: undefined
+			}
 			WinImageSVG={ () => <GA4SuccessGreenSVG /> }
 		/>
 	);

@@ -137,6 +137,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Fixed**
 
+* Fix a bug that could cause a survey to be shown again on next page load after finishing or closing. See [#7064](https://github.com/google/site-kit-wp/issues/7064).
 * Ensure correct widgets for Analytics are rendered on page load. See [#7011](https://github.com/google/site-kit-wp/issues/7011).
 * Fix potential perpetual loading state of GA4 dropdowns for secondary admin without access. See [#7005](https://github.com/google/site-kit-wp/issues/7005).
 * Prevent duplicate error messages from appearing in Analytics settings when another user does not have access to the Analytics account. See [#7004](https://github.com/google/site-kit-wp/issues/7004).
