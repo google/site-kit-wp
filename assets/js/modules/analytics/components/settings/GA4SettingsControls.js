@@ -46,6 +46,8 @@ import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4SettingsNotice from './GA4SettingsNotice';
 import { useFeature } from '../../../../hooks/useFeature';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 const { useSelect, useDispatch } = Data;
@@ -54,6 +56,8 @@ export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
 
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+
+	const viewContext = useViewContext();
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { matchAndSelectProperty } = useDispatch( MODULES_ANALYTICS_4 );
@@ -85,11 +89,19 @@ export default function GA4SettingsControls( props ) {
 		matchAndSelectProperty( accountID );
 	}, [ matchAndSelectProperty, accountID ] );
 
+	const eventCategory = `${ viewContext }_ga4-setup`;
+
+	const onViewTooltip = useCallback( () => {
+		trackEvent( eventCategory, 'feature_tooltip_view' );
+	}, [ eventCategory ] );
+
 	const onDismissTooltip = useCallback( () => {
+		trackEvent( eventCategory, 'feature_tooltip_dismiss' );
+
 		setValues( FORM_SETUP, {
 			enableGA4PropertyTooltip: false,
 		} );
-	}, [ setValues ] );
+	}, [ eventCategory, setValues ] );
 
 	const isDisabled = ! propertyID && ! enableGA4;
 	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
@@ -153,6 +165,7 @@ export default function GA4SettingsControls( props ) {
 									{ __( 'Learn more', 'google-site-kit' ) }
 								</Button>
 							}
+							onView={ onViewTooltip }
 						/>
 					) }
 			</div>
