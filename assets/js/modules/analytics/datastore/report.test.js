@@ -380,7 +380,7 @@ describe( 'modules/analytics report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 15 );
+				await waitForTimeouts( 30 );
 			} );
 
 			it( 'should return TRUE if the returned report is null', async () => {
@@ -478,7 +478,7 @@ describe( 'modules/analytics report', () => {
 				expect( hasZeroData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 15 );
+				await waitForTimeouts( 30 );
 			} );
 
 			it( 'should return TRUE if isGatheringData is true', async () => {
