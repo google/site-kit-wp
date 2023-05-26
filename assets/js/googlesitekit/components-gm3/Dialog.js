@@ -16,6 +16,29 @@
  * limitations under the License.
  */
 
-export default function Dialog() {
-	return null;
+import { MdDialog } from '@material/web/dialog/dialog';
+import { createComponent } from '@lit-labs/react';
+import * as WordPressElement from '@wordpress/element';
+
+const MdDialogComponent = createComponent( {
+	tagName: 'md-dialog',
+	elementClass: MdDialog,
+	react: WordPressElement,
+} );
+
+export default function Dialog( { open, title, content, footer } ) {
+	return (
+		<MdDialogComponent open={ open || null }>
+			<div slot="header">
+				<h2 slot="headline">{ title }</h2>
+			</div>
+			{
+				// This will go in the default content slot:
+				content
+			}
+			<div slot="footer" style={ { display: 'contents' } }>
+				{ footer }
+			</div>
+		</MdDialogComponent>
+	);
 }
