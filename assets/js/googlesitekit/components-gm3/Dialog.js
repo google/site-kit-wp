@@ -19,6 +19,9 @@
 import { MdDialog } from '@material/web/dialog/dialog';
 import { createComponent } from '@lit-labs/react';
 import * as WordPressElement from '@wordpress/element';
+import DialogTitle from './DialogTitle';
+import DialogContent from './DialogContent';
+import DialogFooter from './DialogFooter';
 
 const MdDialogComponent = createComponent( {
 	tagName: 'md-dialog',
@@ -26,7 +29,23 @@ const MdDialogComponent = createComponent( {
 	react: WordPressElement,
 } );
 
-export default function Dialog( { open, title, content, footer } ) {
+export default function Dialog( { open, children } ) {
+	const slotChildren = WordPressElement.Children.toArray( children ).reduce(
+		( slots, child ) => {
+			if ( child.type === DialogTitle ) {
+				slots.title = child;
+			} else if ( child.type === DialogContent ) {
+				slots.content = child;
+			} else if ( child.type === DialogFooter ) {
+				slots.footer = child;
+			}
+			return slots;
+		},
+		{}
+	);
+
+	const { title, content, footer } = slotChildren;
+
 	return (
 		<MdDialogComponent open={ open || null }>
 			<div slot="header">

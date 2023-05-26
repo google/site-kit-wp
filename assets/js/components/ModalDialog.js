@@ -25,13 +25,19 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { SpinnerButton, Dialog } from 'googlesitekit-components';
+import {
+	SpinnerButton,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogFooter,
+} from 'googlesitekit-components';
 import Link from './Link';
 
 const ModalDialog = ( {
@@ -56,72 +62,64 @@ const ModalDialog = ( {
 			open={ dialogActive }
 			// TODO: Pass aria-describedby through in Dialog.
 			aria-describedby={ hasProvides ? describedByID : undefined }
-			title={ title }
-			content={
-				<Fragment>
-					{ subtitle && (
-						<p className="mdc-dialog__lead">{ subtitle }</p>
-					) }
-					{ hasProvides && (
-						<section
-							id={ describedByID }
-							className="mdc-dialog__content"
-						>
-							<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
-								{ provides.map( ( attribute ) => (
-									<li
-										className="mdc-list-item"
-										key={ attribute }
-									>
-										<span className="mdc-list-item__text">
-											{ attribute }
-										</span>
-									</li>
-								) ) }
-							</ul>
-						</section>
-					) }
-					{ dependentModules && (
-						<p className="mdc-dialog__dependecies">
-							{ createInterpolateElement(
-								sprintf(
-									/* translators: %s is replaced with the dependent modules. */
-									__(
-										'<strong>Note:</strong> %s',
-										'google-site-kit'
-									),
-									dependentModules
+		>
+			<DialogTitle>{ title }</DialogTitle>
+			<DialogContent>
+				{ subtitle && <p className="mdc-dialog__lead">{ subtitle }</p> }
+				{ hasProvides && (
+					<section
+						id={ describedByID }
+						className="mdc-dialog__content"
+					>
+						<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
+							{ provides.map( ( attribute ) => (
+								<li className="mdc-list-item" key={ attribute }>
+									<span className="mdc-list-item__text">
+										{ attribute }
+									</span>
+								</li>
+							) ) }
+						</ul>
+					</section>
+				) }
+				{ dependentModules && (
+					<p className="mdc-dialog__dependecies">
+						{ createInterpolateElement(
+							sprintf(
+								/* translators: %s is replaced with the dependent modules. */
+								__(
+									'<strong>Note:</strong> %s',
+									'google-site-kit'
 								),
-								{
-									strong: <strong />,
-								}
-							) }
-						</p>
-					) }
-				</Fragment>
-			}
-			footer={
-				<Fragment>
-					<SpinnerButton
-						onClick={ handleConfirm }
-						danger={ danger }
-						disabled={ inProgress }
-						isSaving={ inProgress }
-					>
-						{ confirmButton
-							? confirmButton
-							: __( 'Disconnect', 'google-site-kit' ) }
-					</SpinnerButton>
-					<Link
-						className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
-						onClick={ handleDialog }
-						disabled={ inProgress }
-					>
-						{ __( 'Cancel', 'google-site-kit' ) }
-					</Link>
-				</Fragment>
-			}
-		/>
+								dependentModules
+							),
+							{
+								strong: <strong />,
+							}
+						) }
+					</p>
+				) }
+			</DialogContent>
+			<DialogFooter>
+				<SpinnerButton
+					onClick={ handleConfirm }
+					danger={ danger }
+					disabled={ inProgress }
+					isSaving={ inProgress }
+				>
+					{ confirmButton
+						? confirmButton
+						: __( 'Disconnect', 'google-site-kit' ) }
+				</SpinnerButton>
+				<Link
+					className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
+					onClick={ handleDialog }
+					disabled={ inProgress }
+				>
+					{ __( 'Cancel', 'google-site-kit' ) }
+				</Link>
+			</DialogFooter>
+		</Dialog>
 	);
 };
 
