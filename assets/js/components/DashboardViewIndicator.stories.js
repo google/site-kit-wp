@@ -48,9 +48,6 @@ DashboardViewIndicatorGA4View.args = {
 		} );
 	},
 };
-DashboardViewIndicatorGA4View.parameters = {
-	features: [ 'ga4Reporting' ],
-};
 DashboardViewIndicatorGA4View.scenario = {
 	label: 'Components/DashboardViewIndicator/DashboardViewIndicatorGA4View',
 };
@@ -78,7 +75,10 @@ export default {
 			args.setupRegistry?.( registry );
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithTestRegistry
+					registry={ registry }
+					features={ [ 'ga4Reporting' ] }
+				>
 					<Story />
 				</WithTestRegistry>
 			);
