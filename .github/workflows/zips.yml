@@ -184,7 +184,7 @@ jobs:
         run: gcloud storage rm gs://${{ env.GCS_UPLOADS_PATH }}/**
 
   update-after-removal:
-    name: Upload comment after removal
+    name: Update comment after removal
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     needs: remove-zips
