@@ -24,13 +24,13 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { Dialog } from 'googlesitekit-components';
+import ModalDialog from '../assets/js/components/ModalDialog';
 
 storiesOf( 'Global', module ).add(
 	'Modal Dialog',
 	() => {
 		return (
-			<Dialog
+			<ModalDialog
 				dialogActive
 				title="Modal Dialog Title"
 				subtitle="Modal Dialog Subtitle"
