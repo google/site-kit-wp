@@ -134,6 +134,7 @@ jobs:
         with:
           path: ${{ github.ref }}
           destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
+          parent: false
 
   add-comment-to-pr:
     name: Add comment to PR
