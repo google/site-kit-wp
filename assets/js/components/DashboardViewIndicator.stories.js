@@ -20,42 +20,52 @@
  * Internal dependencies
  */
 import DashboardViewIndicator from './DashboardViewIndicator';
-import {
-	createTestRegistry,
-	provideModules,
-	provideSiteInfo,
-	WithTestRegistry,
-} from '../../../tests/js/utils';
+import { provideModules, provideSiteInfo } from '../../../tests/js/utils';
 import {
 	DASHBOARD_VIEW_GA4,
 	DASHBOARD_VIEW_UA,
 	MODULES_ANALYTICS,
 } from '../modules/analytics/datastore/constants';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 
-const Template = ( { ...args } ) => <DashboardViewIndicator { ...args } />;
+const Template = () => <DashboardViewIndicator />;
 
 export const DashboardViewIndicatorUAView = Template.bind( {} );
 DashboardViewIndicatorUAView.storyName = 'Universal Analytics View';
-DashboardViewIndicatorUAView.args = {
-	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			dashboardView: DASHBOARD_VIEW_UA,
-		} );
+DashboardViewIndicatorUAView.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+				dashboardView: DASHBOARD_VIEW_UA,
+			} );
+		};
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
 	},
-};
+];
 DashboardViewIndicatorUAView.scenario = {
 	label: 'Components/DashboardViewIndicator/DashboardViewIndicatorUAView',
 };
 
 export const DashboardViewIndicatorGA4View = Template.bind( {} );
 DashboardViewIndicatorGA4View.storyName = 'Google Analytics 4 View';
-DashboardViewIndicatorGA4View.args = {
-	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			dashboardView: DASHBOARD_VIEW_GA4,
-		} );
+DashboardViewIndicatorGA4View.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+				dashboardView: DASHBOARD_VIEW_GA4,
+			} );
+		};
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
 	},
-};
+];
 DashboardViewIndicatorGA4View.scenario = {
 	label: 'Components/DashboardViewIndicator/DashboardViewIndicatorGA4View',
 };
@@ -64,31 +74,27 @@ export default {
 	title: 'Components/DashboardViewIndicator',
 	component: DashboardViewIndicator,
 	decorators: [
-		( Story, { args } ) => {
-			const registry = createTestRegistry();
-			provideSiteInfo( registry );
-			provideModules( registry, [
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			args.setupRegistry?.( registry );
+		( Story ) => {
+			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+			};
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ [ 'ga4Reporting' ] }
-				>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],
