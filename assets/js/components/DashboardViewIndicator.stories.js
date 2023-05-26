@@ -32,40 +32,26 @@ const Template = () => <DashboardViewIndicator />;
 
 export const DashboardViewIndicatorUAView = Template.bind( {} );
 DashboardViewIndicatorUAView.storyName = 'Universal Analytics View';
-DashboardViewIndicatorUAView.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-				dashboardView: DASHBOARD_VIEW_UA,
-			} );
-		};
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
+DashboardViewIndicatorUAView.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_UA,
+		} );
 	},
-];
+};
 DashboardViewIndicatorUAView.scenario = {
 	label: 'Components/DashboardViewIndicator/DashboardViewIndicatorUAView',
 };
 
 export const DashboardViewIndicatorGA4View = Template.bind( {} );
 DashboardViewIndicatorGA4View.storyName = 'Google Analytics 4 View';
-DashboardViewIndicatorGA4View.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-				dashboardView: DASHBOARD_VIEW_GA4,
-			} );
-		};
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
+DashboardViewIndicatorGA4View.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_GA4,
+		} );
 	},
-];
+};
 DashboardViewIndicatorGA4View.scenario = {
 	label: 'Components/DashboardViewIndicator/DashboardViewIndicatorGA4View',
 };
@@ -74,7 +60,7 @@ export default {
 	title: 'Components/DashboardViewIndicator',
 	component: DashboardViewIndicator,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
 				provideModules( registry, [
@@ -89,6 +75,8 @@ export default {
 						connected: true,
 					},
 				] );
+
+				args.setupRegistry?.( registry );
 			};
 
 			return (
