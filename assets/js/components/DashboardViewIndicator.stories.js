@@ -28,6 +28,7 @@ import {
 } from '../../../tests/js/utils';
 import {
 	DASHBOARD_VIEW_GA4,
+	DASHBOARD_VIEW_UA,
 	MODULES_ANALYTICS,
 } from '../modules/analytics/datastore/constants';
 
@@ -35,6 +36,13 @@ const Template = ( { ...args } ) => <DashboardViewIndicator { ...args } />;
 
 export const DashboardViewIndicatorUAView = Template.bind( {} );
 DashboardViewIndicatorUAView.storyName = 'Universal Analytics View';
+DashboardViewIndicatorUAView.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_UA,
+		} );
+	},
+};
 DashboardViewIndicatorUAView.scenario = {
 	label: 'Components/DashboardViewIndicator/DashboardViewIndicatorUAView',
 };
@@ -84,4 +92,5 @@ export default {
 			);
 		},
 	],
+	parameters: { features: [ 'ga4Reporting' ] },
 };
