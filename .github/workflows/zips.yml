@@ -129,9 +129,11 @@ jobs:
       - uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-      - uses: google-github-actions/setup-gcloud@v1
       - name: Upload PR files
-        run: gcloud storage cp --recursive ${{ github.ref }} gs://${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/
+        uses: 'google-github-actions/upload-cloud-storage@v1'
+        with:
+          path: ${{ github.ref }}
+          destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}
 
   add-comment-to-pr:
     name: Add comment to PR
