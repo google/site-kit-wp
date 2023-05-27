@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useWindowWidth } from '@react-hook/window-size/throttled';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -30,10 +35,9 @@ import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { UA_CUTOFF_DATE } from '../../modules/analytics/constants';
 import { stringToDate, trackEvent } from '../../util';
 import { isValidPropertyID } from '../../modules/analytics/util';
+import useViewContext from '../../hooks/useViewContext';
 import ga4Reporting from '../../feature-tours/ga4-reporting';
 import BannerNotification from './BannerNotification';
-import { useWindowWidth } from '@react-hook/window-size/throttled';
-import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SwitchedToGA4Banner() {

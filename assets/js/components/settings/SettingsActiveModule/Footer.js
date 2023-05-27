@@ -99,7 +99,7 @@ export default function Footer( props ) {
 	} );
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
-	const { clearErrors } = useDispatch( `modules/${ slug }` );
+	const { clearErrors } = useDispatch( module?.storeName ) || {};
 	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
@@ -110,7 +110,7 @@ export default function Footer( props ) {
 			'cancel_module_settings',
 			slug
 		);
-		await clearErrors();
+		await clearErrors?.();
 		history.push( `/connected-services/${ slug }` );
 
 		if ( slug === 'analytics' ) {
@@ -134,7 +134,7 @@ export default function Footer( props ) {
 					'update_module_settings',
 					slug
 				);
-				await clearErrors();
+				await clearErrors?.();
 				history.push( `/connected-services/${ slug }` );
 
 				if ( slug === 'analytics' ) {
