@@ -138,10 +138,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 	const loading = ! loaded || isGatheringData === undefined;
 
 	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }__ga4-new-badge`,
-			'click_learn_more_link'
-		);
+		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
 	}, [ viewContext ] );
 
 	// Bypass loading state if showing GA4 tour.

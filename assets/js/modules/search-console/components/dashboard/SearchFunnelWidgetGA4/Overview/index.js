@@ -199,10 +199,7 @@ export default function Overview( props ) {
 	] );
 
 	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }__ga4-new-badge`,
-			'click_learn_more_link'
-		);
+		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
 	}, [ viewContext ] );
 
 	const showConversionsCTA =
