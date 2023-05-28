@@ -49,6 +49,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
 use WP_Error;
+use WP_REST_Response;
 
 /**
  * Class representing the AdSense module.
@@ -69,6 +70,16 @@ final class AdSense extends Module
 	 * Module slug name.
 	 */
 	const MODULE_SLUG = 'adsense';
+
+	/**
+	 * Ad blocking recovery tag option name.
+	 */
+	const AD_BLOCKING_RECOVERY_TAG_OPTION = 'googlesitekit_adsense_recovery-tag';
+
+	/**
+	 * Ad blocking recovery error protection tag option name.
+	 */
+	const AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION = 'googlesitekit_adsense_error-protection-tag';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -195,17 +206,18 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:adunits'       => array( 'service' => 'adsense' ),
-			'GET:accounts'      => array( 'service' => 'adsense' ),
-			'GET:alerts'        => array( 'service' => 'adsense' ),
-			'GET:clients'       => array( 'service' => 'adsense' ),
-			'GET:report'        => array(
+			'GET:adunits'                  => array( 'service' => 'adsense' ),
+			'GET:accounts'                 => array( 'service' => 'adsense' ),
+			'GET:alerts'                   => array( 'service' => 'adsense' ),
+			'GET:clients'                  => array( 'service' => 'adsense' ),
+			'GET:report'                   => array(
 				'service'   => 'adsense',
 				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
 			),
-			'GET:notifications' => array( 'service' => '' ),
-			'GET:urlchannels'   => array( 'service' => 'adsense' ),
-			'GET:sites'         => array( 'service' => 'adsense' ),
+			'GET:notifications'            => array( 'service' => '' ),
+			'GET:urlchannels'              => array( 'service' => 'adsense' ),
+			'GET:sites'                    => array( 'service' => 'adsense' ),
+			'GET:ad-blocking-recovery-tag' => array( 'service' => 'adsense' ),
 		);
 	}
 
@@ -388,6 +400,17 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients_urlchannels->listAccountsAdclientsUrlchannels( self::normalize_client_id( $data['accountID'], $data['clientID'] ) );
+			case 'GET:ad-blocking-recovery-tag':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$service = $this->get_service( 'adsense' );
+				return $service->accounts->getAdBlockingRecoveryTag( self::normalize_account_id( $data['accountID'] ) );
 		}
 
 		return parent::create_data_request( $data );
@@ -423,6 +446,14 @@ final class AdSense extends Module
 				return $response;
 			case 'GET:sites':
 				return $response->getSites();
+			case 'GET:ad-blocking-recovery-tag':
+				$this->options->set( self::AD_BLOCKING_RECOVERY_TAG_OPTION, base64_encode( $response->getTag() ) );
+				$this->options->set( self::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, base64_encode( $response->getErrorProtectionCode() ) );
+				return new WP_REST_Response(
+					array(
+						'success' => true,
+					)
+				);
 		}
 
 		return parent::parse_data_response( $data, $response );
