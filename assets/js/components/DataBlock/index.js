@@ -65,8 +65,8 @@ const DataBlock = ( {
 	const handleKeyDown = useCallback(
 		( e ) => {
 			if ( 'Enter' === e.key || ' ' === e.key ) {
-				handleClick();
 				e.preventDefault();
+				handleClick();
 			}
 		},
 		[ handleClick ]
