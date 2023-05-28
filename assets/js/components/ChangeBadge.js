@@ -40,6 +40,7 @@ const ChangeBadge = ( { previousValue, currentValue } ) => {
 			{ numFmt( change, {
 				style: 'percent',
 				signDisplay: 'exceptZero',
+				maximumFractionDigits: 1,
 			} ) }
 		</div>
 	);
