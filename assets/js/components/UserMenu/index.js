@@ -82,7 +82,7 @@ export default function UserMenu() {
 		setMenuOpen( false );
 		// Reinstate menu button focus when menu is closed via escape key.
 		if ( ESCAPE === e.keyCode ) {
-			menuButtonRef.current.focus();
+			menuButtonRef.current?.focus();
 		}
 	} );
 
