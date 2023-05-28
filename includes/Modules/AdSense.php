@@ -770,6 +770,42 @@ final class AdSense extends Module
 	}
 
 	/**
+	 * Returns the decoded ad blocking recovery tag from the options.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string|null The decoded ad blocking recovery tag, or null if not available.
+	 */
+	public function get_ad_blocking_recovery_tag() {
+		$encoded_tag = $this->options->get( self::AD_BLOCKING_RECOVERY_TAG_OPTION );
+		if ( ! $encoded_tag ) {
+			return null;
+		}
+
+		$decoded_tag = base64_decode( $encoded_tag, true );
+
+		return false === $decoded_tag ? null : $decoded_tag;
+	}
+
+	/**
+	 * Returns the decoded ad blocking recovery error protection tag from the options.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string|null The decoded ad blocking recovery error protection tag, or null if not available.
+	 */
+	public function get_ad_blocking_recovery_error_protection_tag() {
+		$encoded_tag = $this->options->get( self::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION );
+		if ( ! $encoded_tag ) {
+			return null;
+		}
+
+		$decoded_tag = base64_decode( $encoded_tag, true );
+
+		return false === $decoded_tag ? null : $decoded_tag;
+	}
+
+	/**
 	 * Parses account ID, adds it to the model object and returns updated model.
 	 *
 	 * @since 1.36.0
