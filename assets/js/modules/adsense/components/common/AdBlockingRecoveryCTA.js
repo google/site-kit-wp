@@ -69,9 +69,11 @@ export default function AdBlockingRecoveryCTA() {
 			}
 			className="googlesitekit-settings-notice-ad-blocking-recovery-cta"
 			OuterCTA={ () => (
-				<Button href={ recoveryPageURL }>
-					{ __( 'Set up now', 'google-site-kit' ) }
-				</Button>
+				<div className="googlesitekit-settings-notice__button">
+					<Button href={ recoveryPageURL }>
+						{ __( 'Set up now', 'google-site-kit' ) }
+					</Button>
+				</div>
 			) }
 		>
 			{ createInterpolateElement(
