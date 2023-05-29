@@ -51,6 +51,7 @@ export default function SettingsNotice( props ) {
 		type,
 		dismiss = '',
 		Icon = getIconFromType( type ),
+		OuterCTA,
 	} = props;
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -95,6 +96,7 @@ export default function SettingsNotice( props ) {
 					</Button>
 				</div>
 			) }
+			{ OuterCTA && <OuterCTA /> }
 		</div>
 	);
 }
@@ -108,6 +110,7 @@ SettingsNotice.propTypes = {
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
 	CTA: PropTypes.elementType,
+	OuterCTA: PropTypes.elementType,
 };
 
 SettingsNotice.defaultProps = {
