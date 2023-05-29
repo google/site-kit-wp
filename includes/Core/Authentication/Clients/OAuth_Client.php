@@ -535,9 +535,10 @@ final class OAuth_Client extends OAuth_Client_Base {
 			if ( isset( $response['emailAddresses'][0]['value'], $response['photos'][0]['url'], $response['names'][0]['displayName'] ) ) {
 				$this->profile->set(
 					array(
-						'email'     => $response['emailAddresses'][0]['value'],
-						'photo'     => $response['photos'][0]['url'],
-						'full_name' => $response['names'][0]['displayName'],
+						'email'        => $response['emailAddresses'][0]['value'],
+						'photo'        => $response['photos'][0]['url'],
+						'full_name'    => $response['names'][0]['displayName'],
+						'last_updated' => time(),
 					)
 				);
 			}
