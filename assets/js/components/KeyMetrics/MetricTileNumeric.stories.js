@@ -60,10 +60,6 @@ Loading.args = {
 	Widget,
 	loading: true,
 };
-Loading.scenario = {
-	label: 'Components/KeyMetrics/Widgets/MetricTileNumeric/Loading',
-	delay: 250,
-};
 
 export default {
 	title: 'Components/KeyMetrics/WidgetTiles/MetricTileNumeric',
