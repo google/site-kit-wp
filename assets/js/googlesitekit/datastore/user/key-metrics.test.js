@@ -26,7 +26,6 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { coreKeyMetricsEndpointRegExp } from '../../../util/key-metrics';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -37,6 +36,13 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
+
+/**
+ * The endpoint for the key metrics settings.
+ */
+export const coreKeyMetricsEndpointRegExp = new RegExp(
+	'^/google-site-kit/v1/core/user/data/key-metrics'
+);
 
 describe( 'core/user key metrics', () => {
 	let registry;

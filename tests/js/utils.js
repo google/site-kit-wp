@@ -402,13 +402,6 @@ export function provideTracking( registry, enabled = true ) {
 }
 
 /**
- * The endpoint for the key metrics settings.
- */
-export const coreKeyMetricsEndpointRegExp = new RegExp(
-	'^/google-site-kit/v1/core/user/data/key-metrics'
-);
-
-/**
  * Provides key metrics settings data to the given registry.
  *
  * @since n.e.x.t
