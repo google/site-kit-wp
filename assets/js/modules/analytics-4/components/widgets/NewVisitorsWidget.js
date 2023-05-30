@@ -64,15 +64,15 @@ export default function NewVisitorsWidget( widgetProps ) {
 	);
 
 	const newVisitors =
-		parseInt( report?.rows[ 1 ]?.metricValues[ 0 ]?.value, 10 ) ?? 0;
+		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
 	const returningVisitors =
-		parseInt( report?.rows[ 3 ]?.metricValues[ 0 ]?.value, 10 ) ?? 0;
+		parseInt( report?.rows?.[ 3 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
 	const totalVisitors = newVisitors + returningVisitors;
 
 	const compareNewVisitors =
-		parseInt( report?.rows[ 0 ]?.metricValues[ 0 ]?.value, 10 ) ?? 0;
+		parseInt( report?.rows?.[ 0 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
 	const compareReturningVisitors =
-		parseInt( report?.rows[ 2 ]?.metricValues[ 0 ]?.value, 10 ) ?? 0;
+		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
 	const compareTotalVisitors = compareNewVisitors + compareReturningVisitors;
 
 	return (
@@ -85,8 +85,8 @@ export default function NewVisitorsWidget( widgetProps ) {
 				__( 'of %d total visitors', 'google-site-kit' ),
 				totalVisitors
 			) }
-			previousChangeValue={ compareTotalVisitors }
-			currentChangeValue={ totalVisitors }
+			previousValue={ compareTotalVisitors }
+			currentValue={ totalVisitors }
 			loading={ loading }
 		/>
 	);

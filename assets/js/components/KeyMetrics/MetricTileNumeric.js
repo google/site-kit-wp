@@ -33,8 +33,8 @@ export default function MetricTileNumeric( {
 	title,
 	metricValue,
 	subText,
-	previousChangeValue,
-	currentChangeValue,
+	previousValue,
+	currentValue,
 } ) {
 	if ( loading ) {
 		return (
@@ -56,8 +56,8 @@ export default function MetricTileNumeric( {
 							{ metricValue }
 						</div>
 						<ChangeBadge
-							previousValue={ previousChangeValue }
-							currentValue={ currentChangeValue }
+							previousValue={ previousValue }
+							currentValue={ currentValue }
 						></ChangeBadge>
 					</div>
 					<p className="googlesitekit-km-widget-tile__subtext">
@@ -75,6 +75,6 @@ MetricTileNumeric.propTypes = {
 	title: PropTypes.string,
 	metricValue: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
 	subtext: PropTypes.string,
-	previousChangeValue: PropTypes.number,
-	currentChangeValue: PropTypes.number,
+	previousValue: PropTypes.number,
+	currentValue: PropTypes.number,
 };

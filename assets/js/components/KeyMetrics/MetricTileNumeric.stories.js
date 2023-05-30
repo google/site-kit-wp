@@ -31,8 +31,8 @@ Positive.args = {
 	title: 'New Visitors',
 	metricValue: 100,
 	subText: 'of 1,234 total visitors',
-	currentChangeValue: 100,
-	previousChangeValue: 91,
+	currentValue: 100,
+	previousValue: 91,
 };
 Positive.scenario = {
 	label: 'Components/KeyMetrics/Widgets/MetricTileNumeric/Positive',
@@ -46,8 +46,8 @@ Negative.args = {
 	title: 'New Visitors',
 	metricValue: 100,
 	subText: 'of 1,234 total visitors',
-	currentChangeValue: 91,
-	previousChangeValue: 103,
+	currentValue: 91,
+	previousValue: 103,
 };
 Negative.scenario = {
 	label: 'Components/KeyMetrics/Widgets/MetricTileNumeric/Negative',

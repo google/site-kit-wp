@@ -27,7 +27,7 @@ import classnames from 'classnames';
  */
 import { calculateChange, numFmt } from '../util';
 
-const ChangeBadge = ( { previousValue, currentValue } ) => {
+export default function ChangeBadge( { previousValue, currentValue } ) {
 	const change = calculateChange( previousValue, currentValue );
 	const isNegative = change < 0;
 
@@ -44,11 +44,9 @@ const ChangeBadge = ( { previousValue, currentValue } ) => {
 			} ) }
 		</div>
 	);
-};
+}
 
 ChangeBadge.propTypes = {
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,
 };
-
-export default ChangeBadge;

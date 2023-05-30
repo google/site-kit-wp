@@ -24,7 +24,11 @@ import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import NewVisitorsWidget from './NewVisitorsWidget';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { provideAnalytics4MockReport } from '../../utils/data-mock';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '../../utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const reportOptions = {
@@ -58,7 +62,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Components/KeyMetrics/Widgets/NewVisitorsWidget',
+	label: 'Components/KeyMetrics/Widgets/NewVisitorsWidget/Ready',
 	delay: 250,
 };
 
@@ -70,6 +74,24 @@ Loading.args = {
 			reportOptions,
 		] );
 	},
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options: reportOptions,
+		} );
+	},
+};
+ZeroData.scenario = {
+	label: 'Components/KeyMetrics/Widgets/NewVisitorsWidget/ZeroData',
+	delay: 250,
 };
 
 export default {
