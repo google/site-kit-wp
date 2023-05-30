@@ -155,7 +155,7 @@ describe( 'Checkbox', () => {
 				),
 		],
 		// TODO: Restore the label tests, either when JSDom supports the :focus-visible selector,
-		// or when the @material/web md-checkbox no longer makes use of it during this test.
+		// or when the @material/web md-checkbox no longer makes use of it during these tests.
 		// References:
 		// - https://github.com/jsdom/jsdom/issues/3426
 		// - https://github.com/material-components/material-web/blob/f9da93553bd64e7e8475f8acb8ee12206af12ac4/focus/lib/focus-ring.ts#L66
