@@ -47,6 +47,6 @@ export default function ChangeBadge( { previousValue, currentValue } ) {
 }
 
 ChangeBadge.propTypes = {
-	previousValue: PropTypes.number,
-	currentValue: PropTypes.number,
+	previousValue: PropTypes.number.isRequired,
+	currentValue: PropTypes.number.isRequired,
 };

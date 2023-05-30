@@ -58,7 +58,7 @@ export default function MetricTileNumeric( {
 						<ChangeBadge
 							previousValue={ previousValue }
 							currentValue={ currentValue }
-						></ChangeBadge>
+						/>
 					</div>
 					<p className="googlesitekit-km-widget-tile__subtext">
 						{ subText }
