@@ -95,7 +95,7 @@ export default function UACutoffWarning( { className } ) {
 		if ( shouldDisplayWarning ) {
 			trackEvent( eventCategory, 'view_notification' );
 		}
-	}, [ eventCategory, shouldDisplayWarning, viewContext ] );
+	}, [ eventCategory, shouldDisplayWarning ] );
 
 	if ( ! shouldDisplayWarning ) {
 		return null;

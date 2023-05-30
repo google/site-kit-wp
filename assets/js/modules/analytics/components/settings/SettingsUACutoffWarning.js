@@ -71,7 +71,7 @@ export default function SettingsUACutoffWarning() {
 		if ( shouldDisplayWarning ) {
 			trackEvent( eventCategory, 'view_notification' );
 		}
-	}, [ eventCategory, shouldDisplayWarning, viewContext ] );
+	}, [ eventCategory, shouldDisplayWarning ] );
 
 	if ( ! shouldDisplayWarning ) {
 		return null;
