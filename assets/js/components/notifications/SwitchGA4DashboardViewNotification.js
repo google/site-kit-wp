@@ -65,18 +65,14 @@ export default function SwitchGA4DashboardViewNotification() {
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
 
+	const eventCategory = `${ viewContext }_ga4-display-notification`;
+
 	const handleOnView = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_ga4-display-notification`,
-			'view_notification'
-		);
-	}, [ viewContext ] );
+		trackEvent( eventCategory, 'view_notification' );
+	}, [ eventCategory ] );
 
 	const handleCTAClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_ga4-display-notification`,
-			'confirm_notification'
-		);
+		trackEvent( eventCategory, 'confirm_notification' );
 
 		setValue( 'forceInView', true );
 		setValue( 'showGA4ReportingTour', true );
@@ -86,23 +82,23 @@ export default function SwitchGA4DashboardViewNotification() {
 		dismissItem( GA4_DASHBOARD_VIEW_NOTIFICATION_ID );
 
 		return { dismissOnCTAClick: false };
-	}, [ dismissItem, saveSettings, setDashboardView, setValue, viewContext ] );
+	}, [
+		dismissItem,
+		eventCategory,
+		saveSettings,
+		setDashboardView,
+		setValue,
+	] );
 
 	const handleDismiss = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_ga4-display-notification`,
-			'dismiss_notification'
-		);
+		trackEvent( eventCategory, 'dismiss_notification' );
 
 		dismissItem( GA4_DASHBOARD_VIEW_NOTIFICATION_ID );
-	}, [ dismissItem, viewContext ] );
+	}, [ dismissItem, eventCategory ] );
 
 	const handleLearnMoreClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_ga4-display-notification`,
-			'click_learn_more_link'
-		);
-	}, [ viewContext ] );
+		trackEvent( eventCategory, 'click_learn_more_link' );
+	}, [ eventCategory ] );
 
 	if ( ! shouldPromptGA4DashboardView ) {
 		return null;
