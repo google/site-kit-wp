@@ -33,9 +33,10 @@ import {
 	SettingsView,
 } from './components/settings';
 import {
-	DashboardTopEarningPagesWidget,
+	AdBlockerRecoveryWidget,
 	AdBlockerWarningWidget,
 	AdSenseConnectCTAWidget,
+	DashboardTopEarningPagesWidget,
 	DashboardTopEarningPagesWidgetGA4,
 } from './components/dashboard';
 import { ModuleOverviewWidget } from './components/module';
@@ -93,6 +94,20 @@ const isAnalytics4Active = ( select ) =>
 	select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 export const registerWidgets = ( widgets ) => {
+	if ( isFeatureEnabled( 'adBlockerDetection' ) ) {
+		widgets.registerWidget(
+			'adBlockerRecovery',
+			{
+				Component: AdBlockerRecoveryWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'adsense' ],
+			},
+			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+		);
+	}
+
 	widgets.registerWidget(
 		'adBlockerWarning',
 		{

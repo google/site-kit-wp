@@ -533,6 +533,20 @@ export const waitForDefaultTimeouts = () => {
 };
 
 /**
+ * Creates a delay in the execution of subsequent code for a specified duration in milliseconds.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} timeout The duration to wait before resolving the promise, in milliseconds.
+ * @return {Promise} A promise that resolves after the specified `timeout` duration.
+ */
+export const waitForTimeouts = ( timeout ) => {
+	return new Promise( ( resolve ) => {
+		setTimeout( resolve, timeout );
+	} );
+};
+
+/**
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0

@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.2
 Requires PHP:      5.6
-Stable tag:        1.99.0
+Stable tag:        1.101.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -109,6 +109,53 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.101.0 =
+
+**Added**
+
+* Scaffold new screen for ad blocking recovery set up. See [#6946](https://github.com/google/site-kit-wp/issues/6946).
+
+**Enhanced**
+
+* Enhance consistency of layouts with "New" badges. See [#7001](https://github.com/google/site-kit-wp/issues/7001).
+* Add "learn more" link to the Sessions slide of the GA4 Reporting feature tour. See [#6955](https://github.com/google/site-kit-wp/issues/6955).
+* Update the placement of the "existing GTM property" notices in the Analytics setup and settings views to reflect they are only currently relevant for Universal Analytics properties. See [#6934](https://github.com/google/site-kit-wp/issues/6934).
+* Update the URL for the "Learn what's new" link on the "Switch to GA4 Dashboard View" banner. See [#6928](https://github.com/google/site-kit-wp/issues/6928).
+* Enhance the responsive layout of the GA4 Activation Banner. See [#6922](https://github.com/google/site-kit-wp/issues/6922).
+* Fix the svg image size issue on the "Switch to GA4 Dashboard View" banner. See [#6920](https://github.com/google/site-kit-wp/issues/6920).
+* Prevent the GA4 All Traffic widget from momentarily displaying in the zero data state while it's waiting to determine the gathering data state. See [#6913](https://github.com/google/site-kit-wp/issues/6913).
+* Fix bug that caused the GA4 Dashboard Feature Tour to delay appearing. See [#6909](https://github.com/google/site-kit-wp/issues/6909).
+* Update the positioning of the `New` metric badges in table headings. See [#6904](https://github.com/google/site-kit-wp/issues/6904).
+* Update the "gathering data" time for GA4 properties. See [#6877](https://github.com/google/site-kit-wp/issues/6877).
+* Add entity ownership notice when using GA4. See [#6851](https://github.com/google/site-kit-wp/issues/6851).
+* Ensure the Unsatisfied Scopes banner remains visible until the OAuth page appears when pressing the banner CTA. See [#6673](https://github.com/google/site-kit-wp/issues/6673).
+* Add the "Switched to GA4" notification banner to inform users that the dashboard has been switched to the GA4 view. See [#6558](https://github.com/google/site-kit-wp/issues/6558).
+* Update wording regarding the date Universal Analytics will stop collecting data. See [#6453](https://github.com/google/site-kit-wp/issues/6453).
+* Apply consistent placement of notices which inform users they don't have permission to edit Analytics settings. See [#6224](https://github.com/google/site-kit-wp/issues/6224).
+* Add the migration notice to the AdSense overview widget for legacy accounts. See [#5628](https://github.com/google/site-kit-wp/issues/5628).
+
+**Fixed**
+
+* Fix a bug that could cause a survey to be shown again on next page load after finishing or closing. See [#7064](https://github.com/google/site-kit-wp/issues/7064).
+* Ensure correct widgets for Analytics are rendered on page load. See [#7011](https://github.com/google/site-kit-wp/issues/7011).
+* Fix potential perpetual loading state of GA4 dropdowns for secondary admin without access. See [#7005](https://github.com/google/site-kit-wp/issues/7005).
+* Prevent duplicate error messages from appearing in Analytics settings when another user does not have access to the Analytics account. See [#7004](https://github.com/google/site-kit-wp/issues/7004).
+* Fix duplicate URLs in UA popular pages list within WP dashboard widget. See [#6972](https://github.com/google/site-kit-wp/issues/6972).
+* Fix bug in WordPress 6.2+ that caused issues with the GA4 support tooltip on mobile. See [#6924](https://github.com/google/site-kit-wp/issues/6924).
+* Ensure Universal Analytics property is automatically selected when GA4 Reporting is enabled. See [#6921](https://github.com/google/site-kit-wp/issues/6921).
+* Ensure that changing to an Analytics account which doesn't have Universal Analytics properties is detected as a change to the settings in the Analytics Settings edit page. See [#6919](https://github.com/google/site-kit-wp/issues/6919).
+* Fix bug that could cause duplicate entries in the WP dashboard Popular Pages widget when using GA4. See [#6918](https://github.com/google/site-kit-wp/issues/6918).
+* Ensure GA opt-out snippets are output when GA4 is connected without UA. See [#6915](https://github.com/google/site-kit-wp/issues/6915).
+* Update GA4 dashboard tour to only be triggered by banner CTA. See [#6914](https://github.com/google/site-kit-wp/issues/6914).
+* Fix appearance of the date marker on Search Funnel widget charts. See [#6912](https://github.com/google/site-kit-wp/issues/6912).
+* Prevent chart key date markers on the All Traffic Widget chart tooltips from overlaying the chart tooltips. See [#6911](https://github.com/google/site-kit-wp/issues/6911).
+* Adjust positioning of key date info icon to avoid overlapping other elements. See [#6910](https://github.com/google/site-kit-wp/issues/6910).
+* Add "New" badges for the new GA4 metrics to widgets on the Entity Dashboard. See [#6908](https://github.com/google/site-kit-wp/issues/6908).
+* Ensure that GA4 widgets correctly display the gathering data state on the view-only dashboard. See [#6897](https://github.com/google/site-kit-wp/issues/6897).
+* Fix bug that caused Analytics and Analytics 4 to appear in Dashboard Sharing modules when GA4 Reporting is enabled. See [#6862](https://github.com/google/site-kit-wp/issues/6862).
+* Expose errors from GA4 in settings and setup interfaces. See [#6831](https://github.com/google/site-kit-wp/issues/6831).
+* Update banner notification layout to avoid unwanted empty space on the left. See [#5447](https://github.com/google/site-kit-wp/issues/5447).
 
 = 1.99.0 =
 

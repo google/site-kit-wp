@@ -287,7 +287,7 @@ export const selectors = {
 	/**
 	 * Checks if a widget with the given slug is in the preloaded state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.101.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Widget's slug.
@@ -309,7 +309,7 @@ export const selectors = {
 	 * the order provided by the selector.
 	 *
 	 * @since 1.9.0
-	 * @since n.e.x.t Allows widgets to override their active state via an isPreloaded() callback.
+	 * @since 1.101.0 Allows widgets to override their active state via an isPreloaded() callback.
 	 *
 	 * @param {Object}                state             Data store's state.
 	 * @param {string}                widgetAreaSlug    Widget context to get areas for.

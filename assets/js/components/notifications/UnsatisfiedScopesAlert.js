@@ -24,6 +24,7 @@ import { uniq } from 'lodash';
 /**
  * WordPress dependencies
  */
+import { useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -33,6 +34,7 @@ import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
@@ -68,6 +70,12 @@ function mapScopesToModuleNames( scopes, modules ) {
 }
 
 export default function UnsatisfiedScopesAlert() {
+	const doingCTARef = useRef();
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo(
+			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
+		)
+	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getUnsatisfiedScopes()
 	);
@@ -81,7 +89,15 @@ export default function UnsatisfiedScopesAlert() {
 		select( CORE_MODULES ).getModules()
 	);
 
-	if ( ! unsatisfiedScopes?.length || connectURL === undefined ) {
+	// Some external scenarios where we navigate to the OAuth service or connect URL may coincide with a request which populates the
+	// list of unsatisfied scopes. In these scenarios we want to avoid showing this banner as the user is already being directed to
+	// address the missing scopes. However, we want to ensure we still do show this banner while navigating to the connect URL as a
+	// result of its own CTA.
+	if (
+		( isNavigating && ! doingCTARef.current ) ||
+		! unsatisfiedScopes?.length ||
+		connectURL === undefined
+	) {
 		return null;
 	}
 
@@ -155,6 +171,9 @@ export default function UnsatisfiedScopesAlert() {
 			type="win-error"
 			isDismissible={ false }
 			ctaLink={ connectURL }
+			onCTAClick={ () => {
+				doingCTARef.current = true;
+			} }
 			ctaLabel={ ctaLabel }
 		/>
 	);
