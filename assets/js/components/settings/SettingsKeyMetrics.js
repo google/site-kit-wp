@@ -42,16 +42,19 @@ export default function SettingsKeyMetrics() {
 		select( CORE_WIDGETS ).getKeyMetrics()
 	);
 
-	const { setKeyMetricSetting, saveKeyMetricsSettings } =
+	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );
 
 	const handleKeyMetricsToggle = useCallback( async () => {
-		await setKeyMetricSetting( 'isWidgetHidden', ! keyMetricsWidgetHidden );
+		await setKeyMetricsSetting(
+			'isWidgetHidden',
+			! keyMetricsWidgetHidden
+		);
 		await saveKeyMetricsSettings();
 	}, [
 		keyMetricsWidgetHidden,
 		saveKeyMetricsSettings,
-		setKeyMetricSetting,
+		setKeyMetricsSetting,
 	] );
 
 	if ( ! keyMetricsWidgetHidden === undefined || ! keyMetrics?.length ) {

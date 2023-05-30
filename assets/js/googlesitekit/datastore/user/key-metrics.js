@@ -76,7 +76,7 @@ const baseActions = {
 	 * @param {Array.<string>} value     Setting value.
 	 * @return {Object} Redux-style action.
 	 */
-	setKeyMetricSetting( settingID, value ) {
+	setKeyMetricsSetting( settingID, value ) {
 		return {
 			type: SET_KEY_METRICS_SETTING,
 			payload: {

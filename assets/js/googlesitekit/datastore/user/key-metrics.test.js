@@ -68,11 +68,11 @@ describe( 'core/user key metrics', () => {
 		const settingID = 'test-setting';
 		const settingValue = 'test-value';
 
-		describe( 'setKeyMetricSetting', () => {
+		describe( 'setKeyMetricsSetting', () => {
 			it( 'should set the setting value to the store', async () => {
 				await registry
 					.dispatch( CORE_USER )
-					.setKeyMetricSetting( settingID, settingValue );
+					.setKeyMetricsSetting( settingID, settingValue );
 
 				expect( store.getState().keyMetricsSettings[ settingID ] ).toBe(
 					settingValue
@@ -84,7 +84,7 @@ describe( 'core/user key metrics', () => {
 			beforeEach( async () => {
 				await registry
 					.dispatch( CORE_USER )
-					.setKeyMetricSetting( settingID, settingValue );
+					.setKeyMetricsSetting( settingID, settingValue );
 			} );
 
 			it( 'should save settings and add it to the store ', async () => {
