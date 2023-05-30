@@ -36,7 +36,7 @@ export default function DateMarkers( { id, dateMarker } ) {
 
 	useEffect( () => {
 		trackEvent( eventCategory, 'chart_line_view' );
-	} );
+	}, [ eventCategory ] );
 
 	return (
 		<Fragment>
