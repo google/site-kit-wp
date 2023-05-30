@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Grid } from '../../material-components';
+import { Cell, Grid, Row } from '../../material-components';
 
 const { useSelect, useDispatch } = Data;
 
@@ -62,15 +62,19 @@ export default function SettingsKeyMetrics() {
 
 	return (
 		<Grid>
-			<Switch
-				label={ __(
-					'Display key metrics in dashboard',
-					'google-site-kit'
-				) }
-				checked={ ! keyMetricsWidgetHidden }
-				onClick={ handleKeyMetricsToggle }
-				hideLabel={ false }
-			/>
+			<Row>
+				<Cell size={ 12 }>
+					<Switch
+						label={ __(
+							'Display key metrics in dashboard',
+							'google-site-kit'
+						) }
+						checked={ ! keyMetricsWidgetHidden }
+						onClick={ handleKeyMetricsToggle }
+						hideLabel={ false }
+					/>
+				</Cell>
+			</Row>
 		</Grid>
 	);
 }
