@@ -94,7 +94,9 @@ export default function AdBlockingRecoveryNotification() {
 			ctaLabel={ __( 'OK, Got it!', 'google-site-kit' ) }
 			onCTAClick={ () => dismissItem( NOTIFICATION_ID ) }
 			type="win-success"
-			WinImageSVG={ () => <SuccessSVG /> }
+			WinImageSVG={ SuccessSVG }
+			mediumWinImageSVGWidth={ 223 }
+			mediumWinImageSVGHeight="none"
 		/>
 	);
 }
