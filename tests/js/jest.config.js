@@ -16,6 +16,7 @@ module.exports = {
 	setupFiles: [
 		'<rootDir>/tests/js/setup-globals',
 		'jest-localstorage-mock',
+		'element-internals-polyfill',
 	],
 	setupFilesAfterEnv: [
 		'<rootDir>/tests/js/jest-matchers',
