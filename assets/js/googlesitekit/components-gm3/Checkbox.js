@@ -89,6 +89,8 @@ export default function Checkbox( {
 		};
 	}, [ checked, onChange, onKeyDown ] );
 
+	const labelID = `${ id }-label`;
+
 	return (
 		<div className="googlesitekit-component-gm3_checkbox">
 			{ loading && (
@@ -102,6 +104,7 @@ export default function Checkbox( {
 					ref={ ref }
 					role="checkbox"
 					aria-label={ getLabelFromChildren( children ) }
+					aria-labelledby={ labelID }
 					// `Lit` boolean attributes treat anything non-null/undefined as true.
 					// Coerce to null if false.
 					// See https://lit.dev/docs/v1/components/properties/#attributes
@@ -112,7 +115,9 @@ export default function Checkbox( {
 					tabIndex={ tabIndex }
 				></md-checkbox>
 			) }
-			<label htmlFor={ id }>{ children }</label>
+			<label id={ labelID } htmlFor={ id }>
+				{ children }
+			</label>
 		</div>
 	);
 }
