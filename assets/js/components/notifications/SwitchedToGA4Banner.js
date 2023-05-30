@@ -22,6 +22,7 @@ import { useWindowWidth } from '@react-hook/window-size/throttled';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -72,9 +73,9 @@ export default function SwitchedToGA4Banner() {
 
 	const eventCategory = `${ viewContext }_ga4-display-success-notification`;
 
-	const handleOnView = () => {
+	const handleOnView = useCallback( () => {
 		trackEvent( eventCategory, 'view_notification' );
-	};
+	}, [ eventCategory ] );
 
 	const { setValue } = useDispatch( CORE_UI );
 	const handleCTAClick = () => {
