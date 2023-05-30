@@ -34,23 +34,21 @@ import { useMount } from 'react-use';
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
 import {
-	Fragment,
 	useEffect,
 	useLayoutEffect,
 	useRef,
 	useState,
 } from '@wordpress/element';
-import { Icon, info } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
-import { Tooltip } from 'googlesitekit-components';
 import PreviewBlock from '../PreviewBlock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
 import Data from 'googlesitekit-data';
 import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
+import DateMarker from './DateMarker';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import useViewContext from '../../hooks/useViewContext';
 import { isSiteKitScreen } from '../../util/is-site-kit-screen';
@@ -441,30 +439,11 @@ export default function GoogleChart( props ) {
 				{ !! dateMarkersInRange.length &&
 					dateMarkersInRange.map( ( dateMarker, index ) => {
 						return (
-							<Fragment
+							<DateMarker
 								key={ `googlesitekit-chart__date-marker--${ instanceID }-${ index }` }
-							>
-								<div
-									id={ `googlesitekit-chart__date-marker-line--${ instanceID }-${ index }` }
-									className="googlesitekit-chart__date-marker-line"
-								/>
-								{ dateMarker.text && (
-									<div
-										id={ `googlesitekit-chart__date-marker-tooltip--${ instanceID }-${ index }` }
-										className="googlesitekit-chart__date-marker-tooltip"
-									>
-										<Tooltip title={ dateMarker.text }>
-											<span>
-												<Icon
-													fill="currentColor"
-													icon={ info }
-													size={ iconSize }
-												/>
-											</span>
-										</Tooltip>
-									</div>
-								) }
-							</Fragment>
+								id={ `${ instanceID }-${ index }` }
+								text={ dateMarker.text }
+							/>
 						);
 					} ) }
 				{ children }
