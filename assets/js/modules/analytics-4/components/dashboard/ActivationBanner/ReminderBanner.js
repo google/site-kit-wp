@@ -85,7 +85,13 @@ export default function ReminderBanner( {
 	);
 
 	const viewContext = useViewContext();
-	const eventCategory = `${ viewContext }_ga4-reminder-notification`;
+
+	const referenceDate = stringToDate( referenceDateString );
+
+	const eventCategory =
+		stringToDate( '2023-07-01' ) <= referenceDate
+			? `${ viewContext }_ua-stale-notification`
+			: `${ viewContext }_ga4-reminder-notification`;
 
 	useMount( () => {
 		if (
@@ -149,8 +155,6 @@ export default function ReminderBanner( {
 		'google-site-kit'
 	);
 	let descriptionIcon = null;
-
-	const referenceDate = stringToDate( referenceDateString );
 
 	if ( referenceDate < stringToDate( '2023-06-01' ) ) {
 		title = __(

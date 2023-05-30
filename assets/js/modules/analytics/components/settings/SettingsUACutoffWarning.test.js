@@ -22,15 +22,21 @@
 import {
 	render,
 	createTestRegistry,
+	fireEvent,
 } from '../../../../../../tests/js/test-utils';
 import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
 import { getDateString, getPreviousDate, stringToDate } from '../../../../util';
+import * as tracking from '../../../../util/tracking';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { UA_CUTOFF_DATE } from '../../constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
+import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsUACutoffWarning', () => {
 	let registry;
@@ -40,6 +46,7 @@ describe( 'SettingsUACutoffWarning', () => {
 	const dayAfterCutoffDate = getDateString( date );
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 	} );
@@ -129,6 +136,102 @@ describe( 'SettingsUACutoffWarning', () => {
 			} );
 
 			expect( container ).toBeEmptyDOMElement();
+		}
+	);
+
+	it.each( [
+		[
+			'settings_ua-future-warning',
+			'before the UA cutoff date',
+			getPreviousDate( UA_CUTOFF_DATE, 1 ),
+		],
+		[
+			'settings_ua-stale-warning',
+			'on the UA cutoff date',
+			UA_CUTOFF_DATE,
+		],
+		[
+			'settings_ua-stale-warning',
+			'after the UA cutoff date',
+			dayAfterCutoffDate,
+		],
+	] )(
+		'should track the view_notification event as soon as the warning appears with the %s category %s (%s)',
+		( eventCategory, _, referenceDate ) => {
+			provideModules( registry, [
+				{
+					active: true,
+					connected: true,
+					slug: 'analytics',
+				},
+				{
+					active: true,
+					connected: false,
+					slug: 'analytics-4',
+				},
+			] );
+
+			registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
+
+			render( <SettingsUACutoffWarning />, {
+				registry,
+				features: [ 'ga4Reporting' ],
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				eventCategory,
+				'view_notification'
+			);
+		}
+	);
+
+	it.each( [
+		[
+			'settings_ua-future-warning',
+			'before the UA cutoff date',
+			getPreviousDate( UA_CUTOFF_DATE, 1 ),
+		],
+		[
+			'settings_ua-stale-warning',
+			'on the UA cutoff date',
+			UA_CUTOFF_DATE,
+		],
+		[
+			'settings_ua-stale-warning',
+			'after the UA cutoff date',
+			dayAfterCutoffDate,
+		],
+	] )(
+		'should track the click_learn_more_link event when the learn more link is clicked with the %s category %s (%s)',
+		( eventCategory, _, referenceDate ) => {
+			provideModules( registry, [
+				{
+					active: true,
+					connected: true,
+					slug: 'analytics',
+				},
+				{
+					active: true,
+					connected: false,
+					slug: 'analytics-4',
+				},
+			] );
+
+			registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
+
+			const { getByRole } = render( <SettingsUACutoffWarning />, {
+				registry,
+				features: [ 'ga4Reporting' ],
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			} );
+
+			fireEvent.click( getByRole( 'link' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				eventCategory,
+				'click_learn_more_link'
+			);
 		}
 	);
 } );
