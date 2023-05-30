@@ -102,7 +102,6 @@ export default function Checkbox( {
 				<md-checkbox
 					id={ id }
 					ref={ ref }
-					role="checkbox"
 					aria-label={ getLabelFromChildren( children ) }
 					aria-labelledby={ labelID }
 					// `Lit` boolean attributes treat anything non-null/undefined as true.
