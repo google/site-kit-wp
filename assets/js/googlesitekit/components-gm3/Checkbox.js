@@ -89,21 +89,6 @@ export default function Checkbox( {
 		};
 	}, [ checked, onChange, onKeyDown ] );
 
-	// TODO: Remove `onLabelClick` once the `md-checkbox` component is updated to be a form-associated custom element.
-	const onLabelClick = () => {
-		const { current } = ref;
-
-		if ( ! current || disabled ) {
-			return;
-		}
-
-		current.checked = ! current.checked;
-
-		current.dispatchEvent(
-			new Event( 'change', { bubbles: true, cancelable: true } )
-		);
-	};
-
 	return (
 		<div className="googlesitekit-component-gm3_checkbox">
 			{ loading && (
@@ -127,19 +112,7 @@ export default function Checkbox( {
 					tabIndex={ tabIndex }
 				></md-checkbox>
 			) }
-			{
-				// These ESLint rules are disabled because we are intentionally adding a click handler to the
-				// label to make up for a bug in the `@material/web` component, where the label does not respond to
-				// click events for the checkbox. Usually, labels associated with inputs don't respond to
-				// keyboard events, but due to our hack this is required.
-				/* eslint-disable jsx-a11y/click-events-have-key-events */
-				/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-			 }
-			<label htmlFor={ id } onClick={ onLabelClick }>
-				{ children }
-			</label>
-			{ /* eslint-enable jsx-a11y/click-events-have-key-events */
-			/* eslint-enable jsx-a11y/no-noninteractive-element-interactions */ }
+			<label htmlFor={ id }>{ children }</label>
 		</div>
 	);
 }
