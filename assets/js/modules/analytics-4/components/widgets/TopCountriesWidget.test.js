@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
-import { KM_ANALYTICS_TOP_COUNTRIES } from '../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	coreKeyMetricsEndpointRegExp,
-	setupRegistryKeyMetricsWidgetHidden,
-	setupRegistryKeyMetricsWidgetNotHidden,
-} from '../../../../util/key-metrics';
+	freezeFetch,
+	provideKeyMetrics,
+	render,
+} from '../../../../../../tests/js/test-utils';
+import { KM_ANALYTICS_TOP_COUNTRIES } from '../../../../googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import TopCountriesWidget from './TopCountriesWidget';
 
 describe( 'TopCountriesWidget', () => {
@@ -43,7 +43,10 @@ describe( 'TopCountriesWidget', () => {
 
 	it( 'should not render anything when isKeyMetricsWidgetHidden is true', () => {
 		const { container } = render( <WidgetWithComponentProps />, {
-			setupRegistry: setupRegistryKeyMetricsWidgetHidden,
+			setupRegistry: ( registry ) =>
+				provideKeyMetrics( registry, {
+					isWidgetHidden: true,
+				} ),
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
@@ -51,7 +54,7 @@ describe( 'TopCountriesWidget', () => {
 
 	it( 'should render the widget when isKeyMetricsWidgetHidden is false', () => {
 		const { getByText } = render( <WidgetWithComponentProps />, {
-			setupRegistry: setupRegistryKeyMetricsWidgetNotHidden,
+			setupRegistry: provideKeyMetrics,
 		} );
 
 		expect(

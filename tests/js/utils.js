@@ -402,6 +402,32 @@ export function provideTracking( registry, enabled = true ) {
 }
 
 /**
+ * The endpoint for the key metrics settings.
+ */
+export const coreKeyMetricsEndpointRegExp = new RegExp(
+	'^/google-site-kit/v1/core/user/data/key-metrics'
+);
+
+/**
+ * Provides key metrics settings data to the given registry.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry    The registry to set up.
+ * @param {Object} [extraData] Extra data to merge with the default settings.
+ */
+export const provideKeyMetrics = ( registry, extraData = {} ) => {
+	const defaults = {
+		widgetSlugs: [ 'test-slug' ],
+		isWidgetHidden: false,
+	};
+	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
  * Mutes a fetch request to the given URL once.
  *
  * Useful for mocking a request for the purpose of preventing a fetch error
