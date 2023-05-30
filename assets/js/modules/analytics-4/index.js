@@ -44,7 +44,7 @@ import {
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-} from '../../googlesitekit/widgets/datastore/constants';
+} from '../../googlesitekit/datastore/user/constants';
 
 export { registerStore } from './datastore';
 

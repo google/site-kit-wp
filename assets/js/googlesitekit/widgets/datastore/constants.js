@@ -20,18 +20,3 @@ export const WIDGET_AREA_STYLES = { BOXES: 'boxes', COMPOSITE: 'composite' };
 export const WIDGET_WIDTHS = { QUARTER: 'quarter', HALF: 'half', FULL: 'full' };
 
 export const CORE_WIDGETS = 'core/widgets';
-
-// Key Metrics Widgets
-export const KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE =
-	'kmAnalyticsEngagedTrafficSource';
-export const KM_ANALYTICS_LOYAL_VISITORS = 'kmAnalyticsLoyalVisitors';
-export const KM_ANALYTICS_NEW_VISITORS = 'kmAnalyticsNewVisitors';
-export const KM_ANALYTICS_POPULAR_CONTENT = 'kmAnalyticsPopularContent';
-export const KM_ANALYTICS_POPULAR_PRODUCTS = 'kmAnalyticsPopularProducts';
-export const KM_ANALYTICS_TOP_CITIES = 'kmAnalyticsTopCities';
-export const KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE =
-	'kmTopConvertingTrafficSource';
-export const KM_ANALYTICS_TOP_COUNTRIES = 'kmAnalyticsTopCountries';
-export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE = 'kmAnalyticsTopTrafficSource';
-export const KM_SEARCH_CONSOLE_POPULAR_KEYWORDS =
-	'kmSearchConsolePopularKeywords';

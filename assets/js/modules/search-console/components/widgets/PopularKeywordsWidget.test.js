@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
-import { KM_SEARCH_CONSOLE_POPULAR_KEYWORDS } from '../../../../googlesitekit/widgets/datastore/constants';
+import { KM_SEARCH_CONSOLE_POPULAR_KEYWORDS } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	coreKeyMetricsEndpointRegExp,

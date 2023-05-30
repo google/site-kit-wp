@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
-import { KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE } from '../../../../googlesitekit/widgets/datastore/constants';
+import { KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	coreKeyMetricsEndpointRegExp,

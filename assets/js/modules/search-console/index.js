@@ -36,7 +36,7 @@ import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import { isFeatureEnabled } from '../../features';
 import { negateDefined } from '../../util/negate';
 import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
-import { KM_SEARCH_CONSOLE_POPULAR_KEYWORDS } from '../../googlesitekit/widgets/datastore/constants';
+import { KM_SEARCH_CONSOLE_POPULAR_KEYWORDS } from '../../googlesitekit/datastore/user/constants';
 
 export { registerStore } from './datastore';
 

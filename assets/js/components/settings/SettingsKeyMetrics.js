@@ -28,7 +28,6 @@ import { __ } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { Grid } from '../../material-components';
 
 const { useSelect, useDispatch } = Data;
@@ -39,7 +38,7 @@ export default function SettingsKeyMetrics() {
 	);
 
 	const keyMetrics = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).getKeyMetrics()
+		select( CORE_USER ).getKeyMetrics()
 	);
 
 	const { setKeyMetricsSetting, saveKeyMetricsSettings } =

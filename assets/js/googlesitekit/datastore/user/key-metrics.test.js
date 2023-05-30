@@ -21,12 +21,22 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	freezeFetch,
+	provideSiteInfo,
 	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { coreKeyMetricsEndpointRegExp } from '../../../util/key-metrics';
-import { CORE_USER } from './constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from './constants';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -53,7 +63,9 @@ describe( 'core/user key metrics', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
 		store = registry.stores[ CORE_USER ].store;
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 	} );
 
 	afterAll( () => {
@@ -67,6 +79,200 @@ describe( 'core/user key metrics', () => {
 	describe( 'actions', () => {
 		const settingID = 'test-setting';
 		const settingValue = 'test-value';
+
+		describe( 'getKeyMetrics', () => {
+			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/user-input-settings'
+					),
+					{
+						body: {
+							purpose: {
+								values: [ 'publish_blog' ],
+								scope: 'site',
+							},
+						},
+						status: 200,
+					}
+				);
+
+				registry.select( CORE_USER ).getUserInputSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( [
+					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			it( 'should use the user-selected key metrics if the user has selected any widgets', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [ KM_ANALYTICS_LOYAL_VISITORS ],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( [ KM_ANALYTICS_LOYAL_VISITORS ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
+
+		describe( 'getAnswerBasedMetrics', () => {
+			it( 'should return undefined if user input settings are not resolved', async () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/user-input-settings'
+					)
+				);
+
+				expect(
+					registry.select( CORE_USER ).getAnswerBasedMetrics()
+				).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+			} );
+
+			it.each( [
+				[ 'undefined', undefined ],
+				[ 'null', null ],
+				[ 'an empty object', {} ],
+				[ 'an object with empty purpose', { purpose: {} } ],
+				[
+					'an object with empty purpose values',
+					{ purpose: { values: [] } },
+				],
+			] )(
+				'should return an empty array if user input settings are %s',
+				( userInputSettings ) => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetUserInputSettings( userInputSettings );
+
+					expect(
+						registry.select( CORE_USER ).getAnswerBasedMetrics()
+					).toEqual( [] );
+				}
+			);
+
+			it.each( [
+				[
+					'publish_blog',
+					[
+						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					],
+				],
+				[
+					'publish_news',
+					[
+						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					],
+				],
+				[
+					'monetize_content',
+					[
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					],
+				],
+				[
+					'sell_products_or_service',
+					[
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					],
+				],
+				[
+					'share_portfolio',
+					[
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					],
+				],
+			] )(
+				'should return the correct metrics for the %s purpose',
+				( purpose, expectedMetrics ) => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetUserInputSettings( {
+							purpose: { values: [ purpose ] },
+						} );
+
+					expect(
+						registry.select( CORE_USER ).getAnswerBasedMetrics()
+					).toEqual( expectedMetrics );
+				}
+			);
+
+			it( 'should return the correct metrics for the sell_products_or_service purposes when the site has a product post type', () => {
+				provideSiteInfo( registry, {
+					postTypes: [ { slug: 'product', label: 'Product' } ],
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: { values: [ 'sell_products_or_service' ] },
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getAnswerBasedMetrics()
+				).toEqual( [
+					KM_ANALYTICS_POPULAR_PRODUCTS,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				] );
+			} );
+		} );
 
 		describe( 'setKeyMetricsSetting', () => {
 			it( 'should set the setting value to the store', async () => {

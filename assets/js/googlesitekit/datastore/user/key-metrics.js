@@ -25,9 +25,21 @@ import { isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { CORE_USER } from './constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from './constants';
+import { CORE_SITE } from '../../datastore/site/constants';
+
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
+
 const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
 
@@ -70,7 +82,7 @@ const baseActions = {
 	/**
 	 * Sets key metrics setting.
 	 *
-	 * @since 1.94.0
+	 * @since n.e.x.t
 	 *
 	 * @param {string}         settingID Setting key.
 	 * @param {Array.<string>} value     Setting value.
@@ -149,6 +161,86 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+	/**
+	 * Gets currently selected key metrics based on either the user picked metrics or the answer based metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array<string>|undefined} An array of key metric slugs, or undefined while loading.
+	 */
+	getKeyMetrics: createRegistrySelector( ( select ) => () => {
+		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
+
+		if ( userPickedMetrics === undefined ) {
+			return undefined;
+		}
+
+		if ( userPickedMetrics.length ) {
+			return userPickedMetrics;
+		}
+
+		return select( CORE_USER ).getAnswerBasedMetrics();
+	} ),
+
+	/**
+	 * Gets the Key Metric widget slugs based on the user input settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the user input settings are not loaded.
+	 */
+	getAnswerBasedMetrics: createRegistrySelector( ( select ) => () => {
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
+
+		if ( userInputSettings === undefined ) {
+			return undefined;
+		}
+
+		const purpose = userInputSettings?.purpose?.values?.[ 0 ];
+
+		const hasProductPostType = () => {
+			const postTypes = select( CORE_SITE ).getPostTypes();
+			return postTypes.some( ( { slug } ) => slug === 'product' );
+		};
+
+		switch ( purpose ) {
+			case 'publish_blog':
+			case 'publish_news':
+				return [
+					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				];
+			case 'monetize_content':
+				return [
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				];
+			case 'sell_products_or_service':
+				return [
+					hasProductPostType()
+						? KM_ANALYTICS_POPULAR_PRODUCTS
+						: KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				];
+
+			case 'share_portfolio':
+				return [
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				];
+			default:
+				return [];
+		}
+	} ),
+
 	/**
 	 * Gets the Key Metric widget slugs selected by the user.
 	 *
