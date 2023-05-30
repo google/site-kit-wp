@@ -1,4 +1,6 @@
 /**
+ * AdBlockingRecoveryNotification styles.
+ *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,5 +16,16 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-adsense-ad-blocker-recovery";
-@import "googlesitekit-adsense-ad-blocking-recovery-notification";
+.googlesitekit-plugin {
+
+	.googlesitekit-ad-blocking-recovery-notification {
+
+		.googlesitekit-publisher-win__image-small {
+			text-align: center;
+
+			svg {
+				max-width: 233px;
+			}
+		}
+	}
+}
