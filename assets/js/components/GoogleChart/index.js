@@ -442,7 +442,7 @@ export default function GoogleChart( props ) {
 							<DateMarker
 								key={ `googlesitekit-chart__date-marker--${ instanceID }-${ index }` }
 								id={ `${ instanceID }-${ index }` }
-								text={ dateMarker?.text }
+								text={ dateMarker.text }
 							/>
 						);
 					} ) }
