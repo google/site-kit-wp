@@ -20,14 +20,17 @@
  * Internal dependencies
  */
 import MetricTileNumeric from './MetricTileNumeric';
-import Widget from '../../googlesitekit/widgets/components/Widget';
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 
-const Template = ( args ) => <MetricTileNumeric { ...args } />;
+const WidgetWithComponentProps = withWidgetComponentProps(
+	'kmAnalyticsNewVisitors'
+)( MetricTileNumeric );
+
+const Template = ( { ...args } ) => <WidgetWithComponentProps { ...args } />;
 
 export const Positive = Template.bind( {} );
 Positive.storyName = 'Positive';
 Positive.args = {
-	Widget,
 	title: 'New Visitors',
 	metricValue: 100,
 	subText: 'of 1,234 total visitors',
@@ -42,7 +45,6 @@ Positive.scenario = {
 export const Negative = Template.bind( {} );
 Negative.storyName = 'Negative';
 Negative.args = {
-	Widget,
 	title: 'New Visitors',
 	metricValue: 100,
 	subText: 'of 1,234 total visitors',
@@ -57,7 +59,6 @@ Negative.scenario = {
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
-	Widget,
 	loading: true,
 };
 
