@@ -35,6 +35,7 @@ module.exports = {
 		'<rootDir>/node_modules',
 		'<rootDir>/build',
 	],
+	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
 	transformIgnorePatterns: [ '<rootDir>/node_modules/(?!@material/web)/.*' ],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
