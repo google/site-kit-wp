@@ -48,7 +48,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
 import Data from 'googlesitekit-data';
 import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
-import DateMarkers from './DateMarkers';
+import DateMarker from './DateMarker';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import useViewContext from '../../hooks/useViewContext';
 import { isSiteKitScreen } from '../../util/is-site-kit-screen';
@@ -439,10 +439,10 @@ export default function GoogleChart( props ) {
 				{ !! dateMarkersInRange.length &&
 					dateMarkersInRange.map( ( dateMarker, index ) => {
 						return (
-							<DateMarkers
+							<DateMarker
 								key={ `googlesitekit-chart__date-marker--${ instanceID }-${ index }` }
 								id={ `${ instanceID }-${ index }` }
-								dateMarker={ dateMarker }
+								text={ dateMarker?.text }
 							/>
 						);
 					} ) }

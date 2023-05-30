@@ -1,5 +1,5 @@
 /**
- * GoogleChart DateMarkers component.
+ * GoogleChart DateMarker component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -29,7 +29,7 @@ import { Tooltip } from 'googlesitekit-components';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 
-export default function DateMarkers( { id, dateMarker } ) {
+export default function DateMarker( { id, text } ) {
 	const viewContext = useViewContext();
 
 	const eventCategory = `${ viewContext }_ga4-data-collection-line`;
@@ -44,13 +44,13 @@ export default function DateMarkers( { id, dateMarker } ) {
 				id={ `googlesitekit-chart__date-marker-line--${ id }` }
 				className="googlesitekit-chart__date-marker-line"
 			/>
-			{ dateMarker.text && (
+			{ text && (
 				<div
 					id={ `googlesitekit-chart__date-marker-tooltip--${ id }` }
 					className="googlesitekit-chart__date-marker-tooltip"
 				>
 					<Tooltip
-						title={ dateMarker.text }
+						title={ text }
 						onOpen={ () => {
 							trackEvent( eventCategory, 'chart_tooltip_view' );
 						} }
