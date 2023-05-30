@@ -78,12 +78,10 @@ export default function UserMenu() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, ( e ) => {
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => {
 		setMenuOpen( false );
-		// Reinstate menu button focus when menu is closed via escape key.
-		if ( ESCAPE === e.keyCode ) {
-			menuButtonRef.current?.focus();
-		}
+		// Reinstate menu button focus when menu is closed.
+		menuButtonRef.current?.focus();
 	} );
 
 	useEffect( () => {
