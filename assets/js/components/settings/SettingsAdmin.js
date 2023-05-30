@@ -90,17 +90,24 @@ export default function SettingsAdmin() {
 							<SettingsKeyMetrics />
 							<Grid>
 								{ isUserInputCompleted && (
-									<UserInputPreview
-										goTo={ goTo }
-										noHeader
-										noFooter
-										settingsView
-										showIndividualCTAs
-									/>
+									<Row>
+										<Cell size={ 12 }>
+											<UserInputPreview
+												goTo={ goTo }
+												noHeader
+												noFooter
+												settingsView
+												showIndividualCTAs
+											/>
+										</Cell>
+									</Row>
 								) }
 								{ isUserInputCompleted === false && (
-									<div className="googlesitekit-user-input__notification">
-										<Cell>
+									<Row>
+										<Cell
+											className="googlesitekit-user-input__notification"
+											size={ 12 }
+										>
 											<p>
 												<span>
 													{ __(
@@ -116,7 +123,7 @@ export default function SettingsAdmin() {
 												) }
 											</Link>
 										</Cell>
-									</div>
+									</Row>
 								) }
 							</Grid>
 						</div>
