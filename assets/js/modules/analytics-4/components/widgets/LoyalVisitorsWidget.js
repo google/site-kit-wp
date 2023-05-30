@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -39,3 +44,8 @@ export default function LoyalVisitorsWidget( { Widget, WidgetNull } ) {
 		</Widget>
 	);
 }
+
+LoyalVisitorsWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
+};
