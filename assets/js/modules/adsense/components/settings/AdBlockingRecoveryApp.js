@@ -17,22 +17,93 @@
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Header from '../../../../components/Header';
 import HelpMenu from '../../../../components/help/HelpMenu';
+import Layout from '../../../../components/layout/Layout';
+import { Cell, Grid, Row } from '../../../../material-components';
+import PageHeader from '../../../../components/PageHeader';
+import AdBlockingSetupSVG from '../../../../../svg/graphics/ad-blocking-recovery-setup.svg';
+import Link from '../../../../components/Link';
+import {
+	BREAKPOINT_SMALL,
+	useBreakpoint,
+} from '../../../../hooks/useBreakpoint';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 export default function AdBlockingRecoveryApp() {
+	const breakpoint = useBreakpoint();
+
+	const settingsURL = useSelect(
+		( select ) =>
+			`${ select( CORE_SITE ).getAdminURL(
+				'googlesitekit-settings'
+			) }#/connected-services/adsense`
+	);
+
+	const isTabletWidthOrLarger = breakpoint !== BREAKPOINT_SMALL;
+
 	return (
 		<Fragment>
 			<Header>
 				<HelpMenu />
 			</Header>
 			<div className="googlesitekit-ad-blocking-recovery">
-				Ad Blocking Recovery
+				<div className="googlesitekit-module-page">
+					<Grid>
+						<Layout rounded>
+							<Grid className="googlesitekit-heading-3 googlesitekit-ad-blocking-recovery__heading">
+								<Row>
+									<Cell
+										lgSize={ 6 }
+										mdSize={ 8 }
+										smSize={ 4 }
+									>
+										<PageHeader
+											className="googlesitekit-heading-3 googlesitekit-ad-blocking-recovery__heading"
+											title={ __(
+												'Ad Blocking Recovery',
+												'google-site-kit'
+											) }
+											fullWidth
+										/>
+									</Cell>
+								</Row>
+							</Grid>
+
+							<Grid className="googlesitekit-ad-blocking-recovery__content">
+								<Row>
+									<Cell mdSize={ 6 } lgSize={ 8 }></Cell>
+
+									{ isTabletWidthOrLarger && (
+										<Cell
+											className="googlesitekit-ad-blocking-recovery__hero-graphic"
+											mdSize={ 2 }
+											lgSize={ 4 }
+										>
+											<AdBlockingSetupSVG />
+										</Cell>
+									) }
+								</Row>
+							</Grid>
+
+							<div className="googlesitekit-ad-blocking-recovery__footer googlesitekit-ad-blocking-recovery__buttons">
+								<div className="googlesitekit-ad-blocking-recovery__footer-cancel">
+									<Link href={ settingsURL }>
+										{ __( 'Cancel', 'google-site-kit' ) }
+									</Link>
+								</div>
+							</div>
+						</Layout>
+					</Grid>
+				</div>
 			</div>
 		</Fragment>
 	);
