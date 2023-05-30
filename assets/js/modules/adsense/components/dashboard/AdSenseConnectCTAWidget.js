@@ -113,6 +113,7 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 
 AdSenseConnectCTAWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default AdSenseConnectCTAWidget;

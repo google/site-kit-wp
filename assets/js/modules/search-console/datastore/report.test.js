@@ -28,7 +28,7 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
-	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -179,7 +179,7 @@ describe( 'modules/search-console report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
+				await waitForTimeouts( 30 );
 			} );
 
 			it( 'should return TRUE if the returned report is an empty array', async () => {
@@ -261,7 +261,7 @@ describe( 'modules/search-console report', () => {
 				expect( hasZeroData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
+				await waitForTimeouts( 30 );
 			} );
 
 			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {

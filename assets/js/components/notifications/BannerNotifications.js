@@ -46,6 +46,8 @@ import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
+import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
+import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 
 const { useSelect } = Data;
 
@@ -55,6 +57,7 @@ export default function BannerNotifications() {
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 	const gteSupportEnabled = useFeature( 'gteSupport' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
 	const viewOnly = useViewOnly();
 
@@ -120,7 +123,9 @@ export default function BannerNotifications() {
 						<WebDataStreamNotAvailableNotification />
 					</Fragment>
 				) }
+			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
+			{ adBlockerDetectionEnabled && <AdBlockingRecoveryNotification /> }
 			{ userInputEnabled && <UserInputPromptBannerNotification /> }
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 			{ ga4ReportingEnabled && analyticsModuleConnected && (
