@@ -71,7 +71,7 @@ export default function UseSnippetSwitch( { description } ) {
 					'Place Universal Analytics code',
 					'google-site-kit'
 				) }
-				checked={ canUseSnippet === false ? false : useSnippet }
+				checked={ canUseSnippet === false ? false : !! useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
 				disabled={ canUseSnippet === false }

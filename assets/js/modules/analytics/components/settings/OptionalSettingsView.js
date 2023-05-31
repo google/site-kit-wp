@@ -27,9 +27,10 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
@@ -39,6 +40,9 @@ export default function OptionalSettingsView() {
 	);
 	const canUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
+	);
+	const isUAEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAdsConversionID()
@@ -55,7 +59,8 @@ export default function OptionalSettingsView() {
 
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
-	const showIPAnonymizationSettings = useSnippet && ampMode !== 'primary';
+	const showIPAnonymizationSettings =
+		isUAEnabled && useSnippet && ampMode !== 'primary';
 
 	const showAdsConversionIDSettings =
 		canUseSnippet && ( useSnippet || useGA4Snippet );
