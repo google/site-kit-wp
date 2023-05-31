@@ -267,7 +267,6 @@ $width-xxlarge: 1440;
 // Custom Media Breakpoints
 $bp-xsmallOnly: $width-xsmall - 1 + px;
 $bp-mobileOnly: $width-tablet - 1 + px;
-$bp-nonDesktopOnly: $width-desktop - 1 + px;
 $bp-tablet: $width-tablet + px;
 $bp-nonMobile: $width-tablet + 1 + px;
 $bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
