@@ -337,7 +337,7 @@ const baseReducer = ( state, { type, payload } ) => {
 					internalWebPropertyID:
 						state.savedSettings.internalWebPropertyID,
 					profileID: state.savedSettings.profileID,
-					useSnippet: state.savedSettings.profileID,
+					useSnippet: state.savedSettings.useSnippet,
 				},
 			};
 		}

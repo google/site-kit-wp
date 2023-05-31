@@ -162,7 +162,7 @@ export default function EnableUniversalAnalytics( {
 						'Enable Universal Analytics',
 						'google-site-kit'
 					) }
-					checked={ !! isUAEnabled }
+					checked={ isUAEnabled }
 					onClick={ onChange }
 					hideLabel={ false }
 					disabled={ ! hasModuleAccess }
