@@ -71,6 +71,7 @@ export default function AdBlockingRecoveryNotification() {
 	return (
 		<BannerNotification
 			id={ NOTIFICATION_ID }
+			className="googlesitekit-ad-blocking-recovery-notification"
 			title={ __(
 				'You successfully added the ad blocking recovery tag',
 				'google-site-kit'
@@ -95,6 +96,7 @@ export default function AdBlockingRecoveryNotification() {
 			onCTAClick={ () => dismissItem( NOTIFICATION_ID ) }
 			type="win-success"
 			WinImageSVG={ () => <SuccessSVG /> }
+			format="small"
 		/>
 	);
 }
