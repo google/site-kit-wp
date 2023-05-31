@@ -1,5 +1,5 @@
 /**
- * NewVisitorsWidget tests.
+ * Stepper constants.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,8 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
-import NewVisitorsWidget from './NewVisitorsWidget';
-
-describe( 'NewVisitorsWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <NewVisitorsWidget /> );
-
-		expect(
-			getByText( 'TODO: UI for NewVisitorsWidget' )
-		).toBeInTheDocument();
-	} );
-} );
+export const STEP_STATUS = {
+	UPCOMING: 'upcoming',
+	ACTIVE: 'active',
+	COMPLETED: 'completed',
+};
