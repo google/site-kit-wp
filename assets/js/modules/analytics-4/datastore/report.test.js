@@ -27,9 +27,9 @@ import {
 	untilResolved,
 	unsubscribeFromAll,
 	freezeFetch,
-	waitForDefaultTimeouts,
 	subscribeUntil,
 	muteFetch,
+	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import { DAY_IN_SECONDS } from '../../../util';
 import { isZeroReport } from '../utils';
@@ -230,7 +230,7 @@ describe( 'modules/analytics-4 report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
+				await waitForTimeouts( 30 );
 			} );
 
 			it( 'should return FALSE if the returned report has data', async () => {
@@ -342,13 +342,13 @@ describe( 'modules/analytics-4 report', () => {
 					expect( hasZeroData() ).toBeUndefined();
 
 					// Wait for resolvers to run.
-					await waitForDefaultTimeouts();
+					await waitForTimeouts( 30 );
 
 					// Verify that isGatheringData still returns undefined due to getSettings not being resolved yet, while hasZeroData now returns true.
 					expect( isGatheringData() ).toBeUndefined();
 					expect( hasZeroData() ).toBe( true );
 
-					await waitForDefaultTimeouts();
+					await waitForTimeouts( 30 );
 				} );
 
 				it( 'should return TRUE if the connnected GA4 property is under three days old', async () => {
@@ -452,13 +452,13 @@ describe( 'modules/analytics-4 report', () => {
 					expect( hasZeroData() ).toBeUndefined();
 
 					// Wait for resolvers to run.
-					await waitForDefaultTimeouts();
+					await waitForTimeouts( 30 );
 
 					// Verify that isGatheringData now returns TRUE if hasZeroData now returns true but the user is not authenticated.
 					expect( isGatheringData() ).toBe( true );
 					expect( hasZeroData() ).toBe( true );
 
-					await waitForDefaultTimeouts();
+					await waitForTimeouts( 30 );
 				} );
 
 				it( 'should return undefined if getAuthentication is not resolved yet', async () => {
@@ -514,7 +514,7 @@ describe( 'modules/analytics-4 report', () => {
 				expect( hasZeroData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
+				await waitForTimeouts( 30 );
 			} );
 
 			it( 'should return FALSE if the report request fails', async () => {

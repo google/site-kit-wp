@@ -45,6 +45,7 @@ export default function JoyrideTooltip( {
 	className,
 	styles = {},
 	slug = '',
+	onView = () => {},
 } ) {
 	const checkIfTargetExists = () =>
 		!! global.document.querySelector( target );
@@ -107,6 +108,10 @@ export default function JoyrideTooltip( {
 						// This is not strictly necessary as the tooltip will hide without it, but this allows the consumer of the component to clean up post-dismiss.
 						onDismiss();
 					}
+
+					if ( type === EVENTS.TOOLTIP ) {
+						onView();
+					}
 				} }
 				disableOverlay
 				disableScrolling
@@ -143,4 +148,5 @@ JoyrideTooltip.propTypes = {
 	className: PropTypes.string,
 	styles: PropTypes.object,
 	slug: PropTypes.string,
+	onView: PropTypes.func,
 };

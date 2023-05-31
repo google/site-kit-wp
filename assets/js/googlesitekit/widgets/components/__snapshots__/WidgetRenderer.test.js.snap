@@ -19,3 +19,13 @@ exports[`WidgetRenderer should wrap children when wrapWidget is true 1`] = `
   </div>
 </div>
 `;
+
+exports[`WidgetRenderer should wrap the widget in a hidden container when the widget is preloaded 1`] = `
+<div
+  class="googlesitekit-hidden"
+>
+  <div>
+    Test
+  </div>
+</div>
+`;

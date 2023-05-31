@@ -84,13 +84,6 @@ export default function SettingsForm( {
 	const gtmContainersResolved = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
-	const properties = useSelect( ( select ) => {
-		if ( ! accountID || ! hasAnalyticsAccess || ! hasAnalytics4Access ) {
-			return [];
-		}
-
-		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
-	} );
 
 	const showTrackingExclusion = isGA4Connected || isUAConnected;
 
@@ -119,7 +112,7 @@ export default function SettingsForm( {
 					) }
 				>
 					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Dashboard view', 'google-site-kit' ) }
+						{ __( 'Dashboard View', 'google-site-kit' ) }
 					</h4>
 					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
 						{ isGA4Connected && (
@@ -144,19 +137,15 @@ export default function SettingsForm( {
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
 
-			{ ga4ReportingEnabled && properties.length > 0 && (
-				<div className="googlesitekit-settings-module__fields-group">
-					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Universal Analytics', 'google-site-kit' ) }
-					</h4>
-					<EnableUniversalAnalytics
-						hasModuleAccess={ hasAnalyticsAccess }
-						showErrors
-					>
-						{ isUAConnected && <SettingsUseSnippetSwitch /> }
-						{ isUAConnected && <AnonymizeIPSwitch /> }
-					</EnableUniversalAnalytics>
-				</div>
+			{ ga4ReportingEnabled && (
+				<EnableUniversalAnalytics
+					hasModuleAccess={ hasAnalyticsAccess }
+					showErrors
+					showTitle
+				>
+					{ isUAConnected && <SettingsUseSnippetSwitch /> }
+					{ isUAConnected && <AnonymizeIPSwitch /> }
+				</EnableUniversalAnalytics>
 			) }
 
 			{ isValidAccountID( accountID ) && (

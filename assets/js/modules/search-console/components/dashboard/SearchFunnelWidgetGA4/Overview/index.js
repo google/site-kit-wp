@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../../util';
-import { calculateChange } from '../../../../../../util';
+import { calculateChange, trackEvent } from '../../../../../../util';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
@@ -47,6 +47,7 @@ import useDashboardType, {
 } from '../../../../../../hooks/useDashboardType';
 import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
+import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
 import ga4Reporting from '../../../../../../feature-tours/ga4-reporting';
@@ -81,6 +82,7 @@ export default function Overview( props ) {
 	const dashboardType = useDashboardType();
 
 	const viewOnly = useViewOnly();
+	const viewContext = useViewContext();
 
 	const isAnalytics4ModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
@@ -196,6 +198,10 @@ export default function Overview( props ) {
 		canShowGA4ReportingFeatureTour,
 	] );
 
+	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
+		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
+	}, [ viewContext ] );
+
 	const showConversionsCTA =
 		isAuthenticated &&
 		showGA4 &&
@@ -288,6 +294,7 @@ export default function Overview( props ) {
 									'google-site-kit'
 								) }
 								learnMoreLink={ conversionsRateLearnMoreURL }
+								onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
 							/>
 						),
 					},
@@ -310,6 +317,7 @@ export default function Overview( props ) {
 									'google-site-kit'
 								) }
 								learnMoreLink={ engagementRateLearnMoreURL }
+								onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
 							/>
 						),
 					},
@@ -331,6 +339,14 @@ export default function Overview( props ) {
 		3: oneThirdCellProps,
 		4: quarterCellProps,
 	};
+
+	// Check if any of the data blocks have a badge.
+	//
+	// If no data blocks have a badge, we shouldn't even render an
+	// empty badge container, and save some vertical space in the `DataBlock`.
+	const hasMetricWithBadge = dataBlocks.some( ( { badge } ) => {
+		return !! badge;
+	} );
 
 	return (
 		<Grid>
@@ -364,7 +380,9 @@ export default function Overview( props ) {
 									}
 									handleStatSelection={ handleStatsSelection }
 									gatheringData={ dataBlock.isGatheringData }
-									badge={ dataBlock.badge }
+									badge={
+										dataBlock.badge || hasMetricWithBadge
+									}
 								/>
 							</Cell>
 						) ) }

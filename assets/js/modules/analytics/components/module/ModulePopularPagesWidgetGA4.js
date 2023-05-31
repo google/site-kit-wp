@@ -26,6 +26,7 @@ import { cloneDeep } from 'lodash';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,7 +35,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { numFmt } from '../../../../util';
+import { numFmt, trackEvent } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
@@ -44,8 +45,10 @@ import { ZeroDataMessage } from '../common';
 import Header from './ModulePopularPagesWidget/Header';
 import Footer from './ModulePopularPagesWidget/Footer';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import useViewContext from '../../../../hooks/useViewContext';
 import NewBadge from '../../../../components/NewBadge';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidgetGA4( props ) {
@@ -62,6 +65,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 	);
 
 	const viewOnlyDashboard = useViewOnly();
+	const viewContext = useViewContext();
 
 	const args = {
 		...dates,
@@ -127,7 +131,18 @@ function ModulePopularPagesWidgetGA4( props ) {
 		} )
 	);
 
-	if ( ! loaded || isGatheringData === undefined ) {
+	const isGA4ReportingTourActive = useSelect(
+		( select ) => select( CORE_USER ).getCurrentTour() === ga4ReportingTour
+	);
+
+	const loading = ! loaded || isGatheringData === undefined;
+
+	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
+		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
+	}, [ viewContext ] );
+
+	// Bypass loading state if showing GA4 tour.
+	if ( loading && ! isGA4ReportingTourActive ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer } noPadding>
 				<PreviewTable padding />
@@ -198,6 +213,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 						'google-site-kit'
 					) }
 					learnMoreLink={ sessionsLearnMoreURL }
+					onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
 				/>
 			),
 		},
@@ -217,6 +233,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 						'google-site-kit'
 					) }
 					learnMoreLink={ engagementRateLearnMoreURL }
+					onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
 				/>
 			),
 		},
@@ -231,12 +248,20 @@ function ModulePopularPagesWidgetGA4( props ) {
 		},
 	];
 
-	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
-	// Combine the titles from the pageTitles with the rows from the metrics report.
-	rows.forEach( ( row ) => {
-		const url = row.dimensionValues[ 0 ].value;
-		row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
-	} );
+	let rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
+	let ZeroState = ZeroDataMessage;
+	// Use a custom zero state when the GA4 reporting tour is active
+	// while data is still loading.
+	if ( loading && isGA4ReportingTourActive ) {
+		rows = [];
+		ZeroState = () => <PreviewTable rows={ rows.length || 10 } />;
+	} else {
+		// Combine the titles from the pageTitles with the rows from the metrics report.
+		rows.forEach( ( row ) => {
+			const url = row.dimensionValues[ 0 ].value;
+			row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
+		} );
+	}
 
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
@@ -244,7 +269,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 				<ReportTable
 					rows={ rows }
 					columns={ tableColumns }
-					zeroState={ ZeroDataMessage }
+					zeroState={ ZeroState }
 					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
