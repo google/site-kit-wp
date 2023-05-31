@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -29,16 +30,18 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { UA_CUTOFF_DATE } from '../../constants';
-import { stringToDate } from '../../../../util';
+import { stringToDate, trackEvent } from '../../../../util';
 import Link from '../../../../components/Link';
 import SettingsNotice, {
 	TYPE_WARNING,
 } from '../../../../components/SettingsNotice';
 import { useFeature } from '../../../../hooks/useFeature';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function SettingsUACutoffWarning() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const viewContext = useViewContext();
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -59,6 +62,17 @@ export default function SettingsUACutoffWarning() {
 	const shouldDisplayWarning =
 		ga4ReportingEnabled && isAnalyticsConnected && ! isGA4Connected;
 
+	const eventCategory =
+		stringToDate( referenceDate ) < stringToDate( UA_CUTOFF_DATE )
+			? `${ viewContext }_ua-future-warning`
+			: `${ viewContext }_ua-stale-warning`;
+
+	useEffect( () => {
+		if ( shouldDisplayWarning ) {
+			trackEvent( eventCategory, 'view_notification' );
+		}
+	}, [ eventCategory, shouldDisplayWarning ] );
+
 	if ( ! shouldDisplayWarning ) {
 		return null;
 	}
@@ -67,7 +81,13 @@ export default function SettingsUACutoffWarning() {
 		<SettingsNotice
 			type={ TYPE_WARNING }
 			LearnMore={ () => (
-				<Link href={ documentationURL } external>
+				<Link
+					href={ documentationURL }
+					external
+					onClick={ () => {
+						trackEvent( eventCategory, 'click_learn_more_link' );
+					} }
+				>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>
 			) }

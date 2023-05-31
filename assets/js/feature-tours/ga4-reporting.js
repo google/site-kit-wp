@@ -45,8 +45,7 @@ const ga4Reporting = {
 	slug: 'ga4Reporting',
 	contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 	version: '1.999.0', // Change this version to the actual version when GA4 reporting is released to 100% of users.
-	gaEventCategory: ( viewContext ) =>
-		`${ viewContext }_dashboard-ga4-reporting`,
+	gaEventCategory: ( viewContext ) => `${ viewContext }_ga4-metrics`,
 	checkRequirements: () => isFeatureEnabled( 'ga4Reporting' ),
 	steps: [
 		{
