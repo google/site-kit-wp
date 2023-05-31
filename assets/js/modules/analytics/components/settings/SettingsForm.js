@@ -69,7 +69,9 @@ export default function SettingsForm( {
 	const isUAEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
-
+	const useSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getUseSnippet()
+	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -144,7 +146,7 @@ export default function SettingsForm( {
 					showTitle
 				>
 					{ isUAConnected && <SettingsUseSnippetSwitch /> }
-					{ isUAConnected && <AnonymizeIPSwitch /> }
+					{ useSnippet && <AnonymizeIPSwitch /> }
 				</EnableUniversalAnalytics>
 			) }
 
