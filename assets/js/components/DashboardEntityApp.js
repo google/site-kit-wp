@@ -67,6 +67,7 @@ const { useSelect } = Data;
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -218,7 +219,7 @@ function DashboardEntityApp() {
 				) }
 				<HelpMenu />
 			</Header>
-			<DashboardViewIndicator />
+			{ ga4ReportingEnabled && <DashboardViewIndicator /> }
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
