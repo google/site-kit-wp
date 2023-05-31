@@ -59,7 +59,7 @@ export default function OptimizeRemovalNotification() {
 		<BannerNotification
 			id={ bannerID }
 			title={ __(
-				'Google Optimize will no longer work after 30 September 2023',
+				'Google Optimize will no longer work after September 30, 2023',
 				'google-site-kit'
 			) }
 			description={ __(
