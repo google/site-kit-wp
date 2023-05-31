@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Badge from './Badge';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import whenActive from '../util/when-active';
 import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
@@ -36,15 +36,8 @@ const DashboardViewIndicator = () => {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
-	);
 
-	if (
-		! ga4ReportingEnabled ||
-		! analyticsModuleConnected ||
-		isGA4DashboardView === undefined
-	) {
+	if ( ! ga4ReportingEnabled || isGA4DashboardView === undefined ) {
 		return null;
 	}
 
@@ -62,4 +55,6 @@ const DashboardViewIndicator = () => {
 	);
 };
 
-export default DashboardViewIndicator;
+export default whenActive( { moduleName: 'analytics' } )(
+	DashboardViewIndicator
+);
