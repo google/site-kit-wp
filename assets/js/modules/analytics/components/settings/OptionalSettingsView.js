@@ -55,8 +55,7 @@ export default function OptionalSettingsView() {
 
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
-	const showIPAnonymizationSettings =
-		( useGA4Snippet || useSnippet ) && ampMode !== 'primary';
+	const showIPAnonymizationSettings = useSnippet && ampMode !== 'primary';
 
 	const showAdsConversionIDSettings =
 		canUseSnippet && ( useSnippet || useGA4Snippet );
@@ -73,7 +72,7 @@ export default function OptionalSettingsView() {
 							) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
-							{ useSnippet && anonymizeIP && (
+							{ anonymizeIP && (
 								<span>
 									{ __(
 										'IP addresses are being anonymized',
@@ -81,7 +80,7 @@ export default function OptionalSettingsView() {
 									) }
 								</span>
 							) }
-							{ useSnippet && ! anonymizeIP && (
+							{ ! anonymizeIP && (
 								<span>
 									{ __(
 										'IP addresses are not being anonymized',
