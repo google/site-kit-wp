@@ -417,11 +417,10 @@ final class Authentication {
 
 				$profile_data = $this->profile->get();
 
-				if ( ! isset( $profile_data['last_updated'] ) ) {
-					return;
-				}
-
-				if ( time() - $profile_data['last_updated'] > DAY_IN_SECONDS ) {
+				if (
+					! isset( $profile_data['last_updated'] ) ||
+					time() - $profile_data['last_updated'] > DAY_IN_SECONDS
+				) {
 					$this->get_oauth_client()->refresh_profile_data( 30 * MINUTE_IN_SECONDS );
 				}
 			}
