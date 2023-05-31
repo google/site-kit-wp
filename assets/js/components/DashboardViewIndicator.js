@@ -27,8 +27,8 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Badge from './Badge';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
-import { useFeature } from '../hooks/useFeature';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
 const DashboardViewIndicator = () => {
