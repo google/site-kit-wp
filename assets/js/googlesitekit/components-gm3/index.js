@@ -29,6 +29,7 @@ import Radio from './Radio';
 import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
 import Tooltip from './Tooltip';
+import CircularProgress from './CircularProgress';
 
 const Components = {
 	Button,
@@ -41,6 +42,7 @@ const Components = {
 	SpinnerButton,
 	Switch,
 	Tooltip,
+	CircularProgress,
 };
 
 export default Components;
