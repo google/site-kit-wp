@@ -27,22 +27,24 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
-import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
 	const canUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
 	);
-	const isUAEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAdsConversionID()
@@ -60,10 +62,13 @@ export default function OptionalSettingsView() {
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
 	const showIPAnonymizationSettings =
-		isUAEnabled && useSnippet && ampMode !== 'primary';
+		useSnippet &&
+		ampMode !== 'primary' &&
+		( ! ga4ReportingEnabled || isAnalyticsConnected );
 
 	const showAdsConversionIDSettings =
-		canUseSnippet && ( useSnippet || useGA4Snippet );
+		canUseSnippet &&
+		( useSnippet || ( ga4ReportingEnabled && useGA4Snippet ) );
 
 	return (
 		<Fragment>
@@ -71,10 +76,15 @@ export default function OptionalSettingsView() {
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __(
-								'Universal Analytics IP Address Anonymization',
-								'google-site-kit'
-							) }
+							{ ga4ReportingEnabled
+								? __(
+										'Universal Analytics IP Address Anonymization',
+										'google-site-kit'
+								  )
+								: __(
+										'IP Address Anonymization',
+										'google-site-kit'
+								  ) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							{ anonymizeIP && (

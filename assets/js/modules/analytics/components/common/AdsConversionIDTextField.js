@@ -36,9 +36,11 @@ import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidAdsConversionID } from '../../util';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAdsConversionID()
 	);
@@ -74,7 +76,11 @@ export default function AdsConversionIDTextField() {
 
 	// Only show the field if the snippet is enabled for output,
 	// but only hide it if the value is valid otherwise the user will be blocked.
-	if ( isValidValue && ! snippetEnabled && ! ga4SnippetEnabled ) {
+	if (
+		isValidValue &&
+		! snippetEnabled &&
+		! ( ga4ReportingEnabled && ga4SnippetEnabled )
+	) {
 		return null;
 	}
 

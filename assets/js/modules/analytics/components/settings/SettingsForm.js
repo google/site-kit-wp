@@ -69,14 +69,20 @@ export default function SettingsForm( {
 	const isUAEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
-	const useSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getUseSnippet()
-	);
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
+	const useAnalyticsSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getUseSnippet()
+	);
 	const isTagManagerAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+	);
+	const useTagManagerSnippet = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
 	const analyticsSinglePropertyID = useSelect(
 		( select ) =>
@@ -87,7 +93,10 @@ export default function SettingsForm( {
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
 
-	const showTrackingExclusion = isGA4Connected || isUAConnected;
+	const showTrackingExclusion = ga4ReportingEnabled
+		? isGA4Connected || isUAConnected
+		: useAnalyticsSnippet ||
+		  ( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	if ( ! gtmContainersResolved ) {
 		return <ProgressBar />;
@@ -146,12 +155,13 @@ export default function SettingsForm( {
 					showTitle
 				>
 					{ isUAConnected && <SettingsUseSnippetSwitch /> }
-					{ useSnippet && <AnonymizeIPSwitch /> }
+					{ useAnalyticsSnippet && <AnonymizeIPSwitch /> }
 				</EnableUniversalAnalytics>
 			) }
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
+					{ ! ga4ReportingEnabled && <AnonymizeIPSwitch /> }
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
 				</Fragment>
