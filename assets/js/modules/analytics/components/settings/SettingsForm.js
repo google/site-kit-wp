@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -117,11 +112,7 @@ export default function SettingsForm( {
 				</Fragment>
 			) }
 			{ ga4ReportingEnabled && (
-				<div
-					className={ classnames(
-						'googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border'
-					) }
-				>
+				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 					<h4 className="googlesitekit-settings-module__fields-group-title">
 						{ __( 'Dashboard View', 'google-site-kit' ) }
 					</h4>
