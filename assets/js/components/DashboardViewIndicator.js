@@ -28,16 +28,25 @@ import Data from 'googlesitekit-data';
 import Badge from './Badge';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 import whenActive from '../util/when-active';
-import { useFeature } from '../hooks/useFeature';
+import useViewOnly from '../hooks/useViewOnly';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 const DashboardViewIndicator = () => {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 
-	if ( ! ga4ReportingEnabled || isGA4DashboardView === undefined ) {
+	const viewOnly = useViewOnly();
+	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return true;
+		}
+
+		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+	} );
+
+	if ( ! canViewSharedAnalytics || isGA4DashboardView === undefined ) {
 		return null;
 	}
 
