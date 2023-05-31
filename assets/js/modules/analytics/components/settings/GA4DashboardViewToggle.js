@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -36,7 +41,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function GA4DashboardViewToggle() {
+export default function GA4DashboardViewToggle( { isUAAvailable = false } ) {
 	const viewContext = useViewContext();
 
 	const dashboardView = useSelect( ( select ) =>
@@ -59,6 +64,10 @@ export default function GA4DashboardViewToggle() {
 		);
 	}, [ dashboardView, setDashboardView, viewContext ] );
 
+	const displayDashboardView = isUAAvailable
+		? dashboardView
+		: DASHBOARD_VIEW_GA4;
+
 	return (
 		<div>
 			<Switch
@@ -66,17 +75,18 @@ export default function GA4DashboardViewToggle() {
 					'Display metrics from Google Analytics 4 on the dashboard',
 					'google-site-kit'
 				) }
-				checked={ dashboardView === 'google-analytics-4' }
+				checked={ displayDashboardView === 'google-analytics-4' }
 				onClick={ onChange }
 				hideLabel={ false }
+				disabled={ ! isUAAvailable }
 			/>
 			<p>
-				{ dashboardView === DASHBOARD_VIEW_GA4 &&
+				{ displayDashboardView === DASHBOARD_VIEW_GA4 &&
 					__(
 						'Site Kit will show data from Google Analytics 4 (the new version of Analytics) on your dashboard',
 						'google-site-kit'
 					) }
-				{ dashboardView === DASHBOARD_VIEW_UA &&
+				{ displayDashboardView === DASHBOARD_VIEW_UA &&
 					__(
 						'Site Kit will show data from Universal Analytics (the old version of Analytics) on your dashboard',
 						'google-site-kit'
@@ -85,3 +95,8 @@ export default function GA4DashboardViewToggle() {
 		</div>
 	);
 }
+
+// eslint-disable-next-line sitekit/acronym-case
+GA4DashboardViewToggle.propTypes = {
+	isUAAvailable: PropTypes.bool,
+};

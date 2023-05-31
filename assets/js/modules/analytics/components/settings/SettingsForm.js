@@ -94,9 +94,6 @@ export default function SettingsForm( {
 
 	const showTrackingExclusion = isGA4Connected || isUAConnected;
 
-	const showDashboardView =
-		ga4ReportingEnabled && isUAConnected && isUAEnabled;
-
 	if ( ! gtmContainersResolved ) {
 		return <ProgressBar />;
 	}
@@ -115,7 +112,7 @@ export default function SettingsForm( {
 					/>
 				</Fragment>
 			) }
-			{ showDashboardView && (
+			{ ga4ReportingEnabled && (
 				<div
 					className={ classnames(
 						'googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border'
@@ -125,7 +122,11 @@ export default function SettingsForm( {
 						{ __( 'Dashboard view', 'google-site-kit' ) }
 					</h4>
 					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
-						{ isGA4Connected && <GA4DashboardViewToggle /> }
+						{ isGA4Connected && (
+							<GA4DashboardViewToggle
+								isUAAvailable={ isUAConnected && isUAEnabled }
+							/>
+						) }
 						{ ! isGA4Connected &&
 							__( 'Universal Analytics', 'google-site-kit' ) }
 					</div>
