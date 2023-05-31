@@ -34,7 +34,12 @@ import { Tooltip } from 'googlesitekit-components';
 import Badge from './Badge';
 import Link from './Link';
 
-function NewBadge( { tooltipTitle, learnMoreLink, forceOpen } ) {
+function NewBadge( {
+	tooltipTitle,
+	learnMoreLink,
+	forceOpen,
+	onLearnMoreClick = () => {},
+} ) {
 	return (
 		<Tooltip
 			tooltipClassName="googlesitekit-new-badge__tooltip"
@@ -42,7 +47,11 @@ function NewBadge( { tooltipTitle, learnMoreLink, forceOpen } ) {
 				<Fragment>
 					{ tooltipTitle }
 					<br />
-					<Link href={ learnMoreLink } external>
+					<Link
+						href={ learnMoreLink }
+						onClick={ onLearnMoreClick }
+						external
+					>
 						{ __( 'Learn more', 'google-site-kit' ) }
 					</Link>
 				</Fragment>
@@ -65,6 +74,7 @@ NewBadge.propTypes = {
 	tooltipTitle: PropTypes.string.isRequired,
 	learnMoreLink: PropTypes.string.isRequired,
 	forceOpen: PropTypes.bool,
+	onLearnMoreClick: PropTypes.func,
 };
 
 export default NewBadge;

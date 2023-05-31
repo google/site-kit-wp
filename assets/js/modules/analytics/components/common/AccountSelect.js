@@ -70,10 +70,14 @@ export default function AccountSelect( { hasModuleAccess } ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	useEffect( () => {
-		if ( isUAEnabled && properties.length === 0 ) {
+		if (
+			isUAEnabled &&
+			hasModuleAccess !== false && // Show disabled UA settings for Admins who do not have access to the connected Analytics Property.
+			properties.length === 0
+		) {
 			setValues( FORM_SETUP, { enableUA: false } );
 		}
-	}, [ isUAEnabled, properties, setValues ] );
+	}, [ isUAEnabled, properties, setValues, hasModuleAccess ] );
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(

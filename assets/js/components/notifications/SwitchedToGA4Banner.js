@@ -15,8 +15,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useWindowWidth } from '@react-hook/window-size/throttled';
+
+/**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,13 +34,21 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { UA_CUTOFF_DATE } from '../../modules/analytics/constants';
-import { stringToDate } from '../../util';
+import { stringToDate, trackEvent } from '../../util';
 import { isValidPropertyID } from '../../modules/analytics/util';
+import useViewContext from '../../hooks/useViewContext';
 import ga4Reporting from '../../feature-tours/ga4-reporting';
 import BannerNotification from './BannerNotification';
 const { useSelect, useDispatch } = Data;
 
 export default function SwitchedToGA4Banner() {
+	// Get the window width and don't show the button to start
+	// the feature tour if the user isn't on a large enough screen.
+	const windowWidth = useWindowWidth();
+	const screenIsLargeEnoughForFeatureTour = windowWidth >= 783;
+
+	const viewContext = useViewContext();
+
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
@@ -57,14 +71,24 @@ export default function SwitchedToGA4Banner() {
 		return isValidPropertyID( propertyID );
 	} );
 
+	const eventCategory = `${ viewContext }_ga4-display-success-notification`;
+
+	const handleOnView = useCallback( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	}, [ eventCategory ] );
+
 	const { setValue } = useDispatch( CORE_UI );
 	const handleCTAClick = () => {
+		trackEvent( eventCategory, 'confirm_notification' );
+
 		setValue( 'forceInView', true );
 		setValue( 'showGA4ReportingTour', true );
 	};
 
 	const { dismissTour } = useDispatch( CORE_USER );
 	const handleDismissClick = () => {
+		trackEvent( eventCategory, 'dismiss_notification' );
+
 		dismissTour( ga4Reporting.slug );
 	};
 
@@ -97,11 +121,24 @@ export default function SwitchedToGA4Banner() {
 				'google-site-kit'
 			) }
 			description={ description }
-			ctaLabel={ __( 'Learn what’s new', 'google-site-kit' ) }
+			ctaLabel={
+				screenIsLargeEnoughForFeatureTour
+					? __( 'Learn what’s new', 'google-site-kit' )
+					: __( 'OK, Got it!', 'google-site-kit' )
+			}
 			ctaLink="#"
-			onCTAClick={ handleCTAClick }
+			onView={ handleOnView }
+			onCTAClick={
+				screenIsLargeEnoughForFeatureTour
+					? handleCTAClick
+					: handleDismissClick
+			}
 			onDismiss={ handleDismissClick }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+			dismiss={
+				screenIsLargeEnoughForFeatureTour
+					? __( 'OK, Got it!', 'google-site-kit' )
+					: undefined
+			}
 			WinImageSVG={ () => <GA4SuccessGreenSVG /> }
 		/>
 	);
