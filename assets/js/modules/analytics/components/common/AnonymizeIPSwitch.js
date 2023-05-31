@@ -54,10 +54,7 @@ export default function AnonymizeIPSwitch() {
 		setAnonymizeIP( ! anonymizeIP );
 	}, [ anonymizeIP, setAnonymizeIP ] );
 
-	const showAnonymizeIPSwitch =
-		useSnippet && ampMode !== 'primary' && anonymizeIP !== undefined;
-
-	if ( ! showAnonymizeIPSwitch ) {
+	if ( ! useSnippet || ampMode === 'primary' || anonymizeIP === undefined ) {
 		return null;
 	}
 
