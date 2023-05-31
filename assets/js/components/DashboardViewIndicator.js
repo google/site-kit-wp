@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import Badge from './Badge';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 const DashboardViewIndicator = () => {
@@ -35,8 +36,15 @@ const DashboardViewIndicator = () => {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
 
-	if ( ! ga4ReportingEnabled || isGA4DashboardView === undefined ) {
+	if (
+		! ga4ReportingEnabled ||
+		! analyticsModuleConnected ||
+		isGA4DashboardView === undefined
+	) {
 		return null;
 	}
 
