@@ -41,6 +41,13 @@ Negative.args = {
 	currentValue: 25,
 };
 
+export const ZeroChange = Template.bind( {} );
+ZeroChange.storyName = 'ZeroChange';
+ZeroChange.args = {
+	previousValue: 1,
+	currentValue: 1,
+};
+
 export default {
 	title: 'Components/ChangeBadge',
 	component: ChangeBadge,

@@ -56,6 +56,20 @@ Negative.scenario = {
 	delay: 250,
 };
 
+export const ZeroChange = Template.bind( {} );
+ZeroChange.storyName = 'Zero Change';
+ZeroChange.args = {
+	title: 'New Visitors',
+	metricValue: 100,
+	subText: 'of 1,234 total visitors',
+	currentValue: 100,
+	previousValue: 100,
+};
+ZeroChange.scenario = {
+	label: 'Components/KeyMetrics/Widgets/MetricTileNumeric/ZeroChange',
+	delay: 250,
+};
+
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {

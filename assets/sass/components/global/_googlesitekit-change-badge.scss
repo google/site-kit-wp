@@ -32,5 +32,10 @@
 			background-color: $c-red-r-50;
 			color: $c-red-r-700;
 		}
+
+		&.googlesitekit-change-badge--zero {
+			background-color: $c-neutral-n-50;
+			color: $c-neutral-n-700;
+		}
 	}
 }

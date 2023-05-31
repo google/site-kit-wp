@@ -30,11 +30,13 @@ import { calculateChange, numFmt } from '../util';
 export default function ChangeBadge( { previousValue, currentValue } ) {
 	const change = calculateChange( previousValue, currentValue );
 	const isNegative = change < 0;
+	const isZero = change === 0;
 
 	return (
 		<div
 			className={ classnames( 'googlesitekit-change-badge', {
 				'googlesitekit-change-badge--negative': isNegative,
+				'googlesitekit-change-badge--zero': isZero,
 			} ) }
 		>
 			{ numFmt( change, {
