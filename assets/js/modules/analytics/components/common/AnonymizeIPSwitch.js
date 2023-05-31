@@ -19,11 +19,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	useCallback,
-	createInterpolateElement,
-	Fragment,
-} from '@wordpress/element';
+import { useCallback, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -67,72 +63,70 @@ export default function AnonymizeIPSwitch() {
 					{ __( 'IP addresses', 'google-site-kit' ) }
 				</h4>
 			) }
-			<Fragment>
-				<div className="googlesitekit-settings-module__meta-item">
-					<div className="googlesitekit-analytics-anonymizeip">
-						<Switch
-							label={ __(
-								'Anonymize IP addresses',
-								'google-site-kit'
-							) }
-							onClick={ onChange }
-							checked={ anonymizeIP }
-							hideLabel={ false }
-						/>
-						<p>
-							{ createInterpolateElement(
-								anonymizeIP
-									? __(
-											'IP addresses will be anonymized. <LearnMoreLink />',
-											'google-site-kit'
-									  )
-									: __(
-											'IP addresses will not be anonymized. <LearnMoreLink />',
-											'google-site-kit'
-									  ),
-								{
-									LearnMoreLink: (
-										<SupportLink
-											path="/analytics/answer/2763052"
-											external
-											aria-label={ __(
-												'Learn more about IP anonymization.',
-												'google-site-kit'
-											) }
-										>
-											{ __(
-												'Learn more',
-												'google-site-kit'
-											) }
-										</SupportLink>
-									),
-								}
-							) }
-						</p>
-					</div>
-				</div>
-				{ ga4ReportingEnabled && (
-					<SettingsNotice
-						type={ TYPE_INFO }
-						notice={ __(
-							'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
+			<div className="googlesitekit-settings-module__meta-item">
+				<div className="googlesitekit-analytics-anonymizeip">
+					<Switch
+						label={ __(
+							'Anonymize IP addresses',
 							'google-site-kit'
 						) }
-						LearnMore={ () => (
-							<SupportLink
-								path="/analytics/answer/2763052"
-								external
-								aria-label={ __(
-									'Learn more about IP anonymization.',
-									'google-site-kit'
-								) }
-							>
-								{ __( 'Learn more', 'google-site-kit' ) }
-							</SupportLink>
-						) }
+						onClick={ onChange }
+						checked={ anonymizeIP }
+						hideLabel={ false }
 					/>
-				) }
-			</Fragment>
+					<p>
+						{ createInterpolateElement(
+							anonymizeIP
+								? __(
+										'IP addresses will be anonymized. <LearnMoreLink />',
+										'google-site-kit'
+								  )
+								: __(
+										'IP addresses will not be anonymized. <LearnMoreLink />',
+										'google-site-kit'
+								  ),
+							{
+								LearnMoreLink: (
+									<SupportLink
+										path="/analytics/answer/2763052"
+										external
+										aria-label={ __(
+											'Learn more about IP anonymization.',
+											'google-site-kit'
+										) }
+									>
+										{ __(
+											'Learn more',
+											'google-site-kit'
+										) }
+									</SupportLink>
+								),
+							}
+						) }
+					</p>
+				</div>
+			</div>
+			{ ga4ReportingEnabled && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					notice={ __(
+						'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
+						'google-site-kit'
+					) }
+					LearnMore={ () => (
+						<SupportLink
+							path="/analytics/answer/2763052"
+							external
+							aria-label={ __(
+								'Learn more about IP anonymization.',
+								'google-site-kit'
+							) }
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</SupportLink>
+					) }
+				/>
+			) }
 		</div>
 	);
 }
