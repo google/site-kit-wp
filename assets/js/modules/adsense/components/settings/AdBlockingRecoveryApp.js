@@ -55,55 +55,63 @@ export default function AdBlockingRecoveryApp() {
 			<Header>
 				<HelpMenu />
 			</Header>
-			<div className="googlesitekit-ad-blocking-recovery">
-				<div className="googlesitekit-module-page">
-					<Grid>
-						<Layout rounded>
-							<Grid className="googlesitekit-heading-3 googlesitekit-ad-blocking-recovery__heading">
-								<Row>
-									<Cell
-										lgSize={ 6 }
-										mdSize={ 8 }
-										smSize={ 4 }
-									>
-										<PageHeader
-											className="googlesitekit-heading-3 googlesitekit-ad-blocking-recovery__heading"
-											title={ __(
-												'Ad Blocking Recovery',
+			<div className="googlesitekit-ad-blocking-recovery googlesitekit-module-page">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<Layout rounded>
+								<Grid>
+									<Row>
+										<Cell
+											lgSize={ 6 }
+											mdSize={ 8 }
+											smSize={ 4 }
+										>
+											<PageHeader
+												className="googlesitekit-heading-3 googlesitekit-ad-blocking-recovery__heading"
+												title={ __(
+													'Ad Blocking Recovery',
+													'google-site-kit'
+												) }
+												fullWidth
+											/>
+										</Cell>
+									</Row>
+								</Grid>
+
+								<Grid className="googlesitekit-ad-blocking-recovery__content">
+									<Row>
+										<Cell mdSize={ 6 } lgSize={ 8 }>
+											(Placeholer: Stepper component can
+											go here.)
+										</Cell>
+
+										{ isTabletWidthOrLarger && (
+											<Cell
+												className="googlesitekit-ad-blocking-recovery__hero-graphic"
+												mdSize={ 2 }
+												lgSize={ 4 }
+											>
+												<AdBlockingSetupSVG />
+											</Cell>
+										) }
+									</Row>
+								</Grid>
+
+								<div className="googlesitekit-ad-blocking-recovery__footer googlesitekit-ad-blocking-recovery__buttons">
+									<div className="googlesitekit-ad-blocking-recovery__footer-cancel">
+										<Link href={ settingsURL }>
+											{ __(
+												'Cancel',
 												'google-site-kit'
 											) }
-											fullWidth
-										/>
-									</Cell>
-								</Row>
-							</Grid>
-
-							<Grid className="googlesitekit-ad-blocking-recovery__content">
-								<Row>
-									<Cell mdSize={ 6 } lgSize={ 8 }></Cell>
-
-									{ isTabletWidthOrLarger && (
-										<Cell
-											className="googlesitekit-ad-blocking-recovery__hero-graphic"
-											mdSize={ 2 }
-											lgSize={ 4 }
-										>
-											<AdBlockingSetupSVG />
-										</Cell>
-									) }
-								</Row>
-							</Grid>
-
-							<div className="googlesitekit-ad-blocking-recovery__footer googlesitekit-ad-blocking-recovery__buttons">
-								<div className="googlesitekit-ad-blocking-recovery__footer-cancel">
-									<Link href={ settingsURL }>
-										{ __( 'Cancel', 'google-site-kit' ) }
-									</Link>
+										</Link>
+									</div>
 								</div>
-							</div>
-						</Layout>
-					</Grid>
-				</div>
+							</Layout>
+						</Cell>
+					</Row>
+				</Grid>
 			</div>
 		</Fragment>
 	);
