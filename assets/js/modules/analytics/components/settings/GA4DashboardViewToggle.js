@@ -41,7 +41,10 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function GA4DashboardViewToggle( { isUAAvailable = false } ) {
+export default function GA4DashboardViewToggle( {
+	isUAConnected = false,
+	isUAEnabled = false,
+} ) {
 	const viewContext = useViewContext();
 
 	const dashboardView = useSelect( ( select ) =>
@@ -64,9 +67,8 @@ export default function GA4DashboardViewToggle( { isUAAvailable = false } ) {
 		);
 	}, [ dashboardView, setDashboardView, viewContext ] );
 
-	const displayDashboardView = isUAAvailable
-		? dashboardView
-		: DASHBOARD_VIEW_GA4;
+	const displayDashboardView =
+		isUAConnected && isUAEnabled ? dashboardView : DASHBOARD_VIEW_GA4;
 
 	return (
 		<div>
@@ -78,7 +80,7 @@ export default function GA4DashboardViewToggle( { isUAAvailable = false } ) {
 				checked={ displayDashboardView === 'google-analytics-4' }
 				onClick={ onChange }
 				hideLabel={ false }
-				disabled={ ! isUAAvailable }
+				disabled={ ! ( isUAConnected && isUAEnabled ) }
 			/>
 			<p>
 				{ displayDashboardView === DASHBOARD_VIEW_GA4 &&
@@ -98,5 +100,6 @@ export default function GA4DashboardViewToggle( { isUAAvailable = false } ) {
 
 // eslint-disable-next-line sitekit/acronym-case
 GA4DashboardViewToggle.propTypes = {
-	isUAAvailable: PropTypes.bool,
+	isUAConnected: PropTypes.bool,
+	isUAEnabled: PropTypes.bool,
 };

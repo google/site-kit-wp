@@ -119,9 +119,8 @@ export default function SettingsForm( {
 					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
 						{ isGA4Connected && (
 							<GA4DashboardViewToggle
-								isUAAvailable={
-									!! ( isUAConnected && isUAEnabled )
-								}
+								isUAConnected={ isUAConnected }
+								isUAEnabled={ isUAEnabled }
 							/>
 						) }
 						{ ! isGA4Connected &&
