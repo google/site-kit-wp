@@ -27,7 +27,7 @@ import { Icon, info } from '@wordpress/icons';
  */
 import { Tooltip } from 'googlesitekit-components';
 import useViewContext from '../../hooks/useViewContext';
-import useThrottle from '../../hooks/useThrottle';
+import { useDebounce } from '../../hooks/useDebounce';
 import { trackEvent } from '../../util';
 
 export default function DateMarker( { id, text } ) {
@@ -43,7 +43,10 @@ export default function DateMarker( { id, text } ) {
 		trackEvent( eventCategory, 'chart_tooltip_view' );
 	}, [ eventCategory ] );
 
-	const handleTooltipOpen = useThrottle( trackTooltipOpen, 5000 );
+	const handleTooltipOpen = useDebounce( trackTooltipOpen, 5000, {
+		leading: true,
+		trailing: false,
+	} );
 
 	return (
 		<Fragment>
