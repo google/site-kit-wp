@@ -33,6 +33,43 @@ import {
 } from '../../util';
 
 describe( 'AdBlockingRecoveryCTA', () => {
+	it.each`
+		accountStatus               | siteStatus             | adBlockingRecoverySetupStatus                          | description
+		${ ACCOUNT_STATUS_PENDING } | ${ SITE_STATUS_READY } | ${ '' }                                                | ${ 'Adsense account status is not ready' }
+		${ ACCOUNT_STATUS_READY }   | ${ SITE_STATUS_ADDED } | ${ '' }                                                | ${ 'Adsense site status is not ready' }
+		${ ACCOUNT_STATUS_READY }   | ${ SITE_STATUS_ADDED } | ${ AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED } | ${ 'Ad blocking recovery status is not an empty string' }
+	`(
+		'should not render the CTA when $description',
+		( { accountStatus, siteStatus, adBlockingRecoverySetupStatus } ) => {
+			const { container } = render( <AdBlockingRecoveryCTA />, {
+				setupRegistry: ( registry ) => {
+					provideModules( registry, [
+						{
+							slug: 'adsense',
+							active: true,
+							connected: true,
+						},
+					] );
+					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+						accountStatus,
+						siteStatus,
+						adBlockingRecoverySetupStatus,
+					} );
+				},
+			} );
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-settings-notice-ad-blocking-recovery-cta'
+				)
+			).toBeNull();
+
+			expect( container.textContent ).not.toContain(
+				'Ad blocking recovery'
+			);
+		}
+	);
+
 	it( 'should render the CTA when Ad Blocking Recovery is not set up', () => {
 		const { container } = render( <AdBlockingRecoveryCTA />, {
 			setupRegistry: ( registry ) => {
@@ -61,93 +98,5 @@ describe( 'AdBlockingRecoveryCTA', () => {
 		expect( container.textContent ).toContain(
 			'Start recovering revenue lost from ad blockers by deploying the ad blocking tag through Site Kit.'
 		);
-	} );
-
-	it( 'should not render the CTA when the Adsense account status is not ready', () => {
-		const { container } = render( <AdBlockingRecoveryCTA />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					accountStatus: ACCOUNT_STATUS_PENDING,
-					siteStatus: SITE_STATUS_READY,
-					adBlockingRecoverySetupStatus: '',
-				} );
-			},
-		} );
-
-		expect(
-			container.querySelector(
-				'.googlesitekit-settings-notice-ad-blocking-recovery-cta'
-			)
-		).toBeNull();
-
-		expect( container.textContent ).not.toContain( 'Ad blocking recovery' );
-	} );
-
-	it( 'should not render the CTA when the Adsense site status is not ready', () => {
-		const { container } = render( <AdBlockingRecoveryCTA />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					accountStatus: ACCOUNT_STATUS_READY,
-					siteStatus: SITE_STATUS_ADDED,
-					adBlockingRecoverySetupStatus: '',
-				} );
-			},
-		} );
-
-		expect(
-			container.querySelector(
-				'.googlesitekit-settings-notice-ad-blocking-recovery-cta'
-			)
-		).toBeNull();
-
-		expect( container.textContent ).not.toContain( 'Ad blocking recovery' );
-	} );
-
-	it( 'should not render the CTA when ad blocking recovery status is not an empty string', () => {
-		const { container } = render( <AdBlockingRecoveryCTA />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					accountID: 'pub-12345678',
-					clientID: 'ca-pub-12345678',
-					useSnippet: false,
-					accountStatus: ACCOUNT_STATUS_READY,
-					siteStatus: SITE_STATUS_ADDED,
-					adBlockingRecoverySetupStatus:
-						AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
-				} );
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveIsAdBlockerActive( true );
-			},
-		} );
-
-		expect(
-			container.querySelector(
-				'.googlesitekit-settings-notice-ad-blocking-recovery-cta'
-			)
-		).toBeNull();
-
-		expect( container.textContent ).not.toContain( 'Ad blocking recovery' );
 	} );
 } );
