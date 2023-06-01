@@ -39,6 +39,7 @@ export const STRATEGY_ZIP = 'zip';
 const ANALYTICS_4_METRIC_TYPES = {
 	totalUsers: 'TYPE_INTEGER',
 	newUsers: 'TYPE_INTEGER',
+	activeUsers: 'TYPE_INTEGER',
 	sessions: 'TYPE_INTEGER',
 	conversions: 'TYPE_INTEGER',
 	screenPageViews: 'TYPE_INTEGER',
@@ -73,6 +74,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 	deviceCategory: [ 'Desktop', 'Tablet', 'Mobile' ],
 	pageTitle: ( i ) => ( i <= 12 ? `Test Post ${ i }` : false ),
 	pagePath: ( i ) => ( i <= 12 ? `/test-post-${ i }/` : false ),
+	newVsReturning: [ 'new', 'returning' ],
 };
 
 /**

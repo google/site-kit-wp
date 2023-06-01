@@ -1,6 +1,4 @@
 /**
- * NewVisitorsWidget tests.
- *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +14,42 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
-import NewVisitorsWidget from './NewVisitorsWidget';
+.googlesitekit-plugin {
 
-describe( 'NewVisitorsWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <NewVisitorsWidget /> );
+	.googlesitekit-widget--adBlockerRecovery {
 
-		expect(
-			getByText( 'TODO: UI for NewVisitorsWidget' )
-		).toBeInTheDocument();
-	} );
-} );
+		.googlesitekit-publisher-win,
+		.mdc-layout-grid {
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-widget--adBlockerRecovery__content {
+		margin-bottom: 30px;
+
+		p {
+			margin: 10px 0 0;
+		}
+	}
+
+	.googlesitekit-widget--adBlockerRecovery__graphics {
+		text-align: center;
+
+		p {
+			color: $c-neutral-n-500;
+			font-size: 12px;
+			margin: 0 34px;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery-notification {
+
+		.googlesitekit-publisher-win__image-small {
+			text-align: center;
+
+			svg {
+				max-width: 233px;
+			}
+		}
+	}
+}
