@@ -19,7 +19,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\AdSense;
@@ -29,11 +28,13 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\FakeHttp;
 use ReflectionMethod;
 use WP_REST_Request;
 
 /**
  * @group Modules
+ * @group AdSense
  */
 class AdSenseTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
@@ -379,6 +380,38 @@ class AdSenseTest extends TestCase {
 		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
 		// Valid base64 should return the tag.
 		$this->assertEquals( 'test-tag', $tag );
+	}
+
+	public function test_rest_route_ad_blocking_recovery_tag() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+		$adsense->register();
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$adsense->get_scopes()
+		);
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'adsense' ) );
+
+		FakeHttp::fake_google_http_handler(
+			$adsense->get_client()
+		);
+
+		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/adsense/data/ad-blocking-recovery-tag' );
+		$request->set_query_params(
+			array(
+				'accountID' => 'pub-12345678',
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEqualSetsWithIndex( array(), $response->get_data() );
 	}
 
 	public function test_is_connected() {
