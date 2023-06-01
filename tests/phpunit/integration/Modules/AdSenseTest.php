@@ -333,6 +333,54 @@ class AdSenseTest extends TestCase {
 		);
 	}
 
+	public function test_get_ad_blocking_recovery_tag() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		// Confirm that the it is null when not available.
+		$this->assertNull( $tag );
+
+		// Populate the tag with invalid base64.
+		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, 'ABCDEFGHI' ); // Invalid length.
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		// Invalid base64 should return null.
+		$this->assertNull( $tag );
+
+		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, 'ABCD@!#$' ); // Invalid characters.
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		$this->assertNull( $tag );
+
+		// Populate the tag with valid base64.
+		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, base64_encode( 'test-tag' ) );
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		// Valid base64 should return the tag.
+		$this->assertEquals( 'test-tag', $tag );
+	}
+
+	public function test_get_ad_blocking_recovery_error_protection_tag() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		// Confirm that the it is null when not available.
+		$this->assertNull( $tag );
+
+		// Populate the tag with invalid base64.
+		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, 'ABCDEFGHI' ); // Invalid length.
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		// Invalid base64 should return null.
+		$this->assertNull( $tag );
+
+		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, 'ABCD@!#$' ); // Invalid characters.
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		$this->assertNull( $tag );
+
+		// Populate the tag with valid base64.
+		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, base64_encode( 'test-tag' ) );
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		// Valid base64 should return the tag.
+		$this->assertEquals( 'test-tag', $tag );
+	}
+
 	public function test_is_connected() {
 		$adsense  = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
