@@ -369,6 +369,7 @@ class AdSenseTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
+				'ad-blocking-recovery-tag',
 				'notifications',
 				'accounts',
 				'alerts',
