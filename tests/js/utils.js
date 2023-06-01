@@ -554,7 +554,7 @@ export const waitForDefaultTimeouts = () => {
 /**
  * Creates a delay in the execution of subsequent code for a specified duration in milliseconds.
  *
- * @since n.e.x.t
+ * @since 1.102.0
  *
  * @param {number} timeout The duration to wait before resolving the promise, in milliseconds.
  * @return {Promise} A promise that resolves after the specified `timeout` duration.

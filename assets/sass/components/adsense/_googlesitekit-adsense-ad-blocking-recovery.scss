@@ -26,14 +26,30 @@
 
 	.googlesitekit-widget--adBlockerRecovery__content {
 		margin-bottom: 30px;
+
+		p {
+			margin: 10px 0 0;
+		}
 	}
 
 	.googlesitekit-widget--adBlockerRecovery__graphics {
 		text-align: center;
 
 		p {
+			color: $c-neutral-n-500;
 			font-size: 12px;
 			margin: 0 34px;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery-notification {
+
+		.googlesitekit-publisher-win__image-small {
+			text-align: center;
+
+			svg {
+				max-width: 233px;
+			}
 		}
 	}
 }

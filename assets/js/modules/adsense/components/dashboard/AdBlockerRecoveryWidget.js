@@ -92,7 +92,7 @@ export default function AdBlockerRecoveryWidget( { Widget, WidgetNull } ) {
 						</p>
 						<p>
 							{ __(
-								'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message *',
+								'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message*',
 								'google-site-kit'
 							) }
 						</p>
@@ -122,7 +122,7 @@ export default function AdBlockerRecoveryWidget( { Widget, WidgetNull } ) {
 
 					<p>
 						{ __(
-							'* Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop',
+							'*Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop',
 							'google-site-kit'
 						) }
 					</p>

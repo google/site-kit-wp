@@ -111,14 +111,14 @@ describe( 'Checkbox', () => {
 		expect(
 			container
 				.querySelector( 'md-checkbox' )
-				.getAttribute( 'data-aria-label' )
+				.getAttribute( 'aria-label' )
 		).toBe( 'Complex Label With 5 Sub Children' );
 	} );
 
 	it( 'should attach the onKeyDown handler when present', () => {
 		const onKeyDown = jest.fn();
 
-		const { getByRole } = render(
+		const { getByLabelText } = render(
 			<Checkbox
 				id="checkbox-id"
 				name="checkbox-name"
@@ -130,7 +130,7 @@ describe( 'Checkbox', () => {
 			</Checkbox>
 		);
 
-		fireEvent.keyDown( getByRole( 'checkbox' ), {
+		fireEvent.keyDown( getByLabelText( 'Checkbox Label' ), {
 			key: 'Enter',
 			keyCode: 13,
 		} );
@@ -149,15 +149,22 @@ describe( 'Checkbox', () => {
 			// Clickable element for test description:
 			'input',
 			// Function to retrieve the clickable element:
-			( { getByRole } ) =>
-				getByRole( 'checkbox' ).shadowRoot.querySelector( 'input' ),
+			( { getByLabelText } ) =>
+				getByLabelText( 'Checkbox Label' ).shadowRoot.querySelector(
+					'input'
+				),
 		],
-		[
-			// Clickable element for test description:
-			'label',
-			// Function to retrieve the clickable element:
-			( { getByText } ) => getByText( 'Checkbox Label' ),
-		],
+		// TODO: Restore the label tests, either when JSDom supports the :focus-visible selector,
+		// or when the @material/web md-checkbox no longer makes use of it during these tests.
+		// References:
+		// - https://github.com/jsdom/jsdom/issues/3426
+		// - https://github.com/material-components/material-web/blob/f9da93553bd64e7e8475f8acb8ee12206af12ac4/focus/lib/focus-ring.ts#L66
+		// [
+		// 	// Clickable element for test description:
+		// 	'label',
+		// 	// Function to retrieve the clickable element:
+		// 	( { getByText } ) => getByText( 'Checkbox Label' ),
+		// ],
 	] )(
 		'controlled input behaviour for %s',
 		( clickableElement, getClickableElement ) => {
@@ -173,21 +180,21 @@ describe( 'Checkbox', () => {
 			}
 
 			function expectCheckboxToBeChecked( checkbox ) {
-				expect( checkbox ).toHaveAttribute( 'checked' );
+				expect( checkbox.checked ).toBe( true );
 
 				// Explicitly check the `checked` attribute of the underlying input element. This is
 				// worthwhile as we are explicitly reaching into the shadow DOM to update the input within
 				// the Checkbox component.
 				expect(
-					checkbox.shadowRoot.querySelector( 'input' )
-				).toHaveAttribute( 'checked' );
+					checkbox.shadowRoot.querySelector( 'input' ).checked
+				).toBe( true );
 			}
 
 			function expectCheckboxNotToBeChecked( checkbox ) {
-				expect( checkbox ).not.toHaveAttribute( 'checked' );
+				expect( checkbox.checked ).toBe( false );
 				expect(
-					checkbox.shadowRoot.querySelector( 'input' )
-				).not.toHaveAttribute( 'checked' );
+					checkbox.shadowRoot.querySelector( 'input' ).checked
+				).toBe( false );
 			}
 
 			it( 'should correctly invoke onChange and retain its unchecked state when clicked', async () => {
@@ -203,18 +210,22 @@ describe( 'Checkbox', () => {
 					</Checkbox>
 				);
 
-				const { container, getByRole } = result;
+				const { container, getByLabelText } = result;
 
-				await getByRole( 'checkbox' ).updateComplete;
+				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
 				expect( container ).toMatchSnapshot();
 
 				// Confirm the checkbox is not checked.
-				expectCheckboxNotToBeChecked( getByRole( 'checkbox' ) );
+				expectCheckboxNotToBeChecked(
+					getByLabelText( 'Checkbox Label' )
+				);
+
+				expect( onChange ).toHaveBeenCalledTimes( 0 );
 
 				fireEvent.click( getClickableElement( result ) );
 
-				await getByRole( 'checkbox' ).updateComplete;
+				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
 				expect( container ).toMatchSnapshot();
 
@@ -223,7 +234,9 @@ describe( 'Checkbox', () => {
 				expect( onChangeCalls[ 0 ].checked ).toBe( true );
 
 				// Confirm the checkbox remains unchecked as its state is controlled.
-				expectCheckboxNotToBeChecked( getByRole( 'checkbox' ) );
+				expectCheckboxNotToBeChecked(
+					getByLabelText( 'Checkbox Label' )
+				);
 			} );
 
 			it( 'should correctly invoke onChange and retain its checked state when clicked', async () => {
@@ -240,18 +253,18 @@ describe( 'Checkbox', () => {
 					</Checkbox>
 				);
 
-				const { container, getByRole } = result;
+				const { container, getByLabelText } = result;
 
-				await getByRole( 'checkbox' ).updateComplete;
+				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
 				expect( container ).toMatchSnapshot();
 
 				// Confirm the checkbox is checked.
-				expectCheckboxToBeChecked( getByRole( 'checkbox' ) );
+				expectCheckboxToBeChecked( getByLabelText( 'Checkbox Label' ) );
 
 				fireEvent.click( getClickableElement( result ) );
 
-				await getByRole( 'checkbox' ).updateComplete;
+				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
 				expect( container ).toMatchSnapshot();
 
@@ -260,7 +273,7 @@ describe( 'Checkbox', () => {
 				expect( onChangeCalls[ 0 ].checked ).toBe( false );
 
 				// Confirm the checkbox remains checked as its state is controlled.
-				expectCheckboxToBeChecked( getByRole( 'checkbox' ) );
+				expectCheckboxToBeChecked( getByLabelText( 'Checkbox Label' ) );
 			} );
 
 			it( 'should allow updating of the checked state', async () => {
@@ -288,18 +301,20 @@ describe( 'Checkbox', () => {
 					<CheckableCheckbox onChange={ onChange } />
 				);
 
-				const { container, getByRole } = result;
+				const { container, getByLabelText } = result;
 
-				await getByRole( 'checkbox' ).updateComplete;
+				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
 				expect( container ).toMatchSnapshot();
 
 				// Confirm the checkbox is not checked.
-				expectCheckboxNotToBeChecked( getByRole( 'checkbox' ) );
+				expectCheckboxNotToBeChecked(
+					getByLabelText( 'Checkbox Label' )
+				);
 
 				fireEvent.click( getClickableElement( result ) );
 
-				await getByRole( 'checkbox' ).updateComplete;
+				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
 				expect( container ).toMatchSnapshot();
 
@@ -308,7 +323,7 @@ describe( 'Checkbox', () => {
 				expect( onChangeCalls[ 0 ].checked ).toBe( true );
 
 				// Confirm the checkbox is now checked
-				expectCheckboxToBeChecked( getByRole( 'checkbox' ) );
+				expectCheckboxToBeChecked( getByLabelText( 'Checkbox Label' ) );
 
 				// Click again to uncheck
 				onChangeCalls.length = 0;
@@ -316,7 +331,7 @@ describe( 'Checkbox', () => {
 
 				fireEvent.click( getClickableElement( result ) );
 
-				await getByRole( 'checkbox' ).updateComplete;
+				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
 				expect( container ).toMatchSnapshot();
 
@@ -325,7 +340,9 @@ describe( 'Checkbox', () => {
 				expect( onChangeCalls[ 0 ].checked ).toBe( false );
 
 				// Confirm the checkbox is now unchecked
-				expectCheckboxNotToBeChecked( getByRole( 'checkbox' ) );
+				expectCheckboxNotToBeChecked(
+					getByLabelText( 'Checkbox Label' )
+				);
 			} );
 		}
 	);
