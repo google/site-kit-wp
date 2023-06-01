@@ -55,7 +55,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			container.querySelector(
 				'.googlesitekit-settings-notice-ad-blocking-recovery-cta'
 			)
-		).not.toEqual( null );
+		).not.toBeNull();
 
 		expect( container.textContent ).toContain( 'Ad blocking recovery' );
 		expect( container.textContent ).toContain(
@@ -85,7 +85,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			container.querySelector(
 				'.googlesitekit-settings-notice-ad-blocking-recovery-cta'
 			)
-		).toEqual( null );
+		).toBeNull();
 
 		expect( container.textContent ).not.toContain( 'Ad blocking recovery' );
 	} );
@@ -112,7 +112,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			container.querySelector(
 				'.googlesitekit-settings-notice-ad-blocking-recovery-cta'
 			)
-		).toEqual( null );
+		).toBeNull();
 
 		expect( container.textContent ).not.toContain( 'Ad blocking recovery' );
 	} );
@@ -146,7 +146,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			container.querySelector(
 				'.googlesitekit-settings-notice-ad-blocking-recovery-cta'
 			)
-		).toEqual( null );
+		).toBeNull();
 
 		expect( container.textContent ).not.toContain( 'Ad blocking recovery' );
 	} );
