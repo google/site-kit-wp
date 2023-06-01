@@ -77,7 +77,7 @@ export default function GA4DashboardViewToggle( {
 					'Display metrics from Google Analytics 4 on the dashboard',
 					'google-site-kit'
 				) }
-				checked={ displayDashboardView === 'google-analytics-4' }
+				checked={ displayDashboardView === DASHBOARD_VIEW_GA4 }
 				onClick={ onChange }
 				hideLabel={ false }
 				disabled={ ! ( isUAConnected && isUAEnabled ) }
