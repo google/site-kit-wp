@@ -217,7 +217,7 @@
 	flex-flow: column wrap;
 	padding-bottom: 24px;
 	padding-top: 24px;
-	row-gap: 15px;
+	gap: 15px;
 
 	@media (min-width: $bp-desktop) {
 		align-items: center;
@@ -225,7 +225,7 @@
 	}
 
 	.googlesitekit-settings-notice__icon {
-		margin-right: 20px;
+		margin-right: 5px;
 	}
 
 	.googlesitekit-settings-notice__text {
