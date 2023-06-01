@@ -96,7 +96,11 @@ export default function SettingsNotice( props ) {
 					</Button>
 				</div>
 			) }
-			{ OuterCTA && <OuterCTA /> }
+			{ OuterCTA && (
+				<div className="googlesitekit-settings-notice__button">
+					<OuterCTA />
+				</div>
+			) }
 		</div>
 	);
 }
