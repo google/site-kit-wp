@@ -25,7 +25,11 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useEffect,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -85,15 +89,20 @@ export default function UACutoffWarning( { className } ) {
 		! isGA4Connected &&
 		stringToDate( referenceDate ) >= stringToDate( UA_CUTOFF_DATE );
 
+	const eventCategory = `${ viewContext }_widget-ua-stale-warning`;
+
+	useEffect( () => {
+		if ( shouldDisplayWarning ) {
+			trackEvent( eventCategory, 'view_notification' );
+		}
+	}, [ eventCategory, shouldDisplayWarning ] );
+
 	if ( ! shouldDisplayWarning ) {
 		return null;
 	}
 
 	const handleCTAClick = async () => {
-		await trackEvent(
-			`${ viewContext }_ua-cutoff-warning`,
-			'click_setup_ga4_button'
-		);
+		await trackEvent( eventCategory, 'confirm_notification' );
 
 		setValues( FORM_SETUP, {
 			// Pre-enable GA4 controls.
@@ -137,6 +146,12 @@ export default function UACutoffWarning( { className } ) {
 														'google-site-kit'
 													) }
 													href={ documentationURL }
+													onClick={ () => {
+														trackEvent(
+															eventCategory,
+															'click_learn_more_link'
+														);
+													} }
 													external
 												/>
 											),

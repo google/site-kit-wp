@@ -223,6 +223,11 @@
 		margin-right: 20px;
 	}
 
+	.googlesitekit-settings-notice__body {
+		display: flex;
+		flex: 1;
+	}
+
 	.googlesitekit-settings-notice__text {
 		font-size: $fs-title-sm;
 		font-weight: $fw-medium;
@@ -233,5 +238,19 @@
 		font-size: $fs-body-md;
 		line-height: $lh-body-md;
 		padding-top: 3px;
+	}
+
+	.googlesitekit-settings-notice__button {
+		flex-basis: 100%;
+		margin-left: 40px;
+	}
+
+	@media (min-width: $bp-desktop) {
+		flex-wrap: nowrap;
+
+		.googlesitekit-settings-notice__button {
+			flex-basis: auto;
+			margin-left: 0;
+		}
 	}
 }
