@@ -213,19 +213,19 @@
 }
 
 .googlesitekit-settings-notice-adsense-top-earning-pages-widget {
-	align-items: center;
-	flex-wrap: wrap;
+	align-items: normal;
+	flex-flow: column wrap;
 	padding-bottom: 24px;
 	padding-top: 24px;
 	row-gap: 15px;
 
-	.googlesitekit-settings-notice__icon {
-		margin-right: 20px;
+	@media (min-width: $bp-desktop) {
+		align-items: center;
+		flex-direction: row;
 	}
 
-	.googlesitekit-settings-notice__body {
-		display: flex;
-		flex: 1;
+	.googlesitekit-settings-notice__icon {
+		margin-right: 20px;
 	}
 
 	.googlesitekit-settings-notice__text {
@@ -238,19 +238,5 @@
 		font-size: $fs-body-md;
 		line-height: $lh-body-md;
 		padding-top: 3px;
-	}
-
-	.googlesitekit-settings-notice__button {
-		flex-basis: 100%;
-		margin-left: 40px;
-	}
-
-	@media (min-width: $bp-desktop) {
-		flex-wrap: nowrap;
-
-		.googlesitekit-settings-notice__button {
-			flex-basis: auto;
-			margin-left: 0;
-		}
 	}
 }
