@@ -27,12 +27,12 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
+import { isValidPropertyID } from '../../util';
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
@@ -43,9 +43,10 @@ export default function OptionalSettingsView() {
 	const canUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
 	);
-	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
 	);
+	const isUAConnected = isValidPropertyID( propertyID );
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAdsConversionID()
 	);
@@ -64,7 +65,7 @@ export default function OptionalSettingsView() {
 	const showIPAnonymizationSettings =
 		useSnippet &&
 		ampMode !== 'primary' &&
-		( ! ga4ReportingEnabled || isAnalyticsConnected );
+		( ! ga4ReportingEnabled || isUAConnected );
 
 	const showAdsConversionIDSettings =
 		canUseSnippet &&
