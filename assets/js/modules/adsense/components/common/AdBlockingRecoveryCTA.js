@@ -32,6 +32,7 @@ import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SupportLink from '../../../../components/SupportLink';
 import Badge from '../../../../components/Badge';
+import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 const { useSelect } = Data;
 
 export default function AdBlockingRecoveryCTA() {
@@ -50,8 +51,8 @@ export default function AdBlockingRecoveryCTA() {
 
 	if (
 		adBlockingRecoverySetupStatus !== '' ||
-		accountStatus !== 'ready' ||
-		siteStatus !== 'ready'
+		accountStatus !== ACCOUNT_STATUS_READY ||
+		siteStatus !== SITE_STATUS_READY
 	) {
 		return null;
 	}
