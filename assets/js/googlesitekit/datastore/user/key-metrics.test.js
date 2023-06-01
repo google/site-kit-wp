@@ -37,17 +37,13 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 
-/**
- * The endpoint for the key metrics settings.
- */
-export const coreKeyMetricsEndpointRegExp = new RegExp(
-	'^/google-site-kit/v1/core/user/data/key-metrics'
-);
-
 describe( 'core/user key metrics', () => {
 	let registry;
 	let store;
 
+	const coreKeyMetricsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/key-metrics'
+	);
 	const coreKeyMetricsExpectedResponse = {
 		widgetSlugs: [ 'widget1', 'widget2' ],
 		isWidgetHidden: false,
