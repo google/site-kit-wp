@@ -28,7 +28,8 @@ import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 describe( 'OptimizeRemovalNotification', () => {
 	let registry;
 
-	const title = 'Google Optimize will no longer work after 30 September 2023';
+	const title =
+		'Google Optimize will no longer work after September 30, 2023';
 
 	beforeEach( () => {
 		registry = createTestRegistry();
