@@ -22,26 +22,88 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
+import MetricTileNumeric from '../../../../components/KeyMetrics/MetricTileNumeric';
 
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 export default function LoyalVisitorsWidget( { Widget, WidgetNull } ) {
 	const keyMetricsWidgetHidden = useSelect( ( select ) =>
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
+	// One combined select hook is used to prevent unnecessary selects
+	// if the key metrics widget is hidden.
+	const [ report, loading ] = useInViewSelect( ( select ) => {
+		if ( keyMetricsWidgetHidden !== false ) {
+			return [];
+		}
+
+		const { getReport, hasFinishedResolution } =
+			select( MODULES_ANALYTICS_4 );
+
+		const reportOptions = {
+			...select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} ),
+			dimensions: [ 'newVsReturning' ],
+			metrics: [ { name: 'activeUsers' } ],
+		};
+
+		return [
+			getReport( reportOptions ),
+			! hasFinishedResolution( 'getReport', [ reportOptions ] ),
+		];
+	} );
+
 	if ( keyMetricsWidgetHidden !== false ) {
 		return <WidgetNull />;
 	}
 
+	const newVisitors =
+		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
+	const returningVisitors =
+		parseInt( report?.rows?.[ 3 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
+	const totalVisitors = newVisitors + returningVisitors;
+
+	const prevNewVisitors =
+		parseInt( report?.rows?.[ 0 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
+	const prevReturningVisitors =
+		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
+	const prevTotalVisitors = prevNewVisitors + prevReturningVisitors;
+
+	const currentPercentage =
+		totalVisitors > 0 ? returningVisitors / totalVisitors : 0;
+	const prevPercentage =
+		prevTotalVisitors > 0 ? prevReturningVisitors / prevTotalVisitors : 0;
+
 	return (
-		<Widget>
-			<div>TODO: UI for LoyalVisitorsWidget</div>
-		</Widget>
+		<MetricTileNumeric
+			Widget={ Widget }
+			title={ __( 'Loyal visitors', 'google-site-kit' ) }
+			metricValue={ currentPercentage }
+			subText={ sprintf(
+				/* translators: %d: Number of total visitors visiting the site. */
+				__( 'of %d total visitors', 'google-site-kit' ),
+				totalVisitors
+			) }
+			previousValue={ prevPercentage }
+			currentValue={ currentPercentage }
+			loading={ loading }
+		/>
 	);
 }
 
