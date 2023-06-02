@@ -20,21 +20,25 @@
  * Internal dependencies
  */
 import DashboardViewIndicator from './DashboardViewIndicator';
-import {
-	createTestRegistry,
-	provideModules,
-	provideSiteInfo,
-	WithTestRegistry,
-} from '../../../tests/js/utils';
+import { provideModules, provideSiteInfo } from '../../../tests/js/utils';
 import {
 	DASHBOARD_VIEW_GA4,
+	DASHBOARD_VIEW_UA,
 	MODULES_ANALYTICS,
 } from '../modules/analytics/datastore/constants';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 
-const Template = ( { ...args } ) => <DashboardViewIndicator { ...args } />;
+const Template = () => <DashboardViewIndicator />;
 
 export const DashboardViewIndicatorUAView = Template.bind( {} );
 DashboardViewIndicatorUAView.storyName = 'Universal Analytics View';
+DashboardViewIndicatorUAView.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: DASHBOARD_VIEW_UA,
+		} );
+	},
+};
 DashboardViewIndicatorUAView.scenario = {
 	label: 'Components/DashboardViewIndicator/DashboardViewIndicatorUAView',
 };
@@ -48,9 +52,6 @@ DashboardViewIndicatorGA4View.args = {
 		} );
 	},
 };
-DashboardViewIndicatorGA4View.parameters = {
-	features: [ 'ga4Reporting' ],
-};
 DashboardViewIndicatorGA4View.scenario = {
 	label: 'Components/DashboardViewIndicator/DashboardViewIndicatorGA4View',
 };
@@ -60,28 +61,30 @@ export default {
 	component: DashboardViewIndicator,
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
-			provideSiteInfo( registry );
-			provideModules( registry, [
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
+			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
 
-			args.setupRegistry?.( registry );
+				args.setupRegistry?.( registry );
+			};
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],
+	parameters: { features: [ 'ga4Reporting' ] },
 };
