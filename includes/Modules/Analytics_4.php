@@ -296,7 +296,12 @@ final class Analytics_4 extends Module
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			),
-			'GET:google-tag-settings'    => array( 'service' => 'tagmanager' ),
+			'GET:google-tag-settings'    => array(
+				'service' => 'tagmanager',
+				'scopes'  => array(
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
 			'POST:create-property'       => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
