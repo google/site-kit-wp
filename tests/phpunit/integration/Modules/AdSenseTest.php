@@ -29,6 +29,8 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\AdBlockingRecoveryTag;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use ReflectionMethod;
 use WP_REST_Request;
 
@@ -392,26 +394,44 @@ class AdSenseTest extends TestCase {
 		$user_options   = new User_Options( $context, $user->ID );
 		$authentication = new Authentication( $context, $options, $user_options );
 		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
-		$adsense->register();
 
 		$authentication->get_oauth_client()->set_granted_scopes(
 			$adsense->get_scopes()
 		);
-		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'adsense' ) );
 
 		FakeHttp::fake_google_http_handler(
-			$adsense->get_client()
+			$adsense->get_client(),
+			function() {
+				$response = new AdBlockingRecoveryTag();
+				$response->setTag( 'test-recovery-tag' );
+				$response->setErrorProtectionCode( 'test-error-protection-tag' );
+
+				return new Response( 200, array(), json_encode( $response ) );
+			}
 		);
 
-		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/adsense/data/ad-blocking-recovery-tag' );
-		$request->set_query_params(
+		// Assert that the tags are not available in database before fetching.
+		$this->assertFalse( $options->get( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION ) );
+		$this->assertFalse( $options->get( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION ) );
+
+		$response = $adsense->get_data(
+			'ad-blocking-recovery-tag',
 			array(
 				'accountID' => 'pub-12345678',
 			)
 		);
-		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEqualSetsWithIndex( array(), $response->get_data() );
+		// Assert API response.
+		$this->assertNotWPError( $response );
+		$this->assertEqualSetsWithIndex( array( 'success' => true ), $response->get_data() );
+
+		// Assert that the tags are available and saved as base64 encoded string in database after fetching.
+		$this->assertEquals( 'test-recovery-tag', base64_decode( $options->get( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION ) ) );
+		$this->assertEquals( 'test-error-protection-tag', base64_decode( $options->get( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION ) ) );
+
+		// Assert that the getter methods return the decoded tags.
+		$this->assertEquals( 'test-recovery-tag', $adsense->get_ad_blocking_recovery_tag() );
+		$this->assertEquals( 'test-error-protection-tag', $adsense->get_ad_blocking_recovery_error_protection_tag() );
 	}
 
 	public function test_is_connected() {
