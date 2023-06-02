@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { numFmt } from '../../util';
+import { numFmt, numFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
 
@@ -48,6 +48,8 @@ export default function MetricTileNumeric( props ) {
 		);
 	}
 
+	const formatOptions = numFmtOptions( metricValueFormat );
+
 	return (
 		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile">
@@ -57,11 +59,12 @@ export default function MetricTileNumeric( props ) {
 				<div className="googlesitekit-km-widget-tile__body">
 					<div className="googlesitekit-km-widget-tile__metric-change-container">
 						<div className="googlesitekit-km-widget-tile__metric">
-							{ numFmt( metricValue, metricValueFormat ) }
+							{ numFmt( metricValue, formatOptions ) }
 						</div>
 						<ChangeBadge
 							previousValue={ previousValue }
 							currentValue={ currentValue }
+							isAbsolute={ formatOptions?.style === 'percent' }
 						/>
 					</div>
 					<p className="googlesitekit-km-widget-tile__subtext">

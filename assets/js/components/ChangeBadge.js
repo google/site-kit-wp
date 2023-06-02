@@ -27,8 +27,12 @@ import classnames from 'classnames';
  */
 import { calculateChange, numFmt } from '../util';
 
-export default function ChangeBadge( { previousValue, currentValue } ) {
-	const change = calculateChange( previousValue, currentValue );
+export default function ChangeBadge( props ) {
+	const { previousValue, currentValue, isAbsolute } = props;
+
+	const change = isAbsolute
+		? currentValue - previousValue
+		: calculateChange( previousValue, currentValue );
 	const isNegative = change < 0;
 	const isZero = change === 0;
 
@@ -54,6 +58,7 @@ export default function ChangeBadge( { previousValue, currentValue } ) {
 }
 
 ChangeBadge.propTypes = {
+	isAbsolute: PropTypes.bool,
 	previousValue: PropTypes.number.isRequired,
 	currentValue: PropTypes.number.isRequired,
 };
