@@ -793,9 +793,9 @@ class Analytics_4Test extends TestCase {
 	public function test_google_tag_settings_datapoint( $tag_ids_data ) {
 		$this->enable_feature( 'gteSupport' );
 
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
+		$scopes   = $this->analytics->get_scopes();
+		$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+		$this->authentication->get_oauth_client()->set_granted_scopes( $scopes );
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
