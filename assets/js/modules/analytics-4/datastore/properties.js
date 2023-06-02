@@ -468,18 +468,24 @@ const baseActions = {
 	 * @param {string} measurementID Measurement ID.
 	 */
 	*updateSettingsForMeasurementID( measurementID ) {
-		const registry = yield commonActions.getRegistry();
+		const { select, dispatch, __experimentalResolveSelect } =
+			yield commonActions.getRegistry();
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setMeasurementID( measurementID );
+		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( measurementID );
 
 		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
 			return;
 		}
+		// Wait for authentication to be resolved to check scopes.
+		yield commonActions.await(
+			__experimentalResolveSelect( CORE_USER ).getAuthentication()
+		);
+		if ( ! select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE ) ) {
+			return;
+		}
 
 		if ( ! measurementID ) {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 				googleTagAccountID: '',
 				googleTagContainerID: '',
 				googleTagID: '',
@@ -505,7 +511,7 @@ const baseActions = {
 		// GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with mismatched settings. To mitigate this, we
 		// dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
 		// See issue https://github.com/google/site-kit-wp/issues/6784 and the PR https://github.com/google/site-kit-wp/pull/6814.
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			googleTagAccountID,
 			googleTagContainerID,
 			googleTagID,
