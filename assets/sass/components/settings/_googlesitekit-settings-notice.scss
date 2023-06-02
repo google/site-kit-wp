@@ -215,9 +215,9 @@
 .googlesitekit-settings-notice-adsense-top-earning-pages-widget {
 	align-items: normal;
 	flex-flow: column wrap;
+	gap: 15px;
 	padding-bottom: 24px;
 	padding-top: 24px;
-	gap: 15px;
 
 	@media (min-width: $bp-desktop) {
 		align-items: center;
