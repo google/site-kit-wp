@@ -44,34 +44,34 @@ export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} )
-	);
+	// One combined select hook is used to prevent unnecessary selects
+	// if the key metrics widget is hidden.
+	const [ report, loading ] = useInViewSelect( ( select ) => {
+		if ( keyMetricsWidgetHidden !== false ) {
+			return [];
+		}
 
-	const reportOptions = {
-		...dates,
-		dimensions: [ 'newVsReturning' ],
-		metrics: [
-			{
-				name: 'activeUsers',
-			},
-		],
-	};
+		const { getReport, hasFinishedResolution } =
+			select( MODULES_ANALYTICS_4 );
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-	);
+		const reportOptions = {
+			...select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} ),
+			dimensions: [ 'newVsReturning' ],
+			metrics: [ { name: 'activeUsers' } ],
+		};
 
-	const loading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			)
-	);
+		return [
+			getReport( reportOptions ),
+			! hasFinishedResolution( 'getReport', [ reportOptions ] ),
+		];
+	} );
+
+	if ( keyMetricsWidgetHidden !== false ) {
+		return <WidgetNull />;
+	}
 
 	const newVisitors =
 		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
@@ -85,14 +85,10 @@ export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
 		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
 	const compareTotalVisitors = compareNewVisitors + compareReturningVisitors;
 
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
-
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'New Visitors', 'google-site-kit' ) }
+			title={ __( 'New visitors', 'google-site-kit' ) }
 			metricValue={ newVisitors }
 			subText={ sprintf(
 				/* translators: %d: Number of total visitors visiting the site. */
