@@ -36,7 +36,6 @@ import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
-import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
 import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
@@ -53,7 +52,6 @@ const { useSelect } = Data;
 
 export default function BannerNotifications() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 	const gteSupportEnabled = useFeature( 'gteSupport' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
@@ -126,7 +124,6 @@ export default function BannerNotifications() {
 			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
 			{ adBlockerDetectionEnabled && <AdBlockingRecoveryNotification /> }
-			{ userInputEnabled && <UserInputPromptBannerNotification /> }
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 			{ ga4ReportingEnabled && analyticsModuleConnected && (
 				<SwitchGA4DashboardViewNotification />
