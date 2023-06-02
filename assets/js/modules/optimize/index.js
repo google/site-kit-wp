@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -48,13 +49,20 @@ export const registerModule = ( modules ) => {
 			throw {
 				message: (
 					<div>
-						{ __(
-							'Optimize will no longer work after September 30, 2023.',
-							'google-site-kit'
-						) }{ ' ' }
-						<SupportLink path="/optimize/answer/12979939" external>
-							{ __( 'Learn more', 'google-site-kit' ) }
-						</SupportLink>
+						{ createInterpolateElement(
+							__(
+								'Optimize will no longer work after September 30, 2023. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<SupportLink
+										path="/optimize/answer/12979939"
+										external
+									/>
+								),
+							}
+						) }
 					</div>
 				),
 				canActivate: true,
