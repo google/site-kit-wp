@@ -361,6 +361,9 @@ class Analytics_4Test extends TestCase {
 		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
 
 		$this->analytics->register();
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
 
 		$this->assertEqualSetsWithIndex(
 			array(
