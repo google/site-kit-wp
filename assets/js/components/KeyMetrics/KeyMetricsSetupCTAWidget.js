@@ -84,7 +84,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget noPadding Footer={ Footer }>
-			<section className="googlesitekit-plugin googlesitekit-setup__wrapper">
+			<section className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--key-metrics-setup-cta">
 				<Grid>
 					<Row>
 						<Cell smSize={ 6 } mdSize={ 5 } lgSize={ 6 }>
@@ -101,7 +101,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 									'google-site-kit'
 								) }
 							</p>
-							<div className="googlesitekit-widget-km-actions__wrapper">
+							<div className="googlesitekit-widget-key-metrics-actions__wrapper">
 								<Button href={ ctaLink }>
 									{ __(
 										'Get tailored metrics',
