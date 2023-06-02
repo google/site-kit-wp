@@ -32,6 +32,11 @@ export default function ChangeBadge( { previousValue, currentValue } ) {
 	const isNegative = change < 0;
 	const isZero = change === 0;
 
+	// Do not display the change badge if the change value can't be calculated.
+	if ( change === null ) {
+		return null;
+	}
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-change-badge', {

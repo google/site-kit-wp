@@ -90,11 +90,18 @@ export default function LoyalVisitorsWidget( { Widget, WidgetNull } ) {
 	const prevPercentage =
 		prevTotalVisitors > 0 ? prevReturningVisitors / prevTotalVisitors : 0;
 
+	const format = {
+		style: 'percent',
+		signDisplay: 'exceptZero',
+		maximumFractionDigits: 1,
+	};
+
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
 			title={ __( 'Loyal visitors', 'google-site-kit' ) }
 			metricValue={ currentPercentage }
+			metricValueFormat={ format }
 			subText={ sprintf(
 				/* translators: %d: Number of total visitors visiting the site. */
 				__( 'of %d total visitors', 'google-site-kit' ),
