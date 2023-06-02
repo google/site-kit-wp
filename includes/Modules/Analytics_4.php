@@ -469,11 +469,33 @@ final class Analytics_4 extends Module
 			)
 		);
 
-		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
-			$container           = $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $measurement_id ) );
-			$google_tag_settings = $this->get_google_tag_settings_for_measurement_id( $container, $measurement_id );
-			$this->get_settings()->merge( $google_tag_settings );
+		$this->sync_google_tag_settings();
+	}
+
+	/**
+	 * Syncs Google tag settings for the currently configured measurementID.
+	 *
+	 * @since 1.102.0
+	 */
+	protected function sync_google_tag_settings() {
+		if ( ! Feature_Flags::enabled( 'gteSupport' ) ) {
+			return;
 		}
+
+		$settings       = $this->get_settings();
+		$measurement_id = $settings->get()['measurementID'];
+
+		if ( ! $measurement_id ) {
+			return;
+		}
+
+		$google_tag_settings = $this->get_data( 'google-tag-settings', array( 'measurementID' => $measurement_id ) );
+
+		if ( is_wp_error( $google_tag_settings ) ) {
+			return;
+		}
+
+		$settings->merge( $google_tag_settings );
 	}
 
 	/**
