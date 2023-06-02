@@ -1,6 +1,4 @@
 /**
- * NewVisitorsWidget Component Stories.
- *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,20 +17,20 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import NewVisitorsWidget from './NewVisitorsWidget';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import LoyalVisitorsWidget from './LoyalVisitorsWidget';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const reportOptions = {
 	compareStartDate: '2020-07-14',
@@ -48,8 +46,8 @@ const reportOptions = {
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'kmAnalyticsNewVisitors'
-)( NewVisitorsWidget );
+	'kmAnalyticsLoyalVisitors'
+)( LoyalVisitorsWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -65,7 +63,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/NewVisitors/Ready',
+	label: 'KeyMetrics/LoyalVisitors/Ready',
 	delay: 250,
 };
 
@@ -93,12 +91,12 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'KeyMetrics/NewVisitors/ZeroData',
+	label: 'KeyMetrics/LoyalVisitors/ZeroData',
 	delay: 250,
 };
 
 export default {
-	title: 'KeyMetrics/NewVisitors',
+	title: 'KeyMetrics/LoyalVisitors',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
