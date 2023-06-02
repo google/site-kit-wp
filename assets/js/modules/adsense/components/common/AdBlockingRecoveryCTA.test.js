@@ -33,13 +33,27 @@ import {
 } from '../../util';
 
 describe( 'AdBlockingRecoveryCTA', () => {
-	it.each`
-		accountStatus               | siteStatus             | adBlockingRecoverySetupStatus                          | description
-		${ ACCOUNT_STATUS_PENDING } | ${ SITE_STATUS_READY } | ${ '' }                                                | ${ 'Adsense account status is not ready' }
-		${ ACCOUNT_STATUS_READY }   | ${ SITE_STATUS_ADDED } | ${ '' }                                                | ${ 'Adsense site status is not ready' }
-		${ ACCOUNT_STATUS_READY }   | ${ SITE_STATUS_ADDED } | ${ AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED } | ${ 'Ad blocking recovery status is not an empty string' }
-	`(
-		'should not render the CTA when $description',
+	it.each( [
+		[
+			'should not render the CTA when Adsense account status is not ready',
+			ACCOUNT_STATUS_PENDING,
+			SITE_STATUS_READY,
+			'',
+		],
+		[
+			'should not render the CTA when Adsense site status is not ready',
+			ACCOUNT_STATUS_READY,
+			SITE_STATUS_ADDED,
+			'',
+		],
+		[
+			'should not render the CTA when Ad blocking recovery status is not an empty string',
+			ACCOUNT_STATUS_READY,
+			SITE_STATUS_ADDED,
+			AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+		],
+	] )(
+		'%s',
 		( { accountStatus, siteStatus, adBlockingRecoverySetupStatus } ) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
 				setupRegistry: ( registry ) => {
