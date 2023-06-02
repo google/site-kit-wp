@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { Icon, info } from '@wordpress/icons';
 
 /**
@@ -27,6 +27,7 @@ import { Icon, info } from '@wordpress/icons';
  */
 import { Tooltip } from 'googlesitekit-components';
 import useViewContext from '../../hooks/useViewContext';
+import { useDebounce } from '../../hooks/useDebounce';
 import { trackEvent } from '../../util';
 
 export default function DateMarker( { id, text } ) {
@@ -37,6 +38,15 @@ export default function DateMarker( { id, text } ) {
 	useEffect( () => {
 		trackEvent( eventCategory, 'chart_line_view' );
 	}, [ eventCategory ] );
+
+	const trackTooltipOpen = useCallback( () => {
+		trackEvent( eventCategory, 'chart_tooltip_view' );
+	}, [ eventCategory ] );
+
+	const handleTooltipOpen = useDebounce( trackTooltipOpen, 5000, {
+		leading: true,
+		trailing: false,
+	} );
 
 	return (
 		<Fragment>
@@ -49,12 +59,7 @@ export default function DateMarker( { id, text } ) {
 					id={ `googlesitekit-chart__date-marker-tooltip--${ id }` }
 					className="googlesitekit-chart__date-marker-tooltip"
 				>
-					<Tooltip
-						title={ text }
-						onOpen={ () => {
-							trackEvent( eventCategory, 'chart_tooltip_view' );
-						} }
-					>
+					<Tooltip title={ text } onOpen={ handleTooltipOpen }>
 						<span>
 							<Icon
 								fill="currentColor"
