@@ -73,13 +73,16 @@ export default function UserMenu() {
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
+	const menuButtonRef = useRef();
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
-		setMenuOpen( false )
-	);
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => {
+		setMenuOpen( false );
+		// Reinstate menu button focus when menu is closed.
+		menuButtonRef.current?.focus();
+	} );
 
 	useEffect( () => {
 		const handleDialogClose = ( e ) => {
@@ -169,6 +172,7 @@ export default function UserMenu() {
 				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
 			>
 				<Button
+					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
 					text
 					onClick={ handleMenu }
