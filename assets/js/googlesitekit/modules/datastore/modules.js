@@ -1189,7 +1189,10 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		return moduleRequirements === true;
+		return (
+			moduleRequirements === true ||
+			moduleRequirements?.canActivate === true
+		);
 	},
 
 	/**
@@ -1208,12 +1211,19 @@ const baseSelectors = {
 		( select ) => ( state, slug ) => {
 			invariant( slug, 'slug is required.' );
 
-			// Need to use registry selector here to ensure resolver is invoked.
-			if ( select( CORE_MODULES ).canActivateModule( slug ) ) {
+			const { checkRequirementsResults } = state;
+			const canActivate =
+				// Need to use registry selector here to ensure resolver is invoked.
+				select( CORE_MODULES ).canActivateModule( slug );
+
+			if (
+				canActivate === undefined ||
+				checkRequirementsResults[ slug ] === true
+			) {
 				return null;
 			}
 
-			return state.checkRequirementsResults[ slug ];
+			return checkRequirementsResults[ slug ];
 		}
 	),
 

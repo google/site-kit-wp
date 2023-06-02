@@ -16,6 +16,39 @@
  * limitations under the License.
  */
 
-export default function TopConvertingTrafficSourceWidget() {
-	return <div>TODO: UI for TopConvertingTrafficSourceWidget</div>;
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+
+const { useSelect } = Data;
+
+export default function TopConvertingTrafficSourceWidget( {
+	Widget,
+	WidgetNull,
+} ) {
+	const keyMetricsWidgetHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
+
+	if ( keyMetricsWidgetHidden !== false ) {
+		return <WidgetNull />;
+	}
+
+	return (
+		<Widget>
+			<div>TODO: UI for TopConvertingTrafficSourceWidget</div>
+		</Widget>
+	);
 }
+
+TopConvertingTrafficSourceWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
+};
