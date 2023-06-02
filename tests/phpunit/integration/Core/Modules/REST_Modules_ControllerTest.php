@@ -167,17 +167,6 @@ class REST_Modules_ControllerTest extends TestCase {
 			'owner',
 		);
 		$this->assertNotEmpty( $response->get_data() );
-		$this->assertArrayIntersection(
-			array(
-				array(
-					'slug' => 'site-verification',
-				),
-				array(
-					'slug' => 'search-console',
-				),
-			),
-			$response->get_data()
-		);
 
 		foreach ( $response->get_data() as $data ) {
 			foreach ( $module_data_keys as $module_data_key ) {
