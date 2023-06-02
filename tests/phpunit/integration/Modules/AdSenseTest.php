@@ -36,7 +36,6 @@ use WP_REST_Request;
 
 /**
  * @group Modules
- * @group AdSense
  */
 class AdSenseTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
