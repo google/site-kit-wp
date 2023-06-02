@@ -23,7 +23,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics;
@@ -47,8 +46,6 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Stream;
-use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_User;
 
 /**
@@ -394,6 +391,134 @@ class Analytics_4Test extends TestCase {
 				'googleTagID'             => 'GT-123',
 				'googleTagAccountID'      => $google_tag_account_id,
 				'googleTagContainerID'    => $google_tag_container_id,
+				'googleTagLastSyncedAtMs' => 0,
+			),
+			$options->get( Settings::OPTION )
+		);
+	}
+
+	public function test_handle_provisioning_callback__gteSupport__with_failing_container_lookup() {
+		$this->enable_feature( 'gteSupport' );
+		$account_id       = '12345678';
+		$property_id      = '1001';
+		$webdatastream_id = '2001';
+		$measurement_id   = '1A2BCD345E';
+
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => $account_id,
+				'propertyID'      => '',
+				'webDataStreamID' => '',
+				'measurementID'   => '',
+			)
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id ) {
+				$url = parse_url( $request->getUri() );
+
+				if ( ! in_array( $url['host'], array( 'analyticsadmin.googleapis.com', 'tagmanager.googleapis.com' ), true ) ) {
+					return new Response( 200 );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/properties':
+						return new Response(
+							200,
+							array(),
+							json_encode(
+								array(
+									'name' => "properties/{$property_id}",
+								)
+							)
+						);
+					case "/v1beta/properties/{$property_id}/dataStreams":
+						$data = new GoogleAnalyticsAdminV1betaDataStreamWebStreamData();
+						$data->setMeasurementId( $measurement_id );
+						$datastream = new GoogleAnalyticsAdminV1betaDataStream();
+						$datastream->setName( "properties/{$property_id}/dataStreams/{$webdatastream_id}" );
+						$datastream->setType( 'WEB_DATA_STREAM' );
+						$datastream->setWebStreamData( $data );
+
+						return new Response(
+							200,
+							array(),
+							json_encode( $datastream->toSimpleObject() )
+						);
+					case '/tagmanager/v2/accounts/containers:lookup':
+						return new Response(
+							403,
+							array(),
+							json_encode(
+								array(
+									'error' => array(
+										'code'    => 403,
+										'message' => 'Request had insufficient authentication scopes.',
+										'errors'  => array(
+											array(
+												'message' => 'Insufficient Permission',
+												'domain'  => 'global',
+												'reason'  => 'insufficientPermissions',
+											),
+										),
+										'status'  => 'PERMISSION_DENIED',
+										'details' => array(
+											array(
+												'@type'    => 'type.googleapis.com/google.rpc.ErrorInfo',
+												'reason'   => 'ACCESS_TOKEN_SCOPE_INSUFFICIENT',
+												'domain'   => 'googleapis.com',
+												'metadata' => array(
+													'method'  => 'container_tag.apiary_v2.TagManagerServiceV2.LookupContainer',
+													'service' => 'tagmanager.googleapis.com',
+												),
+											),
+										),
+									),
+								)
+							)
+						);
+
+					default:
+						return new Response( 200 );
+				}
+			}
+		);
+
+		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
+
+		$this->analytics->register();
+		// Here we're providing all the required scopes which is necessary to make sure
+		// the Google API request is made now, for the purpose of testing an error.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'accountID'               => $account_id,
+				'propertyID'              => '',
+				'webDataStreamID'         => '',
+				'measurementID'           => '',
+				'ownerID'                 => 0,
+				'useSnippet'              => true,
+				'googleTagID'             => '',
+				'googleTagAccountID'      => '',
+				'googleTagContainerID'    => '',
+				'googleTagLastSyncedAtMs' => 0,
+			),
+			$options->get( Settings::OPTION )
+		);
+
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
+
+		$this->assertArrayIntersection(
+			array(
+				'googleTagID'             => '',
+				'googleTagAccountID'      => '',
+				'googleTagContainerID'    => '',
 				'googleTagLastSyncedAtMs' => 0,
 			),
 			$options->get( Settings::OPTION )
