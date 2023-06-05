@@ -41,6 +41,9 @@ Ready.storyName = 'Ready';
 Ready.scenario = {
 	label: 'Global/AdBlockingRecoveryCTA/Ready',
 };
+Ready.parameters = {
+	features: [ 'adBlockerDetection' ],
+};
 
 export default {
 	title: 'Modules/AdSense/Components/AdBlockingRecoveryCTA',
