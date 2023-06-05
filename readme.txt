@@ -132,6 +132,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Fixed**
 
+* Fix a potential error when creating a new Analytics account. See [#7124](https://github.com/google/site-kit-wp/issues/7124).
 * Update Universal Analytics settings UX for consistency with previous interface when GA4 is the primary version and current admin lacks access. See [#7028](https://github.com/google/site-kit-wp/issues/7028).
 * Fix accessibility issue where tab navigation could get trapped on dashboard. See [#6901](https://github.com/google/site-kit-wp/issues/6901).
 
