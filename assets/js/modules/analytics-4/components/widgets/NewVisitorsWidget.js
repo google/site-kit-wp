@@ -46,28 +46,29 @@ export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
 
 	// One combined select hook is used to prevent unnecessary selects
 	// if the key metrics widget is hidden.
-	const [ report, loading ] = useInViewSelect( ( select ) => {
-		if ( keyMetricsWidgetHidden !== false ) {
-			return [];
-		}
+	const [ report, loading ] =
+		useInViewSelect( ( select ) => {
+			if ( keyMetricsWidgetHidden !== false ) {
+				return [];
+			}
 
-		const { getReport, hasFinishedResolution } =
-			select( MODULES_ANALYTICS_4 );
+			const { getReport, hasFinishedResolution } =
+				select( MODULES_ANALYTICS_4 );
 
-		const reportOptions = {
-			...select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-				compare: true,
-			} ),
-			dimensions: [ 'newVsReturning' ],
-			metrics: [ { name: 'activeUsers' } ],
-		};
+			const reportOptions = {
+				...select( CORE_USER ).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+					compare: true,
+				} ),
+				dimensions: [ 'newVsReturning' ],
+				metrics: [ { name: 'activeUsers' } ],
+			};
 
-		return [
-			getReport( reportOptions ),
-			! hasFinishedResolution( 'getReport', [ reportOptions ] ),
-		];
-	} );
+			return [
+				getReport( reportOptions ),
+				! hasFinishedResolution( 'getReport', [ reportOptions ] ),
+			];
+		} ) || [];
 
 	if ( keyMetricsWidgetHidden !== false ) {
 		return <WidgetNull />;
