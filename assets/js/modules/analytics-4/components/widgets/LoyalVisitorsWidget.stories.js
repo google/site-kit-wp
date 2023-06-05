@@ -96,7 +96,7 @@ ZeroData.scenario = {
 };
 
 export default {
-	title: 'KeyMetrics/LoyalVisitors',
+	title: 'Key Metrics/LoyalVisitors',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

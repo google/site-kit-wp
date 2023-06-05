@@ -22,9 +22,8 @@
 import MetricTileNumeric from './MetricTileNumeric';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 
-const WidgetWithComponentProps = withWidgetComponentProps(
-	'kmAnalyticsNewVisitors'
-)( MetricTileNumeric );
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'test' )( MetricTileNumeric );
 
 const Template = ( { ...args } ) => <WidgetWithComponentProps { ...args } />;
 
@@ -38,7 +37,7 @@ Positive.args = {
 	previousValue: 91,
 };
 Positive.scenario = {
-	label: 'Components/KeyMetrics/Widgets/MetricTileNumeric/Positive',
+	label: 'KeyMetrics/MetricTileNumeric/Positive',
 	delay: 250,
 };
 
@@ -52,7 +51,7 @@ Negative.args = {
 	previousValue: 103,
 };
 Negative.scenario = {
-	label: 'Components/KeyMetrics/Widgets/MetricTileNumeric/Negative',
+	label: 'KeyMetrics/MetricTileNumeric/Negative',
 	delay: 250,
 };
 
@@ -66,7 +65,7 @@ ZeroChange.args = {
 	previousValue: 100,
 };
 ZeroChange.scenario = {
-	label: 'Components/KeyMetrics/Widgets/MetricTileNumeric/ZeroChange',
+	label: 'KeyMetrics/MetricTileNumeric/ZeroChange',
 	delay: 250,
 };
 
@@ -77,6 +76,6 @@ Loading.args = {
 };
 
 export default {
-	title: 'Components/KeyMetrics/WidgetTiles/MetricTileNumeric',
+	title: 'Key Metrics/WidgetTiles/MetricTileNumeric',
 	component: MetricTileNumeric,
 };
