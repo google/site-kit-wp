@@ -470,7 +470,7 @@ final class Screens {
 				array(
 					'title'       => __( 'User Input', 'google-site-kit' ),
 					'capability'  => Permissions::MANAGE_OPTIONS,
-					'parent_slug' => null,
+					'parent_slug' => self::PREFIX . 'null',
 				)
 			);
 		}
