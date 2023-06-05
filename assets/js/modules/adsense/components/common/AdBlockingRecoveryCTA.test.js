@@ -31,9 +31,16 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
+import { enabledFeatures } from '../../../../features';
 
 describe( 'AdBlockingRecoveryCTA', () => {
 	it.each( [
+		[
+			'the Ad blocker detection feature flag is not enabled',
+			ACCOUNT_STATUS_PENDING,
+			SITE_STATUS_READY,
+			'',
+		],
 		[
 			'Adsense account status is not ready',
 			ACCOUNT_STATUS_PENDING,
@@ -99,6 +106,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 						connected: true,
 					},
 				] );
+				enabledFeatures.add( 'adBlockerDetection' );
 				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 					accountStatus: ACCOUNT_STATUS_READY,
 					siteStatus: SITE_STATUS_READY,
