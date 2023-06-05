@@ -132,16 +132,19 @@ describe( 'User Input Settings', () => {
 
 		await step(
 			'visit admin dashboard',
-			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
+			visitAdminPage(
+				'admin.php',
+				'page=googlesitekit-dashboard#key-metrics'
+			)
 		);
 
 		await page.waitForSelector(
-			'.googlesitekit-widget--keyMetricsSetupCTA'
+			'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
 		);
 
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
-				'.googlesitekit-widget--keyMetricsSetupCTA'
+				'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
 			);
 			await Promise.all( [
 				expect( page ).toClick(
@@ -172,11 +175,11 @@ describe( 'User Input Settings', () => {
 
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
-				'.googlesitekit-user-input__notification'
+				'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
 			);
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+					'.googlesitekit-setup__wrapper--key-metrics-setup-cta .googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
 				),
 				page.waitForNavigation(),
 			] );
