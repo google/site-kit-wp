@@ -148,7 +148,7 @@ describe( 'User Input Settings', () => {
 			);
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-setup__wrapper--key-metrics-setup-cta .googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
+					'.googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
 				),
 				page.waitForNavigation(),
 			] );
@@ -175,11 +175,11 @@ describe( 'User Input Settings', () => {
 
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
-				'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
+				'.googlesitekit-user-input__notification'
 			);
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-setup__wrapper--key-metrics-setup-cta .googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
+					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
 				),
 				page.waitForNavigation(),
 			] );
