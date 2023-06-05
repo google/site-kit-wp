@@ -33,7 +33,10 @@ import {
 	PROVISIONING_SCOPE,
 	EDIT_SCOPE,
 } from '../../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import {
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
@@ -58,6 +61,7 @@ const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const gteSupportEnabled = useFeature( 'gteSupport' );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
@@ -89,6 +93,9 @@ export default function AccountCreate() {
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+	const hasGTMScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( GTM_SCOPE )
 	);
 	const hasAccountCreateForm = useSelect( ( select ) =>
 		select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE )
@@ -171,6 +178,13 @@ export default function AccountCreate() {
 			scopes.push( PROVISIONING_SCOPE );
 			scopes.push( EDIT_SCOPE );
 		}
+		// The GTM scope should be granted if GTE is enabled but
+		// it is possible for it not to be at this point.
+		// This saves an extra OAuth flow and is necessary for the
+		// Google tag sync at the end of the post-provisioning flow.
+		if ( gteSupportEnabled && ! hasGTMScope ) {
+			scopes.push( GTM_SCOPE );
+		}
 
 		// If scope not granted, trigger scope error right away. These are
 		// typically handled automatically based on API responses, but
@@ -209,6 +223,8 @@ export default function AccountCreate() {
 		setIsNavigating,
 		hasProvisioningScope,
 		hasEditScope,
+		hasGTMScope,
+		gteSupportEnabled,
 		setPermissionScopeError,
 		setValues,
 		viewContext,
