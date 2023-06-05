@@ -35,26 +35,31 @@ import {
 describe( 'AdBlockingRecoveryCTA', () => {
 	it.each( [
 		[
-			'should not render the CTA when Adsense account status is not ready',
+			'Adsense account status is not ready',
 			ACCOUNT_STATUS_PENDING,
 			SITE_STATUS_READY,
 			'',
 		],
 		[
-			'should not render the CTA when Adsense site status is not ready',
+			'Adsense site status is not ready',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			'',
 		],
 		[
-			'should not render the CTA when Ad blocking recovery status is not an empty string',
+			'Ad blocking recovery status is not an empty string',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 		],
 	] )(
-		'%s',
-		( { accountStatus, siteStatus, adBlockingRecoverySetupStatus } ) => {
+		'should not render the CTA when %s',
+		(
+			testName,
+			accountStatus,
+			siteStatus,
+			adBlockingRecoverySetupStatus
+		) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
