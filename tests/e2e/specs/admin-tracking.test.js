@@ -45,21 +45,6 @@ async function toggleOptIn() {
 }
 
 describe( 'management of tracking opt-in/out via settings page', () => {
-	beforeAll( async () => {
-		await page.setRequestInterception( true );
-		useRequestInterception( ( request ) => {
-			if (
-				request.url.match(
-					'/google-site-kit/v1/core/user/data/key-metrics'
-				)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( [] ) } );
-			} else {
-				request.continue();
-			}
-		} );
-	} );
-
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
@@ -70,7 +55,6 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		await expect( page ).toMatchElement( 'a.mdc-tab', {
 			text: 'Admin Settings',
 		} );
-		// /google-site-kit/v1/core/user/data/key-metrics
 
 		await pageWait(); // Delay the next steps.
 
