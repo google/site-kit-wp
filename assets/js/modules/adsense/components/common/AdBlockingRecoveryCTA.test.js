@@ -40,24 +40,28 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			ACCOUNT_STATUS_PENDING,
 			SITE_STATUS_READY,
 			'',
+			false,
 		],
 		[
 			'Adsense account status is not ready',
 			ACCOUNT_STATUS_PENDING,
 			SITE_STATUS_READY,
 			'',
+			true,
 		],
 		[
 			'Adsense site status is not ready',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			'',
+			true,
 		],
 		[
 			'Ad blocking recovery status is not an empty string',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+			true,
 		],
 	] )(
 		'should not render the CTA when %s',
@@ -65,10 +69,14 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			testName,
 			accountStatus,
 			siteStatus,
-			adBlockingRecoverySetupStatus
+			adBlockingRecoverySetupStatus,
+			adBlockerDetectionEnabled
 		) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
 				setupRegistry: ( registry ) => {
+					if ( adBlockerDetectionEnabled ) {
+						enabledFeatures.add( 'adBlockerDetection' );
+					}
 					provideModules( registry, [
 						{
 							slug: 'adsense',
@@ -99,6 +107,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 	it( 'should render the CTA when Ad Blocking Recovery is not set up', () => {
 		const { container } = render( <AdBlockingRecoveryCTA />, {
 			setupRegistry: ( registry ) => {
+				enabledFeatures.add( 'adBlockerDetection' );
 				provideModules( registry, [
 					{
 						slug: 'adsense',
@@ -106,7 +115,6 @@ describe( 'AdBlockingRecoveryCTA', () => {
 						connected: true,
 					},
 				] );
-				enabledFeatures.add( 'adBlockerDetection' );
 				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 					accountStatus: ACCOUNT_STATUS_READY,
 					siteStatus: SITE_STATUS_READY,
