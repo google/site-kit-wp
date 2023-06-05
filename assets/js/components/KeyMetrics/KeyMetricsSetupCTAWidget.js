@@ -102,7 +102,10 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 								) }
 							</p>
 							<div className="googlesitekit-widget-key-metrics-actions__wrapper">
-								<Button href={ ctaLink }>
+								<Button
+									className="googlesitekit-key-metrics-cta-button"
+									href={ ctaLink }
+								>
 									{ __(
 										'Get tailored metrics',
 										'google-site-kit'
