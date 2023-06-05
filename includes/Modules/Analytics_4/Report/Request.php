@@ -389,7 +389,9 @@ class Request extends Report {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
+				'country',
 				'date',
+				'deviceCategory',
 				'pagePath',
 				'pageTitle',
 				'sessionDefaultChannelGrouping',
