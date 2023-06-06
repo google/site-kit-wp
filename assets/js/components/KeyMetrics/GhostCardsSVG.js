@@ -37,7 +37,7 @@ const LazyGhostCardsMobileSVG = lazy( () =>
 
 export default function GhostCardsSVG() {
 	const breakpoint = useBreakpoint();
-	const mobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 
 	return (
 		<Suspense fallback={ <PreviewBlock width="100%" height="90px" /> }>
@@ -47,8 +47,8 @@ export default function GhostCardsSVG() {
 					'google-site-kit'
 				) }
 			>
-				{ mobileBreakpoint && <LazyGhostCardsMobileSVG /> }
-				{ ! mobileBreakpoint && <LazyGhostCardsSVG /> }
+				{ isMobileBreakpoint && <LazyGhostCardsMobileSVG /> }
+				{ ! isMobileBreakpoint && <LazyGhostCardsSVG /> }
 			</MediaErrorHandler>
 		</Suspense>
 	);

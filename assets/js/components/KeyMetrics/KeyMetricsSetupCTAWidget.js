@@ -58,7 +58,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	const breakpoint = useBreakpoint();
-	const mobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 
 	if (
 		! userInputEnabled ||
@@ -94,7 +94,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 									'google-site-kit'
 								) }
 							</h3>
-							{ mobileBreakpoint && <GhostCardsSVG /> }
+							{ isMobileBreakpoint && <GhostCardsSVG /> }
 							<p>
 								{ __(
 									'Answer 3 questions to show relevant stats for your site',
@@ -119,7 +119,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 								</Link>
 							</div>
 						</Cell>
-						{ ! mobileBreakpoint && (
+						{ ! isMobileBreakpoint && (
 							<Cell smSize={ 6 } mdSize={ 3 } lgSize={ 6 }>
 								<GhostCardsSVG />
 							</Cell>
