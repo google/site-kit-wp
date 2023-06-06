@@ -35,6 +35,7 @@ import {
 	step,
 	setSearchConsoleProperty,
 	setupAnalytics,
+	setupAnalytics4,
 } from '../utils';
 
 describe( 'User Input Settings', () => {
@@ -127,15 +128,13 @@ describe( 'User Input Settings', () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
 		await setupAnalytics();
+		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 
 		await step(
 			'visit admin dashboard',
-			visitAdminPage(
-				'admin.php',
-				'page=googlesitekit-dashboard#key-metrics'
-			)
+			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
 		);
 
 		await page.waitForSelector(
