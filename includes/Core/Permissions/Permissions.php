@@ -541,19 +541,11 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_read_shared_module_data_capability( $user_id, $module_slug ) {
-		/**
-		 * Filters if the READ_SHARED_MODULE_DATA capability should be denied.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param array  $check       Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
-		 * @param string $module_slug Module for which the meta capability is checked for.
-		 */
-		return (array) apply_filters(
-			'googlesitekit_check_read_shared_module_data_capability',
-			$this->user_has_shared_role_for_module( $user_id, $module_slug ) ? array() : array( 'do_not_allow' ),
-			$module_slug
-		);
+		if ( ! $this->user_has_shared_role_for_module( $user_id, $module_slug ) ) {
+			return array( 'do_not_allow' );
+		}
+
+		return array();
 	}
 
 	/**
