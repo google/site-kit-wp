@@ -20,11 +20,11 @@
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import AdBlockerRecoveryWidget from './AdBlockerRecoveryWidget';
+import AdBlockingRecoveryWidget from './AdBlockingRecoveryWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'adBlockerRecovery'
-)( AdBlockerRecoveryWidget );
+)( AdBlockingRecoveryWidget );
 
 const Template = () => <WidgetWithComponentProps />;
 
@@ -32,7 +32,7 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 
 export default {
-	title: 'Modules/AdSense/Widgets/AdBlockerRecoveryWidget',
+	title: 'Modules/AdSense/Widgets/AdBlockingRecoveryWidget',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

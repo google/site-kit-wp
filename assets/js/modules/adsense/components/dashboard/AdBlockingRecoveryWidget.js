@@ -40,7 +40,7 @@ import Banner from '../../../../components/notifications/BannerNotification/Bann
 import Link from '../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
-export default function AdBlockerRecoveryWidget( { Widget, WidgetNull } ) {
+export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const notificationSlug = 'ad-blocker-recovery-notification';
 	const windowWidth = useWindowWidth();
 
@@ -132,7 +132,7 @@ export default function AdBlockerRecoveryWidget( { Widget, WidgetNull } ) {
 	);
 }
 
-AdBlockerRecoveryWidget.propTypes = {
+AdBlockingRecoveryWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
