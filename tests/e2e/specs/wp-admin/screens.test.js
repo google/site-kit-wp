@@ -1,7 +1,7 @@
 /**
- * Dashboard screens test.
+ * Screens test.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
  */
 import { enableFeature, setupSiteKit } from '../../utils';
 
-describe( 'dashboard screens', () => {
+describe( 'screens', () => {
 	it( 'ensures that the page title element pattern is correct for screens with private (and non-null) parent_slug values', async () => {
 		await enableFeature( 'userInput' );
 
