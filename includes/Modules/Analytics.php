@@ -161,28 +161,38 @@ final class Analytics extends Module
 		// Conditionally allow access to either Analytics module based on current dashboard view.
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			add_filter(
-				'googlesitekit_check_read_shared_module_data_capability',
-				function( $access, $module_slug ) {
-					$settings = $this->get_settings()->get();
+				'user_has_cap',
+				function( array $allcaps, $caps, $args ) {
+					$module_slug = $args[2];
 
 					if (
-						'universal-analytics' === $settings['dashboardView'] &&
-						'analytics-4' === $module_slug
+						Permissions::READ_SHARED_MODULE_DATA === $args[0] &&
+						in_array(
+							$module_slug,
+							array( self::MODULE_SLUG, Analytics_4::MODULE_SLUG ),
+							true
+						)
 					) {
-						return array( 'do_not_allow' );
+						$settings = $this->get_settings()->get();
+
+						if (
+							(
+								'universal-analytics' === $settings['dashboardView'] &&
+								Analytics_4::MODULE_SLUG === $module_slug
+							) ||
+							(
+								'google-analytics-4' === $settings['dashboardView'] &&
+								self::MODULE_SLUG === $module_slug
+							)
+						) {
+							$allcaps[ $caps[0] ] = false;
+						}
 					}
 
-					if (
-						'google-analytics-4' === $settings['dashboardView'] &&
-						'analytics' === $module_slug
-					) {
-						return array( 'do_not_allow' );
-					}
-
-					return $access;
+					return $allcaps;
 				},
-				10,
-				2
+				20,
+				3
 			);
 		}
 
