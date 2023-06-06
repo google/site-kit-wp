@@ -158,6 +158,34 @@ final class Analytics extends Module
 			}
 		);
 
+		// Conditionally allow access to either Analytics module based on current dashboard view.
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			add_filter(
+				'googlesitekit_check_read_shared_module_data_capability',
+				function( $access, $module_slug ) {
+					$settings = $this->get_settings()->get();
+
+					if (
+						'universal-analytics' === $settings['dashboardView'] &&
+						'analytics-4' === $module_slug
+					) {
+						return array( 'do_not_allow' );
+					}
+
+					if (
+						'google-analytics-4' === $settings['dashboardView'] &&
+						'analytics' === $module_slug
+					) {
+						return array( 'do_not_allow' );
+					}
+
+					return $access;
+				},
+				10,
+				2
+			);
+		}
+
 	}
 
 	/**
