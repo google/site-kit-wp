@@ -78,7 +78,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 						) }
 					/>
 
-					<div className="googlesitekit-widget--adBlockerRecovery__content">
+					<div className="googlesitekit-widget--adBlockingRecovery__content">
 						<p>
 							{ createInterpolateElement(
 								__(
@@ -107,7 +107,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 				</Cell>
 
 				<Cell
-					className="googlesitekit-widget--adBlockerRecovery__graphics"
+					className="googlesitekit-widget--adBlockingRecovery__graphics"
 					smSize={ 8 }
 					mdSize={ 4 }
 					lgSize={ 5 }
