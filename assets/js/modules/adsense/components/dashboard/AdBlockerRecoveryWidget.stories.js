@@ -23,7 +23,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdBlockingRecoveryWidget from './AdBlockingRecoveryWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'adBlockerRecovery'
+	'adBlockingRecovery'
 )( AdBlockingRecoveryWidget );
 
 const Template = () => <WidgetWithComponentProps />;

@@ -96,7 +96,7 @@ const isAnalytics4Active = ( select ) =>
 export const registerWidgets = ( widgets ) => {
 	if ( isFeatureEnabled( 'adBlockerDetection' ) ) {
 		widgets.registerWidget(
-			'adBlockerRecovery',
+			'adBlockingRecovery',
 			{
 				Component: AdBlockingRecoveryWidget,
 				width: widgets.WIDGET_WIDTHS.FULL,
