@@ -26,35 +26,42 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
  */
 import { enableFeature, setupSiteKit } from '../../utils';
 
-describe( 'page title tests', () => {
-	it( 'ensures that the page title element for the googlesitekit-user-input screen starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
-		await enableFeature( 'userInput' );
+describe( 'screen tests', () => {
+	describe( 'page title test for googlesitekit-user-input screen', () => {
+		it( 'ensures that the page title element for the googlesitekit-user-input screen starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
+			await enableFeature( 'userInput' );
 
-		await setupSiteKit();
+			await setupSiteKit();
 
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-user-input' );
+			await visitAdminPage(
+				'admin.php',
+				'page=googlesitekit-user-input'
+			);
 
-		await page.waitForSelector( 'title' );
+			await page.waitForSelector( 'title' );
 
-		await expect( page ).toMatchElement( 'title', {
-			text: /Site Kit by Google User Input\b/i,
+			await expect( page ).toMatchElement( 'title', {
+				text: /Site Kit by Google User Input\b/i,
+			} );
 		} );
 	} );
 
-	it( 'ensures that the page title element for the googlesitekit-ad-blocking-recovery screen starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
-		await enableFeature( 'adBlockerDetection' );
+	describe( 'page title test for googlesitekit-ad-blocking-recovery screen', () => {
+		it( 'ensures that the page title element for the googlesitekit-ad-blocking-recovery screen starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
+			await enableFeature( 'adBlockerDetection' );
 
-		await setupSiteKit();
+			await setupSiteKit();
 
-		await visitAdminPage(
-			'admin.php',
-			'page=googlesitekit-ad-blocking-recovery'
-		);
+			await visitAdminPage(
+				'admin.php',
+				'page=googlesitekit-ad-blocking-recovery'
+			);
 
-		await page.waitForSelector( 'title' );
+			await page.waitForSelector( 'title' );
 
-		await expect( page ).toMatchElement( 'title', {
-			text: /Site Kit by Google Ad Blocking Recovery\b/i,
+			await expect( page ).toMatchElement( 'title', {
+				text: /Site Kit by Google Ad Blocking Recovery\b/i,
+			} );
 		} );
 	} );
 } );
