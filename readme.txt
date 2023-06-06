@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.2
 Requires PHP:      5.6
-Stable tag:        1.101.0
+Stable tag:        1.102.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -109,6 +109,32 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.102.0 =
+
+**Added**
+
+* Add new Stepper component. See [#6965](https://github.com/google/site-kit-wp/issues/6965).
+* Add Ad Blocking Recovery set up CTA to the Monetization section of the dashboard. See [#6929](https://github.com/google/site-kit-wp/issues/6929).
+
+**Enhanced**
+
+* Add internal GA tracking on GA4 reporting events for those who have opted-in. See [#7045](https://github.com/google/site-kit-wp/issues/7045).
+* Update GA4 Reporting feature tour highlights to match design. See [#6973](https://github.com/google/site-kit-wp/issues/6973).
+* Add the new settings for Ad Blocker Detection to the AdSense module. See [#6960](https://github.com/google/site-kit-wp/issues/6960).
+* Display a success notification on the Main Dashboard after completing the Ad Blocking Recovery tag setup. See [#6957](https://github.com/google/site-kit-wp/issues/6957).
+* Add badge to the dashboard to show which version of Analytics (UA/GA4) is used when connected. See [#6938](https://github.com/google/site-kit-wp/issues/6938).
+* Prevent the "Switch to GA4" CTA from appearing when the user has manually switched away from the GA4 dashboard view. See [#6932](https://github.com/google/site-kit-wp/issues/6932).
+* Add the AdSense setup completion date to the module settings. See [#6903](https://github.com/google/site-kit-wp/issues/6903).
+* Add an aria-label to the edit link on the settings view component. See [#6642](https://github.com/google/site-kit-wp/issues/6642).
+* Add notice about Google Optimize product sunset. See [#6467](https://github.com/google/site-kit-wp/issues/6467).
+* Fix bug that caused extra spacing to appear around Universal Analytics property creation message during Analytics setup. See [#5213](https://github.com/google/site-kit-wp/issues/5213).
+
+**Fixed**
+
+* Fix a potential error when creating a new Analytics account. See [#7124](https://github.com/google/site-kit-wp/issues/7124).
+* Update Universal Analytics settings UX for consistency with previous interface when GA4 is the primary version and current admin lacks access. See [#7028](https://github.com/google/site-kit-wp/issues/7028).
+* Fix accessibility issue where tab navigation could get trapped on dashboard. See [#6901](https://github.com/google/site-kit-wp/issues/6901).
 
 = 1.101.0 =
 

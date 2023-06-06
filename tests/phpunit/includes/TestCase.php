@@ -228,7 +228,7 @@ class TestCase extends WP_UnitTestCase {
 	 * @param string $message Optional. Message to display when the assertion fails.
 	 */
 	protected function assertArrayIntersection( array $subset, array $array, $message = '' ) {
-		$intersection = array_intersect_key( $subset, $array );
+		$intersection = array_intersect_key( $array, $subset );
 
 		$this->assertEqualSetsWithIndex( $subset, $intersection, $message );
 	}

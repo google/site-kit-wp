@@ -37,6 +37,7 @@ import {
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
@@ -122,6 +123,8 @@ export default function SettingsForm() {
 			) }
 
 			<AutoAdExclusionSwitches />
+
+			<AdBlockingRecoveryCTA />
 		</div>
 	);
 }

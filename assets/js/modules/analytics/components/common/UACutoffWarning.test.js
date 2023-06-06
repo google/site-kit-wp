@@ -137,6 +137,34 @@ describe( 'UACutoffWarning', () => {
 		}
 	);
 
+	it( 'should track an event as soon as the warning appears', () => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics',
+			},
+			{
+				active: true,
+				connected: false,
+				slug: 'analytics-4',
+			},
+		] );
+
+		registry.dispatch( CORE_USER ).setReferenceDate( UA_CUTOFF_DATE );
+
+		render( <UACutoffWarning />, {
+			registry,
+			features: [ 'ga4Reporting' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_widget-ua-stale-warning',
+			'view_notification'
+		);
+	} );
+
 	it( 'should track an event and navigate to the settings page when the CTA is clicked', async () => {
 		provideModules( registry, [
 			{
@@ -159,19 +187,47 @@ describe( 'UACutoffWarning', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
-
 		fireEvent.click( getByRole( 'button' ) );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_ua-cutoff-warning',
-			'click_setup_ga4_button'
+			'mainDashboard_widget-ua-stale-warning',
+			'confirm_notification'
 		);
 
 		await waitForRegistry();
 
 		expect( registry.select( CORE_LOCATION ).getNavigateURL() ).toBe(
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connected-services/analytics/edit'
+		);
+	} );
+
+	it( 'should track an event when the learn more link is clicked', () => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics',
+			},
+			{
+				active: true,
+				connected: false,
+				slug: 'analytics-4',
+			},
+		] );
+
+		registry.dispatch( CORE_USER ).setReferenceDate( UA_CUTOFF_DATE );
+
+		const { getByRole } = render( <UACutoffWarning />, {
+			registry,
+			features: [ 'ga4Reporting' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click( getByRole( 'link' ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_widget-ua-stale-warning',
+			'click_learn_more_link'
 		);
 	} );
 } );
