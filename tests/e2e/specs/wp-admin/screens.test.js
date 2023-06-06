@@ -26,9 +26,9 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
  */
 import { enableFeature, setupSiteKit } from '../../utils';
 
-describe( 'screen tests', () => {
-	describe( 'page title test for googlesitekit-user-input screen', () => {
-		it( 'ensures that the page title element for the googlesitekit-user-input screen starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
+describe( 'screens', () => {
+	describe( 'googlesitekit-user-input', () => {
+		it( 'exists with the expected page title', async () => {
 			await enableFeature( 'userInput' );
 
 			await setupSiteKit();
@@ -38,16 +38,14 @@ describe( 'screen tests', () => {
 				'page=googlesitekit-user-input'
 			);
 
-			await page.waitForSelector( 'title' );
-
 			await expect( page ).toMatchElement( 'title', {
 				text: /Site Kit by Google User Input\b/i,
 			} );
 		} );
 	} );
 
-	describe( 'page title test for googlesitekit-ad-blocking-recovery screen', () => {
-		it( 'ensures that the page title element for the googlesitekit-ad-blocking-recovery screen starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
+	describe( 'googlesitekit-ad-blocking-recovery', () => {
+		it( 'exists with the expected page title', async () => {
 			await enableFeature( 'adBlockerDetection' );
 
 			await setupSiteKit();
@@ -56,8 +54,6 @@ describe( 'screen tests', () => {
 				'admin.php',
 				'page=googlesitekit-ad-blocking-recovery'
 			);
-
-			await page.waitForSelector( 'title' );
 
 			await expect( page ).toMatchElement( 'title', {
 				text: /Site Kit by Google Ad Blocking Recovery\b/i,
