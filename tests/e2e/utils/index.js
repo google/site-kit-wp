@@ -37,6 +37,7 @@ export { setSearchConsoleProperty } from './set-search-console-property';
 export { setSiteVerification } from './set-site-verification';
 export { setupAdSense } from './setup-adsense';
 export { setupAnalytics } from './setup-analytics';
+export { setupAnalytics4 } from './setup-analytics-4';
 export { setupSiteKit } from './setup-site-kit';
 export { switchDateRange } from './switch-date-range';
 export { testClientConfig } from './test-client-config';
