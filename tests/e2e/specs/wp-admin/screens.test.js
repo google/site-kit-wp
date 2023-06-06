@@ -26,8 +26,8 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
  */
 import { enableFeature, setupSiteKit } from '../../utils';
 
-describe( 'screens', () => {
-	it( 'ensures that the page title element pattern is correct for screens with private (and non-null) parent_slug values', async () => {
+describe( 'googlesitekit-user-input screen page title', () => {
+	it( 'ensures that the page title element starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
 		await enableFeature( 'userInput' );
 
 		await setupSiteKit();
@@ -37,7 +37,26 @@ describe( 'screens', () => {
 		await page.waitForSelector( 'title' );
 
 		await expect( page ).toMatchElement( 'title', {
-			text: 'Site Kit by Google User Input ‹ Google Site Kit Dev — WordPress',
+			text: /Site Kit by Google User Input(.*?)/i,
+		} );
+	} );
+} );
+
+describe( 'googlesitekit-ad-blocking-recovery screen page title', () => {
+	it( 'ensures that the page title element starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
+		await enableFeature( 'adBlockerDetection' );
+
+		await setupSiteKit();
+
+		await visitAdminPage(
+			'admin.php',
+			'page=googlesitekit-ad-blocking-detection'
+		);
+
+		await page.waitForSelector( 'title' );
+
+		await expect( page ).toMatchElement( 'title', {
+			text: /Site Kit by Google Ad Blocking Recovery(.*?)/i,
 		} );
 	} );
 } );
