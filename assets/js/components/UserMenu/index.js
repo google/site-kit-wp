@@ -177,16 +177,14 @@ export default function UserMenu() {
 		accountLabel = sprintf(
 			/* translators: Account info text. 1: User's (full) name. */
 			__( 'Google Account for %1$s', 'google-site-kit' ),
-			userFullName,
-			userEmail
+			userFullName
 		);
 	}
 
 	if ( ! userFullName && userEmail ) {
 		accountLabel = sprintf(
 			/* translators: Account info text. 1: User's email address. */
-			__( 'Google Account (Email: %1$s', 'google-site-kit' ),
-			userFullName,
+			__( 'Google Account (Email: %1$s)', 'google-site-kit' ),
 			userEmail
 		);
 	}
