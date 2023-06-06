@@ -482,7 +482,7 @@ final class Screens {
 				array(
 					'title'       => __( 'Ad Blocking Recovery', 'google-site-kit' ),
 					'capability'  => Permissions::MANAGE_OPTIONS,
-					'parent_slug' => null,
+					'parent_slug' => self::PARENT_SLUG_NULL,
 				)
 			);
 		}
