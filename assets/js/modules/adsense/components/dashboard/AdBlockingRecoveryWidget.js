@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import AdsenseAdBlockerRecoverySVG from '../../../../../svg/graphics/adsense-ad-blocker-recovery.svg';
+import AdsenseAdBlockingRecoverySVG from '../../../../../svg/graphics/adsense-ad-blocking-recovery.svg';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { Cell } from '../../../../material-components';
@@ -113,7 +113,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 					lgSize={ 5 }
 				>
 					{ windowWidth > 600 && (
-						<AdsenseAdBlockerRecoverySVG
+						<AdsenseAdBlockingRecoverySVG
 							style={ {
 								maxHeight: '172px',
 							} }
