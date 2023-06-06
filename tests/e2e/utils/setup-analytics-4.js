@@ -5,14 +5,14 @@ import { wpApiFetch } from './wp-api-fetch';
 
 const defaultSettings = {
 	ownerID: 0,
-	accountID: 100,
-	propertyID: 200,
-	webDataStreamID: 300,
-	measurementID: 400,
+	accountID: '123456',
+	propertyID: '200000',
+	webDataStreamID: '300000',
+	measurementID: 'G-1A2BCD346E',
 	useSnippet: true,
-	googleTagID: '',
-	googleTagAccountID: '',
-	googleTagContainerID: '',
+	googleTagAccountID: '123456',
+	googleTagContainerID: '321654',
+	googleTagID: 'GT-123456',
 };
 
 /**
