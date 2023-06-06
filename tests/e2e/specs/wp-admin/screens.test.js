@@ -26,8 +26,8 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
  */
 import { enableFeature, setupSiteKit } from '../../utils';
 
-describe( 'googlesitekit-user-input screen page title', () => {
-	it( 'ensures that the page title element starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
+describe( 'page title tests', () => {
+	it( 'ensures that the page title element for the googlesitekit-user-input screen starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
 		await enableFeature( 'userInput' );
 
 		await setupSiteKit();
@@ -37,13 +37,11 @@ describe( 'googlesitekit-user-input screen page title', () => {
 		await page.waitForSelector( 'title' );
 
 		await expect( page ).toMatchElement( 'title', {
-			text: /Site Kit by Google User Input(.*?)/i,
+			text: /Site Kit by Google User Input\b/i,
 		} );
 	} );
-} );
 
-describe( 'googlesitekit-ad-blocking-recovery screen page title', () => {
-	it( 'ensures that the page title element starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
+	it( 'ensures that the page title element for the googlesitekit-ad-blocking-recovery screen starts with the expected value, indicating that non-null but non-existent parent_slug screen properties are not breaking the page title text', async () => {
 		await enableFeature( 'adBlockerDetection' );
 
 		await setupSiteKit();
@@ -56,7 +54,7 @@ describe( 'googlesitekit-ad-blocking-recovery screen page title', () => {
 		await page.waitForSelector( 'title' );
 
 		await expect( page ).toMatchElement( 'title', {
-			text: /Site Kit by Google Ad Blocking Recovery(.*?)/i,
+			text: /Site Kit by Google Ad Blocking Recovery\b/i,
 		} );
 	} );
 } );
