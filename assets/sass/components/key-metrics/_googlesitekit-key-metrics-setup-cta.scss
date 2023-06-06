@@ -1,7 +1,7 @@
 /**
  * Key Metrics Setup CTA Widget styles.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,9 @@
 
 		.googlesitekit-publisher-win__title {
 			display: grid;
-			font-size: 16px;
-			font-weight: 500;
+			font-size: $fs-title-md;
+			font-weight: $fw-medium;
+			line-height: $lh-title-md;
 			margin: 0;
 			place-content: center;
 
@@ -60,9 +61,7 @@
 				place-content: start;
 			}
 
-			button,
 			a {
-				display: block;
 				margin-top: 10px;
 				width: 100%;
 			}
@@ -71,7 +70,6 @@
 				display: flex;
 				gap: 20px;
 
-				button,
 				a {
 					margin-top: 25px;
 					width: auto;
