@@ -50,7 +50,7 @@ describe( 'googlesitekit-ad-blocking-recovery screen page title', () => {
 
 		await visitAdminPage(
 			'admin.php',
-			'page=googlesitekit-ad-blocking-detection'
+			'page=googlesitekit-ad-blocking-recovery'
 		);
 
 		await page.waitForSelector( 'title' );
