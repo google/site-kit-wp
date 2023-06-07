@@ -543,20 +543,23 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 		describe( 'updateSettingsForMeasurementID', () => {
-			it( 'should update the settings with the measurement ID.', () => {
+			it( 'should update the settings with the measurement ID.', async () => {
 				const measurementID = 'G-1A2BCD346E';
-				registry
+
+				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.updateSettingsForMeasurementID( measurementID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getSettings()
-				).toMatchObject( {
+
+				expect( store.getState().settings ).toMatchObject( {
 					measurementID,
 				} );
 			} );
 
 			it( 'dispatches a request to get and populate Google Tag settings', async () => {
 				enabledFeatures.add( 'gteSupport' );
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
 
 				fetchMock.getOnce( googleTagSettingsEndpoint, {
 					body: fixtures.googleTagSettings,
@@ -577,23 +580,27 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.googleTagSettings,
 				} );
 
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagAccountID()
-				).toEqual( fixtures.googleTagSettings.googleTagAccountID );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagContainerID()
-				).toEqual( fixtures.googleTagSettings.googleTagContainerID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( fixtures.googleTagSettings.googleTagID );
+				expect( store.getState().settings ).toMatchObject(
+					fixtures.googleTagSettings
+				);
 			} );
 
-			it( 'empties the Google Tag Settings if measurement ID is an empty string', () => {
+			it( 'requires the GTM readonly scope to dispatch a request for Google Tag settings', async () => {
 				enabledFeatures.add( 'gteSupport' );
+				provideUserAuthentication( registry );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( 'G-1A2BCD346E' );
+
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'empties the Google Tag Settings if measurement ID is an empty string', async () => {
+				enabledFeatures.add( 'gteSupport' );
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -605,37 +612,21 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setGoogleTagID( 'GT-123456' );
 
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagAccountID()
-				).toEqual( '123456' );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagContainerID()
-				).toEqual( '321654' );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( 'GT-123456' );
+				expect( store.getState().settings ).toMatchObject( {
+					googleTagAccountID: '123456',
+					googleTagContainerID: '321654',
+					googleTagID: 'GT-123456',
+				} );
 
-				registry
+				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.updateSettingsForMeasurementID( '' );
 
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagAccountID()
-				).toEqual( '' );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagContainerID()
-				).toEqual( '' );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( '' );
+				expect( store.getState().settings ).toMatchObject( {
+					googleTagAccountID: '',
+					googleTagContainerID: '',
+					googleTagID: '',
+				} );
 			} );
 		} );
 
