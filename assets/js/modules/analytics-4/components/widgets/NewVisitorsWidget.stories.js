@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideKeyMetrics,
+	provideModules,
+} from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import NewVisitorsWidget from './NewVisitorsWidget';
@@ -109,6 +112,8 @@ export default {
 				] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+
+				provideKeyMetrics( registry );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );

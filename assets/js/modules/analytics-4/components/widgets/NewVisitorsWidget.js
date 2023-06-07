@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -25,15 +30,20 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import MetricTileNumeric from '../../../../components/KeyMetrics/MetricTileNumeric';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import MetricTileNumeric from '../../../../components/KeyMetrics/MetricTileNumeric';
+
 const { useSelect, useInViewSelect } = Data;
 
-export default function NewVisitorsWidget( widgetProps ) {
+export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
+	const keyMetricsWidgetHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
+
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -75,9 +85,13 @@ export default function NewVisitorsWidget( widgetProps ) {
 		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
 	const compareTotalVisitors = compareNewVisitors + compareReturningVisitors;
 
+	if ( keyMetricsWidgetHidden !== false ) {
+		return <WidgetNull />;
+	}
+
 	return (
 		<MetricTileNumeric
-			{ ...widgetProps }
+			Widget={ Widget }
 			title={ __( 'New Visitors', 'google-site-kit' ) }
 			metricValue={ newVisitors }
 			subText={ sprintf(
@@ -91,3 +105,8 @@ export default function NewVisitorsWidget( widgetProps ) {
 		/>
 	);
 }
+
+NewVisitorsWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
+};

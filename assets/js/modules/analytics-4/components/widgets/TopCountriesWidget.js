@@ -16,6 +16,36 @@
  * limitations under the License.
  */
 
-export default function TopCountriesWidget() {
-	return <div>TODO: UI for TopCountriesWidget</div>;
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+
+const { useSelect } = Data;
+
+export default function TopCountriesWidget( { Widget, WidgetNull } ) {
+	const keyMetricsWidgetHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
+
+	if ( keyMetricsWidgetHidden !== false ) {
+		return <WidgetNull />;
+	}
+
+	return (
+		<Widget>
+			<div>TODO: UI for TopCountriesWidget</div>
+		</Widget>
+	);
 }
+
+TopCountriesWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
+};
