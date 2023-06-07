@@ -62,12 +62,12 @@ const ModalDialog = ( {
 			aria-describedby={ hasProvides ? describedByID : undefined }
 		>
 			<DialogTitle>{ title }</DialogTitle>
+			{ subtitle && <p className="mdc-dialog__lead">{ subtitle }</p> }
 			<DialogContent>
-				{ subtitle && <p className="mdc-dialog__lead">{ subtitle }</p> }
 				{ hasProvides && (
 					<section
 						id={ describedByID }
-						className="mdc-dialog__content"
+						className="mdc-dialog__provides"
 					>
 						<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
 							{ provides.map( ( attribute ) => (
@@ -81,7 +81,7 @@ const ModalDialog = ( {
 					</section>
 				) }
 				{ dependentModules && (
-					<p className="mdc-dialog__dependecies">
+					<p className="mdc-dialog__dependencies">
 						{ createInterpolateElement(
 							sprintf(
 								/* translators: %s is replaced with the dependent modules. */
