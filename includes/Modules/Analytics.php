@@ -163,30 +163,32 @@ final class Analytics extends Module
 			add_filter(
 				'user_has_cap',
 				function( array $allcaps, $caps, $args ) {
-					$module_slug = $args[2];
-
 					if (
-						Permissions::READ_SHARED_MODULE_DATA === $args[0] &&
-						in_array(
-							$module_slug,
+						Permissions::READ_SHARED_MODULE_DATA !== $args[0] ||
+						! isset( $args[2] ) ||
+						! in_array(
+							$args[2],
 							array( self::MODULE_SLUG, Analytics_4::MODULE_SLUG ),
 							true
 						)
 					) {
-						$settings = $this->get_settings()->get();
+						return $allcaps;
+					}
 
-						if (
-							(
-								'universal-analytics' === $settings['dashboardView'] &&
-								Analytics_4::MODULE_SLUG === $module_slug
-							) ||
-							(
-								'google-analytics-4' === $settings['dashboardView'] &&
-								self::MODULE_SLUG === $module_slug
-							)
-						) {
-							$allcaps[ $caps[0] ] = false;
-						}
+					$module_slug = $args[2];
+					$settings    = $this->get_settings()->get();
+
+					if (
+						(
+							'universal-analytics' === $settings['dashboardView'] &&
+							Analytics_4::MODULE_SLUG === $module_slug
+						) ||
+						(
+							'google-analytics-4' === $settings['dashboardView'] &&
+							self::MODULE_SLUG === $module_slug
+						)
+					) {
+						$allcaps[ $caps[0] ] = false;
 					}
 
 					return $allcaps;
