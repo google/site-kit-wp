@@ -74,7 +74,7 @@ export default function PopularKeywordsWidget( props ) {
 			const reportOptions = {
 				...dates,
 				dimensions: 'query',
-				limit: 3,
+				limit: 100,
 			};
 
 			return [
@@ -134,8 +134,11 @@ export default function PopularKeywordsWidget( props ) {
 			Widget={ Widget }
 			title={ __( 'Top performing keywords', 'google-site-kit' ) }
 			loading={ loading }
-			rows={ report || [] }
+			rows={ ( report || [] ).sort(
+				( { ctr: ctrA }, { ctr: ctrB } ) => ctrB - ctrA
+			) }
 			columns={ columns }
+			limit={ 3 }
 		/>
 	);
 }
