@@ -117,12 +117,15 @@ export default function PopularKeywordsWidget( props ) {
 		},
 		{
 			field: 'ctr',
-			Component: ( { fieldValue } ) =>
-				sprintf(
-					/* translators: %s: click through rate value */
-					__( '%s CTR', 'google-site-kit' ),
-					numFmt( fieldValue, '%' )
-				),
+			Component: ( { fieldValue } ) => (
+				<strong>
+					{ sprintf(
+						/* translators: %s: click through rate value */
+						__( '%s CTR', 'google-site-kit' ),
+						numFmt( fieldValue, '%' )
+					) }
+				</strong>
+			),
 		},
 	];
 

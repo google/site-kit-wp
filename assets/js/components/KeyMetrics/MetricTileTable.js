@@ -37,18 +37,18 @@ export default function MetricTileTable( props ) {
 	}
 
 	return (
-		<Widget>
+		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile">
 				<h3 className="googlesitekit-km-widget-tile__title">
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					<table>
+					<table className="googlesitekit-km-widget-tile__table">
 						<tbody>
 							{ rows
 								.slice( 0, limit || rows.length )
 								.map( ( row, rowIndex ) => (
-									<tr className="" key={ rowIndex }>
+									<tr key={ rowIndex }>
 										{ columns.map(
 											(
 												{
