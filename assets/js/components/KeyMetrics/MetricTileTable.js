@@ -28,14 +28,6 @@ import PreviewBlock from '../PreviewBlock';
 export default function MetricTileTable( props ) {
 	const { Widget, loading, title, subText, rows, columns, limit } = props;
 
-	if ( loading ) {
-		return (
-			<Widget noPadding>
-				<PreviewBlock width="100%" height="142px" padding />
-			</Widget>
-		);
-	}
-
 	return (
 		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile">
@@ -43,51 +35,61 @@ export default function MetricTileTable( props ) {
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					<table className="googlesitekit-km-widget-tile__table">
-						<tbody>
-							{ rows
-								.slice( 0, limit || rows.length )
-								.map( ( row, rowIndex ) => (
-									<tr key={ rowIndex }>
-										{ columns.map(
-											(
-												{
-													Component,
-													field,
-													className: columnClassName,
-												},
-												colIndex
-											) => {
-												const fieldValue =
-													field !== undefined
-														? get( row, field )
-														: undefined;
+					{ loading && (
+						<PreviewBlock
+							className="googlesitekit-km-widget-tile__table"
+							width="100%"
+							height="70px"
+						/>
+					) }
+					{ ! loading && (
+						<table className="googlesitekit-km-widget-tile__table">
+							<tbody>
+								{ rows
+									.slice( 0, limit || rows.length )
+									.map( ( row, rowIndex ) => (
+										<tr key={ rowIndex }>
+											{ columns.map(
+												(
+													{
+														Component,
+														field,
+														className:
+															columnClassName,
+													},
+													colIndex
+												) => {
+													const fieldValue =
+														field !== undefined
+															? get( row, field )
+															: undefined;
 
-												return (
-													<td
-														key={ colIndex }
-														className={
-															columnClassName
-														}
-													>
-														{ Component && (
-															<Component
-																row={ row }
-																fieldValue={
-																	fieldValue
-																}
-															/>
-														) }
-														{ ! Component &&
-															fieldValue }
-													</td>
-												);
-											}
-										) }
-									</tr>
-								) ) }
-						</tbody>
-					</table>
+													return (
+														<td
+															key={ colIndex }
+															className={
+																columnClassName
+															}
+														>
+															{ Component && (
+																<Component
+																	row={ row }
+																	fieldValue={
+																		fieldValue
+																	}
+																/>
+															) }
+															{ ! Component &&
+																fieldValue }
+														</td>
+													);
+												}
+											) }
+										</tr>
+									) ) }
+							</tbody>
+						</table>
+					) }
 					{ subText && (
 						<p className="googlesitekit-km-widget-tile__subtext">
 							{ subText }
