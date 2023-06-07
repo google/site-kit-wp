@@ -94,6 +94,10 @@ describe( 'SettingsModules', () => {
 			coreUserTrackingSettingsEndpointRegExp,
 			coreUserTrackingResponse
 		);
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [],
+			isWidgetHidden: false,
+		} );
 
 		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
 
