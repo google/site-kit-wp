@@ -38,4 +38,6 @@ export const {
 	SpinnerButton,
 	Switch,
 	Tooltip,
+	CircularProgress,
+	TextField,
 } = Components;

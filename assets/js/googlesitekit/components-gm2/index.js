@@ -30,6 +30,7 @@ import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
 import Tooltip from './Tooltip';
 import CircularProgress from './CircularProgress';
+import TextField from './TextField';
 
 const Components = {
 	Button,
@@ -43,6 +44,7 @@ const Components = {
 	Switch,
 	Tooltip,
 	CircularProgress,
+	TextField,
 };
 
 export default Components;
