@@ -1,5 +1,5 @@
 /**
- * MetricTileNumeric component.
+ * MetricTileText component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
 
-export default function MetricTileNumeric( {
+export default function MetricTileText( {
 	Widget,
 	loading,
 	title,
@@ -46,30 +46,30 @@ export default function MetricTileNumeric( {
 
 	return (
 		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
+			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text">
 				<h3 className="googlesitekit-km-widget-tile__title">
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
+					<div className="googlesitekit-km-widget-tile__metric">
+						{ metricValue }
+					</div>
+					<p className="googlesitekit-km-widget-tile__subtext">
+						{ subText }
+					</p>
 					<div className="googlesitekit-km-widget-tile__metric-change-container">
-						<div className="googlesitekit-km-widget-tile__metric">
-							{ metricValue }
-						</div>
 						<ChangeBadge
 							previousValue={ previousValue }
 							currentValue={ currentValue }
 						/>
 					</div>
-					<p className="googlesitekit-km-widget-tile__subtext">
-						{ subText }
-					</p>
 				</div>
 			</div>
 		</Widget>
 	);
 }
 
-MetricTileNumeric.propTypes = {
+MetricTileText.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	loading: PropTypes.bool,
 	title: PropTypes.string,
