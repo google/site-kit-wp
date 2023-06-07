@@ -335,55 +335,90 @@ class AdSenseTest extends TestCase {
 		);
 	}
 
-	public function test_get_ad_blocking_recovery_tag() {
+	public function data_test_tag() {
+		return array(
+			'invalid characters' => array(
+				'ABCD@!#$',
+				null,
+			),
+			'valid'              => array(
+				base64_encode( 'test-tag' ),
+				'test-tag',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_test_tag
+	 * @param string $encoded_tag
+	 * @param string $expected
+	 */
+	public function test_get_ad_blocking_recovery_tag( $encoded_tag, $expected ) {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$tag = $adsense->get_ad_blocking_recovery_tag();
-		// Confirm that the it is null when not available.
 		$this->assertNull( $tag );
 
-		// Populate the tag with invalid base64.
-		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, 'ABCDEFGHI' ); // Invalid length.
+		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, $encoded_tag );
 		$tag = $adsense->get_ad_blocking_recovery_tag();
-		// Invalid base64 should return null.
-		$this->assertNull( $tag );
-
-		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, 'ABCD@!#$' ); // Invalid characters.
-		$tag = $adsense->get_ad_blocking_recovery_tag();
-		$this->assertNull( $tag );
-
-		// Populate the tag with valid base64.
-		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, base64_encode( 'test-tag' ) );
-		$tag = $adsense->get_ad_blocking_recovery_tag();
-		// Valid base64 should return the tag.
-		$this->assertEquals( 'test-tag', $tag );
+		$this->assertEquals( $tag, $expected );
 	}
 
-	public function test_get_ad_blocking_recovery_error_protection_tag() {
+	/**
+	 * @dataProvider data_test_tag
+	 * @param string $encoded_tag
+	 * @param string $expected
+	 */
+	public function test_get_ad_blocking_recovery_error_protection_tag( $encoded_tag, $expected ) {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
-		// Confirm that the it is null when not available.
 		$this->assertNull( $tag );
 
-		// Populate the tag with invalid base64.
-		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, 'ABCDEFGHI' ); // Invalid length.
+		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, $encoded_tag );
 		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
-		// Invalid base64 should return null.
-		$this->assertNull( $tag );
-
-		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, 'ABCD@!#$' ); // Invalid characters.
-		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
-		$this->assertNull( $tag );
-
-		// Populate the tag with valid base64.
-		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, base64_encode( 'test-tag' ) );
-		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
-		// Valid base64 should return the tag.
-		$this->assertEquals( 'test-tag', $tag );
+		$this->assertEquals( $tag, $expected );
 	}
 
-	public function test_rest_route_ad_blocking_recovery_tag() {
+	/**
+	 * Strings with invalid length gets automatically padded below PHP 7 even when the strict flag is
+	 * set to true. This is not the case in PHP 7+.
+	 *
+	 * TODO: Merge this test with test_get_ad_blocking_recovery_tag once PHP 5.6 support is dropped.
+	 *
+	 * @requires PHP >= 7
+	 */
+	public function test_get_ad_blocking_recovery_tag__invalid_length() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		$this->assertNull( $tag );
+
+		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, 'ABCDEFGHI' );
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		$this->assertNull( $tag );
+	}
+
+	/**
+	 * Strings with invalid length gets automatically padded below PHP 7 even when the strict flag is
+	 * set to true. This is not the case in PHP 7+.
+	 *
+	 * TODO: Merge this test with test_get_ad_blocking_recovery_error_protection_tag once PHP 5.6 support is dropped.
+	 *
+	 * @requires PHP >= 7
+	 */
+	public function test_get_ad_blocking_recovery_error_protection_tag__invalid_length() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		$this->assertNull( $tag );
+
+		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, 'ABCDEFGHI' );
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		$this->assertNull( $tag );
+	}
+
+	public function test_get_data__ad_blocking_recovery_tag() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
