@@ -253,7 +253,7 @@ export const readableLargeNumber = ( number ) => {
  * @param {(Intl.NumberFormatOptions|string)} options Formatting options or unit shorthand. Possible shorthand values are '%', 's', or a currency code.
  * @return {Object} Formatting options.
  */
-export function numFmtOptions( options ) {
+export function expandNumFmtOptions( options ) {
 	let formatOptions = {};
 
 	// Expand shorthand values for units.
@@ -306,7 +306,7 @@ export function numFmt( number, options = {} ) {
 		number = 0;
 	}
 
-	const formatOptions = numFmtOptions( options );
+	const formatOptions = expandNumFmtOptions( options );
 	const { style = 'metric' } = formatOptions; // Note: `metric` is our custom, default style.
 
 	if ( 'metric' === style ) {

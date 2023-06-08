@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { numFmt, numFmtOptions } from '../../util';
+import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
 
@@ -48,7 +48,7 @@ export default function MetricTileNumeric( props ) {
 		);
 	}
 
-	const formatOptions = numFmtOptions( metricValueFormat );
+	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
 	return (
 		<Widget noPadding>
