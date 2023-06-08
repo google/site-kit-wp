@@ -406,7 +406,7 @@ final class Screens {
 				array(
 					'title'               => __( 'Dashboard', 'google-site-kit' ),
 					'capability'          => Permissions::VIEW_SPLASH,
-					'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : null,
+					'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : self::PARENT_SLUG_NULL,
 					// This callback will redirect to the dashboard on successful authentication.
 					'initialize_callback' => function( Context $context ) {
 						if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
