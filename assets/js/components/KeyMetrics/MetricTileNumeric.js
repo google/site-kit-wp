@@ -43,7 +43,7 @@ export default function MetricTileNumeric( props ) {
 	if ( loading ) {
 		return (
 			<Widget noPadding>
-				<PreviewBlock width="100%" height="142px" padding />
+				<PreviewBlock width="100%" height="124px" padding />
 			</Widget>
 		);
 	}
