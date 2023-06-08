@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import MetricTileNumeric from '../../../../components/KeyMetrics/MetricTileNumeric';
+import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -51,56 +51,91 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 		} )
 	);
 
-	const reportOptions = {
+	const totalUsersReportOptions = {
 		...dates,
-		dimensions: [ 'newVsReturning' ],
 		metrics: [
 			{
-				name: 'activeUsers',
+				name: 'totalUsers',
 			},
 		],
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	const trafficSourceReportOptions = {
+		...dates,
+		dimensions: [ 'sessionDefaultChannelGroup' ],
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		limit: 1,
+		orderBy: 'totalUsers',
+	};
+
+	const totalUsersReport = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions )
+	);
+
+	const trafficSourceReport = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( trafficSourceReportOptions )
 	);
 
 	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
-				[ reportOptions ]
+				[ totalUsersReportOptions ]
+			) ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ trafficSourceReportOptions ]
 			)
 	);
 
-	const newVisitors =
-		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const returningVisitors =
-		parseInt( report?.rows?.[ 3 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const totalVisitors = newVisitors + returningVisitors;
+	const totalUsers =
+		parseInt(
+			totalUsersReport?.rows?.[ 1 ]?.metricValues[ 0 ]?.value,
+			10
+		) || 0;
 
-	const compareNewVisitors =
-		parseInt( report?.rows?.[ 0 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const compareReturningVisitors =
-		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const compareTotalVisitors = compareNewVisitors + compareReturningVisitors;
+	const topTrafficSource =
+		trafficSourceReport?.rows?.[ 1 ]?.dimensionValues[ 0 ]?.value || '-';
+
+	const currentTopTrafficSourceUsers =
+		parseInt(
+			trafficSourceReport?.rows?.[ 1 ]?.metricValues[ 0 ]?.value,
+			10
+		) || 0;
+
+	const topTrafficSourceUsersPercentage = totalUsers
+		? ( currentTopTrafficSourceUsers * 100 ) / totalUsers
+		: 0;
+
+	const previousTopTrafficSourceUsers =
+		parseInt(
+			trafficSourceReport?.rows?.[ 0 ]?.metricValues[ 0 ]?.value,
+			10
+		) || 0;
 
 	if ( keyMetricsWidgetHidden !== false ) {
 		return <WidgetNull />;
 	}
 
 	return (
-		<MetricTileNumeric
+		<MetricTileText
 			Widget={ Widget }
-			title={ __( 'New Visitors', 'google-site-kit' ) }
-			metricValue={ newVisitors }
-			subText={ sprintf(
-				/* translators: %d: Number of total visitors visiting the site. */
-				__( 'of %d total visitors', 'google-site-kit' ),
-				totalVisitors
-			) }
-			previousValue={ compareTotalVisitors }
-			currentValue={ totalVisitors }
+			title={ __( 'Top Traffic Source', 'google-site-kit' ) }
+			metricValue={ topTrafficSource }
+			subText={
+				// eslint-disable-next-line @wordpress/valid-sprintf
+				sprintf(
+					/* translators: %d: Percentage of users for the current top traffic source compared to the number of total users for all traffic sources. */
+					__( '%d%% of total traffic', 'google-site-kit' ),
+					topTrafficSourceUsersPercentage
+				)
+			}
+			previousValue={ previousTopTrafficSourceUsers }
+			currentValue={ currentTopTrafficSourceUsers }
 			loading={ loading }
 		/>
 	);

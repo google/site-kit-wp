@@ -61,6 +61,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Video',
 		'Display',
 	],
+	sessionDefaultChannelGroup: [ 'Organic Search' ],
 	country: [
 		'United States',
 		'United Kingdom',

@@ -34,21 +34,36 @@ import {
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
-const reportOptions = {
-	compareStartDate: '2020-07-14',
-	compareEndDate: '2020-08-10',
-	startDate: '2020-08-11',
-	endDate: '2020-09-07',
-	dimensions: [ 'newVsReturning' ],
-	metrics: [
-		{
-			name: 'activeUsers',
-		},
-	],
-};
+const reportOptions = [
+	{
+		compareStartDate: '2020-07-14',
+		compareEndDate: '2020-08-10',
+		startDate: '2020-08-11',
+		endDate: '2020-09-07',
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+	},
+	{
+		compareStartDate: '2020-07-14',
+		compareEndDate: '2020-08-10',
+		startDate: '2020-08-11',
+		endDate: '2020-09-07',
+		dimensions: [ 'sessionDefaultChannelGroup' ],
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		limit: 1,
+		orderBy: 'totalUsers',
+	},
+];
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'kmAnalyticsNewVisitors'
+	'kmAnalyticsTopTrafficSource'
 )( TopTrafficSourceWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
@@ -61,7 +76,9 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		provideAnalytics4MockReport( registry, reportOptions );
+		reportOptions.forEach( ( options ) =>
+			provideAnalytics4MockReport( registry, options )
+		);
 	},
 };
 Ready.scenario = {
@@ -74,7 +91,10 @@ Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
-			reportOptions,
+			reportOptions[ 0 ],
+		] );
+		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
+			reportOptions[ 1 ],
 		] );
 	},
 };
@@ -83,12 +103,15 @@ export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( { dispatch } ) => {
-		const report = getAnalytics4MockResponse( reportOptions );
-		const zeroReport =
-			replaceValuesInAnalytics4ReportWithZeroData( report );
-
-		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
-			options: reportOptions,
+		reportOptions.forEach( ( options ) => {
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+				replaceValuesInAnalytics4ReportWithZeroData(
+					getAnalytics4MockResponse( options )
+				),
+				{
+					options,
+				}
+			);
 		} );
 	},
 };
@@ -98,7 +121,7 @@ ZeroData.scenario = {
 };
 
 export default {
-	title: 'Components/KeyMetrics/WidgetTiles/NewVisitors',
+	title: 'Components/KeyMetrics/WidgetTiles/TopTrafficSource',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
