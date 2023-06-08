@@ -30,49 +30,43 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import MetricTileNumeric from '../../../../components/KeyMetrics/MetricTileNumeric';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import {
+	MetricTileNumeric,
+	whenKeyMetricsWidgetVisible,
+} from '../../../../components/KeyMetrics';
 
 const { useSelect, useInViewSelect } = Data;
 
-export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
+function NewVisitorsWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} )
 	);
 
-	// One combined select hook is used to prevent unnecessary selects
-	// if the key metrics widget is hidden.
-	const [ report, loading ] =
-		useInViewSelect( ( select ) => {
-			if ( keyMetricsWidgetHidden !== false ) {
-				return [];
-			}
+	const reportOptions = {
+		...dates,
+		dimensions: [ 'newVsReturning' ],
+		metrics: [ { name: 'activeUsers' } ],
+	};
 
-			const { getReport, hasFinishedResolution } =
-				select( MODULES_ANALYTICS_4 );
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	);
 
-			const reportOptions = {
-				...select( CORE_USER ).getDateRangeDates( {
-					offsetDays: DATE_RANGE_OFFSET,
-					compare: true,
-				} ),
-				dimensions: [ 'newVsReturning' ],
-				metrics: [ { name: 'activeUsers' } ],
-			};
-
-			return [
-				getReport( reportOptions ),
-				! hasFinishedResolution( 'getReport', [ reportOptions ] ),
-			];
-		} ) || [];
-
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
+	const loading = useInViewSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
+			)
+	);
 
 	const newVisitors =
 		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
@@ -105,5 +99,6 @@ export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
 
 NewVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenKeyMetricsWidgetVisible()( NewVisitorsWidget );
