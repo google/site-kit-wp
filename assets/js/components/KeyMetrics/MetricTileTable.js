@@ -26,11 +26,11 @@ import { get } from 'lodash';
 import PreviewBlock from '../PreviewBlock';
 
 export default function MetricTileTable( props ) {
-	const { Widget, loading, title, subText, rows, columns, limit } = props;
+	const { Widget, loading, title, rows, columns, limit } = props;
 
 	return (
 		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile">
+			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-table">
 				<h3 className="googlesitekit-km-widget-tile__title">
 					{ title }
 				</h3>
@@ -90,11 +90,6 @@ export default function MetricTileTable( props ) {
 							</tbody>
 						</table>
 					) }
-					{ subText && (
-						<p className="googlesitekit-km-widget-tile__subtext">
-							{ subText }
-						</p>
-					) }
 				</div>
 			</div>
 		</Widget>
@@ -105,7 +100,6 @@ MetricTileTable.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	loading: PropTypes.bool,
 	title: PropTypes.string,
-	subtext: PropTypes.string,
 	rows: PropTypes.arrayOf(
 		PropTypes.oneOfType( [ PropTypes.array, PropTypes.object ] )
 	).isRequired,

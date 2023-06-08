@@ -120,7 +120,7 @@ export default function PopularKeywordsWidget( props ) {
 			Component: ( { fieldValue } ) => (
 				<strong>
 					{ sprintf(
-						/* translators: %s: click through rate value */
+						/* translators: %s: clickthrough rate value */
 						__( '%s CTR', 'google-site-kit' ),
 						numFmt( fieldValue, '%' )
 					) }
@@ -129,14 +129,16 @@ export default function PopularKeywordsWidget( props ) {
 		},
 	];
 
+	const rows = ( report?.length ? report : [ {}, {}, {} ] ).sort(
+		( { ctr: ctrA = 0 }, { ctr: ctrB = 0 } ) => ctrB - ctrA
+	);
+
 	return (
 		<MetricTileTable
 			Widget={ Widget }
 			title={ __( 'Top performing keywords', 'google-site-kit' ) }
 			loading={ loading }
-			rows={ ( report || [] ).sort(
-				( { ctr: ctrA }, { ctr: ctrB } ) => ctrB - ctrA
-			) }
+			rows={ rows }
 			columns={ columns }
 			limit={ 3 }
 		/>
