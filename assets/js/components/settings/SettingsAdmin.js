@@ -71,6 +71,13 @@ export default function SettingsAdmin() {
 		}
 	};
 
+	const hasUserPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
+	const ctaLabel = !! hasUserPickedMetrics?.length
+		? __( 'Set your site goals', 'google-site-kit' )
+		: __( 'Personalize your metrics', 'google-site-kit' );
+
 	useEffect( () => {
 		if ( isUserInputCompleted ) {
 			trackEvent( viewContext, 'summary_view' );
@@ -117,10 +124,7 @@ export default function SettingsAdmin() {
 												</span>
 											</p>
 											<Link href={ userInputURL }>
-												{ __(
-													'Personalize your metrics',
-													'google-site-kit'
-												) }
+												{ ctaLabel }
 											</Link>
 										</Cell>
 									</Row>
