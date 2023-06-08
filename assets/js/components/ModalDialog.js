@@ -60,6 +60,7 @@ const ModalDialog = ( {
 		<Dialog
 			open={ dialogActive }
 			aria-describedby={ hasProvides ? describedByID : undefined }
+			tabIndex="-1"
 		>
 			<DialogTitle>{ title }</DialogTitle>
 			{ subtitle && <p className="mdc-dialog__lead">{ subtitle }</p> }
