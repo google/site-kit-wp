@@ -26,7 +26,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { MODULES_ADSENSE } from './constants';
 
-describe( 'modules/adsense accounts', () => {
+describe( 'modules/adsense ad-blocking-recovery', () => {
 	let registry;
 
 	beforeAll( () => {
@@ -46,15 +46,7 @@ describe( 'modules/adsense accounts', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'fetchAdBlockingRecoveryTagStore', () => {
-			it( 'throws an error if accountID is not provided', () => {
-				expect( () =>
-					registry
-						.dispatch( MODULES_ADSENSE )
-						.fetchAdBlockingRecoveryTag()
-				).toThrow( 'accountID is required.' );
-			} );
-
+		describe( 'syncAdBlockingRecoveryTags', () => {
 			it( 'dispatches an error if the request fails', async () => {
 				const errorResponse = {
 					code: 'internal_server_error',
@@ -62,14 +54,14 @@ describe( 'modules/adsense accounts', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/ad-blocking-recovery-tag/,
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/sync-ad-blocking-recovery-tags/,
 					{ body: errorResponse, status: 500 }
 				);
 
 				const { response, error } = await registry
 					.dispatch( MODULES_ADSENSE )
-					.fetchAdBlockingRecoveryTag( 'pub-1234567890' );
+					.syncAdBlockingRecoveryTags();
 
 				expect( error ).toEqual( errorResponse );
 				expect( response ).toEqual( undefined );
@@ -77,21 +69,26 @@ describe( 'modules/adsense accounts', () => {
 			} );
 
 			it( 'fetches and returns success status', async () => {
-				const adBlockingRecoveryTagResponse = {
+				const syncSyncAdBlockingRecoveryTagssResponse = {
 					success: true,
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/ad-blocking-recovery-tag/,
-					{ body: adBlockingRecoveryTagResponse, status: 200 }
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/sync-ad-blocking-recovery-tags/,
+					{
+						body: syncSyncAdBlockingRecoveryTagssResponse,
+						status: 200,
+					}
 				);
 
 				const { response, error } = await registry
 					.dispatch( MODULES_ADSENSE )
-					.fetchAdBlockingRecoveryTag( 'pub-1234567890' );
+					.syncAdBlockingRecoveryTags();
 
 				expect( error ).toEqual( undefined );
-				expect( response ).toEqual( adBlockingRecoveryTagResponse );
+				expect( response ).toEqual(
+					syncSyncAdBlockingRecoveryTagssResponse
+				);
 			} );
 		} );
 	} );

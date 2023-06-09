@@ -418,7 +418,7 @@ class AdSenseTest extends TestCase {
 		$this->assertNull( $tag );
 	}
 
-	public function test_get_data__ad_blocking_recovery_tag() {
+	public function test_get_data__sync_ad_blocking_recovery_tags() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
@@ -432,6 +432,8 @@ class AdSenseTest extends TestCase {
 		$authentication->get_oauth_client()->set_granted_scopes(
 			$adsense->get_scopes()
 		);
+
+		$adsense->get_settings()->merge( array( 'accountID' => 'pub-1234567890' ) );
 
 		FakeHttp::fake_google_http_handler(
 			$adsense->get_client(),
@@ -448,12 +450,7 @@ class AdSenseTest extends TestCase {
 		$this->assertFalse( $options->get( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION ) );
 		$this->assertFalse( $options->get( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION ) );
 
-		$response = $adsense->get_data(
-			'ad-blocking-recovery-tag',
-			array(
-				'accountID' => 'pub-12345678',
-			)
-		);
+		$response = $adsense->set_data( 'sync-ad-blocking-recovery-tags', array() );
 
 		// Assert API response.
 		$this->assertNotWPError( $response );
@@ -504,7 +501,6 @@ class AdSenseTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'ad-blocking-recovery-tag',
 				'notifications',
 				'accounts',
 				'alerts',
@@ -513,6 +509,7 @@ class AdSenseTest extends TestCase {
 				'report',
 				'adunits',
 				'sites',
+				'sync-ad-blocking-recovery-tags',
 			),
 			$adsense->get_datapoints()
 		);

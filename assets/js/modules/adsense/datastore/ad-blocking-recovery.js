@@ -17,35 +17,38 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-const fetchAdBlockingRecoveryTagStore = createFetchStore( {
-	baseName: 'adBlockingRecoveryTag',
-	controlCallback: ( { accountID } ) => {
-		return API.get(
+const fetchSyncAdBlockingRecoveryTagsStore = createFetchStore( {
+	baseName: 'syncAdBlockingRecoveryTags',
+	controlCallback: () => {
+		return API.set(
 			'modules',
 			'adsense',
-			'ad-blocking-recovery-tag',
-			{ accountID },
-			{
-				useCache: false,
-			}
+			'sync-ad-blocking-recovery-tags'
 		);
-	},
-	argsToParams: ( accountID ) => {
-		return { accountID };
-	},
-	validateParams: ( { accountID } = {} ) => {
-		invariant( accountID, 'accountID is required.' );
 	},
 } );
 
-export default fetchAdBlockingRecoveryTagStore;
+const baseActions = {
+	/**
+	 * Triggers an API request to sync ad blocking recovery tags on the server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	syncAdBlockingRecoveryTags() {
+		return fetchSyncAdBlockingRecoveryTagsStore.actions.fetchSyncAdBlockingRecoveryTags();
+	},
+};
+
+const store = Data.combineStores( fetchSyncAdBlockingRecoveryTagsStore, {
+	actions: baseActions,
+} );
+
+export default store;
