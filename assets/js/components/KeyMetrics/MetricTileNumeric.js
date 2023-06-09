@@ -24,25 +24,31 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
 
-export default function MetricTileNumeric( {
-	Widget,
-	loading,
-	title,
-	metricValue,
-	subText,
-	previousValue,
-	currentValue,
-} ) {
+export default function MetricTileNumeric( props ) {
+	const {
+		Widget,
+		loading,
+		title,
+		metricValue,
+		metricValueFormat,
+		subText,
+		previousValue,
+		currentValue,
+	} = props;
+
 	if ( loading ) {
 		return (
 			<Widget noPadding>
-				<PreviewBlock width="100%" height="142px" padding />
+				<PreviewBlock width="100%" height="124px" padding />
 			</Widget>
 		);
 	}
+
+	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
 	return (
 		<Widget noPadding>
@@ -53,11 +59,12 @@ export default function MetricTileNumeric( {
 				<div className="googlesitekit-km-widget-tile__body">
 					<div className="googlesitekit-km-widget-tile__metric-change-container">
 						<div className="googlesitekit-km-widget-tile__metric">
-							{ metricValue }
+							{ numFmt( metricValue, formatOptions ) }
 						</div>
 						<ChangeBadge
 							previousValue={ previousValue }
 							currentValue={ currentValue }
+							isAbsolute={ formatOptions?.style === 'percent' }
 						/>
 					</div>
 					<p className="googlesitekit-km-widget-tile__subtext">
@@ -74,6 +81,10 @@ MetricTileNumeric.propTypes = {
 	loading: PropTypes.bool,
 	title: PropTypes.string,
 	metricValue: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
+	metricValueFormat: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.object,
+	] ),
 	subtext: PropTypes.string,
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,

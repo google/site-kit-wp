@@ -30,20 +30,19 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import MetricTileNumeric from '../../../../components/KeyMetrics/MetricTileNumeric';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import {
+	MetricTileNumeric,
+	whenKeyMetricsWidgetVisible,
+} from '../../../../components/KeyMetrics';
 
 const { useSelect, useInViewSelect } = Data;
 
-export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
-	);
-
+function NewVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -54,18 +53,14 @@ export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
 	const reportOptions = {
 		...dates,
 		dimensions: [ 'newVsReturning' ],
-		metrics: [
-			{
-				name: 'activeUsers',
-			},
-		],
+		metrics: [ { name: 'activeUsers' } ],
 	};
 
 	const report = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
 	);
 
-	const loading = useSelect(
+	const loading = useInViewSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
@@ -85,14 +80,10 @@ export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
 		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
 	const compareTotalVisitors = compareNewVisitors + compareReturningVisitors;
 
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
-
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'New Visitors', 'google-site-kit' ) }
+			title={ __( 'New visitors', 'google-site-kit' ) }
 			metricValue={ newVisitors }
 			subText={ sprintf(
 				/* translators: %d: Number of total visitors visiting the site. */
@@ -108,5 +99,6 @@ export default function NewVisitorsWidget( { Widget, WidgetNull } ) {
 
 NewVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenKeyMetricsWidgetVisible()( NewVisitorsWidget );
