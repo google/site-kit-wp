@@ -40,17 +40,12 @@ import { numFmt } from '../../../../util';
 import Link from '../../../../components/Link';
 import MetricTileTable from '../../../../components/KeyMetrics/MetricTileTable';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import { whenKeyMetricsWidgetVisible } from '../../../../components/KeyMetrics';
 
 const { useSelect, useInViewSelect } = Data;
 
-export default function PopularKeywordsWidget( props ) {
-	const { Widget, WidgetNull } = props;
-
+function PopularKeywordsWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
-
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
-	);
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -59,33 +54,23 @@ export default function PopularKeywordsWidget( props ) {
 		} )
 	);
 
-	// One combined select hook is used to prevent unnecessary selects
-	// if the key metrics widget is hidden.
-	const [ report, loading ] =
-		useInViewSelect( ( select ) => {
-			if ( keyMetricsWidgetHidden !== false ) {
-				return [];
-			}
+	const reportOptions = {
+		...dates,
+		dimensions: 'query',
+		limit: 100,
+	};
 
-			const { getReport, hasFinishedResolution } = select(
-				MODULES_SEARCH_CONSOLE
-			);
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getReport( reportOptions )
+	);
 
-			const reportOptions = {
-				...dates,
-				dimensions: 'query',
-				limit: 100,
-			};
-
-			return [
-				getReport( reportOptions ),
-				! hasFinishedResolution( 'getReport', [ reportOptions ] ),
-			];
-		} ) || [];
-
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
+	const loading = useInViewSelect(
+		( select ) =>
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
+			)
+	);
 
 	const keywordsDateRangeArgs = generateDateRangeArgs( dates );
 
@@ -149,3 +134,5 @@ PopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenKeyMetricsWidgetVisible()( PopularKeywordsWidget );

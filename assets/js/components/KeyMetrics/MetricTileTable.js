@@ -39,7 +39,7 @@ export default function MetricTileTable( props ) {
 						<PreviewBlock
 							className="googlesitekit-km-widget-tile__table"
 							width="100%"
-							height="70px"
+							height="65px"
 						/>
 					) }
 					{ ! loading && (
