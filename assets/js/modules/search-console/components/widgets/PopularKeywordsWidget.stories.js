@@ -98,6 +98,11 @@ export default {
 				] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( {
+						propertyID: 'http://example.com/',
+					} );
 
 				provideKeyMetrics( registry );
 
