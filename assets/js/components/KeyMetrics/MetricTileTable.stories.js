@@ -35,6 +35,7 @@ const columns = [
 	},
 	{
 		field: 'field2',
+		Component: ( { fieldValue } ) => <strong>{ fieldValue }</strong>,
 	},
 ];
 
@@ -69,6 +70,7 @@ ZeroData.args = {
 	title,
 	rows: [],
 	columns,
+	zeroState: () => 'No data available',
 };
 ZeroData.scenario = {
 	label: 'KeyMetrics/MetricTileTable/ZeroData',

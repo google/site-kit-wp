@@ -26,7 +26,63 @@ import { get } from 'lodash';
 import PreviewBlock from '../PreviewBlock';
 
 export default function MetricTileTable( props ) {
-	const { Widget, loading, title, rows, columns, limit } = props;
+	const {
+		Widget,
+		loading,
+		title,
+		rows,
+		columns,
+		limit,
+		zeroState: ZeroState,
+	} = props;
+
+	let tbody = null;
+
+	if ( rows?.length > 0 ) {
+		tbody = rows
+			.slice( 0, limit || rows.length )
+			.map( ( row, rowIndex ) => (
+				<tr key={ rowIndex }>
+					{ columns.map(
+						(
+							{ Component, field, className: columnClassName },
+							colIndex
+						) => {
+							const fieldValue =
+								field !== undefined
+									? get( row, field )
+									: undefined;
+
+							return (
+								<td
+									key={ colIndex }
+									className={ columnClassName }
+								>
+									{ Component && (
+										<Component
+											row={ row }
+											fieldValue={ fieldValue }
+										/>
+									) }
+									{ ! Component && fieldValue }
+								</td>
+							);
+						}
+					) }
+				</tr>
+			) );
+	} else if ( !! ZeroState ) {
+		tbody = (
+			<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
+				<td
+					className="googlesitekit-table__body-item"
+					colSpan={ columns.length }
+				>
+					<ZeroState />
+				</td>
+			</tr>
+		);
+	}
 
 	return (
 		<Widget noPadding>
@@ -44,50 +100,7 @@ export default function MetricTileTable( props ) {
 					) }
 					{ ! loading && (
 						<table className="googlesitekit-km-widget-tile__table">
-							<tbody>
-								{ rows
-									.slice( 0, limit || rows.length )
-									.map( ( row, rowIndex ) => (
-										<tr key={ rowIndex }>
-											{ columns.map(
-												(
-													{
-														Component,
-														field,
-														className:
-															columnClassName,
-													},
-													colIndex
-												) => {
-													const fieldValue =
-														field !== undefined
-															? get( row, field )
-															: undefined;
-
-													return (
-														<td
-															key={ colIndex }
-															className={
-																columnClassName
-															}
-														>
-															{ Component && (
-																<Component
-																	row={ row }
-																	fieldValue={
-																		fieldValue
-																	}
-																/>
-															) }
-															{ ! Component &&
-																fieldValue }
-														</td>
-													);
-												}
-											) }
-										</tr>
-									) ) }
-							</tbody>
+							<tbody>{ tbody }</tbody>
 						</table>
 					) }
 				</div>
@@ -105,4 +118,5 @@ MetricTileTable.propTypes = {
 	).isRequired,
 	columns: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	limit: PropTypes.number,
+	zeroState: PropTypes.func,
 };
