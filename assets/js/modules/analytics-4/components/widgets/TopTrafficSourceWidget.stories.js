@@ -82,7 +82,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Components/KeyMetrics/Widgets/TopTrafficSourceWidget/Ready',
+	label: 'KeyMetrics/TopTrafficSourceWidget/Ready',
 	delay: 250,
 };
 
@@ -116,7 +116,7 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'Components/KeyMetrics/Widgets/TopTrafficSourceWidget/ZeroData',
+	label: 'KeyMetrics/TopTrafficSourceWidget/ZeroData',
 	delay: 250,
 };
 

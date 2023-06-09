@@ -38,7 +38,7 @@ Positive.args = {
 	previousValue: 91,
 };
 Positive.scenario = {
-	label: 'Components/KeyMetrics/Widgets/MetricTileText/Positive',
+	label: 'KeyMetrics/MetricTileText/Positive',
 	delay: 250,
 };
 
@@ -52,7 +52,7 @@ Negative.args = {
 	previousValue: 103,
 };
 Negative.scenario = {
-	label: 'Components/KeyMetrics/Widgets/MetricTileText/Negative',
+	label: 'KeyMetrics/MetricTileText/Negative',
 	delay: 250,
 };
 
@@ -66,7 +66,7 @@ ZeroChange.args = {
 	previousValue: 100,
 };
 ZeroChange.scenario = {
-	label: 'Components/Key Metrics/Widgets/MetricTileText/ZeroChange',
+	label: 'KeyMetrics/MetricTileText/ZeroChange',
 	delay: 250,
 };
 
