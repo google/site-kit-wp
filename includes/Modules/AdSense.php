@@ -276,40 +276,40 @@ final class AdSense extends Module
 				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
 			case 'GET:notifications':
 				return function() {
-						$alerts = $this->get_data( 'alerts' );
+					$alerts = $this->get_data( 'alerts' );
 					if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
 						return array();
 					}
-						$alerts = array_filter(
-							$alerts,
-							function( Google_Service_Adsense_Alert $alert ) {
-								return 'SEVERE' === $alert->getSeverity();
-							}
-						);
+					$alerts = array_filter(
+						$alerts,
+						function( Google_Service_Adsense_Alert $alert ) {
+							return 'SEVERE' === $alert->getSeverity();
+						}
+					);
 
-						// There is no SEVERE alert, return empty.
+					// There is no SEVERE alert, return empty.
 					if ( empty( $alerts ) ) {
 						return array();
 					}
 
-						/**
-						 * First Alert
-						 *
-						 * @var Google_Service_Adsense_Alert $alert
-						 */
-						$alert = array_shift( $alerts );
-						return array(
-							array(
-								'id'            => 'adsense-notification',
-								'description'   => $alert->getMessage(),
-								'isDismissible' => true,
-								'format'        => 'large',
-								'severity'      => 'win-info',
-								'ctaURL'        => $this->get_account_url(),
-								'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
-								'ctaTarget'     => '_blank',
-							),
-						);
+					/**
+					 * First Alert
+					 *
+					 * @var Google_Service_Adsense_Alert $alert
+					 */
+					$alert = array_shift( $alerts );
+					return array(
+						array(
+							'id'            => 'adsense-notification',
+							'description'   => $alert->getMessage(),
+							'isDismissible' => true,
+							'format'        => 'large',
+							'severity'      => 'win-info',
+							'ctaURL'        => $this->get_account_url(),
+							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
+							'ctaTarget'     => '_blank',
+						),
+					);
 				};
 			case 'GET:report':
 				$start_date = $data['startDate'];
@@ -407,7 +407,6 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients_urlchannels->listAccountsAdclientsUrlchannels( self::normalize_client_id( $data['accountID'], $data['clientID'] ) );
-
 		}
 
 		return parent::create_data_request( $data );
