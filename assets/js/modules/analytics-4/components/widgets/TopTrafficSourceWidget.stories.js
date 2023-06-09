@@ -121,7 +121,7 @@ ZeroData.scenario = {
 };
 
 export default {
-	title: 'Components/KeyMetrics/WidgetTiles/TopTrafficSource',
+	title: 'Key Metrics/TopTrafficSource',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

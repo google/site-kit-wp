@@ -66,7 +66,7 @@ ZeroChange.args = {
 	previousValue: 100,
 };
 ZeroChange.scenario = {
-	label: 'Components/KeyMetrics/Widgets/MetricTileText/ZeroChange',
+	label: 'Components/Key Metrics/Widgets/MetricTileText/ZeroChange',
 	delay: 250,
 };
 
@@ -77,6 +77,6 @@ Loading.args = {
 };
 
 export default {
-	title: 'Components/KeyMetrics/WidgetTiles/MetricTileText',
+	title: 'Key Metrics/WidgetTiles/MetricTileText',
 	component: MetricTileText,
 };
