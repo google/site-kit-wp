@@ -19,15 +19,49 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import Link from '../../components/Link';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
+
+const { useDispatch } = Data;
 
 export default function ConnectGA4CTATile() {
+	const viewContext = useViewContext();
+
+	const { activateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
+
+	const handleConnectGA4 = useCallback( async () => {
+		const { error, response } = await activateModule( 'analytics' );
+
+		if ( ! error ) {
+			await trackEvent(
+				`${ viewContext }_module-list`,
+				'activate_module',
+				'analytics'
+			);
+
+			navigateTo( response.moduleReauthURL );
+		} else {
+			setInternalServerError( {
+				id: 'activate-module-error',
+				description: error.message,
+			} );
+		}
+	}, [ activateModule, navigateTo, setInternalServerError, viewContext ] );
+
 	return (
 		<div className="googlesitekit-km-connect-ga-cta-tile">
 			<div className="googlesitekit-km-connect-ga-cta-tile__icon">
@@ -40,7 +74,7 @@ export default function ConnectGA4CTATile() {
 						'google-site-kit'
 					) }
 				</p>
-				<Link href="#">
+				<Link href="" onClick={ handleConnectGA4 }>
 					{ __( 'Connect Google Analytics', 'google-site-kit' ) }
 				</Link>
 			</div>
