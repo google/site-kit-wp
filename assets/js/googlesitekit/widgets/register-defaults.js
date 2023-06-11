@@ -27,7 +27,10 @@ import { __ } from '@wordpress/i18n';
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
-import KeyMetricsSetupCTAWidget from '../../components/KeyMetrics/KeyMetricsSetupCTAWidget';
+import {
+	ConnectGA4CTATileWidget,
+	KeyMetricsSetupCTAWidget,
+} from '../../components/KeyMetrics';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -230,6 +233,18 @@ export function registerDefaults( widgetsAPI ) {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ 'search-console' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'keyMetricsConnectGA4CTATile',
+		{
+			Component: ConnectGA4CTATileWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);

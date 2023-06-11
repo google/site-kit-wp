@@ -15,5 +15,6 @@
  */
 
 export { default as KeyMetricsSetupCTAWidget } from './KeyMetricsSetupCTAWidget';
+export { default as ConnectGA4CTATileWidget } from './ConnectGA4CTATileWidget';
 export { default as MetricTileNumeric } from './MetricTileNumeric';
 export * from './utils';
