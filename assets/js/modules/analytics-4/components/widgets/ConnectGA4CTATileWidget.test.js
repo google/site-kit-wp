@@ -23,16 +23,16 @@ import {
 	freezeFetch,
 	provideModules,
 	render,
-} from '../../../../tests/js/test-utils';
-import { muteFetch, provideKeyMetrics } from '../../../../tests/js/utils';
+} from '../../../../../../tests/js/test-utils';
+import { muteFetch, provideKeyMetrics } from '../../../../../../tests/js/utils';
 import {
 	CORE_USER,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-} from '../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+} from '../../../../googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 describe( 'ConnectGA4CTATileWidget', () => {

@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	ConnectGA4CTATileWidget,
 	EngagedTrafficSourceWidget,
 	LoyalVisitorsWidget,
 	NewVisitorsWidget,
@@ -45,7 +46,6 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../googlesitekit/datastore/user/constants';
-import { ConnectGA4CTATileWidget } from '../../components/KeyMetrics';
 
 export { registerStore } from './datastore';
 

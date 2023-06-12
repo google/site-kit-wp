@@ -25,9 +25,9 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ConnectGA4CTATile from './ConnectGA4CTATile';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import ConnectGA4CTATile from '../../../../components/KeyMetrics/ConnectGA4CTATile';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const { useSelect } = Data;
 

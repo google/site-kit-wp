@@ -19,11 +19,14 @@
 /**
  * Internal dependencies
  */
-import { provideKeyMetrics, provideModules } from '../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import {
+	provideKeyMetrics,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import { KM_ANALYTICS_LOYAL_VISITORS } from '../../../../googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { KM_ANALYTICS_LOYAL_VISITORS } from '../../googlesitekit/datastore/user/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectGA4CTATile'
