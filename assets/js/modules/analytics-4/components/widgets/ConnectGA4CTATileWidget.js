@@ -22,10 +22,16 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ConnectGA4CTATile from '../../../../components/KeyMetrics/ConnectGA4CTATile';
+import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
+import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
@@ -56,9 +62,12 @@ export default function ConnectGA4CTATileWidget( { Widget, WidgetNull } ) {
 	}
 
 	return (
-		<Widget noPadding>
-			<ConnectGA4CTATile />
-		</Widget>
+		<ConnectModuleCTATile
+			Icon={ AnalyticsIcon }
+			moduleName={ __( 'Google Analytics', 'google-site-kit' ) }
+			moduleSlug="analytics"
+			Widget={ Widget }
+		/>
 	);
 }
 

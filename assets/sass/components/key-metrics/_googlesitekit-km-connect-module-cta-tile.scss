@@ -1,5 +1,5 @@
 /**
- * Key metric connect ga cta tile styles.
+ * Key metric connect module cta tile styles.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -18,13 +18,13 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-widget--keyMetricsConnectGA4CTATile {
+	.googlesitekit-widget--connectModuleCTATile {
 
 		.googlesitekit-widget__body {
 			display: flex;
 			flex-direction: column;
 
-			.googlesitekit-km-connect-ga-cta-tile {
+			.googlesitekit-km-connect-module-cta-tile {
 				align-items: center;
 				display: flex;
 				flex: 1;
@@ -34,13 +34,13 @@
 					padding: $grid-gap-desktop;
 				}
 
-				.googlesitekit-km-connect-ga-cta-tile__icon {
+				.googlesitekit-km-connect-module-cta-tile__icon {
 					display: flex;
 					flex: 1;
 					justify-content: right;
 				}
 
-				.googlesitekit-km-connect-ga-cta-tile__content {
+				.googlesitekit-km-connect-module-cta-tile__content {
 					flex: 4;
 					margin-left: $grid-gap-phone;
 
@@ -48,7 +48,7 @@
 						margin-left: $grid-gap-desktop;
 					}
 
-					.googlesitekit-km-connect-ga-cta-tile__text {
+					.googlesitekit-km-connect-module-cta-tile__text {
 						margin: 0 0 4px;
 					}
 				}
