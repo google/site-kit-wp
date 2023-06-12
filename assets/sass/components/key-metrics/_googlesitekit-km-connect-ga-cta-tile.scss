@@ -37,11 +37,16 @@
 				.googlesitekit-km-connect-ga-cta-tile__icon {
 					display: flex;
 					flex: 1;
-					justify-content: center;
+					justify-content: right;
 				}
 
 				.googlesitekit-km-connect-ga-cta-tile__content {
 					flex: 4;
+					margin-left: $grid-gap-phone;
+
+					@media (min-width: $bp-tablet) {
+						margin-left: $grid-gap-desktop;
+					}
 
 					.googlesitekit-km-connect-ga-cta-tile__text {
 						margin: 0 0 4px;
