@@ -96,12 +96,14 @@ export default function AdBlockingRecoveryToggle() {
 	};
 
 	useMount( () => {
-		setValues( AD_BLOCKING_FORM_SETTINGS, {
-			adBlockerDetectionToggle: adBlockerDetectionSnippet,
-		} );
-		setValues( AD_BLOCKING_FORM_SETTINGS, {
+		const initialToggleValues = {
+			// Set the initial toggle value to `undefined` if the saved value is `false`
+			// to prevent the SettingsNotice from showing up on mount.
+			adBlockerDetectionToggle: adBlockerDetectionSnippet || undefined,
 			adBlockerDetectionErrorToggle: adBlockerDetectionErrorSnippet,
-		} );
+		};
+
+		setValues( AD_BLOCKING_FORM_SETTINGS, initialToggleValues );
 	} );
 
 	if ( ! adBlockerDetectionEnabled || ! adBlockingRecoverySetupStatus ) {
