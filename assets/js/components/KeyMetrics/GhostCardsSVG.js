@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useWindowWidth } from '@react-hook/window-size/throttled';
+
+/**
  * WordPress dependencies
  */
 import { lazy, Suspense } from '@wordpress/element';
@@ -27,17 +32,27 @@ import { __ } from '@wordpress/i18n';
  */
 import PreviewBlock from '../../components/PreviewBlock';
 import MediaErrorHandler from '../../components/MediaErrorHandler';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
-const LazyGhostCardsSVG = lazy( () =>
+const LazyGhostCardsWideSVG = lazy( () =>
 	import( '../../../svg/graphics/ghost-cards.svg' )
+);
+const LazyGhostCardsTabletSVG = lazy( () =>
+	import( '../../../svg/graphics/ghost-cards-tablet.svg' )
 );
 const LazyGhostCardsMobileSVG = lazy( () =>
 	import( '../../../svg/graphics/ghost-cards-mobile.svg' )
 );
 
 export default function GhostCardsSVG() {
-	const breakpoint = useBreakpoint();
-	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	const windowWidth = useWindowWidth();
+
+	let GhostCardComponent;
+	if ( windowWidth > 783 ) {
+		GhostCardComponent = <LazyGhostCardsWideSVG />;
+	} else if ( windowWidth <= 783 && windowWidth > 600 ) {
+		GhostCardComponent = <LazyGhostCardsTabletSVG />;
+	} else {
+		GhostCardComponent = <LazyGhostCardsMobileSVG />;
+	}
 
 	return (
 		<Suspense fallback={ <PreviewBlock width="100%" height="90px" /> }>
@@ -47,8 +62,7 @@ export default function GhostCardsSVG() {
 					'google-site-kit'
 				) }
 			>
-				{ isMobileBreakpoint && <LazyGhostCardsMobileSVG /> }
-				{ ! isMobileBreakpoint && <LazyGhostCardsSVG /> }
+				{ GhostCardComponent }
 			</MediaErrorHandler>
 		</Suspense>
 	);
