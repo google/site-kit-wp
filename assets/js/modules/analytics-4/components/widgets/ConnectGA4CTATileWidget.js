@@ -33,7 +33,10 @@ import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	keyMetricsGA4Widgets,
+} from '../../../../googlesitekit/datastore/user/constants';
 
 const { useSelect } = Data;
 
@@ -53,8 +56,9 @@ export default function ConnectGA4CTATileWidget( { Widget, WidgetNull } ) {
 
 	if ( keyMetrics?.length > 0 ) {
 		const kmAnalyticsWidgetCount = keyMetrics.filter( ( keyMetric ) =>
-			keyMetric.startsWith( 'kmAnalytics' )
+			keyMetricsGA4Widgets.includes( keyMetric )
 		).length;
+
 		if ( kmAnalyticsWidgetCount > 0 && kmAnalyticsWidgetCount < 3 ) {
 			hideWidget = false;
 		}
