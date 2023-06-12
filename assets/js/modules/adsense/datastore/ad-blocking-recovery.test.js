@@ -55,7 +55,9 @@ describe( 'modules/adsense ad-blocking-recovery', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/sync-ad-blocking-recovery-tags/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+					),
 					{ body: errorResponse, status: 500 }
 				);
 
@@ -74,7 +76,9 @@ describe( 'modules/adsense ad-blocking-recovery', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/sync-ad-blocking-recovery-tags/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+					),
 					{
 						body: syncSyncAdBlockingRecoveryTagssResponse,
 						status: 200,
