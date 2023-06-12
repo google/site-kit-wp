@@ -20,27 +20,69 @@
  * Internal dependencies
  */
 import { determineSiteFromDomain } from './site';
-import * as fixtures from '../datastore/__fixtures__';
+
+/* eslint-disable camelcase */
+/* eslint-disable sitekit/acronym-case */
+const site_www_example_com = {
+	domain: 'www.example.com',
+	name: 'accounts/pub-1234567890/sites/www.example.com',
+	reportingDimensionId: 'ca-pub-1234567890:www.example.com',
+};
+
+const site_example_com = {
+	autoAdsEnabled: null,
+	domain: 'example.com',
+	name: 'accounts/pub-1234567890/sites/example.com',
+	reportingDimensionId: 'ca-pub-1234567890:example.com',
+	state: 'NEEDS_ATTENTION',
+};
+
+const site_foo_test = {
+	autoAdsEnabled: null,
+	domain: 'foo.test',
+	name: 'accounts/pub-1234567890/sites/foo.test',
+	reportingDimensionId: 'ca-pub-1234567890:foo.test',
+	state: 'READY',
+};
+
+const site_ffoo_test = {
+	autoAdsEnabled: null,
+	domain: 'ffoo.test',
+	name: 'accounts/pub-1234567890/sites/ffoo.test',
+	reportingDimensionId: 'ca-pub-1234567890:ffoo.test',
+	state: 'READY',
+};
+/* eslint-enable sitekit/acronym-case */
 
 describe( 'determineSiteFromDomain', () => {
 	it.each( [
 		[ undefined, undefined ],
 		[ undefined, 'www.example.com' ],
-		[ fixtures.sites, undefined ],
+		[ [ site_example_com, site_www_example_com ], undefined ],
 	] )( 'returns undefined for undefined parameters', ( sites, domain ) => {
 		expect( determineSiteFromDomain( sites, domain ) ).toEqual( undefined );
 	} );
 
 	it.each( [
-		[ 'www.example.com', fixtures.sites[ 0 ] ],
-		[ 'www.eXAmPle.COm', fixtures.sites[ 0 ] ],
-		[ 'othersubdomain.example.com', fixtures.sites[ 0 ] ],
-		[ 'www.test-site.com', fixtures.sites[ 1 ] ],
-		[ 'some-other-tld.ie', fixtures.sites[ 2 ] ],
+		[ 'www.example.com', site_example_com ],
+		[ 'www.eXAmPle.COm', site_example_com ],
+		[ 'othersubdomain.example.com', site_example_com ],
+		[ 'www.foo.test', site_foo_test ],
+		[ 'foo.test', site_foo_test ],
+		[ 'bar.test', null ],
+		// Make sure only subdomains match partial site domains
+		[ 'oo.test', null ],
+		[ 'ffoo.test', site_ffoo_test ],
 	] )(
 		'returns the correct site for the domain: %s',
 		( domain, expected ) => {
-			expect( determineSiteFromDomain( fixtures.sites, domain ) ).toEqual(
+			const sites = [
+				site_www_example_com,
+				site_example_com,
+				site_foo_test,
+				site_ffoo_test,
+			];
+			expect( determineSiteFromDomain( sites, domain ) ).toEqual(
 				expected
 			);
 		}
