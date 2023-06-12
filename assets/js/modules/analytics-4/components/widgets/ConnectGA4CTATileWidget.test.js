@@ -24,7 +24,7 @@ import {
 	provideModules,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { muteFetch, provideKeyMetrics } from '../../../../../../tests/js/utils';
+import { provideKeyMetrics } from '../../../../../../tests/js/utils';
 import {
 	CORE_USER,
 	KM_ANALYTICS_LOYAL_VISITORS,
@@ -50,7 +50,6 @@ describe( 'ConnectGA4CTATileWidget', () => {
 
 	it( 'should render nothing when module list is not yet available', () => {
 		freezeFetch( coreModileListEndpointRegExp );
-		muteFetch( coreKeyMetricsEndpointRegExp );
 
 		const { container } = render( <WidgetWithComponentProps /> );
 
@@ -58,10 +57,15 @@ describe( 'ConnectGA4CTATileWidget', () => {
 	} );
 
 	it( 'should render nothing when `analytics-4` is connected', () => {
-		muteFetch( coreKeyMetricsEndpointRegExp );
-
 		const { container } = render( <WidgetWithComponentProps />, {
-			setupRegistry: provideModules,
+			setupRegistry: ( registry ) =>
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] ),
 		} );
 
 		expect( container ).toBeEmptyDOMElement();

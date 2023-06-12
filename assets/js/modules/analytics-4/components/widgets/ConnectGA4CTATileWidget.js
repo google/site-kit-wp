@@ -42,9 +42,12 @@ export default function ConnectGA4CTATileWidget( { Widget, WidgetNull } ) {
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
-	const keyMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetrics()
-	);
+	const keyMetrics = useSelect( ( select ) => {
+		if ( isGA4ModuleConnected !== false ) {
+			return;
+		}
+		return select( CORE_USER ).getKeyMetrics();
+	} );
 
 	let hideWidget = true;
 
@@ -57,7 +60,7 @@ export default function ConnectGA4CTATileWidget( { Widget, WidgetNull } ) {
 		}
 	}
 
-	if ( hideWidget || isGA4ModuleConnected !== false ) {
+	if ( isGA4ModuleConnected !== false || hideWidget ) {
 		return <WidgetNull />;
 	}
 
