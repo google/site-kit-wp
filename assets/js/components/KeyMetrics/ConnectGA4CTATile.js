@@ -43,7 +43,7 @@ export default function ConnectGA4CTATile() {
 						'google-site-kit'
 					) }
 				</p>
-				<Link href="" onClick={ handleConnectGA4 }>
+				<Link href="#" onClick={ handleConnectGA4 }>
 					{ __( 'Connect Google Analytics', 'google-site-kit' ) }
 				</Link>
 			</div>
