@@ -38,6 +38,7 @@ import {
 	getSnippetLabel,
 	getAutoAdsDisabledMessage,
 } from './utils';
+import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -174,6 +175,8 @@ export default function SettingsView() {
 					</div>
 				</div>
 			) }
+
+			<AdBlockingRecoveryCTA />
 		</div>
 	);
 }

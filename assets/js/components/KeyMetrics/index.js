@@ -1,6 +1,4 @@
 /**
- * NewVisitorsWidget tests.
- *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +14,6 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
-import NewVisitorsWidget from './NewVisitorsWidget';
-
-describe( 'NewVisitorsWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <NewVisitorsWidget /> );
-
-		expect(
-			getByText( 'TODO: UI for NewVisitorsWidget' )
-		).toBeInTheDocument();
-	} );
-} );
+export { default as KeyMetricsSetupCTAWidget } from './KeyMetricsSetupCTAWidget';
+export { default as MetricTileNumeric } from './MetricTileNumeric';
+export * from './utils';

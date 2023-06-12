@@ -41,3 +41,18 @@ export const PERMISSION_MANAGE_MODULE_SHARING_OPTIONS =
 export const PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT =
 	'googlesitekit_delegate_module_sharing_management';
 export const PERMISSION_UPDATE_PLUGINS = 'googlesitekit_update_plugins';
+
+// Key Metrics Widgets
+export const KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE =
+	'kmAnalyticsEngagedTrafficSource';
+export const KM_ANALYTICS_LOYAL_VISITORS = 'kmAnalyticsLoyalVisitors';
+export const KM_ANALYTICS_NEW_VISITORS = 'kmAnalyticsNewVisitors';
+export const KM_ANALYTICS_POPULAR_CONTENT = 'kmAnalyticsPopularContent';
+export const KM_ANALYTICS_POPULAR_PRODUCTS = 'kmAnalyticsPopularProducts';
+export const KM_ANALYTICS_TOP_CITIES = 'kmAnalyticsTopCities';
+export const KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE =
+	'kmTopConvertingTrafficSource';
+export const KM_ANALYTICS_TOP_COUNTRIES = 'kmAnalyticsTopCountries';
+export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE = 'kmAnalyticsTopTrafficSource';
+export const KM_SEARCH_CONSOLE_POPULAR_KEYWORDS =
+	'kmSearchConsolePopularKeywords';

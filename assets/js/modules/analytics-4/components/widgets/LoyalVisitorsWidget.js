@@ -16,6 +16,101 @@
  * limitations under the License.
  */
 
-export default function LoyalVisitorsWidget() {
-	return <div>TODO: UI for LoyalVisitorsWidget</div>;
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
+import {
+	MetricTileNumeric,
+	whenKeyMetricsWidgetVisible,
+} from '../../../../components/KeyMetrics';
+
+const { useSelect, useInViewSelect } = Data;
+
+function LoyalVisitorsWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} )
+	);
+
+	const reportOptions = {
+		...dates,
+		dimensions: [ 'newVsReturning' ],
+		metrics: [ { name: 'activeUsers' } ],
+	};
+
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	);
+
+	const loading = useInViewSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
+			)
+	);
+
+	const newVisitors =
+		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
+	const returningVisitors =
+		parseInt( report?.rows?.[ 3 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
+	const totalVisitors = newVisitors + returningVisitors;
+
+	const prevNewVisitors =
+		parseInt( report?.rows?.[ 0 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
+	const prevReturningVisitors =
+		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
+	const prevTotalVisitors = prevNewVisitors + prevReturningVisitors;
+
+	const currentPercentage =
+		totalVisitors > 0 ? returningVisitors / totalVisitors : 0;
+	const prevPercentage =
+		prevTotalVisitors > 0 ? prevReturningVisitors / prevTotalVisitors : 0;
+
+	const format = {
+		style: 'percent',
+		signDisplay: 'exceptZero',
+		maximumFractionDigits: 1,
+	};
+
+	return (
+		<MetricTileNumeric
+			Widget={ Widget }
+			title={ __( 'Loyal visitors', 'google-site-kit' ) }
+			metricValue={ currentPercentage }
+			metricValueFormat={ format }
+			subText={ sprintf(
+				/* translators: %d: Number of total visitors visiting the site. */
+				__( 'of %d total visitors', 'google-site-kit' ),
+				totalVisitors
+			) }
+			previousValue={ prevPercentage }
+			currentValue={ currentPercentage }
+			loading={ loading }
+		/>
+	);
 }
+
+LoyalVisitorsWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+};
+
+export default whenKeyMetricsWidgetVisible()( LoyalVisitorsWidget );

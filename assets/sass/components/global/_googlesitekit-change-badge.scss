@@ -1,5 +1,5 @@
 /**
- * PopularProductsWidget component tests.
+ * Change badge styles.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,26 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
-import PopularProductsWidget from './PopularProductsWidget';
+.googlesitekit-plugin {
 
-describe( 'PopularProductsWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <PopularProductsWidget /> );
+	.googlesitekit-change-badge {
+		background-color: $c-green-g-50;
+		border-radius: $br-lg;
+		color: $c-green-g-700;
+		font: $f-primary;
+		font-size: $fs-label-sm;
+		font-weight: 500;
+		letter-spacing: $ls-xs;
+		padding: 4px 8px;
 
-		expect(
-			getByText( 'TODO: UI for PopularProductsWidget' )
-		).toBeInTheDocument();
-	} );
-} );
+		&.googlesitekit-change-badge--negative {
+			background-color: $c-red-r-50;
+			color: $c-red-r-700;
+		}
+
+		&.googlesitekit-change-badge--zero {
+			background-color: $c-neutral-n-50;
+			color: $c-neutral-n-700;
+		}
+	}
+}

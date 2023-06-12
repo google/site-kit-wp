@@ -36,11 +36,12 @@ import OptIn from '../OptIn';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
-import UserInputSettings from '../notifications/UserInputSettings';
 import { useFeature } from '../../hooks/useFeature';
 import { trackEvent } from '../../util';
 import SettingsPlugin from './SettingsPlugin';
 import useViewContext from '../../hooks/useViewContext';
+import SettingsKeyMetrics from './SettingsKeyMetrics';
+import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsAdmin() {
@@ -70,6 +71,13 @@ export default function SettingsAdmin() {
 		}
 	};
 
+	const hasUserPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
+	const ctaLabel = !! hasUserPickedMetrics?.length
+		? __( 'Set your site goals', 'google-site-kit' )
+		: __( 'Personalize your metrics', 'google-site-kit' );
+
 	useEffect( () => {
 		if ( isUserInputCompleted ) {
 			trackEvent( viewContext, 'summary_view' );
@@ -80,29 +88,50 @@ export default function SettingsAdmin() {
 		<Row>
 			{ userInputEnabled && (
 				<Cell size={ 12 }>
-					{ isUserInputCompleted && (
-						<Layout
-							title={ __( 'Key metrics', 'google-site-kit' ) }
-							header
-							rounded
-						>
-							<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
-								<Grid>
-									<UserInputPreview
-										goTo={ goTo }
-										noHeader
-										noFooter
-										settingsView
-										showIndividualCTAs
-									/>
-								</Grid>
-							</div>
-						</Layout>
-					) }
-
-					{ isUserInputCompleted === false && (
-						<UserInputSettings isDismissible={ false } rounded />
-					) }
+					<Layout
+						title={ __( 'Key metrics', 'google-site-kit' ) }
+						header
+						rounded
+					>
+						<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
+							<SettingsKeyMetrics />
+							<Grid>
+								{ isUserInputCompleted && (
+									<Row>
+										<Cell size={ 12 }>
+											<UserInputPreview
+												goTo={ goTo }
+												noHeader
+												noFooter
+												settingsView
+												showIndividualCTAs
+											/>
+										</Cell>
+									</Row>
+								) }
+								{ isUserInputCompleted === false && (
+									<Row>
+										<Cell
+											className="googlesitekit-user-input__notification"
+											size={ 12 }
+										>
+											<p>
+												<span>
+													{ __(
+														'Answer 3 quick questions to help us show the most relevant data for your site',
+														'google-site-kit'
+													) }
+												</span>
+											</p>
+											<Link href={ userInputURL }>
+												{ ctaLabel }
+											</Link>
+										</Cell>
+									</Row>
+								) }
+							</Grid>
+						</div>
+					</Layout>
 				</Cell>
 			) }
 
