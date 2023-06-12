@@ -51,7 +51,7 @@ export const KM_ANALYTICS_POPULAR_CONTENT = 'kmAnalyticsPopularContent';
 export const KM_ANALYTICS_POPULAR_PRODUCTS = 'kmAnalyticsPopularProducts';
 export const KM_ANALYTICS_TOP_CITIES = 'kmAnalyticsTopCities';
 export const KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE =
-	'kmTopConvertingTrafficSource';
+	'kmAnalyticsTopConvertingTrafficSource';
 export const KM_ANALYTICS_TOP_COUNTRIES = 'kmAnalyticsTopCountries';
 export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE = 'kmAnalyticsTopTrafficSource';
 export const KM_SEARCH_CONSOLE_POPULAR_KEYWORDS =

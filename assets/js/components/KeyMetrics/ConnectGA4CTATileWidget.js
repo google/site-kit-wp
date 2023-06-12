@@ -27,6 +27,8 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import ConnectGA4CTATile from './ConnectGA4CTATile';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+
 const { useSelect } = Data;
 
 export default function ConnectGA4CTATileWidget( { Widget, WidgetNull } ) {
@@ -34,7 +36,22 @@ export default function ConnectGA4CTATileWidget( { Widget, WidgetNull } ) {
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
-	if ( isGA4ModuleConnected !== false ) {
+	const keyMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetrics()
+	);
+
+	let hideWidget = true;
+
+	if ( keyMetrics?.length > 0 ) {
+		const kmAnalyticsWidgetCount = keyMetrics.filter( ( keyMetric ) =>
+			keyMetric.startsWith( 'kmAnalytics' )
+		).length;
+		if ( kmAnalyticsWidgetCount > 0 && kmAnalyticsWidgetCount < 3 ) {
+			hideWidget = false;
+		}
+	}
+
+	if ( hideWidget || isGA4ModuleConnected !== false ) {
 		return <WidgetNull />;
 	}
 
