@@ -145,11 +145,12 @@ export default function EnableUniversalAnalytics( {
 		}
 	} );
 
-	if (
+	const shouldEnableUAToggle =
 		! isValidPropertyID( propertyID ) &&
 		hasModuleAccess !== false &&
-		properties.length === 0
-	) {
+		properties.length === 0;
+
+	if ( shouldEnableUAToggle ) {
 		return null;
 	}
 
@@ -170,7 +171,7 @@ export default function EnableUniversalAnalytics( {
 					checked={ isUAEnabled }
 					onClick={ onChange }
 					hideLabel={ false }
-					disabled={ ! hasModuleAccess }
+					disabled={ shouldEnableUAToggle }
 				/>
 				<p>
 					{ __(
