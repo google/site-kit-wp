@@ -53,6 +53,13 @@ export default function AdsConversionIDTextField() {
 	const ga4SnippetEnabled = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const hasUAProperties = useSelect(
+		( select ) =>
+			!! select( MODULES_ANALYTICS ).getProperties( accountID )?.length
+	);
 
 	const { setAdsConversionID } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
@@ -78,7 +85,7 @@ export default function AdsConversionIDTextField() {
 	// but only hide it if the value is valid otherwise the user will be blocked.
 	if (
 		isValidValue &&
-		! snippetEnabled &&
+		! ( hasUAProperties && snippetEnabled ) &&
 		! ( ga4ReportingEnabled && ga4SnippetEnabled )
 	) {
 		return null;
