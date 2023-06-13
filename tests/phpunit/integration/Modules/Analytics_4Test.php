@@ -1017,10 +1017,12 @@ class Analytics_4Test extends TestCase {
 				array(
 					'startDate' => '2022-11-02',
 					'endDate'   => '2022-11-04',
+					'name'      => 'current_range'
 				),
 				array(
 					'startDate' => '2022-11-01',
 					'endDate'   => '2022-11-02',
+					'name'      => 'compare_range'
 				),
 			),
 			$request_params['dateRanges']
@@ -1166,6 +1168,7 @@ class Analytics_4Test extends TestCase {
 				array(
 					'startDate' => $this->days_ago_date_string( 28 ),
 					'endDate'   => $this->days_ago_date_string( 1 ),
+					'name'      => 'current_range'
 				),
 			),
 			$request_params['dateRanges']
