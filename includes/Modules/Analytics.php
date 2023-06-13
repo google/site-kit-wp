@@ -158,46 +158,6 @@ final class Analytics extends Module
 			}
 		);
 
-		// Conditionally allow access to either Analytics module based on current dashboard view.
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			add_filter(
-				'user_has_cap',
-				function( array $allcaps, $caps, $args ) {
-					if (
-						Permissions::READ_SHARED_MODULE_DATA !== $args[0] ||
-						! isset( $args[2] ) ||
-						! in_array(
-							$args[2],
-							array( self::MODULE_SLUG, Analytics_4::MODULE_SLUG ),
-							true
-						)
-					) {
-						return $allcaps;
-					}
-
-					$module_slug = $args[2];
-					$settings    = $this->get_settings()->get();
-
-					if (
-						(
-							'universal-analytics' === $settings['dashboardView'] &&
-							Analytics_4::MODULE_SLUG === $module_slug
-						) ||
-						(
-							'google-analytics-4' === $settings['dashboardView'] &&
-							self::MODULE_SLUG === $module_slug
-						)
-					) {
-						$allcaps[ $caps[0] ] = false;
-					}
-
-					return $allcaps;
-				},
-				20,
-				3
-			);
-		}
-
 	}
 
 	/**
