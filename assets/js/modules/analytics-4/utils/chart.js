@@ -64,7 +64,8 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 	const dataMap = [ columns ];
 
 	const currentDateRangeRows = rows.filter(
-		( { dimensionValues } ) => dimensionValues[ 1 ].value === 'date_range_0'
+		( { dimensionValues } ) =>
+			dimensionValues[ 1 ].value === 'current_range'
 	);
 
 	let hasOthers = withOthers;
@@ -92,7 +93,7 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 		if ( withTooltips ) {
 			const previousDateRangeRow = rows.find(
 				( { dimensionValues } ) =>
-					dimensionValues[ 1 ].value === 'date_range_1' &&
+					dimensionValues[ 1 ].value === 'compare_range' &&
 					dimensionValues[ 0 ].value ===
 						row.dimensionValues[ 0 ].value
 			);
@@ -133,7 +134,8 @@ export const isSingleSlice = ( report ) => {
 	}
 
 	const currentDateRangeRows = ( report?.rows || [] ).filter(
-		( { dimensionValues } ) => dimensionValues[ 1 ].value === 'date_range_0'
+		( { dimensionValues } ) =>
+			dimensionValues[ 1 ].value === 'compare_range'
 	);
 
 	if (

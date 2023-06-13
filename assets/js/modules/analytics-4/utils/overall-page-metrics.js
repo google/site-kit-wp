@@ -106,7 +106,7 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 
 	const startDateTime = stringToDate( startDate ).getTime();
 	const currentDateRangeRows = rows.filter( ( { dimensionValues } ) => {
-		if ( dimensionValues[ 1 ].value !== 'date_range_0' ) {
+		if ( dimensionValues[ 1 ].value !== 'current_range' ) {
 			return false;
 		}
 

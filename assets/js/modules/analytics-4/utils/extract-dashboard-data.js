@@ -165,7 +165,7 @@ export function extractAnalytics4DashboardData(
 								value: dateString,
 							},
 							{
-								value: 'date_range_0',
+								value: 'current_range',
 							},
 						],
 						metricValues: [ { value: 0 }, { value: 0 } ],
@@ -176,7 +176,7 @@ export function extractAnalytics4DashboardData(
 								value: dateString,
 							},
 							{
-								value: 'date_range_1',
+								value: 'compare_range',
 							},
 						],
 						metricValues: [ { value: 0 }, { value: 0 } ],
@@ -193,7 +193,7 @@ export function extractAnalytics4DashboardData(
 						value: '0',
 					},
 					{
-						value: 'date_range_0',
+						value: 'current_range',
 					},
 				],
 			},
@@ -203,7 +203,7 @@ export function extractAnalytics4DashboardData(
 						value: '0',
 					},
 					{
-						value: 'date_range_1',
+						value: 'compare_range',
 					},
 				],
 			}
