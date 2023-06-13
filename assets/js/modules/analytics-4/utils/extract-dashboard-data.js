@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { identity } from 'lodash';
+import { get, identity } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -45,23 +45,63 @@ import parseDimensionStringToDate from '../../analytics/util/parseDimensionStrin
  *
  * @since 1.96.0
  *
- * @param {Array}  rows          An array of rows to reduce.
- * @param {number} selectedStats The currently selected stat we need to return data for.
+ * @param {Array}  rows         An array of rows to reduce.
+ * @param {number} selectedStat The currently selected stat we need to return data for.
  * @return {Array} Array of selected stats from analytics row data.
  */
-function reduceAnalytics4RowsData( rows, selectedStats ) {
+function reduceAnalytics4RowsData( rows, selectedStat ) {
 	const dataMap = [];
 	rows.forEach( ( row ) => {
 		if ( ! row.metricValues ) {
 			return;
 		}
 
-		const { value } = row.metricValues[ selectedStats ];
+		const { value } = row.metricValues[ selectedStat ];
 		const dateString = row.dimensionValues[ 0 ].value;
 		const date = parseDimensionStringToDate( dateString );
 		dataMap.push( [ date, value ] );
 	} );
 	return dataMap;
+}
+
+/**
+ * Takes a specific property of the first row in the list that matches provided conditions.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} rows       The list of rows.
+ * @param {string}         selectPath The path where to get the field value in the matching row.
+ * @param {Object}         conditions Conditions that should satisfy the row to be selected.
+ * @return {string} The selected field value if the row is found, otherwise undefined.
+ */
+export function pickValueWhere( rows, selectPath, conditions ) {
+	for ( const row of rows ) {
+		let match = true;
+		for ( const condition in conditions ) {
+			match = match && get( row, condition ) === conditions[ condition ];
+		}
+
+		if ( match ) {
+			return get( row, selectPath );
+		}
+	}
+
+	return undefined;
+}
+
+/**
+ * Takes a specific property of the first row in the list that matches provided conditions and cast it to integer.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} rows       The list of rows.
+ * @param {string}         selectPath The path where to get the field value in the matching row.
+ * @param {Object}         conditions Conditions that should satisfy the row to be selected.
+ * @return {number} The numeric value of the select field if the row is found, otherwise 0.
+ */
+export function pickIntValueWhere( rows, selectPath, conditions ) {
+	const value = pickValueWhere( rows, selectPath, conditions );
+	return parseInt( value, 10 ) || 0;
 }
 
 /**

@@ -39,6 +39,7 @@ import {
 	MetricTileNumeric,
 	whenKeyMetricsWidgetVisible,
 } from '../../../../components/KeyMetrics';
+import { pickIntValueWhere } from '../../utils';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -68,22 +69,29 @@ function LoyalVisitorsWidget( { Widget } ) {
 			)
 	);
 
-	const newVisitors =
-		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const returningVisitors =
-		parseInt( report?.rows?.[ 3 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const totalVisitors = newVisitors + returningVisitors;
+	const { rows = [], totals = [] } = report || {};
 
-	const prevNewVisitors =
-		parseInt( report?.rows?.[ 0 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const prevReturningVisitors =
-		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const prevTotalVisitors = prevNewVisitors + prevReturningVisitors;
+	// Total users and returning users for the current date range.
+	const returning = pickIntValueWhere( rows, 'metricValues.0.value', {
+		'dimensionValues.0.value': 'returning',
+		'dimensionValues.1.value': 'current_range',
+	} );
+	const total = pickIntValueWhere( totals, 'metricValues.0.value', {
+		'dimensionValues.1.value': 'current_range',
+	} );
 
-	const currentPercentage =
-		totalVisitors > 0 ? returningVisitors / totalVisitors : 0;
-	const prevPercentage =
-		prevTotalVisitors > 0 ? prevReturningVisitors / prevTotalVisitors : 0;
+	// Total users and returning users for the previous date range.
+	const prevReturning = pickIntValueWhere( rows, 'metricValues.0.value', {
+		'dimensionValues.0.value': 'returning',
+		'dimensionValues.1.value': 'compare_range',
+	} );
+	const prevTotal = pickIntValueWhere( totals, 'metricValues.0.value', {
+		'dimensionValues.1.value': 'compare_range',
+	} );
+
+	// Calculate portions.
+	const currentPercentage = total > 0 ? returning / total : 0;
+	const prevPercentage = prevTotal > 0 ? prevReturning / prevTotal : 0;
 
 	const format = {
 		style: 'percent',
@@ -100,7 +108,7 @@ function LoyalVisitorsWidget( { Widget } ) {
 			subText={ sprintf(
 				/* translators: %d: Number of total visitors visiting the site. */
 				__( 'of %d total visitors', 'google-site-kit' ),
-				totalVisitors
+				total
 			) }
 			previousValue={ prevPercentage }
 			currentValue={ currentPercentage }
