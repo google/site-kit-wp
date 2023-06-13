@@ -96,7 +96,7 @@ function LoyalVisitorsWidget( { Widget } ) {
 
 	const format = {
 		style: 'percent',
-		signDisplay: 'exceptZero',
+		signDisplay: 'never',
 		maximumFractionDigits: 1,
 	};
 
