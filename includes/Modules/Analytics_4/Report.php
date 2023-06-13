@@ -103,7 +103,7 @@ class Report {
 		$start_date = $data['startDate'];
 		$end_date   = $data['endDate'];
 		if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-			$last_28_days =  Date::parse_date_range( 'last-28-days', 1 );
+			$last_28_days = Date::parse_date_range( 'last-28-days', 1 );
 			if ( count( $last_28_days ) === 2 ) {
 				$start_date = $last_28_days[0];
 				$end_date   = $last_28_days[1];
