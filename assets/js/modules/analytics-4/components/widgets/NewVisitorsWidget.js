@@ -39,6 +39,7 @@ import {
 	MetricTileNumeric,
 	whenKeyMetricsWidgetVisible,
 } from '../../../../components/KeyMetrics';
+import { pickIntValueWhere } from '../../utils';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -68,17 +69,21 @@ function NewVisitorsWidget( { Widget } ) {
 			)
 	);
 
-	const newVisitors =
-		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const returningVisitors =
-		parseInt( report?.rows?.[ 3 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const totalVisitors = newVisitors + returningVisitors;
+	const { rows = [], totals = [] } = report || {};
 
-	const compareNewVisitors =
-		parseInt( report?.rows?.[ 0 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const compareReturningVisitors =
-		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const compareTotalVisitors = compareNewVisitors + compareReturningVisitors;
+	// Total users and returning users for the current date range.
+	const newVisitors = pickIntValueWhere( rows, 'metricValues.0.value', {
+		'dimensionValues.0.value': 'new',
+		'dimensionValues.1.value': 'current_range',
+	} );
+	const total = pickIntValueWhere( totals, 'metricValues.0.value', {
+		'dimensionValues.1.value': 'current_range',
+	} );
+
+	// Total users for the previous date range.
+	const prevTotal = pickIntValueWhere( totals, 'metricValues.0.value', {
+		'dimensionValues.1.value': 'compare_range',
+	} );
 
 	return (
 		<MetricTileNumeric
@@ -88,10 +93,10 @@ function NewVisitorsWidget( { Widget } ) {
 			subText={ sprintf(
 				/* translators: %d: Number of total visitors visiting the site. */
 				__( 'of %d total visitors', 'google-site-kit' ),
-				totalVisitors
+				total
 			) }
-			previousValue={ compareTotalVisitors }
-			currentValue={ totalVisitors }
+			previousValue={ prevTotal }
+			currentValue={ total }
 			loading={ loading }
 		/>
 	);
