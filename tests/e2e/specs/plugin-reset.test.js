@@ -77,40 +77,17 @@ describe( 'Plugin Reset', () => {
 
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button' );
 
-		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
-			text: 'Reset',
-		} );
+		// Further wait for the dialog to open, to avoid throwing a focus trap error.
+		// This timeout takes its value from `DIALOG_ANIMATION_OPEN_TIME_MS` in `@material/dialog`.
+		// See https://github.com/material-components/material-components-web/blob/3a1767ea4da308dbee272763a377deff39cf0471/packages/mdc-dialog/foundation.ts#L110-L114
+		await page.waitForTimeout( 150 );
 
-		// Foul hack to delete the focusTrap and prevent "You can't have a focus-trap without at least one focusable element"
-		// error being thrown in the majority of test runs.
-		// This is occurring as a result of the trapFocus() method being invoked here, I haven't established the root cause yet.
-		// https://github.com/material-components/material-components-web/blob/3a1767ea4da308dbee272763a377deff39cf0471/packages/mdc-dialog/foundation.ts#L98-L116
-		await page.evaluate( () => {
-			window.findReactComponentInstance = function ( el ) {
-				for ( const key in el ) {
-					if ( key.startsWith( '__reactInternalInstance$' ) ) {
-						const fiberNode = el[ key ];
-
-						return (
-							fiberNode &&
-							fiberNode.return &&
-							fiberNode.return.stateNode
-						);
-					}
-				}
-				return null;
-			};
-
-			const instance = window.findReactComponentInstance(
-				document.querySelector( '.mdc-dialog--open' )
-			);
-
-			if ( instance ) {
-				delete instance.focusTrap;
-			}
-		} );
-
-		await page.waitForNavigation();
+		await Promise.all( [
+			page.waitForNavigation(),
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
+				text: 'Reset',
+			} ),
+		] );
 
 		// Ensure we're on the setup page
 		await expect( page ).toMatchElement( '.googlesitekit-start-setup', {
