@@ -99,35 +99,41 @@ class Report {
 	 */
 	protected function parse_dateranges( Data_Request $data ) {
 		$date_ranges = array();
-		$start_date  = $data['startDate'];
-		$end_date    = $data['endDate'];
-		if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
-			$compare_start_date = $data['compareStartDate'];
-			$compare_end_date   = $data['compareEndDate'];
-			$date_ranges[]      = array( $start_date, $end_date );
 
-			// When using multiple date ranges, it changes the structure of the response:
-			// Aggregate properties (minimum, maximum, totals) will have an entry per date range.
-			// The rows property will have additional row entries for each date range.
-			if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
-				$date_ranges[] = array( $compare_start_date, $compare_end_date );
+		$start_date = $data['startDate'];
+		$end_date   = $data['endDate'];
+		if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
+			$last_28_days =  Date::parse_date_range( 'last-28-days', 1 );
+			if ( count( $last_28_days ) === 2 ) {
+				$start_date = $last_28_days[0];
+				$end_date   = $last_28_days[1];
 			}
-		} else {
-			// Default the date range to the last 28 days.
-			$date_ranges[] = Date::parse_date_range( 'last-28-days', 1 );
 		}
 
-		$date_ranges = array_map(
-			function ( $date_range ) {
-				list ( $start_date, $end_date ) = $date_range;
-				$date_range                     = new Google_Service_AnalyticsData_DateRange();
-				$date_range->setStartDate( $start_date );
-				$date_range->setEndDate( $end_date );
+		if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
+			return $date_ranges;
+		}
 
-				return $date_range;
-			},
-			$date_ranges
-		);
+		$date_range = new Google_Service_AnalyticsData_DateRange();
+		$date_range->setStartDate( $start_date );
+		$date_range->setEndDate( $end_date );
+		$date_range->setName( 'current_range' );
+		$date_ranges[] = $date_range;
+
+		// When using multiple date ranges, it changes the structure of the response:
+		// Aggregate properties (minimum, maximum, totals) will have an entry per date range.
+		// The rows property will have additional row entries for each date range.
+		$compare_start_date = $data['compareStartDate'];
+		$compare_end_date   = $data['compareEndDate'];
+		if ( ! strtotime( $compare_start_date ) || ! strtotime( $compare_end_date ) ) {
+			return $date_ranges;
+		}
+
+		$date_range = new Google_Service_AnalyticsData_DateRange();
+		$date_range->setStartDate( $compare_start_date );
+		$date_range->setEndDate( $compare_end_date );
+		$date_range->setName( 'compare_range' );
+		$date_ranges[] = $date_range;
 
 		return $date_ranges;
 	}
