@@ -135,7 +135,7 @@ export const isSingleSlice = ( report ) => {
 
 	const currentDateRangeRows = ( report?.rows || [] ).filter(
 		( { dimensionValues } ) =>
-			dimensionValues[ 1 ].value === 'compare_range'
+			dimensionValues[ 1 ].value === 'current_range'
 	);
 
 	if (
