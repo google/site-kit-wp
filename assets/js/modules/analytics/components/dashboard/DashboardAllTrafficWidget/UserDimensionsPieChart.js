@@ -134,7 +134,7 @@ export default function UserDimensionsPieChart( props ) {
 			if (
 				isTooltipOpen &&
 				! event?.target?.closest(
-					'.googlesitekit-widget--analyticsAllTraffic__legend'
+					'.googlesitekit-widget--analyticsAllTraffic__dimensions-chart'
 				)
 			) {
 				setIsTooltipOpen( false );
