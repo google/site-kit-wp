@@ -49,6 +49,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import ExistingGTMPropertyNotice from './ExistingGTMPropertyNotice';
+import { isValidPropertyID } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function EnableUniversalAnalytics( {
@@ -144,7 +145,11 @@ export default function EnableUniversalAnalytics( {
 		}
 	} );
 
-	if ( hasModuleAccess !== false && properties.length === 0 ) {
+	if (
+		! isValidPropertyID( propertyID ) &&
+		hasModuleAccess !== false &&
+		properties.length === 0
+	) {
 		return null;
 	}
 
