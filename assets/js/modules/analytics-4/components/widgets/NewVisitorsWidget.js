@@ -40,6 +40,7 @@ import {
 	whenKeyMetricsWidgetVisible,
 } from '../../../../components/KeyMetrics';
 import { pickIntValueWhere } from '../../utils';
+import { numFmt } from '../../../../util';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -71,7 +72,7 @@ function NewVisitorsWidget( { Widget } ) {
 
 	const { rows = [], totals = [] } = report || {};
 
-	// Total users and returning users for the current date range.
+	// Total users and new users for the current date range.
 	const newVisitors = pickIntValueWhere( rows, 'metricValues.0.value', {
 		'dimensionValues.0.value': 'new',
 		'dimensionValues.1.value': 'current_range',
@@ -80,10 +81,13 @@ function NewVisitorsWidget( { Widget } ) {
 		'dimensionValues.1.value': 'current_range',
 	} );
 
-	// Total users for the previous date range.
-	const prevTotal = pickIntValueWhere( totals, 'metricValues.0.value', {
+	// New users for the previous date range.
+	const prevVisitors = pickIntValueWhere( rows, 'metricValues.0.value', {
+		'dimensionValues.0.value': 'new',
 		'dimensionValues.1.value': 'compare_range',
 	} );
+
+	const format = { style: 'number' };
 
 	return (
 		<MetricTileNumeric
@@ -95,9 +99,15 @@ function NewVisitorsWidget( { Widget } ) {
 				__( 'of %d total visitors', 'google-site-kit' ),
 				total
 			) }
-			previousValue={ prevTotal }
-			currentValue={ total }
+			previousValue={ prevVisitors }
+			currentValue={ newVisitors }
 			loading={ loading }
+			tooltip={ sprintf(
+				// translators: %1$s - the previous value, %2$s - the current value
+				__( '%1$s before vs %2$s now', 'google-site-kit' ),
+				numFmt( prevVisitors, format ),
+				numFmt( newVisitors, format )
+			) }
 		/>
 	);
 }

@@ -38,6 +38,7 @@ export default function MetricTileNumeric( props ) {
 		subText,
 		previousValue,
 		currentValue,
+		tooltip,
 	} = props;
 
 	if ( loading ) {
@@ -58,7 +59,10 @@ export default function MetricTileNumeric( props ) {
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
 					<div className="googlesitekit-km-widget-tile__metric-change-container">
-						<div className="googlesitekit-km-widget-tile__metric">
+						<div
+							className="googlesitekit-km-widget-tile__metric"
+							title={ tooltip }
+						>
 							{ numFmt( metricValue, formatOptions ) }
 						</div>
 						<ChangeBadge
@@ -88,4 +92,5 @@ MetricTileNumeric.propTypes = {
 	subtext: PropTypes.string,
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,
+	tooltip: PropTypes.string,
 };

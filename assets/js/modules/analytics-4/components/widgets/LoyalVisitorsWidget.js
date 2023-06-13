@@ -40,6 +40,7 @@ import {
 	whenKeyMetricsWidgetVisible,
 } from '../../../../components/KeyMetrics';
 import { pickIntValueWhere } from '../../utils';
+import { numFmt } from '../../../../util';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -113,6 +114,12 @@ function LoyalVisitorsWidget( { Widget } ) {
 			previousValue={ prevPercentage }
 			currentValue={ currentPercentage }
 			loading={ loading }
+			tooltip={ sprintf(
+				// translators: %1$s - the previous value, %2$s - the current value
+				__( '%1$s before vs %2$s now', 'google-site-kit' ),
+				numFmt( prevPercentage, format ),
+				numFmt( currentPercentage, format )
+			) }
 		/>
 	);
 }
