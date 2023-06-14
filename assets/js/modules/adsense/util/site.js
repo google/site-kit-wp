@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { escapeRegExp } from 'lodash';
+
+/**
  * Determines the AdSense site from the given domain.
  *
  * This utility function should be used in combination with data retrieved from
@@ -30,17 +35,35 @@
  * found or undefined if any of the parameters are undefined.
  */
 export const determineSiteFromDomain = ( sites, domain ) => {
-	if ( undefined === sites || undefined === domain ) {
+	if (
+		undefined === sites ||
+		undefined === domain ||
+		! Array.isArray( sites )
+	) {
 		return undefined;
 	}
+	// Only consider sites with state (essentially non-subdomains).
+	const sitesWithState = sites.filter( ( { state } ) => !! state );
 
-	const lowerCaseDomain = domain.toLowerCase();
-	const siteIndex = sites.findIndex(
-		( site ) => 0 <= lowerCaseDomain.indexOf( site.domain.toLowerCase() )
+	// Look for an exact match first.
+	const exactMatch = sitesWithState.find(
+		( site ) => site.domain === domain.toLowerCase()
 	);
-	if ( siteIndex === -1 ) {
-		return null;
+
+	if ( exactMatch ) {
+		return exactMatch;
 	}
 
-	return sites[ siteIndex ];
+	const subdomainMatch = sitesWithState.find( ( site ) => {
+		// Note the prefixed `.` to ensure only a subdomain is matched
+		// not simply a substring of a longer domain with the same ending.
+		const inclusiveRegExp = new RegExp(
+			`\\.${ escapeRegExp( site.domain ) }$`,
+			'i' // case-insensitive
+		);
+		// Check to see if `domain` is a subdomain of the site
+		return inclusiveRegExp.test( domain );
+	} );
+
+	return subdomainMatch || null;
 };
