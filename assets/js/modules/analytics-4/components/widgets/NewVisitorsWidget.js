@@ -87,7 +87,7 @@ function NewVisitorsWidget( { Widget } ) {
 		'dimensionValues.1.value': 'compare_range',
 	} );
 
-	const format = { style: 'number' };
+	const format = { style: 'decimal' };
 
 	return (
 		<MetricTileNumeric
