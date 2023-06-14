@@ -84,6 +84,7 @@ function PopularKeywordsWidget( { Widget } ) {
 						? select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
 								{
 									...keywordsDateRangeArgs,
+									// The exclamation mark at the beginning of the query is needed because that is how SC console uses the query parameter.
 									query: `!${ fieldValue }`,
 								}
 						  )
