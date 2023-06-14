@@ -26,7 +26,7 @@ import {
 	Input,
 } from '@material/react-text-field';
 
-export default function TextField( {
+const TextField = ( {
 	className,
 	name,
 	label,
@@ -44,7 +44,7 @@ export default function TextField( {
 	disabled,
 	onChange,
 	onKeyDown,
-} ) {
+} ) => {
 	return (
 		<MaterialTextField
 			className={ className }
@@ -69,7 +69,7 @@ export default function TextField( {
 			/>
 		</MaterialTextField>
 	);
-}
+};
 
 TextField.propTypes = {
 	className: PropTypes.string,
@@ -90,3 +90,12 @@ TextField.propTypes = {
 	onChange: PropTypes.func,
 	onKeyDown: PropTypes.func,
 };
+
+/**
+ * The HelperText component is exported as a named export here because
+ * it is being used as a standalone component in the
+ * SurveyQuestionMultiSelect component.
+ */
+export { HelperText };
+
+export default TextField;
