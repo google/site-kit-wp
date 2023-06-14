@@ -32,7 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { TextField, HelperText, Input } from '../../../../material-components';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidAdsConversionID } from '../../util';
@@ -52,6 +53,9 @@ export default function AdsConversionIDTextField() {
 	} );
 	const ga4SnippetEnabled = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
+	);
+	const isUAEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
 
 	const { setAdsConversionID } = useDispatch( MODULES_ANALYTICS );
@@ -78,8 +82,9 @@ export default function AdsConversionIDTextField() {
 	// but only hide it if the value is valid otherwise the user will be blocked.
 	if (
 		isValidValue &&
-		! snippetEnabled &&
-		! ( ga4ReportingEnabled && ga4SnippetEnabled )
+		( ga4ReportingEnabled
+			? ! ( isUAEnabled && snippetEnabled ) && ! ga4SnippetEnabled
+			: ! snippetEnabled )
 	) {
 		return null;
 	}
