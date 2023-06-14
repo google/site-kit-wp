@@ -191,7 +191,7 @@ describe( 'ConnectGA4CTATileWidget', () => {
 		} );
 
 		expect( container ).toHaveTextContent(
-			'Google Analytics is disconnected, some of your metrics can’t be displayed'
+			'Analytics is disconnected, some of your metrics can’t be displayed'
 		);
 	} );
 } );
