@@ -32,7 +32,7 @@
 			color: $c-neutral-n-500;
 			font-family: $f-primary;
 			font-size: $fs-label-sm;
-			font-weight: 400;
+			font-weight: $fw-normal;
 			letter-spacing: $ls-xs;
 			line-height: 16px;
 			margin: 0 0 4px;
@@ -66,7 +66,7 @@
 			}
 
 			strong {
-				font-weight: 500;
+				font-weight: $fw-medium;
 			}
 		}
 

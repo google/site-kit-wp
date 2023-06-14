@@ -30,8 +30,8 @@ export default function MetricTileTable( props ) {
 		Widget,
 		loading,
 		title,
-		rows,
-		columns,
+		rows = [],
+		columns = [],
 		limit,
 		zeroState: ZeroState,
 	} = props;
@@ -44,20 +44,14 @@ export default function MetricTileTable( props ) {
 			.map( ( row, rowIndex ) => (
 				<tr key={ rowIndex }>
 					{ columns.map(
-						(
-							{ Component, field, className: columnClassName },
-							colIndex
-						) => {
+						( { Component, field, className }, colIndex ) => {
 							const fieldValue =
 								field !== undefined
 									? get( row, field )
 									: undefined;
 
 							return (
-								<td
-									key={ colIndex }
-									className={ columnClassName }
-								>
+								<td key={ colIndex } className={ className }>
 									{ Component && (
 										<Component
 											row={ row }
@@ -74,10 +68,7 @@ export default function MetricTileTable( props ) {
 	} else if ( !! ZeroState ) {
 		tbody = (
 			<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
-				<td
-					className="googlesitekit-table__body-item"
-					colSpan={ columns.length }
-				>
+				<td className="googlesitekit-table__body-item">
 					<ZeroState />
 				</td>
 			</tr>
@@ -113,10 +104,8 @@ MetricTileTable.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	loading: PropTypes.bool,
 	title: PropTypes.string,
-	rows: PropTypes.arrayOf(
-		PropTypes.oneOfType( [ PropTypes.array, PropTypes.object ] )
-	).isRequired,
-	columns: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	rows: PropTypes.array,
+	columns: PropTypes.array,
 	limit: PropTypes.number,
 	zeroState: PropTypes.func,
 };
