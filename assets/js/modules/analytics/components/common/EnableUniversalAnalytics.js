@@ -146,12 +146,11 @@ export default function EnableUniversalAnalytics( {
 		}
 	} );
 
-	const shouldEnableUAToggle =
+	if (
 		! isValidPropertyID( propertyID ) &&
 		hasModuleAccess !== false &&
-		properties.length === 0;
-
-	if ( shouldEnableUAToggle ) {
+		properties.length === 0
+	) {
 		return null;
 	}
 
