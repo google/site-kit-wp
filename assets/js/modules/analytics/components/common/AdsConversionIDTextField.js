@@ -82,8 +82,9 @@ export default function AdsConversionIDTextField() {
 	// but only hide it if the value is valid otherwise the user will be blocked.
 	if (
 		isValidValue &&
-		! ( isUAEnabled && snippetEnabled ) &&
-		! ( ga4ReportingEnabled && ga4SnippetEnabled )
+		( ga4ReportingEnabled
+			? ! ( isUAEnabled && snippetEnabled ) && ! ga4SnippetEnabled
+			: ! snippetEnabled )
 	) {
 		return null;
 	}
