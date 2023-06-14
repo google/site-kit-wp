@@ -20,17 +20,6 @@
  * Internal dependencies
  */
 import { getAnalytics4MockResponse, STRATEGY_ZIP } from './data-mock';
-import mockedReportResponse from './__fixtures__/mocked-report.json';
-import mockedReportMultipleDistinctDateRangesResponse from './__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
-import mockedReportMultipleOverlappingDateRangesResponse from './__fixtures__/mocked-report-multiple-overlapping-date-ranges.json';
-import mockedReportFixedValueDimensionResponse from './__fixtures__/mocked-report-fixed-value-dimension.json';
-import mockedReportMultipleDimensionsCartesianResponse from './__fixtures__/mocked-report-multiple-dimensions-cartesian.json';
-import mockedReportMultipleDimensionsZippedResponse from './__fixtures__/mocked-report-multiple-dimensions-zipped.json';
-import mockedReportOrderByMetricAscendingResponse from './__fixtures__/mocked-report-order-by-metric-ascending.json';
-import mockedReportOrderByMetricDescendingResponse from './__fixtures__/mocked-report-order-by-metric-descending.json';
-import mockedReportOrderByDimensionAscendingResponse from './__fixtures__/mocked-report-order-by-dimension-ascending.json';
-import mockedReportOrderByDimensionDescendingResponse from './__fixtures__/mocked-report-order-by-dimension-descending.json';
-import mockedReportOrderByMetricsAndDimensionsResponse from './__fixtures__/mocked-report-order-by-metrics-and-dimensions.json';
 
 describe( 'getAnalytics4MockResponse', () => {
 	it( 'throws if called without report options', () => {
@@ -69,7 +58,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report ).toEqual( mockedReportResponse );
+		expect( report ).toMatchSnapshot();
 
 		// Verify the correct number of rows for the date range.
 		expect( report.rows ).toHaveLength( 5 );
@@ -92,9 +81,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report ).toEqual(
-			mockedReportMultipleDistinctDateRangesResponse
-		);
+		expect( report ).toMatchSnapshot();
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 10 );
@@ -117,9 +104,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report ).toEqual(
-			mockedReportMultipleOverlappingDateRangesResponse
-		);
+		expect( report ).toMatchSnapshot();
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 10 );
@@ -142,7 +127,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'sessionDefaultChannelGrouping' ],
 		} );
 
-		expect( report ).toEqual( mockedReportFixedValueDimensionResponse );
+		expect( report ).toMatchSnapshot();
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 20 );
@@ -166,9 +151,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'deviceCategory', 'sessionDefaultChannelGrouping' ],
 		} );
 
-		expect( report ).toEqual(
-			mockedReportMultipleDimensionsCartesianResponse
-		);
+		expect( report ).toMatchSnapshot();
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 60 );
@@ -187,9 +170,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			}
 		);
 
-		expect( report ).toEqual(
-			mockedReportMultipleDimensionsZippedResponse
-		);
+		expect( report ).toMatchSnapshot();
 	} );
 
 	it( 'generates the same number of rows for each date range in a multi-date range report', () => {
@@ -212,13 +193,13 @@ describe( 'getAnalytics4MockResponse', () => {
 
 		const dateRangeZero = report.rows.filter( ( { dimensionValues } ) =>
 			dimensionValues.find(
-				( dimensionValue ) => dimensionValue.value === 'date_range_0'
+				( dimensionValue ) => dimensionValue.value === 'current_range'
 			)
 		);
 
 		const dateRangeOne = report.rows.filter( ( { dimensionValues } ) =>
 			dimensionValues.find(
-				( dimensionValue ) => dimensionValue.value === 'date_range_1'
+				( dimensionValue ) => dimensionValue.value === 'compare_range'
 			)
 		);
 
@@ -252,7 +233,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			],
 		} );
 
-		expect( report ).toEqual( mockedReportOrderByMetricAscendingResponse );
+		expect( report ).toMatchSnapshot();
 	} );
 
 	it( 'sorts by metric in descending order', () => {
@@ -282,7 +263,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			],
 		} );
 
-		expect( report ).toEqual( mockedReportOrderByMetricDescendingResponse );
+		expect( report ).toMatchSnapshot();
 	} );
 
 	it( 'sorts by dimension in ascending order', () => {
@@ -312,9 +293,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			],
 		} );
 
-		expect( report ).toEqual(
-			mockedReportOrderByDimensionAscendingResponse
-		);
+		expect( report ).toMatchSnapshot();
 	} );
 
 	it( 'sorts by dimension in descending order', () => {
@@ -344,9 +323,7 @@ describe( 'getAnalytics4MockResponse', () => {
 			],
 		} );
 
-		expect( report ).toEqual(
-			mockedReportOrderByDimensionDescendingResponse
-		);
+		expect( report ).toMatchSnapshot();
 	} );
 
 	it( 'sorts by a combination of metrics and dimensions, with multiple date ranges', () => {
@@ -387,8 +364,6 @@ describe( 'getAnalytics4MockResponse', () => {
 			],
 		} );
 
-		expect( report ).toEqual(
-			mockedReportOrderByMetricsAndDimensionsResponse
-		);
+		expect( report ).toMatchSnapshot();
 	} );
 } );

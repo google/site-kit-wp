@@ -54,12 +54,12 @@ export function partitionAnalytics4Report( report, { dateRangeLength } ) {
 
 	// Get the rows for the current date range and the compare date range.
 	// The current range should always be sliced from the end.
-	const currentRange = getRowsForDateRange( 'date_range_0' ).slice(
+	const currentRange = getRowsForDateRange( 'current_range' ).slice(
 		reverseDateRangeLength
 	);
 	// The compare range continues from where the current left off (slicing towards the start),
 	// and may be shorter (where older data is not available yet) which is fine.
-	const compareRange = getRowsForDateRange( 'date_range_1' ).slice(
+	const compareRange = getRowsForDateRange( 'compare_range' ).slice(
 		reverseDateRangeLength * 2,
 		reverseDateRangeLength
 	);

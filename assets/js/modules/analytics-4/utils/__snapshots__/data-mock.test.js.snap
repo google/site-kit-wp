@@ -1,0 +1,6820 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getAnalytics4MockResponse generates a valid report 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": "date",
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "0.6174966930411756",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "sessions",
+      "type": "TYPE_INTEGER",
+    },
+    Object {
+      "name": "engagementRate",
+      "type": "TYPE_FLOAT",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "0.14262126828543842",
+        },
+      ],
+    },
+  ],
+  "rowCount": 5,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201229",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "0.14262126828543842",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201230",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "0.13729542959481478",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201231",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+        Object {
+          "value": "0.38743476173840463",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20210101",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+        Object {
+          "value": "0.7306178859435022",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20210102",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "0.6174966930411756",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "161",
+        },
+        Object {
+          "value": "1.1475527230650187",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse generates a valid report using a dimension with a fixed set of values 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": "sessionDefaultChannelGrouping",
+    },
+    Object {
+      "name": "dateRange",
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "83",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+        Object {
+          "value": "34",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+    Object {
+      "name": "averageSessionDuration",
+      "type": "TYPE_SECONDS",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+  ],
+  "rowCount": 20,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+        Object {
+          "value": "44",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "37",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "98",
+        },
+        Object {
+          "value": "4",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "27",
+        },
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+        Object {
+          "value": "32",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "43",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "21",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "66",
+        },
+        Object {
+          "value": "48",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "16",
+        },
+        Object {
+          "value": "13",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "45",
+        },
+        Object {
+          "value": "20",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "23",
+        },
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "40",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "19",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+        Object {
+          "value": "28",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "83",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+        Object {
+          "value": "34",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "532",
+        },
+        Object {
+          "value": "310",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "401",
+        },
+        Object {
+          "value": "287",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse generates a valid report using the cartesian product of multiple dimensions 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": "deviceCategory",
+    },
+    Object {
+      "name": "sessionDefaultChannelGrouping",
+    },
+    Object {
+      "name": "dateRange",
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "32",
+        },
+        Object {
+          "value": "18",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "32",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+    Object {
+      "name": "averageSessionDuration",
+      "type": "TYPE_SECONDS",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+  ],
+  "rowCount": 60,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+        Object {
+          "value": "44",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "37",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "98",
+        },
+        Object {
+          "value": "4",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "27",
+        },
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+        Object {
+          "value": "32",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "43",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "21",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "66",
+        },
+        Object {
+          "value": "48",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "16",
+        },
+        Object {
+          "value": "13",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "45",
+        },
+        Object {
+          "value": "20",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "23",
+        },
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "40",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "19",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+        Object {
+          "value": "28",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "83",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Desktop",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+        Object {
+          "value": "34",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "79",
+        },
+        Object {
+          "value": "33",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "93",
+        },
+        Object {
+          "value": "36",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "95",
+        },
+        Object {
+          "value": "54",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+        Object {
+          "value": "35",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "56",
+        },
+        Object {
+          "value": "42",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "49",
+        },
+        Object {
+          "value": "49",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "80",
+        },
+        Object {
+          "value": "3",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "64",
+        },
+        Object {
+          "value": "33",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "2",
+        },
+        Object {
+          "value": "21",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "23",
+        },
+        Object {
+          "value": "1",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "59",
+        },
+        Object {
+          "value": "58",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "22",
+        },
+        Object {
+          "value": "40",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "4",
+        },
+        Object {
+          "value": "13",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "46",
+        },
+        Object {
+          "value": "41",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "40",
+        },
+        Object {
+          "value": "58",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "96",
+        },
+        Object {
+          "value": "43",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "84",
+        },
+        Object {
+          "value": "24",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "83",
+        },
+        Object {
+          "value": "31",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "9",
+        },
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Tablet",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "85",
+        },
+        Object {
+          "value": "35",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "67",
+        },
+        Object {
+          "value": "60",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "9",
+        },
+        Object {
+          "value": "50",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "28",
+        },
+        Object {
+          "value": "49",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "50",
+        },
+        Object {
+          "value": "51",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+        Object {
+          "value": "15",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+        Object {
+          "value": "17",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "48",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+        Object {
+          "value": "28",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "77",
+        },
+        Object {
+          "value": "18",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+        Object {
+          "value": "1",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "88",
+        },
+        Object {
+          "value": "5",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "62",
+        },
+        Object {
+          "value": "0",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "48",
+        },
+        Object {
+          "value": "29",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "24",
+        },
+        Object {
+          "value": "31",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "94",
+        },
+        Object {
+          "value": "48",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "71",
+        },
+        Object {
+          "value": "21",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+        Object {
+          "value": "34",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "32",
+        },
+        Object {
+          "value": "18",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "Mobile",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "32",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "1526",
+        },
+        Object {
+          "value": "891",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "1660",
+        },
+        Object {
+          "value": "939",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse generates a valid report using zipped multiple dimensions 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": "pagePath",
+    },
+    Object {
+      "name": "pageTitle",
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "RESERVED_MAX",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "RESERVED_MIN",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+  ],
+  "rowCount": 12,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-1/",
+        },
+        Object {
+          "value": "Test Post 1",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-2/",
+        },
+        Object {
+          "value": "Test Post 2",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "14",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-3/",
+        },
+        Object {
+          "value": "Test Post 3",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-4/",
+        },
+        Object {
+          "value": "Test Post 4",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "13",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-5/",
+        },
+        Object {
+          "value": "Test Post 5",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-6/",
+        },
+        Object {
+          "value": "Test Post 6",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "39",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-7/",
+        },
+        Object {
+          "value": "Test Post 7",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-8/",
+        },
+        Object {
+          "value": "Test Post 8",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "73",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-9/",
+        },
+        Object {
+          "value": "Test Post 9",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-10/",
+        },
+        Object {
+          "value": "Test Post 10",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "62",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-11/",
+        },
+        Object {
+          "value": "Test Post 11",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "98",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "/test-post-12/",
+        },
+        Object {
+          "value": "Test Post 12",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "272",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse generates a valid report with multiple distinct date ranges 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": "date",
+    },
+    Object {
+      "name": "dateRange",
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "43",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "21",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+    Object {
+      "name": "averageSessionDuration",
+      "type": "TYPE_SECONDS",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+  ],
+  "rowCount": 10,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+        Object {
+          "value": "44",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "37",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "98",
+        },
+        Object {
+          "value": "4",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201206",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "27",
+        },
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201206",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+        Object {
+          "value": "32",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201207",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "43",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201207",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "21",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "226",
+        },
+        Object {
+          "value": "166",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "218",
+        },
+        Object {
+          "value": "133",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse generates a valid report with multiple overlapping date ranges 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": "date",
+    },
+    Object {
+      "name": "dateRange",
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "43",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "21",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+    Object {
+      "name": "averageSessionDuration",
+      "type": "TYPE_SECONDS",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+  ],
+  "rowCount": 10,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+        Object {
+          "value": "44",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "37",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "98",
+        },
+        Object {
+          "value": "4",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "27",
+        },
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+        Object {
+          "value": "32",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "43",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "21",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "226",
+        },
+        Object {
+          "value": "166",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "218",
+        },
+        Object {
+          "value": "133",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse sorts by a combination of metrics and dimensions, with multiple date ranges 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": Object {
+        "name": "date",
+      },
+    },
+    Object {
+      "name": Object {
+        "name": "sessionDefaultChannelGrouping",
+      },
+    },
+    Object {
+      "name": "dateRange",
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "32",
+        },
+        Object {
+          "value": "38",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "13",
+        },
+        Object {
+          "value": "1",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+    Object {
+      "name": "averageSessionDuration",
+      "type": "TYPE_SECONDS",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "98",
+        },
+        Object {
+          "value": "4",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "37",
+        },
+      ],
+    },
+  ],
+  "rowCount": 80,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "98",
+        },
+        Object {
+          "value": "4",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "37",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+        Object {
+          "value": "32",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "83",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+        Object {
+          "value": "28",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+        Object {
+          "value": "34",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "66",
+        },
+        Object {
+          "value": "48",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "45",
+        },
+        Object {
+          "value": "20",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "43",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+        Object {
+          "value": "40",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "27",
+        },
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "23",
+        },
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "21",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "19",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "16",
+        },
+        Object {
+          "value": "13",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+        Object {
+          "value": "44",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "96",
+        },
+        Object {
+          "value": "43",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "95",
+        },
+        Object {
+          "value": "54",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "93",
+        },
+        Object {
+          "value": "36",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "85",
+        },
+        Object {
+          "value": "35",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "84",
+        },
+        Object {
+          "value": "24",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "83",
+        },
+        Object {
+          "value": "31",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "80",
+        },
+        Object {
+          "value": "3",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "79",
+        },
+        Object {
+          "value": "33",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "64",
+        },
+        Object {
+          "value": "33",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "59",
+        },
+        Object {
+          "value": "58",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "56",
+        },
+        Object {
+          "value": "42",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+        Object {
+          "value": "35",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "49",
+        },
+        Object {
+          "value": "49",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "46",
+        },
+        Object {
+          "value": "41",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "40",
+        },
+        Object {
+          "value": "58",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "23",
+        },
+        Object {
+          "value": "1",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "22",
+        },
+        Object {
+          "value": "40",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "9",
+        },
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "4",
+        },
+        Object {
+          "value": "13",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "2",
+        },
+        Object {
+          "value": "21",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "94",
+        },
+        Object {
+          "value": "48",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "48",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "88",
+        },
+        Object {
+          "value": "5",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+        Object {
+          "value": "17",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "77",
+        },
+        Object {
+          "value": "18",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+        Object {
+          "value": "15",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+        Object {
+          "value": "1",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+        Object {
+          "value": "34",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "71",
+        },
+        Object {
+          "value": "21",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "67",
+        },
+        Object {
+          "value": "60",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "62",
+        },
+        Object {
+          "value": "0",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+        Object {
+          "value": "28",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "50",
+        },
+        Object {
+          "value": "51",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "48",
+        },
+        Object {
+          "value": "29",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "32",
+        },
+        Object {
+          "value": "18",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "32",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "28",
+        },
+        Object {
+          "value": "49",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "24",
+        },
+        Object {
+          "value": "31",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "9",
+        },
+        Object {
+          "value": "50",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "100",
+        },
+        Object {
+          "value": "10",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "91",
+        },
+        Object {
+          "value": "42",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "90",
+        },
+        Object {
+          "value": "24",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Email",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+        Object {
+          "value": "21",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "85",
+        },
+        Object {
+          "value": "11",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "82",
+        },
+        Object {
+          "value": "40",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "80",
+        },
+        Object {
+          "value": "22",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "80",
+        },
+        Object {
+          "value": "18",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+        Object {
+          "value": "11",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+        Object {
+          "value": "22",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+        Object {
+          "value": "46",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Direct",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "68",
+        },
+        Object {
+          "value": "25",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "68",
+        },
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Referral",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "65",
+        },
+        Object {
+          "value": "60",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "61",
+        },
+        Object {
+          "value": "15",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "43",
+        },
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Video",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "42",
+        },
+        Object {
+          "value": "42",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "35",
+        },
+        Object {
+          "value": "30",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Display",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "32",
+        },
+        Object {
+          "value": "38",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "13",
+        },
+        Object {
+          "value": "1",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "current_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "2367",
+        },
+        Object {
+          "value": "1173",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "compare_range",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "2162",
+        },
+        Object {
+          "value": "1165",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse sorts by dimension in ascending order 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": Object {
+        "name": "date",
+      },
+    },
+    Object {
+      "name": Object {
+        "name": "sessionDefaultChannelGrouping",
+      },
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "RESERVED_MAX",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "69",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "RESERVED_MIN",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+  ],
+  "rowCount": 50,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "14",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "13",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "39",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "73",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "62",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "98",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "27",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "91",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "71",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "21",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "66",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "80",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "16",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "22",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "34",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "91",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "66",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "19",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "75",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "47",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "12",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "83",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "14",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "57",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "79",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "56",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "93",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "59",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "95",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "90",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "58",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "56",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "69",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "1309",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse sorts by dimension in descending order 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": Object {
+        "name": "date",
+      },
+    },
+    Object {
+      "name": Object {
+        "name": "sessionDefaultChannelGrouping",
+      },
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+        Object {
+          "value": "RESERVED_MAX",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "90",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+        Object {
+          "value": "RESERVED_MIN",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+      ],
+    },
+  ],
+  "rowCount": 50,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "21",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "72",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Video",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "56",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "38",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "83",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Referral",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "27",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "16",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Paid Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "93",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "73",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "71",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "91",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "14",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Paid Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "58",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "13",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "91",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "22",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "47",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Organic Social",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "59",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "14",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "7",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "80",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "75",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Organic Search",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "56",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "86",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "45",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Email",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "95",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "62",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "74",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "66",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "57",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Display",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "69",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "98",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "66",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "19",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Direct",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "79",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "39",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "53",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "34",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "12",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+        Object {
+          "value": "Affiliates",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "90",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "1230",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse sorts by metric in ascending order 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": Object {
+        "name": "date",
+      },
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "37",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+    Object {
+      "name": "averageSessionDuration",
+      "type": "TYPE_SECONDS",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+  ],
+  "rowCount": 5,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+        Object {
+          "value": "44",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "37",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "109",
+        },
+        Object {
+          "value": "68",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`getAnalytics4MockResponse sorts by metric in descending order 1`] = `
+Object {
+  "dimensionHeaders": Array [
+    Object {
+      "name": Object {
+        "name": "date",
+      },
+    },
+  ],
+  "kind": "analyticsData#runReport",
+  "maximums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MAX",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+  ],
+  "metadata": Object {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles",
+  },
+  "metricHeaders": Array [
+    Object {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER",
+    },
+    Object {
+      "name": "averageSessionDuration",
+      "type": "TYPE_SECONDS",
+    },
+  ],
+  "minimums": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_MIN",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+        Object {
+          "value": "44",
+        },
+      ],
+    },
+  ],
+  "rowCount": 5,
+  "rows": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201204",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "10",
+        },
+        Object {
+          "value": "44",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201205",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "89",
+        },
+        Object {
+          "value": "37",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201203",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "17",
+        },
+        Object {
+          "value": "23",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201201",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "55",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "20201202",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "3",
+        },
+        Object {
+          "value": "8",
+        },
+      ],
+    },
+  ],
+  "totals": Array [
+    Object {
+      "dimensionValues": Array [
+        Object {
+          "value": "RESERVED_TOTAL",
+        },
+      ],
+      "metricValues": Array [
+        Object {
+          "value": "30",
+        },
+        Object {
+          "value": "75",
+        },
+      ],
+    },
+  ],
+}
+`;

@@ -32,7 +32,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Referral' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -46,7 +46,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Referral' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -62,7 +62,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'RESERVED_TOTAL' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -76,7 +76,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'RESERVED_TOTAL' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -99,7 +99,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Referral' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -113,7 +113,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Referral' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -127,7 +127,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Direct' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -141,7 +141,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Direct' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -155,7 +155,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Social' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -169,7 +169,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Social' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -185,7 +185,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'RESERVED_TOTAL' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -199,7 +199,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'RESERVED_TOTAL' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -222,7 +222,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Direct' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -236,7 +236,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Direct' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -250,7 +250,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Organic Search' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -264,7 +264,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Organic Search' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -278,7 +278,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Referral' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -292,7 +292,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Referral' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -306,7 +306,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Social' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -320,7 +320,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Social' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -336,7 +336,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'RESERVED_TOTAL' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -350,7 +350,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'RESERVED_TOTAL' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -373,7 +373,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Direct' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -387,7 +387,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Direct' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -401,7 +401,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Organic Search' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -415,7 +415,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Organic Search' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -429,7 +429,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Referral' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -443,7 +443,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Referral' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -457,7 +457,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Social' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -471,7 +471,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'Social' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{
@@ -487,7 +487,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'RESERVED_TOTAL' },
-						{ value: 'date_range_0' },
+						{ value: 'current_range' },
 					],
 					metricValues: [
 						{
@@ -501,7 +501,7 @@ describe( 'isSingleSlice', () => {
 				{
 					dimensionValues: [
 						{ value: 'RESERVED_TOTAL' },
-						{ value: 'date_range_1' },
+						{ value: 'compare_range' },
 					],
 					metricValues: [
 						{

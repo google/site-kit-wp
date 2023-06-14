@@ -407,7 +407,7 @@ export function getAnalytics4MockResponse(
 			// Generates a stream (an array) of dates.
 			streams.push( from( [ ...dateRange ] ) );
 		} else if ( dimension === 'dateRange' ) {
-			streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
+			streams.push( from( [ 'current_range', 'compare_range' ] ) );
 		} else if (
 			dimension &&
 			typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
@@ -502,7 +502,7 @@ export function getAnalytics4MockResponse(
 				{
 					dimensionValues: dimensions.map( ( dimension ) => {
 						if ( dimension === 'dateRange' ) {
-							return { value: 'date_range_0' };
+							return { value: 'current_range' };
 						}
 
 						return {
@@ -519,7 +519,7 @@ export function getAnalytics4MockResponse(
 									( dimension ) => {
 										if ( dimension === 'dateRange' ) {
 											return {
-												value: 'date_range_1',
+												value: 'compare_range',
 											};
 										}
 
@@ -536,7 +536,7 @@ export function getAnalytics4MockResponse(
 					: []
 			);
 
-			// For maximums and totals, if we have a date range the second to last row will be date_range_0 and the last row will be date_range_1.
+			// For maximums and totals, if we have a date range the second to last row will be current_range and the last row will be compare_range.
 			// When there is no date range we only need to use the last row.
 			const firstItemIndex = rows.length - ( hasDateRange ? 2 : 1 );
 
@@ -544,7 +544,7 @@ export function getAnalytics4MockResponse(
 				{
 					dimensionValues: dimensions.map( ( dimension ) => {
 						if ( dimension === 'dateRange' ) {
-							return { value: 'date_range_0' };
+							return { value: 'current_range' };
 						}
 
 						return {
@@ -563,7 +563,7 @@ export function getAnalytics4MockResponse(
 									( dimension ) => {
 										if ( dimension === 'dateRange' ) {
 											return {
-												value: 'date_range_1',
+												value: 'compare_range',
 											};
 										}
 
@@ -581,20 +581,28 @@ export function getAnalytics4MockResponse(
 					: []
 			);
 
-			// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
+			// Calculating totals for date ranges.
 			data.totals = [
 				{
-					dimensionValues: dimensions.map( ( dimension ) => {
-						if ( dimension === 'dateRange' ) {
-							return { value: 'date_range_0' };
-						}
-
-						return {
-							value: 'RESERVED_TOTAL',
-						};
-					} ),
+					dimensionValues: dimensions.map( ( dimension ) =>
+						dimension === 'dateRange'
+							? { value: 'current_range' }
+							: { value: 'RESERVED_TOTAL' }
+					),
 					metricValues: [
-						...( rows[ firstItemIndex ]?.metricValues || [] ),
+						...( rows[ firstItemIndex ]?.metricValues || [] ).map(
+							( _, i ) => ( {
+								value: rows
+									.reduce(
+										( acc, { metricValues }, rowIndex ) =>
+											rowIndex % 2 === 0 // Every even row is for the current range, so we need to skip odd rows.
+												? +metricValues[ i ].value + acc
+												: acc,
+										0
+									)
+									.toString(),
+							} )
+						),
 					],
 				},
 			].concat(
@@ -602,21 +610,31 @@ export function getAnalytics4MockResponse(
 					? [
 							{
 								dimensionValues: dimensions.map(
-									( dimension ) => {
-										if ( dimension === 'dateRange' ) {
-											return {
-												value: 'date_range_1',
-											};
-										}
-
-										return {
-											value: 'RESERVED_TOTAL',
-										};
-									}
+									( dimension ) =>
+										dimension === 'dateRange'
+											? { value: 'compare_range' }
+											: { value: 'RESERVED_TOTAL' }
 								),
 								metricValues: [
-									...( rows[ rows.length - 1 ]
-										?.metricValues || [] ),
+									...(
+										rows[ firstItemIndex ]?.metricValues ||
+										[]
+									).map( ( _, i ) => ( {
+										value: rows
+											.reduce(
+												(
+													acc,
+													{ metricValues },
+													rowIndex
+												) =>
+													rowIndex % 2 === 1 // Every odd row is for the current range, so we need to skip even rows.
+														? +metricValues[ i ]
+																.value + acc
+														: acc,
+												0
+											)
+											.toString(),
+									} ) ),
 								],
 							},
 					  ]

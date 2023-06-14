@@ -183,9 +183,9 @@ export default function UserDimensionsPieChart( props ) {
 	( report?.rows || [] ).forEach( ( { dimensionValues, metricValues } ) => {
 		const dateRangeDimension = dimensionValues[ 1 ].value;
 
-		if ( dateRangeDimension === 'date_range_0' ) {
+		if ( dateRangeDimension === 'current_range' ) {
 			absOthers.current -= metricValues[ 0 ].value;
-		} else if ( dateRangeDimension === 'date_range_1' ) {
+		} else if ( dateRangeDimension === 'compare_range' ) {
 			absOthers.previous -= metricValues[ 0 ].value;
 		}
 	} );

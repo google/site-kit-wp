@@ -47,8 +47,8 @@ function limitResponseToSingleDate( analyticsResponse ) {
 	return {
 		...analyticsResponse,
 		rows: [
-			findFirstDateRangeRow( 'date_range_0' ),
-			findFirstDateRangeRow( 'date_range_1' ),
+			findFirstDateRangeRow( 'current_range' ),
+			findFirstDateRangeRow( 'compare_range' ),
 		],
 	};
 }

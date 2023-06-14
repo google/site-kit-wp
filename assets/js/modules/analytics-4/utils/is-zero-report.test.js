@@ -146,7 +146,7 @@ describe( 'isZeroReport', () => {
 								value: 'RESERVED_TOTAL',
 							},
 							{
-								value: 'date_range_1',
+								value: 'compare_range',
 							},
 						],
 						metricValues: [

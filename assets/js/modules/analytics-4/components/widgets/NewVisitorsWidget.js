@@ -39,6 +39,8 @@ import {
 	MetricTileNumeric,
 	whenKeyMetricsWidgetVisible,
 } from '../../../../components/KeyMetrics';
+import { pickIntValueWhere } from '../../utils';
+import { numFmt } from '../../../../util';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -68,17 +70,24 @@ function NewVisitorsWidget( { Widget } ) {
 			)
 	);
 
-	const newVisitors =
-		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const returningVisitors =
-		parseInt( report?.rows?.[ 3 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const totalVisitors = newVisitors + returningVisitors;
+	const { rows = [], totals = [] } = report || {};
 
-	const compareNewVisitors =
-		parseInt( report?.rows?.[ 0 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const compareReturningVisitors =
-		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const compareTotalVisitors = compareNewVisitors + compareReturningVisitors;
+	// Total users and new users for the current date range.
+	const newVisitors = pickIntValueWhere( rows, 'metricValues.0.value', {
+		'dimensionValues.0.value': 'new',
+		'dimensionValues.1.value': 'current_range',
+	} );
+	const total = pickIntValueWhere( totals, 'metricValues.0.value', {
+		'dimensionValues.1.value': 'current_range',
+	} );
+
+	// New users for the previous date range.
+	const prevVisitors = pickIntValueWhere( rows, 'metricValues.0.value', {
+		'dimensionValues.0.value': 'new',
+		'dimensionValues.1.value': 'compare_range',
+	} );
+
+	const format = { style: 'decimal' };
 
 	return (
 		<MetricTileNumeric
@@ -88,11 +97,17 @@ function NewVisitorsWidget( { Widget } ) {
 			subText={ sprintf(
 				/* translators: %d: Number of total visitors visiting the site. */
 				__( 'of %d total visitors', 'google-site-kit' ),
-				totalVisitors
+				total
 			) }
-			previousValue={ compareTotalVisitors }
-			currentValue={ totalVisitors }
+			previousValue={ prevVisitors }
+			currentValue={ newVisitors }
 			loading={ loading }
+			tooltip={ sprintf(
+				// translators: %1$s - the previous value, %2$s - the current value
+				__( '%1$s before vs %2$s now', 'google-site-kit' ),
+				numFmt( prevVisitors, format ),
+				numFmt( newVisitors, format )
+			) }
 		/>
 	);
 }
