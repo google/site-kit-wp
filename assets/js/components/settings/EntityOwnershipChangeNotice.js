@@ -44,13 +44,15 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 	const slugs = Array.isArray( slug ) ? slug : [ slug ];
 
 	const storeNames = useSelect( ( select ) => {
-		const { getModuleStoreName } = select( CORE_MODULES );
+		const { getModuleStoreName, getSharedRoles } = select( CORE_MODULES );
 
 		return slugs.reduce( ( acc, currentSlug ) => {
 			const storeName = getModuleStoreName( currentSlug );
-			if ( storeName ) {
-				acc[ currentSlug ] = storeName;
+
+			if ( storeName && !! getSharedRoles( currentSlug )?.length ) {
+				return { ...acc, [ currentSlug ]: storeName };
 			}
+
 			return acc;
 		}, {} );
 	} );
