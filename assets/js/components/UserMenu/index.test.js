@@ -67,7 +67,7 @@ describe( 'UserMenu', () => {
 		beforeEach( () => {
 			provideUserInfo( registry );
 			provideSiteInfo( registry );
-			( { container } = render( <UserMenu />, { registry } ) );
+			container = render( <UserMenu />, { registry } ).container;
 			fireEvent.click(
 				container.querySelector(
 					'.googlesitekit-user-selector .googlesitekit-header__dropdown'

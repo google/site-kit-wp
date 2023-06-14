@@ -130,7 +130,7 @@ describe( 'ResetButton', () => {
 				document.querySelector( '.mdc-dialog--open' )
 			).not.toBeInTheDocument();
 
-			// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are appied to the .mdc-dialog element.
+			// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are applied to the .mdc-dialog element.
 			expect(
 				document.querySelector( '.mdc-dialog' ).classList.length
 			).toBe( 1 );
@@ -149,7 +149,7 @@ describe( 'ResetButton', () => {
 				document.querySelector( '.mdc-dialog--open' )
 			).not.toBeInTheDocument();
 
-			// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are appied to the .mdc-dialog element.
+			// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are applied to the .mdc-dialog element.
 			expect(
 				document.querySelector( '.mdc-dialog' ).classList.length
 			).toBe( 1 );

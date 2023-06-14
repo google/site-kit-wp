@@ -106,9 +106,7 @@ const ModalDialog = ( {
 					disabled={ inProgress }
 					isSaving={ inProgress }
 				>
-					{ confirmButton
-						? confirmButton
-						: __( 'Disconnect', 'google-site-kit' ) }
+					{ confirmButton || __( 'Disconnect', 'google-site-kit' ) }
 				</SpinnerButton>
 				<Link
 					className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
