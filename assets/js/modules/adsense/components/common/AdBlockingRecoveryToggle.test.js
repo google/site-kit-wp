@@ -68,9 +68,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 				)
 			).toBeNull();
 
-			expect( container.textContent ).not.toContain(
-				'Ad blocking recovery'
-			);
+			expect( container ).toBeEmptyDOMElement();
 		}
 	);
 
