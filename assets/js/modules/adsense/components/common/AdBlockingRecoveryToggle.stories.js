@@ -52,9 +52,25 @@ Ready.parameters = {
 	features: [ 'adBlockerDetection' ],
 };
 
-export const WithTogglesEnabled = Template.bind( {} );
-WithTogglesEnabled.storyName = 'With Toggles Enabled';
-WithTogglesEnabled.args = {
+export const WithAdBlockingRecoveryTagEnabled = Template.bind( {} );
+WithAdBlockingRecoveryTagEnabled.storyName =
+	'With Ad Blocking Recovery Tag Enabled';
+WithAdBlockingRecoveryTagEnabled.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...validSettings,
+			useAdBlockerDetectionSnippet: true,
+			useAdBlockerDetectionErrorSnippet: false,
+		} );
+	},
+};
+WithAdBlockingRecoveryTagEnabled.parameters = {
+	features: [ 'adBlockerDetection' ],
+};
+
+export const WithBothTogglesEnabled = Template.bind( {} );
+WithBothTogglesEnabled.storyName = 'With Both The Toggles Enabled';
+WithBothTogglesEnabled.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 			...validSettings,
@@ -63,7 +79,7 @@ WithTogglesEnabled.args = {
 		} );
 	},
 };
-WithTogglesEnabled.parameters = {
+WithBothTogglesEnabled.parameters = {
 	features: [ 'adBlockerDetection' ],
 };
 
