@@ -45,10 +45,10 @@ const { useSelect, useDispatch } = Data;
 export default function AdBlockingRecoveryToggle() {
 	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
-	const adBlockerDetectionSnippet = useSelect( ( select ) =>
+	const adBlockingDetectionSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockerDetectionSnippet()
 	);
-	const adBlockerDetectionErrorSnippet = useSelect( ( select ) =>
+	const adBlockingDetectionErrorSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockerDetectionErrorSnippet()
 	);
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
@@ -62,13 +62,13 @@ export default function AdBlockingRecoveryToggle() {
 			path: `/${ adsenseAccountID }/privacymessaging/ad_blocking`,
 		} )
 	);
-	const adBlockerDetectionToggle = useSelect( ( select ) =>
+	const adBlockingDetectionToggle = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AD_BLOCKING_FORM_SETTINGS,
 			'adBlockerDetectionToggle'
 		)
 	);
-	const adBlockerDetectionErrorToggle = useSelect( ( select ) =>
+	const adBlockingDetectionErrorToggle = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AD_BLOCKING_FORM_SETTINGS,
 			'adBlockerDetectionErrorToggle'
@@ -83,24 +83,26 @@ export default function AdBlockingRecoveryToggle() {
 
 	const handleDetectionToggleClick = () => {
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
-			adBlockerDetectionToggle: ! adBlockerDetectionToggle,
+			adBlockerDetectionToggle: ! adBlockingDetectionToggle,
 		} );
-		setUseAdBlockerDetectionSnippet( ! adBlockerDetectionToggle );
+		setUseAdBlockerDetectionSnippet( ! adBlockingDetectionToggle );
 	};
 
 	const handleErrorToggleClick = () => {
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
-			adBlockerDetectionErrorToggle: ! adBlockerDetectionErrorToggle,
+			adBlockerDetectionErrorToggle: ! adBlockingDetectionErrorToggle,
 		} );
-		setUseAdBlockerDetectionErrorSnippet( ! adBlockerDetectionErrorToggle );
+		setUseAdBlockerDetectionErrorSnippet(
+			! adBlockingDetectionErrorToggle
+		);
 	};
 
 	useMount( () => {
 		const initialToggleValues = {
 			// Set the initial toggle value to `undefined` if the saved value is `false`
 			// to prevent the SettingsNotice from showing up on mount.
-			adBlockerDetectionToggle: adBlockerDetectionSnippet || undefined,
-			adBlockerDetectionErrorToggle: adBlockerDetectionErrorSnippet,
+			adBlockerDetectionToggle: adBlockingDetectionSnippet || undefined,
+			adBlockerDetectionErrorToggle: adBlockingDetectionErrorSnippet,
 		};
 
 		setValues( AD_BLOCKING_FORM_SETTINGS, initialToggleValues );
@@ -122,7 +124,7 @@ export default function AdBlockingRecoveryToggle() {
 							'Place ad blocking recovery tag',
 							'google-site-kit'
 						) }
-						checked={ adBlockerDetectionToggle }
+						checked={ adBlockingDetectionToggle }
 						onClick={ handleDetectionToggleClick }
 						hideLabel={ false }
 					/>
@@ -143,14 +145,15 @@ export default function AdBlockingRecoveryToggle() {
 						) }
 					</p>
 				</div>
-				{ ( adBlockerDetectionToggle || adBlockerDetectionSnippet ) && (
+				{ ( adBlockingDetectionToggle ||
+					adBlockingDetectionSnippet ) && (
 					<div className="googlesitekit-settings-module__meta-item">
 						<Switch
 							label={ __(
 								'Place error protection tag',
 								'google-site-kit'
 							) }
-							checked={ adBlockerDetectionErrorToggle }
+							checked={ adBlockingDetectionErrorToggle }
 							onClick={ handleErrorToggleClick }
 							hideLabel={ false }
 						/>
@@ -163,7 +166,7 @@ export default function AdBlockingRecoveryToggle() {
 					</div>
 				) }
 			</div>
-			{ adBlockerDetectionToggle === false && (
+			{ adBlockingDetectionToggle === false && (
 				<SettingsNotice
 					notice={ __(
 						'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed',
