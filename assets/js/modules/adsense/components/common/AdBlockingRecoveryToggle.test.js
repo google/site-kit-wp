@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
-import { render, provideModules } from '../../../../../../tests/js/test-utils';
+import {
+	render,
+	provideModules,
+	fireEvent,
+} from '../../../../../../tests/js/test-utils';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
 	MODULES_ADSENSE,
@@ -73,25 +77,28 @@ describe( 'AdBlockingRecoveryToggle', () => {
 	);
 
 	it( 'should render the Ad blocking recovery toggle when the conditions are met', () => {
-		const { container } = render( <AdBlockingRecoveryToggle />, {
-			setupRegistry: ( registry ) => {
-				enabledFeatures.add( 'adBlockerDetection' );
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					...validSettings,
-					adBlockingRecoverySetupStatus:
-						AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
-					useAdBlockerDetectionSnippet: true,
-					useAdBlockerDetectionErrorSnippet: true,
-				} );
-			},
-		} );
+		const { container, getByLabelText, getAllByRole } = render(
+			<AdBlockingRecoveryToggle />,
+			{
+				setupRegistry: ( registry ) => {
+					enabledFeatures.add( 'adBlockerDetection' );
+					provideModules( registry, [
+						{
+							slug: 'adsense',
+							active: true,
+							connected: true,
+						},
+					] );
+					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+						...validSettings,
+						adBlockingRecoverySetupStatus:
+							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+						useAdBlockerDetectionSnippet: true,
+						useAdBlockerDetectionErrorSnippet: true,
+					} );
+				},
+			}
+		);
 
 		expect(
 			container.querySelector(
@@ -101,9 +108,119 @@ describe( 'AdBlockingRecoveryToggle', () => {
 
 		expect( container.textContent ).toContain( 'Ad blocking recovery' );
 		expect(
-			container.querySelector(
-				'.googlesitekit-settings-module__meta-item'
-			)
-		).toHaveTextContent( 'Place ad blocking recovery tag' );
+			getByLabelText( /Place ad blocking recovery tag/i )
+		).toBeInTheDocument();
+
+		// The Material Design switch component is represented
+		// by multiple elements including a 'div' and an 'input'.
+		// We loop over all these to verify that they are checked.
+		const recoveryTagSwitchElements = getAllByRole( 'switch', {
+			name: /place ad blocking recovery tag/i,
+		} );
+		recoveryTagSwitchElements.forEach( ( switchEl ) => {
+			expect( switchEl ).toBeChecked();
+		} );
+		const errorProtectionTagSwitchElements = getAllByRole( 'switch', {
+			name: /place error protection tag/i,
+		} );
+		errorProtectionTagSwitchElements.forEach( ( switchEl ) => {
+			expect( switchEl ).toBeChecked();
+		} );
+	} );
+
+	it( 'should render the Ad blocking recovery tag toggle unchecked', () => {
+		const { getByLabelText, getAllByRole, queryByLabelText } = render(
+			<AdBlockingRecoveryToggle />,
+			{
+				setupRegistry: ( registry ) => {
+					enabledFeatures.add( 'adBlockerDetection' );
+					provideModules( registry, [
+						{
+							slug: 'adsense',
+							active: true,
+							connected: true,
+						},
+					] );
+					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+						...validSettings,
+						adBlockingRecoverySetupStatus:
+							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+						useAdBlockerDetectionSnippet: false,
+						useAdBlockerDetectionErrorSnippet: false,
+					} );
+				},
+			}
+		);
+
+		expect(
+			getByLabelText( /Place ad blocking recovery tag/i )
+		).toBeInTheDocument();
+
+		const recoveryTagSwitchElements = getAllByRole( 'switch', {
+			name: /place ad blocking recovery tag/i,
+		} );
+		recoveryTagSwitchElements.forEach( ( switchEl ) => {
+			expect( switchEl ).not.toBeChecked();
+		} );
+
+		expect(
+			queryByLabelText( /Place error protection tag/i )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the notice when the user unchecks the ad blocking recovery tag toggle', () => {
+		const { getByLabelText, getAllByRole, container } = render(
+			<AdBlockingRecoveryToggle />,
+			{
+				setupRegistry: ( registry ) => {
+					enabledFeatures.add( 'adBlockerDetection' );
+					provideModules( registry, [
+						{
+							slug: 'adsense',
+							active: true,
+							connected: true,
+						},
+					] );
+					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+						...validSettings,
+						adBlockingRecoverySetupStatus:
+							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+						useAdBlockerDetectionSnippet: true,
+						useAdBlockerDetectionErrorSnippet: false,
+					} );
+				},
+			}
+		);
+
+		expect(
+			getByLabelText( /Place ad blocking recovery tag/i )
+		).toBeInTheDocument();
+
+		const recoveryTagSwitchElements = getAllByRole( 'switch', {
+			name: /place ad blocking recovery tag/i,
+		} );
+		// Verify that the switch is checked initially.
+		recoveryTagSwitchElements.forEach( ( switchEl ) => {
+			expect( switchEl ).toBeChecked();
+		} );
+		// Verify that the notice is not rendered.
+		expect(
+			container.querySelector( '.googlesitekit-settings-notice' )
+		).not.toBeInTheDocument();
+
+		// Uncheck the switch.
+		fireEvent.click( container.querySelector( '.mdc-switch' ) );
+
+		// Verify that the switch is unchecked.
+		recoveryTagSwitchElements.forEach( ( switchEl ) => {
+			expect( switchEl ).not.toBeChecked();
+		} );
+
+		// Verify that the notice is rendered.
+		expect(
+			container.querySelector( '.googlesitekit-settings-notice__text' )
+		).toHaveTextContent(
+			'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed'
+		);
 	} );
 } );
