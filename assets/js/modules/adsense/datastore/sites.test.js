@@ -30,6 +30,11 @@ import {
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
+const sitesByDomain = fixtures.sites.reduce(
+	( acc, site ) => ( { ...acc, [ site.domain ]: site } ),
+	{}
+);
+
 describe( 'modules/adsense sites', () => {
 	let registry;
 
@@ -156,10 +161,13 @@ describe( 'modules/adsense sites', () => {
 			} );
 
 			it.each( [
-				[ 'www.example.com', fixtures.sites[ 0 ] ],
-				[ 'othersubdomain.example.com', fixtures.sites[ 0 ] ],
-				[ 'www.test-site.com', fixtures.sites[ 1 ] ],
-				[ 'some-other-tld.ie', fixtures.sites[ 2 ] ],
+				[ 'www.example.com', sitesByDomain[ 'example.com' ] ],
+				[
+					'othersubdomain.example.com',
+					sitesByDomain[ 'example.com' ],
+				],
+				[ 'www.test-site.com', sitesByDomain[ 'test-site.com' ] ],
+				[ 'some-other-tld.ie', sitesByDomain[ 'some-other-tld.ie' ] ],
 			] )(
 				'finds the site in this account that matches the domain: %s',
 				( domain, expected ) => {
@@ -196,9 +204,9 @@ describe( 'modules/adsense sites', () => {
 		} );
 
 		describe( 'getCurrentSite', () => {
-			beforeEach( () => {
-				const accountID = fixtures.clients[ 0 ]._accountID;
+			const accountID = 'pub-1234567890';
 
+			beforeEach( () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry
@@ -207,20 +215,16 @@ describe( 'modules/adsense sites', () => {
 			} );
 
 			it( 'gets the AdSense site which matches the domain of the current site', async () => {
-				const accountID = fixtures.clients[ 0 ]._accountID;
-
 				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					referenceSiteURL: 'http://example.com',
 				} );
 				const site = registry
 					.select( MODULES_ADSENSE )
 					.getCurrentSite( accountID );
-				expect( site ).toEqual( fixtures.sites[ 0 ] );
+				expect( site ).toEqual( sitesByDomain[ 'example.com' ] );
 			} );
 
 			it( 'returns null when the current site domain does not matches any site', async () => {
-				const accountID = fixtures.clients[ 0 ]._accountID;
-
 				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					referenceSiteURL: 'http://non-existent-site.com',
 				} );
