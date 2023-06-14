@@ -29,16 +29,23 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
 import Link from '../Link';
 
-export default function ConnectModuleCTATile( {
-	Icon,
-	moduleName,
-	moduleSlug,
-	Widget,
-} ) {
+const { useSelect } = Data;
+
+export default function ConnectModuleCTATile( { Icon, moduleSlug, Widget } ) {
 	const handleConnectModule = useActivateModuleCallback( moduleSlug );
+
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( moduleSlug )
+	);
+
+	if ( ! module ) {
+		return null;
+	}
 
 	return (
 		<Widget
@@ -57,14 +64,14 @@ export default function ConnectModuleCTATile( {
 								'%s is disconnected, some of your metrics can’t be displayed',
 								'google-site-kit'
 							),
-							moduleName
+							module.name
 						) }
 					</p>
 					<Link onClick={ handleConnectModule }>
 						{ sprintf(
 							/* translators: %s: module name */
 							__( 'Connect %s', 'google-site-kit' ),
-							moduleName
+							module.name
 						) }
 					</Link>
 				</div>
@@ -75,7 +82,6 @@ export default function ConnectModuleCTATile( {
 
 ConnectModuleCTATile.propTypes = {
 	Icon: propTypes.elementType.isRequired,
-	moduleName: propTypes.string.isRequired,
 	moduleSlug: propTypes.string.isRequired,
 	Widget: propTypes.elementType.isRequired,
 };

@@ -22,11 +22,6 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -71,7 +66,6 @@ export default function ConnectGA4CTATileWidget( { Widget, WidgetNull } ) {
 	return (
 		<ConnectModuleCTATile
 			Icon={ AnalyticsIcon }
-			moduleName={ __( 'Google Analytics', 'google-site-kit' ) }
 			moduleSlug="analytics"
 			Widget={ Widget }
 		/>
