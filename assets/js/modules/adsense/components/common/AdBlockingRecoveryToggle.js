@@ -65,13 +65,13 @@ export default function AdBlockingRecoveryToggle() {
 	const adBlockingDetectionToggle = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AD_BLOCKING_FORM_SETTINGS,
-			'adBlockerDetectionToggle'
+			'adBlockingDetectionToggle'
 		)
 	);
 	const adBlockingDetectionErrorToggle = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AD_BLOCKING_FORM_SETTINGS,
-			'adBlockerDetectionErrorToggle'
+			'adBlockingDetectionErrorToggle'
 		)
 	);
 
@@ -83,14 +83,14 @@ export default function AdBlockingRecoveryToggle() {
 
 	const handleDetectionToggleClick = () => {
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
-			adBlockerDetectionToggle: ! adBlockingDetectionToggle,
+			adBlockingDetectionToggle: ! adBlockingDetectionToggle,
 		} );
 		setUseAdBlockerDetectionSnippet( ! adBlockingDetectionToggle );
 	};
 
 	const handleErrorToggleClick = () => {
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
-			adBlockerDetectionErrorToggle: ! adBlockingDetectionErrorToggle,
+			adBlockingDetectionErrorToggle: ! adBlockingDetectionErrorToggle,
 		} );
 		setUseAdBlockerDetectionErrorSnippet(
 			! adBlockingDetectionErrorToggle
@@ -101,8 +101,8 @@ export default function AdBlockingRecoveryToggle() {
 		const initialToggleValues = {
 			// Set the initial toggle value to `undefined` if the saved value is `false`
 			// to prevent the SettingsNotice from showing up on mount.
-			adBlockerDetectionToggle: adBlockingDetectionSnippet || undefined,
-			adBlockerDetectionErrorToggle: adBlockingDetectionErrorSnippet,
+			adBlockingDetectionToggle: adBlockingDetectionSnippet || undefined,
+			adBlockingDetectionErrorToggle: adBlockingDetectionErrorSnippet,
 		};
 
 		setValues( AD_BLOCKING_FORM_SETTINGS, initialToggleValues );
