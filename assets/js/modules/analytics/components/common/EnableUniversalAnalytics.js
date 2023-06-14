@@ -95,7 +95,7 @@ export default function EnableUniversalAnalytics( {
 	} = useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback( () => {
-		if ( isUAEnabled ) {
+		if ( isUAEnabled && properties.length > 0 ) {
 			resetPropertyAndProfileIDs();
 		} else {
 			revertPropertyAndProfileIDs();
@@ -104,6 +104,7 @@ export default function EnableUniversalAnalytics( {
 		setValues( FORM_SETUP, { enableUA: ! isUAEnabled } );
 	}, [
 		isUAEnabled,
+		properties.length,
 		setValues,
 		resetPropertyAndProfileIDs,
 		revertPropertyAndProfileIDs,
@@ -171,7 +172,7 @@ export default function EnableUniversalAnalytics( {
 					checked={ isUAEnabled }
 					onClick={ onChange }
 					hideLabel={ false }
-					disabled={ shouldEnableUAToggle }
+					disabled={ ! hasModuleAccess }
 				/>
 				<p>
 					{ __(
