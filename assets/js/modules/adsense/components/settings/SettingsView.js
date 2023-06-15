@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,7 +40,6 @@ import {
 	getAutoAdsDisabledMessage,
 } from './utils';
 import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
-import { Fragment } from 'react';
 const { useSelect } = Data;
 
 export default function SettingsView() {
