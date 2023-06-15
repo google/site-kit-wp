@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\AdSense;
+use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -335,89 +336,6 @@ class AdSenseTest extends TestCase {
 		);
 	}
 
-	public function data_test_tag() {
-		return array(
-			'invalid characters' => array(
-				'ABCD@!#$',
-				null,
-			),
-			'valid'              => array(
-				base64_encode( 'test-tag' ),
-				'test-tag',
-			),
-		);
-	}
-
-	/**
-	 * @dataProvider data_test_tag
-	 * @param string $encoded_tag
-	 * @param string $expected
-	 */
-	public function test_get_ad_blocking_recovery_tag( $encoded_tag, $expected ) {
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$tag = $adsense->get_ad_blocking_recovery_tag();
-		$this->assertNull( $tag );
-
-		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, $encoded_tag );
-		$tag = $adsense->get_ad_blocking_recovery_tag();
-		$this->assertEquals( $tag, $expected );
-	}
-
-	/**
-	 * @dataProvider data_test_tag
-	 * @param string $encoded_tag
-	 * @param string $expected
-	 */
-	public function test_get_ad_blocking_recovery_error_protection_tag( $encoded_tag, $expected ) {
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
-		$this->assertNull( $tag );
-
-		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, $encoded_tag );
-		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
-		$this->assertEquals( $tag, $expected );
-	}
-
-	/**
-	 * Strings with invalid length gets automatically padded below PHP 7 even when the strict flag is
-	 * set to true. This is not the case in PHP 7+.
-	 *
-	 * TODO: Merge this test with test_get_ad_blocking_recovery_tag once PHP 5.6 support is dropped.
-	 *
-	 * @requires PHP >= 7
-	 */
-	public function test_get_ad_blocking_recovery_tag__invalid_length() {
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$tag = $adsense->get_ad_blocking_recovery_tag();
-		$this->assertNull( $tag );
-
-		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, 'ABCDEFGHI' );
-		$tag = $adsense->get_ad_blocking_recovery_tag();
-		$this->assertNull( $tag );
-	}
-
-	/**
-	 * Strings with invalid length gets automatically padded below PHP 7 even when the strict flag is
-	 * set to true. This is not the case in PHP 7+.
-	 *
-	 * TODO: Merge this test with test_get_ad_blocking_recovery_error_protection_tag once PHP 5.6 support is dropped.
-	 *
-	 * @requires PHP >= 7
-	 */
-	public function test_get_ad_blocking_recovery_error_protection_tag__invalid_length() {
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
-		$this->assertNull( $tag );
-
-		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, 'ABCDEFGHI' );
-		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
-		$this->assertNull( $tag );
-	}
-
 	public function test_get_data__sync_ad_blocking_recovery_tags() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
@@ -447,8 +365,7 @@ class AdSenseTest extends TestCase {
 		);
 
 		// Assert that the tags are not available in database before fetching.
-		$this->assertFalse( $options->get( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION ) );
-		$this->assertFalse( $options->get( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION ) );
+		$this->assertFalse( $options->get( Ad_Blocking_Recovery_Tag::OPTION ) );
 
 		$response = $adsense->set_data( 'sync-ad-blocking-recovery-tags', array() );
 
@@ -457,12 +374,9 @@ class AdSenseTest extends TestCase {
 		$this->assertEqualSetsWithIndex( array( 'success' => true ), $response->get_data() );
 
 		// Assert that the tags are available and saved as base64 encoded string in database after fetching.
-		$this->assertEquals( 'test-recovery-tag', base64_decode( $options->get( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION ) ) );
-		$this->assertEquals( 'test-error-protection-tag', base64_decode( $options->get( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION ) ) );
-
-		// Assert that the getter methods return the decoded tags.
-		$this->assertEquals( 'test-recovery-tag', $adsense->get_ad_blocking_recovery_tag() );
-		$this->assertEquals( 'test-error-protection-tag', $adsense->get_ad_blocking_recovery_error_protection_tag() );
+		$tags = $options->get( Ad_Blocking_Recovery_Tag::OPTION );
+		$this->assertEquals( 'test-recovery-tag', base64_decode( $tags['tag'] ) );
+		$this->assertEquals( 'test-error-protection-tag', base64_decode( $tags['error_protection_code'] ) );
 	}
 
 	public function test_is_connected() {
