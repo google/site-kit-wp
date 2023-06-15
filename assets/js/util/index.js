@@ -85,13 +85,15 @@ export const getTimeInSeconds = ( period ) => {
  * @return {(number|null)} The percent change. Null if the input or output is invalid.
  */
 export function calculateChange( previous, current ) {
-	// Prevent null result when both values are legitimately 0
-	if ( [ '0', 0 ].includes( previous ) && [ '0', 0 ].includes( current ) ) {
+	const isZero = ( value ) => value === '0' || value === 0;
+
+	// Prevent null result when both values are legitimately 0.
+	if ( isZero( previous ) && isZero( current ) ) {
 		return 0;
 	}
 
 	// Prevent divide by zero errors.
-	if ( '0' === previous || 0 === previous || Number.isNaN( previous ) ) {
+	if ( isZero( previous ) || Number.isNaN( previous ) ) {
 		return null;
 	}
 
