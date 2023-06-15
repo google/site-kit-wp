@@ -31,9 +31,9 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 const Template = () => <WidgetWithComponentProps />;
 
 export const Default = Template.bind( {} );
-Default.storyName = 'KeyMetricsSetupCTAWidget';
+Default.storyName = 'SetupCTAWidget';
 Default.scenario = {
-	label: 'Global/KeyMetricsSetupCTAWidget',
+	label: 'KeyMetrics/SetupCTAWidget',
 	delay: 250,
 };
 Default.parameters = {
@@ -41,7 +41,7 @@ Default.parameters = {
 };
 
 export default {
-	title: 'Components/KeyMetrics',
+	title: 'Key Metrics',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

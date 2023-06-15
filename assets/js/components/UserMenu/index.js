@@ -31,7 +31,7 @@ import {
 	useEffect,
 	useCallback,
 } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
@@ -165,6 +165,33 @@ export default function UserMenu() {
 		return null;
 	}
 
+	let accountLabel;
+
+	if ( userFullName && userEmail ) {
+		accountLabel = sprintf(
+			/* translators: Account info text. 1: User's (full) name 2: User's email address. */
+			__( 'Google Account for %1$s (Email: %2$s)', 'google-site-kit' ),
+			userFullName,
+			userEmail
+		);
+	}
+
+	if ( userFullName && ! userEmail ) {
+		accountLabel = sprintf(
+			/* translators: Account info text. 1: User's (full) name. */
+			__( 'Google Account for %1$s', 'google-site-kit' ),
+			userFullName
+		);
+	}
+
+	if ( ! userFullName && userEmail ) {
+		accountLabel = sprintf(
+			/* translators: Account info text. 1: User's email address. */
+			__( 'Google Account (Email: %1$s)', 'google-site-kit' ),
+			userEmail
+		);
+	}
+
 	return (
 		<Fragment>
 			<div
@@ -199,7 +226,7 @@ export default function UserMenu() {
 					aria-label={ __( 'Account', 'google-site-kit' ) }
 					tooltip
 					customizedTooltip={
-						<Fragment>
+						<span aria-label={ accountLabel }>
 							<strong>
 								{ __( 'Google Account', 'google-site-kit' ) }
 							</strong>
@@ -208,7 +235,7 @@ export default function UserMenu() {
 							{ userFullName }
 							{ userFullName && <br /> }
 							{ userEmail }
-						</Fragment>
+						</span>
 					}
 				/>
 

@@ -15,6 +15,7 @@ import {
 	setClientConfig,
 	setSearchConsoleProperty,
 	setSiteVerification,
+	useRequestInterception,
 } from '../utils';
 
 describe( 'Plugin Reset', () => {
@@ -24,6 +25,24 @@ describe( 'Plugin Reset', () => {
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();
+
+		await page.setRequestInterception( true );
+		useRequestInterception( ( request ) => {
+			const url = request.url();
+			if (
+				url.match( '/google-site-kit/v1/core/user/data/key-metrics' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						widgetSlugs: [],
+						isWidgetHidden: false,
+					} ),
+				} );
+			} else {
+				request.continue();
+			}
+		} );
 	} );
 
 	beforeEach( async () => {
