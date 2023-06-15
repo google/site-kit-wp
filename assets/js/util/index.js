@@ -87,7 +87,7 @@ export const getTimeInSeconds = ( period ) => {
 export function calculateChange( previous, current ) {
 	const isZero = ( value ) => value === '0' || value === 0;
 
-	// Prevent null result when both values are legitimately 0.
+	// Prevent null result when both values are legitimately zero.
 	if ( isZero( previous ) && isZero( current ) ) {
 		return 0;
 	}
