@@ -45,10 +45,10 @@ const { useSelect, useDispatch } = Data;
 export default function AdBlockingRecoveryToggle() {
 	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
-	const adBlockingDetectionSnippet = useSelect( ( select ) =>
+	const adBlockerDetectionSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockerDetectionSnippet()
 	);
-	const adBlockingDetectionErrorSnippet = useSelect( ( select ) =>
+	const adBlockerDetectionErrorSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockerDetectionErrorSnippet()
 	);
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
@@ -101,8 +101,8 @@ export default function AdBlockingRecoveryToggle() {
 		const initialToggleValues = {
 			// Set the initial toggle value to `undefined` if the saved value is `false`
 			// to prevent the SettingsNotice from showing up on mount.
-			adBlockingDetectionToggle: adBlockingDetectionSnippet || undefined,
-			adBlockingDetectionErrorToggle: adBlockingDetectionErrorSnippet,
+			adBlockingDetectionToggle: adBlockerDetectionSnippet || undefined,
+			adBlockingDetectionErrorToggle: adBlockerDetectionErrorSnippet,
 		};
 
 		setValues( AD_BLOCKING_FORM_SETTINGS, initialToggleValues );
@@ -146,7 +146,7 @@ export default function AdBlockingRecoveryToggle() {
 					</p>
 				</div>
 				{ ( adBlockingDetectionToggle ||
-					adBlockingDetectionSnippet ) && (
+					adBlockerDetectionSnippet ) && (
 					<div className="googlesitekit-settings-module__meta-item">
 						<Switch
 							label={ __(
