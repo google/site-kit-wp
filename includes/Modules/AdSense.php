@@ -48,6 +48,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsens
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
+use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use WP_Error;
 use WP_REST_Response;
 
@@ -72,14 +73,12 @@ final class AdSense extends Module
 	const MODULE_SLUG = 'adsense';
 
 	/**
-	 * Ad blocking recovery tag option name.
+	 * Ad_Blocking_Recovery_Tag instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Ad_Blocking_Recovery_Tag
 	 */
-	const AD_BLOCKING_RECOVERY_TAG_OPTION = 'googlesitekit_adsense_recovery-tag';
-
-	/**
-	 * Ad blocking recovery error protection tag option name.
-	 */
-	const AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION = 'googlesitekit_adsense_error-protection-tag';
+	protected $ad_blocking_recovery_tag;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -441,8 +440,13 @@ final class AdSense extends Module
 			case 'GET:sites':
 				return $response->getSites();
 			case 'POST:sync-ad-blocking-recovery-tags':
-				$this->options->set( self::AD_BLOCKING_RECOVERY_TAG_OPTION, base64_encode( $response->getTag() ) );
-				$this->options->set( self::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, base64_encode( $response->getErrorProtectionCode() ) );
+				$this->get_ad_blocking_recovery_tag()->set(
+					array(
+						'tag'                   => $response->getTag(),
+						'error_protection_code' => $response->getErrorProtectionCode(),
+					)
+				);
+
 				return new WP_REST_Response(
 					array(
 						'success' => true,
@@ -704,6 +708,21 @@ final class AdSense extends Module
 	}
 
 	/**
+	 * Gets the ad blocking recovery tag instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Ad_Blocking_Recovery_Tag
+	 */
+	public function get_ad_blocking_recovery_tag() {
+		if ( ! $this->ad_blocking_recovery_tag instanceof Ad_Blocking_Recovery_Tag ) {
+			$this->ad_blocking_recovery_tag = new Ad_Blocking_Recovery_Tag( $this->options );
+		}
+
+		return $this->ad_blocking_recovery_tag;
+	}
+
+	/**
 	 * Sets up the module's assets to register.
 	 *
 	 * @since 1.9.0
@@ -763,42 +782,6 @@ final class AdSense extends Module
 				$tag->register();
 			}
 		}
-	}
-
-	/**
-	 * Returns the decoded ad blocking recovery tag from the options.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string|null The decoded ad blocking recovery tag, or null if not available.
-	 */
-	public function get_ad_blocking_recovery_tag() {
-		$encoded_tag = $this->options->get( self::AD_BLOCKING_RECOVERY_TAG_OPTION );
-		if ( ! $encoded_tag ) {
-			return null;
-		}
-
-		$decoded_tag = base64_decode( $encoded_tag, true );
-
-		return false === $decoded_tag ? null : $decoded_tag;
-	}
-
-	/**
-	 * Returns the decoded ad blocking recovery error protection tag from the options.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string|null The decoded ad blocking recovery error protection tag, or null if not available.
-	 */
-	public function get_ad_blocking_recovery_error_protection_tag() {
-		$encoded_tag = $this->options->get( self::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION );
-		if ( ! $encoded_tag ) {
-			return null;
-		}
-
-		$decoded_tag = base64_decode( $encoded_tag, true );
-
-		return false === $decoded_tag ? null : $decoded_tag;
 	}
 
 	/**
