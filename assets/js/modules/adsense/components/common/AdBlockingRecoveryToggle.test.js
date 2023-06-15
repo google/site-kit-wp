@@ -128,7 +128,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		} );
 	} );
 
-	it( 'should render the Ad blocking recovery tag toggle unchecked', () => {
+	it( 'renders the Ad Blocking Recovery tag toggle unchecked and does not render the Error Protection tag toggle', () => {
 		const { getByLabelText, getAllByRole, queryByLabelText } = render(
 			<AdBlockingRecoveryToggle />,
 			{
