@@ -197,12 +197,10 @@ export default function SettingsView() {
 						{ adBlockingRecoverySetupStatus === 'tag-placed' && (
 							<Fragment>
 								<p className="googlesitekit-settings-module__meta-item-data">
-									<strong>
-										{ __(
-											'Ad blocking recovery tag is placed',
-											'google-site-kit'
-										) }
-									</strong>
+									{ __(
+										'Ad blocking recovery tag is placed',
+										'google-site-kit'
+									) }
 								</p>
 								<p className="googlesitekit-settings-module__meta-item-data">
 									{ createInterpolateElement(
