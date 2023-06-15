@@ -55,7 +55,6 @@ export default function BannerNotifications() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
-	const gteSupportEnabled = useFeature( 'gteSupport' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
@@ -114,15 +113,12 @@ export default function BannerNotifications() {
 				analyticsModuleConnected &&
 				ga4ModuleConnected && <SwitchedToGA4Banner /> }
 			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-			{ gteSupportEnabled &&
-				ga4ModuleConnected &&
-				hasGTMScope &&
-				isGA4ModuleOwner && (
-					<Fragment>
-						<GoogleTagIDMismatchNotification />
-						<WebDataStreamNotAvailableNotification />
-					</Fragment>
-				) }
+			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
+				<Fragment>
+					<GoogleTagIDMismatchNotification />
+					<WebDataStreamNotAvailableNotification />
+				</Fragment>
+			) }
 			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
 			{ adBlockerDetectionEnabled && <AdBlockingRecoveryNotification /> }

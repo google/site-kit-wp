@@ -1258,8 +1258,7 @@ final class Authentication {
 					$unsatisfied_scopes = $this->get_oauth_client()->get_unsatisfied_scopes();
 
 					if (
-						Feature_Flags::enabled( 'gteSupport' )
-						&& count( $unsatisfied_scopes ) === 1
+						count( $unsatisfied_scopes ) === 1
 						&& 'https://www.googleapis.com/auth/tagmanager.readonly' === $unsatisfied_scopes[0]
 					) {
 						return false;

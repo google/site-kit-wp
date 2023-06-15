@@ -169,10 +169,6 @@ describe( 'modules/analytics tags', () => {
 				beforeAll( () => {
 					jest.resetModules();
 
-					const { enabledFeatures } = require( '../../../features' );
-
-					enabledFeatures.add( 'gteSupport' );
-
 					API = require( 'googlesitekit-api' ).default;
 					( {
 						createTestRegistry,

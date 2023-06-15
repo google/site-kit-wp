@@ -283,7 +283,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_handle_provisioning_callback__gteSupport() {
-		$this->enable_feature( 'gteSupport' );
 		$account_id              = '12345678';
 		$property_id             = '1001';
 		$webdatastream_id        = '2001';
@@ -398,7 +397,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_handle_provisioning_callback__gteSupport__with_failing_container_lookup() {
-		$this->enable_feature( 'gteSupport' );
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
@@ -672,8 +670,6 @@ class Analytics_4Test extends TestCase {
 	 * @dataProvider data_scopes_gteSupport
 	 */
 	public function test_auth_scopes__gteSupport( array $granted_scopes, array $expected_scopes ) {
-		$this->enable_feature( 'gteSupport' );
-
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		$this->analytics->register();
 
@@ -791,8 +787,6 @@ class Analytics_4Test extends TestCase {
 	 * @param array $tag_ids_data Tag IDs and expected result.
 	 */
 	public function test_google_tag_settings_datapoint( $tag_ids_data ) {
-		$this->enable_feature( 'gteSupport' );
-
 		$scopes   = $this->analytics->get_scopes();
 		$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
 		$this->authentication->get_oauth_client()->set_granted_scopes( $scopes );
@@ -1955,7 +1949,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_tracking_opt_out_snippet__gteSupport() {
-		$this->enable_feature( 'gteSupport' );
 		$this->analytics->register();
 
 		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
