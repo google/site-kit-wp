@@ -74,6 +74,12 @@ export default function EnableUniversalAnalytics( {
 	const isUAEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
+	const showUASectionDueToUserInteraction = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'showUASectionDueToUserInteraction'
+		)
+	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
@@ -95,7 +101,8 @@ export default function EnableUniversalAnalytics( {
 	} = useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback( () => {
-		if ( isUAEnabled && properties.length > 0 ) {
+		setValues( FORM_SETUP, { showUASectionDueToUserInteraction: true } );
+		if ( isUAEnabled ) {
 			resetPropertyAndProfileIDs();
 		} else {
 			revertPropertyAndProfileIDs();
@@ -104,7 +111,6 @@ export default function EnableUniversalAnalytics( {
 		setValues( FORM_SETUP, { enableUA: ! isUAEnabled } );
 	}, [
 		isUAEnabled,
-		properties.length,
 		setValues,
 		resetPropertyAndProfileIDs,
 		revertPropertyAndProfileIDs,
@@ -149,7 +155,8 @@ export default function EnableUniversalAnalytics( {
 	if (
 		! isValidPropertyID( propertyID ) &&
 		hasModuleAccess !== false &&
-		properties.length === 0
+		properties.length === 0 &&
+		! showUASectionDueToUserInteraction
 	) {
 		return null;
 	}

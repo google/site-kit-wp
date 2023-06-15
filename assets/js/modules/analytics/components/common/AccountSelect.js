@@ -89,6 +89,10 @@ export default function AccountSelect( { hasModuleAccess } ) {
 		( index, item ) => {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
+				setValues( FORM_SETUP, {
+					showUASectionDueToUserInteraction: true,
+				} );
+
 				selectAccount( newAccountID );
 
 				// Reset the property ID.
@@ -100,7 +104,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 				trackEvent( `${ viewContext }_analytics`, action );
 			}
 		},
-		[ accountID, selectAccount, setPropertyID, viewContext ]
+		[ accountID, selectAccount, setPropertyID, setValues, viewContext ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
