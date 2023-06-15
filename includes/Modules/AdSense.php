@@ -88,6 +88,8 @@ final class AdSense extends Module
 	public function register() {
 		$this->register_scopes_hook();
 
+		$this->get_ad_blocking_recovery_tag()->register();
+
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render_platform_meta_tags' ) );
 
 		if ( $this->is_connected() ) {
