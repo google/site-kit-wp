@@ -353,12 +353,17 @@ class AdSenseTest extends TestCase {
 
 		$adsense->get_settings()->merge( array( 'accountID' => 'pub-1234567890' ) );
 
+		$test_revcory_tag              = 'test-recovery-tag';
+		$encoded_recovery_tag          = base64_encode( $test_revcory_tag );
+		$test_error_protection_code    = 'test-error-protection-code';
+		$encoded_error_protection_code = base64_encode( $test_error_protection_code );
+
 		FakeHttp::fake_google_http_handler(
 			$adsense->get_client(),
-			function() {
+			function() use ( $test_revcory_tag, $test_error_protection_code ) {
 				$response = new AdBlockingRecoveryTag();
-				$response->setTag( 'test-recovery-tag' );
-				$response->setErrorProtectionCode( 'test-error-protection-tag' );
+				$response->setTag( $test_revcory_tag );
+				$response->setErrorProtectionCode( $test_error_protection_code );
 
 				return new Response( 200, array(), json_encode( $response ) );
 			}
@@ -375,8 +380,8 @@ class AdSenseTest extends TestCase {
 
 		// Assert that the tags are available and saved as base64 encoded string in database after fetching.
 		$tags = $options->get( Ad_Blocking_Recovery_Tag::OPTION );
-		$this->assertEquals( 'test-recovery-tag', base64_decode( $tags['tag'] ) );
-		$this->assertEquals( 'test-error-protection-tag', base64_decode( $tags['error_protection_code'] ) );
+		$this->assertEquals( $encoded_recovery_tag, $tags['tag'] );
+		$this->assertEquals( $encoded_error_protection_code, $tags['error_protection_code'] );
 	}
 
 	public function test_is_connected() {
