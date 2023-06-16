@@ -33,7 +33,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
 
-const { createRegistrySelector } = Data;
+const { createRegistrySelector, commonActions } = Data;
 
 /**
  * Creates a store object that has selectors for managing site info.
@@ -59,7 +59,26 @@ export const createInfoStore = (
 	const reducer = ( state ) => {
 		return state;
 	};
-	const resolvers = {};
+	const resolvers = {
+		*getAdminReauthURL() {
+			const { __experimentalResolveSelect } =
+				yield commonActions.getRegistry();
+			const { getAuthentication, getConnectURL } =
+				__experimentalResolveSelect( CORE_USER );
+			const { getSiteInfo } = __experimentalResolveSelect( CORE_SITE );
+
+			yield commonActions.await(
+				Promise.all( [
+					// Authentication is needed for checking `needsReauthentication`.
+					getAuthentication(),
+					// Site info is needed for the `adminURL`.
+					getSiteInfo(),
+					// connectURL is needed for the reAuthURL when reauthentication is needed.
+					getConnectURL(),
+				] )
+			);
+		},
+	};
 	const selectors = {
 		/**
 		 * Returns admin screen URL.
