@@ -37,6 +37,12 @@ add_filter(
 add_filter(
 	'get_user_option_googlesitekit_auth_scopes',
 	function () {
+		global $wp_current_filter;
+
+		if ( count( array_keys( $wp_current_filter, 'get_user_option_googlesitekit_auth_scopes', true ) ) > 1 ) {
+			return null;
+		}
+
 		return ( new OAuth_Client( Plugin::instance()->context() ) )->get_required_scopes();
 	}
 );
