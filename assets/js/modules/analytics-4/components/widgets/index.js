@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as ConnectGA4CTATileWidget } from './ConnectGA4CTATileWidget';
 export { default as EngagedTrafficSourceWidget } from './EngagedTrafficSourceWidget';
 export { default as LoyalVisitorsWidget } from './LoyalVisitorsWidget';
 export { default as NewVisitorsWidget } from './NewVisitorsWidget';
