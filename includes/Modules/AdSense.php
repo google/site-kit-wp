@@ -760,6 +760,11 @@ final class AdSense extends Module
 			$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 			if ( $tag->can_register() ) {
+				$tag->set_use_ad_blocker_detection_snippet( $settings['useAdBlockerDetectionSnippet'] );
+				$tag->set_use_ad_blocker_detection_error_snippet(
+					$settings['useAdBlockerDetectionErrorSnippet']
+				);
+
 				$tag->register();
 			}
 		}
