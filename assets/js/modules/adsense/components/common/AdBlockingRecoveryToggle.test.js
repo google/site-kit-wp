@@ -30,7 +30,6 @@ import {
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import { enabledFeatures } from '../../../../features';
 
 describe( 'AdBlockingRecoveryToggle', () => {
 	const validSettings = {
@@ -49,10 +48,10 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		'should not render the Ad blocking recovery toggle when %s',
 		( testName, adBlockerDetectionEnabled ) => {
 			const { container } = render( <AdBlockingRecoveryToggle />, {
+				features: [].concat(
+					adBlockerDetectionEnabled ? 'adBlockerDetection' : []
+				),
 				setupRegistry: ( registry ) => {
-					if ( adBlockerDetectionEnabled ) {
-						enabledFeatures.add( 'adBlockerDetection' );
-					}
 					provideModules( registry, [
 						{
 							slug: 'adsense',
@@ -80,8 +79,8 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const { container, getByLabelText, getAllByRole } = render(
 			<AdBlockingRecoveryToggle />,
 			{
+				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
-					enabledFeatures.add( 'adBlockerDetection' );
 					provideModules( registry, [
 						{
 							slug: 'adsense',
@@ -132,8 +131,8 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const { getByLabelText, getAllByRole, queryByLabelText } = render(
 			<AdBlockingRecoveryToggle />,
 			{
+				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
-					enabledFeatures.add( 'adBlockerDetection' );
 					provideModules( registry, [
 						{
 							slug: 'adsense',
@@ -172,8 +171,8 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const { getByLabelText, getAllByRole, container } = render(
 			<AdBlockingRecoveryToggle />,
 			{
+				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
-					enabledFeatures.add( 'adBlockerDetection' );
 					provideModules( registry, [
 						{
 							slug: 'adsense',
