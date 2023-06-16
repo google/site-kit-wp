@@ -141,7 +141,8 @@ class Web_Tag extends Module_Web_Tag {
 			'crossorigin' => 'anonymous',
 		);
 
-		$adsense_attributes = $this->get_tag_blocked_on_consent_attribute_array();
+		$adsense_consent_attributes = $this->get_tag_blocked_on_consent_attribute_array();
+		$adsense_attributes         = $adsense_consent_attributes;
 
 		$auto_ads_opt = array();
 
@@ -170,6 +171,21 @@ class Web_Tag extends Module_Web_Tag {
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 		BC_Functions::wp_print_script_tag( array_merge( $adsense_script_attributes, $adsense_attributes ) );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+
+		if ( $this->use_ad_blocker_detection_snippet ) {
+			printf( "\n<!-- %s -->\n", esc_html__( 'Ad blocker detection snippet added by Site Kit', 'google-site-kit' ) );
+			BC_Functions::wp_print_inline_script_tag( $this->recovery_tag_html, $adsense_consent_attributes );
+			printf( "\n<!-- %s -->\n", esc_html__( 'End ad blocker detection snippet added by Site Kit', 'google-site-kit' ) );
+
+			if ( $this->use_ad_blocker_detection_error_snippet ) {
+				printf( "\n<!-- %s -->\n", esc_html__( 'Ad blocking recovery error protection snippet added by Site Kit', 'google-site-kit' ) );
+				BC_Functions::wp_print_inline_script_tag(
+					$this->error_protection_html,
+					$adsense_consent_attributes
+				);
+				printf( "\n<!-- %s -->\n", esc_html__( 'End ad blocking recovery error protection snippet added by Site Kit', 'google-site-kit' ) );
+			}
+		}
 	}
 
 }
