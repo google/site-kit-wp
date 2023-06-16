@@ -25,6 +25,8 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
@@ -40,6 +42,7 @@ import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { DASHBOARD_VIEW_GA4 } from '../../../modules/analytics/datastore/constants';
+import { resetGlobals } from '../../../../../.storybook/utils/resetGlobals';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -213,6 +216,52 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( isActiveAfter ).toBe( false );
+			} );
+
+			it( 'includes the `moduleReauthURL` when activation requires reauthentication', async () => {
+				resetGlobals();
+				const connectURL = 'http://example.com/connect';
+				global._googlesitekitUserData.connectURL = connectURL;
+				provideUserAuthentication( registry );
+				provideModuleRegistrations( registry );
+				provideSiteInfo( registry );
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
+					{ body: { success: true } }
+				);
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
+					{
+						body: {
+							authenticated: true,
+							requiredScopes: [
+								'https://www.googleapis.com/auth/analytics.readonly',
+							],
+							grantedScopes: [],
+							unsatisfiedScopes: [
+								'https://www.googleapis.com/auth/analytics.readonly',
+							],
+							needsReauthentication: true,
+						},
+					}
+				);
+				fetchMock.get(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: withActive( 'analytics' ) }
+				);
+
+				const { response } = await registry
+					.dispatch( CORE_MODULES )
+					.activateModule( 'analytics' );
+
+				expect( response.moduleReauthURL ).toContain( connectURL );
+				expect(
+					response.moduleReauthURL.startsWith( connectURL )
+				).toBe( true );
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
