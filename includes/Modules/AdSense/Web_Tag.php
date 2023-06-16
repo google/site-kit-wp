@@ -27,6 +27,82 @@ class Web_Tag extends Module_Web_Tag {
 	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait;
 
 	/**
+	 * Whether or not to use ad blocker detection snippet.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $use_ad_blocker_detection_snippet;
+
+	/**
+	 * Whether or not to use ad blocker detection error snippet.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $use_ad_blocker_detection_error_snippet;
+
+	/**
+	 * Recovery tag HTML.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $recovery_tag_html;
+
+	/**
+	 * Error protection HTML.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $error_protection_html;
+
+	/**
+	 * Sets whether or not to use ad blocker detection snippet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool $use_ad_blocker_detection_snippet Whether or not to use ad blocker detection snippet.
+	 */
+	public function set_use_ad_blocker_detection_snippet( $use_ad_blocker_detection_snippet ) {
+		$this->use_ad_blocker_detection_snippet = (bool) $use_ad_blocker_detection_snippet;
+	}
+
+	/**
+	 * Sets whether or not to use ad blocker detection error snippet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool $use_ad_blocker_detection_error_snippet Whether or not to use ad blocker detection error snippet.
+	 */
+	public function set_use_ad_blocker_detection_error_snippet( $use_ad_blocker_detection_error_snippet ) {
+		$this->use_ad_blocker_detection_error_snippet = (bool) $use_ad_blocker_detection_error_snippet;
+	}
+
+	/**
+	 * Sets the recovery tag HTML.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $recovery_tag_html Recovery tag HTML.
+	 */
+	public function set_recovery_tag_html( $recovery_tag_html ) {
+		$this->recovery_tag_html = $recovery_tag_html;
+	}
+
+	/**
+	 * Sets the error protection HTML.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $error_protection_html Error protection HTML.
+	 */
+	public function set_error_protection_html( $error_protection_html ) {
+		$this->error_protection_html = $error_protection_html;
+	}
+
+	/**
 	 * Registers tag hooks.
 	 *
 	 * @since 1.24.0
