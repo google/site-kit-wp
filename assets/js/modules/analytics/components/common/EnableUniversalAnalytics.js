@@ -30,6 +30,8 @@ import {
 	Fragment,
 	useCallback,
 	useEffect,
+	useState,
+	useRef,
 	createInterpolateElement,
 } from '@wordpress/element';
 
@@ -74,12 +76,12 @@ export default function EnableUniversalAnalytics( {
 	const isUAEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
-	const showUASectionDueToUserInteraction = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_SETUP,
-			'showUASectionDueToUserInteraction'
-		)
-	);
+	// const showUASectionDueToUserInteraction = useSelect( ( select ) =>
+	// 	select( CORE_FORMS ).getValue(
+	// 		FORM_SETUP,
+	// 		'showUASectionDueToUserInteraction'
+	// 	)
+	// );
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
@@ -101,7 +103,7 @@ export default function EnableUniversalAnalytics( {
 	} = useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback( () => {
-		setValues( FORM_SETUP, { showUASectionDueToUserInteraction: true } );
+		// setValues( FORM_SETUP, { showUASectionDueToUserInteraction: true } );
 		if ( isUAEnabled ) {
 			resetPropertyAndProfileIDs();
 		} else {
@@ -124,6 +126,56 @@ export default function EnableUniversalAnalytics( {
 			  )
 			: true
 	);
+
+	const [ initialPropertyNotInList, setInitialPropertyNotInList ] = useState(
+		isValidPropertyID( propertyID ) &&
+			! properties.find( ( property ) => property.id === propertyID )
+	);
+	// const prevAccountID = usePrevious( accountID );
+	// useEffect( () => {
+	// 	if ( prevAccountID && prevAccountID !== accountID ) {
+	// 		setInitialPropertyNotInList(
+	// 			isValidPropertyID( propertyID ) &&
+	// 				! properties.find(
+	// 					( property ) => property.id === propertyID
+	// 				)
+	// 		);
+	// 	}
+	// }, [
+	// 	accountID,
+	// 	prevAccountID,
+	// 	propertyID,
+	// 	properties,
+	// 	setInitialPropertyNotInList,
+	// ] );
+	const initialAccountID = useRef( accountID );
+
+	useEffect( () => {
+		if ( initialAccountID.current !== accountID ) {
+			setInitialPropertyNotInList(
+				isValidPropertyID( propertyID ) &&
+					! properties.find(
+						( property ) => property.id === propertyID
+					)
+			);
+		}
+	}, [ accountID, propertyID, properties, setInitialPropertyNotInList ] );
+
+	const condition =
+		! isValidPropertyID( propertyID ) &&
+		hasModuleAccess !== false &&
+		properties.length === 0 &&
+		! initialPropertyNotInList;
+
+	global.console.log( {
+		accountID,
+		initialAccountID,
+		initialPropertyNotInList,
+		isValidPropertyID: isValidPropertyID( propertyID ),
+		hasModuleAccess,
+		properties: properties.length,
+		condition,
+	} );
 
 	useEffect( () => {
 		if ( isUAEnabled && ! propertyID ) {
@@ -156,7 +208,7 @@ export default function EnableUniversalAnalytics( {
 		! isValidPropertyID( propertyID ) &&
 		hasModuleAccess !== false &&
 		properties.length === 0 &&
-		! showUASectionDueToUserInteraction
+		! initialPropertyNotInList
 	) {
 		return null;
 	}
