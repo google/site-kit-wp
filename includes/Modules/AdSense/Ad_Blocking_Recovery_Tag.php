@@ -55,6 +55,10 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set( $value ) {
+		if ( ! is_array( $value ) || ! isset( $value['tag'] ) || ! isset( $value['error_protection_code'] ) || ! is_string( $value['tag'] ) || ! is_string( $value['error_protection_code'] ) ) {
+			return false;
+		}
+
 		$tag                   = base64_encode( $value['tag'] );
 		$error_protection_code = base64_encode( $value['error_protection_code'] );
 
