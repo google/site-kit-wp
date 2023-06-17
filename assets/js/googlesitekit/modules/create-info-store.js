@@ -33,7 +33,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
 
-const { createRegistrySelector, commonActions } = Data;
+const { createRegistryControl, createRegistrySelector } = Data;
 
 /**
  * Creates a store object that has selectors for managing site info.
@@ -53,30 +53,38 @@ export const createInfoStore = (
 ) => {
 	invariant( storeName, 'storeName is required.' );
 
+	const WAIT_FOR_REAUTH_RESOLVERS = 'WAIT_FOR_REAUTH_RESOLVERS';
+
 	const initialState = {};
 	const actions = {};
-	const controls = {};
-	const reducer = ( state ) => {
-		return state;
-	};
-	const resolvers = {
-		*getAdminReauthURL() {
-			const { __experimentalResolveSelect } =
-				yield commonActions.getRegistry();
-			const { getAuthentication, getConnectURL } =
-				__experimentalResolveSelect( CORE_USER );
-			const { getSiteInfo } = __experimentalResolveSelect( CORE_SITE );
+	const controls = {
+		[ WAIT_FOR_REAUTH_RESOLVERS ]: createRegistryControl(
+			( registry ) => async () => {
+				const { __experimentalResolveSelect } = registry;
+				const { getAuthentication, getConnectURL } =
+					__experimentalResolveSelect( CORE_USER );
+				const { getSiteInfo } =
+					__experimentalResolveSelect( CORE_SITE );
 
-			yield commonActions.await(
-				Promise.all( [
+				await Promise.all( [
 					// Authentication is needed for checking `needsReauthentication`.
 					getAuthentication(),
 					// Site info is needed for the `adminURL`.
 					getSiteInfo(),
 					// connectURL is needed for the reAuthURL when reauthentication is needed.
 					getConnectURL(),
-				] )
-			);
+				] );
+			}
+		),
+	};
+	const reducer = ( state ) => {
+		return state;
+	};
+	const resolvers = {
+		*getAdminReauthURL() {
+			yield {
+				type: WAIT_FOR_REAUTH_RESOLVERS,
+			};
 		},
 	};
 	const selectors = {
