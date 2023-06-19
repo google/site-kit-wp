@@ -147,4 +147,33 @@
 			margin-bottom: 0;
 		}
 	}
+
+	.googlesitekit-ad-blocking-recovery__step {
+
+		.googlesitekit-stepper__step-content {
+
+			p {
+				color: $c-surfaces-on-surface-variant;
+				font-size: $fs-body-lg;
+				letter-spacing: $ls-s;
+			}
+
+			p:first-child {
+				margin-top: 8px;
+			}
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__step-place-tags {
+
+		.mdc-checkbox {
+			margin-left: -11px;
+		}
+
+		.googlesitekit-ad-blocking-recovery__error-protection-tag-info {
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
+			margin: 0 0 20px 34px;
+		}
+	}
 }
