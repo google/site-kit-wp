@@ -253,35 +253,39 @@ final class Analytics extends Module
 		$settings = $this->get_settings()->get();
 
 		$fields = array(
-			'analytics_dashboard_view' => array(
-				'label' => __( 'Analytics dashboard view', 'google-site-kit' ),
-				'value' => 'google-analytics-4' === $settings['dashboardView'] ? __( 'Google Analytics 4 view', 'google-site-kit' ) : __( 'Universal Analytics view', 'google-site-kit' ),
-				'debug' => $settings['dashboardView'],
-			),
-			'analytics_account_id'     => array(
+			'analytics_account_id'  => array(
 				'label' => __( 'Analytics account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
-			'analytics_property_id'    => array(
+			'analytics_property_id' => array(
 				'label' => __( 'Analytics property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
-			'analytics_profile_id'     => array(
+			'analytics_profile_id'  => array(
 				'label' => __( 'Analytics view ID', 'google-site-kit' ),
 				'value' => $settings['profileID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['profileID'] ),
 			),
-			'analytics_use_snippet'    => array(
+			'analytics_use_snippet' => array(
 				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 		);
 
-		if ( ! Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			unset( $fields['analytics_dashboard_view'] );
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			$fields = array_merge(
+				array(
+					'analytics_dashboard_view' => array(
+						'label' => __( 'Analytics dashboard view', 'google-site-kit' ),
+						'value' => 'google-analytics-4' === $settings['dashboardView'] ? __( 'Google Analytics 4 view', 'google-site-kit' ) : __( 'Universal Analytics view', 'google-site-kit' ),
+						'debug' => $settings['dashboardView'],
+					),
+				),
+				$fields
+			);
 		}
 
 		return $fields;
