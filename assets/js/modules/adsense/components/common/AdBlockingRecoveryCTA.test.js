@@ -31,7 +31,6 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
-import { enabledFeatures } from '../../../../features';
 
 describe( 'AdBlockingRecoveryCTA', () => {
 	it.each( [
@@ -73,10 +72,10 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			adBlockerDetectionEnabled
 		) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
+				features: [].concat(
+					adBlockerDetectionEnabled ? 'adBlockerDetection' : []
+				),
 				setupRegistry: ( registry ) => {
-					if ( adBlockerDetectionEnabled ) {
-						enabledFeatures.add( 'adBlockerDetection' );
-					}
 					provideModules( registry, [
 						{
 							slug: 'adsense',
@@ -106,8 +105,8 @@ describe( 'AdBlockingRecoveryCTA', () => {
 
 	it( 'should render the CTA when Ad Blocking Recovery is not set up', () => {
 		const { container } = render( <AdBlockingRecoveryCTA />, {
+			features: [ 'adBlockerDetection' ],
 			setupRegistry: ( registry ) => {
-				enabledFeatures.add( 'adBlockerDetection' );
 				provideModules( registry, [
 					{
 						slug: 'adsense',

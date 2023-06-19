@@ -42,6 +42,7 @@ import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper'
 
 const defaultSettings = {
 	accountID: '',
+	adBlockingRecoverySetupStatus: '',
 	clientID: '',
 	accountStatus: '',
 	siteStatus: '',
@@ -54,6 +55,7 @@ const defaultSettings = {
 const completeSettings = {
 	...defaultSettings,
 	accountID: fixtures.accounts[ 0 ]._id,
+	adBlockingRecoverySetupStatus: '',
 	clientID: fixtures.clients[ 0 ]._id,
 	accountStatus: ACCOUNT_STATUS_APPROVED,
 	siteStatus: SITE_STATUS_ADDED,
@@ -134,6 +136,44 @@ storiesOf( 'AdSense Module/Settings', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( completeSettings );
+
+			return (
+				<Settings
+					route="/connected-services/adsense"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'View, open with Ad Blocking Recovery tag placed',
+		( args, { registry } ) => {
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				...completeSettings,
+				adBlockingRecoverySetupStatus: 'tag-placed',
+			} );
+
+			return (
+				<Settings
+					route="/connected-services/adsense"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'View, open with Ad Blocking Recovery tag not placed',
+		( args, { registry } ) => {
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				...completeSettings,
+				adBlockingRecoverySetupStatus: 'setup-confirmed',
+			} );
 
 			return (
 				<Settings
