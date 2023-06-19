@@ -58,10 +58,6 @@ describe( 'SettingsApp', () => {
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetAdminBarSettings( { enabled: true } );
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			widgetSlugs: [],
-			isWidgetHidden: false,
-		} );
 
 		provideSiteInfo( registry, {
 			proxySupportLinkURL: 'https://test.com',
