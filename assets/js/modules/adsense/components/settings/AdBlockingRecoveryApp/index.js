@@ -24,18 +24,18 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Header from '../../../../components/Header';
-import HelpMenu from '../../../../components/help/HelpMenu';
-import Layout from '../../../../components/layout/Layout';
-import { Cell, Grid, Row } from '../../../../material-components';
-import PageHeader from '../../../../components/PageHeader';
-import AdBlockingSetupSVG from '../../../../../svg/graphics/ad-blocking-recovery-setup.svg';
-import Link from '../../../../components/Link';
+import Header from '../../../../../components/Header';
+import HelpMenu from '../../../../../components/help/HelpMenu';
+import Layout from '../../../../../components/layout/Layout';
+import { Cell, Grid, Row } from '../../../../../material-components';
+import PageHeader from '../../../../../components/PageHeader';
+import AdBlockingSetupSVG from '../../../../../../svg/graphics/ad-blocking-recovery-setup.svg';
+import Link from '../../../../../components/Link';
 import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
-} from '../../../../hooks/useBreakpoint';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+} from '../../../../../hooks/useBreakpoint';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function AdBlockingRecoveryApp() {

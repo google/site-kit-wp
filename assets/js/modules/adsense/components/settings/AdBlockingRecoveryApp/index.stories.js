@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { provideModules } from '../../../../../../tests/js/utils';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import AdBlockingRecoveryApp from './AdBlockingRecoveryApp';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '../../../../../../../tests/js/utils';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+import AdBlockingRecoveryApp from '.';
 
 const Template = () => <AdBlockingRecoveryApp />;
 
