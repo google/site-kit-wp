@@ -31,11 +31,19 @@ import { Cell, Grid, Row } from '../../../../../material-components';
 import PageHeader from '../../../../../components/PageHeader';
 import AdBlockingSetupSVG from '../../../../../../svg/graphics/ad-blocking-recovery-setup.svg';
 import Link from '../../../../../components/Link';
+import Stepper from '../../../../../components/Stepper';
+import Step from '../../../../../components/Stepper/Step';
 import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import {
+	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	MODULES_ADSENSE,
+} from '../../../datastore/constants';
+import PlaceTagsStep from './steps/PlaceTagsStep';
+import CreateMessageStep from './steps/CreateMessageStep';
 const { useSelect } = Data;
 
 export default function AdBlockingRecoveryApp() {
@@ -47,6 +55,17 @@ export default function AdBlockingRecoveryApp() {
 				'googlesitekit-settings'
 			) }#/connected-services/adsense`
 	);
+	const activeStep = useSelect( ( select ) => {
+		const adBlockingRecoverySetupStatus =
+			select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
+
+		switch ( adBlockingRecoverySetupStatus ) {
+			case '':
+				return 0;
+			case AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED:
+				return 1;
+		}
+	} );
 
 	const isTabletWidthOrLarger = breakpoint !== BREAKPOINT_SMALL;
 
@@ -82,8 +101,29 @@ export default function AdBlockingRecoveryApp() {
 								<Grid className="googlesitekit-ad-blocking-recovery__content">
 									<Row>
 										<Cell mdSize={ 6 } lgSize={ 8 }>
-											(Placeholer: Stepper component can
-											go here.)
+											<Stepper
+												activeStep={ activeStep }
+												className="googlesitekit-ad-blocking-recovery__steps"
+											>
+												<Step
+													title={ __(
+														'Place the standard ad blocking recovery tag (required)',
+														'google-site-kit'
+													) }
+													className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-place-tags"
+												>
+													<PlaceTagsStep />
+												</Step>
+												<Step
+													title={ __(
+														'Create your site’s ad blocking recovery message (required)',
+														'google-site-kit'
+													) }
+													className="googlesitekit-ad-blocking-recovery__step"
+												>
+													<CreateMessageStep />
+												</Step>
+											</Stepper>
 										</Cell>
 
 										{ isTabletWidthOrLarger && (
