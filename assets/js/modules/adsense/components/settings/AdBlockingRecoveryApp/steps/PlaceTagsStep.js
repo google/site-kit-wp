@@ -30,16 +30,29 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { Checkbox, SpinnerButton } from 'googlesitekit-components';
-import { MODULES_ADSENSE } from '../../../../datastore/constants';
+import {
+	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	MODULES_ADSENSE,
+} from '../../../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function PlaceTagsStep() {
 	const useAdBlockerDetectionErrorSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockerDetectionErrorSnippet()
 	);
+	const isSaving = useSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).isDoingSaveSettings() ||
+			select( MODULES_ADSENSE ).isFetchingSyncAdBlockingRecoveryTags()
+	);
 
-	const { setUseAdBlockerDetectionErrorSnippet } =
-		useDispatch( MODULES_ADSENSE );
+	const {
+		saveSettings,
+		setAdBlockingRecoverySetupStatus,
+		setUseAdBlockerDetectionSnippet,
+		setUseAdBlockerDetectionErrorSnippet,
+		syncAdBlockingRecoveryTags,
+	} = useDispatch( MODULES_ADSENSE );
 
 	const onErrorProtectionTagOptionChange = useCallback(
 		( { target } ) => {
@@ -47,6 +60,21 @@ export default function PlaceTagsStep() {
 		},
 		[ setUseAdBlockerDetectionErrorSnippet ]
 	);
+
+	const onCTAClick = useCallback( async () => {
+		await syncAdBlockingRecoveryTags();
+
+		setAdBlockingRecoverySetupStatus(
+			AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED
+		);
+		setUseAdBlockerDetectionSnippet( true );
+		saveSettings();
+	}, [
+		saveSettings,
+		setAdBlockingRecoverySetupStatus,
+		setUseAdBlockerDetectionSnippet,
+		syncAdBlockingRecoveryTags,
+	] );
 
 	// Error snippet option is enabled by default.
 	useMount( () => {
@@ -81,7 +109,11 @@ export default function PlaceTagsStep() {
 					'google-site-kit'
 				) }
 			</p>
-			<SpinnerButton>
+			<SpinnerButton
+				onClick={ onCTAClick }
+				isSaving={ isSaving }
+				disabled={ isSaving }
+			>
 				{ __( 'Place tag', 'google-site-kit' ) }
 			</SpinnerButton>
 		</Fragment>
