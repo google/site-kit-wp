@@ -33,6 +33,7 @@ import {
 	ErrorNotices,
 	UseSnippetSwitch,
 	AutoAdExclusionSwitches,
+	AdBlockingRecoveryToggle,
 } from '../common';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
@@ -125,6 +126,8 @@ export default function SettingsForm() {
 			<AutoAdExclusionSwitches />
 
 			<AdBlockingRecoveryCTA />
+
+			<AdBlockingRecoveryToggle />
 		</div>
 	);
 }

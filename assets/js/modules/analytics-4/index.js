@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	ConnectGA4CTATileWidget,
 	EngagedTrafficSourceWidget,
 	LoyalVisitorsWidget,
 	NewVisitorsWidget,
@@ -60,6 +61,18 @@ export const registerWidgets = ( widgets ) => {
 		/*
 		 * Key metrics widgets.
 		 */
+		widgets.registerWidget(
+			'keyMetricsConnectGA4CTATile',
+			{
+				Component: ConnectGA4CTATileWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
 		widgets.registerWidget(
 			KM_ANALYTICS_LOYAL_VISITORS,
 			{

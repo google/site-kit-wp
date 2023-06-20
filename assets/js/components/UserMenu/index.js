@@ -38,7 +38,8 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, Dialog, Menu } from 'googlesitekit-components';
+import { Button, Menu } from 'googlesitekit-components';
+import ModalDialog from '../ModalDialog';
 import { trackEvent } from '../../util';
 import { clearCache } from '../../googlesitekit/api/cache';
 import Portal from '../Portal';
@@ -276,7 +277,7 @@ export default function UserMenu() {
 				</Menu>
 			</div>
 			<Portal>
-				<Dialog
+				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
 					handleDialog={ handleDialog }
