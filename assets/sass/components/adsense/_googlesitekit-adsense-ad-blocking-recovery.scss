@@ -170,10 +170,36 @@
 			margin-left: -11px;
 		}
 
-		.googlesitekit-ad-blocking-recovery__error-protection-tag-info {
+		p.googlesitekit-ad-blocking-recovery__error-protection-tag-info {
 			font-size: $fs-body-md;
 			line-height: $lh-body-md;
 			margin: 0 0 20px 34px;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__step-create-message {
+
+		.googlesitekit-ad-blocking-recovery__create-message-footer-actions {
+			align-items: center;
+			display: flex;
+			gap: 26px;
+
+			.googlesitekit-cta-link {
+				color: $c-surfaces-on-surface-variant;
+				font-weight: $fw-medium;
+			}
+		}
+
+		.googlesitekit-ad-blocking-recovery__create-message-footer {
+			display: inline-block;
+			margin-top: 12px;
+		}
+
+		p.googlesitekit-ad-blocking-recovery__create-message-footer-note {
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin-top: 24px;
 		}
 	}
 }

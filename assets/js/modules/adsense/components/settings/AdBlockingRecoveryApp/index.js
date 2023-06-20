@@ -18,7 +18,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,17 +33,18 @@ import AdBlockingSetupSVG from '../../../../../../svg/graphics/ad-blocking-recov
 import Link from '../../../../../components/Link';
 import Stepper from '../../../../../components/Stepper';
 import Step from '../../../../../components/Stepper/Step';
+import PlaceTagsStep from './steps/PlaceTagsStep';
+import CreateMessageStep from './steps/CreateMessageStep';
 import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
+	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
 	MODULES_ADSENSE,
 } from '../../../datastore/constants';
-import PlaceTagsStep from './steps/PlaceTagsStep';
-import CreateMessageStep from './steps/CreateMessageStep';
 const { useSelect } = Data;
 
 export default function AdBlockingRecoveryApp() {
@@ -55,7 +56,7 @@ export default function AdBlockingRecoveryApp() {
 				'googlesitekit-settings'
 			) }#/connected-services/adsense`
 	);
-	const activeStep = useSelect( ( select ) => {
+	const initialActiveStep = useSelect( ( select ) => {
 		const adBlockingRecoverySetupStatus =
 			select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
 
@@ -64,8 +65,12 @@ export default function AdBlockingRecoveryApp() {
 				return 0;
 			case AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED:
 				return 1;
+			case AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED:
+				return 2;
 		}
 	} );
+
+	const [ activeStep, setActiveStep ] = useState( initialActiveStep );
 
 	const isTabletWidthOrLarger = breakpoint !== BREAKPOINT_SMALL;
 
@@ -112,14 +117,18 @@ export default function AdBlockingRecoveryApp() {
 													) }
 													className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-place-tags"
 												>
-													<PlaceTagsStep />
+													<PlaceTagsStep
+														setActiveStep={
+															setActiveStep
+														}
+													/>
 												</Step>
 												<Step
 													title={ __(
 														'Create your site’s ad blocking recovery message (required)',
 														'google-site-kit'
 													) }
-													className="googlesitekit-ad-blocking-recovery__step"
+													className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-create-message"
 												>
 													<CreateMessageStep />
 												</Step>

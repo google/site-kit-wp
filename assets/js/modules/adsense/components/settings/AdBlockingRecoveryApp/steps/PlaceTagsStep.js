@@ -17,6 +17,7 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import { useMount } from 'react-use';
 
 /**
@@ -36,7 +37,7 @@ import {
 } from '../../../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function PlaceTagsStep() {
+export default function PlaceTagsStep( { setActiveStep } ) {
 	const useAdBlockerDetectionErrorSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockerDetectionErrorSnippet()
 	);
@@ -68,9 +69,15 @@ export default function PlaceTagsStep() {
 			AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED
 		);
 		setUseAdBlockerDetectionSnippet( true );
-		saveSettings();
+
+		const { error } = await saveSettings();
+
+		if ( ! error ) {
+			setActiveStep( 1 );
+		}
 	}, [
 		saveSettings,
+		setActiveStep,
 		setAdBlockingRecoverySetupStatus,
 		setUseAdBlockerDetectionSnippet,
 		syncAdBlockingRecoveryTags,
@@ -119,3 +126,7 @@ export default function PlaceTagsStep() {
 		</Fragment>
 	);
 }
+
+PlaceTagsStep.propTypes = {
+	setActiveStep: PropTypes.func,
+};

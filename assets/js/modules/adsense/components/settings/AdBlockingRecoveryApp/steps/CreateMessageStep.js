@@ -18,9 +18,69 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { SpinnerButton, Button } from 'googlesitekit-components';
+import Link from '../../../../../../components/Link';
+import {
+	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+	MODULES_ADSENSE,
+} from '../../../../datastore/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function CreateMessageStep() {
+	const [ ctaClicked, setCTAClicked ] = useState( false );
+
+	const adsenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+	const privacyMessagingURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getServiceURL( {
+			path: `/${ adsenseAccountID }/privacymessaging/ad_blocking`,
+		} )
+	);
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+	const isSaving = useSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).isDoingSaveSettings() ||
+			select( CORE_LOCATION ).isNavigatingTo( dashboardURL )
+	);
+
+	const { saveSettings, setAdBlockingRecoverySetupStatus } =
+		useDispatch( MODULES_ADSENSE );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const onCTAClick = useCallback( async () => {
+		if ( ! ctaClicked ) {
+			setCTAClicked( true );
+			return;
+		}
+
+		setAdBlockingRecoverySetupStatus(
+			AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED
+		);
+
+		const { error } = await saveSettings();
+
+		if ( ! error ) {
+			navigateTo( dashboardURL );
+		}
+	}, [
+		ctaClicked,
+		dashboardURL,
+		navigateTo,
+		saveSettings,
+		setAdBlockingRecoverySetupStatus,
+	] );
+
 	return (
 		<Fragment>
 			<p>
@@ -35,6 +95,43 @@ export default function CreateMessageStep() {
 					'google-site-kit'
 				) }
 			</p>
+			<div className="googlesitekit-ad-blocking-recovery__create-message-footer">
+				<div className="googlesitekit-ad-blocking-recovery__create-message-footer-actions">
+					{ ctaClicked ? (
+						<Fragment>
+							<SpinnerButton
+								onClick={ onCTAClick }
+								isSaving={ isSaving }
+								disabled={ isSaving }
+							>
+								{ __(
+									'My message is ready',
+									'google-site-kit'
+								) }
+							</SpinnerButton>
+							<Link href={ privacyMessagingURL } target="_blank">
+								{ __( 'Create message', 'google-site-kit' ) }
+							</Link>
+						</Fragment>
+					) : (
+						<Button
+							href={ privacyMessagingURL }
+							target="_blank"
+							onClick={ onCTAClick }
+						>
+							{ __( 'Create message', 'google-site-kit' ) }
+						</Button>
+					) }
+				</div>
+				{ ctaClicked && (
+					<p className="googlesitekit-ad-blocking-recovery__create-message-footer-note">
+						{ __(
+							'Ad blocking recovery only works if you’ve created and published your message in AdSense',
+							'google-site-kit'
+						) }
+					</p>
+				) }
+			</div>
 		</Fragment>
 	);
 }
