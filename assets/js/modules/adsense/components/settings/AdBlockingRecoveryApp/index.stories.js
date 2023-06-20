@@ -21,22 +21,69 @@
  */
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { provideModules } from '../../../../../../../tests/js/utils';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import {
+	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	MODULES_ADSENSE,
+	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
+} from '../../../datastore/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import AdBlockingRecoveryApp from '.';
 
 const Template = () => <AdBlockingRecoveryApp />;
 
-export const Setup = Template.bind( {} );
-Setup.storyName = 'Setup';
-Setup.scenario = {
-	label: 'Global/AdBlockingRecoveryApp/Setup',
+export const StepOne = Template.bind( {} );
+StepOne.storyName = 'Step 1';
+StepOne.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).setSettings( {
+			adBlockingRecoverySetupStatus: '',
+		} );
+	},
+};
+StepOne.scenario = {
+	label: 'Global/AdBlockingRecoveryApp/StepOne',
+	delay: 250,
+};
+
+export const StepTwo = Template.bind( {} );
+StepTwo.storyName = 'Step 2';
+StepTwo.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).setSettings( {
+			adBlockingRecoverySetupStatus:
+				AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+		} );
+	},
+};
+StepTwo.scenario = {
+	label: 'Global/AdBlockingRecoveryApp/StepTwo',
+	delay: 250,
+};
+
+export const StepTwoAfterCTAClick = Template.bind( {} );
+StepTwoAfterCTAClick.storyName = 'Step 2 - After CTA Click';
+StepTwoAfterCTAClick.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).setSettings( {
+			adBlockingRecoverySetupStatus:
+				AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+		} );
+
+		registry.dispatch( CORE_UI ).setValues( {
+			[ AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED ]: true,
+		} );
+	},
+};
+StepTwoAfterCTAClick.scenario = {
+	label: 'Global/AdBlockingRecoveryApp/StepTwoAfterCTAClick',
 	delay: 250,
 };
 
 export default {
 	title: 'Modules/AdSense/Settings/AdBlockingRecoveryApp',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -49,6 +96,12 @@ export default {
 				registry
 					.dispatch( MODULES_ADSENSE )
 					.receiveIsAdBlockerActive( false );
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					adminURL: 'http://example.com/wp-admin/',
+				} );
+
+				args.setupRegistry?.( registry );
 			};
 
 			return (
