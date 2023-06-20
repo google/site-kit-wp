@@ -44,23 +44,25 @@ import {
 	useTooltipState,
 } from '../../../../components/AdminMenuTooltip';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
-	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { WEEK_IN_SECONDS, getTimeInSeconds } from '../../../../util';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { getTimeInSeconds } from '../../../../util';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
-	const notificationSlug = 'ad-blocker-recovery-notification';
+	const AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG =
+		'ad-blocker-recovery-notification';
 	const windowWidth = useWindowWidth();
 
-	const showTooltip = useShowTooltip( notificationSlug );
-	const { isTooltipVisible } = useTooltipState( notificationSlug );
+	const showTooltip = useShowTooltip( AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG );
+	const { isTooltipVisible } = useTooltipState(
+		AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG
+	);
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( notificationSlug )
+		select( CORE_USER ).isItemDismissed(
+			AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG
+		)
 	);
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -87,26 +89,11 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
-	const dismissCallback = () => {
-		dismissItem( notificationSlug );
+	const dismissCallback = async () => {
+		await dismissItem( AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG );
 	};
 
-	const THREE_WEEKS_IN_SECONDS = WEEK_IN_SECONDS * 3;
-
-	const condition =
-		adSenseModuleConnected === false ||
-		adBlockingRecoverySetupStatus !==
-			AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED ||
-		accountStatus !== ACCOUNT_STATUS_READY ||
-		siteStatus !== SITE_STATUS_READY ||
-		( setupCompletedTimestamp &&
-			getTimeInSeconds() - setupCompletedTimestamp <
-				THREE_WEEKS_IN_SECONDS );
-	global.console.log( { condition } );
-	global.console.log( { isTooltipVisible } );
-
 	if ( isTooltipVisible ) {
-		global.console.log( { isDismissed, isTooltipVisible } );
 		return (
 			<Fragment>
 				<WidgetNull />
@@ -117,21 +104,23 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 					onDismiss={ dismissCallback }
-					tooltipStateKey={ notificationSlug }
+					tooltipStateKey={ AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG }
 				/>
 			</Fragment>
 		);
 	}
 
+	const THREE_WEEKS_IN_SECONDS = getTimeInSeconds( 'week' ) * 3;
+	const NOW_IN_SECONDS = Math.floor( Date.now() / 1000 );
+
 	if (
 		adSenseModuleConnected &&
 		isDismissed === false &&
-		// ! isTooltipVisible ||
 		adBlockingRecoverySetupStatus !== '' &&
 		accountStatus === ACCOUNT_STATUS_READY &&
 		siteStatus === SITE_STATUS_READY &&
-		setupCompletedTimestamp &&
-		getTimeInSeconds() - setupCompletedTimestamp > THREE_WEEKS_IN_SECONDS
+		( ! setupCompletedTimestamp ||
+			NOW_IN_SECONDS - setupCompletedTimestamp > THREE_WEEKS_IN_SECONDS )
 	) {
 		return (
 			<Widget>
