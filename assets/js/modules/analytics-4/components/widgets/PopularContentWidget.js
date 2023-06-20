@@ -22,30 +22,93 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
+import {
+	MetricTileTable,
+	whenKeyMetricsWidgetVisible,
+} from '../../../../components/KeyMetrics';
+import Link from '../../../../components/Link';
+import { ZeroDataMessage } from '../../../analytics/components/common';
+const { useSelect, useInViewSelect } = Data;
 
-const { useSelect } = Data;
-
-export default function PopularContentWidget( { Widget, WidgetNull } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
+function PopularContentWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
 	);
 
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
+	const reportOptions = {
+		...dates,
+		dimensions: [ 'pageTitle', 'pagePath' ],
+		metrics: [ { name: 'screenPageViews' } ],
+		orderby: [
+			{
+				metric: { metricName: 'screenPageViews' },
+				desc: true,
+			},
+		],
+		limit: 3,
+	};
+
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	);
+
+	const loading = useInViewSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
+			)
+	);
+
+	const { rows = [] } = report || {};
+
+	const columns = [
+		{
+			field: 'dimensionValues',
+			Component: ( { fieldValue } ) => {
+				const [ title, url ] = fieldValue;
+
+				return <Link href={ url.value }>{ title.value }</Link>;
+			},
+		},
+		{
+			field: 'metricValues.0.value',
+			Component: ( { fieldValue } ) => <strong>{ fieldValue }</strong>,
+		},
+	];
 
 	return (
-		<Widget>
-			<div>TODO: UI for PopularContentWidget</div>
-		</Widget>
+		<MetricTileTable
+			Widget={ Widget }
+			title={ __(
+				'Most popular content by pageviews',
+				'google-site-kit'
+			) }
+			loading={ loading }
+			rows={ rows }
+			columns={ columns }
+			zeroState={ ZeroDataMessage }
+		/>
 	);
 }
 
 PopularContentWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenKeyMetricsWidgetVisible()( PopularContentWidget );
