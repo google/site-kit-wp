@@ -207,6 +207,8 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 			</Widget>
 		);
 	}
+
+	return <WidgetNull />;
 }
 
 AdBlockingRecoveryWidget.propTypes = {
