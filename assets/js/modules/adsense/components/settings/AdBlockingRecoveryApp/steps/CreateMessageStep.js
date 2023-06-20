@@ -18,7 +18,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -27,16 +27,16 @@ import Data from 'googlesitekit-data';
 import { SpinnerButton, Button } from 'googlesitekit-components';
 import Link from '../../../../../../components/Link';
 import {
+	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function CreateMessageStep() {
-	const [ ctaClicked, setCTAClicked ] = useState( false );
-
 	const adsenseAccountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
@@ -53,14 +53,24 @@ export default function CreateMessageStep() {
 			select( MODULES_ADSENSE ).isDoingSaveSettings() ||
 			select( CORE_LOCATION ).isNavigatingTo( dashboardURL )
 	);
+	const createMessageCTAClicked = useSelect(
+		( select ) =>
+			!! select( CORE_UI ).getValue(
+				AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED
+			)
+	);
 
 	const { saveSettings, setAdBlockingRecoverySetupStatus } =
 		useDispatch( MODULES_ADSENSE );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setValue } = useDispatch( CORE_UI );
 
 	const onCTAClick = useCallback( async () => {
-		if ( ! ctaClicked ) {
-			setCTAClicked( true );
+		if ( ! createMessageCTAClicked ) {
+			setValue(
+				AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
+				true
+			);
 			return;
 		}
 
@@ -74,11 +84,12 @@ export default function CreateMessageStep() {
 			navigateTo( dashboardURL );
 		}
 	}, [
-		ctaClicked,
+		createMessageCTAClicked,
 		dashboardURL,
 		navigateTo,
 		saveSettings,
 		setAdBlockingRecoverySetupStatus,
+		setValue,
 	] );
 
 	return (
@@ -97,7 +108,7 @@ export default function CreateMessageStep() {
 			</p>
 			<div className="googlesitekit-ad-blocking-recovery__create-message-footer">
 				<div className="googlesitekit-ad-blocking-recovery__create-message-footer-actions">
-					{ ctaClicked ? (
+					{ createMessageCTAClicked ? (
 						<Fragment>
 							<SpinnerButton
 								onClick={ onCTAClick }
@@ -123,7 +134,7 @@ export default function CreateMessageStep() {
 						</Button>
 					) }
 				</div>
-				{ ctaClicked && (
+				{ createMessageCTAClicked && (
 					<p className="googlesitekit-ad-blocking-recovery__create-message-footer-note">
 						{ __(
 							'Ad blocking recovery only works if you’ve created and published your message in AdSense',
