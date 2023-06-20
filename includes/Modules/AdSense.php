@@ -49,6 +49,11 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsens
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
 use WP_REST_Response;
 
@@ -81,6 +86,28 @@ final class AdSense extends Module
 	protected $ad_blocking_recovery_tag;
 
 	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+		$this->ad_blocking_recovery_tag = new Ad_Blocking_Recovery_Tag( $this->options );
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -88,7 +115,7 @@ final class AdSense extends Module
 	public function register() {
 		$this->register_scopes_hook();
 
-		$this->get_ad_blocking_recovery_tag()->register();
+		$this->ad_blocking_recovery_tag->register();
 
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render_platform_meta_tags' ) );
 
@@ -442,7 +469,7 @@ final class AdSense extends Module
 			case 'GET:sites':
 				return $response->getSites();
 			case 'POST:sync-ad-blocking-recovery-tags':
-				$this->get_ad_blocking_recovery_tag()->set(
+				$this->ad_blocking_recovery_tag->set(
 					array(
 						'tag'                   => $response->getTag(),
 						'error_protection_code' => $response->getErrorProtectionCode(),
@@ -707,21 +734,6 @@ final class AdSense extends Module
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
-	}
-
-	/**
-	 * Gets the ad blocking recovery tag instance.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return Ad_Blocking_Recovery_Tag
-	 */
-	public function get_ad_blocking_recovery_tag() {
-		if ( ! $this->ad_blocking_recovery_tag instanceof Ad_Blocking_Recovery_Tag ) {
-			$this->ad_blocking_recovery_tag = new Ad_Blocking_Recovery_Tag( $this->options );
-		}
-
-		return $this->ad_blocking_recovery_tag;
 	}
 
 	/**
