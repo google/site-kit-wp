@@ -229,6 +229,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 						! in_array(
 							$option['adBlockingRecoverySetupStatus'],
 							array(
+								'',
 								self::AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
 								self::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 							),
