@@ -18,7 +18,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,11 +41,14 @@ import {
 } from '../../../../../hooks/useBreakpoint';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
+	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
 	MODULES_ADSENSE,
 } from '../../../datastore/constants';
-const { useSelect } = Data;
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryApp() {
 	const breakpoint = useBreakpoint();
@@ -69,8 +72,61 @@ export default function AdBlockingRecoveryApp() {
 				return 2;
 		}
 	} );
+	const createMessageCTAClicked = useSelect(
+		( select ) =>
+			!! select( CORE_UI ).getValue(
+				AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED
+			)
+	);
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
+	const {
+		saveSettings,
+		setAdBlockingRecoverySetupStatus,
+		setUseAdBlockerDetectionSnippet,
+		setUseAdBlockerDetectionErrorSnippet,
+	} = useDispatch( MODULES_ADSENSE );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const [ activeStep, setActiveStep ] = useState( initialActiveStep );
+
+	const onCancel = useCallback( async () => {
+		if ( activeStep === 0 ) {
+			return navigateTo( dashboardURL );
+		}
+
+		if ( createMessageCTAClicked ) {
+			return navigateTo( settingsURL );
+		}
+
+		setAdBlockingRecoverySetupStatus( '' );
+		setUseAdBlockerDetectionSnippet( false );
+		setUseAdBlockerDetectionErrorSnippet( false );
+
+		const { error } = await saveSettings();
+
+		if ( ! error ) {
+			navigateTo( dashboardURL );
+		}
+	}, [
+		activeStep,
+		createMessageCTAClicked,
+		dashboardURL,
+		navigateTo,
+		saveSettings,
+		setAdBlockingRecoverySetupStatus,
+		setUseAdBlockerDetectionErrorSnippet,
+		setUseAdBlockerDetectionSnippet,
+		settingsURL,
+	] );
+
+	useEffect( () => {
+		if ( undefined === activeStep && undefined !== initialActiveStep ) {
+			setActiveStep( initialActiveStep );
+		}
+	}, [ activeStep, initialActiveStep ] );
 
 	const isTabletWidthOrLarger = breakpoint !== BREAKPOINT_SMALL;
 
@@ -149,7 +205,7 @@ export default function AdBlockingRecoveryApp() {
 
 								<div className="googlesitekit-ad-blocking-recovery__footer googlesitekit-ad-blocking-recovery__buttons">
 									<div className="googlesitekit-ad-blocking-recovery__footer-cancel">
-										<Link href={ settingsURL }>
+										<Link onClick={ onCancel }>
 											{ __(
 												'Cancel',
 												'google-site-kit'
