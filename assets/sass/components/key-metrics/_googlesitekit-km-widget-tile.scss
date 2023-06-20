@@ -61,6 +61,10 @@
 			margin-top: 12px;
 			width: 100%;
 
+			td {
+				vertical-align: top;
+			}
+
 			td + td {
 				text-align: right;
 			}
