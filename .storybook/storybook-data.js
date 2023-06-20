@@ -52,20 +52,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--modal-dialog',
-		kind: 'Global',
-		name: 'Modal Dialog',
-		story: 'Modal Dialog',
-		parameters: {
-			fileName: './stories/modal-dialog.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 1000,
-			},
-		},
-	},
-	{
 		id: 'adsense-module-components-module-overview-widget--loaded',
 		kind: 'AdSense Module',
 		name: 'Overview Widget',
