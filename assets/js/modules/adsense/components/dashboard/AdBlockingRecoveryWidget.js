@@ -125,6 +125,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 
 	if (
 		adSenseModuleConnected &&
+		isDismissed === false &&
 		// ! isTooltipVisible ||
 		adBlockingRecoverySetupStatus !== '' &&
 		accountStatus === ACCOUNT_STATUS_READY &&
@@ -206,8 +207,6 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 			</Widget>
 		);
 	}
-
-	return <WidgetNull />;
 }
 
 AdBlockingRecoveryWidget.propTypes = {
