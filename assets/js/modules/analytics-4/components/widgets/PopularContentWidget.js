@@ -83,7 +83,11 @@ function PopularContentWidget( { Widget } ) {
 			Component: ( { fieldValue } ) => {
 				const [ title, url ] = fieldValue;
 
-				return <Link href={ url.value }>{ title.value }</Link>;
+				return (
+					<Link href={ url.value } title={ title.value }>
+						{ title.value }
+					</Link>
+				);
 			},
 		},
 		{

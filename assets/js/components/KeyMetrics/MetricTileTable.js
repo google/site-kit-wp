@@ -19,6 +19,7 @@
  */
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
@@ -42,7 +43,7 @@ export default function MetricTileTable( props ) {
 		tbody = rows
 			.slice( 0, limit || rows.length )
 			.map( ( row, rowIndex ) => (
-				<tr key={ rowIndex }>
+				<div key={ rowIndex } className="googlesitekit-table__body-row">
 					{ columns.map(
 						( { Component, field, className }, colIndex ) => {
 							const fieldValue =
@@ -51,7 +52,13 @@ export default function MetricTileTable( props ) {
 									: undefined;
 
 							return (
-								<td key={ colIndex } className={ className }>
+								<div
+									key={ colIndex }
+									className={ classnames(
+										'googlesitekit-table__body-item',
+										className
+									) }
+								>
 									{ Component && (
 										<Component
 											row={ row }
@@ -59,19 +66,19 @@ export default function MetricTileTable( props ) {
 										/>
 									) }
 									{ ! Component && fieldValue }
-								</td>
+								</div>
 							);
 						}
 					) }
-				</tr>
+				</div>
 			) );
 	} else if ( !! ZeroState ) {
 		tbody = (
-			<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
-				<td className="googlesitekit-table__body-item">
+			<div className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
+				<div className="googlesitekit-table__body-item">
 					<ZeroState />
-				</td>
-			</tr>
+				</div>
+			</div>
 		);
 	}
 
@@ -90,9 +97,9 @@ export default function MetricTileTable( props ) {
 						/>
 					) }
 					{ ! loading && (
-						<table className="googlesitekit-km-widget-tile__table">
-							<tbody>{ tbody }</tbody>
-						</table>
+						<div className="googlesitekit-km-widget-tile__table">
+							{ tbody }
+						</div>
 					) }
 				</div>
 			</div>

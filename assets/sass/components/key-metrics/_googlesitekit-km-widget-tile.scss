@@ -57,16 +57,30 @@
 		}
 
 		.googlesitekit-km-widget-tile__table {
+			display: flex;
+			flex-direction: column;
 			font-size: $fs-label-sm;
 			margin-top: 12px;
 			width: 100%;
+		}
 
-			td {
-				vertical-align: top;
-			}
+		.googlesitekit-table__body-row {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			padding: 2px 0;
+		}
 
-			td + td {
-				text-align: right;
+		.googlesitekit-table__body-item {
+			margin-right: 10px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+
+			&:last-child {
+				margin-right: 0;
+				overflow: visible;
+				text-overflow: unset;
 			}
 
 			strong {
