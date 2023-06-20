@@ -252,7 +252,7 @@ final class Analytics extends Module
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$fields = array(
 			'analytics_account_id'  => array(
 				'label' => __( 'Analytics account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
@@ -274,6 +274,21 @@ final class Analytics extends Module
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			$fields = array_merge(
+				array(
+					'analytics_dashboard_view' => array(
+						'label' => __( 'Analytics dashboard view', 'google-site-kit' ),
+						'value' => 'google-analytics-4' === $settings['dashboardView'] ? __( 'Google Analytics 4 view', 'google-site-kit' ) : __( 'Universal Analytics view', 'google-site-kit' ),
+						'debug' => $settings['dashboardView'],
+					),
+				),
+				$fields
+			);
+		}
+
+		return $fields;
 	}
 
 	/**
