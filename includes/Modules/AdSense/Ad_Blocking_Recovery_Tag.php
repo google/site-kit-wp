@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\Setting;
  * @ignore
  */
 class Ad_Blocking_Recovery_Tag extends Setting {
+
 	const OPTION = 'googlesitekit_adsense_ad_blocking_recovery_tag';
 
 	/**
