@@ -47,23 +47,51 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { getTimeInSeconds } from '../../../../util';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG =
 		'ad-blocker-recovery-notification';
 	const windowWidth = useWindowWidth();
+	const viewOnlyDashboard = useViewOnly();
 
 	const showTooltip = useShowTooltip( AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG );
 	const { isTooltipVisible } = useTooltipState(
 		AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG
 	);
-
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG
 		)
 	);
+	const adSenseModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'adsense' )
+	);
+	const adBlockingRecoverySetupStatus = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
+	} );
+	const accountStatus = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getAccountStatus();
+	} );
+	const setupCompletedTimestamp = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getSetupCompletedTimestamp();
+	} );
+	const siteStatus = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getSiteStatus();
+	} );
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/11576589',
@@ -71,21 +99,6 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	);
 	const recoveryPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
-	);
-	const setupCompletedTimestamp = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getSetupCompletedTimestamp()
-	);
-	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
-	);
-	const adSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
-	);
-	const accountStatus = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAccountStatus()
-	);
-	const siteStatus = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getSiteStatus()
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -114,6 +127,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const NOW_IN_SECONDS = Math.floor( Date.now() / 1000 );
 
 	if (
+		! viewOnlyDashboard &&
 		adSenseModuleConnected &&
 		isDismissed === false &&
 		adBlockingRecoverySetupStatus !== '' &&
