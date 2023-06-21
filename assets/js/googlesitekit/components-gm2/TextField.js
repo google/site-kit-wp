@@ -25,6 +25,11 @@ import MaterialTextField, {
 	Input,
 } from '@material/react-text-field';
 
+/**
+ * WordPress dependencies
+ */
+import { useInstanceId } from '@wordpress/compose';
+
 const TextField = ( {
 	className,
 	name,
@@ -45,6 +50,11 @@ const TextField = ( {
 	onChange,
 	onKeyDown,
 } ) => {
+	// For accessibility, provide a generated id fallback if an id
+	// is not supplied. Adding an id is mandatory because otherwise the label
+	// is not able to associate with the input.
+	const idFallback = useInstanceId( TextField, 'googlesitekit-textfield' );
+
 	return (
 		<MaterialTextField
 			className={ className }
@@ -63,7 +73,7 @@ const TextField = ( {
 			}
 		>
 			<Input
-				id={ id }
+				id={ id || idFallback }
 				inputType={ inputType }
 				value={ value }
 				size={ size }
