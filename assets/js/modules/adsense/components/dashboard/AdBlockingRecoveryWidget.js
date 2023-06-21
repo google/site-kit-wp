@@ -51,18 +51,20 @@ import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
-	const AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG =
-		'ad-blocker-recovery-notification';
+	const AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG =
+		'ad-blocking-recovery-notification';
 	const windowWidth = useWindowWidth();
 	const viewOnlyDashboard = useViewOnly();
 
-	const showTooltip = useShowTooltip( AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG );
+	const showTooltip = useShowTooltip(
+		AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG
+	);
 	const { isTooltipVisible } = useTooltipState(
-		AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG
+		AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG
 	);
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG
+			AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG
 		)
 	);
 	const adSenseModuleConnected = useSelect( ( select ) =>
@@ -103,7 +105,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const dismissCallback = async () => {
-		await dismissItem( AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG );
+		await dismissItem( AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG );
 	};
 
 	if ( isTooltipVisible ) {
@@ -117,7 +119,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 					onDismiss={ dismissCallback }
-					tooltipStateKey={ AD_BLOCKER_RECOVERY_NOTIFICATION_SLUG }
+					tooltipStateKey={ AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG }
 				/>
 			</Fragment>
 		);
