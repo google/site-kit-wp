@@ -24,7 +24,7 @@ const { useSelect } = Data;
 /**
  * Returns a Higher-Order Component to render wrapped components when the Key Metrics widget is visible.
  *
- * @since n.e.x.t
+ * @since 1.103.0
  *
  * @return {Function} Enhancing function.
  */
