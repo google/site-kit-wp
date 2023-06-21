@@ -272,6 +272,12 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
+		// The dashboard view setting is stored in the UA/original Analytics
+		// module, so fetch its settings to get the current dashboard view.
+		$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
+
+		$ga4_dashboard_view_enabled = Feature_Flags::enabled( 'ga4Reporting' ) ? isset( $analytics_settings['dashboardView'] ) && 'google-analytics-4' === $analytics_settings['dashboardView'] : true;
+
 		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
@@ -289,7 +295,7 @@ final class Analytics_4 extends Module
 			),
 			'GET:conversion-events'      => array(
 				'service'   => 'analyticsadmin',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ) && $ga4_dashboard_view_enabled,
 			),
 			'POST:create-account-ticket' => array(
 				'service'                => 'analyticsprovisioning',
@@ -321,7 +327,7 @@ final class Analytics_4 extends Module
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			$datapoints['GET:report'] = array(
 				'service'   => 'analyticsdata',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ) && $ga4_dashboard_view_enabled,
 			);
 		}
 

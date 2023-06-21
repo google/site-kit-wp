@@ -405,6 +405,10 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
+		$settings = $this->get_settings()->get();
+
+		$universal_analytics_dashboard_view_enabled = Feature_Flags::enabled( 'ga4Reporting' ) ? 'universal-analytics' === $settings['dashboardView'] : true;
+
 		$datapoints = array(
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
 			'POST:create-account-ticket'       => array(
@@ -424,13 +428,13 @@ final class Analytics extends Module
 			),
 			'GET:goals'                        => array(
 				'service'   => 'analytics',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ) && $universal_analytics_dashboard_view_enabled,
 			),
 			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
 			'GET:report'                       => array(
 				'service'   => 'analyticsreporting',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ) && $universal_analytics_dashboard_view_enabled,
 			),
 		);
 
