@@ -10,9 +10,6 @@
 
 namespace Google\Site_Kit\Modules\AdSense;
 
-use Google\Site_Kit\Core\Storage\Encrypted_Options;
-use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\Options_Interface;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
@@ -25,17 +22,6 @@ use Google\Site_Kit\Core\Storage\Setting;
 class Ad_Blocking_Recovery_Tag extends Setting {
 
 	const OPTION = 'googlesitekit_adsense_ad_blocking_recovery_tag';
-
-	/**
-	 * Ad_Blocking_Recovery_Tag constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Options $options Options_Interface instance.
-	 */
-	public function __construct( Options $options ) {
-		$this->options = new Encrypted_Options( $options );
-	}
 
 	/**
 	 * Gets ad blocking recovery tag.
