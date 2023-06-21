@@ -33,15 +33,9 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 	public function get() {
 		$option = parent::get();
 
-		$tag                   = base64_decode( $option['tag'], true );
-		$error_protection_code = base64_decode( $option['error_protection_code'], true );
-
-		if ( false === $tag || false === $error_protection_code ) {
+		if ( ! is_array( $option ) || ! isset( $option['tag'] ) || ! isset( $option['error_protection_code'] ) || ! is_string( $option['tag'] ) || ! is_string( $option['error_protection_code'] ) ) {
 			return $this->get_default();
 		}
-
-		$option['tag']                   = $tag;
-		$option['error_protection_code'] = $error_protection_code;
 
 		return $option;
 	}
@@ -60,15 +54,7 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 			return false;
 		}
 
-		$tag                   = base64_encode( $value['tag'] );
-		$error_protection_code = base64_encode( $value['error_protection_code'] );
-
-		return parent::set(
-			array(
-				'tag'                   => $tag,
-				'error_protection_code' => $error_protection_code,
-			)
-		);
+		return parent::set( $value );
 	}
 
 	/**

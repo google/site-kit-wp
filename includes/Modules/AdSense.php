@@ -52,6 +52,7 @@ use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
@@ -104,7 +105,7 @@ final class AdSense extends Module
 		Assets $assets = null
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-		$this->ad_blocking_recovery_tag = new Ad_Blocking_Recovery_Tag( $this->options );
+		$this->ad_blocking_recovery_tag = new Ad_Blocking_Recovery_Tag( new Encrypted_Options( $this->options ) );
 	}
 
 	/**
