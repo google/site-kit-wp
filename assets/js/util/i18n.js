@@ -248,7 +248,7 @@ export const readableLargeNumber = ( number ) => {
 /**
  * Parses formatting options and returns an object with options for selected formatting.
  *
- * @since n.e.x.t
+ * @since 1.103.0
  *
  * @param {(Intl.NumberFormatOptions|string)} options Formatting options or unit shorthand. Possible shorthand values are '%', 's', or a currency code.
  * @return {Object} Formatting options.
