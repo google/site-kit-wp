@@ -26,10 +26,8 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 	 */
 	private $ad_blocking_recovery_tag;
 
-	private $test_recovery_tag             = 'test-recovery-tag';
-	private $encoded_recovery_tag          = 'dGVzdC1yZWNvdmVyeS10YWc='; // base64 encode( $this->test_recovery_tag )
-	private $test_error_protection_code    = 'test-error-protection-code';
-	private $encoded_error_protection_code = 'dGVzdC1lcnJvci1wcm90ZWN0aW9uLWNvZGU='; // base64 encode( $this->test_error_protection_code )
+	private $test_recovery_tag          = 'test-recovery-tag';
+	private $test_error_protection_code = 'test-error-protection-code';
 
 
 	public function set_up() {
@@ -53,8 +51,8 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 		update_option(
 			Ad_Blocking_Recovery_Tag::OPTION,
 			array(
-				'tag'                   => $this->encoded_recovery_tag,
-				'error_protection_code' => $this->encoded_error_protection_code,
+				'tag'                   => $this->test_recovery_tag,
+				'error_protection_code' => $this->test_error_protection_code,
 			)
 		);
 
@@ -65,23 +63,15 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 			),
 			$this->ad_blocking_recovery_tag->get()
 		);
-
-		$this->assertEqualSetsWithIndex(
-			array(
-				'tag'                   => $this->encoded_recovery_tag,
-				'error_protection_code' => $this->encoded_error_protection_code,
-			),
-			get_option( Ad_Blocking_Recovery_Tag::OPTION )
-		);
 	}
 
-	public function test_get_with_invalid_data() {
+	/**
+	 * @dataProvider data_invalid_values
+	 */
+	public function test_get_with_invalid_data( $value ) {
 		update_option(
 			Ad_Blocking_Recovery_Tag::OPTION,
-			array(
-				'tag'                   => 'inv@lid', // invalid base64 encoded string
-				'error_protection_code' => 'inv@lid', // invalid base64 encoded string
-			)
+			$value
 		);
 
 		$this->assertEqualSetsWithIndex(
@@ -108,14 +98,6 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 				'tag'                   => $this->test_recovery_tag,
 				'error_protection_code' => $this->test_error_protection_code,
 			),
-			$this->ad_blocking_recovery_tag->get()
-		);
-
-		$this->assertEqualSetsWithIndex(
-			array(
-				'tag'                   => $this->encoded_recovery_tag,
-				'error_protection_code' => $this->encoded_error_protection_code,
-			),
 			get_option( Ad_Blocking_Recovery_Tag::OPTION )
 		);
 	}
@@ -139,8 +121,8 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 		update_option(
 			Ad_Blocking_Recovery_Tag::OPTION,
 			array(
-				'tag'                   => $this->encoded_recovery_tag,
-				'error_protection_code' => $this->encoded_error_protection_code,
+				'tag'                   => $this->test_recovery_tag,
+				'error_protection_code' => $this->test_error_protection_code,
 			)
 		);
 
