@@ -18,7 +18,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
  * WordPress dependencies
@@ -48,12 +47,16 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { getTimeInSeconds } from '../../../../util';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import {
+	BREAKPOINT_SMALL,
+	useBreakpoint,
+} from '../../../../hooks/useBreakpoint';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG =
 		'ad-blocking-recovery-notification';
-	const windowWidth = useWindowWidth();
+	const breakpoint = useBreakpoint();
 	const viewOnlyDashboard = useViewOnly();
 
 	const showTooltip = useShowTooltip(
@@ -127,8 +130,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 
 	const THREE_WEEKS_IN_SECONDS = getTimeInSeconds( 'week' ) * 3;
 	const NOW_IN_SECONDS = Math.floor( Date.now() / 1000 );
-
-	if (
+	const shouldShowWidget =
 		! viewOnlyDashboard &&
 		adSenseModuleConnected &&
 		isDismissed === false &&
@@ -136,84 +138,77 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		accountStatus === ACCOUNT_STATUS_READY &&
 		siteStatus === SITE_STATUS_READY &&
 		( ! setupCompletedTimestamp ||
-			NOW_IN_SECONDS - setupCompletedTimestamp > THREE_WEEKS_IN_SECONDS )
-	) {
-		return (
-			<Widget>
-				<Banner>
-					<Cell smSize={ 8 } mdSize={ 4 } lgSize={ 7 }>
-						<BannerTitle
-							title={ __(
-								'Recover revenue lost to ad blockers',
-								'google-site-kit'
-							) }
-						/>
+			NOW_IN_SECONDS - setupCompletedTimestamp > THREE_WEEKS_IN_SECONDS );
 
-						<div className="googlesitekit-widget--adBlockingRecovery__content">
-							<p>
-								{ createInterpolateElement(
-									__(
-										'Display a message to give site visitors with an ad blocker the option to allow ads on your site. Site Kit will place an ad blocking recovery tag on your site. <a>Learn more</a>',
-										'google-site-kit'
-									),
-									{
-										a: (
-											<Link
-												href={ learnMoreURL }
-												external
-											/>
-										),
-									}
-								) }
-							</p>
-							<p>
-								{ __(
-									'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message*',
-									'google-site-kit'
-								) }
-							</p>
-						</div>
+	if ( ! shouldShowWidget ) {
+		return <WidgetNull />;
+	}
 
-						<BannerActions
-							ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
-							ctaLink={ recoveryPageURL }
-							dismissCallback={ () => {
-								showTooltip();
-							} }
-							dismissLabel={ __(
-								'Maybe later',
-								'google-site-kit'
-							) }
-						/>
-					</Cell>
-
-					<Cell
-						className="googlesitekit-widget--adBlockingRecovery__graphics"
-						smSize={ 8 }
-						mdSize={ 4 }
-						lgSize={ 5 }
-					>
-						{ windowWidth > 600 && (
-							<AdsenseAdBlockingRecoverySVG
-								style={ {
-									maxHeight: '172px',
-								} }
-							/>
+	return (
+		<Widget>
+			<Banner>
+				<Cell smSize={ 8 } mdSize={ 4 } lgSize={ 7 }>
+					<BannerTitle
+						title={ __(
+							'Recover revenue lost to ad blockers',
+							'google-site-kit'
 						) }
+					/>
 
+					<div className="googlesitekit-widget--adBlockingRecovery__content">
+						<p>
+							{ createInterpolateElement(
+								__(
+									'Display a message to give site visitors with an ad blocker the option to allow ads on your site. Site Kit will place an ad blocking recovery tag on your site. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: <Link href={ learnMoreURL } external />,
+								}
+							) }
+						</p>
 						<p>
 							{ __(
-								'*Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop',
+								'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message*',
 								'google-site-kit'
 							) }
 						</p>
-					</Cell>
-				</Banner>
-			</Widget>
-		);
-	}
+					</div>
 
-	return <WidgetNull />;
+					<BannerActions
+						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
+						ctaLink={ recoveryPageURL }
+						dismissCallback={ () => {
+							showTooltip();
+						} }
+						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
+					/>
+				</Cell>
+
+				<Cell
+					className="googlesitekit-widget--adBlockingRecovery__graphics"
+					smSize={ 8 }
+					mdSize={ 4 }
+					lgSize={ 5 }
+				>
+					{ breakpoint !== BREAKPOINT_SMALL && (
+						<AdsenseAdBlockingRecoverySVG
+							style={ {
+								maxHeight: '172px',
+							} }
+						/>
+					) }
+
+					<p>
+						{ __(
+							'*Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop',
+							'google-site-kit'
+						) }
+					</p>
+				</Cell>
+			</Banner>
+		</Widget>
+	);
 }
 
 AdBlockingRecoveryWidget.propTypes = {
