@@ -19,90 +19,27 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
 import ResetButton from '../ResetButton';
-import UserInputPreview from '../user-input/UserInputPreview';
-import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
-import UserInputSettings from '../notifications/UserInputSettings';
 import { useFeature } from '../../hooks/useFeature';
-import { trackEvent } from '../../util';
+import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
-import useViewContext from '../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function SettingsAdmin() {
-	const viewContext = useViewContext();
 	const userInputEnabled = useFeature( 'userInput' );
-	const isUserInputCompleted = useSelect(
-		( select ) =>
-			userInputEnabled && select( CORE_USER ).isUserInputCompleted()
-	);
-	const userInputURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
-	);
-
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const goTo = ( questionIndex = 1 ) => {
-		const questionSlug = USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ];
-		if ( questionSlug ) {
-			trackEvent( viewContext, 'question_edit', questionSlug );
-
-			navigateTo(
-				addQueryArgs( userInputURL, {
-					question: questionSlug,
-					redirect_url: global.location.href,
-					single: 'settings', // Allows the user to edit a single question then return to the settings page.
-				} )
-			);
-		}
-	};
-
-	useEffect( () => {
-		if ( isUserInputCompleted ) {
-			trackEvent( viewContext, 'summary_view' );
-		}
-	}, [ isUserInputCompleted, viewContext ] );
 
 	return (
 		<Row>
 			{ userInputEnabled && (
 				<Cell size={ 12 }>
-					{ isUserInputCompleted && (
-						<Layout
-							title={ __( 'Key metrics', 'google-site-kit' ) }
-							header
-							rounded
-						>
-							<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
-								<Grid>
-									<UserInputPreview
-										goTo={ goTo }
-										noHeader
-										noFooter
-										settingsView
-										showIndividualCTAs
-									/>
-								</Grid>
-							</div>
-						</Layout>
-					) }
-
-					{ isUserInputCompleted === false && (
-						<UserInputSettings isDismissible={ false } rounded />
-					) }
+					<SettingsCardKeyMetrics />
 				</Cell>
 			) }
 

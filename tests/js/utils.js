@@ -402,6 +402,25 @@ export function provideTracking( registry, enabled = true ) {
 }
 
 /**
+ * Provides key metrics settings data to the given registry.
+ *
+ * @since 1.103.0
+ *
+ * @param {Object} registry    The registry to set up.
+ * @param {Object} [extraData] Extra data to merge with the default settings.
+ */
+export const provideKeyMetrics = ( registry, extraData = {} ) => {
+	const defaults = {
+		widgetSlugs: [ 'test-slug' ],
+		isWidgetHidden: false,
+	};
+	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
  * Mutes a fetch request to the given URL once.
  *
  * Useful for mocking a request for the purpose of preventing a fetch error

@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	ConnectGA4CTATileWidget,
 	EngagedTrafficSourceWidget,
 	LoyalVisitorsWidget,
 	NewVisitorsWidget,
@@ -34,6 +35,17 @@ import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import { isFeatureEnabled } from '../../features';
+import {
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_COUNTRIES,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+} from '../../googlesitekit/datastore/user/constants';
 
 export { registerStore } from './datastore';
 
@@ -50,7 +62,19 @@ export const registerWidgets = ( widgets ) => {
 		 * Key metrics widgets.
 		 */
 		widgets.registerWidget(
-			'kmAnalyticsLoyalVisitors',
+			'keyMetricsConnectGA4CTATile',
+			{
+				Component: ConnectGA4CTATileWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_LOYAL_VISITORS,
 			{
 				Component: LoyalVisitorsWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
@@ -62,7 +86,7 @@ export const registerWidgets = ( widgets ) => {
 		);
 
 		widgets.registerWidget(
-			'kmAnalyticsNewVisitors',
+			KM_ANALYTICS_NEW_VISITORS,
 			{
 				Component: NewVisitorsWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
@@ -74,7 +98,7 @@ export const registerWidgets = ( widgets ) => {
 		);
 
 		widgets.registerWidget(
-			'kmAnalyticsTopTrafficSource',
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 			{
 				Component: TopTrafficSourceWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
@@ -86,7 +110,7 @@ export const registerWidgets = ( widgets ) => {
 		);
 
 		widgets.registerWidget(
-			'kmAnalyticsEngagedTrafficSource',
+			KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 			{
 				Component: EngagedTrafficSourceWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
@@ -98,7 +122,7 @@ export const registerWidgets = ( widgets ) => {
 		);
 
 		widgets.registerWidget(
-			'kmAnalyticsPopularContent',
+			KM_ANALYTICS_POPULAR_CONTENT,
 			{
 				Component: PopularContentWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
@@ -110,7 +134,7 @@ export const registerWidgets = ( widgets ) => {
 		);
 
 		widgets.registerWidget(
-			'kmAnalyticsPopularProducts',
+			KM_ANALYTICS_POPULAR_PRODUCTS,
 			{
 				Component: PopularProductsWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
@@ -122,7 +146,7 @@ export const registerWidgets = ( widgets ) => {
 		);
 
 		widgets.registerWidget(
-			'kmAnalyticsTopCities',
+			KM_ANALYTICS_TOP_CITIES,
 			{
 				Component: TopCitiesWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
@@ -134,7 +158,7 @@ export const registerWidgets = ( widgets ) => {
 		);
 
 		widgets.registerWidget(
-			'kmAnalyticsTopCountries',
+			KM_ANALYTICS_TOP_COUNTRIES,
 			{
 				Component: TopCountriesWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
@@ -146,7 +170,7 @@ export const registerWidgets = ( widgets ) => {
 		);
 
 		widgets.registerWidget(
-			'kmTopConvertingTrafficSource',
+			KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 			{
 				Component: TopConvertingTrafficSourceWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,

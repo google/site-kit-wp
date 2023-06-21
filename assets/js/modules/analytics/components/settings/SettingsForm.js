@@ -88,9 +88,10 @@ export default function SettingsForm( {
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
 
-	const showTrackingExclusion =
-		useAnalyticsSnippet ||
-		( useTagManagerSnippet && analyticsSinglePropertyID );
+	const showTrackingExclusion = ga4ReportingEnabled
+		? isGA4Connected || isUAConnected
+		: useAnalyticsSnippet ||
+		  ( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	if ( ! gtmContainersResolved ) {
 		return <ProgressBar />;
@@ -110,13 +111,18 @@ export default function SettingsForm( {
 					/>
 				</Fragment>
 			) }
-			{ ga4ReportingEnabled && isUAConnected && isUAEnabled && (
+			{ ga4ReportingEnabled && (
 				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 					<h4 className="googlesitekit-settings-module__fields-group-title">
 						{ __( 'Dashboard View', 'google-site-kit' ) }
 					</h4>
 					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
-						{ isGA4Connected && <GA4DashboardViewToggle /> }
+						{ isGA4Connected && (
+							<GA4DashboardViewToggle
+								isUAConnected={ isUAConnected }
+								isUAEnabled={ isUAEnabled }
+							/>
+						) }
 						{ ! isGA4Connected &&
 							__( 'Universal Analytics', 'google-site-kit' ) }
 					</div>
@@ -138,13 +144,14 @@ export default function SettingsForm( {
 					showErrors
 					showTitle
 				>
-					<SettingsUseSnippetSwitch />
+					{ isUAConnected && <SettingsUseSnippetSwitch /> }
+					{ useAnalyticsSnippet && <AnonymizeIPSwitch /> }
 				</EnableUniversalAnalytics>
 			) }
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
-					<AnonymizeIPSwitch />
+					{ ! ga4ReportingEnabled && <AnonymizeIPSwitch /> }
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
 				</Fragment>

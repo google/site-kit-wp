@@ -42,6 +42,46 @@
 		}
 	}
 
+	.googlesitekit-ad-blocking-recovery__hero-graphic {
+		margin: 0 2rem;
+	}
+
+	.googlesitekit-ad-blocking-recovery__footer {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+
+		@media (min-width: $bp-desktop) {
+			align-items: center;
+			border-top: 1px solid $c-mercury;
+			flex-direction: row;
+			margin: 42px 0 0;
+			padding: 28px 24px;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__footer-nav {
+		align-items: center;
+		column-gap: 20px;
+		display: flex;
+		padding: 17px 17px 33px;
+
+		@media (min-width: $bp-desktop) {
+			flex-direction: reverse;
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__footer-cancel {
+		border-top: 1px solid $c-mercury;
+		padding: 17px;
+
+		@media (min-width: $bp-desktop) {
+			border: none;
+			padding: 0;
+		}
+	}
+
 	.googlesitekit-ad-blocking-recovery-notification {
 
 		.googlesitekit-publisher-win__image-small {
@@ -50,6 +90,61 @@
 			svg {
 				max-width: 233px;
 			}
+		}
+	}
+
+	.googlesitekit-settings-notice-ad-blocking-recovery-cta {
+		align-items: center;
+		flex-wrap: wrap;
+		margin-top: 24px;
+		padding: 24px;
+		row-gap: 15px;
+
+		@media (min-width: $bp-tablet) {
+			flex-wrap: nowrap;
+		}
+
+		.googlesitekit-settings-notice__icon {
+			margin-right: 20px;
+		}
+
+		.googlesitekit-settings-notice__text {
+			font-size: $fs-title-sm;
+			font-weight: $fw-medium;
+			line-height: $lh-title-sm;
+		}
+
+		.googlesitekit-settings-notice__inner-row {
+			flex-wrap: wrap;
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
+			padding-top: 3px;
+		}
+
+		.googlesitekit-settings-notice__button {
+
+			@media (min-width: $bp-tablet) {
+				margin-left: 25px;
+				white-space: nowrap;
+			}
+		}
+	}
+
+	.googlesitekit-settings-module__ad-blocking-recovery-toggles {
+		margin-top: 20px;
+
+		.googlesitekit-settings-module__meta-item {
+			margin-bottom: 0;
+
+			p {
+				left: 42px;
+				margin-top: 10px;
+				position: relative;
+			}
+		}
+
+		.googlesitekit-settings-notice {
+			margin-bottom: 0;
 		}
 	}
 }

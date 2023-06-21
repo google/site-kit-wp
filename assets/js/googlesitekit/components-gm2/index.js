@@ -16,6 +16,12 @@
  * limitations under the License.
  */
 
+import Dialog, {
+	DialogTitle,
+	DialogContent,
+	DialogFooter,
+} from '@material/react-dialog';
+
 /**
  * Internal dependencies
  */
@@ -23,7 +29,6 @@ import Button from './Button';
 import Checkbox from './Checkbox';
 import Chip from './Chip';
 import CircularProgress from './CircularProgress';
-import Dialog from './Dialog';
 import Menu from './Menu';
 import ProgressBar from './ProgressBar';
 import Radio from './Radio';
@@ -38,6 +43,9 @@ const Components = {
 	Chip,
 	CircularProgress,
 	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogFooter,
 	Menu,
 	ProgressBar,
 	Radio,

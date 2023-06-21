@@ -28,7 +28,8 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
  */
 final class Screens {
 
-	const PREFIX = 'googlesitekit-';
+	const PREFIX           = 'googlesitekit-';
+	const PARENT_SLUG_NULL = self::PREFIX . 'null';
 
 	/**
 	 * Plugin context.
@@ -470,7 +471,7 @@ final class Screens {
 				array(
 					'title'       => __( 'User Input', 'google-site-kit' ),
 					'capability'  => Permissions::MANAGE_OPTIONS,
-					'parent_slug' => null,
+					'parent_slug' => self::PARENT_SLUG_NULL,
 				)
 			);
 		}
@@ -481,7 +482,7 @@ final class Screens {
 				array(
 					'title'       => __( 'Ad Blocking Recovery', 'google-site-kit' ),
 					'capability'  => Permissions::MANAGE_OPTIONS,
-					'parent_slug' => null,
+					'parent_slug' => self::PARENT_SLUG_NULL,
 				)
 			);
 		}

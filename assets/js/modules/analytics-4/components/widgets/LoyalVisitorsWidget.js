@@ -16,6 +16,112 @@
  * limitations under the License.
  */
 
-export default function LoyalVisitorsWidget() {
-	return <div>TODO: UI for LoyalVisitorsWidget</div>;
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import { get } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
+import {
+	MetricTileNumeric,
+	whenKeyMetricsWidgetVisible,
+} from '../../../../components/KeyMetrics';
+
+const { useSelect, useInViewSelect } = Data;
+
+function LoyalVisitorsWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} )
+	);
+
+	const reportOptions = {
+		...dates,
+		dimensions: [ 'newVsReturning' ],
+		metrics: [ { name: 'activeUsers' } ],
+	};
+
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	);
+
+	const loading = useInViewSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
+			)
+	);
+
+	const { rows = [] } = report || {};
+
+	const makeFind = ( dateRange ) => ( row ) =>
+		get( row, 'dimensionValues.0.value' ) === 'returning' &&
+		get( row, 'dimensionValues.1.value' ) === dateRange;
+	const makeFilter = ( dateRange ) => ( row ) =>
+		get( row, 'dimensionValues.1.value' ) === dateRange;
+	const reducer = ( acc, row ) =>
+		acc + ( parseInt( get( row, 'metricValues.0.value' ), 10 ) || 0 );
+
+	const returning =
+		rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value ||
+		0;
+	const total = rows
+		.filter( makeFilter( 'date_range_0' ) )
+		.reduce( reducer, 0 );
+
+	const prevReturning =
+		rows.find( makeFind( 'date_range_1' ) )?.metricValues?.[ 0 ]?.value ||
+		0;
+	const prevTotal = rows
+		.filter( makeFilter( 'date_range_1' ) )
+		.reduce( reducer, 0 );
+
+	const currentPercentage = total > 0 ? returning / total : 0;
+	const prevPercentage = prevTotal > 0 ? prevReturning / prevTotal : 0;
+
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	};
+
+	return (
+		<MetricTileNumeric
+			Widget={ Widget }
+			title={ __( 'Loyal visitors', 'google-site-kit' ) }
+			metricValue={ currentPercentage }
+			metricValueFormat={ format }
+			subText={ sprintf(
+				/* translators: %d: Number of total visitors visiting the site. */
+				__( 'of %d total visitors', 'google-site-kit' ),
+				total
+			) }
+			previousValue={ prevPercentage }
+			currentValue={ currentPercentage }
+			loading={ loading }
+		/>
+	);
 }
+
+LoyalVisitorsWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+};
+
+export default whenKeyMetricsWidgetVisible()( LoyalVisitorsWidget );

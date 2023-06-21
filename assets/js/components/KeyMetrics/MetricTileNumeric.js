@@ -22,27 +22,30 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
 
-export default function MetricTileNumeric( {
-	Widget,
-	loading,
-	title,
-	metricValue,
-	subText,
-	previousValue,
-	currentValue,
-} ) {
-	if ( loading ) {
-		return (
-			<Widget noPadding>
-				<PreviewBlock width="100%" height="142px" padding />
-			</Widget>
-		);
-	}
+export default function MetricTileNumeric( props ) {
+	const {
+		Widget,
+		loading,
+		title,
+		metricValue,
+		metricValueFormat,
+		subText,
+		previousValue,
+		currentValue,
+	} = props;
+
+	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
 	return (
 		<Widget noPadding>
@@ -51,18 +54,26 @@ export default function MetricTileNumeric( {
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					<div className="googlesitekit-km-widget-tile__metric-change-container">
-						<div className="googlesitekit-km-widget-tile__metric">
-							{ metricValue }
-						</div>
-						<ChangeBadge
-							previousValue={ previousValue }
-							currentValue={ currentValue }
-						/>
-					</div>
-					<p className="googlesitekit-km-widget-tile__subtext">
-						{ subText }
-					</p>
+					{ loading && <PreviewBlock width="100%" height="68px" /> }
+					{ ! loading && (
+						<Fragment>
+							<div className="googlesitekit-km-widget-tile__metric-change-container">
+								<div className="googlesitekit-km-widget-tile__metric">
+									{ numFmt( metricValue, formatOptions ) }
+								</div>
+								<ChangeBadge
+									previousValue={ previousValue }
+									currentValue={ currentValue }
+									isAbsolute={
+										formatOptions?.style === 'percent'
+									}
+								/>
+							</div>
+							<p className="googlesitekit-km-widget-tile__subtext">
+								{ subText }
+							</p>
+						</Fragment>
+					) }
 				</div>
 			</div>
 		</Widget>
@@ -74,6 +85,10 @@ MetricTileNumeric.propTypes = {
 	loading: PropTypes.bool,
 	title: PropTypes.string,
 	metricValue: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
+	metricValueFormat: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.object,
+	] ),
 	subtext: PropTypes.string,
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,
