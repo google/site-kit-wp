@@ -30,7 +30,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
-const { commonActions, createRegistrySelector, createRegistryControl } = Data;
+const { commonActions, createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
 function fetchStoreReducerCallback( state, inputSettings ) {
@@ -62,7 +62,6 @@ const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTINGS_SAVING_FLAG =
 	'SET_USER_INPUT_SETTINGS_SAVING_FLAG';
 const RESET_USER_INPUT_SETTINGS = 'RESET_USER_INPUT_SETTINGS';
-const MAYBE_TRIGGER_USER_INPUT_SURVEY = 'MAYBE_TRIGGER_USER_INPUT_SURVEY';
 
 const baseInitialState = {
 	inputSettings: undefined,
@@ -160,38 +159,30 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {Object} Redux-style action.
+	 * @return {Object} Object with `response` and `error`.
 	 */
 	*maybeTriggerUserInputSurvey() {
-		return yield {
-			type: MAYBE_TRIGGER_USER_INPUT_SURVEY,
-			payload: {},
-		};
-	},
-};
+		const registry = yield Data.commonActions.getRegistry();
+		const settings = registry.select( CORE_USER ).getUserInputSettings();
 
-export const baseControls = {
-	[ MAYBE_TRIGGER_USER_INPUT_SURVEY ]: createRegistryControl(
-		( registry ) => () => {
-			const settings = registry
-				.select( CORE_USER )
-				.getUserInputSettings();
+		const settingsAnsweredOther = Object.keys( settings ).filter( ( key ) =>
+			settings[ key ].values.includes( 'other' )
+		);
 
-			const settingsAnsweredOther = Object.keys( settings ).filter(
-				( key ) => settings[ key ].values.includes( 'other' )
-			);
-
-			if ( ! settingsAnsweredOther.length > 0 ) {
-				return;
-			}
-
-			const triggerID = `userInput_answered_other__${ settingsAnsweredOther.join(
-				'_'
-			) }`;
-
-			return registry.dispatch( CORE_USER ).triggerSurvey( triggerID );
+		if ( ! settingsAnsweredOther.length > 0 ) {
+			return;
 		}
-	),
+
+		const triggerID = `userInput_answered_other__${ settingsAnsweredOther.join(
+			'_'
+		) }`;
+
+		const { response, error } = yield registry
+			.dispatch( CORE_USER )
+			.triggerSurvey( triggerID );
+
+		return { response, error };
+	},
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
@@ -354,7 +345,6 @@ const store = Data.combineStores(
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
-		controls: baseControls,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
