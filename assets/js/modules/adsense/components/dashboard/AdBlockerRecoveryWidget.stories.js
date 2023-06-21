@@ -72,7 +72,6 @@ ReadyWithCompletionTime.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 			...validSettings,
-			// setupCompletedTimestamp: 1689416266,
 			setupCompletedTimestamp: 1684145866,
 		} );
 	},
