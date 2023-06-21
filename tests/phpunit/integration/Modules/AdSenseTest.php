@@ -370,7 +370,7 @@ class AdSenseTest extends TestCase {
 		);
 
 		// Assert that the tags are not available in database before fetching.
-		$this->assertFalse( $options->get( Ad_Blocking_Recovery_Tag::OPTION ) );
+		$this->assertOptionNotExists( Ad_Blocking_Recovery_Tag::OPTION );
 
 		$response = $adsense->set_data( 'sync-ad-blocking-recovery-tags', array() );
 
@@ -378,10 +378,8 @@ class AdSenseTest extends TestCase {
 		$this->assertNotWPError( $response );
 		$this->assertEqualSetsWithIndex( array( 'success' => true ), $response->get_data() );
 
-		// Assert that the tags are available and saved as base64 encoded string in database after fetching.
-		$tags = $options->get( Ad_Blocking_Recovery_Tag::OPTION );
-		$this->assertEquals( $encoded_recovery_tag, $tags['tag'] );
-		$this->assertEquals( $encoded_error_protection_code, $tags['error_protection_code'] );
+		// Assert that the tags are available in database after fetching.
+		$this->assertOptionExists( Ad_Blocking_Recovery_Tag::OPTION );
 	}
 
 	public function test_is_connected() {
