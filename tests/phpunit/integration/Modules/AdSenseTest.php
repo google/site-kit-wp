@@ -19,7 +19,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\AdSense;
@@ -29,6 +28,9 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\AdBlockingRecoveryTag;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use ReflectionMethod;
 use WP_REST_Request;
 
@@ -333,6 +335,136 @@ class AdSenseTest extends TestCase {
 		);
 	}
 
+	public function data_test_tag() {
+		return array(
+			'invalid characters' => array(
+				'ABCD@!#$',
+				null,
+			),
+			'valid'              => array(
+				base64_encode( 'test-tag' ),
+				'test-tag',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_test_tag
+	 * @param string $encoded_tag
+	 * @param string $expected
+	 */
+	public function test_get_ad_blocking_recovery_tag( $encoded_tag, $expected ) {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		$this->assertNull( $tag );
+
+		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, $encoded_tag );
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		$this->assertEquals( $tag, $expected );
+	}
+
+	/**
+	 * @dataProvider data_test_tag
+	 * @param string $encoded_tag
+	 * @param string $expected
+	 */
+	public function test_get_ad_blocking_recovery_error_protection_tag( $encoded_tag, $expected ) {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		$this->assertNull( $tag );
+
+		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, $encoded_tag );
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		$this->assertEquals( $tag, $expected );
+	}
+
+	/**
+	 * Strings with invalid length gets automatically padded below PHP 7 even when the strict flag is
+	 * set to true. This is not the case in PHP 7+.
+	 *
+	 * TODO: Merge this test with test_get_ad_blocking_recovery_tag once PHP 5.6 support is dropped.
+	 *
+	 * @requires PHP >= 7
+	 */
+	public function test_get_ad_blocking_recovery_tag__invalid_length() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		$this->assertNull( $tag );
+
+		update_option( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION, 'ABCDEFGHI' );
+		$tag = $adsense->get_ad_blocking_recovery_tag();
+		$this->assertNull( $tag );
+	}
+
+	/**
+	 * Strings with invalid length gets automatically padded below PHP 7 even when the strict flag is
+	 * set to true. This is not the case in PHP 7+.
+	 *
+	 * TODO: Merge this test with test_get_ad_blocking_recovery_error_protection_tag once PHP 5.6 support is dropped.
+	 *
+	 * @requires PHP >= 7
+	 */
+	public function test_get_ad_blocking_recovery_error_protection_tag__invalid_length() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		$this->assertNull( $tag );
+
+		update_option( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, 'ABCDEFGHI' );
+		$tag = $adsense->get_ad_blocking_recovery_error_protection_tag();
+		$this->assertNull( $tag );
+	}
+
+	public function test_get_data__sync_ad_blocking_recovery_tags() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$adsense->get_scopes()
+		);
+
+		$adsense->get_settings()->merge( array( 'accountID' => 'pub-1234567890' ) );
+
+		FakeHttp::fake_google_http_handler(
+			$adsense->get_client(),
+			function() {
+				$response = new AdBlockingRecoveryTag();
+				$response->setTag( 'test-recovery-tag' );
+				$response->setErrorProtectionCode( 'test-error-protection-tag' );
+
+				return new Response( 200, array(), json_encode( $response ) );
+			}
+		);
+
+		// Assert that the tags are not available in database before fetching.
+		$this->assertFalse( $options->get( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION ) );
+		$this->assertFalse( $options->get( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION ) );
+
+		$response = $adsense->set_data( 'sync-ad-blocking-recovery-tags', array() );
+
+		// Assert API response.
+		$this->assertNotWPError( $response );
+		$this->assertEqualSetsWithIndex( array( 'success' => true ), $response->get_data() );
+
+		// Assert that the tags are available and saved as base64 encoded string in database after fetching.
+		$this->assertEquals( 'test-recovery-tag', base64_decode( $options->get( AdSense::AD_BLOCKING_RECOVERY_TAG_OPTION ) ) );
+		$this->assertEquals( 'test-error-protection-tag', base64_decode( $options->get( AdSense::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION ) ) );
+
+		// Assert that the getter methods return the decoded tags.
+		$this->assertEquals( 'test-recovery-tag', $adsense->get_ad_blocking_recovery_tag() );
+		$this->assertEquals( 'test-error-protection-tag', $adsense->get_ad_blocking_recovery_error_protection_tag() );
+	}
+
 	public function test_is_connected() {
 		$adsense  = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -377,6 +509,7 @@ class AdSenseTest extends TestCase {
 				'report',
 				'adunits',
 				'sites',
+				'sync-ad-blocking-recovery-tags',
 			),
 			$adsense->get_datapoints()
 		);

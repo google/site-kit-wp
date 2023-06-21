@@ -69,7 +69,9 @@ export default function OptionalSettingsView() {
 
 	const showAdsConversionIDSettings =
 		canUseSnippet &&
-		( useSnippet || ( ga4ReportingEnabled && useGA4Snippet ) );
+		( ga4ReportingEnabled
+			? ( isUAConnected && useSnippet ) || useGA4Snippet
+			: useSnippet );
 
 	return (
 		<Fragment>

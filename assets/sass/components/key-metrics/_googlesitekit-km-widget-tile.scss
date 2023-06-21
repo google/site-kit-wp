@@ -32,7 +32,7 @@
 			color: $c-neutral-n-500;
 			font-family: $f-primary;
 			font-size: $fs-label-sm;
-			font-weight: 400;
+			font-weight: $fw-normal;
 			letter-spacing: $ls-xs;
 			line-height: 16px;
 			margin: 0 0 4px;
@@ -58,6 +58,20 @@
 			}
 		}
 
+		.googlesitekit-km-widget-tile__table {
+			font-size: $fs-label-sm;
+			margin-top: 12px;
+			width: 100%;
+
+			td + td {
+				text-align: right;
+			}
+
+			strong {
+				font-weight: $fw-medium;
+			}
+		}
+
 		.googlesitekit-km-widget-tile__subtext {
 			margin: 2px 0 0;
 		}
@@ -77,5 +91,9 @@
 		.googlesitekit-km-widget-tile__subtext {
 			margin: 2px 0 4px;
 		}
+	}
+
+	.googlesitekit-km-widget-table {
+		flex-direction: column;
 	}
 }

@@ -30,6 +30,7 @@ import {
 	Fragment,
 	useCallback,
 	useEffect,
+	useRef,
 	createInterpolateElement,
 } from '@wordpress/element';
 
@@ -49,6 +50,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import ExistingGTMPropertyNotice from './ExistingGTMPropertyNotice';
+import { isValidPropertyID } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function EnableUniversalAnalytics( {
@@ -144,7 +146,25 @@ export default function EnableUniversalAnalytics( {
 		}
 	} );
 
-	if ( hasModuleAccess !== false && properties.length === 0 ) {
+	const initialValuesRef = useRef( {
+		initialAccountID: accountID,
+		isInitialConnectedAccount: isValidPropertyID( propertyID ),
+	} );
+
+	const { initialAccountID, isInitialConnectedAccount } =
+		initialValuesRef.current;
+
+	useEffect( () => {
+		if ( accountID !== initialAccountID ) {
+			initialValuesRef.current.isInitialConnectedAccount = false;
+		}
+	}, [ accountID, initialAccountID ] );
+
+	if (
+		! isInitialConnectedAccount &&
+		hasModuleAccess !== false &&
+		properties.length === 0
+	) {
 		return null;
 	}
 

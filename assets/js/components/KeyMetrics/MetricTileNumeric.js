@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { numFmt, expandNumFmtOptions } from '../../util';
@@ -40,14 +45,6 @@ export default function MetricTileNumeric( props ) {
 		currentValue,
 	} = props;
 
-	if ( loading ) {
-		return (
-			<Widget noPadding>
-				<PreviewBlock width="100%" height="124px" padding />
-			</Widget>
-		);
-	}
-
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
 	return (
@@ -57,19 +54,26 @@ export default function MetricTileNumeric( props ) {
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					<div className="googlesitekit-km-widget-tile__metric-change-container">
-						<div className="googlesitekit-km-widget-tile__metric">
-							{ numFmt( metricValue, formatOptions ) }
-						</div>
-						<ChangeBadge
-							previousValue={ previousValue }
-							currentValue={ currentValue }
-							isAbsolute={ formatOptions?.style === 'percent' }
-						/>
-					</div>
-					<p className="googlesitekit-km-widget-tile__subtext">
-						{ subText }
-					</p>
+					{ loading && <PreviewBlock width="100%" height="68px" /> }
+					{ ! loading && (
+						<Fragment>
+							<div className="googlesitekit-km-widget-tile__metric-change-container">
+								<div className="googlesitekit-km-widget-tile__metric">
+									{ numFmt( metricValue, formatOptions ) }
+								</div>
+								<ChangeBadge
+									previousValue={ previousValue }
+									currentValue={ currentValue }
+									isAbsolute={
+										formatOptions?.style === 'percent'
+									}
+								/>
+							</div>
+							<p className="googlesitekit-km-widget-tile__subtext">
+								{ subText }
+							</p>
+						</Fragment>
+					) }
 				</div>
 			</div>
 		</Widget>
