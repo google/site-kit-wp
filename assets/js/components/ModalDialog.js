@@ -63,7 +63,10 @@ const ModalDialog = ( {
 			tabIndex="-1"
 		>
 			<DialogTitle>{ title }</DialogTitle>
-			{ subtitle && <p className="mdc-dialog__lead">{ subtitle }</p> }
+			{
+				// Ensure we don't render anything at all if subtitle is falsy, as Dialog expects all its children to be elements and a falsy value will result in an error.
+				subtitle ? <p className="mdc-dialog__lead">{ subtitle }</p> : []
+			}
 			<DialogContent>
 				{ hasProvides && (
 					<section
