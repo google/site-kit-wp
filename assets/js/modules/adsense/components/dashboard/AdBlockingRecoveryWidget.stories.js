@@ -52,29 +52,18 @@ const validSettings = {
 		AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 };
 
-export const ReadyWithoutCompletionTime = Template.bind( {} );
-ReadyWithoutCompletionTime.storyName = 'Ready Without Completion Time';
-ReadyWithoutCompletionTime.args = {
+export const Ready = Template.bind( {} );
+Ready.storyName = 'Ready';
+Ready.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.receiveGetSettings( validSettings );
 	},
 };
-ReadyWithoutCompletionTime.scenario = {
-	label: 'Global/AdBlockingRecoveryWidget/ReadyWithoutCompletionTime',
+Ready.scenario = {
+	label: 'Global/AdBlockingRecoveryWidget/Ready',
 	delay: 250,
-};
-
-export const ReadyWithCompletionTime = Template.bind( {} );
-ReadyWithCompletionTime.storyName = 'Ready With Completion Time';
-ReadyWithCompletionTime.args = {
-	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-			...validSettings,
-			setupCompletedTimestamp: 1684145866,
-		} );
-	},
 };
 
 export default {
