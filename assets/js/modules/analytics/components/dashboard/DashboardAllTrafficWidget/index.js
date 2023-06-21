@@ -61,7 +61,10 @@ function DashboardAllTrafficWidget( props ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return (
+			select( CORE_USER ).canViewSharedModule( 'analytics' ) ||
+			select( CORE_USER ).canViewSharedModule( 'analytics-4' )
+		);
 	} );
 
 	const isGatheringData = useInViewSelect(
