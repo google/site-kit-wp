@@ -36,6 +36,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { numFmt } from '../../../../util';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -106,9 +107,8 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 			trafficSourceReport?.rows?.[ 1 ]?.metricValues[ 0 ]?.value,
 			10
 		) || 0;
-
-	const topTrafficSourceUsersPercentage = totalUsers
-		? ( currentTopTrafficSourceUsers * 100 ) / totalUsers
+	const relativeCurrentTopTrafficSourceUsers = totalUsers
+		? currentTopTrafficSourceUsers / totalUsers
 		: 0;
 
 	const previousTopTrafficSourceUsers =
@@ -116,26 +116,36 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 			trafficSourceReport?.rows?.[ 0 ]?.metricValues[ 0 ]?.value,
 			10
 		) || 0;
+	const relativePreviousTopTrafficSourceUsers = totalUsers
+		? previousTopTrafficSourceUsers / totalUsers
+		: 0;
 
 	if ( keyMetricsWidgetHidden !== false ) {
 		return <WidgetNull />;
 	}
+
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	};
 
 	return (
 		<MetricTileText
 			Widget={ Widget }
 			title={ __( 'Top Traffic Source', 'google-site-kit' ) }
 			metricValue={ topTrafficSource }
+			metricValueFormat={ format }
 			subText={
 				// eslint-disable-next-line @wordpress/valid-sprintf
 				sprintf(
 					/* translators: %d: Percentage of users for the current top traffic source compared to the number of total users for all traffic sources. */
-					__( '%d%% of total traffic', 'google-site-kit' ),
-					topTrafficSourceUsersPercentage
+					__( '%s of total traffic', 'google-site-kit' ),
+					numFmt( relativeCurrentTopTrafficSourceUsers, format )
 				)
 			}
-			previousValue={ previousTopTrafficSourceUsers }
-			currentValue={ currentTopTrafficSourceUsers }
+			previousValue={ relativePreviousTopTrafficSourceUsers }
+			currentValue={ relativeCurrentTopTrafficSourceUsers }
 			loading={ loading }
 		/>
 	);

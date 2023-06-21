@@ -26,12 +26,14 @@ import PropTypes from 'prop-types';
  */
 import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
+import { expandNumFmtOptions } from '../../util';
 
 export default function MetricTileText( {
 	Widget,
 	loading,
 	title,
 	metricValue,
+	metricValueFormat,
 	subText,
 	previousValue,
 	currentValue,
@@ -43,6 +45,8 @@ export default function MetricTileText( {
 			</Widget>
 		);
 	}
+
+	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
 	return (
 		<Widget noPadding>
@@ -61,6 +65,7 @@ export default function MetricTileText( {
 						<ChangeBadge
 							previousValue={ previousValue }
 							currentValue={ currentValue }
+							isAbsolute={ formatOptions?.style === 'percent' }
 						/>
 					</div>
 				</div>

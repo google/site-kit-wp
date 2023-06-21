@@ -22,9 +22,8 @@
 import MetricTileText from './MetricTileText';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 
-const WidgetWithComponentProps = withWidgetComponentProps(
-	'kmAnalyticsNewVisitors'
-)( MetricTileText );
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'test' )( MetricTileText );
 
 const Template = ( { ...args } ) => <WidgetWithComponentProps { ...args } />;
 
