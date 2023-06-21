@@ -138,7 +138,8 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		accountStatus === ACCOUNT_STATUS_READY &&
 		siteStatus === SITE_STATUS_READY &&
 		( ! setupCompletedTimestamp ||
-			NOW_IN_SECONDS - setupCompletedTimestamp > THREE_WEEKS_IN_SECONDS );
+			NOW_IN_SECONDS - setupCompletedTimestamp >=
+				THREE_WEEKS_IN_SECONDS );
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;
