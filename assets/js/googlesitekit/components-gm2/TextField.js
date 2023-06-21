@@ -20,8 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import {
-	default as MaterialTextField,
+import MaterialTextField, {
 	HelperText,
 	Input,
 } from '@material/react-text-field';
