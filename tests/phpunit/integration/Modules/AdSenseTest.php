@@ -353,16 +353,16 @@ class AdSenseTest extends TestCase {
 
 		$adsense->get_settings()->merge( array( 'accountID' => 'pub-1234567890' ) );
 
-		$test_revcory_tag              = 'test-recovery-tag';
-		$encoded_recovery_tag          = base64_encode( $test_revcory_tag );
+		$test_recovery_tag             = 'test-recovery-tag';
+		$encoded_recovery_tag          = base64_encode( $test_recovery_tag );
 		$test_error_protection_code    = 'test-error-protection-code';
 		$encoded_error_protection_code = base64_encode( $test_error_protection_code );
 
 		FakeHttp::fake_google_http_handler(
 			$adsense->get_client(),
-			function() use ( $test_revcory_tag, $test_error_protection_code ) {
+			function() use ( $test_recovery_tag, $test_error_protection_code ) {
 				$response = new AdBlockingRecoveryTag();
-				$response->setTag( $test_revcory_tag );
+				$response->setTag( $test_recovery_tag );
 				$response->setErrorProtectionCode( $test_error_protection_code );
 
 				return new Response( 200, array(), json_encode( $response ) );

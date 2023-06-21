@@ -26,8 +26,8 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 	 */
 	private $ad_blocking_recovery_tag;
 
-	private $test_revcory_tag              = 'test-recovery-tag';
-	private $encoded_recovery_tag          = 'dGVzdC1yZWNvdmVyeS10YWc='; // base64 encode( $this->test_revcory_tag )
+	private $test_recovery_tag             = 'test-recovery-tag';
+	private $encoded_recovery_tag          = 'dGVzdC1yZWNvdmVyeS10YWc='; // base64 encode( $this->test_recovery_tag )
 	private $test_error_protection_code    = 'test-error-protection-code';
 	private $encoded_error_protection_code = 'dGVzdC1lcnJvci1wcm90ZWN0aW9uLWNvZGU='; // base64 encode( $this->test_error_protection_code )
 
@@ -60,7 +60,7 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'tag'                   => $this->test_revcory_tag,
+				'tag'                   => $this->test_recovery_tag,
 				'error_protection_code' => $this->test_error_protection_code,
 			),
 			$this->ad_blocking_recovery_tag->get()
@@ -97,7 +97,7 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 		$this->assertTrue(
 			$this->ad_blocking_recovery_tag->set(
 				array(
-					'tag'                   => $this->test_revcory_tag,
+					'tag'                   => $this->test_recovery_tag,
 					'error_protection_code' => $this->test_error_protection_code,
 				)
 			)
@@ -105,7 +105,7 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'tag'                   => $this->test_revcory_tag,
+				'tag'                   => $this->test_recovery_tag,
 				'error_protection_code' => $this->test_error_protection_code,
 			),
 			$this->ad_blocking_recovery_tag->get()
@@ -147,7 +147,7 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 		// Get the option and check that it is set correctly.
 		$this->assertEqualSetsWithIndex(
 			array(
-				'tag'                   => $this->test_revcory_tag,
+				'tag'                   => $this->test_recovery_tag,
 				'error_protection_code' => $this->test_error_protection_code,
 			),
 			$this->ad_blocking_recovery_tag->get()
@@ -168,7 +168,7 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 			'non-array'      => array( 'test' ),
 			'empty'          => array( array() ),
 			'invalid index'  => array( array( 'foo' => 'bar' ) ),
-			'nissing index'  => array( array( 'tag' => 'bar' ) ),
+			'missing index'  => array( array( 'tag' => 'bar' ) ),
 			'invalid values' => array(
 				array(
 					'tag'                   => 1234,
