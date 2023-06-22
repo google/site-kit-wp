@@ -28,7 +28,7 @@ import { SpinnerButton, Button } from 'googlesitekit-components';
 import Link from '../../../../../../components/Link';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
-	AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
@@ -75,7 +75,7 @@ export default function CreateMessageStep() {
 		}
 
 		setAdBlockingRecoverySetupStatus(
-			AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
+			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
 		);
 
 		const { error } = await saveSettings();

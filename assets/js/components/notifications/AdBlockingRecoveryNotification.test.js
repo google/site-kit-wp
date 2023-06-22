@@ -28,7 +28,7 @@ import {
 } from '../../../../tests/js/test-utils';
 import {
 	MODULES_ADSENSE,
-	AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '../../modules/adsense/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -58,7 +58,7 @@ describe( 'AdBlockingRecoveryNotification', () => {
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.setAdBlockingRecoverySetupStatus(
-				AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
 			);
 
 		const { container } = render( <AdBlockingRecoveryNotification />, {
@@ -72,7 +72,7 @@ describe( 'AdBlockingRecoveryNotification', () => {
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.setAdBlockingRecoverySetupStatus(
-				AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
 			);
 
 		registry
@@ -92,7 +92,7 @@ describe( 'AdBlockingRecoveryNotification', () => {
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.setAdBlockingRecoverySetupStatus(
-				AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
 			);
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );

@@ -32,7 +32,7 @@ import { Fragment, useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { Checkbox, SpinnerButton } from 'googlesitekit-components';
 import {
-	AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
 const { useSelect, useDispatch } = Data;
@@ -66,7 +66,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 		await syncAdBlockingRecoveryTags();
 
 		setAdBlockingRecoverySetupStatus(
-			AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
+			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
 		);
 		setUseAdBlockerDetectionSnippet( true );
 

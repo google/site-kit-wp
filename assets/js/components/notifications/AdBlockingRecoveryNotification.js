@@ -32,7 +32,7 @@ import SuccessSVG from '../../../svg/graphics/ad-blocking-recovery-success.svg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
-	AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../modules/adsense/datastore/constants';
 const { useDispatch, useSelect } = Data;
@@ -62,7 +62,7 @@ export default function AdBlockingRecoveryNotification() {
 
 	if (
 		adBlockingRecoverySetupStatus !==
-			AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED ||
+			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED ||
 		isNotificationDismissed
 	) {
 		return null;

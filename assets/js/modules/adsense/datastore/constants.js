@@ -34,7 +34,7 @@ export const AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED =
 	'googlesitekit-ad-blocking-recovery-setup-create-message-cta-clicked';
 
 // Various ad blocking recovery setup statuses.
-export const AD_BLOCKING_RECOVERY_SETUP_STATUS = {
+export const ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS = {
 	TAG_PLACED: 'tag-placed',
 	SETUP_CONFIRMED: 'setup-confirmed',
 };

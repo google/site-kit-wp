@@ -21,7 +21,7 @@
  */
 import {
 	MODULES_ADSENSE,
-	AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 } from '../../modules/adsense/datastore/constants';
 import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
 import {
@@ -56,7 +56,7 @@ export default {
 			registry.dispatch( MODULES_ADSENSE ).setSettings( {
 				accountID: 'pub-123456',
 				adBlockingRecoverySetupStatus:
-					AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+					ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
 			} );
 
 			return (

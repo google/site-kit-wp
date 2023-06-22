@@ -36,7 +36,7 @@ import PageHeader from '../../../../../components/PageHeader';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
-	AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
@@ -66,9 +66,9 @@ export default function SetupMain() {
 		switch ( adBlockingRecoverySetupStatus ) {
 			case '':
 				return 0;
-			case AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED:
+			case ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED:
 				return 1;
-			case AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED:
+			case ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED:
 				return 2;
 		}
 	} );
