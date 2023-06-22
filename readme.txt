@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.2
 Requires PHP:      5.6
-Stable tag:        1.102.0
+Stable tag:        1.103.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -109,6 +109,31 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.103.0 =
+
+**Added**
+
+* Add the skeleton component for the Ad Blocking Recovery page. See [#6964](https://github.com/google/site-kit-wp/issues/6964).
+* Add the new Ad Blocking Recovery CTA to the AdSense module settings. See [#6958](https://github.com/google/site-kit-wp/issues/6958).
+
+**Enhanced**
+
+* Update Material 3 Checkbox component. See [#6696](https://github.com/google/site-kit-wp/issues/6696).
+* Improve accessibility for user menu tooltip. See [#6637](https://github.com/google/site-kit-wp/issues/6637).
+* Add notice about Optimize sunset to settings and setup screens. See [#6468](https://github.com/google/site-kit-wp/issues/6468).
+* Update the messaging for site goals in the Site Kit admin setting when user metrics have been selected. See [#6262](https://github.com/google/site-kit-wp/issues/6262).
+* Implement settings toggle to show/hide the Key metrics widget. See [#6261](https://github.com/google/site-kit-wp/issues/6261).
+* Implement the `New visitors` key metric widget. See [#6244](https://github.com/google/site-kit-wp/issues/6244).
+* Add "Loyal visitors" key metric widget tile. See [#6243](https://github.com/google/site-kit-wp/issues/6243).
+* Implement Google profile data synchronisation. See [#6003](https://github.com/google/site-kit-wp/issues/6003).
+
+**Fixed**
+
+* Update layout of Analytics settings to better support the now optional UA Analytics. See [#6875](https://github.com/google/site-kit-wp/issues/6875).
+* Correct page titles on screens that don't exist in the admin menu. See [#6668](https://github.com/google/site-kit-wp/issues/6668).
+* Ensure focus remains on user menu button when the menu is exited with the keyboard. See [#6635](https://github.com/google/site-kit-wp/issues/6635).
+* Fix a bug that could prevent AdSense from being set up on a subdomain. See [#5852](https://github.com/google/site-kit-wp/issues/5852).
 
 = 1.102.0 =
 

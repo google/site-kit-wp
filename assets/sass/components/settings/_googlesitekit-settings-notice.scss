@@ -181,7 +181,8 @@
 	color: $c-text-notice-suggestion;
 }
 
-#googlesitekit-settings-wrapper {
+.googlesitekit-setup-module,
+.googlesitekit-setup {
 
 	.googlesitekit-settings-notice {
 		max-width: $max-width-settings-notice-content;

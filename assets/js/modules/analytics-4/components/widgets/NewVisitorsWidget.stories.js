@@ -65,7 +65,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Components/KeyMetrics/Widgets/NewVisitorsWidget/Ready',
+	label: 'KeyMetrics/NewVisitors/Ready',
 	delay: 250,
 };
 
@@ -93,12 +93,12 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'Components/KeyMetrics/Widgets/NewVisitorsWidget/ZeroData',
+	label: 'KeyMetrics/NewVisitors/ZeroData',
 	delay: 250,
 };
 
 export default {
-	title: 'Components/KeyMetrics/WidgetTiles/NewVisitors',
+	title: 'Key Metrics/NewVisitors',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

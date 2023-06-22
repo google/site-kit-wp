@@ -82,7 +82,7 @@ const baseActions = {
 	/**
 	 * Sets key metrics setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @param {string}         settingID Setting key.
 	 * @param {Array.<string>} value     Setting value.
@@ -101,7 +101,7 @@ const baseActions = {
 	/**
 	 * Saves key metrics settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -164,7 +164,7 @@ const baseSelectors = {
 	/**
 	 * Gets currently selected key metrics based on either the user picked metrics or the answer based metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @return {Array<string>|undefined} An array of key metric slugs, or undefined while loading.
 	 */
@@ -185,7 +185,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Key Metric widget slugs based on the user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the user input settings are not loaded.
 	 */
@@ -244,7 +244,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Key Metric widget slugs selected by the user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the key metrics settings are not loaded.
 	 */
@@ -260,7 +260,7 @@ const baseSelectors = {
 	/**
 	 * Gets whether the key metrics widget is hidden.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
@@ -277,7 +277,7 @@ const baseSelectors = {
 	/**
 	 * Gets key metrics settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings. Returns `undefined` if not loaded.
