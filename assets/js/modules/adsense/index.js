@@ -112,6 +112,23 @@ export const registerWidgets = ( widgets ) => {
 		);
 	}
 
+	if ( isFeatureEnabled( 'userInput' ) ) {
+		/*
+		 * Key metrics widgets.
+		 */
+		widgets.registerWidget(
+			'keyMetricsConnectAdSenseCTATile',
+			{
+				Component: ConnectAdSenseCTATileWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'adsense', 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
+
 	widgets.registerWidget(
 		'adBlockerWarning',
 		{
@@ -175,21 +192,4 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
-
-	if ( isFeatureEnabled( 'userInput' ) ) {
-		/*
-		 * Key metrics widgets.
-		 */
-		widgets.registerWidget(
-			'keyMetricsConnectGA4CTATile',
-			{
-				Component: ConnectAdSenseCTATileWidget,
-				width: widgets.WIDGET_WIDTHS.QUARTER,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ 'adsense', 'analytics-4' ],
-			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-	}
 };
