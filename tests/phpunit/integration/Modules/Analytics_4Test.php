@@ -1582,7 +1582,7 @@ class Analytics_4Test extends TestCase {
 		}
 	}
 
-	public function test_report__shared_metric_validation() {
+	public function test_report__shared_metric_validation( $access_token ) {
 		$this->enable_feature( 'dashboardSharing' );
 		$this->setup_user_authentication( $access_token );
 
@@ -1621,8 +1621,9 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
 	}
 
-	public function test_report__shared_dimension_validation() {
+	public function test_report__shared_dimension_validation( $access_token ) {
 		$this->enable_feature( 'dashboardSharing' );
+		$this->setup_user_authentication( $access_token );
 
 		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
 		// TODO: Remove this when `dashboardSharing` feature flag is removed.
