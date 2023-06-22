@@ -376,7 +376,7 @@ final class Analytics extends Module
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// For GA4-SPECIFIC provisioning callback, switch to GA4 dashboard view.
-			$new_settings['dashboardView'] = 'google-analytics-4';
+			$new_settings['dashboardView'] = Analytics_4::DASHBOARD_VIEW;
 		}
 
 		$this->get_settings()->merge( $new_settings );
