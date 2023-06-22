@@ -38,3 +38,10 @@ export const ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS = {
 	TAG_PLACED: 'tag-placed',
 	SETUP_CONFIRMED: 'setup-confirmed',
 };
+
+// Zero-based index of the available ad blocking recovery setup steps.
+export const ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP = {
+	PLACE_TAGS: 0,
+	CREATE_MESSAGE: 1,
+	COMPLETE: 2,
+};

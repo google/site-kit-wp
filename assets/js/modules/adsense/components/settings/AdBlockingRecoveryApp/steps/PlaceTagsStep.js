@@ -33,6 +33,7 @@ import Data from 'googlesitekit-data';
 import { Checkbox, SpinnerButton } from 'googlesitekit-components';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
 const { useSelect, useDispatch } = Data;
@@ -73,7 +74,9 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 		const { error } = await saveSettings();
 
 		if ( ! error ) {
-			setActiveStep( 1 );
+			setActiveStep(
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.CREATE_MESSAGE
+			);
 		}
 	}, [
 		saveSettings,
