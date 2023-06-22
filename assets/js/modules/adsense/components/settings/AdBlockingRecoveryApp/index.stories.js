@@ -20,13 +20,15 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { provideModules } from '../../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../../tests/js/utils';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
 	MODULES_ADSENSE,
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 } from '../../../datastore/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import AdBlockingRecoveryApp from '.';
 
@@ -92,14 +94,11 @@ export default {
 						slug: 'adsense',
 					},
 				] );
+				provideSiteInfo( registry );
 
 				registry
 					.dispatch( MODULES_ADSENSE )
 					.receiveIsAdBlockerActive( false );
-
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-					adminURL: 'http://example.com/wp-admin/',
-				} );
 
 				args.setupRegistry?.( registry );
 			};
