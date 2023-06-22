@@ -53,12 +53,12 @@ use WP_User;
  */
 class Analytics_4Test extends TestCase {
 
-	use Module_With_Scopes_ContractTests;
-	use Module_With_Settings_ContractTests;
-	use Module_With_Owner_ContractTests;
-	use Module_With_Service_Entity_ContractTests;
-	use UserAuthenticationTrait;
 	use Module_With_Data_Available_State_ContractTests;
+	use Module_With_Owner_ContractTests;
+	use Module_With_Scopes_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
+	use Module_With_Settings_ContractTests;
+	use UserAuthenticationTrait;
 
 	/**
 	 * Context object.
