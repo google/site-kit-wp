@@ -41,6 +41,7 @@ import {
 } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
+import { numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
 function PopularContentWidget( { Widget } ) {
@@ -92,7 +93,9 @@ function PopularContentWidget( { Widget } ) {
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => <strong>{ fieldValue }</strong>,
+			Component: ( { fieldValue } ) => (
+				<strong>{ numFmt( fieldValue ) }</strong>
+			),
 		},
 	];
 
