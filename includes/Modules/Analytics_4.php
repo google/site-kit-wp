@@ -274,10 +274,10 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		// The dashboard view setting is stored in the UA/original Analytics
-		// module, so fetch its settings to get the current dashboard view.
-		$shareable = Feature_Flags::enabled( 'dashboardSharing' );
-		if ( $shareable && Feature_Flags::enabled( 'ga4Reporting' ) ) {
+		$shareable = Feature_Flags::enabled( 'dashboardSharing' ) && Feature_Flags::enabled( 'ga4Reporting' );
+		if ( $shareable ) {
+			// The dashboard view setting is stored in the UA/original Analytics
+			// module, so fetch its settings to get the current dashboard view.
 			$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
 			$shareable          = self::DASHBOARD_VIEW === $analytics_settings['dashboardView'];
 		}
