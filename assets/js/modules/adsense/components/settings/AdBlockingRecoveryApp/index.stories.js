@@ -25,7 +25,7 @@ import {
 	provideSiteInfo,
 } from '../../../../../../../tests/js/utils';
 import {
-	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 } from '../../../datastore/constants';
@@ -54,7 +54,7 @@ StepTwo.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {
 			adBlockingRecoverySetupStatus:
-				AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+				AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
 		} );
 	},
 };
@@ -69,7 +69,7 @@ StepTwoAfterCTAClick.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {
 			adBlockingRecoverySetupStatus:
-				AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+				AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
 		} );
 
 		registry.dispatch( CORE_UI ).setValues( {

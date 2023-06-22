@@ -26,7 +26,7 @@ import {
 	fireEvent,
 } from '../../../../../../tests/js/test-utils';
 import {
-	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
@@ -91,7 +91,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
-							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+							AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
 						useAdBlockerDetectionSnippet: true,
 						useAdBlockerDetectionErrorSnippet: true,
 					} );
@@ -143,7 +143,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
-							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+							AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
 						useAdBlockerDetectionSnippet: false,
 						useAdBlockerDetectionErrorSnippet: false,
 					} );
@@ -183,7 +183,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
-							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+							AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
 						useAdBlockerDetectionSnippet: true,
 						useAdBlockerDetectionErrorSnippet: false,
 					} );
