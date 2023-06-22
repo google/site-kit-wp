@@ -33,7 +33,7 @@ import {
 	SettingsView,
 } from './components/settings';
 import {
-	AdBlockerRecoveryWidget,
+	AdBlockingRecoveryWidget,
 	AdBlockerWarningWidget,
 	AdSenseConnectCTAWidget,
 	DashboardTopEarningPagesWidget,
@@ -96,9 +96,9 @@ const isAnalytics4Active = ( select ) =>
 export const registerWidgets = ( widgets ) => {
 	if ( isFeatureEnabled( 'adBlockerDetection' ) ) {
 		widgets.registerWidget(
-			'adBlockerRecovery',
+			'adBlockingRecovery',
 			{
-				Component: AdBlockerRecoveryWidget,
+				Component: AdBlockingRecoveryWidget,
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 1,
 				wrapWidget: false,
