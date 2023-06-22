@@ -46,7 +46,7 @@ import { WEEK_IN_SECONDS, DAY_IN_SECONDS } from '../../../../util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
-	const timestampThreeWeeksAgo = Date.now() - WEEK_IN_SECONDS * 3 * 1000;
+	const timestampThreeWeeksAgo = Date.now() / 1000 - WEEK_IN_SECONDS * 3;
 	const timestampLessThanThreeWeeksAgo =
 		timestampThreeWeeksAgo - DAY_IN_SECONDS;
 	const validSettings = {
