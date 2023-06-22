@@ -366,7 +366,7 @@ describe( 'Checkbox', () => {
 
 				// TODO: There is a glitch when rendering the checked Checkbox resulting in an additional `input` element rendered to the JSDom, which is not present in the browser.
 				// This makes for a bit of a confusing snapshot, so it has been removed.
-				// When updating related packages (Jest, JSDom, @material/web, @lit-labs/react, etc), keep an eye out for this to be fixed and restore the snapshot tests.
+				// When updating related packages (Jest, JSDom, @material/web, @lit-labs/react, etc), keep an eye out for this to be fixed and restore the snapshot test.
 				// expect( container ).toMatchSnapshot();
 
 				// Confirm the click resulted in a change event with target.checked: true.
