@@ -276,9 +276,11 @@ final class Analytics_4 extends Module
 	protected function get_datapoint_definitions() {
 		// The dashboard view setting is stored in the UA/original Analytics
 		// module, so fetch its settings to get the current dashboard view.
-		$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
-
-		$ga4_dashboard_view_enabled = Feature_Flags::enabled( 'ga4Reporting' ) ? isset( $analytics_settings['dashboardView'] ) && 'google-analytics-4' === $analytics_settings['dashboardView'] : true;
+		$shareable = Feature_Flags::enabled( 'dashboardSharing' );
+		if ( $shareable && Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
+			$shareable          = self::DASHBOARD_VIEW === $analytics_settings['dashboardView'];
+		}
 
 		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
@@ -297,7 +299,7 @@ final class Analytics_4 extends Module
 			),
 			'GET:conversion-events'      => array(
 				'service'   => 'analyticsadmin',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ) && $ga4_dashboard_view_enabled,
+				'shareable' => $shareable,
 			),
 			'POST:create-account-ticket' => array(
 				'service'                => 'analyticsprovisioning',
@@ -329,7 +331,7 @@ final class Analytics_4 extends Module
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			$datapoints['GET:report'] = array(
 				'service'   => 'analyticsdata',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ) && $ga4_dashboard_view_enabled,
+				'shareable' => $shareable,
 			);
 		}
 

@@ -407,9 +407,11 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$settings = $this->get_settings()->get();
-
-		$universal_analytics_dashboard_view_enabled = Feature_Flags::enabled( 'ga4Reporting' ) ? 'universal-analytics' === $settings['dashboardView'] : true;
+		$shareable = Feature_Flags::enabled( 'dashboardSharing' );
+		if ( $shareable && Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			$settings  = $this->get_settings()->get();
+			$shareable = self::DASHBOARD_VIEW === $settings['dashboardView'];
+		}
 
 		$datapoints = array(
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
@@ -430,13 +432,13 @@ final class Analytics extends Module
 			),
 			'GET:goals'                        => array(
 				'service'   => 'analytics',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ) && $universal_analytics_dashboard_view_enabled,
+				'shareable' => $shareable,
 			),
 			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
 			'GET:report'                       => array(
 				'service'   => 'analyticsreporting',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ) && $universal_analytics_dashboard_view_enabled,
+				'shareable' => $shareable,
 			),
 		);
 
