@@ -85,6 +85,8 @@ final class Analytics_4 extends Module
 	 */
 	const MODULE_SLUG = 'analytics-4';
 
+	const DASHBOARD_VIEW = 'google-analytics-4';
+
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *

@@ -98,6 +98,8 @@ final class Analytics extends Module
 	 */
 	const MODULE_SLUG = 'analytics';
 
+	const DASHBOARD_VIEW = 'universal-analytics';
+
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
