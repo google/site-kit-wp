@@ -24,7 +24,7 @@ import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { KM_ANALYTICS_LOYAL_VISITORS } from '../../../../googlesitekit/datastore/user/constants';
+import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
@@ -51,13 +51,13 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: 'adsense',
 						active: false,
 						connected: false,
 					},
 				] );
 				provideKeyMetrics( registry, {
-					widgetSlugs: [ KM_ANALYTICS_LOYAL_VISITORS ],
+					widgetSlugs: [ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ],
 				} );
 			};
 
