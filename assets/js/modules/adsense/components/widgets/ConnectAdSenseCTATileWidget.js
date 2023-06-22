@@ -49,7 +49,7 @@ export default function ConnectAdSenseCTATileWidget( { Widget, WidgetNull } ) {
 
 	if (
 		isAdSenseModuleConnected === false &&
-		keyMetrics.includes( KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT )
+		keyMetrics?.includes( KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT )
 	) {
 		return (
 			<ConnectModuleCTATile
