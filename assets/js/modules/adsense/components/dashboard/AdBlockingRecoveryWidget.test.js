@@ -41,9 +41,12 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
+import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
+	const timestampThreeWeeksAgo = 1684145866;
+	const timestampLessThanThreeWeeks = 4117324069;
 	const validSettings = {
 		accountID: 'pub-12345678',
 		clientID: 'ca-pub-12345678',
@@ -53,6 +56,9 @@ describe( 'AdSenseConnectCTA', () => {
 		adBlockingRecoverySetupStatus:
 			AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 	};
+
+	const { Widget, WidgetNull } =
+		getWidgetComponentProps( 'adBlockingRecovery' );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -81,7 +87,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				false,
 				false,
-				1684145866,
+				timestampThreeWeeksAgo,
 			],
 			[
 				'notification is dismissed',
@@ -90,7 +96,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				true,
 				true,
-				1684145866,
+				timestampThreeWeeksAgo,
 			],
 			[
 				'the Adsense account status is not ready',
@@ -99,7 +105,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				true,
 				false,
-				1684145866,
+				timestampThreeWeeksAgo,
 			],
 			[
 				'the Adsense site status is not ready',
@@ -108,7 +114,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				true,
 				false,
-				1684145866,
+				timestampThreeWeeksAgo,
 			],
 			[
 				'the Ad blocking recovery status is an empty string',
@@ -117,7 +123,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				true,
 				false,
-				1684145866,
+				timestampThreeWeeksAgo,
 			],
 			[
 				'the setup completed timestamp is less than three weeks',
@@ -126,7 +132,7 @@ describe( 'AdSenseConnectCTA', () => {
 				AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 				true,
 				false,
-				1686836242,
+				timestampLessThanThreeWeeks,
 			],
 		] )(
 			'should not render the widget when %s',
@@ -139,9 +145,6 @@ describe( 'AdSenseConnectCTA', () => {
 				isNotificationDismissed,
 				setupCompletedTimestamp
 			) => {
-				const Widget = ( { children } ) => <div>{ children }</div>;
-				const WidgetNull = () => <div>NULL</div>;
-
 				provideModules( registry, [
 					{
 						slug: 'adsense',
@@ -175,14 +178,11 @@ describe( 'AdSenseConnectCTA', () => {
 					}
 				);
 
-				expect( container ).toHaveTextContent( 'NULL' );
+				expect( container ).toBeEmptyDOMElement();
 			}
 		);
 
 		it( 'should render the widget for the existing site without the setup completion time', () => {
-			const Widget = ( { children } ) => <div>{ children }</div>;
-			const WidgetNull = () => <div>NULL</div>;
-
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
@@ -202,9 +202,6 @@ describe( 'AdSenseConnectCTA', () => {
 		} );
 
 		it( 'should render the widget for the site with a setup completion time of more than three weeks', () => {
-			const Widget = ( { children } ) => <div>{ children }</div>;
-			const WidgetNull = () => <div>NULL</div>;
-
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...validSettings,
 				setupCompletedTimestamp: 1684145866,
@@ -228,9 +225,6 @@ describe( 'AdSenseConnectCTA', () => {
 	describe( 'after click', () => {
 		let container;
 		beforeEach( () => {
-			const Widget = ( { children } ) => <div>{ children }</div>;
-			const WidgetNull = () => <div>NULL</div>;
-
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
