@@ -46,15 +46,22 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 	const storeNames = useSelect( ( select ) => {
 		const { getModuleStoreName, getSharedRoles } = select( CORE_MODULES );
 
-		return slugs.reduce( ( acc, currentSlug ) => {
-			const storeName = getModuleStoreName( currentSlug );
+		return (
+			slugs
+				// Filter out modules that don't have any shared roles.
+				.filter( ( currentSlug ) => {
+					return !! getSharedRoles( currentSlug )?.length;
+				} )
+				.reduce( ( acc, currentSlug ) => {
+					const storeName = getModuleStoreName( currentSlug );
 
-			if ( storeName && !! getSharedRoles( currentSlug )?.length ) {
-				return { ...acc, [ currentSlug ]: storeName };
-			}
+					if ( storeName ) {
+						return { ...acc, [ currentSlug ]: storeName };
+					}
 
-			return acc;
-		}, {} );
+					return acc;
+				}, {} )
+		);
 	} );
 
 	const haveOwnedSettingsChanged = useSelect( ( select ) =>
