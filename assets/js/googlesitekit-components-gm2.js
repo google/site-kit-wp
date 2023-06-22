@@ -31,6 +31,7 @@ export const {
 	Button,
 	Checkbox,
 	Chip,
+	CircularProgress,
 	Dialog,
 	DialogTitle,
 	DialogContent,
@@ -40,5 +41,6 @@ export const {
 	Radio,
 	SpinnerButton,
 	Switch,
+	TextField,
 	Tooltip,
 } = Components;

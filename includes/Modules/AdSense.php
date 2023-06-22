@@ -38,6 +38,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\AdSense\Tag_Guard;
@@ -48,6 +49,12 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsens
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
 use WP_REST_Response;
 
@@ -72,14 +79,34 @@ final class AdSense extends Module
 	const MODULE_SLUG = 'adsense';
 
 	/**
-	 * Ad blocking recovery tag option name.
+	 * Ad_Blocking_Recovery_Tag instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Ad_Blocking_Recovery_Tag
 	 */
-	const AD_BLOCKING_RECOVERY_TAG_OPTION = 'googlesitekit_adsense_recovery-tag';
+	protected $ad_blocking_recovery_tag;
 
 	/**
-	 * Ad blocking recovery error protection tag option name.
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
 	 */
-	const AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION = 'googlesitekit_adsense_error-protection-tag';
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+		$this->ad_blocking_recovery_tag = new Ad_Blocking_Recovery_Tag( new Encrypted_Options( $this->options ) );
+	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -88,6 +115,8 @@ final class AdSense extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		$this->ad_blocking_recovery_tag->register();
 
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render_platform_meta_tags' ) );
 
@@ -441,8 +470,13 @@ final class AdSense extends Module
 			case 'GET:sites':
 				return $response->getSites();
 			case 'POST:sync-ad-blocking-recovery-tags':
-				$this->options->set( self::AD_BLOCKING_RECOVERY_TAG_OPTION, base64_encode( $response->getTag() ) );
-				$this->options->set( self::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION, base64_encode( $response->getErrorProtectionCode() ) );
+				$this->ad_blocking_recovery_tag->set(
+					array(
+						'tag'                   => $response->getTag(),
+						'error_protection_code' => $response->getErrorProtectionCode(),
+					)
+				);
+
 				return new WP_REST_Response(
 					array(
 						'success' => true,
@@ -763,42 +797,6 @@ final class AdSense extends Module
 				$tag->register();
 			}
 		}
-	}
-
-	/**
-	 * Returns the decoded ad blocking recovery tag from the options.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string|null The decoded ad blocking recovery tag, or null if not available.
-	 */
-	public function get_ad_blocking_recovery_tag() {
-		$encoded_tag = $this->options->get( self::AD_BLOCKING_RECOVERY_TAG_OPTION );
-		if ( ! $encoded_tag ) {
-			return null;
-		}
-
-		$decoded_tag = base64_decode( $encoded_tag, true );
-
-		return false === $decoded_tag ? null : $decoded_tag;
-	}
-
-	/**
-	 * Returns the decoded ad blocking recovery error protection tag from the options.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string|null The decoded ad blocking recovery error protection tag, or null if not available.
-	 */
-	public function get_ad_blocking_recovery_error_protection_tag() {
-		$encoded_tag = $this->options->get( self::AD_BLOCKING_RECOVERY_ERROR_PROTECTION_TAG_OPTION );
-		if ( ! $encoded_tag ) {
-			return null;
-		}
-
-		$decoded_tag = base64_decode( $encoded_tag, true );
-
-		return false === $decoded_tag ? null : $decoded_tag;
 	}
 
 	/**
