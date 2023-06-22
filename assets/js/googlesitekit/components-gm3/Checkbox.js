@@ -19,19 +19,31 @@
 /**
  * External dependencies
  */
-import '@material/web/checkbox/checkbox';
+import { MdCheckbox } from '@material/web/checkbox/checkbox';
+import { createComponent } from '@lit-labs/react';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
-import Spinner from '../../components/Spinner';
+import * as WordPressElement from '@wordpress/element';
+const { useCallback, useEffect, useRef } = WordPressElement;
 
 /**
  * Internal dependencies
  */
 import { getLabelFromChildren } from '../../util/react-children-to-text';
+import Spinner from '../../components/Spinner';
+
+const MdCheckboxComponent = createComponent( {
+	tagName: 'md-checkbox',
+	elementClass: MdCheckbox,
+	react: WordPressElement,
+	events: {
+		onKeyDown: 'keydown',
+		onChange: 'change',
+	},
+} );
 
 export default function Checkbox( {
 	onChange,
@@ -47,47 +59,33 @@ export default function Checkbox( {
 } ) {
 	const ref = useRef( null );
 
-	useEffect( () => {
+	const updateCheckedState = useCallback( () => {
 		const { current } = ref;
 
 		if ( ! current ) {
 			return;
 		}
 
-		function updateCheckedState() {
-			current.checked = checked;
+		current.checked = checked;
 
-			// The checked property doesn't get reflected to the inner input element checked state,
-			// so we need to set it manually.
-			const innerInput = current.shadowRoot.querySelector( 'input' );
-			if ( innerInput ) {
-				innerInput.checked = checked;
-			}
+		// The checked property doesn't get reflected to the inner input element checked state,
+		// so we need to set it manually.
+		const innerInput = current.shadowRoot.querySelector( 'input' );
+		if ( innerInput ) {
+			innerInput.checked = checked;
 		}
+	}, [ checked ] );
 
-		function handleChange( event ) {
-			onChange?.( event );
+	function handleChange( event ) {
+		onChange?.( event );
 
-			// Restore current checked state for controlled component behaviour.
-			updateCheckedState();
-		}
-
-		current.addEventListener( 'change', handleChange );
-
-		if ( onKeyDown ) {
-			current.addEventListener( 'keydown', onKeyDown );
-		}
-
+		// Restore current checked state for controlled component behaviour.
 		updateCheckedState();
+	}
 
-		return () => {
-			current.removeEventListener( 'change', handleChange );
-
-			if ( onKeyDown ) {
-				current.removeEventListener( 'keydown', onKeyDown );
-			}
-		};
-	}, [ checked, onChange, onKeyDown ] );
+	useEffect( () => {
+		updateCheckedState();
+	}, [ updateCheckedState ] );
 
 	const labelID = `${ id }-label`;
 
@@ -99,7 +97,7 @@ export default function Checkbox( {
 				</div>
 			) }
 			{ ! loading && (
-				<md-checkbox
+				<MdCheckboxComponent
 					id={ id }
 					ref={ ref }
 					aria-label={ getLabelFromChildren( children ) }
@@ -112,7 +110,9 @@ export default function Checkbox( {
 					name={ name }
 					value={ value }
 					tabIndex={ tabIndex }
-				></md-checkbox>
+					onChange={ handleChange }
+					onKeyDown={ onKeyDown }
+				/>
 			) }
 			<label id={ labelID } htmlFor={ id }>
 				{ children }
