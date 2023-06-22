@@ -52,7 +52,7 @@ import {
 import { isFeatureEnabled } from '../../features';
 import { negateDefined } from '../../util/negate';
 import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
-import ConnectAdSenseCTATileWidget from './components/widgets/ConnectAdSenseCTATileWidget';
+import { ConnectAdSenseCTATileWidget } from './components/widgets';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
