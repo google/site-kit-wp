@@ -42,11 +42,13 @@ import {
 	SITE_STATUS_READY,
 } from '../../util';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { WEEK_IN_SECONDS, DAY_IN_SECONDS } from '../../../../util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
-	const timestampThreeWeeksAgo = 1684145866;
-	const timestampLessThanThreeWeeks = 4117324069;
+	const timestampThreeWeeksAgo = Date.now() - WEEK_IN_SECONDS * 3 * 1000;
+	const timestampLessThanThreeWeeksAgo =
+		timestampThreeWeeksAgo - DAY_IN_SECONDS;
 	const validSettings = {
 		accountID: 'pub-12345678',
 		clientID: 'ca-pub-12345678',
@@ -132,7 +134,7 @@ describe( 'AdSenseConnectCTA', () => {
 				AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 				true,
 				false,
-				timestampLessThanThreeWeeks,
+				timestampLessThanThreeWeeksAgo,
 			],
 		] )(
 			'should not render the widget when %s',
