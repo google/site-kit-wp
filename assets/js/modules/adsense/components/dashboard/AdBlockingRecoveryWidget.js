@@ -44,7 +44,7 @@ import {
 } from '../../../../components/AdminMenuTooltip';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import { getTimeInSeconds } from '../../../../util';
+import { WEEK_IN_SECONDS } from '../../../../util';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import {
@@ -128,8 +128,9 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		);
 	}
 
-	const THREE_WEEKS_IN_SECONDS = getTimeInSeconds( 'week' ) * 3;
-	const NOW_IN_SECONDS = Math.floor( Date.now() / 1000 );
+	const threeWeeksInSeconds = WEEK_IN_SECONDS * 3;
+	const nowInSeconds = Math.floor( Date.now() / 1000 );
+
 	const shouldShowWidget =
 		! viewOnlyDashboard &&
 		adSenseModuleConnected &&
@@ -138,8 +139,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		accountStatus === ACCOUNT_STATUS_READY &&
 		siteStatus === SITE_STATUS_READY &&
 		( ! setupCompletedTimestamp ||
-			NOW_IN_SECONDS - setupCompletedTimestamp >=
-				THREE_WEEKS_IN_SECONDS );
+			nowInSeconds - setupCompletedTimestamp >= threeWeeksInSeconds );
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;
