@@ -46,9 +46,10 @@ import { WEEK_IN_SECONDS, DAY_IN_SECONDS } from '../../../../util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
-	const timestampThreeWeeksAgo = Date.now() / 1000 - WEEK_IN_SECONDS * 3;
+	const timestampThreeWeeksAgo =
+		Math.floor( Date.now() / 1000 ) - WEEK_IN_SECONDS * 3;
 	const timestampLessThanThreeWeeksAgo =
-		timestampThreeWeeksAgo - DAY_IN_SECONDS;
+		timestampThreeWeeksAgo + DAY_IN_SECONDS;
 	const validSettings = {
 		accountID: 'pub-12345678',
 		clientID: 'ca-pub-12345678',
@@ -206,7 +207,7 @@ describe( 'AdSenseConnectCTA', () => {
 		it( 'should render the widget for the site with a setup completion time of more than three weeks', () => {
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...validSettings,
-				setupCompletedTimestamp: 1684145866,
+				setupCompletedTimestamp: timestampThreeWeeksAgo,
 			} );
 
 			const { container } = render(
