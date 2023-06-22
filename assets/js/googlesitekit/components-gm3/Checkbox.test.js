@@ -28,8 +28,8 @@ import { fireEvent, render } from '../../../../tests/js/test-utils';
 import Checkbox from './Checkbox';
 
 describe( 'Checkbox', () => {
-	it( 'should render the checkbox', () => {
-		const { container } = render(
+	it( 'should render the checkbox', async () => {
+		const { container, getByLabelText } = render(
 			<Checkbox
 				id="checkbox-id"
 				name="checkbox-name"
@@ -39,11 +39,25 @@ describe( 'Checkbox', () => {
 				Checkbox Label
 			</Checkbox>
 		);
+
+		const checkbox = getByLabelText( 'Checkbox Label' );
+
+		await checkbox.updateComplete;
+
 		expect( container ).toMatchSnapshot();
+
+		// Verify that the value attribute is retained as a property.
+		expect( checkbox.value ).toBe( 'checkbox-value' );
+
+		const input = checkbox.shadowRoot.querySelector( 'input' );
+
+		// Verify that the underlying input element is not checked or disabled.
+		expect( input.checked ).toBe( false );
+		expect( input.disabled ).toBe( false );
 	} );
 
-	it( 'should render the checkbox with checked state', () => {
-		const { container } = render(
+	it( 'should render the checkbox with checked state', async () => {
+		const { getByLabelText } = render(
 			<Checkbox
 				id="checkbox-id"
 				name="checkbox-name"
@@ -54,11 +68,27 @@ describe( 'Checkbox', () => {
 				Checkbox Label
 			</Checkbox>
 		);
-		expect( container ).toMatchSnapshot();
+
+		const checkbox = getByLabelText( 'Checkbox Label' );
+
+		await checkbox.updateComplete;
+
+		// TODO: There is a glitch when rendering the checked Checkbox resulting in an additional `input` element rendered to the JSDom, which is not present in the browser.
+		// This makes for a bit of a confusing snapshot, so it has been removed.
+		// When updating related packages (Jest, JSDom, @material/web, @lit-labs/react, etc), keep an eye out for this to be fixed and restore the snapshot test.
+		// expect( container ).toMatchSnapshot();
+
+		// Verify that the checked state is stored as a property.
+		expect( checkbox.checked ).toBe( true );
+
+		const input = checkbox.shadowRoot.querySelector( 'input' );
+
+		// Verify that the checked state is passed through to the underlying input element.
+		expect( input.checked ).toBe( true );
 	} );
 
-	it( 'should render the checkbox with disabled state', () => {
-		const { container } = render(
+	it( 'should render the checkbox with disabled state', async () => {
+		const { container, getByLabelText } = render(
 			<Checkbox
 				id="checkbox-id"
 				name="checkbox-name"
@@ -69,7 +99,17 @@ describe( 'Checkbox', () => {
 				Checkbox Label
 			</Checkbox>
 		);
+
+		const checkbox = getByLabelText( 'Checkbox Label' );
+
+		await checkbox.updateComplete;
+
 		expect( container ).toMatchSnapshot();
+
+		const input = checkbox.shadowRoot.querySelector( 'input' );
+
+		// Verify that the disabled state is passed through to the underlying input element.
+		expect( input.disabled ).toBe( true );
 	} );
 
 	it( 'should render the checkbox with loading state', () => {
@@ -87,8 +127,8 @@ describe( 'Checkbox', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render the checkbox with a complex label', () => {
-		const { container } = render(
+	it( 'should render the checkbox with a complex label', async () => {
+		const { container, getByLabelText } = render(
 			<Checkbox
 				id="checkbox-id"
 				name="checkbox-name"
@@ -107,12 +147,17 @@ describe( 'Checkbox', () => {
 				</div>
 			</Checkbox>
 		);
+
+		const expectedLabelText = 'Complex Label With 5 Sub Children';
+
+		await getByLabelText( expectedLabelText ).updateComplete;
+
 		expect( container ).toMatchSnapshot();
 		expect(
 			container
 				.querySelector( 'md-checkbox' )
 				.getAttribute( 'aria-label' )
-		).toBe( 'Complex Label With 5 Sub Children' );
+		).toBe( expectedLabelText );
 	} );
 
 	it( 'should attach the onKeyDown handler when present', () => {
@@ -253,11 +298,14 @@ describe( 'Checkbox', () => {
 					</Checkbox>
 				);
 
-				const { container, getByLabelText } = result;
+				const { getByLabelText } = result;
 
 				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
-				expect( container ).toMatchSnapshot();
+				// TODO: There is a glitch when rendering the checked Checkbox resulting in an additional `input` element rendered to the JSDom, which is not present in the browser.
+				// This makes for a bit of a confusing snapshot, so it has been removed, as has the second snapshot assertion below.
+				// When updating related packages (Jest, JSDom, @material/web, @lit-labs/react, etc), keep an eye out for this to be fixed and restore the snapshot tests.
+				// expect( container ).toMatchSnapshot();
 
 				// Confirm the checkbox is checked.
 				expectCheckboxToBeChecked( getByLabelText( 'Checkbox Label' ) );
@@ -266,7 +314,7 @@ describe( 'Checkbox', () => {
 
 				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
-				expect( container ).toMatchSnapshot();
+				// expect( container ).toMatchSnapshot();
 
 				// Confirm the click resulted in a change event with target.checked: false.
 				expect( onChange ).toHaveBeenCalledTimes( 1 );
@@ -316,7 +364,10 @@ describe( 'Checkbox', () => {
 
 				await getByLabelText( 'Checkbox Label' ).updateComplete;
 
-				expect( container ).toMatchSnapshot();
+				// TODO: There is a glitch when rendering the checked Checkbox resulting in an additional `input` element rendered to the JSDom, which is not present in the browser.
+				// This makes for a bit of a confusing snapshot, so it has been removed.
+				// When updating related packages (Jest, JSDom, @material/web, @lit-labs/react, etc), keep an eye out for this to be fixed and restore the snapshot tests.
+				// expect( container ).toMatchSnapshot();
 
 				// Confirm the click resulted in a change event with target.checked: true.
 				expect( onChange ).toHaveBeenCalledTimes( 1 );
