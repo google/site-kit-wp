@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
 import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
 import { expandNumFmtOptions } from '../../util';
+import { Fragment } from 'react';
 
 export default function MetricTileText( {
 	Widget,
@@ -38,14 +39,6 @@ export default function MetricTileText( {
 	previousValue,
 	currentValue,
 } ) {
-	if ( loading ) {
-		return (
-			<Widget noPadding>
-				<PreviewBlock width="100%" height="142px" padding />
-			</Widget>
-		);
-	}
-
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
 	return (
@@ -55,19 +48,26 @@ export default function MetricTileText( {
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					<div className="googlesitekit-km-widget-tile__metric">
-						{ metricValue }
-					</div>
-					<p className="googlesitekit-km-widget-tile__subtext">
-						{ subText }
-					</p>
-					<div className="googlesitekit-km-widget-tile__metric-change-container">
-						<ChangeBadge
-							previousValue={ previousValue }
-							currentValue={ currentValue }
-							isAbsolute={ formatOptions?.style === 'percent' }
-						/>
-					</div>
+					{ loading && <PreviewBlock width="100%" height="84px" /> }
+					{ ! loading && (
+						<Fragment>
+							<div className="googlesitekit-km-widget-tile__metric">
+								{ metricValue }
+							</div>
+							<p className="googlesitekit-km-widget-tile__subtext">
+								{ subText }
+							</p>
+							<div className="googlesitekit-km-widget-tile__metric-change-container">
+								<ChangeBadge
+									previousValue={ previousValue }
+									currentValue={ currentValue }
+									isAbsolute={
+										formatOptions?.style === 'percent'
+									}
+								/>
+							</div>
+						</Fragment>
+					) }
 				</div>
 			</div>
 		</Widget>

@@ -72,6 +72,7 @@ ZeroChange.scenario = {
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
+	title: 'Most engaged traffic source',
 	loading: true,
 };
 
