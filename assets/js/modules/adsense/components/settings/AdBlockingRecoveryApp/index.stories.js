@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import {
-	provideModules,
-	provideSiteInfo,
-} from '../../../../../../../tests/js/utils';
+import { provideSiteInfo } from '../../../../../../../tests/js/utils';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
@@ -87,13 +84,6 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				provideModules( registry, [
-					{
-						active: true,
-						connected: true,
-						slug: 'adsense',
-					},
-				] );
 				provideSiteInfo( registry );
 
 				registry
