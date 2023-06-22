@@ -30,7 +30,7 @@ import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModul
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
-	keyMetricsAdSenseWidgets,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../../../googlesitekit/datastore/user/constants';
 
 const { useSelect } = Data;
@@ -47,29 +47,20 @@ export default function ConnectAdSenseCTATileWidget( { Widget, WidgetNull } ) {
 		return select( CORE_USER ).getKeyMetrics();
 	} );
 
-	let hideWidget = true;
-
-	if ( keyMetrics?.length > 0 ) {
-		const kmAdSenseWidgetCount = keyMetrics.filter( ( keyMetric ) =>
-			keyMetricsAdSenseWidgets.includes( keyMetric )
-		).length;
-
-		if ( kmAdSenseWidgetCount > 0 && kmAdSenseWidgetCount < 3 ) {
-			hideWidget = false;
-		}
+	if (
+		isAdSenseModuleConnected === false &&
+		keyMetrics.includes( KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT )
+	) {
+		return (
+			<ConnectModuleCTATile
+				Icon={ AdSenseIcon }
+				moduleSlug="adsense"
+				Widget={ Widget }
+			/>
+		);
 	}
 
-	if ( isAdSenseModuleConnected !== false || hideWidget ) {
-		return <WidgetNull />;
-	}
-
-	return (
-		<ConnectModuleCTATile
-			Icon={ AdSenseIcon }
-			moduleSlug="adsense"
-			Widget={ Widget }
-		/>
-	);
+	return <WidgetNull />;
 }
 
 ConnectAdSenseCTATileWidget.propTypes = {

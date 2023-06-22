@@ -71,7 +71,3 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 ];
-
-export const keyMetricsAdSenseWidgets = [
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-];
