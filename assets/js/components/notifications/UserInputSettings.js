@@ -36,6 +36,9 @@ import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import Link from '../Link';
 const { useSelect } = Data;
 
@@ -53,23 +56,32 @@ export default function UserInputSettings( {
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
-	);
+
 	const searchConsoleModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'search-console' )
 	);
+	const searchConsoleIsGatheringData = useSelect(
+		( select ) =>
+			searchConsoleModuleConnected &&
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
 
-	// TODO: Re-implement the Gathering Data check once Issue #5933 is merged
-	// and this data is available on page load.
-	// const searchConsoleIsGatheringData = useSelect( ( select ) =>
-	// 	select( MODULES_SEARCH_CONSOLE ).isGatheringData()
-	// );
-	// const analyticsIsGatheringData = useSelect(
-	// 	( select ) =>
-	// 		analyticsModuleConnected &&
-	// 		select( MODULES_ANALYTICS ).isGatheringData()
-	// );
+	const analyticsModuleConnected = useSelect(
+		( select ) =>
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ||
+			select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+	const analyticsIsGatheringData = useSelect( ( select ) => {
+		if ( select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
+			return select( MODULES_ANALYTICS_4 ).isGatheringData();
+		}
+
+		if ( select( CORE_MODULES ).isModuleConnected( 'analytics' ) ) {
+			return select( MODULES_ANALYTICS ).isGatheringData();
+		}
+
+		return false;
+	} );
 
 	if ( isUserInputCompleted === undefined || isUserInputCompleted ) {
 		return null;
@@ -79,12 +91,16 @@ export default function UserInputSettings( {
 		return null;
 	}
 
-	// if (
-	// 	analyticsIsGatheringData !== false ||
-	// 	searchConsoleIsGatheringData !== false
-	// ) {
-	// 	return null;
-	// }
+	// Don't show the component if either module is gathering data, or
+	// if the gathering data state is still loading/resolving.
+	if (
+		analyticsIsGatheringData === undefined ||
+		analyticsIsGatheringData === true ||
+		searchConsoleIsGatheringData === undefined ||
+		searchConsoleIsGatheringData === true
+	) {
+		return null;
+	}
 
 	return (
 		<BannerNotification
