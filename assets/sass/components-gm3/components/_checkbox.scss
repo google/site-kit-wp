@@ -39,4 +39,12 @@
 		justify-content: center;
 		width: var(--md-checkbox-_touch-target-size); /* stylelint-disable-line custom-property-pattern */
 	}
+
+	// The Checkbox component has an essential margin of 15 pixels to accommodate
+	// its hover/focus background. This makes it not possible to align the checkbox
+	// to the absolute left when required. The following style compensates for the
+	// margin and aligns it to the absolute left.
+	.googlesitekit-component-gm3_checkbox--align-left {
+		margin-left: -15px;
+	}
 }
