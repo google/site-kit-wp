@@ -107,6 +107,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 				name="ad-blocking-recovery-error-protection-tag-checkbox"
 				value="1"
 				onChange={ onErrorProtectionTagOptionChange }
+				alignLeft
 			>
 				{ __(
 					'Place the error protection tag (optional)',
