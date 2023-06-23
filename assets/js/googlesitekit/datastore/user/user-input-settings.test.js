@@ -22,6 +22,8 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	muteFetch,
+	provideUserAuthentication,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -65,6 +67,12 @@ describe( 'core/user user-input-settings', () => {
 		postFrequency:
 			coreUserInputSettingsExpectedResponse.postFrequency.values,
 	};
+	const surveyTriggerEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-trigger'
+	);
+	const surveyTimeoutEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-timeout'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -196,6 +204,41 @@ describe( 'core/user user-input-settings', () => {
 				expect( settings ).toEqual(
 					coreUserInputSettingsExpectedResponse
 				);
+			} );
+		} );
+
+		describe( 'maybeTriggerUserInputSurvey', () => {
+			beforeEach( () => {
+				provideUserAuthentication( registry );
+			} );
+
+			it( 'should bail if no answers contain "Other"', async () => {
+				await registry
+					.dispatch( CORE_USER )
+					.maybeTriggerUserInputSurvey();
+
+				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
+			} );
+
+			it( 'should trigger survey if answers conatin "Other"', async () => {
+				muteFetch( surveyTriggerEndpoint );
+				muteFetch( surveyTimeoutEndpoint );
+
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( 'goals', [ 'other' ] );
+
+				await registry
+					.dispatch( CORE_USER )
+					.maybeTriggerUserInputSurvey();
+
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID: 'userInput_answered_other__goals' },
+					},
+				} );
 			} );
 		} );
 	} );
