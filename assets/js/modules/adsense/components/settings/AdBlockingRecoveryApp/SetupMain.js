@@ -61,17 +61,24 @@ export default function SetupMain() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 	const initialActiveStep = useSelect( ( select ) => {
+		const statusStepMap = {
+			[ ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED ]:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.CREATE_MESSAGE,
+			[ ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED ]:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.COMPLETE,
+		};
+
 		const adBlockingRecoverySetupStatus =
 			select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
 
-		switch ( adBlockingRecoverySetupStatus ) {
-			case '':
-				return ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.PLACE_TAGS;
-			case ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED:
-				return ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.CREATE_MESSAGE;
-			case ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED:
-				return ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.COMPLETE;
+		if ( adBlockingRecoverySetupStatus === undefined ) {
+			return undefined;
 		}
+
+		return (
+			statusStepMap[ adBlockingRecoverySetupStatus ] ||
+			ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.PLACE_TAGS
+		);
 	} );
 
 	const {
