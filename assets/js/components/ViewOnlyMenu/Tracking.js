@@ -46,6 +46,7 @@ export default function Tracking() {
 			</p>
 			<OptIn
 				trackEventCategory={ `${ viewContext }_headerbar_viewonly` }
+				alignCheckboxLeft
 			/>
 		</li>
 	);
