@@ -159,7 +159,7 @@
 			}
 
 			p:first-child {
-				margin-top: 8px;
+				margin-top: $grid-gap-phone / 2;
 			}
 		}
 	}
@@ -169,7 +169,7 @@
 		p.googlesitekit-ad-blocking-recovery__error-protection-tag-info {
 			font-size: $fs-body-md;
 			line-height: $lh-body-md;
-			margin: 0 0 20px 34px;
+			margin: 0 0 20px 34px; // Aligns the paragraph with the checkbox.
 		}
 	}
 
@@ -179,7 +179,7 @@
 			align-items: center;
 			display: flex;
 			flex-wrap: wrap;
-			gap: 26px;
+			gap: $grid-gap-desktop + 2px;
 
 			.googlesitekit-cta-link {
 				color: $c-surfaces-on-surface-variant;
@@ -196,7 +196,7 @@
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
-			margin-top: 24px;
+			margin-top: $grid-gap-desktop;
 		}
 	}
 }
