@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\User_Input;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\User_Surveys\Survey_Queue;
 use WP_Error;
 use WP_User;
 
@@ -92,7 +93,10 @@ class User_Input {
 		$this->site_specific_answers = new Site_Specific_Answers( $options ?: new Options( $context ) );
 		$this->user_options          = $user_options ?: new User_Options( $context );
 		$this->user_specific_answers = new User_Specific_Answers( $this->user_options );
-		$this->rest_controller       = new REST_User_Input_Controller( $this );
+		$this->rest_controller       = new REST_User_Input_Controller(
+			$this,
+			new Survey_Queue( $this->user_options )
+		);
 	}
 
 	/**
