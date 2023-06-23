@@ -152,13 +152,13 @@
 
 		.googlesitekit-stepper__step-content {
 
-			p {
+			> p {
 				color: $c-surfaces-on-surface-variant;
 				font-size: $fs-body-lg;
 				letter-spacing: $ls-s;
 			}
 
-			p:first-child {
+			> p:first-child {
 				margin-top: $grid-gap-phone / 2;
 			}
 		}

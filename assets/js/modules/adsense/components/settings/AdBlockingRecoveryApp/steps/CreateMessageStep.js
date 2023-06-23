@@ -26,6 +26,7 @@ import { Fragment, useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { SpinnerButton, Button } from 'googlesitekit-components';
 import Link from '../../../../../../components/Link';
+import ErrorNotice from '../../../../../../components/ErrorNotice';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
@@ -58,6 +59,9 @@ export default function CreateMessageStep() {
 			!! select( CORE_UI ).getValue(
 				AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED
 			)
+	);
+	const saveSettingsError = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getErrorForAction( 'saveSettings' )
 	);
 
 	const { saveSettings, setAdBlockingRecoverySetupStatus } =
@@ -106,6 +110,7 @@ export default function CreateMessageStep() {
 					'google-site-kit'
 				) }
 			</p>
+			{ saveSettingsError && <ErrorNotice error={ saveSettingsError } /> }
 			<div className="googlesitekit-ad-blocking-recovery__create-message-footer">
 				<div className="googlesitekit-ad-blocking-recovery__create-message-footer-actions">
 					{ createMessageCTAClicked ? (

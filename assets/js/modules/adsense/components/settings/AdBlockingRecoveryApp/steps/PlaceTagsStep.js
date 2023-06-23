@@ -31,6 +31,7 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { Checkbox, SpinnerButton } from 'googlesitekit-components';
+import ErrorNotice from '../../../../../../components/ErrorNotice';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
@@ -46,6 +47,12 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 		( select ) =>
 			select( MODULES_ADSENSE ).isDoingSaveSettings() ||
 			select( MODULES_ADSENSE ).isFetchingSyncAdBlockingRecoveryTags()
+	);
+	const error = useSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).getErrorForAction(
+				'syncAdBlockingRecoveryTags'
+			) || select( MODULES_ADSENSE ).getErrorForAction( 'saveSettings' )
 	);
 
 	const {
@@ -64,20 +71,24 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 	);
 
 	const onCTAClick = useCallback( async () => {
-		await syncAdBlockingRecoveryTags();
+		const { error: syncError } = await syncAdBlockingRecoveryTags();
+
+		if ( syncError ) {
+			return;
+		}
 
 		setAdBlockingRecoverySetupStatus(
 			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
 		);
 		setUseAdBlockerDetectionSnippet( true );
 
-		const { error } = await saveSettings();
+		const { error: saveError } = await saveSettings();
 
-		if ( ! error ) {
-			setActiveStep(
-				ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.CREATE_MESSAGE
-			);
+		if ( saveError ) {
+			return;
 		}
+
+		setActiveStep( ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.CREATE_MESSAGE );
 	}, [
 		saveSettings,
 		setActiveStep,
@@ -120,6 +131,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 					'google-site-kit'
 				) }
 			</p>
+			{ error && <ErrorNotice error={ error } /> }
 			<SpinnerButton
 				onClick={ onCTAClick }
 				isSaving={ isSaving }
