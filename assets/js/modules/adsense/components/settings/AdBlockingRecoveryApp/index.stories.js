@@ -41,7 +41,7 @@ StepOne.args = {
 	},
 };
 StepOne.scenario = {
-	label: 'Global/AdBlockingRecoveryApp/StepOne',
+	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup - Place Tags Step',
 	delay: 250,
 };
 
@@ -56,7 +56,7 @@ StepTwo.args = {
 	},
 };
 StepTwo.scenario = {
-	label: 'Global/AdBlockingRecoveryApp/StepTwo',
+	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup - Create Message Step',
 	delay: 250,
 };
 
@@ -75,7 +75,7 @@ StepTwoAfterCTAClick.args = {
 	},
 };
 StepTwoAfterCTAClick.scenario = {
-	label: 'Global/AdBlockingRecoveryApp/StepTwoAfterCTAClick',
+	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup - Create Message Step - After CTA Click',
 	delay: 250,
 };
 
