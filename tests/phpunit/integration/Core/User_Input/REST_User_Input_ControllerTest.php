@@ -38,18 +38,25 @@ class REST_User_Input_ControllerTest extends TestCase {
 	 */
 	private $controller;
 
+	/**
+	 * User_Options instance.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
 	public function set_up() {
 		parent::set_up();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$user_options     = new User_Options( $context );
-		$this->user_input = new User_Input( $context );
-		$this->controller = new REST_User_Input_Controller(
+		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options = new User_Options( $context );
+		$this->user_input   = new User_Input( $context );
+		$this->controller   = new REST_User_Input_Controller(
 			$this->user_input,
-			new Survey_Queue( $user_options )
+			new Survey_Queue( $this->user_options )
 		);
 
 		$this->user_input->register();
@@ -117,6 +124,23 @@ class REST_User_Input_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
+		// The REST request here is supposed to dequeue the the
+		// `user_input_answered_other_survey` from the survey queue if it exists.
+		// This is added to the queue so that its removal can be tested.
+		$this->user_options->set(
+			Survey_Queue::OPTION,
+			array(
+				array(
+					'survey_id' => 'user_input_answered_other_survey',
+					'payload'   => array(),
+					'session'   => array(
+						'session_id'    => 'test_session_id_1',
+						'session_token' => 'test_session_token_1',
+					),
+				),
+			)
+		);
+
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings' );
 		$request->set_body_params(
 			array(
@@ -146,6 +170,12 @@ class REST_User_Input_ControllerTest extends TestCase {
 				),
 			),
 			rest_get_server()->dispatch( $request )->get_data()
+		);
+
+		// Verify that the `user_input_answered_other_survey` survey is dequeued.
+		$this->assertEquals(
+			array(),
+			$this->user_options->get( Survey_Queue::OPTION )
 		);
 	}
 }
