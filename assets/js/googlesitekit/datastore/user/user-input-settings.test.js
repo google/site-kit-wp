@@ -38,34 +38,24 @@ describe( 'core/user user-input-settings', () => {
 		'^/google-site-kit/v1/core/user/data/user-input-settings'
 	);
 	const coreUserInputSettingsExpectedResponse = {
-		goals: {
-			values: [ 'goal1', 'goal2' ],
+		purpose: {
+			values: [ 'purpose1' ],
 			scope: 'site',
-		},
-		helpNeeded: {
-			values: [ 'no' ],
-			scope: 'site',
-		},
-		searchTerms: {
-			values: [ 'keyword1' ],
-			scope: 'site',
-		},
-		role: {
-			values: [ 'admin' ],
-			scope: 'user',
 		},
 		postFrequency: {
 			values: [ 'daily' ],
 			scope: 'user',
 		},
+		goals: {
+			values: [ 'goal1', 'goal2' ],
+			scope: 'site',
+		},
 	};
 	const coreUserInputSettings = {
-		goals: coreUserInputSettingsExpectedResponse.goals.values,
-		helpNeeded: coreUserInputSettingsExpectedResponse.helpNeeded.values,
-		searchTerms: coreUserInputSettingsExpectedResponse.searchTerms.values,
-		role: coreUserInputSettingsExpectedResponse.role.values,
+		purpose: coreUserInputSettingsExpectedResponse.purpose.values,
 		postFrequency:
 			coreUserInputSettingsExpectedResponse.postFrequency.values,
+		goals: coreUserInputSettingsExpectedResponse.goals.values,
 	};
 	const surveyTriggerEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/survey-trigger'
