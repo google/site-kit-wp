@@ -70,9 +70,6 @@ describe( 'core/user user-input-settings', () => {
 	const surveyTriggerEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/survey-trigger'
 	);
-	const surveyTimeoutEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-timeout'
-	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -222,7 +219,6 @@ describe( 'core/user user-input-settings', () => {
 
 			it( 'should trigger survey if answers conatin "Other"', async () => {
 				muteFetch( surveyTriggerEndpoint );
-				muteFetch( surveyTimeoutEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
@@ -230,9 +226,19 @@ describe( 'core/user user-input-settings', () => {
 					.dispatch( CORE_USER )
 					.setUserInputSetting( 'goals', [ 'other' ] );
 
-				await registry
-					.dispatch( CORE_USER )
-					.maybeTriggerUserInputSurvey();
+				registry.dispatch( CORE_USER ).maybeTriggerUserInputSurvey();
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getSurveyTimeouts' )
+				);
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUserInputSettings' )
+				);
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
@@ -240,6 +246,68 @@ describe( 'core/user user-input-settings', () => {
 					},
 				} );
 			} );
+
+			it.each( [
+				[ 'purpose', 'Purpose' ],
+				[ 'postFrequency', 'Post Frequency' ],
+				[ 'goals', 'Goals' ],
+				[ 'purpose_postFrequency', 'Purpose, Post Frequency' ],
+				[ 'purpose_goals', 'Purpose, Goals' ],
+				[ 'postFrequency_goals', 'Post Frequency, Goals' ],
+				[
+					'purpose_postFrequency_goals',
+					'Purpose, Post Frequency, Goals',
+				],
+			] )(
+				'survey triggerID should be userInput_answered_other__%s when "Other" is answered for the following questions: %s',
+				async ( questions ) => {
+					const questionsArray = questions.split( '_' );
+					const settings = questionsArray.reduce(
+						( accum, key ) => ( {
+							...accum,
+							[ key ]: {
+								values: [ 'other' ],
+								scope: key === 'purpose' ? 'site' : 'user',
+							},
+						} ),
+						{}
+					);
+
+					muteFetch( surveyTriggerEndpoint );
+
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetSurveyTimeouts( [] );
+
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetUserInputSettings( settings );
+
+					registry
+						.dispatch( CORE_USER )
+						.maybeTriggerUserInputSurvey();
+
+					await subscribeUntil( registry, () =>
+						registry
+							.select( CORE_USER )
+							.hasFinishedResolution( 'getSurveyTimeouts' )
+					);
+
+					await subscribeUntil( registry, () =>
+						registry
+							.select( CORE_USER )
+							.hasFinishedResolution( 'getUserInputSettings' )
+					);
+
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+						body: {
+							data: {
+								triggerID: `userInput_answered_other__${ questions }`,
+							},
+						},
+					} );
+				}
+			);
 		} );
 	} );
 
