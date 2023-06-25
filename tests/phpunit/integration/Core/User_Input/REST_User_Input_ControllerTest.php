@@ -12,8 +12,10 @@ namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Input\REST_User_Input_Controller;
 use Google\Site_Kit\Core\User_Input\User_Input;
+use Google\Site_Kit\Core\User_Surveys\Survey_Queue;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
@@ -43,8 +45,12 @@ class REST_User_Input_ControllerTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options     = new User_Options( $context );
 		$this->user_input = new User_Input( $context );
-		$this->controller = new REST_User_Input_Controller( $this->user_input );
+		$this->controller = new REST_User_Input_Controller(
+			$this->user_input,
+			new Survey_Queue( $user_options )
+		);
 
 		$this->user_input->register();
 	}
