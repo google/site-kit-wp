@@ -252,16 +252,6 @@ describe( 'core/user user-input-settings', () => {
 				'survey triggerID should be userInput_answered_other__%s when "Other" is answered for the following questions: %s',
 				async ( questions ) => {
 					const questionsArray = questions.split( '_' );
-					const settings = questionsArray.reduce(
-						( accum, key ) => ( {
-							...accum,
-							[ key ]: {
-								values: [ 'other' ],
-								scope: key === 'purpose' ? 'site' : 'user',
-							},
-						} ),
-						{}
-					);
 
 					muteFetch( surveyTriggerEndpoint );
 
@@ -269,9 +259,13 @@ describe( 'core/user user-input-settings', () => {
 						.dispatch( CORE_USER )
 						.receiveGetSurveyTimeouts( [] );
 
-					registry
-						.dispatch( CORE_USER )
-						.receiveGetUserInputSettings( settings );
+					await Promise.all(
+						questionsArray.map( async ( question ) => {
+							await registry
+								.dispatch( CORE_USER )
+								.setUserInputSetting( question, [ 'other' ] );
+						} )
+					);
 
 					registry
 						.dispatch( CORE_USER )
