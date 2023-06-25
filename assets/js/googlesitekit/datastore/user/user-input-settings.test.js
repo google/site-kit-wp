@@ -48,7 +48,7 @@ describe( 'core/user user-input-settings', () => {
 		},
 		goals: {
 			values: [ 'goal1', 'goal2' ],
-			scope: 'site',
+			scope: 'user',
 		},
 	};
 	const coreUserInputSettings = {
@@ -168,6 +168,104 @@ describe( 'core/user user-input-settings', () => {
 						.getErrorForAction( 'saveUserInputSettings', args )
 				).toMatchObject( response );
 				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should trigger survey if there is no error and answers conatin "Other"', async () => {
+				provideUserAuthentication( registry );
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				const settingsResponse = {
+					...coreUserInputSettingsExpectedResponse,
+					goals: {
+						...coreUserInputSettingsExpectedResponse.goals,
+						values: [ 'other' ],
+					},
+				};
+				const settings = {
+					...coreUserInputSettings,
+					goals: [ 'other' ],
+				};
+
+				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+					body: settingsResponse,
+					status: 200,
+				} );
+				muteFetch( surveyTriggerEndpoint );
+
+				await registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( 'goals', [ 'other' ] );
+
+				await registry.dispatch( CORE_USER ).saveUserInputSettings();
+
+				expect( fetchMock ).toHaveFetched(
+					coreUserInputSettingsEndpointRegExp,
+					{
+						body: {
+							data: {
+								settings,
+							},
+						},
+					}
+				);
+
+				expect(
+					registry.select( CORE_USER ).getUserInputSettings()
+				).toEqual( settingsResponse );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getSurveyTimeouts' )
+				);
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUserInputSettings' )
+				);
+
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: {
+							triggerID: 'userInput_answered_other__goals',
+						},
+					},
+				} );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			it( 'should not trigger survey if there is an error, even though answers conatin "Other"', async () => {
+				const settings = {
+					purpose: [ 'other' ],
+					...coreUserInputSettings,
+				};
+
+				const args = [ settings ];
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( coreUserInputSettingsEndpointRegExp, {
+					body: response,
+					status: 500,
+				} );
+
+				await registry
+					.dispatch( CORE_USER )
+					.saveUserInputSettings( ...args );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getErrorForAction( 'saveUserInputSettings', args )
+				).toMatchObject( response );
+				expect( console ).toHaveErrored();
+
+				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 			} );
 		} );
 
