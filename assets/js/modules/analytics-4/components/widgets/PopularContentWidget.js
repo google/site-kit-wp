@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -41,10 +42,14 @@ import {
 } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
-import { numFmt } from '../../../../util';
+import { getFullURL, numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
 function PopularContentWidget( { Widget } ) {
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -83,9 +88,15 @@ function PopularContentWidget( { Widget } ) {
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ title, url ] = fieldValue;
+				const permaLink = getFullURL( siteURL, url.value );
 
 				return (
-					<Link href={ url.value } title={ title.value }>
+					<Link
+						href={ permaLink }
+						title={ title.value }
+						external
+						hideExternalIndicator
+					>
 						{ title.value }
 					</Link>
 				);
