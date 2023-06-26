@@ -108,16 +108,18 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 			makeFilter( 'date_range_0', 1 )
 		)?.[ 0 ].dimensionValues?.[ 0 ].value || '-';
 
-	const currentTopTrafficSourceUsers = trafficSourceReport?.rows
-		.filter( makeFilter( 'date_range_0', 1 ) )
-		.reduce( reducer, 0 );
+	const currentTopTrafficSourceUsers =
+		trafficSourceReport?.rows
+			.filter( makeFilter( 'date_range_0', 1 ) )
+			.reduce( reducer, 0 ) || 0;
 	const relativeCurrentTopTrafficSourceUsers = totalUsers
 		? currentTopTrafficSourceUsers / totalUsers
 		: 0;
 
-	const previousTopTrafficSourceUsers = trafficSourceReport?.rows
-		.filter( makeFilter( 'date_range_1', 1 ) )
-		.reduce( reducer, 0 );
+	const previousTopTrafficSourceUsers =
+		trafficSourceReport?.rows
+			.filter( makeFilter( 'date_range_1', 1 ) )
+			.reduce( reducer, 0 ) || 0;
 	const relativePreviousTopTrafficSourceUsers = totalUsers
 		? previousTopTrafficSourceUsers / totalUsers
 		: 0;
