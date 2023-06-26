@@ -15,6 +15,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import faker from 'faker';
+import { capitalize } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -24,13 +30,10 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { getAnalytics4MockResponse } from '../../utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PopularContentWidget from './PopularContentWidget';
-import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -59,7 +62,19 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		provideAnalytics4MockReport( registry, reportOptions );
+		const report = getAnalytics4MockResponse( reportOptions );
+		report.rows = report.rows.map( ( row ) => ( {
+			...row,
+			dimensionValues: row.dimensionValues.map( ( dimensionValue, i ) =>
+				i === 0
+					? { value: capitalize( faker.lorem.words( 10 ) ) }
+					: dimensionValue
+			),
+		} ) );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
+			options: reportOptions,
+		} );
 	},
 };
 Ready.scenario = {
