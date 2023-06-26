@@ -80,10 +80,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 			return true;
 		}
 
-		return (
-			select( CORE_USER ).canViewSharedModule( 'analytics' ) ||
-			select( CORE_USER ).canViewSharedModule( 'analytics-4' )
-		);
+		return select( CORE_USER ).canViewSharedModule( 'analytics' );
 	} );
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
