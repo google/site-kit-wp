@@ -35,8 +35,8 @@ import {
 	step,
 	setSearchConsoleProperty,
 	setupAnalytics,
+	setupAnalytics4,
 } from '../utils';
-import { setupAnalytics4 } from '../utils/setup-analytics';
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {

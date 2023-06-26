@@ -13,7 +13,7 @@ const defaultAnalyticsSettings = {
 
 const defaultAnalytics4Settings = {
 	propertyID: '500',
-	webDataStreamID: '500',
+	webDataStreamID: '600',
 	measurementID: 'G-700',
 	useSnippet: true,
 };
