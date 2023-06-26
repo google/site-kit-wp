@@ -11,6 +11,18 @@ const defaultSettings = {
 	useSnippet: true,
 };
 
+const defaultAnalytics4Settings = {
+	// ownerID: 1,
+	propertyID: '500',
+	webDataStreamID: '500',
+	measurementID: 'G-700',
+	useSnippet: true,
+	// googleTagID: 'GT-800',
+	// googleTagAccountID: '900',
+	// googleTagContainerID: '1000',
+	// googleTagLastSyncedAtMs: 1687783271577,
+};
+
 /**
  * Activates the Analytics module and complete the setup process.
  *
@@ -37,6 +49,14 @@ export async function setupAnalytics( settingsOverrides = {} ) {
 		path: 'google-site-kit/v1/modules/analytics/data/settings',
 		data: {
 			data: settings,
+		},
+	} );
+
+	await wpApiFetch( {
+		method: 'post',
+		path: 'google-site-kit/v1/modules/analytics-4/data/settings',
+		data: {
+			data: defaultAnalytics4Settings,
 		},
 	} );
 }
