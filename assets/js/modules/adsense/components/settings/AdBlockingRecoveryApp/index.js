@@ -1,7 +1,5 @@
 /**
- * EntityBannerNotifications component.
- *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +22,26 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { ActivationBanner } from '../../modules/analytics-4/components/dashboard';
-import ZeroDataNotifications from './ZeroDataStateNotifications';
-import useViewOnly from '../../hooks/useViewOnly';
+import Header from '../../../../../components/Header';
+import HelpMenu from '../../../../../components/help/HelpMenu';
+import { Cell, Grid, Row } from '../../../../../material-components';
+import SetupMain from './SetupMain';
 
-export default function EntityBannerNotifications() {
-	const viewOnly = useViewOnly();
-
+export default function AdBlockingRecoveryApp() {
 	return (
 		<Fragment>
-			{ ! viewOnly && <ActivationBanner /> }
-			<ZeroDataNotifications />
+			<Header>
+				<HelpMenu />
+			</Header>
+			<div className="googlesitekit-ad-blocking-recovery googlesitekit-module-page">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<SetupMain />
+						</Cell>
+					</Row>
+				</Grid>
+			</div>
 		</Fragment>
 	);
 }

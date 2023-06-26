@@ -54,7 +54,6 @@ const { useSelect } = Data;
 export default function BannerNotifications() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const userInputEnabled = useFeature( 'userInput' );
-	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 	const gteSupportEnabled = useFeature( 'gteSupport' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
@@ -113,7 +112,7 @@ export default function BannerNotifications() {
 			{ ga4ReportingEnabled &&
 				analyticsModuleConnected &&
 				ga4ModuleConnected && <SwitchedToGA4Banner /> }
-			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
+			<ActivationBanner />
 			{ gteSupportEnabled &&
 				ga4ModuleConnected &&
 				hasGTMScope &&

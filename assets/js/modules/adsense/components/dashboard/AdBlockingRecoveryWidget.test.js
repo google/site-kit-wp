@@ -32,7 +32,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
-	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import {
@@ -57,7 +57,7 @@ describe( 'AdSenseConnectCTA', () => {
 		accountStatus: ACCOUNT_STATUS_READY,
 		siteStatus: SITE_STATUS_READY,
 		adBlockingRecoverySetupStatus:
-			AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
 	};
 
 	const { Widget, WidgetNull } =
@@ -132,7 +132,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'the setup completed timestamp is less than three weeks',
 				ACCOUNT_STATUS_READY,
 				SITE_STATUS_READY,
-				AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
 				true,
 				false,
 				timestampLessThanThreeWeeksAgo,
