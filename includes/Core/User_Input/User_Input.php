@@ -84,18 +84,20 @@ class User_Input {
 	 * @param Context      $context         Plugin context.
 	 * @param Options      $options         Optional. Options instance. Default a new instance.
 	 * @param User_Options $user_options    Optional. User_Options instance. Default a new instance.
+	 * @param Survey_Queue $survey_queue    Optional. Survey_Queue instance. Default a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
-		User_Options $user_options = null
+		User_Options $user_options = null,
+		Survey_Queue $survey_queue = null
 	) {
 		$this->site_specific_answers = new Site_Specific_Answers( $options ?: new Options( $context ) );
 		$this->user_options          = $user_options ?: new User_Options( $context );
 		$this->user_specific_answers = new User_Specific_Answers( $this->user_options );
 		$this->rest_controller       = new REST_User_Input_Controller(
 			$this,
-			new Survey_Queue( $this->user_options )
+			$survey_queue ?: new Survey_Queue( $this->user_options )
 		);
 	}
 
