@@ -36,6 +36,7 @@ import {
 	setSearchConsoleProperty,
 	setupAnalytics,
 } from '../utils';
+import { setupAnalytics4 } from '../utils/setup-analytics';
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
@@ -127,6 +128,7 @@ describe( 'User Input Settings', () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
 		await setupAnalytics();
+		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 
@@ -156,6 +158,7 @@ describe( 'User Input Settings', () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
 		await setupAnalytics();
+		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 

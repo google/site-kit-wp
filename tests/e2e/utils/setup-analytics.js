@@ -3,7 +3,7 @@
  */
 import { wpApiFetch } from './wp-api-fetch';
 
-const defaultSettings = {
+const defaultAnalyticsSettings = {
 	accountID: 100,
 	propertyID: 200,
 	profileID: 300,
@@ -12,19 +12,14 @@ const defaultSettings = {
 };
 
 const defaultAnalytics4Settings = {
-	// ownerID: 1,
 	propertyID: '500',
 	webDataStreamID: '500',
 	measurementID: 'G-700',
 	useSnippet: true,
-	// googleTagID: 'GT-800',
-	// googleTagAccountID: '900',
-	// googleTagContainerID: '1000',
-	// googleTagLastSyncedAtMs: 1687783271577,
 };
 
 /**
- * Activates the Analytics module and complete the setup process.
+ * Activates the Analytics module and completes the UA setup process.
  *
  * @since 1.0.0
  *
@@ -32,7 +27,7 @@ const defaultAnalytics4Settings = {
  */
 export async function setupAnalytics( settingsOverrides = {} ) {
 	const settings = {
-		...defaultSettings,
+		...defaultAnalyticsSettings,
 		...settingsOverrides,
 	};
 	// Activate the module.
@@ -51,12 +46,34 @@ export async function setupAnalytics( settingsOverrides = {} ) {
 			data: settings,
 		},
 	} );
+}
 
+/**
+ * Activates the Analytics module and completes the GA4 setup process.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} settingsOverrides Optional settings to override the defaults.
+ */
+export async function setupAnalytics4( settingsOverrides = {} ) {
+	const settings = {
+		...defaultAnalytics4Settings,
+		...settingsOverrides,
+	};
+	// Activate the module.
+	await wpApiFetch( {
+		method: 'post',
+		path: 'google-site-kit/v1/core/modules/data/activation',
+		data: {
+			data: { slug: 'analytics', active: true },
+		},
+	} );
+	// Set placeholder connection data.
 	await wpApiFetch( {
 		method: 'post',
 		path: 'google-site-kit/v1/modules/analytics-4/data/settings',
 		data: {
-			data: defaultAnalytics4Settings,
+			data: settings,
 		},
 	} );
 }
