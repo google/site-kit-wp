@@ -62,9 +62,6 @@ WithAdBlockingRecoveryTagEnabled.args = {
 		} );
 	},
 };
-WithAdBlockingRecoveryTagEnabled.parameters = {
-	features: [ 'adBlockerDetection' ],
-};
 
 export const WithBothTogglesEnabled = Template.bind( {} );
 WithBothTogglesEnabled.storyName = 'With Both The Toggles Enabled';
@@ -76,9 +73,6 @@ WithBothTogglesEnabled.args = {
 			useAdBlockerDetectionErrorSnippet: true,
 		} );
 	},
-};
-WithBothTogglesEnabled.parameters = {
-	features: [ 'adBlockerDetection' ],
 };
 
 export default {

@@ -41,39 +41,30 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		adBlockingRecoverySetupStatus: '',
 	};
 
-	it.each( [
-		[ 'the Ad blocker detection feature flag is not enabled', false ],
-		[ 'Ad blocker recovery setup status is empty', true ],
-	] )(
-		'should not render the Ad blocking recovery toggle when %s',
-		( testName, adBlockerDetectionEnabled ) => {
-			const { container } = render( <AdBlockingRecoveryToggle />, {
-				features: [].concat(
-					adBlockerDetectionEnabled ? 'adBlockerDetection' : []
-				),
-				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					registry
-						.dispatch( MODULES_ADSENSE )
-						.receiveGetSettings( validSettings );
-				},
-			} );
+	it( 'should not render the Ad blocking recovery toggle when Ad blocker recovery setup status is empty', () => {
+		const { container } = render( <AdBlockingRecoveryToggle />, {
+			setupRegistry: ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetSettings( validSettings );
+			},
+		} );
 
-			expect(
-				container.querySelector(
-					'.googlesitekit-settings-module__ad-blocking-recovery-toggles'
-				)
-			).toBeNull();
+		expect(
+			container.querySelector(
+				'.googlesitekit-settings-module__ad-blocking-recovery-toggles'
+			)
+		).toBeNull();
 
-			expect( container ).toBeEmptyDOMElement();
-		}
-	);
+		expect( container ).toBeEmptyDOMElement();
+	} );
 
 	it( 'should render the Ad blocking recovery toggle when the conditions are met', () => {
 		const { container, getByLabelText, getAllByRole } = render(
