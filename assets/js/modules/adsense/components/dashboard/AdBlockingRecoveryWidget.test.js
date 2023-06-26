@@ -44,7 +44,7 @@ import {
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { WEEK_IN_SECONDS, DAY_IN_SECONDS } from '../../../../util';
 
-describe( 'AdSenseConnectCTA', () => {
+describe( 'AdBlockingRecoveryWidget', () => {
 	let registry;
 	const timestampThreeWeeksAgo =
 		Math.floor( Date.now() / 1000 ) - WEEK_IN_SECONDS * 3;
@@ -137,6 +137,16 @@ describe( 'AdSenseConnectCTA', () => {
 				false,
 				timestampLessThanThreeWeeksAgo,
 			],
+			[
+				'an existing ad blocker recovery tag is detected',
+				ACCOUNT_STATUS_READY,
+				SITE_STATUS_READY,
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+				true,
+				false,
+				timestampThreeWeeksAgo,
+				'pub-3467161886473746',
+			],
 		] )(
 			'should not render the widget when %s',
 			(
@@ -146,7 +156,8 @@ describe( 'AdSenseConnectCTA', () => {
 				adBlockingRecoverySetupStatus,
 				isModuleConnected,
 				isNotificationDismissed,
-				setupCompletedTimestamp
+				setupCompletedTimestamp,
+				existingAdBlockingRecoveryTag = null
 			) => {
 				provideModules( registry, [
 					{
@@ -163,6 +174,11 @@ describe( 'AdSenseConnectCTA', () => {
 					adBlockingRecoverySetupStatus,
 					setupCompletedTimestamp,
 				} );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetExistingAdBlockingRecoveryTag(
+						existingAdBlockingRecoveryTag
+					);
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedItems( [
@@ -231,6 +247,9 @@ describe( 'AdSenseConnectCTA', () => {
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
 
 			container = render(
 				<div>
