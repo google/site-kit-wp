@@ -39,28 +39,24 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			ACCOUNT_STATUS_PENDING,
 			SITE_STATUS_READY,
 			'',
-			false,
 		],
 		[
 			'Adsense account status is not ready',
 			ACCOUNT_STATUS_PENDING,
 			SITE_STATUS_READY,
 			'',
-			true,
 		],
 		[
 			'Adsense site status is not ready',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			'',
-			true,
 		],
 		[
 			'Ad blocking recovery status is not an empty string',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
-			true,
 		],
 	] )(
 		'should not render the CTA when %s',
@@ -68,13 +64,9 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			testName,
 			accountStatus,
 			siteStatus,
-			adBlockingRecoverySetupStatus,
-			adBlockerDetectionEnabled
+			adBlockingRecoverySetupStatus
 		) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
-				features: [].concat(
-					adBlockerDetectionEnabled ? 'adBlockerDetection' : []
-				),
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
