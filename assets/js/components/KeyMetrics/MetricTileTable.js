@@ -37,10 +37,10 @@ export default function MetricTileTable( props ) {
 		zeroState: ZeroState,
 	} = props;
 
-	let tbody = null;
+	let tileBody = null;
 
 	if ( rows?.length > 0 ) {
-		tbody = rows
+		tileBody = rows
 			.slice( 0, limit || rows.length )
 			.map( ( row, rowIndex ) => (
 				<div key={ rowIndex } className="googlesitekit-table__body-row">
@@ -73,7 +73,7 @@ export default function MetricTileTable( props ) {
 				</div>
 			) );
 	} else if ( !! ZeroState ) {
-		tbody = (
+		tileBody = (
 			<div className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
 				<div className="googlesitekit-table__body-item">
 					<ZeroState />
@@ -98,7 +98,7 @@ export default function MetricTileTable( props ) {
 					) }
 					{ ! loading && (
 						<div className="googlesitekit-km-widget-tile__table">
-							{ tbody }
+							{ tileBody }
 						</div>
 					) }
 				</div>
