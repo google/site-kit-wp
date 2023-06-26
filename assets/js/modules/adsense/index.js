@@ -24,7 +24,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+import {
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+} from '../../googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
 import { SetupMain as SetupMainV2 } from './components/setup/v2';
 import {
@@ -33,7 +36,7 @@ import {
 	SettingsView,
 } from './components/settings';
 import {
-	AdBlockerRecoveryWidget,
+	AdBlockingRecoveryWidget,
 	AdBlockerWarningWidget,
 	AdSenseConnectCTAWidget,
 	DashboardTopEarningPagesWidget,
@@ -49,6 +52,7 @@ import {
 import { isFeatureEnabled } from '../../features';
 import { negateDefined } from '../../util/negate';
 import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
+import { ConnectAdSenseCTATileWidget } from './components/widgets';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -96,15 +100,32 @@ const isAnalytics4Active = ( select ) =>
 export const registerWidgets = ( widgets ) => {
 	if ( isFeatureEnabled( 'adBlockerDetection' ) ) {
 		widgets.registerWidget(
-			'adBlockerRecovery',
+			'adBlockingRecovery',
 			{
-				Component: AdBlockerRecoveryWidget,
+				Component: AdBlockingRecoveryWidget,
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'adsense' ],
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+		);
+	}
+
+	if ( isFeatureEnabled( 'userInput' ) ) {
+		/*
+		 * Key metrics widgets.
+		 */
+		widgets.registerWidget(
+			'keyMetricsConnectAdSenseCTATile',
+			{
+				Component: ConnectAdSenseCTATileWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'adsense', 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
 	}
 
