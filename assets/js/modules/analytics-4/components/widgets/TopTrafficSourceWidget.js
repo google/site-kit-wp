@@ -37,6 +37,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import { numFmt } from '../../../../util';
+import { get } from 'lodash';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -93,29 +94,30 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 			)
 	);
 
-	const totalUsers =
-		parseInt(
-			totalUsersReport?.rows?.[ 1 ]?.metricValues[ 0 ]?.value,
-			10
-		) || 0;
+	const makeFilter = ( dateRange, dateRangeIndex ) => ( row ) =>
+		get( row, `dimensionValues.${ dateRangeIndex }.value` ) === dateRange;
+	const reducer = ( acc, row ) =>
+		acc + ( parseInt( get( row, 'metricValues.0.value' ), 10 ) || 0 );
+
+	const totalUsers = totalUsersReport?.rows
+		.filter( makeFilter( 'date_range_0', 0 ) )
+		.reduce( reducer, 0 );
 
 	const topTrafficSource =
-		trafficSourceReport?.rows?.[ 1 ]?.dimensionValues[ 0 ]?.value || '-';
+		trafficSourceReport?.rows.filter(
+			makeFilter( 'date_range_0', 1 )
+		)?.[ 0 ].dimensionValues?.[ 0 ].value || '-';
 
-	const currentTopTrafficSourceUsers =
-		parseInt(
-			trafficSourceReport?.rows?.[ 1 ]?.metricValues[ 0 ]?.value,
-			10
-		) || 0;
+	const currentTopTrafficSourceUsers = trafficSourceReport?.rows
+		.filter( makeFilter( 'date_range_0', 1 ) )
+		.reduce( reducer, 0 );
 	const relativeCurrentTopTrafficSourceUsers = totalUsers
 		? currentTopTrafficSourceUsers / totalUsers
 		: 0;
 
-	const previousTopTrafficSourceUsers =
-		parseInt(
-			trafficSourceReport?.rows?.[ 0 ]?.metricValues[ 0 ]?.value,
-			10
-		) || 0;
+	const previousTopTrafficSourceUsers = trafficSourceReport?.rows
+		.filter( makeFilter( 'date_range_1', 1 ) )
+		.reduce( reducer, 0 );
 	const relativePreviousTopTrafficSourceUsers = totalUsers
 		? previousTopTrafficSourceUsers / totalUsers
 		: 0;
