@@ -275,9 +275,6 @@ final class Authentication {
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
 		$this->initial_version->register();
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
-			$this->user_input->register();
-		}
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );

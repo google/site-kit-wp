@@ -159,6 +159,10 @@ final class Plugin {
 
 				$user_input = new Core\User_Input\User_Input( $this->context, $options, $user_options, $survey_queue );
 
+				if ( Feature_Flags::enabled( 'userInput' ) ) {
+					$user_input->register();
+				}
+
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients, $user_input );
 				$authentication->register();
 
