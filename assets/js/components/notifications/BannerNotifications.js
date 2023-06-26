@@ -112,7 +112,7 @@ export default function BannerNotifications() {
 			{ ga4ReportingEnabled &&
 				analyticsModuleConnected &&
 				ga4ModuleConnected && <SwitchedToGA4Banner /> }
-			{ <ActivationBanner /> }
+			<ActivationBanner />
 			{ gteSupportEnabled &&
 				ga4ModuleConnected &&
 				hasGTMScope &&
