@@ -62,6 +62,14 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
 			true,
 		],
+		[
+			'an existing ad blocker recovery tag is detected',
+			ACCOUNT_STATUS_READY,
+			SITE_STATUS_ADDED,
+			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+			true,
+			'pub-3467161886473746',
+		],
 	] )(
 		'should not render the CTA when %s',
 		(
@@ -69,7 +77,8 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			accountStatus,
 			siteStatus,
 			adBlockingRecoverySetupStatus,
-			adBlockerDetectionEnabled
+			adBlockerDetectionEnabled,
+			existingAdBlockingRecoveryTag = null
 		) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
 				features: [].concat(
@@ -88,6 +97,11 @@ describe( 'AdBlockingRecoveryCTA', () => {
 						siteStatus,
 						adBlockingRecoverySetupStatus,
 					} );
+					registry
+						.dispatch( MODULES_ADSENSE )
+						.receiveGetExistingAdBlockingRecoveryTag(
+							existingAdBlockingRecoveryTag
+						);
 				},
 			} );
 
@@ -119,6 +133,9 @@ describe( 'AdBlockingRecoveryCTA', () => {
 					siteStatus: SITE_STATUS_READY,
 					adBlockingRecoverySetupStatus: '',
 				} );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetExistingAdBlockingRecoveryTag( null );
 			},
 		} );
 
