@@ -48,9 +48,6 @@ Ready.args = {
 			.receiveGetSettings( validSettings );
 	},
 };
-Ready.parameters = {
-	features: [ 'adBlockerDetection' ],
-};
 
 export const WithAdBlockingRecoveryTagEnabled = Template.bind( {} );
 WithAdBlockingRecoveryTagEnabled.storyName =

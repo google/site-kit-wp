@@ -79,7 +79,6 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const { container, getByLabelText, getAllByRole } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -131,7 +130,6 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const { getByLabelText, getAllByRole, queryByLabelText } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -171,7 +169,6 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const { getByLabelText, getAllByRole, container } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
