@@ -21,6 +21,7 @@
  */
 import '@material/web/checkbox/checkbox';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -44,6 +45,7 @@ export default function Checkbox( {
 	tabIndex,
 	onKeyDown,
 	loading,
+	alignLeft,
 } ) {
 	const ref = useRef( null );
 
@@ -92,7 +94,11 @@ export default function Checkbox( {
 	const labelID = `${ id }-label`;
 
 	return (
-		<div className="googlesitekit-component-gm3_checkbox">
+		<div
+			className={ classnames( 'googlesitekit-component-gm3_checkbox', {
+				'googlesitekit-component-gm3_checkbox--align-left': alignLeft,
+			} ) }
+		>
 			{ loading && (
 				<div className="googlesitekit-component-gm3_checkbox--loading">
 					<Spinner isSaving />
@@ -132,6 +138,7 @@ Checkbox.propTypes = {
 	children: PropTypes.node.isRequired,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	loading: PropTypes.bool,
+	alignLeft: PropTypes.bool,
 };
 
 Checkbox.defaultProps = {
@@ -140,4 +147,5 @@ Checkbox.defaultProps = {
 	tabIndex: undefined,
 	onKeyDown: null,
 	loading: false,
+	alignLeft: false,
 };

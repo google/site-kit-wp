@@ -114,12 +114,6 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
-
-		.googlesitekit-opt-in {
-			// Compensate for the padding & absolute positioning of the checkbox
-			// provided by the OptIn component.
-			margin-left: -11px;
-		}
 	}
 
 	.googlesitekit-view-only-menu--user-can-authenticate {
