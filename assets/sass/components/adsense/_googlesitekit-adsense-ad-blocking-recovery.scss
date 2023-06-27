@@ -16,7 +16,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-widget--adBlockerRecovery {
+	.googlesitekit-widget--adBlockingRecovery {
 
 		.googlesitekit-publisher-win,
 		.mdc-layout-grid {
@@ -24,7 +24,7 @@
 		}
 	}
 
-	.googlesitekit-widget--adBlockerRecovery__content {
+	.googlesitekit-widget--adBlockingRecovery__content {
 		margin-bottom: 30px;
 
 		p {
@@ -32,7 +32,7 @@
 		}
 	}
 
-	.googlesitekit-widget--adBlockerRecovery__graphics {
+	.googlesitekit-widget--adBlockingRecovery__graphics {
 		text-align: center;
 
 		p {
@@ -127,6 +127,77 @@
 				margin-left: 25px;
 				white-space: nowrap;
 			}
+		}
+	}
+
+	.googlesitekit-settings-module__ad-blocking-recovery-toggles {
+		margin-top: 20px;
+
+		.googlesitekit-settings-module__meta-item {
+			margin-bottom: 0;
+
+			p {
+				left: 42px;
+				margin-top: 10px;
+				position: relative;
+			}
+		}
+
+		.googlesitekit-settings-notice {
+			margin-bottom: 0;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__step {
+
+		.googlesitekit-stepper__step-content {
+
+			> p {
+				color: $c-surfaces-on-surface-variant;
+				font-size: $fs-body-lg;
+				letter-spacing: $ls-s;
+			}
+
+			> p:first-child {
+				margin-top: $grid-gap-phone / 2;
+			}
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__step-place-tags {
+
+		p.googlesitekit-ad-blocking-recovery__error-protection-tag-info {
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
+			margin: 0 0 20px 34px; // Aligns the paragraph with the checkbox.
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__step-create-message {
+
+		.googlesitekit-ad-blocking-recovery__create-message-footer-actions {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			gap: $grid-gap-desktop + 2px; // The reference designs implement a spacing of 26px between the actions.
+
+			.googlesitekit-cta-link {
+				color: $c-surfaces-on-surface-variant;
+				font-weight: $fw-medium;
+			}
+		}
+
+		.googlesitekit-ad-blocking-recovery__create-message-footer {
+			display: inline-block;
+			margin-top: 12px;
+		}
+
+		p.googlesitekit-ad-blocking-recovery__create-message-footer-note {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin-top: $grid-gap-desktop;
 		}
 	}
 }

@@ -22,24 +22,34 @@
 import Button from './Button';
 import Checkbox from './Checkbox';
 import Chip from './Chip';
+import CircularProgress from './CircularProgress';
 import Dialog from './Dialog';
+import DialogTitle from './DialogTitle';
+import DialogContent from './DialogContent';
+import DialogFooter from './DialogFooter';
 import Menu from './Menu';
 import ProgressBar from './ProgressBar';
 import Radio from './Radio';
 import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
+import TextField from './TextField';
 import Tooltip from './Tooltip';
 
 const Components = {
 	Button,
 	Checkbox,
 	Chip,
+	CircularProgress,
 	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogFooter,
 	Menu,
 	ProgressBar,
 	Radio,
 	SpinnerButton,
 	Switch,
+	TextField,
 	Tooltip,
 };
 

@@ -22,7 +22,7 @@
 import AdBlockingRecoveryCTA from './AdBlockingRecoveryCTA';
 import { render, provideModules } from '../../../../../../tests/js/test-utils';
 import {
-	AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import {
@@ -31,36 +31,26 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
-import { enabledFeatures } from '../../../../features';
 
 describe( 'AdBlockingRecoveryCTA', () => {
 	it.each( [
-		[
-			'the Ad blocker detection feature flag is not enabled',
-			ACCOUNT_STATUS_PENDING,
-			SITE_STATUS_READY,
-			'',
-			false,
-		],
 		[
 			'Adsense account status is not ready',
 			ACCOUNT_STATUS_PENDING,
 			SITE_STATUS_READY,
 			'',
-			true,
 		],
 		[
 			'Adsense site status is not ready',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			'',
-			true,
 		],
 		[
 			'Ad blocking recovery status is not an empty string',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
-			AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
 			true,
 		],
 	] )(
@@ -69,14 +59,10 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			testName,
 			accountStatus,
 			siteStatus,
-			adBlockingRecoverySetupStatus,
-			adBlockerDetectionEnabled
+			adBlockingRecoverySetupStatus
 		) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
 				setupRegistry: ( registry ) => {
-					if ( adBlockerDetectionEnabled ) {
-						enabledFeatures.add( 'adBlockerDetection' );
-					}
 					provideModules( registry, [
 						{
 							slug: 'adsense',
@@ -107,7 +93,6 @@ describe( 'AdBlockingRecoveryCTA', () => {
 	it( 'should render the CTA when Ad Blocking Recovery is not set up', () => {
 		const { container } = render( <AdBlockingRecoveryCTA />, {
 			setupRegistry: ( registry ) => {
-				enabledFeatures.add( 'adBlockerDetection' );
 				provideModules( registry, [
 					{
 						slug: 'adsense',

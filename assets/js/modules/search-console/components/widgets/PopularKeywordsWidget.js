@@ -22,26 +22,116 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_SEARCH_CONSOLE,
+} from '../../datastore/constants';
+import { generateDateRangeArgs } from '../../util';
+import { numFmt } from '../../../../util';
+import Link from '../../../../components/Link';
+import useViewOnly from '../../../../hooks/useViewOnly';
+import {
+	MetricTileTable,
+	whenKeyMetricsWidgetVisible,
+} from '../../../../components/KeyMetrics';
+import { ZeroDataMessage } from '../common';
 
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
-export default function PopularKeywordsWidget( { Widget, WidgetNull } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
+function PopularKeywordsWidget( { Widget } ) {
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
 	);
 
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
+	const reportOptions = {
+		...dates,
+		dimensions: 'query',
+		limit: 100,
+	};
+
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getReport( reportOptions )
+	);
+
+	const loading = useInViewSelect(
+		( select ) =>
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
+			)
+	);
+
+	const keywordsDateRangeArgs = generateDateRangeArgs( dates );
+
+	const columns = [
+		{
+			field: 'keys.0',
+			Component: ( { fieldValue } ) => {
+				const searchAnalyticsURL = useSelect( ( select ) => {
+					return ! viewOnlyDashboard
+						? select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
+								{
+									...keywordsDateRangeArgs,
+									// The exclamation mark at the beginning of the query specifies that the term
+									// should be treated as an exact match on the SC search results page.
+									query: `!${ fieldValue }`,
+								}
+						  )
+						: null;
+				} );
+
+				return (
+					<Link
+						href={ searchAnalyticsURL }
+						external
+						hideExternalIndicator
+					>
+						{ fieldValue }
+					</Link>
+				);
+			},
+		},
+		{
+			field: 'ctr',
+			Component: ( { fieldValue } ) => (
+				<strong>
+					{ sprintf(
+						/* translators: %s: clickthrough rate value */
+						__( '%s CTR', 'google-site-kit' ),
+						numFmt( fieldValue, '%' )
+					) }
+				</strong>
+			),
+		},
+	];
+
+	const rows = ( report || [] ).sort(
+		( { ctr: ctrA = 0 }, { ctr: ctrB = 0 } ) => ctrB - ctrA
+	);
 
 	return (
-		<Widget>
-			<div>TODO: UI for PopularKeywordsWidget</div>
-		</Widget>
+		<MetricTileTable
+			Widget={ Widget }
+			title={ __( 'Top performing keywords', 'google-site-kit' ) }
+			loading={ loading }
+			rows={ rows }
+			columns={ columns }
+			zeroState={ ZeroDataMessage }
+			limit={ 3 }
+		/>
 	);
 }
 
@@ -49,3 +139,5 @@ PopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenKeyMetricsWidgetVisible()( PopularKeywordsWidget );

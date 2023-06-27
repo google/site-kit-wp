@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -33,7 +34,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import Tick from '../../../svg/icons/tick.svg';
 import { STEP_STATUS } from './constants';
 
-export default function Stepper( { children, activeStep } ) {
+export default function Stepper( { children, activeStep, className } ) {
 	const childCount = Children.count( children );
 
 	function getStepStatus( index = -1 ) {
@@ -75,14 +76,19 @@ export default function Stepper( { children, activeStep } ) {
 	}
 
 	return (
-		<ol className="googlesitekit-stepper">
+		<ol className={ classnames( 'googlesitekit-stepper', className ) }>
 			{ Children.map( children, ( child, childIndex ) => {
 				const stepStatus = getStepStatus( childIndex, activeStep );
 
 				const childNumber = childIndex + 1;
 
 				return (
-					<li className="googlesitekit-stepper__step">
+					<li
+						className={ classnames(
+							'googlesitekit-stepper__step',
+							child.props.className
+						) }
+					>
 						<div className="googlesitekit-stepper__step-progress">
 							<span
 								className={ `googlesitekit-stepper__step-number googlesitekit-stepper__step-number--${ stepStatus }` }
@@ -113,4 +119,5 @@ Stepper.propTypes = {
 	children: PropTypes.node.isRequired,
 	// The zero-based index of the active step. If omitted or negative, all steps are in the upcoming state. If greater than the number of steps - 1, all steps are complete.
 	activeStep: PropTypes.number,
+	className: PropTypes.string,
 };

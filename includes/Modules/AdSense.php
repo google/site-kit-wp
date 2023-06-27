@@ -38,6 +38,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\AdSense\Tag_Guard;
@@ -48,7 +49,14 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsens
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
+use WP_REST_Response;
 
 /**
  * Class representing the AdSense module.
@@ -71,12 +79,44 @@ final class AdSense extends Module
 	const MODULE_SLUG = 'adsense';
 
 	/**
+	 * Ad_Blocking_Recovery_Tag instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Ad_Blocking_Recovery_Tag
+	 */
+	protected $ad_blocking_recovery_tag;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+		$this->ad_blocking_recovery_tag = new Ad_Blocking_Recovery_Tag( new Encrypted_Options( $this->options ) );
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		$this->ad_blocking_recovery_tag->register();
 
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render_platform_meta_tags' ) );
 
@@ -195,17 +235,18 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:adunits'       => array( 'service' => 'adsense' ),
-			'GET:accounts'      => array( 'service' => 'adsense' ),
-			'GET:alerts'        => array( 'service' => 'adsense' ),
-			'GET:clients'       => array( 'service' => 'adsense' ),
-			'GET:report'        => array(
+			'GET:accounts'                        => array( 'service' => 'adsense' ),
+			'GET:adunits'                         => array( 'service' => 'adsense' ),
+			'GET:alerts'                          => array( 'service' => 'adsense' ),
+			'GET:clients'                         => array( 'service' => 'adsense' ),
+			'GET:notifications'                   => array( 'service' => '' ),
+			'GET:report'                          => array(
 				'service'   => 'adsense',
 				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
 			),
-			'GET:notifications' => array( 'service' => '' ),
-			'GET:urlchannels'   => array( 'service' => 'adsense' ),
-			'GET:sites'         => array( 'service' => 'adsense' ),
+			'GET:sites'                           => array( 'service' => 'adsense' ),
+			'POST:sync-ad-blocking-recovery-tags' => array( 'service' => 'adsense' ),
+			'GET:urlchannels'                     => array( 'service' => 'adsense' ),
 		);
 	}
 
@@ -262,6 +303,43 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
+			case 'GET:notifications':
+				return function() {
+					$alerts = $this->get_data( 'alerts' );
+					if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
+						return array();
+					}
+					$alerts = array_filter(
+						$alerts,
+						function( Google_Service_Adsense_Alert $alert ) {
+							return 'SEVERE' === $alert->getSeverity();
+						}
+					);
+
+					// There is no SEVERE alert, return empty.
+					if ( empty( $alerts ) ) {
+						return array();
+					}
+
+					/**
+					 * First Alert
+					 *
+					 * @var Google_Service_Adsense_Alert $alert
+					 */
+					$alert = array_shift( $alerts );
+					return array(
+						array(
+							'id'            => 'adsense-notification',
+							'description'   => $alert->getMessage(),
+							'isDismissible' => true,
+							'format'        => 'large',
+							'severity'      => 'win-info',
+							'ctaURL'        => $this->get_account_url(),
+							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
+							'ctaTarget'     => '_blank',
+						),
+					);
+				};
 			case 'GET:report':
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
@@ -321,43 +399,6 @@ final class AdSense extends Module
 				}
 
 				return $this->create_adsense_earning_data_request( array_filter( $args ) );
-			case 'GET:notifications':
-				return function() {
-					$alerts = $this->get_data( 'alerts' );
-					if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
-						return array();
-					}
-					$alerts = array_filter(
-						$alerts,
-						function( Google_Service_Adsense_Alert $alert ) {
-							return 'SEVERE' === $alert->getSeverity();
-						}
-					);
-
-					// There is no SEVERE alert, return empty.
-					if ( empty( $alerts ) ) {
-						return array();
-					}
-
-					/**
-					 * First Alert
-					 *
-					 * @var Google_Service_Adsense_Alert $alert
-					 */
-					$alert = array_shift( $alerts );
-					return array(
-						array(
-							'id'            => 'adsense-notification',
-							'description'   => $alert->getMessage(),
-							'isDismissible' => true,
-							'format'        => 'large',
-							'severity'      => 'win-info',
-							'ctaURL'        => $this->get_account_url(),
-							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
-							'ctaTarget'     => '_blank',
-						),
-					);
-				};
 			case 'GET:sites':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -369,6 +410,13 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_sites->listAccountsSites( self::normalize_account_id( $data['accountID'] ) );
+			case 'POST:sync-ad-blocking-recovery-tags':
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['accountID'] ) ) {
+					return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
+				}
+				$service = $this->get_service( 'adsense' );
+				return $service->accounts->getAdBlockingRecoveryTag( self::normalize_account_id( $settings['accountID'] ) );
 			case 'GET:urlchannels':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -417,12 +465,25 @@ final class AdSense extends Module
 				return $response->getAlerts();
 			case 'GET:clients':
 				return array_map( array( self::class, 'filter_client_with_ids' ), $response->getAdClients() );
-			case 'GET:urlchannels':
-				return $response->getUrlChannels();
 			case 'GET:report':
 				return $response;
 			case 'GET:sites':
 				return $response->getSites();
+			case 'POST:sync-ad-blocking-recovery-tags':
+				$this->ad_blocking_recovery_tag->set(
+					array(
+						'tag'                   => $response->getTag(),
+						'error_protection_code' => $response->getErrorProtectionCode(),
+					)
+				);
+
+				return new WP_REST_Response(
+					array(
+						'success' => true,
+					)
+				);
+			case 'GET:urlchannels':
+				return $response->getUrlChannels();
 		}
 
 		return parent::parse_data_response( $data, $response );
