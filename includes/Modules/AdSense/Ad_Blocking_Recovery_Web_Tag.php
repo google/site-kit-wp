@@ -66,27 +66,20 @@ class Ad_Blocking_Recovery_Web_Tag extends Module_Web_Tag {
 	 * @since n.e.x.t
 	 */
 	protected function render() {
-
-		$ep_kses_allowed_html_tags = array(
-			'script' => array(
-				'async' => true,
-				'src'   => true,
-				'nonce' => true,
-			),
-		);
-
 		$tags = $this->ad_blocking_recovery_tag->get();
 
 		if ( empty( $tags['tag'] ) || empty( $option['error_protection_code'] ) ) {
 			return;
 		}
 
-		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
-		wp_kses( $tags['tag'], $ep_kses_allowed_html_tags );
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense Ad Blocking Recovery snippet added by Site Kit', 'google-site-kit' ) );
+		echo $tags['tag']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense Ad Blocking Recovery snippet added by Site Kit', 'google-site-kit' ) );
 		if ( $this->use_error_protection_snippet ) {
-			wp_kses( $tags['error_protection_code'], $ep_kses_allowed_html_tags );
+			printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit', 'google-site-kit' ) );
+			echo $tags['error_protection_code']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit', 'google-site-kit' ) );
 		}
-		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**
