@@ -81,21 +81,4 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 			'error_protection_code' => '',
 		);
 	}
-
-	/**
-	 * Gets the callback for sanitizing the ad blocking recovery tag before saving.
-	 *
-	 * @since 1.6.0
-	 *
-	 * @return callable|null
-	 */
-	protected function get_sanitize_callback() {
-		return function( $option ) {
-			if ( ! is_array( $option ) || ! isset( $option['tag'] ) || ! isset( $option['error_protection_code'] ) || ! is_string( $option['tag'] ) || ! is_string( $option['error_protection_code'] ) ) {
-				return $this->get_default();
-			}
-
-			return $option;
-		};
-	}
 }
