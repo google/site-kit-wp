@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryApp Component Stories.
+ * ConnectAdSenseCTATileWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -20,35 +20,45 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { provideModules } from '../../../../../../tests/js/utils';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import AdBlockingRecoveryApp from './AdBlockingRecoveryApp';
+import {
+	provideKeyMetrics,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
-const Template = () => <AdBlockingRecoveryApp />;
+const WidgetWithComponentProps = withWidgetComponentProps(
+	'keyMetricsConnectAdSenseCTATile'
+)( ConnectAdSenseCTATileWidget );
 
-export const Setup = Template.bind( {} );
-Setup.storyName = 'Setup';
-Setup.scenario = {
-	label: 'Global/AdBlockingRecoveryApp/Setup',
+const Template = () => <WidgetWithComponentProps />;
+
+export const Default = Template.bind( {} );
+Default.storyName = 'ConnectAdSenseCTATileWidget';
+Default.scenario = {
+	label: 'KeyMetrics/ConnectAdSenseCTATileWidget',
 	delay: 250,
+};
+Default.parameters = {
+	features: [ 'userInput' ],
 };
 
 export default {
-	title: 'Modules/AdSense/Settings/AdBlockingRecoveryApp',
+	title: 'Key Metrics/ConnectAdSenseCTATileWidget',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						active: true,
-						connected: true,
 						slug: 'adsense',
+						active: false,
+						connected: false,
 					},
 				] );
-
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveIsAdBlockerActive( false );
+				provideKeyMetrics( registry, {
+					widgetSlugs: [ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ],
+				} );
 			};
 
 			return (

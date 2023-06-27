@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\User_Input;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\User_Surveys\Survey_Queue;
 use WP_Error;
 use WP_User;
 
@@ -83,16 +84,21 @@ class User_Input {
 	 * @param Context      $context         Plugin context.
 	 * @param Options      $options         Optional. Options instance. Default a new instance.
 	 * @param User_Options $user_options    Optional. User_Options instance. Default a new instance.
+	 * @param Survey_Queue $survey_queue    Optional. Survey_Queue instance. Default a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
-		User_Options $user_options = null
+		User_Options $user_options = null,
+		Survey_Queue $survey_queue = null
 	) {
 		$this->site_specific_answers = new Site_Specific_Answers( $options ?: new Options( $context ) );
 		$this->user_options          = $user_options ?: new User_Options( $context );
 		$this->user_specific_answers = new User_Specific_Answers( $this->user_options );
-		$this->rest_controller       = new REST_User_Input_Controller( $this );
+		$this->rest_controller       = new REST_User_Input_Controller(
+			$this,
+			$survey_queue ?: new Survey_Queue( $this->user_options )
+		);
 	}
 
 	/**

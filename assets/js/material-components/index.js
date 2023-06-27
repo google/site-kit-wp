@@ -29,7 +29,6 @@ import { MDCDialog } from '@material/dialog';
 import { MDCCheckbox } from '@material/checkbox';
 import { MDCMenu } from '@material/menu';
 import Dialog, { DialogContent, DialogFooter } from '@material/react-dialog';
-import { CircularProgress } from '@material-ui/core';
 
 export * from './layout';
 export {
@@ -48,5 +47,4 @@ export {
 	Dialog,
 	DialogContent,
 	DialogFooter,
-	CircularProgress,
 };

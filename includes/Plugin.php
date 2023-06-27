@@ -154,7 +154,16 @@ final class Plugin {
 				$user_options = new Core\Storage\User_Options( $this->context, get_current_user_id() );
 				$assets       = new Core\Assets\Assets( $this->context );
 
-				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients );
+				$survey_queue = new Core\User_Surveys\Survey_Queue( $user_options );
+				$survey_queue->register();
+
+				$user_input = new Core\User_Input\User_Input( $this->context, $options, $user_options, $survey_queue );
+
+				if ( Feature_Flags::enabled( 'userInput' ) ) {
+					$user_input->register();
+				}
+
+				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients, $user_input );
 				$authentication->register();
 
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
@@ -177,7 +186,7 @@ final class Plugin {
 				$screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication );
 				$screens->register();
 
-				$user_surveys = new Core\User_Surveys\User_Surveys( $authentication, $user_options );
+				$user_surveys = new Core\User_Surveys\User_Surveys( $authentication, $user_options, $survey_queue );
 				$user_surveys->register();
 
 				( new Core\Authentication\Setup( $this->context, $user_options, $authentication ) )->register();

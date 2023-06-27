@@ -404,7 +404,7 @@ export function provideTracking( registry, enabled = true ) {
 /**
  * Provides key metrics settings data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.103.0
  *
  * @param {Object} registry    The registry to set up.
  * @param {Object} [extraData] Extra data to merge with the default settings.

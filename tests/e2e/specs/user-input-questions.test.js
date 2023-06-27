@@ -160,6 +160,7 @@ describe( 'User Input Settings', () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
 		await setupAnalytics();
+		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 

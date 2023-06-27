@@ -34,7 +34,7 @@ import { useDebounce } from '../hooks/useDebounce';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Dialog } from 'googlesitekit-components';
+import ModalDialog from './ModalDialog';
 import { clearCache } from '../googlesitekit/api/cache';
 import Portal from './Portal';
 import Link from './Link';
@@ -122,7 +122,7 @@ function ResetButton( { children } ) {
 				{ children || __( 'Reset Site Kit', 'google-site-kit' ) }
 			</Link>
 			<Portal>
-				<Dialog
+				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
 					handleDialog={ toggleDialogActive }
