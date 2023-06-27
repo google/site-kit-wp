@@ -68,7 +68,7 @@ class Ad_Blocking_Recovery_Web_Tag extends Module_Web_Tag {
 	protected function render() {
 		$tags = $this->ad_blocking_recovery_tag->get();
 
-		if ( empty( $tags['tag'] ) || empty( $option['error_protection_code'] ) ) {
+		if ( empty( $tags['tag'] ) || empty( $tags['error_protection_code'] ) ) {
 			return;
 		}
 
