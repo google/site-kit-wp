@@ -99,17 +99,21 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 	const reducer = ( acc, row ) =>
 		acc + ( parseInt( get( row, 'metricValues.0.value' ), 10 ) || 0 );
 
-	const totalUsers = totalUsersReport?.rows
-		.filter( makeFilter( 'date_range_0', 0 ) )
-		.reduce( reducer, 0 );
+	// Prevents running a filter on `report.rows` which could be undefined.
+	const { rows: totalUsersReportRows = [] } = totalUsersReport || {};
+	const { rows: trafficSourceReportRows = [] } = trafficSourceReport || {};
+
+	const totalUsers =
+		totalUsersReportRows
+			.filter( makeFilter( 'date_range_0', 0 ) )
+			.reduce( reducer, 0 ) || 0;
 
 	const topTrafficSource =
-		trafficSourceReport?.rows.filter(
-			makeFilter( 'date_range_0', 1 )
-		)?.[ 0 ].dimensionValues?.[ 0 ].value || '-';
+		trafficSourceReportRows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
+			?.dimensionValues?.[ 0 ].value || '-';
 
 	const currentTopTrafficSourceUsers =
-		trafficSourceReport?.rows
+		trafficSourceReportRows
 			.filter( makeFilter( 'date_range_0', 1 ) )
 			.reduce( reducer, 0 ) || 0;
 	const relativeCurrentTopTrafficSourceUsers = totalUsers
@@ -117,7 +121,7 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 		: 0;
 
 	const previousTopTrafficSourceUsers =
-		trafficSourceReport?.rows
+		trafficSourceReportRows
 			.filter( makeFilter( 'date_range_1', 1 ) )
 			.reduce( reducer, 0 ) || 0;
 	const relativePreviousTopTrafficSourceUsers = totalUsers
