@@ -92,6 +92,6 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 	 * @return bool TRUE if valid, otherwise FALSE.
 	 */
 	private function is_valid_tag_object( $tag ) {
-		return is_array( $tag ) && isset( $tag['tag'] ) && isset( $tag['error_protection_code'] ) && is_string( $tag['tag'] ) & is_string( $tag['error_protection_code'] );
+		return is_array( $tag ) && isset( $tag['tag'] ) && isset( $tag['error_protection_code'] ) && is_string( $tag['tag'] ) && is_string( $tag['error_protection_code'] );
 	}
 }
