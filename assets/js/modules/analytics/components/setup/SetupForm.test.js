@@ -41,7 +41,6 @@ import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__
 import { enabledFeatures } from '../../../../features';
 import SetupForm from './SetupForm';
 
-// const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
 const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 
 describe( 'SetupForm', () => {
@@ -64,20 +63,12 @@ describe( 'SetupForm', () => {
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		// registry
-		// 	.dispatch( MODULES_ANALYTICS )
-		// 	.receiveGetAccounts( [ accountUA ] );
-		// registry
-		// 	.dispatch( MODULES_ANALYTICS_4 )
-		// 	.receiveGetAccountSummaries( [ accountGA4 ] );
 
 		const { container, getByRole } = render( <SetupForm />, { registry } );
 
 		expect( container ).toMatchSnapshot();
 
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
-
-		// getByRole( 'button', { name: /Configure Analytics/i } );
 	} );
 
 	it( 'renders the form correctly when setup flow mode is UA', async () => {
@@ -86,26 +77,13 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
-			// fixtures.accountsPropertiesProfiles.properties,
-			[],
-			{ accountID }
-		);
-
-		// await subscribeUntil( registry, () =>
-		// 	registry
-		// 		.select( MODULES_ANALYTICS )
-		// 		.hasFinishedResolution( 'getAccounts' )
-		// );
-
-		// registry
-		// 	.dispatch( MODULES_ANALYTICS )
-		// 	.finishResolution( 'getAccounts', [] );
-		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( [], { accountID } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( [], { accountID } );
+		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Verify that the setup flow mode is UA.
 		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
@@ -122,13 +100,9 @@ describe( 'SetupForm', () => {
 		expect( container ).toMatchSnapshot();
 
 		expect( getByText( 'Account' ) ).toBeInTheDocument();
-
 		expect( getByText( 'Property' ) ).toBeInTheDocument();
-
 		expect( getByText( 'View' ) ).toBeInTheDocument();
-
 		expect( getByText( 'View Name' ) ).toBeInTheDocument();
-
 		expect(
 			getByText( 'A Google Analytics 4 property will also be created.' )
 		).toBeInTheDocument();
@@ -146,12 +120,10 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
-
-		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( [], { accountID } );
+		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Verify that the setup flow mode is GA4.
 		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
@@ -170,40 +142,34 @@ describe( 'SetupForm', () => {
 		expect( container ).toMatchSnapshot();
 
 		expect( getByText( 'Account' ) ).toBeInTheDocument();
-
 		expect( getByText( 'Property' ) ).toBeInTheDocument();
-
 		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders the form correctly when setup flow mode is GA4 Legacy', async () => {
+		const propertyID = analytics4Fixtures.properties[ 0 ]._id;
+
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
-			// fixtures.accountsPropertiesProfiles.properties,
-			[],
-			{ accountID }
-		);
-
-		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( [], { accountID } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( analytics4Fixtures.properties, {
 				accountID,
 			} );
-
-		const propertyID = analytics4Fixtures.properties[ 0 ]._id;
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetWebDataStreams( analytics4Fixtures.webDataStreams, {
 				propertyID,
 			} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( propertyID ); // FIXME: await this?
+		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( propertyID );
 
 		// Verify that the setup flow mode is GA4 Legacy.
 		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
@@ -221,11 +187,8 @@ describe( 'SetupForm', () => {
 		expect( container ).toMatchSnapshot();
 
 		expect( getByText( 'Account' ) ).toBeInTheDocument();
-
 		expect( getByText( 'Property' ) ).toBeInTheDocument();
-
 		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
-
 		expect(
 			getByText(
 				'An associated Universal Analytics property will also be created.'
@@ -234,6 +197,9 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'renders the form correctly when setup flow mode is GA4 Transitional', async () => {
+		const propertyID =
+			fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
@@ -246,22 +212,16 @@ describe( 'SetupForm', () => {
 				fixtures.accountsPropertiesProfiles.properties,
 				{ accountID }
 			);
-
-		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( analytics4Fixtures.properties, {
 				accountID,
 			} );
-
-		const propertyID =
-			fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
-
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [], {
 			accountID,
 			propertyID,
 		} );
+		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 		registry.dispatch( MODULES_ANALYTICS ).selectProperty( propertyID );
 
 		// Verify that the setup flow mode is GA4 Transitional.
@@ -285,11 +245,8 @@ describe( 'SetupForm', () => {
 		expect( propertyElements.length ).toBe( 2 );
 
 		expect( getByText( 'View' ) ).toBeInTheDocument();
-
 		expect( getByText( 'View Name' ) ).toBeInTheDocument();
-
 		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
-
 		expect(
 			getByText(
 				'You need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.'
