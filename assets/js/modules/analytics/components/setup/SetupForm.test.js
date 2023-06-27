@@ -31,34 +31,18 @@ import {
 	EDIT_SCOPE,
 	FORM_SETUP,
 	MODULES_ANALYTICS,
+	SETUP_FLOW_MODE_GA4,
+	SETUP_FLOW_MODE_GA4_LEGACY,
+	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+	SETUP_FLOW_MODE_UA,
 } from '../../datastore/constants';
+import * as fixtures from '../../datastore/__fixtures__';
+import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import { enabledFeatures } from '../../../../features';
 import SetupForm from './SetupForm';
 
-const accountUA = {
-	created: '2011-03-25T21:41:26.980Z',
-	id: '123456789',
-	kind: 'analytics#account',
-	name: 'Test Account',
-	selfLink:
-		'https://www.googleapis.com/analytics/v3/management/accounts/123456789',
-	starred: null,
-	updated: '2019-08-22T17:20:53.203Z',
-	permissions: {
-		effective: [],
-	},
-	childLink: {
-		href: 'https://www.googleapis.com/analytics/v3/management/accounts/123456789/webproperties',
-		type: 'analytics#webproperties',
-	},
-};
-
-const accountGA4 = {
-	account: 'accounts/123456789',
-	displayName: 'Example Org',
-	name: 'accountSummaries/123456789',
-	_id: '123456789',
-	propertySummaries: [],
-};
+// const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 
 describe( 'SetupForm', () => {
 	let registry;
@@ -67,22 +51,250 @@ describe( 'SetupForm', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
-		provideModules( registry, [ { slug: 'analytics', active: true } ] );
+		provideModules( registry, [
+			{ slug: 'analytics', active: true, connected: true },
+		] );
 	} );
 
-	it( 'renders the form', () => {
+	it( 'renders the form with a progress bar when GTM containers are not resolved', () => {
+		provideModules( registry, [
+			{ slug: 'analytics', active: true, connected: true },
+			{ slug: 'tagmanager', active: true, connected: true },
+		] );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		// registry
+		// 	.dispatch( MODULES_ANALYTICS )
+		// 	.receiveGetAccounts( [ accountUA ] );
+		// registry
+		// 	.dispatch( MODULES_ANALYTICS_4 )
+		// 	.receiveGetAccountSummaries( [ accountGA4 ] );
+
+		const { container, getByRole } = render( <SetupForm />, { registry } );
+
+		expect( container ).toMatchSnapshot();
+
+		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
+
+		// getByRole( 'button', { name: /Configure Analytics/i } );
+	} );
+
+	it( 'renders the form correctly when setup flow mode is UA', async () => {
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( [ accountUA ] );
+			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
+			// fixtures.accountsPropertiesProfiles.properties,
+			[],
+			{ accountID }
+		);
+
+		// await subscribeUntil( registry, () =>
+		// 	registry
+		// 		.select( MODULES_ANALYTICS )
+		// 		.hasFinishedResolution( 'getAccounts' )
+		// );
+
+		// registry
+		// 	.dispatch( MODULES_ANALYTICS )
+		// 	.finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAccountSummaries( [ accountGA4 ] );
+			.receiveGetProperties( [], { accountID } );
 
-		const { getByRole } = render( <SetupForm />, { registry } );
+		// Verify that the setup flow mode is UA.
+		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
+			SETUP_FLOW_MODE_UA
+		);
 
-		getByRole( 'button', { name: /Configure Analytics/i } );
+		const { container, getByText, waitForRegistry } = render(
+			<SetupForm />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		expect( getByText( 'Account' ) ).toBeInTheDocument();
+
+		expect( getByText( 'Property' ) ).toBeInTheDocument();
+
+		expect( getByText( 'View' ) ).toBeInTheDocument();
+
+		expect( getByText( 'View Name' ) ).toBeInTheDocument();
+
+		expect(
+			getByText( 'A Google Analytics 4 property will also be created.' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders the form correctly when setup flow mode is GA4', async () => {
+		enabledFeatures.add( 'ga4Reporting' );
+
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( [], { accountID } );
+
+		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperties( [], { accountID } );
+
+		// Verify that the setup flow mode is GA4.
+		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
+			SETUP_FLOW_MODE_GA4
+		);
+
+		const { container, getByText, waitForRegistry } = render(
+			<SetupForm />,
+			{
+				registry,
+				features: [ 'ga4Reporting' ],
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		expect( getByText( 'Account' ) ).toBeInTheDocument();
+
+		expect( getByText( 'Property' ) ).toBeInTheDocument();
+
+		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
+	} );
+
+	it( 'renders the form correctly when setup flow mode is GA4 Legacy', async () => {
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
+			// fixtures.accountsPropertiesProfiles.properties,
+			[],
+			{ accountID }
+		);
+
+		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperties( analytics4Fixtures.properties, {
+				accountID,
+			} );
+
+		const propertyID = analytics4Fixtures.properties[ 0 ]._id;
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreams( analytics4Fixtures.webDataStreams, {
+				propertyID,
+			} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( propertyID ); // FIXME: await this?
+
+		// Verify that the setup flow mode is GA4 Legacy.
+		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
+			SETUP_FLOW_MODE_GA4_LEGACY
+		);
+
+		const { container, getByText, waitForRegistry } = render(
+			<SetupForm />,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		expect( getByText( 'Account' ) ).toBeInTheDocument();
+
+		expect( getByText( 'Property' ) ).toBeInTheDocument();
+
+		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
+
+		expect(
+			getByText(
+				'An associated Universal Analytics property will also be created.'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders the form correctly when setup flow mode is GA4 Transitional', async () => {
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties(
+				fixtures.accountsPropertiesProfiles.properties,
+				{ accountID }
+			);
+
+		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperties( analytics4Fixtures.properties, {
+				accountID,
+			} );
+
+		const propertyID =
+			fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [], {
+			accountID,
+			propertyID,
+		} );
+		registry.dispatch( MODULES_ANALYTICS ).selectProperty( propertyID );
+
+		// Verify that the setup flow mode is GA4 Transitional.
+		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
+			SETUP_FLOW_MODE_GA4_TRANSITIONAL
+		);
+
+		const { container, findAllByText, getByText, waitForRegistry } = render(
+			<SetupForm />,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		expect( getByText( 'Account' ) ).toBeInTheDocument();
+
+		const propertyElements = await findAllByText( 'Property' );
+		expect( propertyElements.length ).toBe( 2 );
+
+		expect( getByText( 'View' ) ).toBeInTheDocument();
+
+		expect( getByText( 'View Name' ) ).toBeInTheDocument();
+
+		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
+
+		expect(
+			getByText(
+				'You need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.'
+			)
+		).toBeInTheDocument();
 	} );
 
 	it( 'auto-submits the form once', async () => {
@@ -100,14 +312,18 @@ describe( 'SetupForm', () => {
 		const dispatchGA4 = registry.dispatch( MODULES_ANALYTICS_4 );
 		dispatchUA.setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		dispatchUA.receiveGetAccounts( [ accountUA ] );
-		dispatchUA.receiveGetProperties( [], { accountID: accountUA.id } );
+		dispatchUA.receiveGetAccounts(
+			fixtures.accountsPropertiesProfiles.accounts
+		);
+		dispatchUA.receiveGetProperties( [], { accountID } );
 		dispatchUA.receiveGetExistingTag( null );
 
 		dispatchGA4.receiveGetExistingTag( null );
-		dispatchGA4.receiveGetAccountSummaries( [ accountGA4 ] );
-		dispatchGA4.receiveGetProperties( [], { accountID: accountUA.id } );
-		dispatchUA.selectAccount( accountUA.id );
+		dispatchGA4.receiveGetAccountSummaries(
+			analytics4Fixtures.accountSummaries
+		);
+		dispatchGA4.receiveGetProperties( [], { accountID } );
+		dispatchUA.selectAccount( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
