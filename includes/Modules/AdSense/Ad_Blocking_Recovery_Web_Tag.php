@@ -110,5 +110,4 @@ class Ad_Blocking_Recovery_Web_Tag extends Module_Web_Tag {
 	public function set_use_error_snippet( $use_error_protection_snippet ) {
 		$this->use_error_protection_snippet = $use_error_protection_snippet;
 	}
-
 }
