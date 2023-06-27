@@ -94,38 +94,35 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 			)
 	);
 
-	const makeFilter = ( dateRange, dateRangeIndex ) => ( row ) =>
-		get( row, `dimensionValues.${ dateRangeIndex }.value` ) === dateRange;
-	const reducer = ( acc, row ) =>
-		acc + ( parseInt( get( row, 'metricValues.0.value' ), 10 ) || 0 );
+	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
+		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
 
 	// Prevents running a filter on `report.rows` which could be undefined.
 	const { rows: totalUsersReportRows = [] } = totalUsersReport || {};
 	const { rows: trafficSourceReportRows = [] } = trafficSourceReport || {};
 
-	const totalUsers =
-		totalUsersReportRows
-			.filter( makeFilter( 'date_range_0', 0 ) )
-			.reduce( reducer, 0 ) || 0;
-
 	const topTrafficSource =
 		trafficSourceReportRows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
 			?.dimensionValues?.[ 0 ].value || '-';
 
+	const currentTotalUsers =
+		totalUsersReportRows.filter( makeFilter( 'date_range_0', 0 ) )[ 0 ]
+			?.metricValues?.[ 0 ]?.value || 0;
 	const currentTopTrafficSourceUsers =
-		trafficSourceReportRows
-			.filter( makeFilter( 'date_range_0', 1 ) )
-			.reduce( reducer, 0 ) || 0;
-	const relativeCurrentTopTrafficSourceUsers = totalUsers
-		? currentTopTrafficSourceUsers / totalUsers
+		trafficSourceReportRows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
+			?.metricValues?.[ 0 ]?.value || 0;
+	const relativeCurrentTopTrafficSourceUsers = currentTotalUsers
+		? currentTopTrafficSourceUsers / currentTotalUsers
 		: 0;
 
+	const previousTotalUsers =
+		totalUsersReportRows.filter( makeFilter( 'date_range_1', 0 ) )[ 0 ]
+			?.metricValues?.[ 0 ]?.value || 0;
 	const previousTopTrafficSourceUsers =
-		trafficSourceReportRows
-			.filter( makeFilter( 'date_range_1', 1 ) )
-			.reduce( reducer, 0 ) || 0;
-	const relativePreviousTopTrafficSourceUsers = totalUsers
-		? previousTopTrafficSourceUsers / totalUsers
+		trafficSourceReportRows.filter( makeFilter( 'date_range_1', 1 ) )[ 0 ]
+			?.metricValues?.[ 0 ]?.value || 0;
+	const relativePreviousTopTrafficSourceUsers = previousTotalUsers
+		? previousTopTrafficSourceUsers / previousTotalUsers
 		: 0;
 
 	if ( keyMetricsWidgetHidden !== false ) {
