@@ -38,13 +38,10 @@ import {
 } from '../../datastore/constants';
 import Link from '../../../../components/Link';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
-import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryToggle() {
-	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
-
 	const adBlockerDetectionSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockerDetectionSnippet()
 	);
@@ -108,7 +105,7 @@ export default function AdBlockingRecoveryToggle() {
 		setValues( AD_BLOCKING_FORM_SETTINGS, initialToggleValues );
 	} );
 
-	if ( ! adBlockerDetectionEnabled || ! adBlockingRecoverySetupStatus ) {
+	if ( ! adBlockingRecoverySetupStatus ) {
 		return null;
 	}
 

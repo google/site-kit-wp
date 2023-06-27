@@ -43,7 +43,10 @@ const DashboardViewIndicator = () => {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return (
+			select( CORE_USER ).canViewSharedModule( 'analytics' ) ||
+			select( CORE_USER ).canViewSharedModule( 'analytics-4' )
+		);
 	} );
 
 	if ( ! canViewSharedAnalytics || isGA4DashboardView === undefined ) {

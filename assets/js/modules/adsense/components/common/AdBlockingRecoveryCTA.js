@@ -33,11 +33,9 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SupportLink from '../../../../components/SupportLink';
 import Badge from '../../../../components/Badge';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function AdBlockingRecoveryCTA() {
-	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
 	);
@@ -52,7 +50,6 @@ export default function AdBlockingRecoveryCTA() {
 	);
 
 	if (
-		! adBlockerDetectionEnabled ||
 		adBlockingRecoverySetupStatus !== '' ||
 		accountStatus !== ACCOUNT_STATUS_READY ||
 		siteStatus !== SITE_STATUS_READY
