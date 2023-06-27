@@ -13,9 +13,6 @@ namespace Google\Site_Kit\Tests\Core\Tags\Guards;
 use Google\Site_Kit\Core\Tags\Guards\WP_Query_404_Guard;
 use Google\Site_Kit\Tests\TestCase;
 
-/**
- * @group test
- */
 class WP_Query_404_GuardTest extends TestCase {
 
 	/**

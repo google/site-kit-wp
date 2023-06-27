@@ -19,7 +19,6 @@ use Google\Site_Kit\Tests\TestCase;
 /**
  * @group Modules
  * @group AdSense
- * @group test
  */
 class Ad_Blocking_Recovery_Tag_GuardTest extends TestCase {
 
