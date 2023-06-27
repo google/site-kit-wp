@@ -38,9 +38,11 @@ import {
 import { generateDateRangeArgs } from '../../util';
 import { numFmt } from '../../../../util';
 import Link from '../../../../components/Link';
-import MetricTileTable from '../../../../components/KeyMetrics/MetricTileTable';
 import useViewOnly from '../../../../hooks/useViewOnly';
-import { whenKeyMetricsWidgetVisible } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	whenKeyMetricsWidgetVisible,
+} from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../common';
 
 const { useSelect, useInViewSelect } = Data;
@@ -51,7 +53,6 @@ function PopularKeywordsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
 		} )
 	);
 

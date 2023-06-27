@@ -44,6 +44,7 @@ export default function OptIn( {
 	name = 'optIn',
 	className,
 	trackEventCategory,
+	alignLeftCheckbox = false,
 } ) {
 	const enabled = useSelect( ( select ) =>
 		select( CORE_USER ).isTrackingEnabled()
@@ -89,6 +90,7 @@ export default function OptIn( {
 				disabled={ saving }
 				onChange={ handleOptIn }
 				loading={ enabled === undefined }
+				alignLeft={ alignLeftCheckbox }
 			>
 				<span>
 					{ __(
@@ -129,4 +131,5 @@ OptIn.propTypes = {
 	name: PropTypes.string,
 	className: PropTypes.string,
 	trackEventCategory: PropTypes.string,
+	alignLeftCheckbox: PropTypes.bool,
 };

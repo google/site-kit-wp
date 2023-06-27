@@ -98,6 +98,8 @@ final class Analytics extends Module
 	 */
 	const MODULE_SLUG = 'analytics';
 
+	const DASHBOARD_VIEW = 'universal-analytics';
+
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
@@ -389,7 +391,7 @@ final class Analytics extends Module
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// For GA4-SPECIFIC provisioning callback, switch to GA4 dashboard view.
-			$new_settings['dashboardView'] = 'google-analytics-4';
+			$new_settings['dashboardView'] = Analytics_4::DASHBOARD_VIEW;
 		}
 
 		$this->get_settings()->merge( $new_settings );
@@ -420,6 +422,14 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
+		$shareable = Feature_Flags::enabled( 'dashboardSharing' );
+		// If ga4Reporting is enabled, the dashboard view controls which
+		// Analytics module is shareable.
+		if ( $shareable && Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			$settings  = $this->get_settings()->get();
+			$shareable = self::DASHBOARD_VIEW === $settings['dashboardView'];
+		}
+
 		$datapoints = array(
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
 			'POST:create-account-ticket'       => array(
@@ -439,13 +449,13 @@ final class Analytics extends Module
 			),
 			'GET:goals'                        => array(
 				'service'   => 'analytics',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => $shareable,
 			),
 			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
 			'GET:report'                       => array(
 				'service'   => 'analyticsreporting',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => $shareable,
 			),
 		);
 
