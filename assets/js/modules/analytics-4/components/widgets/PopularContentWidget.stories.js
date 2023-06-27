@@ -15,29 +15,42 @@
  */
 
 /**
+ * External dependencies
+ */
+import faker from 'faker';
+import { capitalize } from 'lodash';
+
+/**
  * Internal dependencies
  */
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { getAnalytics4MockResponse } from '../../utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import PopularKeywordsWidget from './PopularKeywordsWidget';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
-import { provideSearchConsoleMockReport } from '../../util/data-mock';
+import PopularContentWidget from './PopularContentWidget';
 
 const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
-	dimensions: 'query',
-	limit: 100,
+	dimensions: [ 'pageTitle', 'pagePath' ],
+	metrics: [ { name: 'screenPageViews' } ],
+	orderby: [
+		{
+			metric: { metricName: 'screenPageViews' },
+			desc: true,
+		},
+	],
+	limit: 3,
 };
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
-	PopularKeywordsWidget
-);
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'test' )( PopularContentWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -49,11 +62,23 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		provideSearchConsoleMockReport( registry, reportOptions );
+		const report = getAnalytics4MockResponse( reportOptions );
+		report.rows = report.rows.map( ( row ) => ( {
+			...row,
+			dimensionValues: row.dimensionValues.map( ( dimensionValue, i ) =>
+				i === 0
+					? { value: capitalize( faker.lorem.words( 10 ) ) }
+					: dimensionValue
+			),
+		} ) );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
+			options: reportOptions,
+		} );
 	},
 };
 Ready.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/Ready',
+	label: 'KeyMetrics/PopularContentWidget/Ready',
 	delay: 250,
 };
 
@@ -61,7 +86,7 @@ export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_SEARCH_CONSOLE ).startResolution( 'getReport', [
+		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
 			reportOptions,
 		] );
 	},
@@ -71,36 +96,35 @@ export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
 		} );
 	},
 };
 ZeroData.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/ZeroData',
+	label: 'KeyMetrics/PopularContentWidget/ZeroData',
 	delay: 250,
 };
 
 export default {
-	title: 'Key Metrics/PopularKeywordsWidget',
+	title: 'Key Metrics/PopularContentWidget',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				global._googlesitekitUserData.isUserInputCompleted = false;
 				provideModules( registry, [
 					{
-						slug: 'search-console',
+						slug: 'analytics-4',
 						active: true,
 						connected: true,
 					},
 				] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-				registry
-					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveGetSettings( {
-						propertyID: 'http://example.com/',
-					} );
 
 				provideKeyMetrics( registry );
 
