@@ -378,7 +378,7 @@ export function getAnalytics4MockResponse(
 	// dimension set in the combined stream (array). We need to use array of streams because report arguments may
 	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
 	// of dimension values.
-	const dimensions = castArray( args.dimensions );
+	const dimensions = args.dimensions ? castArray( args.dimensions ) : [];
 
 	if ( hasDateRange ) {
 		dimensions.push( 'dateRange' );
