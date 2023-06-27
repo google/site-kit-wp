@@ -49,9 +49,6 @@ Ready.args = {
 			.receiveGetSettings( validSettings );
 	},
 };
-Ready.parameters = {
-	features: [ 'adBlockerDetection' ],
-};
 
 export const WithAdBlockingRecoveryTagEnabled = Template.bind( {} );
 WithAdBlockingRecoveryTagEnabled.storyName =
@@ -65,9 +62,6 @@ WithAdBlockingRecoveryTagEnabled.args = {
 		} );
 	},
 };
-WithAdBlockingRecoveryTagEnabled.parameters = {
-	features: [ 'adBlockerDetection' ],
-};
 
 export const WithBothTogglesEnabled = Template.bind( {} );
 WithBothTogglesEnabled.storyName = 'With Both The Toggles Enabled';
@@ -79,9 +73,6 @@ WithBothTogglesEnabled.args = {
 			useAdBlockerDetectionErrorSnippet: true,
 		} );
 	},
-};
-WithBothTogglesEnabled.parameters = {
-	features: [ 'adBlockerDetection' ],
 };
 
 export default {

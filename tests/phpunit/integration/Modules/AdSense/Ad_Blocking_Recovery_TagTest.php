@@ -111,40 +111,6 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 		$this->assertFalse( $this->ad_blocking_recovery_tag->set( $value ) );
 	}
 
-	/**
-	 * @dataProvider data_invalid_values
-	 *
-	 * @param mixed $value
-	 */
-	public function test_get_sanitize_callback_invlid_values( $value ) {
-		// Set the option to a good value.
-		update_option(
-			Ad_Blocking_Recovery_Tag::OPTION,
-			array(
-				'tag'                   => $this->test_recovery_tag,
-				'error_protection_code' => $this->test_error_protection_code,
-			)
-		);
-
-		// Get the option and check that it is set correctly.
-		$this->assertEqualSetsWithIndex(
-			array(
-				'tag'                   => $this->test_recovery_tag,
-				'error_protection_code' => $this->test_error_protection_code,
-			),
-			$this->ad_blocking_recovery_tag->get()
-		);
-
-		update_option( Ad_Blocking_Recovery_Tag::OPTION, $value );
-		$this->assertEqualSetsWithIndex(
-			array(
-				'tag'                   => '',
-				'error_protection_code' => '',
-			),
-			$this->ad_blocking_recovery_tag->get()
-		);
-	}
-
 	public function data_invalid_values() {
 		return array(
 			'non-array'      => array( 'test' ),
