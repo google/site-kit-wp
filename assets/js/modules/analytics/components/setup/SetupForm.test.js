@@ -17,19 +17,22 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
+import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import {
 	EDIT_SCOPE,
 	FORM_SETUP,
+	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 	MODULES_ANALYTICS,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_LEGACY,
@@ -38,6 +41,7 @@ import {
 } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import ga4Reporting from '../../../../feature-tours/ga4-reporting';
 import { enabledFeatures } from '../../../../features';
 import SetupForm from './SetupForm';
 
@@ -252,6 +256,104 @@ describe( 'SetupForm', () => {
 				'You need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'submits the form upon pressing the CTA', async () => {
+		enabledFeatures.add( 'ga4Reporting' );
+		const propertyID = analytics4Fixtures.properties[ 0 ]._id;
+
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( [], { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperties( analytics4Fixtures.properties, {
+				accountID,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreams( analytics4Fixtures.webDataStreams, {
+				propertyID,
+			} );
+		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+
+		const finishSetup = jest.fn();
+		const { getByRole, getByText, waitForRegistry } = render(
+			<SetupForm finishSetup={ finishSetup } />,
+			{
+				registry,
+				features: [ 'ga4Reporting' ],
+			}
+		);
+		await waitForRegistry();
+
+		// Click the label to expose the elements in the menu.
+		// fireEvent.click( getByText( 'Property' ) );
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByText( /Test GA4 Property/i ) );
+		} );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ] );
+
+		const updateAnalyticsSettingsRegexp = new RegExp(
+			'/analytics/data/settings'
+		);
+
+		const updateAnalytics4SettingsRegexp = new RegExp(
+			'/analytics-4/data/settings'
+		);
+
+		const getModulesRegexp = new RegExp( '/core/modules/data/list' );
+
+		fetchMock.post( updateAnalyticsSettingsRegexp, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.post( updateAnalytics4SettingsRegexp, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.get( getModulesRegexp, {
+			status: 200,
+			body: [],
+		} );
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', { name: /Configure Analytics/i } )
+			);
+		} );
+
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			updateAnalyticsSettingsRegexp
+		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			updateAnalytics4SettingsRegexp
+		);
+		expect( fetchMock ).toHaveFetchedTimes( 1, getModulesRegexp );
+
+		await waitForDefaultTimeouts();
+
+		expect( finishSetup ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'auto-submits the form once', async () => {
