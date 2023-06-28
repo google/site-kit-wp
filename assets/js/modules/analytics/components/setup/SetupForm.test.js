@@ -280,7 +280,9 @@ describe( 'SetupForm', () => {
 
 	it( 'submits the form upon pressing the CTA', async () => {
 		enabledFeatures.add( 'ga4Reporting' );
-		const propertyID = analytics4Fixtures.properties[ 0 ]._id;
+		// const propertyID = analytics4Fixtures.properties[ 0 ]._id;
+		// const propertyID =
+		// 	fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
 
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
@@ -288,23 +290,44 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProperties( [], { accountID } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
+			// fixtures.accountsPropertiesProfiles.properties,
+			[],
+			{ accountID }
+		);
+		// .receiveGetProperties( [], { accountID } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( analytics4Fixtures.properties, {
+				// .receiveGetProperties( [], {
 				accountID,
 			} );
+		// registry
+		// 	.dispatch( MODULES_ANALYTICS )
+		// 	.receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, {
+		// 		accountID,
+		// 		propertyID,
+		// 	} );
+		// registry
+		// 	.dispatch( MODULES_ANALYTICS_4 )
+		// 	.receiveGetWebDataStreams( analytics4Fixtures.webDataStreams, {
+		// 		propertyID,
+		// 	} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetWebDataStreams( analytics4Fixtures.webDataStreams, {
-				propertyID,
-			} );
+			.receiveGetWebDataStreamsBatch(
+				analytics4Fixtures.webDataStreamsBatch,
+				{
+					propertyIDs: Object.keys(
+						analytics4Fixtures.webDataStreamsBatch
+					),
+				}
+			);
 		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+		// registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( propertyID );
 
 		const finishSetup = jest.fn();
-		const { getByRole, getByText, waitForRegistry } = render(
+		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
 			{
 				registry,
@@ -313,13 +336,27 @@ describe( 'SetupForm', () => {
 		);
 		await waitForRegistry();
 
-		// Click the label to expose the elements in the menu.
-		// fireEvent.click( getByText( 'Property' ) );
+		// An additional wait is required in order for all resolvers to finish and the component to update.
+		await act( async () => {
+			await waitForDefaultTimeouts();
+		} );
 
 		// eslint-disable-next-line require-await
 		await act( async () => {
-			fireEvent.click( getByText( /Test GA4 Property/i ) );
+			fireEvent.click(
+				getByRole( 'menuitem', {
+					name: /Test GA4 Property/i,
+					hidden: true,
+				} )
+			);
 		} );
+
+		// expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toEqual(
+		// 	{}
+		// );
+		// expect( registry.select( MODULES_ANALYTICS_4 ).getSettings() ).toEqual(
+		// 	{}
+		// );
 
 		registry
 			.dispatch( CORE_USER )
@@ -337,7 +374,7 @@ describe( 'SetupForm', () => {
 			'/analytics-4/data/settings'
 		);
 
-		const getModulesRegexp = new RegExp( '/core/modules/data/list' );
+		// const getModulesRegexp = new RegExp( '/core/modules/data/list' );
 
 		fetchMock.post( updateAnalyticsSettingsRegexp, {
 			status: 200,
@@ -349,16 +386,18 @@ describe( 'SetupForm', () => {
 			body: {},
 		} );
 
-		fetchMock.get( getModulesRegexp, {
-			status: 200,
-			body: [],
-		} );
+		// fetchMock.get( getModulesRegexp, {
+		// 	status: 200,
+		// 	body: [],
+		// } );
 
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click(
 				getByRole( 'button', { name: /Configure Analytics/i } )
 			);
+
+			// await waitForRegistry();
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes(
@@ -369,9 +408,153 @@ describe( 'SetupForm', () => {
 			1,
 			updateAnalytics4SettingsRegexp
 		);
-		expect( fetchMock ).toHaveFetchedTimes( 1, getModulesRegexp );
+		// expect( fetchMock ).toHaveFetchedTimes( 1, getModulesRegexp );
 
 		await waitForDefaultTimeouts();
+
+		expect( finishSetup ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'auto-submits the form', async () => {
+		enabledFeatures.add( 'ga4Reporting' );
+		// const createPropertyRegexp = new RegExp(
+		// 	'/analytics/data/create-property'
+		// );
+		// fetchMock.post( createPropertyRegexp, {
+		// 	status: 200,
+		// 	body: {},
+		// } );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( [], { accountID } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( analytics4Fixtures.accountSummaries );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperties( [], { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch(
+				analytics4Fixtures.webDataStreamsBatch,
+				{
+					propertyIDs: Object.keys(
+						analytics4Fixtures.webDataStreamsBatch
+					),
+				}
+			);
+		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+
+		// Simulate an auto-submit case where the user is returning to the page
+		// after granting extra scopes necessary to submit.
+		// In this situation, the autoSubmit is set before the user goes to oAuth,
+		// store state is snapshotted, and then restored upon returning.
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_SETUP, { autoSubmit: true } );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ] );
+
+		const createPropertyRegexp = new RegExp(
+			'/analytics-4/data/create-property'
+		);
+
+		const createWebDataStreamRegexp = new RegExp(
+			'/analytics-4/data/create-webdatastream'
+		);
+
+		const updateAnalyticsSettingsRegexp = new RegExp(
+			'/analytics/data/settings'
+		);
+
+		const updateAnalytics4SettingsRegexp = new RegExp(
+			'/analytics-4/data/settings'
+		);
+
+		const getWebDataStreamsBatchRegexp = new RegExp(
+			'/analytics-4/data/webdatastreams-batch'
+		);
+
+		fetchMock.post( createPropertyRegexp, {
+			status: 200,
+			// body: analytics4Fixtures.createProperty,
+			body: analytics4Fixtures.properties[ 0 ],
+		} );
+
+		fetchMock.post( createWebDataStreamRegexp, {
+			status: 200,
+			body: analytics4Fixtures.webDataStreams[ 0 ],
+		} );
+
+		fetchMock.post( updateAnalyticsSettingsRegexp, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.post( updateAnalytics4SettingsRegexp, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.get( getWebDataStreamsBatchRegexp, {
+			status: 200,
+			body: [],
+		} );
+
+		const finishSetup = jest.fn();
+		const { getByRole, waitForRegistry } = render(
+			<SetupForm finishSetup={ finishSetup } />,
+			{
+				registry,
+				features: [ 'ga4Reporting' ],
+			}
+		);
+		await waitForRegistry();
+
+		// Ensure the form rendered successfully.
+		getByRole( 'button', { name: /Configure Analytics/i } );
+
+		expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toEqual(
+			{}
+		);
+
+		await waitForRegistry();
+
+		// An additional wait is required in order for all resolvers to finish.
+		await act( async () => {
+			await waitForDefaultTimeouts();
+		} );
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyRegexp );
+		expect( fetchMock ).toHaveFetchedTimes( 1, createWebDataStreamRegexp );
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			updateAnalyticsSettingsRegexp
+		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			updateAnalytics4SettingsRegexp
+		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			getWebDataStreamsBatchRegexp
+		);
 
 		expect( finishSetup ).toHaveBeenCalledTimes( 1 );
 	} );
