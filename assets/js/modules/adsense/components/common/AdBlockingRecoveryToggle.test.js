@@ -82,8 +82,8 @@ describe( 'AdBlockingRecoveryToggle', () => {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
 							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-						useAdBlockerDetectionSnippet: true,
-						useAdBlockerDetectionErrorSnippet: true,
+						useAdBlockingRecoverySnippet: true,
+						useAdBlockingRecoveryErrorSnippet: true,
 					} );
 				},
 			}
@@ -133,8 +133,8 @@ describe( 'AdBlockingRecoveryToggle', () => {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
 							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-						useAdBlockerDetectionSnippet: false,
-						useAdBlockerDetectionErrorSnippet: false,
+						useAdBlockingRecoverySnippet: false,
+						useAdBlockingRecoveryErrorSnippet: false,
 					} );
 				},
 			}
@@ -172,8 +172,8 @@ describe( 'AdBlockingRecoveryToggle', () => {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
 							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-						useAdBlockerDetectionSnippet: true,
-						useAdBlockerDetectionErrorSnippet: false,
+						useAdBlockingRecoverySnippet: true,
+						useAdBlockingRecoveryErrorSnippet: false,
 					} );
 				},
 			}

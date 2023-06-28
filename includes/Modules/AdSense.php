@@ -805,7 +805,7 @@ final class AdSense extends Module
 		}
 
 		if ( Feature_Flags::enabled( 'adBlockerDetection' ) && ! $this->context->is_amp() ) {
-			$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $this->ad_blocking_recovery_tag, $settings['useAdBlockerDetectionErrorSnippet'] );
+			$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $this->ad_blocking_recovery_tag, $settings['useAdBlockingRecoveryErrorSnippet'] );
 
 			$ad_blocking_recovery_web_tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 			$ad_blocking_recovery_web_tag->use_guard( new WP_Query_404_Guard() );

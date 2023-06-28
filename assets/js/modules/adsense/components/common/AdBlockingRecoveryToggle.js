@@ -42,11 +42,11 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryToggle() {
-	const adBlockerDetectionSnippet = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getUseAdBlockerDetectionSnippet()
+	const adBlockingRecoverySnippet = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getUseAdBlockingRecoverySnippet()
 	);
-	const adBlockerDetectionErrorSnippet = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getUseAdBlockerDetectionErrorSnippet()
+	const adBlockingRecoveryErrorSnippet = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getUseAdBlockingRecoveryErrorSnippet()
 	);
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
@@ -74,22 +74,22 @@ export default function AdBlockingRecoveryToggle() {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const {
-		setUseAdBlockerDetectionSnippet,
-		setUseAdBlockerDetectionErrorSnippet,
+		setUseAdBlockingRecoverySnippet,
+		setUseAdBlockingRecoveryErrorSnippet,
 	} = useDispatch( MODULES_ADSENSE );
 
 	const handleDetectionToggleClick = () => {
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
 			adBlockingDetectionToggle: ! adBlockingDetectionToggle,
 		} );
-		setUseAdBlockerDetectionSnippet( ! adBlockingDetectionToggle );
+		setUseAdBlockingRecoverySnippet( ! adBlockingDetectionToggle );
 	};
 
 	const handleErrorToggleClick = () => {
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
 			adBlockingDetectionErrorToggle: ! adBlockingDetectionErrorToggle,
 		} );
-		setUseAdBlockerDetectionErrorSnippet(
+		setUseAdBlockingRecoveryErrorSnippet(
 			! adBlockingDetectionErrorToggle
 		);
 	};
@@ -98,8 +98,8 @@ export default function AdBlockingRecoveryToggle() {
 		const initialToggleValues = {
 			// Set the initial toggle value to `undefined` if the saved value is `false`
 			// to prevent the SettingsNotice from showing up on mount.
-			adBlockingDetectionToggle: adBlockerDetectionSnippet || undefined,
-			adBlockingDetectionErrorToggle: adBlockerDetectionErrorSnippet,
+			adBlockingDetectionToggle: adBlockingRecoverySnippet || undefined,
+			adBlockingDetectionErrorToggle: adBlockingRecoveryErrorSnippet,
 		};
 
 		setValues( AD_BLOCKING_FORM_SETTINGS, initialToggleValues );
@@ -143,7 +143,7 @@ export default function AdBlockingRecoveryToggle() {
 					</p>
 				</div>
 				{ ( adBlockingDetectionToggle ||
-					adBlockerDetectionSnippet ) && (
+					adBlockingRecoverySnippet ) && (
 					<div className="googlesitekit-settings-module__meta-item">
 						<Switch
 							label={ __(
