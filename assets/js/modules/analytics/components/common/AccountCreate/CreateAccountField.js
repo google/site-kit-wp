@@ -45,7 +45,6 @@ export default function CreateAccountField( {
 				setValue( event.target.value, name );
 			} }
 			outlined
-			required
 			value={ value }
 			id={ `googlesitekit_analytics_account_create_${ name }` }
 		/>

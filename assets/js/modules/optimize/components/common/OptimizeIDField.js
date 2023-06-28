@@ -70,7 +70,6 @@ export default function OptimizeIDField() {
 				}
 				helperTextPersistent={ true }
 				outlined
-				required
 				value={ optimizeID }
 			/>
 		</div>
