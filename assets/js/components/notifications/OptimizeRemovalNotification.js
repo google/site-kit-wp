@@ -51,7 +51,7 @@ export default function OptimizeRemovalNotification() {
 		dismissItem( bannerID );
 	};
 
-	if ( ! connected || isDismissed ) {
+	if ( ! connected || isDismissed || undefined === isDismissed ) {
 		return null;
 	}
 

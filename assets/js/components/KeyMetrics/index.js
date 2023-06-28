@@ -16,4 +16,5 @@
 
 export { default as KeyMetricsSetupCTAWidget } from './KeyMetricsSetupCTAWidget';
 export { default as MetricTileNumeric } from './MetricTileNumeric';
+export { default as MetricTileTable } from './MetricTileTable';
 export * from './utils';
