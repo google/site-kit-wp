@@ -55,6 +55,8 @@ class AMP_Tag extends Analytics_AMP_Tag {
 	/**
 	 * Extends gtag vars config with the GA4 tag config.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $opt AMP gtag config.
 	 * @return array
 	 */
