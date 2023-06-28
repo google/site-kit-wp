@@ -33,7 +33,8 @@ import { Component, Fragment } from '@wordpress/element';
 import API from 'googlesitekit-api';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import { trackEvent } from '../../util';
-import { Select, TextField, Input } from '../../material-components';
+import { Select } from '../../material-components';
+import { TextField } from '../../googlesitekit-components-gm2';
 
 class SearchConsole extends Component {
 	constructor( props ) {
@@ -269,9 +270,8 @@ class SearchConsole extends Component {
 						floatingLabelClassName="mdc-floating-label--float-above"
 						outlined
 						disabled
-					>
-						<Input value={ siteURL } />
-					</TextField>
+						value={ siteURL }
+					/>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 					<Button onClick={ this.submitPropertyEventHandler }>
