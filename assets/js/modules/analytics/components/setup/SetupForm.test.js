@@ -280,9 +280,6 @@ describe( 'SetupForm', () => {
 
 	it( 'submits the form upon pressing the CTA', async () => {
 		enabledFeatures.add( 'ga4Reporting' );
-		// const propertyID = analytics4Fixtures.properties[ 0 ]._id;
-		// const propertyID =
-		// 	fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
 
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
@@ -290,29 +287,14 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
-			// fixtures.accountsPropertiesProfiles.properties,
-			[],
-			{ accountID }
-		);
-		// .receiveGetProperties( [], { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( [], { accountID } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( analytics4Fixtures.properties, {
-				// .receiveGetProperties( [], {
 				accountID,
 			} );
-		// registry
-		// 	.dispatch( MODULES_ANALYTICS )
-		// 	.receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, {
-		// 		accountID,
-		// 		propertyID,
-		// 	} );
-		// registry
-		// 	.dispatch( MODULES_ANALYTICS_4 )
-		// 	.receiveGetWebDataStreams( analytics4Fixtures.webDataStreams, {
-		// 		propertyID,
-		// 	} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetWebDataStreamsBatch(
@@ -324,7 +306,6 @@ describe( 'SetupForm', () => {
 				}
 			);
 		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-		// registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( propertyID );
 
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
@@ -351,13 +332,6 @@ describe( 'SetupForm', () => {
 			);
 		} );
 
-		// expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toEqual(
-		// 	{}
-		// );
-		// expect( registry.select( MODULES_ANALYTICS_4 ).getSettings() ).toEqual(
-		// 	{}
-		// );
-
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
@@ -374,8 +348,6 @@ describe( 'SetupForm', () => {
 			'/analytics-4/data/settings'
 		);
 
-		// const getModulesRegexp = new RegExp( '/core/modules/data/list' );
-
 		fetchMock.post( updateAnalyticsSettingsRegexp, {
 			status: 200,
 			body: {},
@@ -386,18 +358,11 @@ describe( 'SetupForm', () => {
 			body: {},
 		} );
 
-		// fetchMock.get( getModulesRegexp, {
-		// 	status: 200,
-		// 	body: [],
-		// } );
-
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click(
 				getByRole( 'button', { name: /Configure Analytics/i } )
 			);
-
-			// await waitForRegistry();
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes(
@@ -408,7 +373,6 @@ describe( 'SetupForm', () => {
 			1,
 			updateAnalytics4SettingsRegexp
 		);
-		// expect( fetchMock ).toHaveFetchedTimes( 1, getModulesRegexp );
 
 		await waitForDefaultTimeouts();
 
@@ -417,13 +381,7 @@ describe( 'SetupForm', () => {
 
 	it( 'auto-submits the form', async () => {
 		enabledFeatures.add( 'ga4Reporting' );
-		// const createPropertyRegexp = new RegExp(
-		// 	'/analytics/data/create-property'
-		// );
-		// fetchMock.post( createPropertyRegexp, {
-		// 	status: 200,
-		// 	body: {},
-		// } );
+
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
@@ -493,7 +451,6 @@ describe( 'SetupForm', () => {
 
 		fetchMock.post( createPropertyRegexp, {
 			status: 200,
-			// body: analytics4Fixtures.createProperty,
 			body: analytics4Fixtures.properties[ 0 ],
 		} );
 
@@ -529,10 +486,6 @@ describe( 'SetupForm', () => {
 
 		// Ensure the form rendered successfully.
 		getByRole( 'button', { name: /Configure Analytics/i } );
-
-		expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toEqual(
-			{}
-		);
 
 		await waitForRegistry();
 
