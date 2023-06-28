@@ -1,5 +1,5 @@
 /**
- * MetricTileNumeric component.
+ * MetricTileText component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -22,45 +22,42 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
+import { expandNumFmtOptions } from '../../util';
+import { Fragment } from 'react';
 
-export default function MetricTileNumeric( props ) {
-	const {
-		Widget,
-		loading,
-		title,
-		metricValue,
-		metricValueFormat,
-		subText,
-		previousValue,
-		currentValue,
-	} = props;
-
+export default function MetricTileText( {
+	Widget,
+	loading,
+	title,
+	metricValue,
+	metricValueFormat,
+	subText,
+	previousValue,
+	currentValue,
+} ) {
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
 	return (
 		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
+			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text">
 				<h3 className="googlesitekit-km-widget-tile__title">
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && <PreviewBlock width="100%" height="68px" /> }
+					{ loading && <PreviewBlock width="100%" height="84px" /> }
 					{ ! loading && (
 						<Fragment>
+							<div className="googlesitekit-km-widget-tile__metric">
+								{ metricValue }
+							</div>
+							<p className="googlesitekit-km-widget-tile__subtext">
+								{ subText }
+							</p>
 							<div className="googlesitekit-km-widget-tile__metric-change-container">
-								<div className="googlesitekit-km-widget-tile__metric">
-									{ numFmt( metricValue, formatOptions ) }
-								</div>
 								<ChangeBadge
 									previousValue={ previousValue }
 									currentValue={ currentValue }
@@ -69,9 +66,6 @@ export default function MetricTileNumeric( props ) {
 									}
 								/>
 							</div>
-							<p className="googlesitekit-km-widget-tile__subtext">
-								{ subText }
-							</p>
 						</Fragment>
 					) }
 				</div>
@@ -80,15 +74,11 @@ export default function MetricTileNumeric( props ) {
 	);
 }
 
-MetricTileNumeric.propTypes = {
+MetricTileText.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	loading: PropTypes.bool,
 	title: PropTypes.string,
 	metricValue: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
-	metricValueFormat: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.object,
-	] ),
 	subtext: PropTypes.string,
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,
