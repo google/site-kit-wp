@@ -85,7 +85,7 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( [], { accountID } );
-		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Verify that the setup flow mode is UA.
 		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
@@ -96,7 +96,6 @@ describe( 'SetupForm', () => {
 			<SetupForm />,
 			{ registry }
 		);
-
 		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
@@ -125,7 +124,7 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( [], { accountID } );
-		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Verify that the setup flow mode is GA4.
 		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
@@ -173,7 +172,7 @@ describe( 'SetupForm', () => {
 					),
 				}
 			);
-		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Verify that the setup flow mode is GA4 Legacy.
 		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
@@ -187,11 +186,6 @@ describe( 'SetupForm', () => {
 			}
 		);
 		await waitForRegistry();
-
-		// An additional wait is required in order for all resolvers to finish and the component to update.
-		await act( async () => {
-			await waitForDefaultTimeouts();
-		} );
 
 		expect( container ).toMatchSnapshot();
 
@@ -240,8 +234,13 @@ describe( 'SetupForm', () => {
 					),
 				}
 			);
+		// TODO: This call to `selectAccount()` is deliberately _not_ awaited in order to avoid a bug resulting from Redux state mutation in the `PropertySelect` component.
+		// This should be revisited once the bug is fixed at which point it can be awaited for consistency with the other tests.
+		// See https://github.com/google/site-kit-wp/issues/7220.
 		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-		registry.dispatch( MODULES_ANALYTICS ).selectProperty( propertyID );
+		await registry
+			.dispatch( MODULES_ANALYTICS )
+			.selectProperty( propertyID );
 
 		// Verify that the setup flow mode is GA4 Transitional.
 		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
@@ -305,7 +304,7 @@ describe( 'SetupForm', () => {
 					),
 				}
 			);
-		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
@@ -317,13 +316,9 @@ describe( 'SetupForm', () => {
 		);
 		await waitForRegistry();
 
-		// An additional wait is required in order for all resolvers to finish and the component to update.
-		await act( async () => {
-			await waitForDefaultTimeouts();
-		} );
-
-		// eslint-disable-next-line require-await
-		await act( async () => {
+		act( () => {
+			// It doesn't seem possible to show the dropdown menu within the test by clicking on the dropdown in the usual way.
+			// Therefore, we simulate the click on the dropdown menu item directly, despite it being hidden.
 			fireEvent.click(
 				getByRole( 'menuitem', {
 					name: /Test GA4 Property/i,
@@ -358,12 +353,16 @@ describe( 'SetupForm', () => {
 			body: {},
 		} );
 
-		// eslint-disable-next-line require-await
-		await act( async () => {
+		act( () => {
 			fireEvent.click(
 				getByRole( 'button', { name: /Configure Analytics/i } )
 			);
 		} );
+
+		await waitForRegistry();
+
+		// An additional wait is required to allow the finishSetup callback to be invoked.
+		await waitForDefaultTimeouts();
 
 		expect( fetchMock ).toHaveFetchedTimes(
 			1,
@@ -373,8 +372,6 @@ describe( 'SetupForm', () => {
 			1,
 			updateAnalytics4SettingsRegexp
 		);
-
-		await waitForDefaultTimeouts();
 
 		expect( finishSetup ).toHaveBeenCalledTimes( 1 );
 	} );
@@ -485,7 +482,9 @@ describe( 'SetupForm', () => {
 		await waitForRegistry();
 
 		// Ensure the form rendered successfully.
-		getByRole( 'button', { name: /Configure Analytics/i } );
+		expect(
+			getByRole( 'button', { name: /Configure Analytics/i } )
+		).toBeInTheDocument();
 
 		await waitForRegistry();
 
@@ -585,9 +584,11 @@ describe( 'SetupForm', () => {
 		await waitForRegistry();
 
 		// Ensure the form rendered successfully.
-		getByRole( 'button', { name: /Configure Analytics/i } );
+		expect(
+			getByRole( 'button', { name: /Configure Analytics/i } )
+		).toBeInTheDocument();
 
-		// While not strictly needed, add waits to match the successful auto-submit test case to avoid a false positive result.
+		// While not strictly needed, add waits to match the successful auto-submit test case to help avoid a false positive result.
 		await waitForRegistry();
 		await act( async () => {
 			await waitForDefaultTimeouts();
