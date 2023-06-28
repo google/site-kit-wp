@@ -129,7 +129,7 @@ const baseActions = {
 		}
 
 		if ( ! error ) {
-			yield registry.dispatch( CORE_USER ).maybeTriggerUserInputSurvey();
+			yield baseActions.maybeTriggerUserInputSurvey();
 		}
 
 		yield {
@@ -162,8 +162,12 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*maybeTriggerUserInputSurvey() {
-		const registry = yield Data.commonActions.getRegistry();
-		const settings = registry.select( CORE_USER ).getUserInputSettings();
+		const { __experimentalResolveSelect, dispatch } =
+			yield Data.commonActions.getRegistry();
+
+		const settings = yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_USER ).getUserInputSettings()
+		);
 
 		const settingsAnsweredOther = Object.keys( settings ).filter( ( key ) =>
 			settings[ key ].values.includes( 'other' )
@@ -177,9 +181,9 @@ const baseActions = {
 			'_'
 		) }`;
 
-		const { response, error } = yield registry
-			.dispatch( CORE_USER )
-			.triggerSurvey( triggerID );
+		const { response, error } = yield Data.commonActions.await(
+			yield dispatch( CORE_USER ).triggerSurvey( triggerID )
+		);
 
 		return { response, error };
 	},

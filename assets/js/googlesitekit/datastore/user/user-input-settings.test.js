@@ -213,18 +213,6 @@ describe( 'core/user user-input-settings', () => {
 					registry.select( CORE_USER ).getUserInputSettings()
 				).toEqual( settingsResponse );
 
-				await subscribeUntil( registry, () =>
-					registry
-						.select( CORE_USER )
-						.hasFinishedResolution( 'getSurveyTimeouts' )
-				);
-
-				await subscribeUntil( registry, () =>
-					registry
-						.select( CORE_USER )
-						.hasFinishedResolution( 'getUserInputSettings' )
-				);
-
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
 						data: {
