@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 
 /**
- * Class for Web tag.
+ * Class for Ad Blocking Recovery tag.
  *
  * @since n.e.x.t
  * @access private
