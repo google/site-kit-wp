@@ -193,7 +193,6 @@ class SiteVerification extends Component {
 					<TextField
 						label={ __( 'Website Address', 'google-site-kit' ) }
 						name="siteProperty"
-						floatingLabelClassName="mdc-floating-label--float-above"
 						outlined
 						disabled
 						value={ siteURL }
