@@ -54,9 +54,7 @@ describe( 'SetupForm', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
-		provideModules( registry, [
-			{ slug: 'analytics', active: true, connected: true },
-		] );
+		provideModules( registry, [ { slug: 'analytics', active: true } ] );
 	} );
 
 	it( 'renders the form with a progress bar when GTM containers are not resolved', () => {
@@ -151,8 +149,6 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'renders the form correctly when setup flow mode is GA4 Legacy', async () => {
-		const propertyID = analytics4Fixtures.properties[ 0 ]._id;
-
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
@@ -169,11 +165,15 @@ describe( 'SetupForm', () => {
 			} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetWebDataStreams( analytics4Fixtures.webDataStreams, {
-				propertyID,
-			} );
+			.receiveGetWebDataStreamsBatch(
+				analytics4Fixtures.webDataStreamsBatch,
+				{
+					propertyIDs: Object.keys(
+						analytics4Fixtures.webDataStreamsBatch
+					),
+				}
+			);
 		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-		registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( propertyID );
 
 		// Verify that the setup flow mode is GA4 Legacy.
 		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
@@ -187,6 +187,11 @@ describe( 'SetupForm', () => {
 			}
 		);
 		await waitForRegistry();
+
+		// An additional wait is required in order for all resolvers to finish and the component to update.
+		await act( async () => {
+			await waitForDefaultTimeouts();
+		} );
 
 		expect( container ).toMatchSnapshot();
 
@@ -225,6 +230,16 @@ describe( 'SetupForm', () => {
 			accountID,
 			propertyID,
 		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch(
+				analytics4Fixtures.webDataStreamsBatch,
+				{
+					propertyIDs: Object.keys(
+						analytics4Fixtures.webDataStreamsBatch
+					),
+				}
+			);
 		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 		registry.dispatch( MODULES_ANALYTICS ).selectProperty( propertyID );
 
@@ -241,6 +256,11 @@ describe( 'SetupForm', () => {
 		);
 		await waitForRegistry();
 
+		// An additional wait is required in order for all resolvers to finish and the component to update.
+		await act( async () => {
+			await waitForDefaultTimeouts();
+		} );
+
 		expect( container ).toMatchSnapshot();
 
 		expect( getByText( 'Account' ) ).toBeInTheDocument();
@@ -253,7 +273,7 @@ describe( 'SetupForm', () => {
 		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
 		expect(
 			getByText(
-				'You need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.'
+				'You need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property.'
 			)
 		).toBeInTheDocument();
 	} );
