@@ -99,7 +99,7 @@ TextField.propTypes = {
 	helperTextPersistent: PropTypes.bool,
 	id: PropTypes.string,
 	inputType: PropTypes.string,
-	value: PropTypes.string,
+	value: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
 	size: PropTypes.number,
 	maxLength: PropTypes.number,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
