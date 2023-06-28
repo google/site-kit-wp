@@ -84,7 +84,7 @@ export default function MetricTileTable( props ) {
 
 	return (
 		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-table">
+			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table">
 				<h3 className="googlesitekit-km-widget-tile__title">
 					{ title }
 				</h3>
