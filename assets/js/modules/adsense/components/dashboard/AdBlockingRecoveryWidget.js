@@ -131,18 +131,9 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		);
 	}
 
-	// const date = new Date();
-	// date.setDate( date.getDate() - 3 );
-
-	// global.console.log( {
-	// 	referenceDate: stringToDate( referenceDate ),
-	// 	setupCompletedTimestamp: new Date(
-	// 		setupCompletedTimestamp * 1000
-	// 	).getTime(),
-	// 	threeWeeksAgo:
-	// 		stringToDate( referenceDate ).getTime() -
-	// 		WEEK_IN_SECONDS * 3 * 1000,
-	// } );
+	const nowInMilliseconds = stringToDate( referenceDate ).getTime();
+	const completionTimeInMilliseconds = setupCompletedTimestamp * 1000;
+	const threeWeeksInMilliseconds = WEEK_IN_SECONDS * 3 * 1000;
 
 	const shouldShowWidget =
 		! viewOnlyDashboard &&
@@ -152,9 +143,8 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		accountStatus === ACCOUNT_STATUS_READY &&
 		siteStatus === SITE_STATUS_READY &&
 		( ! setupCompletedTimestamp ||
-			new Date( setupCompletedTimestamp * 1000 ).getTime() >=
-				stringToDate( referenceDate ).getTime() -
-					WEEK_IN_SECONDS * 3 * 1000 );
+			nowInMilliseconds - completionTimeInMilliseconds >=
+				threeWeeksInMilliseconds );
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;
