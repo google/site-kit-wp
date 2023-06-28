@@ -248,4 +248,50 @@ storiesOf( 'AdSense Module/Settings', module )
 		{
 			decorators: [ withRegistry ],
 		}
+	)
+	.add(
+		'Edit, open with existing ad blocking recovery tag (same account)',
+		( args, { registry } ) => {
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetSettings( completeSettings );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag(
+					completeSettings.accountID
+				);
+			setUpAdUnits( registry );
+
+			return (
+				<Settings
+					route="/connected-services/adsense/edit"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with existing ad blocking recovery tag (different account)',
+		( args, { registry } ) => {
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetSettings( completeSettings );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( 'pub-12345678' );
+			setUpAdUnits( registry );
+
+			return (
+				<Settings
+					route="/connected-services/adsense/edit"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
 	);

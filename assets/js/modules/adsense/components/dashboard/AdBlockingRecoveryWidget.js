@@ -97,6 +97,9 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		}
 		return select( MODULES_ADSENSE ).getSiteStatus();
 	} );
+	const hasExistingAdBlockingRecoveryTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasExistingAdBlockingRecoveryTag()
+	);
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/11576589',
@@ -134,6 +137,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const shouldShowWidget =
 		! viewOnlyDashboard &&
 		adSenseModuleConnected &&
+		! hasExistingAdBlockingRecoveryTag &&
 		isDismissed === false &&
 		adBlockingRecoverySetupStatus !== '' &&
 		accountStatus === ACCOUNT_STATUS_READY &&
