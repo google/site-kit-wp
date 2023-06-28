@@ -964,10 +964,12 @@ final class Analytics_4 extends Module
 	 * Registers the Analytics 4 tag.
 	 *
 	 * @since 1.31.0
+	 * @since n.e.x.t Added support for AMP tag.
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
-			$tag = new AMP_Tag( $this->get_tag_id(), self::MODULE_SLUG );
+			// AMP currently only works with the measurement ID.
+			$tag = new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG );
 		} else {
 			$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 		}
@@ -1225,6 +1227,19 @@ final class Analytics_4 extends Module
 		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
 			return $settings['googleTagID'];
 		}
+		return $settings['measurementID'];
+	}
+
+	/**
+	 * Gets the currently configured measurement ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Google Analytics 4 measurement ID.
+	 */
+	protected function get_measurement_id() {
+		$settings = $this->get_settings()->get();
+
 		return $settings['measurementID'];
 	}
 
