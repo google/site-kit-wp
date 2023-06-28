@@ -44,7 +44,7 @@ import {
 } from '../../../../components/AdminMenuTooltip';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import { WEEK_IN_SECONDS } from '../../../../util';
+import { WEEK_IN_SECONDS, stringToDate } from '../../../../util';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import {
@@ -105,6 +105,9 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const recoveryPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
 	);
+	const referenceDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
+	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const dismissCallback = async () => {
@@ -128,8 +131,9 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		);
 	}
 
-	const threeWeeksInSeconds = WEEK_IN_SECONDS * 3;
-	const nowInSeconds = Math.floor( Date.now() / 1000 );
+	const nowInMilliseconds = stringToDate( referenceDate ).getTime();
+	const completionTimeInMilliseconds = setupCompletedTimestamp * 1000;
+	const threeWeeksInMilliseconds = WEEK_IN_SECONDS * 3 * 1000;
 
 	const shouldShowWidget =
 		! viewOnlyDashboard &&
@@ -139,7 +143,8 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		accountStatus === ACCOUNT_STATUS_READY &&
 		siteStatus === SITE_STATUS_READY &&
 		( ! setupCompletedTimestamp ||
-			nowInSeconds - setupCompletedTimestamp >= threeWeeksInSeconds );
+			nowInMilliseconds - completionTimeInMilliseconds >=
+				threeWeeksInMilliseconds );
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;

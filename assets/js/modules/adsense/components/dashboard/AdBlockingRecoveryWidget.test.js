@@ -42,14 +42,15 @@ import {
 	SITE_STATUS_READY,
 } from '../../util';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { WEEK_IN_SECONDS, DAY_IN_SECONDS } from '../../../../util';
+import { stringToDate } from '../../../../util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
-	const timestampThreeWeeksAgo =
-		Math.floor( Date.now() / 1000 ) - WEEK_IN_SECONDS * 3;
-	const timestampLessThanThreeWeeksAgo =
-		timestampThreeWeeksAgo + DAY_IN_SECONDS;
+	const referenceDate = '2023-06-22';
+	const timestampThreeWeeksPrior =
+		stringToDate( '2023-06-01' ).getTime() / 1000;
+	const timestampLessThanThreeWeeksPrior =
+		stringToDate( '2023-06-02' ).getTime() / 1000;
 	const validSettings = {
 		accountID: 'pub-12345678',
 		clientID: 'ca-pub-12345678',
@@ -74,6 +75,7 @@ describe( 'AdSenseConnectCTA', () => {
 				slug: 'adsense',
 			},
 		] );
+		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
@@ -90,7 +92,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				false,
 				false,
-				timestampThreeWeeksAgo,
+				timestampThreeWeeksPrior,
 			],
 			[
 				'notification is dismissed',
@@ -99,7 +101,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				true,
 				true,
-				timestampThreeWeeksAgo,
+				timestampThreeWeeksPrior,
 			],
 			[
 				'the Adsense account status is not ready',
@@ -108,7 +110,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				true,
 				false,
-				timestampThreeWeeksAgo,
+				timestampThreeWeeksPrior,
 			],
 			[
 				'the Adsense site status is not ready',
@@ -117,7 +119,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				true,
 				false,
-				timestampThreeWeeksAgo,
+				timestampThreeWeeksPrior,
 			],
 			[
 				'the Ad blocking recovery status is an empty string',
@@ -126,7 +128,7 @@ describe( 'AdSenseConnectCTA', () => {
 				'',
 				true,
 				false,
-				timestampThreeWeeksAgo,
+				timestampThreeWeeksPrior,
 			],
 			[
 				'the setup completed timestamp is less than three weeks',
@@ -135,7 +137,7 @@ describe( 'AdSenseConnectCTA', () => {
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
 				true,
 				false,
-				timestampLessThanThreeWeeksAgo,
+				timestampLessThanThreeWeeksPrior,
 			],
 		] )(
 			'should not render the widget when %s',
@@ -207,7 +209,7 @@ describe( 'AdSenseConnectCTA', () => {
 		it( 'should render the widget for the site with a setup completion time of more than three weeks', () => {
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...validSettings,
-				setupCompletedTimestamp: timestampThreeWeeksAgo,
+				setupCompletedTimestamp: timestampThreeWeeksPrior,
 			} );
 
 			const { container } = render(
