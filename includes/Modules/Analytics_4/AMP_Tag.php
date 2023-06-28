@@ -39,6 +39,20 @@ class AMP_Tag extends Analytics_AMP_Tag {
 	}
 
 	/**
+	 * Outputs gtag <amp-analytics> tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function render() {
+		// Only render this tag if the UA AMP tag was not rendered to avoid multiple tags.
+		if ( did_action( 'googlesitekit_analytics_init_tag_amp' ) ) {
+			return;
+		}
+
+		parent::render();
+	}
+
+	/**
 	 * Extends gtag vars config with the GA4 tag config.
 	 *
 	 * @param array $opt AMP gtag config.
