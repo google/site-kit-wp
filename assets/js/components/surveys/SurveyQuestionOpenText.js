@@ -32,7 +32,7 @@ import { useInstanceId } from '@wordpress/compose';
  */
 import { Button } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
-import { TextField, Input, HelperText } from '../../material-components';
+import { TextField } from '../../googlesitekit-components-gm2';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
@@ -73,21 +73,14 @@ const SurveyQuestionOpenText = ( {
 				</VisuallyHidden>
 				<TextField
 					name={ `survey-opentext-${ instanceID }` }
-					helperText={
-						subtitle ? (
-							<HelperText persistent>{ subtitle }</HelperText>
-						) : undefined
-					}
+					helperText={ subtitle }
 					onChange={ onChange }
 					label={ placeholder }
 					textarea
-				>
-					<Input
-						inputType="textarea"
-						id={ instanceID }
-						value={ value }
-					/>
-				</TextField>
+					inputType="textarea"
+					id={ instanceID }
+					value={ value }
+				/>
 			</div>
 			<div className="googlesitekit-survey__footer">
 				<Button
