@@ -87,20 +87,26 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 			<section className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--key-metrics-setup-cta">
 				<Grid>
 					<Row>
-						<Cell smSize={ 6 } mdSize={ 5 } lgSize={ 6 }>
-							<h3 className="googlesitekit-publisher-win__title">
-								{ __(
-									'Get metrics and suggestions tailored to your specific goals',
-									'google-site-kit'
-								) }
-							</h3>
-							{ isMobileBreakpoint && <GhostCardsSVG /> }
-							<p>
-								{ __(
-									'Answer 3 questions to show relevant stats for your site',
-									'google-site-kit'
-								) }
-							</p>
+						<Cell smSize={ 6 } mdSize={ 6 } lgSize={ 7 }>
+							<div className="googlesitekit-widget-key-metrics-text__wrapper">
+								<h3 className="googlesitekit-publisher-win__title">
+									{ __(
+										'Get metrics and suggestions tailored to your specific goals',
+										'google-site-kit'
+									) }
+								</h3>
+								<p>
+									{ __(
+										'Answer 3 questions to show relevant stats for your site',
+										'google-site-kit'
+									) }
+								</p>
+							</div>
+							{ isMobileBreakpoint && (
+								<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
+									<GhostCardsSVG />
+								</Cell>
+							) }
 							<div className="googlesitekit-widget-key-metrics-actions__wrapper">
 								<Button
 									className="googlesitekit-key-metrics-cta-button"
@@ -120,7 +126,12 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 							</div>
 						</Cell>
 						{ ! isMobileBreakpoint && (
-							<Cell smSize={ 6 } mdSize={ 3 } lgSize={ 6 }>
+							<Cell
+								className="googlesitekit-widget-key-metrics-svg__wrapper"
+								smSize={ 6 }
+								mdSize={ 2 }
+								lgSize={ 5 }
+							>
 								<GhostCardsSVG />
 							</Cell>
 						) }
