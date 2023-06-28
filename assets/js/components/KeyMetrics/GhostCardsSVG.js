@@ -46,9 +46,11 @@ export default function GhostCardsSVG() {
 	const windowWidth = useWindowWidth();
 
 	let GhostCardComponent;
-	if ( windowWidth > 783 ) {
+	if ( windowWidth >= 1280 ) {
 		GhostCardComponent = <LazyGhostCardsWideSVG />;
-	} else if ( windowWidth <= 783 && windowWidth > 600 ) {
+	} else if ( windowWidth >= 960 ) {
+		GhostCardComponent = <LazyGhostCardsMobileSVG />;
+	} else if ( windowWidth >= 601 ) {
 		GhostCardComponent = <LazyGhostCardsTabletSVG />;
 	} else {
 		GhostCardComponent = <LazyGhostCardsMobileSVG />;
