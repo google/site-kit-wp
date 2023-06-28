@@ -43,6 +43,7 @@ use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
@@ -966,10 +967,10 @@ final class Analytics_4 extends Module
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
-			return;
+			$tag = new AMP_Tag( $this->get_tag_id(), self::MODULE_SLUG );
+		} else {
+			$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 		}
-
-		$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -980,6 +981,9 @@ final class Analytics_4 extends Module
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( $tag->can_register() ) {
+			$tag->set_home_domain(
+				URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST )
+			);
 			// Here we need to retrieve the ads conversion ID from the
 			// classic/UA Analytics settings as it does not exist yet for this module.
 			// TODO: Update the value to be sourced from GA4 module settings once decoupled.
