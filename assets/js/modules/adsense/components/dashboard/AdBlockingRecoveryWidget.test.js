@@ -42,14 +42,11 @@ import {
 	SITE_STATUS_READY,
 } from '../../util';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { WEEK_IN_SECONDS, DAY_IN_SECONDS } from '../../../../util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
-	const timestampThreeWeeksAgo =
-		Math.floor( Date.now() / 1000 ) - WEEK_IN_SECONDS * 3;
-	const timestampLessThanThreeWeeksAgo =
-		timestampThreeWeeksAgo + DAY_IN_SECONDS;
+	const timestampThreeWeeksAgo = '1685576083'; // Unix timestamp for 2023-06-01
+	const timestampLessThanThreeWeeksAgo = '1685662483'; // Unix timestamp for 2023-06-02
 	const validSettings = {
 		accountID: 'pub-12345678',
 		clientID: 'ca-pub-12345678',
@@ -74,6 +71,7 @@ describe( 'AdSenseConnectCTA', () => {
 				slug: 'adsense',
 			},
 		] );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2023-06-15' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
@@ -205,6 +203,7 @@ describe( 'AdSenseConnectCTA', () => {
 		} );
 
 		it( 'should render the widget for the site with a setup completion time of more than three weeks', () => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2023-06-25' );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...validSettings,
 				setupCompletedTimestamp: timestampThreeWeeksAgo,
