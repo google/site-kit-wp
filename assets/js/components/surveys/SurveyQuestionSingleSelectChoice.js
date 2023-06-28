@@ -31,7 +31,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Radio } from 'googlesitekit-components';
-import { TextField, Input } from '../../material-components';
+import { TextField } from '../../googlesitekit-components-gm2';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
@@ -71,21 +71,19 @@ const SurveyQuestionSingleSelectChoice = ( {
 							) }
 						</label>
 					</VisuallyHidden>
-					<TextField>
-						<Input
-							id={ uniqueID }
-							onChange={ ( event ) =>
-								setWriteIn(
-									event.target.value.slice(
-										0,
-										SURVEY_INPUT_MAX_CHARACTER_LIMIT
-									)
+					<TextField
+						id={ uniqueID }
+						onChange={ ( event ) =>
+							setWriteIn(
+								event.target.value.slice(
+									0,
+									SURVEY_INPUT_MAX_CHARACTER_LIMIT
 								)
-							}
-							value={ writeIn }
-							disabled={ ! isChecked }
-						/>
-					</TextField>
+							)
+						}
+						value={ writeIn }
+						disabled={ ! isChecked }
+					/>
 				</Fragment>
 			) }
 		</div>
