@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Tests\Modules\AdSense;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Web_Tag;
 use Google\Site_Kit\Tests\TestCase;
@@ -23,32 +22,13 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Ad_Blocking_Recovery_Web_TagTest extends TestCase {
 
-	/**
-	 * Ad_Blocking_Recovery_Tag object.
-	 * @var Ad_Blocking_Recovery_Tag
-	 */
-	private $tag;
+	public function test_renders_nothing_when_tag_is_not_available() {
+		$tag                          = new Ad_Blocking_Recovery_Tag( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $tag, true );
 
-	/**
-	 * Ad_Blocking_Recovery_Web_Tag object.
-	 *
-	 * @var Ad_Blocking_Recovery_Web_Tag
-	 */
-	private $web_tag;
-
-	public function set_up() {
-		parent::set_up();
-
-		$this->tag     = new Ad_Blocking_Recovery_Tag( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$this->web_tag = new Ad_Blocking_Recovery_Web_Tag( 'test-id', AdSense::MODULE_SLUG );
-		$this->web_tag->set_ad_blocking_recovery_tag( $this->tag );
-		$this->web_tag->set_use_error_snippet( true );
-	}
-
-	public function test_renders_nothing_when_not_available() {
 		remove_all_actions( 'wp_head' );
 
-		$this->web_tag->register();
+		$ad_blocking_recovery_web_tag->register();
 
 		$output = $this->capture_action( 'wp_head' );
 
@@ -56,16 +36,19 @@ class Ad_Blocking_Recovery_Web_TagTest extends TestCase {
 	}
 
 	public function test_renders_tags() {
+		$tag                          = new Ad_Blocking_Recovery_Tag( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $tag, true );
+
 		remove_all_actions( 'wp_head' );
 
-		$this->tag->set(
+		$tag->set(
 			array(
 				'tag'                   => 'test-tag',
 				'error_protection_code' => 'test-error-protection-code',
 			)
 		);
 
-		$this->web_tag->register();
+		$ad_blocking_recovery_web_tag->register();
 
 		$output = $this->capture_action( 'wp_head' );
 
@@ -76,18 +59,20 @@ class Ad_Blocking_Recovery_Web_TagTest extends TestCase {
 
 	}
 
-	public function test_does_nt_render_error_protection_tag_when_disabled() {
+	public function test_does_not_render_error_protection_tag_when_disabled() {
+		$tag                          = new Ad_Blocking_Recovery_Tag( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $tag, false );
+
 		remove_all_actions( 'wp_head' );
 
-		$this->tag->set(
+		$tag->set(
 			array(
 				'tag'                   => 'test-tag',
 				'error_protection_code' => 'test-error-protection-code',
 			)
 		);
-		$this->web_tag->set_use_error_snippet( false );
 
-		$this->web_tag->register();
+		$ad_blocking_recovery_web_tag->register();
 
 		$output = $this->capture_action( 'wp_head' );
 
