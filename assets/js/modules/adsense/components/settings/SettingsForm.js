@@ -43,9 +43,12 @@ import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
+	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
+
 	const webStoriesActive = useSelect( ( select ) =>
 		select( CORE_SITE ).isWebStoriesActive()
 	);
@@ -169,9 +172,12 @@ export default function SettingsForm() {
 				/>
 			) }
 
-			<AdBlockingRecoveryCTA />
-
-			<AdBlockingRecoveryToggle />
+			{ adBlockerDetectionEnabled && (
+				<Fragment>
+					<AdBlockingRecoveryCTA />
+					<AdBlockingRecoveryToggle />
+				</Fragment>
+			) }
 		</div>
 	);
 }

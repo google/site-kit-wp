@@ -35,25 +35,16 @@ import {
 describe( 'AdBlockingRecoveryCTA', () => {
 	it.each( [
 		[
-			'the Ad blocker detection feature flag is not enabled',
-			ACCOUNT_STATUS_PENDING,
-			SITE_STATUS_READY,
-			'',
-			false,
-		],
-		[
 			'Adsense account status is not ready',
 			ACCOUNT_STATUS_PENDING,
 			SITE_STATUS_READY,
 			'',
-			true,
 		],
 		[
 			'Adsense site status is not ready',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			'',
-			true,
 		],
 		[
 			'Ad blocking recovery status is not an empty string',
@@ -77,13 +68,9 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			accountStatus,
 			siteStatus,
 			adBlockingRecoverySetupStatus,
-			adBlockerDetectionEnabled,
 			existingAdBlockingRecoveryTag = null
 		) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
-				features: [].concat(
-					adBlockerDetectionEnabled ? 'adBlockerDetection' : []
-				),
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -119,7 +106,6 @@ describe( 'AdBlockingRecoveryCTA', () => {
 
 	it( 'should render the CTA when Ad Blocking Recovery is not set up', () => {
 		const { container } = render( <AdBlockingRecoveryCTA />, {
-			features: [ 'adBlockerDetection' ],
 			setupRegistry: ( registry ) => {
 				provideModules( registry, [
 					{

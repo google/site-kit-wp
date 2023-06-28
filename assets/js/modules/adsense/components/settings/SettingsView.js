@@ -44,6 +44,7 @@ const { useSelect } = Data;
 
 export default function SettingsView() {
 	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
+	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
@@ -179,52 +180,59 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			{ !! adBlockingRecoverySetupStatus?.length && (
-				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Ad blocking recovery', 'google-site-kit' ) }
-						</h5>
-						{ adBlockingRecoverySetupStatus ===
-							'setup-confirmed' && (
-							<p className="googlesitekit-settings-module__meta-item-data">
+			{ adBlockerDetectionEnabled &&
+				!! adBlockingRecoverySetupStatus?.length && (
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
 								{ __(
-									'Ad blocking recovery tag is not placed',
+									'Ad blocking recovery',
 									'google-site-kit'
 								) }
-							</p>
-						) }
-						{ adBlockingRecoverySetupStatus === 'tag-placed' && (
-							<Fragment>
+							</h5>
+							{ adBlockingRecoverySetupStatus ===
+								'setup-confirmed' && (
 								<p className="googlesitekit-settings-module__meta-item-data">
 									{ __(
-										'Ad blocking recovery tag is placed',
+										'Ad blocking recovery tag is not placed',
 										'google-site-kit'
 									) }
 								</p>
-								<p className="googlesitekit-settings-module__meta-item-data">
-									{ createInterpolateElement(
-										__(
-											'Ad blocking recovery only works if you’ve also created and published a recovery message in AdSense. <a>Configure your message</a>',
+							) }
+							{ adBlockingRecoverySetupStatus ===
+								'tag-placed' && (
+								<Fragment>
+									<p className="googlesitekit-settings-module__meta-item-data">
+										{ __(
+											'Ad blocking recovery tag is placed',
 											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													href={ privacyMessagingURL }
-													external
-												/>
+										) }
+									</p>
+									<p className="googlesitekit-settings-module__meta-item-data">
+										{ createInterpolateElement(
+											__(
+												'Ad blocking recovery only works if you’ve also created and published a recovery message in AdSense. <a>Configure your message</a>',
+												'google-site-kit'
 											),
-										}
-									) }
-								</p>
-							</Fragment>
-						) }
+											{
+												a: (
+													<Link
+														href={
+															privacyMessagingURL
+														}
+														external
+													/>
+												),
+											}
+										) }
+									</p>
+								</Fragment>
+							) }
+						</div>
 					</div>
-				</div>
-			) }
+				) }
 
-			<AdBlockingRecoveryCTA />
+			{ adBlockerDetectionEnabled && <AdBlockingRecoveryCTA /> }
 		</div>
 	);
 }

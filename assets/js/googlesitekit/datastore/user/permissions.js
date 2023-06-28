@@ -238,34 +238,18 @@ const baseSelectors = {
 		// Return an array of module slugs for modules that are
 		// shareable and the user has the "read shared module data"
 		// capability for.
-		let moduleSlugs = Object.values( modules ).reduce(
-			( slugs, module ) => {
-				const hasCapability = select( CORE_USER ).hasCapability(
-					PERMISSION_READ_SHARED_MODULE_DATA,
-					module.slug
-				);
+		return Object.values( modules ).reduce( ( slugs, module ) => {
+			const hasCapability = select( CORE_USER ).hasCapability(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				module.slug
+			);
 
-				if ( module.shareable && hasCapability ) {
-					return [ ...slugs, module.slug ];
-				}
+			if ( module.shareable && hasCapability ) {
+				return [ ...slugs, module.slug ];
+			}
 
-				return slugs;
-			},
-			[]
-		);
-
-		// If both 'analytics' and 'analytics-4' modules are viewable by the user,
-		// remove one of them based on whether the user is viewing an Analytics 4 dashboard or not.
-		if (
-			moduleSlugs.includes( 'analytics' ) &&
-			moduleSlugs.includes( 'analytics-4' )
-		) {
-			moduleSlugs = isGA4DashboardView
-				? moduleSlugs.filter( ( slug ) => slug !== 'analytics' )
-				: moduleSlugs.filter( ( slug ) => slug !== 'analytics-4' );
-		}
-
-		return moduleSlugs;
+			return slugs;
+		}, [] );
 	} ),
 
 	/**
