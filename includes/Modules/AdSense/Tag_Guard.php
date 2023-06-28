@@ -26,7 +26,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	 *
 	 * @since 1.24.0
 	 * @since 1.30.0 Update to return FALSE on 404 pages deliberately.
-	 * @since n.e.x.t Update to remove the check for 404 pages.
+	 * @since n.e.x.t Extract the check for 404 pages to dedicated Guard.
 	 *
 	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */
