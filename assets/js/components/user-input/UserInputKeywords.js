@@ -35,7 +35,8 @@ import { ENTER, BACKSPACE } from '@wordpress/keycodes';
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Cell, Input, TextField } from '../../material-components';
+import { Cell } from '../../material-components';
+import { TextField } from '../../googlesitekit-components-gm2';
 import CloseIcon from '../../../svg/icons/close.svg';
 import { COMMA } from '../../util/key-codes';
 import VisuallyHidden from '../VisuallyHidden';
@@ -203,19 +204,14 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 								'google-site-kit'
 							) }
 							noLabel
-						>
-							<Input
-								id={ `${ slug }-keyword-${ i }` }
-								value={ value }
-								size={
-									value.length > 0 ? value.length : undefined
-								}
-								onChange={ onKeywordChange.bind( null, i ) }
-								onKeyDown={ onKeyDown.bind( null, i ) }
-								tabIndex={ ! isActive ? '-1' : undefined }
-								maxLength={ 40 }
-							/>
-						</TextField>
+							id={ `${ slug }-keyword-${ i }` }
+							value={ value }
+							size={ value.length > 0 ? value.length : undefined }
+							onChange={ onKeywordChange.bind( null, i ) }
+							onKeyDown={ onKeyDown.bind( null, i ) }
+							tabIndex={ ! isActive ? '-1' : undefined }
+							maxLength={ 40 }
+						/>
 
 						{ ( value.length > 0 ||
 							i + 1 < localValues.length ) && (
