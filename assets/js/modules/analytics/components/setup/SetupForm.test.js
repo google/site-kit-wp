@@ -512,37 +512,40 @@ describe( 'SetupForm', () => {
 		expect( finishSetup ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'auto-submits the form once', async () => {
-		const createPropertyRegexp = new RegExp(
-			'/analytics/data/create-property'
-		);
-		fetchMock.post( createPropertyRegexp, {
-			status: 403,
-			body: {
-				code: 403,
-				error: 'Insufficient permissions',
-			},
-		} );
-		const dispatchUA = registry.dispatch( MODULES_ANALYTICS );
-		const dispatchGA4 = registry.dispatch( MODULES_ANALYTICS_4 );
-		dispatchUA.setSettings( {} );
-		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		dispatchUA.receiveGetAccounts(
-			fixtures.accountsPropertiesProfiles.accounts
-		);
-		dispatchUA.receiveGetProperties( [], { accountID } );
-		dispatchUA.receiveGetExistingTag( null );
+	it( 'auto-submits the form only once in the case of an error', async () => {
+		enabledFeatures.add( 'ga4Reporting' );
 
-		dispatchGA4.receiveGetExistingTag( null );
-		dispatchGA4.receiveGetAccountSummaries(
-			analytics4Fixtures.accountSummaries
-		);
-		dispatchGA4.receiveGetProperties( [], { accountID } );
-		dispatchUA.selectAccount( accountID );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( [], { accountID } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( analytics4Fixtures.accountSummaries );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperties( [], { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch(
+				analytics4Fixtures.webDataStreamsBatch,
+				{
+					propertyIDs: Object.keys(
+						analytics4Fixtures.webDataStreamsBatch
+					),
+				}
+			);
+		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
-		// In this situation, the autoSubmit is set before the user goes to oAuth
+		// In this situation, the autoSubmit is set before the user goes to oAuth,
 		// store state is snapshotted, and then restored upon returning.
 		registry
 			.dispatch( CORE_FORMS )
@@ -551,17 +554,44 @@ describe( 'SetupForm', () => {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
 
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ] );
+
+		const createPropertyRegexp = new RegExp(
+			'/analytics-4/data/create-property'
+		);
+
+		fetchMock.post( createPropertyRegexp, {
+			status: 403,
+			body: {
+				code: 403,
+				error: 'Insufficient permissions',
+			},
+		} );
+
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
 			{
 				registry,
+				features: [ 'ga4Reporting' ],
 			}
 		);
 		await waitForRegistry();
 
 		// Ensure the form rendered successfully.
 		getByRole( 'button', { name: /Configure Analytics/i } );
+
+		// While not strictly needed, add waits to match the successful auto-submit test case to avoid a false positive result.
+		await waitForRegistry();
+		await act( async () => {
+			await waitForDefaultTimeouts();
+		} );
 
 		// Create property should have only been called once.
 		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyRegexp );
