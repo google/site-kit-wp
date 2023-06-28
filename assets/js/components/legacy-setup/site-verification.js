@@ -33,7 +33,7 @@ import { Component, Fragment } from '@wordpress/element';
 import API from 'googlesitekit-api';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import { validateJSON, trackEvent } from '../../util';
-import { TextField, Input } from '../../material-components';
+import { TextField } from '../../googlesitekit-components-gm2';
 
 class SiteVerification extends Component {
 	constructor( props ) {
@@ -196,9 +196,8 @@ class SiteVerification extends Component {
 						floatingLabelClassName="mdc-floating-label--float-above"
 						outlined
 						disabled
-					>
-						<Input value={ siteURL } />
-					</TextField>
+						value={ siteURL }
+					/>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 					<Button onClick={ this.onProceed }>
