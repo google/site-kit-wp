@@ -792,7 +792,7 @@ final class AdSense extends Module
 
 		if ( ! $tag->is_tag_blocked() ) {
 			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new WP_Query_404_Guard( $this->context->input() ) );
+			$tag->use_guard( new WP_Query_404_Guard() );
 			$tag->use_guard( new Tag_Guard( $module_settings ) );
 			$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
 			$tag->use_guard( new Tag_Environment_Type_Guard() );
@@ -812,7 +812,7 @@ final class AdSense extends Module
 			}
 
 			$ad_blocking_recovery_web_tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$ad_blocking_recovery_web_tag->use_guard( new WP_Query_404_Guard( $this->context->input() ) );
+			$ad_blocking_recovery_web_tag->use_guard( new WP_Query_404_Guard() );
 			$ad_blocking_recovery_web_tag->use_guard( new Ad_Blocking_Recovery_Tag_Guard( $module_settings ) );
 			$ad_blocking_recovery_web_tag->use_guard( new Tag_Environment_Type_Guard() );
 
