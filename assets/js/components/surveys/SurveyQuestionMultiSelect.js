@@ -35,7 +35,8 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import { Button, Checkbox } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
-import { TextField, Input, HelperText } from '../../material-components';
+import { TextField } from '../../googlesitekit-components-gm2';
+import { HelperText } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
@@ -200,21 +201,17 @@ const SurveyQuestionMultiSelect = ( {
 													) }
 												</label>
 											</VisuallyHidden>
-											<TextField>
-												<Input
-													id={ `${ id }-write-in` }
-													onChange={ ( event ) =>
-														handleAnswerChange(
-															event,
-															answer_ordinal
-														)
-													}
-													value={ answer.answer_text }
-													disabled={
-														! answer.selected
-													}
-												/>
-											</TextField>
+											<TextField
+												id={ `${ id }-write-in` }
+												onChange={ ( event ) =>
+													handleAnswerChange(
+														event,
+														answer_ordinal
+													)
+												}
+												value={ answer.answer_text }
+												disabled={ ! answer.selected }
+											/>
 										</Fragment>
 									)
 								}
