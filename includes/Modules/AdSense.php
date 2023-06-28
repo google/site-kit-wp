@@ -804,8 +804,8 @@ final class AdSense extends Module
 
 		if ( Feature_Flags::enabled( 'adBlockerDetection' ) && ! $this->context->is_amp() ) {
 			$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $settings['accountID'], self::MODULE_SLUG );
-			$this->web_tag->set_ad_blocking_recovery_tag( $this->ad_blocking_recovery_tag );
-			$this->web_tag->set_use_error_snippet( $this->get_settings()->get()['useAdBlockerDetectionErrorSnippet'] );
+			$ad_blocking_recovery_web_tag->set_ad_blocking_recovery_tag( $this->ad_blocking_recovery_tag );
+			$ad_blocking_recovery_web_tag->set_use_error_snippet( $settings['useAdBlockerDetectionErrorSnippet'] );
 
 			if ( $ad_blocking_recovery_web_tag->is_tag_blocked() ) {
 				return;
