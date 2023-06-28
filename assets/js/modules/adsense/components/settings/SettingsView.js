@@ -233,7 +233,10 @@ export default function SettingsView() {
 					</div>
 				) }
 
-			{ adBlockerDetectionEnabled && <AdBlockingRecoveryCTA /> }
+			{ adBlockerDetectionEnabled &&
+				! adBlockingRecoverySetupStatus?.length && (
+					<AdBlockingRecoveryCTA />
+				) }
 		</div>
 	);
 }
