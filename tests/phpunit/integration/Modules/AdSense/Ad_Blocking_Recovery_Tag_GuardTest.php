@@ -19,7 +19,6 @@ use Google\Site_Kit\Tests\TestCase;
 /**
  * @group Modules
  * @group AdSense
- * @group test
  */
 class Ad_Blocking_Recovery_Tag_GuardTest extends TestCase {
 
@@ -56,13 +55,18 @@ class Ad_Blocking_Recovery_Tag_GuardTest extends TestCase {
 		$this->assertTrue( $this->guard->can_activate() );
 	}
 
-	public function test_cant_activate_when_adBlockingRecovery_is_not_set_up() {
-		$this->settings->merge( array( 'adBlockingRecoverySetupStatus' => '' ) );
-		$this->assertFalse( $this->guard->can_activate(), 'Should return FALSE when adBlockingRecoverySetupStatus is empty.' );
+	/**
+	 * @dataProvider data_can_not_activate
+	 */
+	public function test_can_not_activate( $settings ) {
+		$this->settings->merge( $settings );
+		$this->assertFalse( $this->guard->can_activate() );
 	}
 
-	public function test_cant_activate_when_useAdBlockerDetectionSnippet_is_falsy() {
-		$this->settings->merge( array( 'useAdBlockerDetectionSnippet' => false ) );
-		$this->assertFalse( $this->guard->can_activate(), 'Should return FALSE when useAdBlockerDetectionSnippet is falsy.' );
+	public function data_can_not_activate() {
+		return array(
+			'when adBlockingRecoverySetupStatus is empty' => array( array( 'adBlockingRecoverySetupStatus' => '' ) ),
+			'when useAdBlockerDetectionSnippet is falsy'  => array( array( 'useAdBlockerDetectionSnippet' => false ) ),
+		);
 	}
 }

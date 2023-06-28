@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Tags\Guards;
 use Google\Site_Kit\Core\Guards\Guard_Interface;
 
 /**
- * Base class for a module tag guard.
+ * Class for WP_Query 404 guard.
  *
  * @since n.e.x.t
  * @access private

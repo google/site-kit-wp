@@ -13,9 +13,9 @@ namespace Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Guard;
 
 /**
- * Class for the AdSense tag guard.
+ * Class for the AdSense Ad Blocking Recovery tag guard.
  *
- * @since 1.24.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
