@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Input, TextField, HelperText } from '../../../../material-components';
+import { TextField } from '../../../../googlesitekit-components-gm2';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { isValidOptimizeID } from '../../util';
 
@@ -62,20 +62,17 @@ export default function OptimizeIDField() {
 				name="optimizeID"
 				onChange={ onChange }
 				helperText={
-					isInvalidValue && (
-						<HelperText persistent>
-							{ __(
-								'Format: GTM-XXXXXXX or OPT-XXXXXXX',
-								'google-site-kit'
-							) }
-						</HelperText>
+					isInvalidValue &&
+					__(
+						'Format: GTM-XXXXXXX or OPT-XXXXXXX',
+						'google-site-kit'
 					)
 				}
+				helperTextPersistent={ true }
 				outlined
 				required
-			>
-				<Input value={ optimizeID } />
-			</TextField>
+				value={ optimizeID }
+			/>
 		</div>
 	);
 }
