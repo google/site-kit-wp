@@ -51,14 +51,12 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
-			true,
 		],
 		[
 			'an existing ad blocker recovery tag is detected',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
-			true,
 			'pub-3467161886473746',
 		],
 	] )(
