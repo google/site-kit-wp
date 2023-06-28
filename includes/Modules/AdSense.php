@@ -790,26 +790,24 @@ final class AdSense extends Module
 			$tag = new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
 		}
 
-		if ( ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new WP_Query_404_Guard() );
-			$tag->use_guard( new Tag_Guard( $module_settings ) );
-			$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
-			$tag->use_guard( new Tag_Environment_Type_Guard() );
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
 
-			if ( $tag->can_register() ) {
-				$tag->register();
-			}
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new WP_Query_404_Guard() );
+		$tag->use_guard( new Tag_Guard( $module_settings ) );
+		$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
+		$tag->use_guard( new Tag_Environment_Type_Guard() );
+
+		if ( $tag->can_register() ) {
+			$tag->register();
 		}
 
 		if ( Feature_Flags::enabled( 'adBlockerDetection' ) && ! $this->context->is_amp() ) {
 			$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $settings['accountID'], self::MODULE_SLUG );
 			$ad_blocking_recovery_web_tag->set_ad_blocking_recovery_tag( $this->ad_blocking_recovery_tag );
 			$ad_blocking_recovery_web_tag->set_use_error_snippet( $settings['useAdBlockerDetectionErrorSnippet'] );
-
-			if ( $ad_blocking_recovery_web_tag->is_tag_blocked() ) {
-				return;
-			}
 
 			$ad_blocking_recovery_web_tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 			$ad_blocking_recovery_web_tag->use_guard( new WP_Query_404_Guard() );
