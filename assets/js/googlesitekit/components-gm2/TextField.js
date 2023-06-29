@@ -39,7 +39,6 @@ const TextField = ( {
 	textarea,
 	trailingIcon,
 	helperText,
-	helperTextPersistent,
 	id,
 	inputType,
 	value,
@@ -65,11 +64,7 @@ const TextField = ( {
 			textarea={ textarea }
 			trailingIcon={ trailingIcon }
 			helperText={
-				helperText && (
-					<HelperText persistent={ helperTextPersistent }>
-						{ helperText }
-					</HelperText>
-				)
+				helperText && <HelperText persistent>{ helperText }</HelperText>
 			}
 		>
 			<Input
@@ -96,7 +91,6 @@ TextField.propTypes = {
 	textarea: PropTypes.bool,
 	trailingIcon: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.element ] ),
 	helperText: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.string ] ),
-	helperTextPersistent: PropTypes.bool,
 	id: PropTypes.string,
 	inputType: PropTypes.string,
 	value: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
