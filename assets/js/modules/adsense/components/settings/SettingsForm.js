@@ -28,7 +28,10 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import { parseAccountID } from '../../util/parsing';
+import {
+	parseAccountID,
+	parseAccountIDFromExistingTag,
+} from '../../util/parsing';
 import {
 	ErrorNotices,
 	UseSnippetSwitch,
@@ -39,6 +42,7 @@ import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
@@ -47,6 +51,9 @@ export default function SettingsForm() {
 
 	const webStoriesActive = useSelect( ( select ) =>
 		select( CORE_SITE ).isWebStoriesActive()
+	);
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
 	);
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
@@ -57,8 +64,19 @@ export default function SettingsForm() {
 	const hasResolvedGetExistingTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasFinishedResolution( 'getExistingTag' )
 	);
+	const existingAdBlockingRecoveryTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingAdBlockingRecoveryTag()
+	);
+	const hasResolvedGetExistingAdBlockingRecoveryTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasFinishedResolution(
+			'getExistingAdBlockingRecoveryTag'
+		)
+	);
 
-	if ( ! hasResolvedGetExistingTag ) {
+	if (
+		! hasResolvedGetExistingTag ||
+		! hasResolvedGetExistingAdBlockingRecoveryTag
+	) {
 		return <ProgressBar />;
 	}
 
@@ -89,6 +107,26 @@ export default function SettingsForm() {
 		uncheckedMessage = __(
 			'Please note that AdSense will not show ads on your website unless you’ve already placed the code.',
 			'google-site-kit'
+		);
+	}
+
+	let existingAdBlockingRecoveryTagMessage;
+	if (
+		existingAdBlockingRecoveryTag &&
+		existingAdBlockingRecoveryTag === accountID
+	) {
+		existingAdBlockingRecoveryTagMessage = __(
+			'You’ve already got an Ad Blocking Recovery code on your site. We recommend you use Site Kit to manage this to get the most out of AdSense.',
+			'google-site-kit'
+		);
+	} else if ( existingAdBlockingRecoveryTag ) {
+		existingAdBlockingRecoveryTagMessage = sprintf(
+			/* translators: %s: account ID */
+			__(
+				'Site Kit detected Ad Blocking Recovery code for a different account %s on your site. For a better ad blocking recovery experience, you should remove Ad Blocking Recovery code that’s not linked to this AdSense account.',
+				'google-site-kit'
+			),
+			parseAccountIDFromExistingTag( existingAdBlockingRecoveryTag )
 		);
 	}
 
@@ -127,6 +165,12 @@ export default function SettingsForm() {
 			) }
 
 			<AutoAdExclusionSwitches />
+
+			{ existingAdBlockingRecoveryTag && (
+				<SettingsNotice
+					notice={ existingAdBlockingRecoveryTagMessage }
+				/>
+			) }
 
 			{ adBlockerDetectionEnabled && (
 				<Fragment>

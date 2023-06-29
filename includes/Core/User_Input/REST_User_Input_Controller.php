@@ -40,7 +40,7 @@ class REST_User_Input_Controller {
 	/**
 	 * Survey_Queue instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 * @var Survey_Queue
 	 */
 	protected $survey_queue;

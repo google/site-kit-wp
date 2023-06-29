@@ -61,6 +61,9 @@ export default function SettingsView() {
 	const accountStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountStatus()
 	);
+	const useAdBlockerDetectionSnippet = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getUseAdBlockerDetectionSnippet()
+	);
 
 	const siteStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getSiteStatus()
@@ -181,7 +184,7 @@ export default function SettingsView() {
 			) }
 
 			{ adBlockerDetectionEnabled &&
-				!! adBlockingRecoverySetupStatus?.length && (
+				adBlockingRecoverySetupStatus?.length > 0 && (
 					<div className="googlesitekit-settings-module__meta-items">
 						<div className="googlesitekit-settings-module__meta-item">
 							<h5 className="googlesitekit-settings-module__meta-item-type">
@@ -190,8 +193,7 @@ export default function SettingsView() {
 									'google-site-kit'
 								) }
 							</h5>
-							{ adBlockingRecoverySetupStatus ===
-								'setup-confirmed' && (
+							{ ! useAdBlockerDetectionSnippet && (
 								<p className="googlesitekit-settings-module__meta-item-data">
 									{ __(
 										'Ad blocking recovery tag is not placed',
@@ -199,8 +201,7 @@ export default function SettingsView() {
 									) }
 								</p>
 							) }
-							{ adBlockingRecoverySetupStatus ===
-								'tag-placed' && (
+							{ useAdBlockerDetectionSnippet && (
 								<Fragment>
 									<p className="googlesitekit-settings-module__meta-item-data">
 										{ __(
@@ -232,7 +233,10 @@ export default function SettingsView() {
 					</div>
 				) }
 
-			{ adBlockerDetectionEnabled && <AdBlockingRecoveryCTA /> }
+			{ adBlockerDetectionEnabled &&
+				! adBlockingRecoverySetupStatus?.length && (
+					<AdBlockingRecoveryCTA />
+				) }
 		</div>
 	);
 }
