@@ -157,7 +157,7 @@ const baseActions = {
 	/**
 	 * Triggers user input survey if any of the answers is "Other".
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */

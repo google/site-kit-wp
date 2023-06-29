@@ -38,7 +38,7 @@ const baseActions = {
 	/**
 	 * Triggers an API request to sync Ad Blocking Recovery and Error Protection tags on the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */

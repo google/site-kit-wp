@@ -16,7 +16,7 @@ use Google\Site_Kit\Modules\Analytics\AMP_Tag as Analytics_AMP_Tag;
 /**
  * Class for AMP tag.
  *
- * @since  n.e.x.t
+ * @since  1.104.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class AMP_Tag extends Analytics_AMP_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 */
 	public function register() {
 		parent::register();
@@ -41,7 +41,7 @@ class AMP_Tag extends Analytics_AMP_Tag {
 	/**
 	 * Outputs gtag <amp-analytics> tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 */
 	protected function render() {
 		// Only render this tag if the UA AMP tag was not rendered to avoid multiple tags.
@@ -55,7 +55,7 @@ class AMP_Tag extends Analytics_AMP_Tag {
 	/**
 	 * Extends gtag vars config with the GA4 tag config.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @param array $opt AMP gtag config.
 	 * @return array

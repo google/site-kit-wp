@@ -964,7 +964,7 @@ final class Analytics_4 extends Module
 	 * Registers the Analytics 4 tag.
 	 *
 	 * @since 1.31.0
-	 * @since n.e.x.t Added support for AMP tag.
+	 * @since 1.104.0 Added support for AMP tag.
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
@@ -1233,7 +1233,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the currently configured measurement ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @return string Google Analytics 4 measurement ID.
 	 */

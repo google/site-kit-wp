@@ -81,7 +81,7 @@ final class AdSense extends Module
 	/**
 	 * Ad_Blocking_Recovery_Tag instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 * @var Ad_Blocking_Recovery_Tag
 	 */
 	protected $ad_blocking_recovery_tag;
@@ -89,7 +89,7 @@ final class AdSense extends Module
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
