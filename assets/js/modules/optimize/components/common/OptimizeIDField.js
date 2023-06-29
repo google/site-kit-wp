@@ -68,7 +68,6 @@ export default function OptimizeIDField() {
 						'google-site-kit'
 					)
 				}
-				helperTextPersistent={ true }
 				outlined
 				value={ optimizeID }
 			/>
