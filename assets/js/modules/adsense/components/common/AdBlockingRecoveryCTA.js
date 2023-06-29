@@ -45,11 +45,15 @@ export default function AdBlockingRecoveryCTA() {
 	const siteStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getSiteStatus()
 	);
+	const hasExistingAdBlockingRecoveryTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasExistingAdBlockingRecoveryTag()
+	);
 	const recoveryPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
 	);
 
 	if (
+		hasExistingAdBlockingRecoveryTag ||
 		adBlockingRecoverySetupStatus !== '' ||
 		accountStatus !== ACCOUNT_STATUS_READY ||
 		siteStatus !== SITE_STATUS_READY

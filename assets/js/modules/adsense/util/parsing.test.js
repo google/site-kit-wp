@@ -19,14 +19,32 @@
 /**
  * Internal dependencies
  */
-import { parseAccountID } from './parsing';
+import { parseAccountID, parseAccountIDFromExistingTag } from './parsing';
 
-describe( 'parseAccountID', () => {
-	it( 'parses an account ID from a valid client ID', () => {
-		expect( parseAccountID( 'ca-pub-12345678' ) ).toEqual( 'pub-12345678' );
+describe( 'parsers', () => {
+	describe( 'parseAccountID', () => {
+		it( 'parses an account ID from a valid client ID', () => {
+			expect( parseAccountID( 'ca-pub-12345678' ) ).toEqual(
+				'pub-12345678'
+			);
+		} );
+
+		it( 'returns undefined for an invalid client ID', () => {
+			expect( parseAccountID( 'ca-pub-test' ) ).toEqual( undefined );
+		} );
 	} );
 
-	it( 'returns undefined for an invalid client ID', () => {
-		expect( parseAccountID( 'ca-pub-test' ) ).toEqual( undefined );
+	describe( 'parseAccountIDFromExistingTag', () => {
+		it( 'parses an account ID from a valid existing tag', () => {
+			expect( parseAccountIDFromExistingTag( 'pub-12345678' ) ).toEqual(
+				'pub-12345678'
+			);
+		} );
+
+		it( 'returns undefined for an invalid existing tag', () => {
+			expect(
+				parseAccountIDFromExistingTag( 'ca-pub-12345678' )
+			).toEqual( undefined );
+		} );
 	} );
 } );

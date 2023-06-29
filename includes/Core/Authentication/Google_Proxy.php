@@ -516,7 +516,7 @@ class Google_Proxy {
 	 * Gets remote features.
 	 *
 	 * @since 1.27.0
-	 * @since n.e.x.t Added `php_version` to request.
+	 * @since 1.104.0 Added `php_version` to request.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.
