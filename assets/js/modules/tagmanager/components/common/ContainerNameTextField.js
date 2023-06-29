@@ -86,7 +86,6 @@ export default function ContainerNameTextField( { label, name } ) {
 				label={ label }
 				outlined
 				helperText={ helperText }
-				helperTextPersistent={ true }
 				trailingIcon={ trailingIcon }
 				id={ name }
 				name={ name }
