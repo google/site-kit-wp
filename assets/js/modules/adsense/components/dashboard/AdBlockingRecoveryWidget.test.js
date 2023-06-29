@@ -146,7 +146,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
 				true,
 				false,
-				timestampThreeWeeksAgo,
+				timestampThreeWeeksPrior,
 				'pub-3467161886473746',
 			],
 		] )(
