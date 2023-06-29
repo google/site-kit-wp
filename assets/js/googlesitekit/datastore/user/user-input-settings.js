@@ -163,9 +163,9 @@ const baseActions = {
 	 */
 	*maybeTriggerUserInputSurvey() {
 		const { __experimentalResolveSelect, dispatch } =
-			yield Data.commonActions.getRegistry();
+			yield commonActions.getRegistry();
 
-		const settings = yield Data.commonActions.await(
+		const settings = yield commonActions.await(
 			__experimentalResolveSelect( CORE_USER ).getUserInputSettings()
 		);
 
@@ -181,7 +181,7 @@ const baseActions = {
 			'_'
 		) }`;
 
-		const { response, error } = yield Data.commonActions.await(
+		const { response, error } = yield commonActions.await(
 			dispatch( CORE_USER ).triggerSurvey( triggerID )
 		);
 
