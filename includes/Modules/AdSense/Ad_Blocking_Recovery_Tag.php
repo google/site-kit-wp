@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for AdSense Ad Blocker Recovery Tag.
  *
- * @since n.e.x.t
+ * @since 1.104.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 	/**
 	 * Gets ad blocking recovery tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @return array Array with tag and error protection code.
 	 */
@@ -43,7 +43,7 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 	/**
 	 * Sets ad blocking recovery tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @param array $value Array with tag and error protection code.
 	 *
@@ -60,7 +60,7 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @return string The type name.
 	 */
@@ -71,7 +71,7 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @return array
 	 */
@@ -85,7 +85,7 @@ class Ad_Blocking_Recovery_Tag extends Setting {
 	/**
 	 * Determines whether the given value is a valid tag object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @param mixed $tag Tag object.
 	 *
