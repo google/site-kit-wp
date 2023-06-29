@@ -194,7 +194,6 @@ class SiteVerification extends Component {
 						label={ __( 'Website Address', 'google-site-kit' ) }
 						name="siteProperty"
 						outlined
-						disabled
 						value={ siteURL }
 					/>
 				</div>
