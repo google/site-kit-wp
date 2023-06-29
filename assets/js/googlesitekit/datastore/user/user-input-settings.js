@@ -182,7 +182,7 @@ const baseActions = {
 		) }`;
 
 		const { response, error } = yield Data.commonActions.await(
-			yield dispatch( CORE_USER ).triggerSurvey( triggerID )
+			dispatch( CORE_USER ).triggerSurvey( triggerID )
 		);
 
 		return { response, error };
