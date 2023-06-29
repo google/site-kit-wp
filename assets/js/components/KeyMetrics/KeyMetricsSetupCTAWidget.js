@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../material-components';
-import GhostCardsSVG from './GhostCardsSVG';
+import GhostCardsSVG from './GhostCards';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { useFeature } from '../../hooks/useFeature';
@@ -87,7 +87,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 			<section className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--key-metrics-setup-cta">
 				<Grid>
 					<Row>
-						<Cell smSize={ 6 } mdSize={ 6 } lgSize={ 7 }>
+						<Cell smSize={ 6 } mdSize={ 5 } lgSize={ 6 }>
 							<div className="googlesitekit-widget-key-metrics-text__wrapper">
 								<h3 className="googlesitekit-publisher-win__title">
 									{ __(
@@ -129,8 +129,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 							<Cell
 								className="googlesitekit-widget-key-metrics-svg__wrapper"
 								smSize={ 6 }
-								mdSize={ 2 }
-								lgSize={ 5 }
+								mdSize={ 3 }
+								lgSize={ 6 }
 							>
 								<GhostCardsSVG />
 							</Cell>

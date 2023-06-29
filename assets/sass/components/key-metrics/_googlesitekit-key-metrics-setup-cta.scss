@@ -30,51 +30,53 @@
 		}
 
 		.googlesitekit-widget-key-metrics-svg__wrapper {
-			display: grid;
-			place-content: center;
-
-			svg {
-				height: 65px;
-				margin-bottom: 15px;
-				margin-top: 15px;
-				width: 308px;
-			}
-
-			@media (min-width: $bp-xsmallOnly) {
-
-				svg {
-					height: 100px;
-					width: 360px;
-				}
-			}
+			align-items: center;
+			display: flex;
+			justify-content: center;
+			padding: 18px 0;
 
 			@media (min-width: $bp-nonMobile) {
-				place-content: end;
-				position: relative;
-				right: 15px;
-
-				svg {
-					height: 165px;
-					margin-top: 0;
-					width: 125px;
-				}
+				padding: 0;
 			}
 
-			@media (min-width: $bp-desktop) {
-				right: unset;
-
-				svg {
-					height: 129px;
-					width: 285px;
-				}
+			@media (min-width: $width-desktop + 1 + px) {
+				justify-content: flex-end;
 			}
+		}
 
-			@media (min-width: $bp-xlarge) {
+		.googlesitekit-ghost-cards {
+			display: grid;
 
-				svg {
-					height: 90px;
-					width: 527px;
-				}
+			svg {
+				width: 100%;
+			}
+		}
+
+		.googlesitekit-ghost-cards--three-horizontal {
+			gap: 2%;
+			grid-auto-flow: column;
+
+			svg {
+				max-height: 120px;
+			}
+		}
+
+		.googlesitekit-ghost-cards--two-horizontal {
+			gap: 3%;
+			grid-auto-flow: column;
+
+			svg {
+				max-height: 150px;
+			}
+		}
+
+		.googlesitekit-ghost-cards--two-vertical {
+			gap: 10%;
+			grid-auto-flow: row;
+			margin-bottom: 3%;
+
+			svg {
+				max-height: 100px;
 			}
 		}
 
