@@ -75,7 +75,7 @@ export default function MetricTileTable( props ) {
 	} else if ( !! ZeroState ) {
 		tileBody = (
 			<div className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
-				<div className="googlesitekit-table__body-item">
+				<div className="googlesitekit-table__body-zero-data">
 					<ZeroState />
 				</div>
 			</div>

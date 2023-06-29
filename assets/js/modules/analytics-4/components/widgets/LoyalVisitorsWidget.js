@@ -40,6 +40,7 @@ import {
 	MetricTileNumeric,
 	whenKeyMetricsWidgetVisible,
 } from '../../../../components/KeyMetrics';
+import { numFmt } from '../../../../util';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -110,8 +111,8 @@ function LoyalVisitorsWidget( { Widget } ) {
 			metricValueFormat={ format }
 			subText={ sprintf(
 				/* translators: %d: Number of total visitors visiting the site. */
-				__( 'of %d total visitors', 'google-site-kit' ),
-				total
+				__( 'of %s total visitors', 'google-site-kit' ),
+				numFmt( total, { style: 'decimal' } )
 			) }
 			previousValue={ prevPercentage }
 			currentValue={ currentPercentage }

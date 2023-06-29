@@ -51,7 +51,7 @@ export async function setupAnalytics( settingsOverrides = {} ) {
 /**
  * Activates the Analytics module and completes the GA4 setup process.
  *
- * @since n.e.x.t
+ * @since 1.104.0
  *
  * @param {Object} settingsOverrides Optional settings to override the defaults.
  */
