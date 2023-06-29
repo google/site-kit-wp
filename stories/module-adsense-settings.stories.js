@@ -154,12 +154,14 @@ storiesOf( 'AdSense Module/Settings', module )
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...completeSettings,
 				adBlockingRecoverySetupStatus: 'tag-placed',
+				useAdBlockerDetectionSnippet: true,
 			} );
 
 			return (
 				<Settings
 					route="/connected-services/adsense"
 					registry={ registry }
+					features={ [ 'adBlockerDetection' ] }
 				/>
 			);
 		},
@@ -173,12 +175,14 @@ storiesOf( 'AdSense Module/Settings', module )
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...completeSettings,
 				adBlockingRecoverySetupStatus: 'setup-confirmed',
+				useAdBlockerDetectionSnippet: false,
 			} );
 
 			return (
 				<Settings
 					route="/connected-services/adsense"
 					registry={ registry }
+					features={ [ 'adBlockerDetection' ] }
 				/>
 			);
 		},
