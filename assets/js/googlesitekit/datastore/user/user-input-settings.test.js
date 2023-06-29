@@ -293,7 +293,7 @@ describe( 'core/user user-input-settings', () => {
 				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 			} );
 
-			it( 'should trigger survey if answers conatin "Other"', async () => {
+			it( 'should trigger survey if answers contain "Other"', async () => {
 				muteFetch( surveyTriggerEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
@@ -302,19 +302,9 @@ describe( 'core/user user-input-settings', () => {
 					.dispatch( CORE_USER )
 					.setUserInputSetting( 'goals', [ 'other' ] );
 
-				registry.dispatch( CORE_USER ).maybeTriggerUserInputSurvey();
-
-				await subscribeUntil( registry, () =>
-					registry
-						.select( CORE_USER )
-						.hasFinishedResolution( 'getSurveyTimeouts' )
-				);
-
-				await subscribeUntil( registry, () =>
-					registry
-						.select( CORE_USER )
-						.hasFinishedResolution( 'getUserInputSettings' )
-				);
+				await registry
+					.dispatch( CORE_USER )
+					.maybeTriggerUserInputSurvey();
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
