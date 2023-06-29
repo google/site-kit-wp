@@ -106,7 +106,6 @@ export default function AdsConversionIDTextField() {
 						'google-site-kit'
 					)
 				}
-				helperTextPersistent={ true }
 				trailingIcon={
 					! isValidValue && (
 						<span className="googlesitekit-text-field-icon--error">
