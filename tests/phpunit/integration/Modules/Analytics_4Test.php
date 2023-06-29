@@ -53,12 +53,13 @@ use WP_User;
  */
 class Analytics_4Test extends TestCase {
 
-	use Module_With_Scopes_ContractTests;
-	use Module_With_Settings_ContractTests;
-	use Module_With_Owner_ContractTests;
-	use Module_With_Service_Entity_ContractTests;
-	use UserAuthenticationTrait;
+	use AnalyticsDashboardView;
 	use Module_With_Data_Available_State_ContractTests;
+	use Module_With_Owner_ContractTests;
+	use Module_With_Scopes_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
+	use Module_With_Settings_ContractTests;
+	use UserAuthenticationTrait;
 
 	/**
 	 * Context object.
@@ -1584,6 +1585,7 @@ class Analytics_4Test extends TestCase {
 
 	public function test_report__shared_metric_validation() {
 		$this->enable_feature( 'dashboardSharing' );
+		$this->enable_feature( 'ga4Reporting' );
 
 		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
 		// TODO: Remove this when `dashboardSharing` feature flag is removed.
@@ -1602,6 +1604,8 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_metrics( 'sessions', 'totalUsers' );
 
 		$this->enable_shared_credentials();
+		$this->set_dashboard_view_ga4();
+		$this->assertTrue( $this->analytics->is_shareable() );
 
 		$data = $this->analytics->get_data(
 			'report',
@@ -1641,6 +1645,8 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_dimensions( 'date', 'pageTitle' );
 
 		$this->enable_shared_credentials();
+		$this->set_dashboard_view_ga4();
+		$this->assertTrue( $this->analytics->is_shareable() );
 
 		$data = $this->analytics->get_data(
 			'report',

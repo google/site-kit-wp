@@ -24,7 +24,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+import {
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+} from '../../googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
 import { SetupMain as SetupMainV2 } from './components/setup/v2';
 import {
@@ -49,6 +52,7 @@ import {
 import { isFeatureEnabled } from '../../features';
 import { negateDefined } from '../../util/negate';
 import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
+import { ConnectAdSenseCTATileWidget } from './components/widgets';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -105,6 +109,23 @@ export const registerWidgets = ( widgets ) => {
 				modules: [ 'adsense' ],
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+		);
+	}
+
+	if ( isFeatureEnabled( 'userInput' ) ) {
+		/*
+		 * Key metrics widgets.
+		 */
+		widgets.registerWidget(
+			'keyMetricsConnectAdSenseCTATile',
+			{
+				Component: ConnectAdSenseCTATileWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'adsense', 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
 	}
 

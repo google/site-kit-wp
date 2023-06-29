@@ -26,7 +26,7 @@ import {
 	fireEvent,
 } from '../../../../../../tests/js/test-utils';
 import {
-	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
@@ -41,45 +41,35 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		adBlockingRecoverySetupStatus: '',
 	};
 
-	it.each( [
-		[ 'the Ad blocker detection feature flag is not enabled', false ],
-		[ 'Ad blocker recovery setup status is empty', true ],
-	] )(
-		'should not render the Ad blocking recovery toggle when %s',
-		( testName, adBlockerDetectionEnabled ) => {
-			const { container } = render( <AdBlockingRecoveryToggle />, {
-				features: [].concat(
-					adBlockerDetectionEnabled ? 'adBlockerDetection' : []
-				),
-				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					registry
-						.dispatch( MODULES_ADSENSE )
-						.receiveGetSettings( validSettings );
-				},
-			} );
+	it( 'should not render the Ad blocking recovery toggle when Ad blocker recovery setup status is empty', () => {
+		const { container } = render( <AdBlockingRecoveryToggle />, {
+			setupRegistry: ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetSettings( validSettings );
+			},
+		} );
 
-			expect(
-				container.querySelector(
-					'.googlesitekit-settings-module__ad-blocking-recovery-toggles'
-				)
-			).toBeNull();
+		expect(
+			container.querySelector(
+				'.googlesitekit-settings-module__ad-blocking-recovery-toggles'
+			)
+		).toBeNull();
 
-			expect( container ).toBeEmptyDOMElement();
-		}
-	);
+		expect( container ).toBeEmptyDOMElement();
+	} );
 
 	it( 'should render the Ad blocking recovery toggle when the conditions are met', () => {
 		const { container, getByLabelText, getAllByRole } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -91,7 +81,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
-							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
 						useAdBlockerDetectionSnippet: true,
 						useAdBlockerDetectionErrorSnippet: true,
 					} );
@@ -131,7 +121,6 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const { getByLabelText, getAllByRole, queryByLabelText } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -143,7 +132,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
-							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
 						useAdBlockerDetectionSnippet: false,
 						useAdBlockerDetectionErrorSnippet: false,
 					} );
@@ -171,7 +160,6 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const { getByLabelText, getAllByRole, container } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -183,7 +171,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
-							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
 						useAdBlockerDetectionSnippet: true,
 						useAdBlockerDetectionErrorSnippet: false,
 					} );

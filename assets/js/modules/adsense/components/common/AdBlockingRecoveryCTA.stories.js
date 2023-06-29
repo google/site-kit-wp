@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
@@ -41,9 +44,6 @@ Ready.storyName = 'Ready';
 Ready.scenario = {
 	label: 'Global/AdBlockingRecoveryCTA/Ready',
 };
-Ready.parameters = {
-	features: [ 'adBlockerDetection' ],
-};
 
 export default {
 	title: 'Modules/AdSense/Components/AdBlockingRecoveryCTA',
@@ -57,6 +57,7 @@ export default {
 						slug: 'adsense',
 					},
 				] );
+				provideSiteInfo( registry );
 
 				registry
 					.dispatch( MODULES_ADSENSE )

@@ -49,7 +49,7 @@ export default function MetricTileNumeric( props ) {
 
 	return (
 		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile">
+			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
 				<h3 className="googlesitekit-km-widget-tile__title">
 					{ title }
 				</h3>

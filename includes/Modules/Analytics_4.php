@@ -43,6 +43,7 @@ use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
@@ -84,6 +85,8 @@ final class Analytics_4 extends Module
 	 * Module slug name.
 	 */
 	const MODULE_SLUG = 'analytics-4';
+
+	const DASHBOARD_VIEW = 'google-analytics-4';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -272,6 +275,15 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
+		// GA4 is only shareable if ga4Reporting is also enabled.
+		$shareable = Feature_Flags::enabled( 'dashboardSharing' ) && Feature_Flags::enabled( 'ga4Reporting' );
+		if ( $shareable ) {
+			// The dashboard view setting is stored in the UA/original Analytics
+			// module, so fetch its settings to get the current dashboard view.
+			$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
+			$shareable          = self::DASHBOARD_VIEW === $analytics_settings['dashboardView'];
+		}
+
 		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
@@ -289,7 +301,7 @@ final class Analytics_4 extends Module
 			),
 			'GET:conversion-events'      => array(
 				'service'   => 'analyticsadmin',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => $shareable,
 			),
 			'POST:create-account-ticket' => array(
 				'service'                => 'analyticsprovisioning',
@@ -321,7 +333,7 @@ final class Analytics_4 extends Module
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			$datapoints['GET:report'] = array(
 				'service'   => 'analyticsdata',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => $shareable,
 			);
 		}
 
@@ -952,13 +964,15 @@ final class Analytics_4 extends Module
 	 * Registers the Analytics 4 tag.
 	 *
 	 * @since 1.31.0
+	 * @since 1.104.0 Added support for AMP tag.
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
-			return;
+			// AMP currently only works with the measurement ID.
+			$tag = new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG );
+		} else {
+			$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 		}
-
-		$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -969,6 +983,9 @@ final class Analytics_4 extends Module
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( $tag->can_register() ) {
+			$tag->set_home_domain(
+				URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST )
+			);
 			// Here we need to retrieve the ads conversion ID from the
 			// classic/UA Analytics settings as it does not exist yet for this module.
 			// TODO: Update the value to be sourced from GA4 module settings once decoupled.
@@ -1210,6 +1227,19 @@ final class Analytics_4 extends Module
 		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
 			return $settings['googleTagID'];
 		}
+		return $settings['measurementID'];
+	}
+
+	/**
+	 * Gets the currently configured measurement ID.
+	 *
+	 * @since 1.104.0
+	 *
+	 * @return string Google Analytics 4 measurement ID.
+	 */
+	protected function get_measurement_id() {
+		$settings = $this->get_settings()->get();
+
 		return $settings['measurementID'];
 	}
 

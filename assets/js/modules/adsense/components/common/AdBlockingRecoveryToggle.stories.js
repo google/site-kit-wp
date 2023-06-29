@@ -22,7 +22,7 @@
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
-	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
@@ -36,7 +36,8 @@ const validSettings = {
 	useSnippet: false,
 	accountStatus: ACCOUNT_STATUS_READY,
 	siteStatus: SITE_STATUS_READY,
-	adBlockingRecoverySetupStatus: AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	adBlockingRecoverySetupStatus:
+		ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
 };
 
 export const Ready = Template.bind( {} );
@@ -47,9 +48,6 @@ Ready.args = {
 			.dispatch( MODULES_ADSENSE )
 			.receiveGetSettings( validSettings );
 	},
-};
-Ready.parameters = {
-	features: [ 'adBlockerDetection' ],
 };
 
 export const WithAdBlockingRecoveryTagEnabled = Template.bind( {} );
@@ -64,9 +62,6 @@ WithAdBlockingRecoveryTagEnabled.args = {
 		} );
 	},
 };
-WithAdBlockingRecoveryTagEnabled.parameters = {
-	features: [ 'adBlockerDetection' ],
-};
 
 export const WithBothTogglesEnabled = Template.bind( {} );
 WithBothTogglesEnabled.storyName = 'With Both The Toggles Enabled';
@@ -78,9 +73,6 @@ WithBothTogglesEnabled.args = {
 			useAdBlockerDetectionErrorSnippet: true,
 		} );
 	},
-};
-WithBothTogglesEnabled.parameters = {
-	features: [ 'adBlockerDetection' ],
 };
 
 export default {
