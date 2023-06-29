@@ -153,7 +153,7 @@ storiesOf( 'AdSense Module/Settings', module )
 		( args, { registry } ) => {
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...completeSettings,
-				adBlockingRecoverySetupStatus: 'tag-placed',
+				useAdBlockerDetectionSnippet: true,
 			} );
 
 			return (
@@ -172,7 +172,7 @@ storiesOf( 'AdSense Module/Settings', module )
 		( args, { registry } ) => {
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...completeSettings,
-				adBlockingRecoverySetupStatus: 'setup-confirmed',
+				useAdBlockerDetectionSnippet: false,
 			} );
 
 			return (
