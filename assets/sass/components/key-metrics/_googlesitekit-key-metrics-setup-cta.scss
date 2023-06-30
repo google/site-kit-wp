@@ -126,17 +126,6 @@
 					width: auto;
 				}
 			}
-
-			@media (min-width: $width-desktop + 1 + px) {
-				a,
-				button {
-					white-space: nowrap;
-				}
-			}
-
-			.googlesitekit-cta-link {
-				padding: 10px;
-			}
 		}
 	}
 }
