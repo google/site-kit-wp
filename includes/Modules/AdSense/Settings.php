@@ -171,7 +171,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the default value.
 	 *
 	 * @since 1.2.0
-	 * @since 1.102.0 Added settings for the AdSense Blocker Detection feature.
+	 * @since 1.102.0 Added settings for the Ad Blocking Recovery feature.
 	 *
 	 * @return array
 	 */
