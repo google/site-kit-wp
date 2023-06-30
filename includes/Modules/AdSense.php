@@ -55,6 +55,9 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\Guards\WP_Query_404_Guard;
+use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag_Guard;
+use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Web_Tag;
 use WP_Error;
 use WP_REST_Response;
 
@@ -81,7 +84,7 @@ final class AdSense extends Module
 	/**
 	 * Ad_Blocking_Recovery_Tag instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 * @var Ad_Blocking_Recovery_Tag
 	 */
 	protected $ad_blocking_recovery_tag;
@@ -89,7 +92,7 @@ final class AdSense extends Module
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.104.0
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
@@ -787,14 +790,30 @@ final class AdSense extends Module
 			$tag = new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
 		}
 
-		if ( ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new Tag_Guard( $module_settings ) );
-			$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
-			$tag->use_guard( new Tag_Environment_Type_Guard() );
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
 
-			if ( $tag->can_register() ) {
-				$tag->register();
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new WP_Query_404_Guard() );
+		$tag->use_guard( new Tag_Guard( $module_settings ) );
+		$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
+		$tag->use_guard( new Tag_Environment_Type_Guard() );
+
+		if ( $tag->can_register() ) {
+			$tag->register();
+		}
+
+		if ( Feature_Flags::enabled( 'adBlockerDetection' ) && ! $this->context->is_amp() ) {
+			$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $this->ad_blocking_recovery_tag, $settings['useAdBlockerDetectionErrorSnippet'] );
+
+			$ad_blocking_recovery_web_tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+			$ad_blocking_recovery_web_tag->use_guard( new WP_Query_404_Guard() );
+			$ad_blocking_recovery_web_tag->use_guard( new Ad_Blocking_Recovery_Tag_Guard( $module_settings ) );
+			$ad_blocking_recovery_web_tag->use_guard( new Tag_Environment_Type_Guard() );
+
+			if ( $ad_blocking_recovery_web_tag->can_register() ) {
+				$ad_blocking_recovery_web_tag->register();
 			}
 		}
 	}

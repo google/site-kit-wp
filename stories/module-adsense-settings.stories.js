@@ -154,12 +154,14 @@ storiesOf( 'AdSense Module/Settings', module )
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...completeSettings,
 				adBlockingRecoverySetupStatus: 'tag-placed',
+				useAdBlockerDetectionSnippet: true,
 			} );
 
 			return (
 				<Settings
 					route="/connected-services/adsense"
 					registry={ registry }
+					features={ [ 'adBlockerDetection' ] }
 				/>
 			);
 		},
@@ -173,12 +175,14 @@ storiesOf( 'AdSense Module/Settings', module )
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...completeSettings,
 				adBlockingRecoverySetupStatus: 'setup-confirmed',
+				useAdBlockerDetectionSnippet: false,
 			} );
 
 			return (
 				<Settings
 					route="/connected-services/adsense"
 					registry={ registry }
+					features={ [ 'adBlockerDetection' ] }
 				/>
 			);
 		},
@@ -236,6 +240,52 @@ storiesOf( 'AdSense Module/Settings', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( 'ca-pub-12345678' );
+			setUpAdUnits( registry );
+
+			return (
+				<Settings
+					route="/connected-services/adsense/edit"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with existing ad blocking recovery tag (same account)',
+		( args, { registry } ) => {
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetSettings( completeSettings );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag(
+					completeSettings.accountID
+				);
+			setUpAdUnits( registry );
+
+			return (
+				<Settings
+					route="/connected-services/adsense/edit"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with existing ad blocking recovery tag (different account)',
+		( args, { registry } ) => {
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetSettings( completeSettings );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( 'pub-12345678' );
 			setUpAdUnits( registry );
 
 			return (
