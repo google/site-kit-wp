@@ -183,7 +183,7 @@ describe( 'Ad Blocking Recovery Existing Tag store', () => {
 				).toBeNull();
 			} );
 
-			it( 'gets the correct ad blocker recovery tag', async () => {
+			it( 'gets the correct ad blocking recovery tag', async () => {
 				const expectedTag = 'pub-12345678';
 
 				fetchMock.getOnce(

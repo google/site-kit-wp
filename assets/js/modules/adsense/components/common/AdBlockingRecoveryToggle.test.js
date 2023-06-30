@@ -41,7 +41,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		adBlockingRecoverySetupStatus: '',
 	};
 
-	it( 'should not render the Ad blocking recovery toggle when Ad blocker recovery setup status is empty', () => {
+	it( 'should not render the Ad blocking recovery toggle when Ad blocking recovery setup status is empty', () => {
 		const { container } = render( <AdBlockingRecoveryToggle />, {
 			setupRegistry: ( registry ) => {
 				provideModules( registry, [

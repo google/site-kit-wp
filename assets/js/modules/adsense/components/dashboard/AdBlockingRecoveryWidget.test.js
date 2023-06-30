@@ -149,7 +149,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				},
 			],
 			[
-				'an existing ad blocker recovery tag is detected',
+				'an existing ad blocking recovery tag is detected',
 				{
 					...shouldRender,
 					existingAdBlockingRecoveryTag: 'pub-3467161886473746',
