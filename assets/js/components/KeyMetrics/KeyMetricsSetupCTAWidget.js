@@ -117,7 +117,11 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 										'google-site-kit'
 									) }
 								</Button>
-								<Link href="#">
+								{ /* 
+								The `onClick` prop is used to ensure consistent styling for the link button across various banners. 
+								In the future, it will also serve the purpose of adding a track event.
+								*/ }
+								<Link onClick={ () => {} }>
 									{ __(
 										'I’ll pick metrics myself',
 										'google-site-kit'
