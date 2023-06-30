@@ -61,8 +61,8 @@ export default function SettingsView() {
 	const accountStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountStatus()
 	);
-	const useAdBlockerDetectionSnippet = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getUseAdBlockerDetectionSnippet()
+	const useAdBlockingRecoverySnippet = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getUseAdBlockingRecoverySnippet()
 	);
 
 	const siteStatus = useSelect( ( select ) =>
@@ -193,7 +193,7 @@ export default function SettingsView() {
 									'google-site-kit'
 								) }
 							</h5>
-							{ ! useAdBlockerDetectionSnippet && (
+							{ ! useAdBlockingRecoverySnippet && (
 								<p className="googlesitekit-settings-module__meta-item-data">
 									{ __(
 										'Ad blocking recovery tag is not placed',
@@ -201,7 +201,7 @@ export default function SettingsView() {
 									) }
 								</p>
 							) }
-							{ useAdBlockerDetectionSnippet && (
+							{ useAdBlockingRecoverySnippet && (
 								<Fragment>
 									<p className="googlesitekit-settings-module__meta-item-data">
 										{ __(
