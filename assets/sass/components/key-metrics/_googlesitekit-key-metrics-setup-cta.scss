@@ -107,7 +107,8 @@
 			display: grid;
 			place-content: center;
 
-			a {
+			a,
+			button {
 				margin-top: 10px;
 				text-align: center;
 				width: 100%;
@@ -119,9 +120,17 @@
 				margin-left: 5px;
 				place-content: start;
 
-				a {
+				a,
+				button {
 					margin-top: 25px;
 					width: auto;
+				}
+			}
+
+			@media (min-width: $width-desktop + 1 + px) {
+				a,
+				button {
+					white-space: nowrap;
 				}
 			}
 
