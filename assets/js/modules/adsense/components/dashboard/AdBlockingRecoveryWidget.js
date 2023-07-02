@@ -134,8 +134,9 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		);
 	}
 
-	const nowInMilliseconds = stringToDate( referenceDate ).getTime();
-	const completionTimeInMilliseconds = setupCompletedTimestamp * 1000;
+	const referenceDateInMilliseconds = stringToDate( referenceDate ).getTime();
+	const setupCompletedTimestampInMilliseconds =
+		setupCompletedTimestamp * 1000;
 	const threeWeeksInMilliseconds = WEEK_IN_SECONDS * 3 * 1000;
 
 	const shouldShowWidget =
@@ -143,11 +144,13 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		adSenseModuleConnected &&
 		! hasExistingAdBlockingRecoveryTag &&
 		isDismissed === false &&
-		adBlockingRecoverySetupStatus !== '' &&
+		adBlockingRecoverySetupStatus === '' &&
 		accountStatus === ACCOUNT_STATUS_READY &&
 		siteStatus === SITE_STATUS_READY &&
+		// Show the widget if setupCompletedTimestamp is not set, or it is 3 weeks or more in the past.
 		( ! setupCompletedTimestamp ||
-			nowInMilliseconds - completionTimeInMilliseconds >=
+			referenceDateInMilliseconds -
+				setupCompletedTimestampInMilliseconds >=
 				threeWeeksInMilliseconds );
 
 	if ( ! shouldShowWidget ) {

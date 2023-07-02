@@ -30,10 +30,7 @@ import {
 	BREAKPOINT_SMALL,
 } from '../../../../hooks/useBreakpoint';
 import AdBlockingRecoveryWidget from './AdBlockingRecoveryWidget';
-import {
-	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-	MODULES_ADSENSE,
-} from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -48,8 +45,7 @@ const validSettings = {
 	useSnippet: false,
 	accountStatus: ACCOUNT_STATUS_READY,
 	siteStatus: SITE_STATUS_READY,
-	adBlockingRecoverySetupStatus:
-		ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+	adBlockingRecoverySetupStatus: '',
 };
 
 export const Ready = Template.bind( {} );
