@@ -36,6 +36,7 @@ import { MODULES_ANALYTICS_4 } from './datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import { isFeatureEnabled } from '../../features';
 import {
+	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -81,6 +82,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_LOYAL_VISITORS
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
@@ -93,6 +98,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_NEW_VISITORS
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
@@ -105,6 +114,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
@@ -117,6 +130,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
@@ -129,6 +146,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_POPULAR_CONTENT
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
@@ -141,6 +162,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_POPULAR_PRODUCTS
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
@@ -153,6 +178,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_TOP_CITIES
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
@@ -165,6 +194,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_TOP_COUNTRIES
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
@@ -177,6 +210,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
