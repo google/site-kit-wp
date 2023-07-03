@@ -74,7 +74,11 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		return (
 			<Row>
 				<Cell size={ 12 }>
-					<Link href="#">
+					{ /*
+					The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
+					In the future, it will be fleshed out with the logic to dismiss the widget.
+					*/ }
+					<Link onClick={ () => {} }>
 						{ __( 'Maybe later', 'google-site-kit' ) }
 					</Link>
 				</Cell>
@@ -117,8 +121,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 										'google-site-kit'
 									) }
 								</Button>
-								{ /* 
-								The `onClick` prop is used to ensure consistent styling for the link button across various banners. 
+								{ /*
+								The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
 								In the future, it will also serve the purpose of adding a track event.
 								*/ }
 								<Link onClick={ () => {} }>
