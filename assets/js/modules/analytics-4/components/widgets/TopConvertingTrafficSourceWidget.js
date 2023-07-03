@@ -122,14 +122,11 @@ export default function TopConvertingTrafficSourceWidget( {
 			title={ __( 'Top converting traffic source', 'google-site-kit' ) }
 			metricValue={ topChannelGroup }
 			metricValueFormat={ format }
-			subText={
-				// eslint-disable-next-line @wordpress/valid-sprintf
-				sprintf(
-					/* translators: %d: Percentage of users for the current top traffic source compared to the number of total users for all traffic sources. */
-					__( '%s of visits led to conversions', 'google-site-kit' ),
-					numFmt( topConversionRate, format )
-				)
-			}
+			subText={ sprintf(
+				/* translators: %d: Percentage of visits that led to conversions. */
+				__( '%s of visits led to conversions', 'google-site-kit' ),
+				numFmt( topConversionRate, format )
+			) }
 			previousValue={ previousTopConversionRate }
 			currentValue={ topConversionRate }
 			loading={ loading }
