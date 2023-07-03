@@ -154,7 +154,7 @@ storiesOf( 'AdSense Module/Settings', module )
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...completeSettings,
 				adBlockingRecoverySetupStatus: 'tag-placed',
-				adBlockingRecoverySnippet: true,
+				useAdBlockingRecoverySnippet: true,
 			} );
 
 			return (
@@ -175,7 +175,7 @@ storiesOf( 'AdSense Module/Settings', module )
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...completeSettings,
 				adBlockingRecoverySetupStatus: 'setup-confirmed',
-				adBlockingRecoverySnippet: false,
+				useAdBlockingRecoverySnippet: false,
 			} );
 
 			return (
