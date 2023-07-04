@@ -28,6 +28,7 @@ import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
 import { KeyMetricsSetupCTAWidget } from '../../components/KeyMetrics';
+import ConnectGA4CTAWidget from '../../components/KeyMetrics/ConnectGA4CTAWidget';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -230,6 +231,18 @@ export function registerDefaults( widgetsAPI ) {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ 'search-console' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'keyMetricsConnectGA4CTA',
+		{
+			Component: ConnectGA4CTAWidget,
+			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics' ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
