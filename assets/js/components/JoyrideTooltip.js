@@ -76,6 +76,9 @@ export default function JoyrideTooltip( {
 		}
 	}, [ target, targetExists ] );
 
+	// eslint-disable-next-line no-console
+	// console.log( 'JoyrideTooltip', target, targetExists );
+
 	// Joyride expects the step's target to be in the DOM immediately
 	// so we need to wait for it in some cases, e.g. loading data.
 	if ( ! targetExists ) {
@@ -107,10 +110,16 @@ export default function JoyrideTooltip( {
 					if ( type === EVENTS.STEP_AFTER ) {
 						// This is not strictly necessary as the tooltip will hide without it, but this allows the consumer of the component to clean up post-dismiss.
 						onDismiss();
+						// TODO:
+						// console.log( 'onDismiss' );
+						// restoreFocus();
 					}
 
 					if ( type === EVENTS.TOOLTIP ) {
 						onView();
+						// TODO:
+						// console.log( 'onView', document.activeElement );
+						// storeFocusedElement( document.activeElement );
 					}
 				} }
 				disableOverlay

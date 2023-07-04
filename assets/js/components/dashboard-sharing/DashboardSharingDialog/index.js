@@ -92,8 +92,13 @@ export default function DashboardSharingDialog() {
 	const triggeredTourRef = useRef();
 	const handleTriggerOnDemandTour = useCallback( () => {
 		if ( ! triggeredTourRef.current ) {
-			triggeredTourRef.current = true;
-			triggerOnDemandTour( sharingSettingsTour );
+			// Add a delay to allow the modal to open and capture focus before the tour starts.
+			// Otherwise the tour will attempt to restore focus to the Dashboard Sharing Settings button, which is
+			// outside the modal, and thus break the modal paradigm of capturing focus.
+			global.setTimeout( () => {
+				triggeredTourRef.current = true;
+				triggerOnDemandTour( sharingSettingsTour );
+			}, 100 );
 		}
 	}, [ triggerOnDemandTour ] );
 
