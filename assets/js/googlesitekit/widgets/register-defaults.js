@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
+import { isFeatureEnabled } from '../../features';
 import { KeyMetricsSetupCTAWidget } from '../../components/KeyMetrics';
 import ConnectGA4CTAWidget from '../../components/KeyMetrics/ConnectGA4CTAWidget';
 
@@ -235,15 +236,17 @@ export function registerDefaults( widgetsAPI ) {
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 
-	widgetsAPI.registerWidget(
-		'keyMetricsConnectGA4CTA',
-		{
-			Component: ConnectGA4CTAWidget,
-			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
-			priority: 1,
-			wrapWidget: false,
-			modules: [ 'analytics' ],
-		},
-		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-	);
+	if ( isFeatureEnabled( 'userInput' ) ) {
+		widgetsAPI.registerWidget(
+			'keyMetricsConnectGA4CTA',
+			{
+				Component: ConnectGA4CTAWidget,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 }
