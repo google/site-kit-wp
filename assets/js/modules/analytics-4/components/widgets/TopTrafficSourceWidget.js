@@ -79,7 +79,7 @@ export default function TopTrafficSourceWidget( props ) {
 	const totalUsersReport = useInViewSelect( ( select ) =>
 		isGA4ModuleConnected
 			? select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions )
-			: {}
+			: undefined
 	);
 
 	const trafficSourceReport = useInViewSelect( ( select ) =>
@@ -87,7 +87,7 @@ export default function TopTrafficSourceWidget( props ) {
 			? select( MODULES_ANALYTICS_4 ).getReport(
 					trafficSourceReportOptions
 			  )
-			: {}
+			: undefined
 	);
 
 	const loading = useSelect(

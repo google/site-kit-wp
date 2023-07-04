@@ -79,7 +79,7 @@ function PopularContentWidget( props ) {
 	const report = useInViewSelect( ( select ) =>
 		isGA4ModuleConnected
 			? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-			: {}
+			: undefined
 	);
 
 	const loading = useInViewSelect( ( select ) =>
