@@ -32,6 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -44,7 +45,13 @@ import { numFmt } from '../../../../util/i18n';
 
 const { useSelect, useInViewSelect } = Data;
 
-function NewVisitorsWidget( { Widget } ) {
+function NewVisitorsWidget( props ) {
+	const { Widget, WidgetNull } = props;
+
+	const isGA4ModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -59,16 +66,23 @@ function NewVisitorsWidget( { Widget } ) {
 	};
 
 	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+		isGA4ModuleConnected
+			? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+			: {}
 	);
 
-	const loading = useInViewSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			)
+	const loading = useInViewSelect( ( select ) =>
+		isGA4ModuleConnected
+			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ reportOptions ]
+			  )
+			: undefined
 	);
+
+	if ( ! isGA4ModuleConnected ) {
+		return <WidgetNull />;
+	}
 
 	const { rows = [] } = report || {};
 
@@ -109,6 +123,7 @@ function NewVisitorsWidget( { Widget } ) {
 
 NewVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default whenKeyMetricsWidgetVisible()( NewVisitorsWidget );

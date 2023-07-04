@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -30,20 +31,21 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import { numFmt } from '../../../../util';
-import { get } from 'lodash';
-
+import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
 const { useSelect, useInViewSelect } = Data;
 
-export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
+export default function TopTrafficSourceWidget( props ) {
+	const { Widget, WidgetNull } = props;
+
+	const isGA4ModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
 	const dates = useSelect( ( select ) =>
@@ -75,24 +77,36 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 	};
 
 	const totalUsersReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions )
+		isGA4ModuleConnected
+			? select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions )
+			: {}
 	);
 
 	const trafficSourceReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( trafficSourceReportOptions )
+		isGA4ModuleConnected
+			? select( MODULES_ANALYTICS_4 ).getReport(
+					trafficSourceReportOptions
+			  )
+			: {}
 	);
 
 	const loading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ totalUsersReportOptions ]
-			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ trafficSourceReportOptions ]
-			)
+		isGA4ModuleConnected
+			? ( select ) =>
+					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getReport',
+						[ totalUsersReportOptions ]
+					) ||
+					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getReport',
+						[ trafficSourceReportOptions ]
+					)
+			: () => undefined
 	);
+
+	if ( ! isGA4ModuleConnected ) {
+		return <WidgetNull />;
+	}
 
 	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
 		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
@@ -125,10 +139,6 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 		? previousTopTrafficSourceUsers / previousTotalUsers
 		: 0;
 
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
-
 	const format = {
 		style: 'percent',
 		signDisplay: 'never',
@@ -141,14 +151,11 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 			title={ __( 'Top Traffic Source', 'google-site-kit' ) }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={
-				// eslint-disable-next-line @wordpress/valid-sprintf
-				sprintf(
-					/* translators: %d: Percentage of users for the current top traffic source compared to the number of total users for all traffic sources. */
-					__( '%s of total traffic', 'google-site-kit' ),
-					numFmt( relativeCurrentTopTrafficSourceUsers, format )
-				)
-			}
+			subText={ sprintf(
+				/* translators: %s: Percentage of users for the current top traffic source compared to the number of total users for all traffic sources. */
+				__( '%s of total traffic', 'google-site-kit' ),
+				numFmt( relativeCurrentTopTrafficSourceUsers, format )
+			) }
 			previousValue={ relativePreviousTopTrafficSourceUsers }
 			currentValue={ relativeCurrentTopTrafficSourceUsers }
 			loading={ loading }

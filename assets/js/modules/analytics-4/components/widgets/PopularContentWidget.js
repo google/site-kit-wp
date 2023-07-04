@@ -46,7 +46,9 @@ import { ZeroDataMessage } from '../../../analytics/components/common';
 import { getFullURL, numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
-function PopularContentWidget( { Widget, WidgetNull } ) {
+function PopularContentWidget( props ) {
+	const { Widget, WidgetNull } = props;
+
 	const isGA4ModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -75,15 +77,18 @@ function PopularContentWidget( { Widget, WidgetNull } ) {
 	};
 
 	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+		isGA4ModuleConnected
+			? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+			: {}
 	);
 
-	const loading = useInViewSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			)
+	const loading = useInViewSelect( ( select ) =>
+		isGA4ModuleConnected
+			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ reportOptions ]
+			  )
+			: undefined
 	);
 
 	if ( ! isGA4ModuleConnected ) {
