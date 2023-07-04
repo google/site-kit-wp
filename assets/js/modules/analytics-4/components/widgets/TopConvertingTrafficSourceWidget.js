@@ -68,9 +68,13 @@ export default function TopConvertingTrafficSourceWidget( {
 		orderBy: 'sessionConversionRate',
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-	);
+	const report = useInViewSelect( ( select ) => {
+		if ( keyMetricsWidgetHidden !== false ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+	} );
 
 	const loading = useSelect(
 		( select ) =>
@@ -95,7 +99,7 @@ export default function TopConvertingTrafficSourceWidget( {
 				dateValue.value === dateRange
 		);
 
-		// As the report is limited to 1 row, return the first row.
+		// As the report is limited to 1 row per date range, return the first row.
 		return rows[ 0 ];
 	};
 
