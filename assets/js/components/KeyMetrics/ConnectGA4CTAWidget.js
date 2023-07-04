@@ -24,11 +24,53 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import KeyMetricsCTAContent from './KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+const { useSelect } = Data;
 
-export default function ConnectGA4CTAWidget( { Widget } ) {
+export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
+	const DISMISSED_ITEM_KEY = 'key-metrics-connect-ga4-cta-widget';
+
+	const isCTADismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( DISMISSED_ITEM_KEY )
+	);
+	const isUserInputCompleted = useSelect( ( select ) =>
+		select( CORE_USER ).isUserInputCompleted()
+	);
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const ga4DependantKeyMetrics = useSelect( ( select ) => {
+		const keyMetrics = select( CORE_USER ).getKeyMetrics();
+		const widgets = select( CORE_WIDGETS ).getWidgets(
+			AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY
+		);
+
+		if ( ! keyMetrics || ! widgets ) {
+			return [];
+		}
+
+		return widgets.filter(
+			( { slug, modules } ) =>
+				keyMetrics.includes( slug ) && modules.includes( 'analytics-4' )
+		);
+	} );
+
+	if (
+		isCTADismissed ||
+		! isUserInputCompleted ||
+		isGA4Connected ||
+		ga4DependantKeyMetrics.length < 3
+	) {
+		return <WidgetNull />;
+	}
+
 	return (
 		<Widget noPadding Footer={ () => <KeyMetricsCTAFooter /> }>
 			<KeyMetricsCTAContent
