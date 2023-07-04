@@ -156,6 +156,9 @@
 @import "components/dashboard/wizard/googlesitekit-wizard-progress-step";
 @import "components/dashboard/wizard/googlesitekit-wizard-step";
 
+// Key Metrics
+@import "components/key-metrics/googlesitekit-key-metrics-setup-cta";
+
 // Setup
 @import "components/setup/googlesitekit-setup";
 @import "components/setup/googlesitekit-setup-module";
@@ -174,7 +177,6 @@
 @import "components/user-input/googlesitekit-user-input-questions";
 @import "components/user-input/googlesitekit-user-input-preview";
 @import "components/user-input/googlesitekit-user-input-controls";
-@import "components/user-input/googlesitekit-user-input-notification";
 
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
