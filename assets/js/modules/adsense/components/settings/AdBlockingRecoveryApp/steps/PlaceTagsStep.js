@@ -40,8 +40,8 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function PlaceTagsStep( { setActiveStep } ) {
-	const useAdBlockerDetectionErrorSnippet = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getUseAdBlockerDetectionErrorSnippet()
+	const useAdBlockingRecoveryErrorSnippet = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getUseAdBlockingRecoveryErrorSnippet()
 	);
 	const isSaving = useSelect(
 		( select ) =>
@@ -58,16 +58,16 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 	const {
 		saveSettings,
 		setAdBlockingRecoverySetupStatus,
-		setUseAdBlockerDetectionSnippet,
-		setUseAdBlockerDetectionErrorSnippet,
+		setUseAdBlockingRecoverySnippet,
+		setUseAdBlockingRecoveryErrorSnippet,
 		syncAdBlockingRecoveryTags,
 	} = useDispatch( MODULES_ADSENSE );
 
 	const onErrorProtectionTagOptionChange = useCallback(
 		( { target } ) => {
-			setUseAdBlockerDetectionErrorSnippet( !! target.checked );
+			setUseAdBlockingRecoveryErrorSnippet( !! target.checked );
 		},
-		[ setUseAdBlockerDetectionErrorSnippet ]
+		[ setUseAdBlockingRecoveryErrorSnippet ]
 	);
 
 	const onCTAClick = useCallback( async () => {
@@ -80,7 +80,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 		setAdBlockingRecoverySetupStatus(
 			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
 		);
-		setUseAdBlockerDetectionSnippet( true );
+		setUseAdBlockingRecoverySnippet( true );
 
 		const { error: saveError } = await saveSettings();
 
@@ -93,14 +93,14 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 		saveSettings,
 		setActiveStep,
 		setAdBlockingRecoverySetupStatus,
-		setUseAdBlockerDetectionSnippet,
+		setUseAdBlockingRecoverySnippet,
 		syncAdBlockingRecoveryTags,
 	] );
 
 	// Error snippet option is enabled by default.
 	useMount( () => {
-		if ( ! useAdBlockerDetectionErrorSnippet ) {
-			setUseAdBlockerDetectionErrorSnippet( true );
+		if ( ! useAdBlockingRecoveryErrorSnippet ) {
+			setUseAdBlockingRecoveryErrorSnippet( true );
 		}
 	} );
 
@@ -113,7 +113,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 				) }
 			</p>
 			<Checkbox
-				checked={ useAdBlockerDetectionErrorSnippet }
+				checked={ useAdBlockingRecoveryErrorSnippet }
 				id="ad-blocking-recovery-error-protection-tag-checkbox"
 				name="ad-blocking-recovery-error-protection-tag-checkbox"
 				value="1"

@@ -57,8 +57,8 @@ WithAdBlockingRecoveryTagEnabled.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 			...validSettings,
-			useAdBlockerDetectionSnippet: true,
-			useAdBlockerDetectionErrorSnippet: false,
+			useAdBlockingRecoverySnippet: true,
+			useAdBlockingRecoveryErrorSnippet: false,
 		} );
 	},
 };
@@ -69,8 +69,8 @@ WithBothTogglesEnabled.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 			...validSettings,
-			useAdBlockerDetectionSnippet: true,
-			useAdBlockerDetectionErrorSnippet: true,
+			useAdBlockingRecoverySnippet: true,
+			useAdBlockingRecoveryErrorSnippet: true,
 		} );
 	},
 };
