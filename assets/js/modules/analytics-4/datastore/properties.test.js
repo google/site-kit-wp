@@ -164,6 +164,8 @@ describe( 'modules/analytics-4 properties', () => {
 					measurementID: 'abcd',
 				};
 
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( settings );
@@ -193,6 +195,7 @@ describe( 'modules/analytics-4 properties', () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.io',
 				} );
+				provideUserAuthentication( registry );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -228,6 +231,7 @@ describe( 'modules/analytics-4 properties', () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
 				} );
+				provideUserAuthentication( registry );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -276,6 +280,8 @@ describe( 'modules/analytics-4 properties', () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
 				} );
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( settings );
@@ -398,6 +404,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 
 				const properties = [
 					{
@@ -544,6 +551,8 @@ describe( 'modules/analytics-4 properties', () => {
 		describe( 'updateSettingsForMeasurementID', () => {
 			it( 'should update the settings with the measurement ID.', async () => {
 				const measurementID = 'G-1A2BCD346E';
+
+				provideUserAuthentication( registry );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
