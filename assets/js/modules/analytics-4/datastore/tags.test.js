@@ -19,20 +19,15 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from './constants';
-import * as fixtures from './__fixtures__';
-// These modules will need to be reloaded, because their behaviour changes
-// based on the `gteSupport` feature flag.
-//
-// TODO: Remove this once the `gteSupport` feature flag is removed and use
-// regular `import` statements.
-let API = require( 'googlesitekit-api' ).default;
-let {
+import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	untilResolved,
 	provideSiteInfo,
-} = require( '../../../../../tests/js/utils' );
+} from '../../../../../tests/js/utils';
+import API from 'googlesitekit-api';
+import { MODULES_ANALYTICS_4 } from './constants';
+import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics tags', () => {
 	let registry;
@@ -172,21 +167,6 @@ describe( 'modules/analytics tags', () => {
 					'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
 				);
 				const containerMock = fixtures.container[ expectedTag ];
-
-				beforeAll( () => {
-					// TODO: Remove/rewrite this section once the `gteSupport` feature flag is removed.
-					jest.resetModules();
-
-					API = require( 'googlesitekit-api' ).default;
-					( {
-						createTestRegistry,
-						unsubscribeFromAll,
-						untilResolved,
-						provideSiteInfo,
-					} = require( '../../../../../tests/js/utils' ) );
-
-					API.setUsingCache( false );
-				} );
 
 				it( 'should return null if no tag is found on the page', async () => {
 					fetchMock.getOnce(
