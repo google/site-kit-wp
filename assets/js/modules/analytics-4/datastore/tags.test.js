@@ -148,6 +148,13 @@ describe( 'modules/analytics tags', () => {
 						}
 					);
 
+					const containerMock = fixtures.container[ expectedTag ];
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetGoogleTagContainer( containerMock, {
+							measurementID: expectedTag,
+						} );
+
 					registry.select( MODULES_ANALYTICS_4 ).getExistingTag();
 					await untilResolved(
 						registry,
