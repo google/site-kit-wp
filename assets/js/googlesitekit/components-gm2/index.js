@@ -46,13 +46,13 @@ const Components = {
 	DialogTitle,
 	DialogContent,
 	DialogFooter,
+	HelperText,
 	Menu,
 	ProgressBar,
 	Radio,
 	SpinnerButton,
 	Switch,
 	TextField,
-	HelperText,
 	Tooltip,
 };
 
