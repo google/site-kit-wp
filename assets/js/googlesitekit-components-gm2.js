@@ -42,5 +42,6 @@ export const {
 	SpinnerButton,
 	Switch,
 	TextField,
+	HelperText,
 	Tooltip,
 } = Components;

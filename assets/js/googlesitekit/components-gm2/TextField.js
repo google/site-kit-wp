@@ -107,6 +107,6 @@ TextField.propTypes = {
  * it is being used as a standalone component in the
  * SurveyQuestionMultiSelect component.
  */
-export { HelperText };
+export { HelperText, TextField };
 
 export default TextField;

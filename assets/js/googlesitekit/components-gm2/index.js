@@ -34,7 +34,7 @@ import ProgressBar from './ProgressBar';
 import Radio from './Radio';
 import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
-import TextField from './TextField';
+import { TextField, HelperText } from './TextField';
 import Tooltip from './Tooltip';
 
 const Components = {
@@ -52,6 +52,7 @@ const Components = {
 	SpinnerButton,
 	Switch,
 	TextField,
+	HelperText,
 	Tooltip,
 };
 
