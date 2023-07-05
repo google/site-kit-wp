@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -39,6 +39,7 @@ import {
 import Link from '../../../../components/Link';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { parseAccountIDFromExistingTag } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryToggle() {
@@ -51,12 +52,15 @@ export default function AdBlockingRecoveryToggle() {
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
 	);
-	const adsenseAccountID = useSelect( ( select ) =>
+	const existingAdBlockingRecoveryTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingAdBlockingRecoveryTag()
+	);
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
 	const privacyMessagingURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceURL( {
-			path: `/${ adsenseAccountID }/privacymessaging/ad_blocking`,
+			path: `/${ accountID }/privacymessaging/ad_blocking`,
 		} )
 	);
 	const adBlockingRecoveryToggle = useSelect( ( select ) =>
@@ -102,6 +106,26 @@ export default function AdBlockingRecoveryToggle() {
 
 		setValues( AD_BLOCKING_FORM_SETTINGS, initialToggleValues );
 	} );
+
+	let existingAdBlockingRecoveryTagMessage;
+	if (
+		existingAdBlockingRecoveryTag &&
+		existingAdBlockingRecoveryTag === accountID
+	) {
+		existingAdBlockingRecoveryTagMessage = __(
+			'You’ve already got an Ad Blocking Recovery code on your site. We recommend you use Site Kit to manage this to get the most out of AdSense.',
+			'google-site-kit'
+		);
+	} else if ( existingAdBlockingRecoveryTag ) {
+		existingAdBlockingRecoveryTagMessage = sprintf(
+			/* translators: %s: account ID */
+			__(
+				'Site Kit detected Ad Blocking Recovery code for a different account %s on your site. For a better ad blocking recovery experience, you should remove Ad Blocking Recovery code that’s not linked to this AdSense account.',
+				'google-site-kit'
+			),
+			parseAccountIDFromExistingTag( existingAdBlockingRecoveryTag )
+		);
+	}
 
 	if ( ! adBlockingRecoverySetupStatus ) {
 		return null;
@@ -160,12 +184,18 @@ export default function AdBlockingRecoveryToggle() {
 					</div>
 				) }
 			</div>
-			{ adBlockingRecoveryToggle === false && (
+			{ ! existingAdBlockingRecoveryTag &&
+				adBlockingRecoveryToggle === false && (
+					<SettingsNotice
+						notice={ __(
+							'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed',
+							'google-site-kit'
+						) }
+					/>
+				) }
+			{ existingAdBlockingRecoveryTag && (
 				<SettingsNotice
-					notice={ __(
-						'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed',
-						'google-site-kit'
-					) }
+					notice={ existingAdBlockingRecoveryTagMessage }
 				/>
 			) }
 		</fieldset>
