@@ -137,15 +137,17 @@ describe( 'User Input Settings', () => {
 			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
 		);
 
-		await page.waitForSelector( '.googlesitekit-user-input__notification' );
+		await page.waitForSelector(
+			'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
+		);
 
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
-				'.googlesitekit-user-input__notification'
+				'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
 			);
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+					'.googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
 				),
 				page.waitForNavigation(),
 			] );

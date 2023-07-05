@@ -66,8 +66,8 @@ class SettingsTest extends SettingsTestCase {
 				'webStoriesAdUnit'                  => '',
 				'autoAdsDisabled'                   => array(),
 				'setupCompletedTimestamp'           => null,
-				'useAdBlockerDetectionSnippet'      => false,
-				'useAdBlockerDetectionErrorSnippet' => false,
+				'useAdBlockingRecoverySnippet'      => false,
+				'useAdBlockingRecoveryErrorSnippet' => false,
 				'adBlockingRecoverySetupStatus'     => '',
 			),
 			get_option( Settings::OPTION )

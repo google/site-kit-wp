@@ -31,6 +31,6 @@ class Ad_Blocking_Recovery_Tag_Guard extends Module_Tag_Guard {
 	public function can_activate() {
 		$settings = $this->settings->get();
 
-		return ! empty( $settings['adBlockingRecoverySetupStatus'] ) && $settings['useAdBlockerDetectionSnippet'];
+		return ! empty( $settings['adBlockingRecoverySetupStatus'] ) && $settings['useAdBlockingRecoverySnippet'];
 	}
 }

@@ -25,13 +25,16 @@ import {
 	render,
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
 } from '../../../../tests/js/test-utils';
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
-
 	beforeEach( async () => {
 		registry = createTestRegistry();
+
+		provideSiteInfo( registry, { homeURL: 'http://example.com' } );
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( true );
@@ -96,7 +99,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		expect( container ).toHaveTextContent( 'NULL' );
 	} );
 
-	it( 'does render when SC and GA4 are both connected', async () => {
+	it( 'does render the CTA when SC and GA4 are both connected', async () => {
 		global._googlesitekitUserData.isUserInputCompleted = false;
 		await registry
 			.dispatch( CORE_USER )
@@ -118,7 +121,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		const Widget = ( { children } ) => <div>{ children }</div>;
 		const WidgetNull = () => <div>NULL</div>;
 
-		const { container, waitForRegistry } = render(
+		const { container, getByRole, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
 				Widget={ Widget }
 				WidgetNull={ WidgetNull }
@@ -129,8 +132,17 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			}
 		);
 		await waitForRegistry();
-		expect( container ).toHaveTextContent(
-			'TODO: UI for KeyMetricsSetupCTAWidget'
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win__title' )
+		).toHaveTextContent(
+			'Get metrics and suggestions tailored to your specific goals'
+		);
+		const button = getByRole( 'button', { name: /get tailored metrics/i } );
+		expect( button ).toBeInTheDocument();
+		expect( button ).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
 		);
 	} );
 } );

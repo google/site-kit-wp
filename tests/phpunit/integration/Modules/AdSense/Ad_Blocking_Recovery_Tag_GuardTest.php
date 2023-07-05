@@ -43,7 +43,7 @@ class Ad_Blocking_Recovery_Tag_GuardTest extends TestCase {
 			Settings::OPTION,
 			array(
 				'adBlockingRecoverySetupStatus' => 'tag-placed',
-				'useAdBlockerDetectionSnippet'  => true,
+				'useAdBlockingRecoverySnippet'  => true,
 			)
 		);
 
@@ -66,7 +66,7 @@ class Ad_Blocking_Recovery_Tag_GuardTest extends TestCase {
 	public function data_can_not_activate() {
 		return array(
 			'when adBlockingRecoverySetupStatus is empty' => array( array( 'adBlockingRecoverySetupStatus' => '' ) ),
-			'when useAdBlockerDetectionSnippet is falsy'  => array( array( 'useAdBlockerDetectionSnippet' => false ) ),
+			'when useAdBlockingRecoverySnippet is falsy'  => array( array( 'useAdBlockingRecoverySnippet' => false ) ),
 		);
 	}
 }

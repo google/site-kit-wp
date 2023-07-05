@@ -53,7 +53,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
 		],
 		[
-			'an existing ad blocker recovery tag is detected',
+			'an existing ad blocking recovery tag is detected',
 			ACCOUNT_STATUS_READY,
 			SITE_STATUS_ADDED,
 			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,

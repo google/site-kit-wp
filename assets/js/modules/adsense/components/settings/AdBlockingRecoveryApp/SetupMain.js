@@ -84,8 +84,8 @@ export default function SetupMain() {
 	const {
 		saveSettings,
 		setAdBlockingRecoverySetupStatus,
-		setUseAdBlockerDetectionSnippet,
-		setUseAdBlockerDetectionErrorSnippet,
+		setUseAdBlockingRecoverySnippet,
+		setUseAdBlockingRecoveryErrorSnippet,
 	} = useDispatch( MODULES_ADSENSE );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -101,8 +101,8 @@ export default function SetupMain() {
 		}
 
 		setAdBlockingRecoverySetupStatus( '' );
-		setUseAdBlockerDetectionSnippet( false );
-		setUseAdBlockerDetectionErrorSnippet( false );
+		setUseAdBlockingRecoverySnippet( false );
+		setUseAdBlockingRecoveryErrorSnippet( false );
 
 		const { error } = await saveSettings();
 
@@ -116,8 +116,8 @@ export default function SetupMain() {
 		navigateTo,
 		saveSettings,
 		setAdBlockingRecoverySetupStatus,
-		setUseAdBlockerDetectionErrorSnippet,
-		setUseAdBlockerDetectionSnippet,
+		setUseAdBlockingRecoveryErrorSnippet,
+		setUseAdBlockingRecoverySnippet,
 		settingsURL,
 	] );
 
