@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Dependencies;
+use WP_Post_Type;
 
 /**
  * Class managing assets.
@@ -723,6 +724,7 @@ final class Assets {
 			'postTypes'        => $this->get_post_types(),
 			'storagePrefix'    => $this->get_storage_prefix(),
 			'referenceDate'    => apply_filters( 'googlesitekit_reference_date', null ),
+			'productBasePaths' => $this->get_product_base_paths(),
 		);
 
 		/**
@@ -1060,6 +1062,45 @@ final class Assets {
 		$session_token = isset( $auth_cookie['token'] ) ? $auth_cookie['token'] : '';
 
 		return wp_hash( $current_user->user_login . '|' . $session_token . '|' . $blog_id );
+	}
+
+	/**
+	 * Returns an array of product base paths.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The array of product base paths.
+	 */
+	private function get_product_base_paths() {
+		// Return early if permalinks are not used.
+		if ( ! get_option( 'permalink_structure' ) ) {
+			return array();
+		}
+
+		$product_base_paths = array();
+		$product            = get_post_type_object( 'product' );
+
+		// Check whether the product post type is available and public.
+		if (
+			$product instanceof WP_Post_Type &&
+			$product->public &&
+			! empty( $product->rewrite['with_front'] )
+		) {
+			$product_base_paths[] = $product->rewrite['slug'];
+		}
+
+		/**
+		 * Filters product base paths found in WordPress. By default the array contains
+		 * the base path for the "product" post type if it is available in WordPress
+		 * and public.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $product_base_paths Array of existing product base paths.
+		 */
+		$product_base_paths = apply_filters( 'googlesitekit_product_base_paths', $product_base_paths );
+
+		return $product_base_paths;
 	}
 
 }
