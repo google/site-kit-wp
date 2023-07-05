@@ -57,6 +57,13 @@ export default function SettingsForm() {
 	const hasResolvedGetExistingTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasFinishedResolution( 'getExistingTag' )
 	);
+
+	// This is called here to ensure that the progress bar is displayed while
+	// the Ad Blocking Recovery existing tag is being resolved to prevent a
+	// layout shift.
+	useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingAdBlockingRecoveryTag()
+	);
 	const hasResolvedGetExistingAdBlockingRecoveryTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasFinishedResolution(
 			'getExistingAdBlockingRecoveryTag'
