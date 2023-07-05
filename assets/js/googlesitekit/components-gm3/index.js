@@ -33,6 +33,7 @@ import Radio from './Radio';
 import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
 import TextField from './TextField';
+import HelperText from './HelperText';
 import Tooltip from './Tooltip';
 
 const Components = {
@@ -50,6 +51,7 @@ const Components = {
 	SpinnerButton,
 	Switch,
 	TextField,
+	HelperText,
 	Tooltip,
 };
 
