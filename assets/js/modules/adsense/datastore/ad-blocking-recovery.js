@@ -148,11 +148,9 @@ const resolvers = {
 			const fetchedAdBlockingRecoveryTag =
 				yield actions.fetchGetExistingAdBlockingRecoveryTag();
 
-			yield registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetExistingAdBlockingRecoveryTag(
-					fetchedAdBlockingRecoveryTag
-				);
+			yield actions.receiveGetExistingAdBlockingRecoveryTag(
+				fetchedAdBlockingRecoveryTag
+			);
 		}
 	},
 };
