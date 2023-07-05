@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { TextField } from '../../../../googlesitekit-components-gm2';
+import { TextField } from 'googlesitekit-components';
 import { isUniqueContainerName } from '../../util';
 const { useSelect, useDispatch } = Data;
 

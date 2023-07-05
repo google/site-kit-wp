@@ -31,9 +31,8 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { Button, ProgressBar, TextField } from 'googlesitekit-components';
 import { validateJSON, trackEvent } from '../../util';
-import { TextField } from '../../googlesitekit-components-gm2';
 
 class SiteVerification extends Component {
 	constructor( props ) {

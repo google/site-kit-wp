@@ -32,7 +32,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { TextField } from '../../../../googlesitekit-components-gm2';
+import { TextField } from 'googlesitekit-components';
 import {
 	MODULES_ANALYTICS,
 	PROFILE_CREATE,

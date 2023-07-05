@@ -31,10 +31,9 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { Button, ProgressBar, TextField } from 'googlesitekit-components';
 import { trackEvent } from '../../util';
 import { Select } from '../../material-components';
-import { TextField } from '../../googlesitekit-components-gm2';
 
 class SearchConsole extends Component {
 	constructor( props ) {

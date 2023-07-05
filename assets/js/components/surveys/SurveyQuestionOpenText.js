@@ -30,9 +30,8 @@ import { useInstanceId } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
+import { Button, TextField } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
-import { TextField } from '../../googlesitekit-components-gm2';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { TextField } from '../../../../../googlesitekit-components-gm2';
+import { TextField } from 'googlesitekit-components';
 import classnames from 'classnames';
 
 export default function CreateAccountField( {
