@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,28 +33,21 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import {
+	FORM_SETUP,
+	MODULES_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../../hooks/useDebounce';
+import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 const { useSelect, useDispatch } = Data;
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	const DISMISSED_ITEM_KEY = 'key-metrics-connect-ga4-cta-widget';
-
-	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
-	const completeModuleActivationCallback =
-		useCompleteModuleActivationCallback( 'analytics' );
-
-	const [ inProgress, setInProgress ] = useState( false );
-
-	/*
-	 * Using debounce here because the spinner has to render across two separate calls.
-	 * Rather than risk it flickering on and off in between the activation call completing and
-	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
-	 */
-	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
 
 	const isCTADismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( DISMISSED_ITEM_KEY )
@@ -80,7 +73,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 				keyMetrics.includes( slug ) && modules.includes( 'analytics-4' )
 		);
 	} );
-	const analyticsModuleActive = useSelect( ( select ) =>
+	const isAnalyticsActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 	const isNavigatingToReauthURL = useSelect( ( select ) => {
@@ -92,26 +85,86 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
 	} );
-	const isActivating = useSelect( ( select ) =>
+	const isActivatingAnalytics = useSelect( ( select ) =>
 		select( CORE_MODULES ).isFetchingSetModuleActivation(
 			'analytics',
 			true
 		)
 	);
+	const settingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+	const connectGA4URL = `${ settingsURL }#connected-services/analytics/edit`;
+	const isNavigatingToGA4URL = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( connectGA4URL )
+	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const activateAnalytics = useActivateModuleCallback( 'analytics' );
+	const completeAnalyticsActivation =
+		useCompleteModuleActivationCallback( 'analytics' );
+
+	const handleCTAClick = useCallback( async () => {
+		if ( ! isAnalyticsConnected ) {
+			if ( isAnalyticsActive ) {
+				completeAnalyticsActivation();
+			} else {
+				activateAnalytics();
+			}
+		} else if ( ! isGA4Connected ) {
+			setValues( FORM_SETUP, {
+				// Pre-enable GA4 controls.
+				enableGA4: true,
+				// Enable tooltip highlighting GA4 property select.
+				enableGA4PropertyTooltip: true,
+			} );
+
+			await snapshotAllStores();
+
+			navigateTo( `${ settingsURL }#connected-services/analytics/edit` );
+		}
+	}, [
+		activateAnalytics,
+		completeAnalyticsActivation,
+		isAnalyticsActive,
+		isAnalyticsConnected,
+		isGA4Connected,
+		navigateTo,
+		setValues,
+		settingsURL,
+	] );
+
+	const [ inProgress, setInProgress ] = useState( false );
+
+	/*
+	 * Using debounce here because the spinner has to render across two separate calls.
+	 * Rather than risk it flickering on and off in between the activation call completing and
+	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
+	 */
+	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
 
 	useEffect( () => {
-		if ( isActivating || isNavigatingToReauthURL ) {
+		if (
+			isActivatingAnalytics ||
+			isNavigatingToReauthURL ||
+			isNavigatingToGA4URL
+		) {
 			setInProgress( true );
 		} else {
 			debouncedSetInProgress( false );
 		}
-	}, [ isActivating, isNavigatingToReauthURL, debouncedSetInProgress ] );
-
-	const onClickCallback = analyticsModuleActive
-		? completeModuleActivationCallback
-		: activateModuleCallback;
+	}, [
+		isActivatingAnalytics,
+		isNavigatingToReauthURL,
+		debouncedSetInProgress,
+		isNavigatingToGA4URL,
+	] );
 
 	if (
 		isCTADismissed ||
@@ -143,7 +196,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 				) }
 				actions={
 					<SpinnerButton
-						onClick={ onClickCallback }
+						onClick={ handleCTAClick }
 						isSaving={ inProgress }
 					>
 						{ __( 'Connect Google Analytics', 'google-site-kit' ) }
