@@ -164,11 +164,6 @@ export default function AdBlockingRecoveryToggle() {
 						) }
 					</p>
 				</div>
-				{ existingAdBlockingRecoveryTag && (
-					<SettingsNotice
-						notice={ existingAdBlockingRecoveryTagMessage }
-					/>
-				) }
 				{ ( adBlockingRecoveryToggle || adBlockingRecoverySnippet ) && (
 					<div className="googlesitekit-settings-module__meta-item">
 						<Switch
@@ -195,6 +190,11 @@ export default function AdBlockingRecoveryToggle() {
 						'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed',
 						'google-site-kit'
 					) }
+				/>
+			) }
+			{ existingAdBlockingRecoveryTag && (
+				<SettingsNotice
+					notice={ existingAdBlockingRecoveryTagMessage }
 				/>
 			) }
 		</fieldset>
