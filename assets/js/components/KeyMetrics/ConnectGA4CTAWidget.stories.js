@@ -1,5 +1,5 @@
 /**
- * ConnectGA4CTA Component Stories.
+ * ConnectGA4CTAWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -46,24 +46,29 @@ Default.scenario = {
 	label: 'KeyMetrics/ConnectGA4CTAWidget',
 	delay: 250,
 };
-Default.parameters = {
-	features: [ 'userInput' ],
-};
 
 export default {
 	title: 'Key Metrics/ConnectGA4CTAWidget',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+				global._googlesitekitUserData.isUserInputCompleted = true;
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: false,
+						connected: false,
+					},
+				] );
+
 				const keyMetricWidgets = [
 					KM_ANALYTICS_LOYAL_VISITORS,
 					KM_ANALYTICS_NEW_VISITORS,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 				];
-
-				global._googlesitekitUserData.isUserInputCompleted = true;
-				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				provideKeyMetrics( registry, {
 					widgetSlugs: keyMetricWidgets,
@@ -96,14 +101,6 @@ export default {
 							AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY
 						);
 				} );
-
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: false,
-						connected: false,
-					},
-				] );
 			};
 
 			return (
