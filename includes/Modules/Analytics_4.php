@@ -127,43 +127,41 @@ final class Analytics_4 extends Module
 			);
 		}
 
-		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
-			add_filter(
-				'googlesitekit_auth_scopes',
-				function( array $scopes ) {
-					$oauth_client = $this->authentication->get_oauth_client();
+		add_filter(
+			'googlesitekit_auth_scopes',
+			function( array $scopes ) {
+				$oauth_client = $this->authentication->get_oauth_client();
 
-					$needs_tagmanager_scope = false;
+				$needs_tagmanager_scope = false;
 
-					if ( $oauth_client->has_sufficient_scopes(
+				if ( $oauth_client->has_sufficient_scopes(
+					array(
+						Analytics::READONLY_SCOPE,
+						'https://www.googleapis.com/auth/tagmanager.readonly',
+					)
+				) ) {
+					$needs_tagmanager_scope = true;
+				} else {
+					// Ensure the Tag Manager scope is not added as a required scope in the case where the user has
+					// granted the Analytics scope but not the Tag Manager scope, in order to allow the GTE-specific
+					// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
+					// modal also appearing.
+					if ( ! $oauth_client->has_sufficient_scopes(
 						array(
 							Analytics::READONLY_SCOPE,
-							'https://www.googleapis.com/auth/tagmanager.readonly',
 						)
 					) ) {
 						$needs_tagmanager_scope = true;
-					} else {
-						// Ensure the Tag Manager scope is not added as a required scope in the case where the user has
-						// granted the Analytics scope but not the Tag Manager scope, in order to allow the GTE-specific
-						// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
-						// modal also appearing.
-						if ( ! $oauth_client->has_sufficient_scopes(
-							array(
-								Analytics::READONLY_SCOPE,
-							)
-						) ) {
-							$needs_tagmanager_scope = true;
-						}
 					}
-
-					if ( $needs_tagmanager_scope ) {
-						$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
-					}
-
-					return $scopes;
 				}
-			);
-		}
+
+				if ( $needs_tagmanager_scope ) {
+					$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+				}
+
+				return $scopes;
+			}
+		);
 
 		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 	}
@@ -495,10 +493,6 @@ final class Analytics_4 extends Module
 	 * @since 1.102.0
 	 */
 	protected function sync_google_tag_settings() {
-		if ( ! Feature_Flags::enabled( 'gteSupport' ) ) {
-			return;
-		}
-
 		$settings       = $this->get_settings();
 		$measurement_id = $settings->get()['measurementID'];
 
@@ -1224,7 +1218,7 @@ final class Analytics_4 extends Module
 	private function get_tag_id() {
 		$settings = $this->get_settings()->get();
 
-		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
+		if ( ! empty( $settings['googleTagID'] ) ) {
 			return $settings['googleTagID'];
 		}
 		return $settings['measurementID'];

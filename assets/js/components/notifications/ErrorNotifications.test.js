@@ -108,7 +108,6 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
-			features: [ 'gteSupport' ],
 		} );
 
 		expect( container ).toHaveTextContent(
@@ -127,7 +126,6 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
-			features: [ 'gteSupport' ],
 		} );
 
 		expect( container ).toHaveTextContent(

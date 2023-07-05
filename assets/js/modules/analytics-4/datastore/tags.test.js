@@ -167,11 +167,8 @@ describe( 'modules/analytics tags', () => {
 				const containerMock = fixtures.container[ expectedTag ];
 
 				beforeAll( () => {
+					// TODO: Remove/rewrite this section once the `gteSupport` feature flag is removed.
 					jest.resetModules();
-
-					const { enabledFeatures } = require( '../../../features' );
-
-					enabledFeatures.add( 'gteSupport' );
 
 					API = require( 'googlesitekit-api' ).default;
 					( {
