@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -100,6 +101,9 @@ export default function TourTooltips( {
 
 	const viewContext = useViewContext();
 
+	const [ hasMissingTargetError, setHasMissingTargetError ] =
+		useState( false );
+
 	const stepIndex = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( stepKey )
 	);
@@ -126,8 +130,11 @@ export default function TourTooltips( {
 			'googlesitekit-showing-feature-tour',
 			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
+
 		// Dismiss tour to avoid unwanted repeat viewing.
-		dismissTour( tourID );
+		if ( ! hasMissingTargetError ) {
+			dismissTour( tourID );
+		}
 	};
 
 	const trackAllTourEvents = ( {
@@ -209,6 +216,10 @@ export default function TourTooltips( {
 		const shouldCloseFromButtonClick =
 			hasCloseAction && type === EVENTS.STEP_AFTER;
 		const shouldEndTour = isFinishedOrSkipped || shouldCloseFromButtonClick;
+
+		if ( EVENTS.TARGET_NOT_FOUND === type ) {
+			setHasMissingTargetError( true );
+		}
 
 		// Center the target in the viewport when transitioning to the step.
 		if ( EVENTS.STEP_BEFORE === type ) {
