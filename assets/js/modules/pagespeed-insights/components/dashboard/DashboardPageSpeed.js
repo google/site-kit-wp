@@ -20,8 +20,6 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import Tab from '@material/react-tab';
-import TabBar from '@material/react-tab-bar';
 import { useIntersection } from 'react-use';
 
 /**
@@ -33,9 +31,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Button, ProgressBar, Tab, TabBar } from 'googlesitekit-components';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import Link from '../../../../components/Link';
 import LabReportMetrics from '../common/LabReportMetrics';
