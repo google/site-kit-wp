@@ -19,6 +19,9 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/default-contexts';
 const { useSelect } = Data;
 
 /**
@@ -58,3 +61,41 @@ export function whenKeyMetricsWidgetVisible() {
 		return WrapperComponent;
 	};
 }
+
+/**
+ * Provides key metric widgets registration data to the given registry.
+ *
+ * This is a temporary utility until a solidified solution is implemented to effortlessly provide
+ * widget registrations to the registry.
+ *
+ * @since n.e.x.t
+ * @see {@link https://github.com/google/site-kit-wp/issues/7264} Initiative to implement a utility to provide widget registrations.
+ *
+ * @param {Object} registry The registry to set up.
+ * @param {Object} widgets  Object containing options mapped to widget slugs.
+ */
+export const provideKeyMetricsWidgetRegistrations = ( registry, widgets ) => {
+	registry
+		.dispatch( CORE_WIDGETS )
+		.registerWidgetArea( AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY, {
+			title: 'Key metrics',
+		} );
+
+	registry
+		.dispatch( CORE_WIDGETS )
+		.assignWidgetArea(
+			AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+			CONTEXT_MAIN_DASHBOARD_KEY_METRICS
+		);
+
+	Object.keys( widgets ).forEach( ( slug ) => {
+		registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
+			Component: () => <div>Hello test.</div>,
+			...widgets[ slug ],
+		} );
+
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( slug, AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY );
+	} );
+};

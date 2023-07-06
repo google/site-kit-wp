@@ -35,11 +35,9 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	provideModules,
-	provideWidgetRegistrations,
 } from '../../../../../../tests/js/test-utils';
+import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../../googlesitekit/widgets/default-areas';
-import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../../../googlesitekit/widgets/default-contexts';
 
 describe( 'ConnectGA4CTAWidget', () => {
 	let registry;
@@ -80,13 +78,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 			widgetSlugs: Object.keys( keyMetricWidgets ),
 		} );
 
-		provideWidgetRegistrations(
-			registry,
-			AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-			'Key metrics',
-			CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
-			keyMetricWidgets
-		);
+		provideKeyMetricsWidgetRegistrations( registry, keyMetricWidgets );
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -111,11 +103,8 @@ describe( 'ConnectGA4CTAWidget', () => {
 			widgetSlugs: keyMetricWidgets,
 		} );
 
-		provideWidgetRegistrations(
+		provideKeyMetricsWidgetRegistrations(
 			registry,
-			AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-			'Key metrics',
-			CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 			keyMetricWidgets.reduce(
 				( acc, widget ) => ( {
 					...acc,

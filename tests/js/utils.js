@@ -46,7 +46,6 @@ import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-ins
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
-import { CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
 import {
 	PERMISSION_AUTHENTICATE,
 	PERMISSION_SETUP,
@@ -418,44 +417,6 @@ export const provideKeyMetrics = ( registry, extraData = {} ) => {
 	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 		...defaults,
 		...extraData,
-	} );
-};
-
-/**
- * Provides widget registration data to the given registry.
- *
- * @since n.e.x.t
- *
- * @param {Object}       registry     The registry to set up.
- * @param {string}       areaSlug     Widget area slug.
- * @param {string}       areaTitle    Widget area title.
- * @param {string|Array} contextSlugs Widget context slug(s).
- * @param {Object}       widgets      Object containing options mapped to widget slugs.
- */
-export const provideWidgetRegistrations = (
-	registry,
-	areaSlug,
-	areaTitle,
-	contextSlugs = null,
-	widgets
-) => {
-	registry.dispatch( CORE_WIDGETS ).registerWidgetArea( areaSlug, {
-		title: areaTitle,
-	} );
-
-	if ( contextSlugs ) {
-		registry
-			.dispatch( CORE_WIDGETS )
-			.assignWidgetArea( areaSlug, contextSlugs );
-	}
-
-	Object.keys( widgets ).forEach( ( slug ) => {
-		registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
-			Component: () => <div>Hello test.</div>,
-			...widgets[ slug ],
-		} );
-
-		registry.dispatch( CORE_WIDGETS ).assignWidget( slug, areaSlug );
 	} );
 };
 
