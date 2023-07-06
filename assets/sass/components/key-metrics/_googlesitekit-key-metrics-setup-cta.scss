@@ -95,6 +95,8 @@
 
 		p {
 			display: grid;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
 			margin: 5px 0;
 			place-content: center;
 
@@ -126,6 +128,17 @@
 					width: auto;
 				}
 			}
+
+			.googlesitekit-cta-link {
+				color: $c-surfaces-on-surface-variant;
+			}
+		}
+	}
+
+	.googlesitekit-widget-key-metrics-footer {
+
+		button.googlesitekit-cta-link {
+			color: $c-surfaces-on-surface-variant;
 		}
 	}
 
@@ -133,6 +146,7 @@
 
 		.googlesitekit-publisher-win__title {
 			color: $c-utility-error;
+			font-family: $f-primary;
 		}
 	}
 }

@@ -34,7 +34,7 @@ import Link from '../Link';
 
 export default function KeyMetricsCTAFooter( { onActionClick = () => {} } ) {
 	return (
-		<Row>
+		<Row className="googlesitekit-widget-key-metrics-footer">
 			<Cell size={ 12 }>
 				<Link onClick={ onActionClick }>
 					{ __( 'Maybe later', 'google-site-kit' ) }
