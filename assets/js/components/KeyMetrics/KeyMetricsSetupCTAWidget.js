@@ -78,8 +78,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		isUserInputCompleted ||
 		! analyticsModuleConnected ||
 		! searchConsoleModuleConnected ||
-		searchConsoleIsGatheringData !== false ||
-		analyticsIsGatheringData !== false
+		analyticsIsGatheringData !== false ||
+		searchConsoleIsGatheringData !== false
 	) {
 		return <WidgetNull />;
 	}
