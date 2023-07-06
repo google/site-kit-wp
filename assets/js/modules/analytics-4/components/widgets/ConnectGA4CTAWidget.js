@@ -48,9 +48,6 @@ import { snapshotAllStores } from '../../../../googlesitekit/data/create-snapsho
 const { useSelect, useDispatch } = Data;
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
-	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
 	const ga4DependantKeyMetrics = useSelect( ( select ) => {
 		const keyMetrics = select( CORE_USER ).getKeyMetrics();
 		const widgets = select( CORE_WIDGETS ).getWidgets(
@@ -107,13 +104,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		useCompleteModuleActivationCallback( 'analytics' );
 
 	const handleCTAClick = useCallback( async () => {
-		if ( ! isAnalyticsConnected ) {
-			if ( isAnalyticsActive ) {
-				completeAnalyticsActivation();
-			} else {
-				activateAnalytics();
-			}
-		} else if ( ! isGA4Connected ) {
+		if ( isAnalyticsConnected ) {
 			setValues( FORM_SETUP, {
 				// Pre-enable GA4 controls.
 				enableGA4: true,
@@ -123,15 +114,20 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 			await snapshotAllStores();
 
-			navigateTo( connectGA4URL );
+			return navigateTo( connectGA4URL );
 		}
+
+		if ( isAnalyticsActive ) {
+			return completeAnalyticsActivation();
+		}
+
+		activateAnalytics();
 	}, [
 		activateAnalytics,
 		completeAnalyticsActivation,
 		connectGA4URL,
 		isAnalyticsActive,
 		isAnalyticsConnected,
-		isGA4Connected,
 		navigateTo,
 		setValues,
 	] );
