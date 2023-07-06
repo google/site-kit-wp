@@ -25,10 +25,12 @@ import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/default-contexts';
-import { provideKeyMetrics } from '../../../../tests/js/utils';
+import {
+	provideKeyMetrics,
+	provideWidgetRegistrations,
+} from '../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
@@ -62,33 +64,19 @@ export default {
 					widgetSlugs: keyMetricWidgets,
 				} );
 
-				registry
-					.dispatch( CORE_WIDGETS )
-					.registerWidgetArea(
-						AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-						{
-							title: 'Key metrics',
-						}
-					);
-				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidgetArea(
-						AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-						CONTEXT_MAIN_DASHBOARD_KEY_METRICS
-					);
-
-				keyMetricWidgets.forEach( ( slug ) => {
-					registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
-						Component: () => <div>Hello test.</div>,
-						modules: [ 'analytics-4' ],
-					} );
-					registry
-						.dispatch( CORE_WIDGETS )
-						.assignWidget(
-							slug,
-							AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY
-						);
-				} );
+				provideWidgetRegistrations(
+					registry,
+					AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+					'Key metrics',
+					CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+					keyMetricWidgets.reduce(
+						( acc, widget ) => ( {
+							...acc,
+							[ widget ]: { modules: [ 'analytics-4' ] },
+						} ),
+						{}
+					)
+				);
 			};
 
 			return (

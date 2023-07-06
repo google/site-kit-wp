@@ -35,9 +35,9 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	provideModules,
+	provideWidgetRegistrations,
 } from '../../../../tests/js/test-utils';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/default-contexts';
 
@@ -66,37 +66,27 @@ describe( 'ConnectGA4CTAWidget', () => {
 
 	it( 'should not render unless at least 3 analytics dependant metrics are registered', async () => {
 		const keyMetricWidgets = {
-			[ KM_ANALYTICS_LOYAL_VISITORS ]: [ 'analytics-4' ],
-			[ KM_ANALYTICS_NEW_VISITORS ]: [ 'analytics-4' ],
-			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: [ 'adsense' ],
-			[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: [ 'search-console' ],
+			[ KM_ANALYTICS_LOYAL_VISITORS ]: { modules: [ 'analytics-4' ] },
+			[ KM_ANALYTICS_NEW_VISITORS ]: { modules: [ 'analytics-4' ] },
+			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+				modules: [ 'adsense' ],
+			},
+			[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+				modules: [ 'search-console' ],
+			},
 		};
 
 		provideKeyMetrics( registry, {
 			widgetSlugs: Object.keys( keyMetricWidgets ),
 		} );
 
-		registry
-			.dispatch( CORE_WIDGETS )
-			.registerWidgetArea( AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY, {
-				title: 'Key metrics',
-			} );
-		registry
-			.dispatch( CORE_WIDGETS )
-			.assignWidgetArea(
-				AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-				CONTEXT_MAIN_DASHBOARD_KEY_METRICS
-			);
-
-		Object.keys( keyMetricWidgets ).forEach( ( slug ) => {
-			registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
-				Component: () => <div>Hello test.</div>,
-				modules: keyMetricWidgets[ slug ],
-			} );
-			registry
-				.dispatch( CORE_WIDGETS )
-				.assignWidget( slug, AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY );
-		} );
+		provideWidgetRegistrations(
+			registry,
+			AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+			'Key metrics',
+			CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+			keyMetricWidgets
+		);
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -121,27 +111,19 @@ describe( 'ConnectGA4CTAWidget', () => {
 			widgetSlugs: keyMetricWidgets,
 		} );
 
-		registry
-			.dispatch( CORE_WIDGETS )
-			.registerWidgetArea( AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY, {
-				title: 'Key metrics',
-			} );
-		registry
-			.dispatch( CORE_WIDGETS )
-			.assignWidgetArea(
-				AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-				CONTEXT_MAIN_DASHBOARD_KEY_METRICS
-			);
-
-		keyMetricWidgets.forEach( ( slug ) => {
-			registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
-				Component: () => <div>Hello test.</div>,
-				modules: [ 'analytics-4' ],
-			} );
-			registry
-				.dispatch( CORE_WIDGETS )
-				.assignWidget( slug, AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY );
-		} );
+		provideWidgetRegistrations(
+			registry,
+			AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+			'Key metrics',
+			CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+			keyMetricWidgets.reduce(
+				( acc, widget ) => ( {
+					...acc,
+					[ widget ]: { modules: [ 'analytics-4' ] },
+				} ),
+				{}
+			)
+		);
 
 		const { container, getByRole, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
