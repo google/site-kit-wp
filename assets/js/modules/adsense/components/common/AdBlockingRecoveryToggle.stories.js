@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
@@ -75,6 +78,40 @@ WithBothTogglesEnabled.args = {
 	},
 };
 
+export const WithExistingAdBlockingRecoveryTag = Template.bind( {} );
+WithExistingAdBlockingRecoveryTag.storyName =
+	'With Existing Ad Blocking Recovery Tag from same account';
+WithExistingAdBlockingRecoveryTag.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...validSettings,
+			useAdBlockingRecoverySnippet: true,
+			useAdBlockingRecoveryErrorSnippet: false,
+		} );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetExistingAdBlockingRecoveryTag( validSettings.accountID );
+	},
+};
+
+export const WithExistingAdBlockingRecoveryTagDifferentAccount = Template.bind(
+	{}
+);
+WithExistingAdBlockingRecoveryTagDifferentAccount.storyName =
+	'With Existing Ad Blocking Recovery Tag from different account';
+WithExistingAdBlockingRecoveryTagDifferentAccount.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...validSettings,
+			useAdBlockingRecoverySnippet: true,
+			useAdBlockingRecoveryErrorSnippet: false,
+		} );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetExistingAdBlockingRecoveryTag( 'pub-87654321' );
+	},
+};
+
 export default {
 	title: 'Modules/AdSense/Components/AdBlockingRecoveryToggle',
 	decorators: [
@@ -87,6 +124,7 @@ export default {
 						slug: 'adsense',
 					},
 				] );
+				provideSiteInfo( registry );
 
 				args?.setupRegistry( registry );
 			};

@@ -17,10 +17,6 @@
  */
 
 export default [
-	// Detect google_ad_client.
-	/google_ad_client: ?["|'](.*?)["|']/,
-	// Detect auto-ads tags.
-	/<(?:script|amp-auto-ads) [^>]*data-ad-client="([^"]+)"/,
 	// Detect the src URL in script tag and capture the accountID.
 	/<script async src="https:\/\/fundingchoicesmessages\.google\.com\/i\/(.*?)\?ers=/,
 ];
