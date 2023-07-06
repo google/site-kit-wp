@@ -128,6 +128,7 @@ describe( 'User Input Settings', () => {
 					status: 200,
 					body: JSON.stringify(
 						getAnalytics4MockResponse(
+							// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the URL search params to a multi-dimensional object.
 							getMultiDimensionalObjectFromURLSearchParams( url )
 						)
 					),
