@@ -102,10 +102,7 @@ describe( 'User Input Settings', () => {
 		);
 	}
 
-	function getMultiDimensionalObjectFromURLSearchParams( url ) {
-		const params = Object.fromEntries(
-			new URL( url ).searchParams.entries()
-		);
+	function getMultiDimensionalObjectFromParams( params ) {
 		return Object.entries( params ).reduce( ( acc, [ key, value ] ) => {
 			set( acc, key, value );
 			return acc;
@@ -118,6 +115,10 @@ describe( 'User Input Settings', () => {
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 
+			const paramsObject = Object.fromEntries(
+				new URL( url ).searchParams.entries()
+			);
+
 			// Provide mock data for Analytics 4 and Search Console requests to ensure they are not in the "gathering data" state.
 			if (
 				url.match(
@@ -128,8 +129,8 @@ describe( 'User Input Settings', () => {
 					status: 200,
 					body: JSON.stringify(
 						getAnalytics4MockResponse(
-							// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the URL search params to a multi-dimensional object.
-							getMultiDimensionalObjectFromURLSearchParams( url )
+							// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
+							getMultiDimensionalObjectFromParams( paramsObject )
 						)
 					),
 				} );
@@ -141,9 +142,7 @@ describe( 'User Input Settings', () => {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify(
-						getSearchConsoleMockResponse(
-							getMultiDimensionalObjectFromURLSearchParams( url )
-						)
+						getSearchConsoleMockResponse( paramsObject )
 					),
 				} );
 			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
