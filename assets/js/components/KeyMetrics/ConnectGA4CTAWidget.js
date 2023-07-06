@@ -30,7 +30,10 @@ import { SpinnerButton } from 'googlesitekit-components';
 import KeyMetricsCTAContent from './KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
+} from '../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import {
@@ -47,14 +50,6 @@ import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-stor
 const { useSelect, useDispatch } = Data;
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
-	const DISMISSED_ITEM_KEY = 'key-metrics-connect-ga4-cta-widget';
-
-	const isCTADismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( DISMISSED_ITEM_KEY )
-	);
-	const isUserInputCompleted = useSelect( ( select ) =>
-		select( CORE_USER ).isUserInputCompleted()
-	);
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -166,12 +161,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		isNavigatingToGA4URL,
 	] );
 
-	if (
-		isCTADismissed ||
-		! isUserInputCompleted ||
-		isGA4Connected ||
-		ga4DependantKeyMetrics.length < 3
-	) {
+	if ( ga4DependantKeyMetrics.length < 3 ) {
 		return <WidgetNull />;
 	}
 
@@ -180,7 +170,11 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 			noPadding
 			Footer={ () => (
 				<KeyMetricsCTAFooter
-					onActionClick={ () => dismissItem( DISMISSED_ITEM_KEY ) }
+					onActionClick={ () =>
+						dismissItem(
+							KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
+						)
+					}
 				/>
 			) }
 		>

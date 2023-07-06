@@ -21,7 +21,6 @@
  */
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
 import {
-	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -32,11 +31,12 @@ import {
 import {
 	render,
 	createTestRegistry,
-	provideModules,
 	provideKeyMetrics,
 	provideUserAuthentication,
 	provideUserCapabilities,
+	provideModules,
 } from '../../../../tests/js/test-utils';
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/default-contexts';
@@ -44,10 +44,9 @@ import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/
 describe( 'ConnectGA4CTAWidget', () => {
 	let registry;
 
-	const DISMISSED_ITEM_KEY = 'key-metrics-connect-ga4-cta-widget';
-
-	const Widget = ( { children } ) => <div>{ children }</div>;
-	const WidgetNull = () => <div>NULL</div>;
+	const WidgetWithComponentProps = withWidgetComponentProps(
+		'keyMetricsConnectGA4CTA'
+	)( ConnectGA4CTAWidget );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -56,9 +55,6 @@ describe( 'ConnectGA4CTAWidget', () => {
 		provideUserCapabilities( registry );
 		provideKeyMetrics( registry );
 
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
-
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -66,56 +62,6 @@ describe( 'ConnectGA4CTAWidget', () => {
 				connected: false,
 			},
 		] );
-	} );
-
-	it( 'should not render when the widget is dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ DISMISSED_ITEM_KEY ] );
-
-		const { container, waitForRegistry } = render(
-			<ConnectGA4CTAWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
-		expect( container ).toHaveTextContent( 'NULL' );
-	} );
-
-	it( 'should not render if user input is not completed', async () => {
-		global._googlesitekitUserData.isUserInputCompleted = false;
-		await registry
-			.dispatch( CORE_USER )
-			.receiveIsUserInputCompleted( false );
-
-		const { container, waitForRegistry } = render(
-			<ConnectGA4CTAWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
-		expect( container ).toHaveTextContent( 'NULL' );
-	} );
-
-	it( 'should not render if GA4 is connected', async () => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		const { container, waitForRegistry } = render(
-			<ConnectGA4CTAWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
-		expect( container ).toHaveTextContent( 'NULL' );
 	} );
 
 	it( 'should not render unless at least 3 analytics dependant metrics are registered', async () => {
@@ -153,13 +99,14 @@ describe( 'ConnectGA4CTAWidget', () => {
 		} );
 
 		const { container, waitForRegistry } = render(
-			<ConnectGA4CTAWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
+			<WidgetWithComponentProps />,
 			{
 				registry,
 			}
 		);
 		await waitForRegistry();
-		expect( container ).toHaveTextContent( 'NULL' );
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should render if widget is not dismissed, user input is completed, GA4 is not connected, and at least 3 analytics dependant metrics are registered', async () => {
@@ -197,7 +144,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 		} );
 
 		const { container, getByRole, waitForRegistry } = render(
-			<ConnectGA4CTAWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
+			<WidgetWithComponentProps />,
 			{
 				registry,
 			}
