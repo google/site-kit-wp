@@ -221,6 +221,17 @@ function observeConsoleLogging() {
 			return;
 		}
 
+		// WordPress 6.3 moved the editor into an iframe and warns when
+		// when styles are added incorrectly.
+		// See https://github.com/WordPress/gutenberg/blob/5977e3d60b7aea6e22d4a452f7525d3f140c37b6/packages/block-editor/src/components/iframe/index.js#L170
+		// Here we ignore core those from core themes in case we add our own styles
+		// here in the future.
+		if (
+			text.match( /^twenty[a-z-]+ was added to the iframe incorrectly/ )
+		) {
+			return;
+		}
+
 		let logFunction = OBSERVED_CONSOLE_MESSAGE_TYPES[ type ];
 
 		// At this point, any unexpected message will result in a test failure.
