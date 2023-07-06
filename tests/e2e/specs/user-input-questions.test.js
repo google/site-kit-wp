@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { set } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { visitAdminPage } from '@wordpress/e2e-test-utils';
@@ -37,6 +42,8 @@ import {
 	setupAnalytics,
 	setupAnalytics4,
 } from '../utils';
+import { getAnalytics4MockResponse } from '../../../assets/js/modules/analytics-4/utils/data-mock';
+import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
@@ -95,13 +102,50 @@ describe( 'User Input Settings', () => {
 		);
 	}
 
+	function getMultiDimensionalObjectFromURLSearchParams( url ) {
+		const params = Object.fromEntries(
+			new URL( url ).searchParams.entries()
+		);
+		return Object.entries( params ).reduce( ( acc, [ key, value ] ) => {
+			set( acc, key, value );
+			return acc;
+		}, {} );
+	}
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 
-			if ( url.match( '/google-site-kit/v1/modules' ) ) {
+			// Provide mock data for Analytics 4 and Search Console requests to ensure they are not in the "gathering data" state.
+			if (
+				url.match(
+					'/wp-json/google-site-kit/v1/modules/analytics-4/data/report?'
+				)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						getAnalytics4MockResponse(
+							getMultiDimensionalObjectFromURLSearchParams( url )
+						)
+					),
+				} );
+			} else if (
+				url.match(
+					'/wp-json/google-site-kit/v1/modules/search-console/data/searchanalytics?'
+				)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						getSearchConsoleMockResponse(
+							getMultiDimensionalObjectFromURLSearchParams( url )
+						)
+					),
+				} );
+			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {
 				request.continue();
