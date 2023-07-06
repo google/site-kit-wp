@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import {
-	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -29,7 +28,7 @@ import {
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/default-contexts';
-import { provideKeyMetrics, provideModules } from '../../../../tests/js/utils';
+import { provideKeyMetrics } from '../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
@@ -52,17 +51,6 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-				global._googlesitekitUserData.isUserInputCompleted = true;
-
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: false,
-						connected: false,
-					},
-				] );
-
 				const keyMetricWidgets = [
 					KM_ANALYTICS_LOYAL_VISITORS,
 					KM_ANALYTICS_NEW_VISITORS,
