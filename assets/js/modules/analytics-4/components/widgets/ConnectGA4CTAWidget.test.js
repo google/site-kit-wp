@@ -27,7 +27,7 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '../../googlesitekit/datastore/user/constants';
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	render,
 	createTestRegistry,
@@ -36,10 +36,10 @@ import {
 	provideUserCapabilities,
 	provideModules,
 	provideWidgetRegistrations,
-} from '../../../../tests/js/test-utils';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
-import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/default-contexts';
+} from '../../../../../../tests/js/test-utils';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../../googlesitekit/widgets/default-areas';
+import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../../../googlesitekit/widgets/default-contexts';
 
 describe( 'ConnectGA4CTAWidget', () => {
 	let registry;

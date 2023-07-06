@@ -24,15 +24,15 @@ import {
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-} from '../../googlesitekit/datastore/user/constants';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
-import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/default-contexts';
+} from '../../../../googlesitekit/datastore/user/constants';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../../googlesitekit/widgets/default-areas';
+import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../../../googlesitekit/widgets/default-contexts';
 import {
 	provideKeyMetrics,
 	provideWidgetRegistrations,
-} from '../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+} from '../../../../../../tests/js/utils';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

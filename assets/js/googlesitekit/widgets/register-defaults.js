@@ -27,14 +27,7 @@ import { __ } from '@wordpress/i18n';
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
-import {
-	CORE_USER,
-	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
-} from '../datastore/user/constants';
-import { CORE_MODULES } from '../modules/datastore/constants';
-import { isFeatureEnabled } from '../../features';
 import { KeyMetricsSetupCTAWidget } from '../../components/KeyMetrics';
-import ConnectGA4CTAWidget from '../../components/KeyMetrics/ConnectGA4CTAWidget';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -240,40 +233,4 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
-
-	if ( isFeatureEnabled( 'userInput' ) ) {
-		widgetsAPI.registerWidget(
-			'keyMetricsConnectGA4CTA',
-			{
-				Component: ConnectGA4CTAWidget,
-				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
-				priority: 1,
-				wrapWidget: false,
-				modules: [ 'analytics-4' ],
-				isActive: ( select ) => {
-					const isCTADismissed = select( CORE_USER ).isItemDismissed(
-						KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
-					);
-					const isUserInputCompleted =
-						select( CORE_USER ).isUserInputCompleted();
-					const isGA4Connected =
-						select( CORE_MODULES ).isModuleConnected(
-							'analytics-4'
-						);
-
-					return (
-						! [
-							isCTADismissed,
-							isUserInputCompleted,
-							isGA4Connected,
-						].includes( undefined ) &&
-						! isCTADismissed &&
-						isUserInputCompleted &&
-						! isGA4Connected
-					);
-				},
-			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-	}
 }

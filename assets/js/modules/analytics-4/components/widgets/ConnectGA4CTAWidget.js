@@ -27,26 +27,24 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
-import KeyMetricsCTAContent from './KeyMetricsCTAContent';
-import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import {
-	CORE_USER,
-	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
-} from '../../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+import KeyMetricsCTAContent from '../../../../components/KeyMetrics/KeyMetricsCTAContent';
+import KeyMetricsCTAFooter from '../../../../components/KeyMetrics/KeyMetricsCTAFooter';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../../googlesitekit/widgets/default-areas';
 import {
 	FORM_SETUP,
 	MODULES_ANALYTICS,
-} from '../../modules/analytics/datastore/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
-import useCompleteModuleActivationCallback from '../../hooks/useCompleteModuleActivationCallback';
-import { useDebounce } from '../../hooks/useDebounce';
-import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
+} from '../../../../modules/analytics/datastore/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
+import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
+import useCompleteModuleActivationCallback from '../../../../hooks/useCompleteModuleActivationCallback';
+import { useDebounce } from '../../../../hooks/useDebounce';
+import { snapshotAllStores } from '../../../../googlesitekit/data/create-snapshot-store';
 const { useSelect, useDispatch } = Data;
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {

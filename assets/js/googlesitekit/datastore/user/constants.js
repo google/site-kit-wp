@@ -71,6 +71,3 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 ];
-
-export const KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY =
-	'key-metrics-connect-ga4-cta-widget';
