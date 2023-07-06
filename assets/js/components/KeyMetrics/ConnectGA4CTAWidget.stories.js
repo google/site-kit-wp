@@ -45,7 +45,6 @@ export const Default = Template.bind( {} );
 Default.storyName = 'ConnectGA4CTAWidget';
 Default.scenario = {
 	label: 'KeyMetrics/ConnectGA4CTAWidget',
-	delay: 250,
 };
 
 export default {

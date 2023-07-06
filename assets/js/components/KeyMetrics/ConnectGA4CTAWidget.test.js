@@ -64,7 +64,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 		] );
 	} );
 
-	it( 'should not render unless at least 3 analytics dependant metrics are registered', async () => {
+	it( 'should not render unless at least 3 analytics dependant metrics are chosen to be displayed', async () => {
 		const keyMetricWidgets = {
 			[ KM_ANALYTICS_LOYAL_VISITORS ]: { modules: [ 'analytics-4' ] },
 			[ KM_ANALYTICS_NEW_VISITORS ]: { modules: [ 'analytics-4' ] },
@@ -99,7 +99,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render if widget is not dismissed, user input is completed, GA4 is not connected, and at least 3 analytics dependant metrics are registered', async () => {
+	it( 'should render if widget is not dismissed, user input is completed, GA4 is not connected, and at least 3 analytics dependant metrics are chosen to be displayed', async () => {
 		const keyMetricWidgets = [
 			KM_ANALYTICS_LOYAL_VISITORS,
 			KM_ANALYTICS_NEW_VISITORS,

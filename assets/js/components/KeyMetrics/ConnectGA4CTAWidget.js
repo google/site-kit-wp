@@ -86,13 +86,16 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 			true
 		)
 	);
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
-	);
+	const connectGA4URL = useSelect( ( select ) => {
+		const settingsURL = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-settings'
+		);
+
+		return `${ settingsURL }#connected-services/analytics/edit`;
+	} );
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
-	const connectGA4URL = `${ settingsURL }#connected-services/analytics/edit`;
 	const isNavigatingToGA4URL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( connectGA4URL )
 	);
@@ -122,17 +125,17 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 			await snapshotAllStores();
 
-			navigateTo( `${ settingsURL }#connected-services/analytics/edit` );
+			navigateTo( connectGA4URL );
 		}
 	}, [
 		activateAnalytics,
 		completeAnalyticsActivation,
+		connectGA4URL,
 		isAnalyticsActive,
 		isAnalyticsConnected,
 		isGA4Connected,
 		navigateTo,
 		setValues,
-		settingsURL,
 	] );
 
 	const [ inProgress, setInProgress ] = useState( false );
@@ -192,6 +195,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 					<SpinnerButton
 						onClick={ handleCTAClick }
 						isSaving={ inProgress }
+						disabled={ inProgress }
 					>
 						{ __( 'Connect Google Analytics', 'google-site-kit' ) }
 					</SpinnerButton>
