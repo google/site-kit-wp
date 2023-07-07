@@ -41,8 +41,8 @@ $enqueue = function () {
 	wp_enqueue_script( 'googlesitekit-e2e-api-fetch' );
 	wp_enqueue_script( 'googlesitekit-e2e-redux-logger' );
 };
-// Site Kit registers its assets on priority 10.
+// Site Kit registers its assets on priority 10 (admin bar on 40).
 // These are hooked after to avoid enqueuing before registered.
-add_action( 'wp_enqueue_scripts', $enqueue, 20 );
-add_action( 'admin_enqueue_scripts', $enqueue, 20 );
+add_action( 'wp_enqueue_scripts', $enqueue, 99 );
+add_action( 'admin_enqueue_scripts', $enqueue, 99 );
 unset( $enqueue );
