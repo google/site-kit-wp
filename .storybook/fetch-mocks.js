@@ -31,7 +31,7 @@ export function bootstrapFetchMocks() {
 }
 
 export function fetchMockGetModules() {
-	fetchMock.get( /\/google-site-kit\/v1\/core\/modules\/data\/list/, {
+	fetchMock.get( new RegExp( '/google-site-kit/v1/core/modules/data/list' ), {
 		body: [],
 		status: 200,
 	} );
@@ -39,7 +39,7 @@ export function fetchMockGetModules() {
 
 export function fetchMockSaveSettings() {
 	fetchMock.post(
-		/\/google-site-kit\/v1\/modules\/[\w-]+\/data\/settings/,
+		new RegExp( '/google-site-kit/v1/modules/[\\w-]+/data/settings' ),
 		( url, opts ) => {
 			const { data } = JSON.parse( opts.body );
 			return {
@@ -52,7 +52,7 @@ export function fetchMockSaveSettings() {
 
 export function fetchMockSaveDataAvailable() {
 	fetchMock.post(
-		/\/google-site-kit\/v1\/modules\/[\w-]+\/data\/data-available/,
+		new RegExp( '/google-site-kit/v1/modules/[\\w-]+/data/data-available' ),
 		() => {
 			return {
 				status: 200,
