@@ -26,7 +26,7 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { provideKeyMetrics } from '../../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/utils';
+import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';

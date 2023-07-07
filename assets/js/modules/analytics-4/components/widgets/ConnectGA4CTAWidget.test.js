@@ -36,7 +36,7 @@ import {
 	provideUserCapabilities,
 	provideModules,
 } from '../../../../../../tests/js/test-utils';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/utils';
+import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 
 describe( 'ConnectGA4CTAWidget', () => {
