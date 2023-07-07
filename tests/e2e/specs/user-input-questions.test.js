@@ -122,7 +122,7 @@ describe( 'User Input Settings', () => {
 			// Provide mock data for Analytics 4 and Search Console requests to ensure they are not in the "gathering data" state.
 			if (
 				url.match(
-					'/wp-json/google-site-kit/v1/modules/analytics-4/data/report?'
+					'/google-site-kit/v1/modules/analytics-4/data/report?'
 				)
 			) {
 				request.respond( {
@@ -136,7 +136,7 @@ describe( 'User Input Settings', () => {
 				} );
 			} else if (
 				url.match(
-					'/wp-json/google-site-kit/v1/modules/search-console/data/searchanalytics?'
+					'/google-site-kit/v1/modules/search-console/data/searchanalytics?'
 				)
 			) {
 				request.respond( {
