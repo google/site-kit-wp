@@ -131,7 +131,10 @@ class Analytics_4Test extends TestCase {
 
 		// Adding required scopes.
 		$this->assertEquals(
-			$this->analytics->get_scopes(),
+			array_merge(
+				$this->analytics->get_scopes(),
+				array( 'https://www.googleapis.com/auth/tagmanager.readonly' )
+			),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
 	}
