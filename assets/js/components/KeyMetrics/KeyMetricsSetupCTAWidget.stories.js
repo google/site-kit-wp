@@ -19,9 +19,17 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import {
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { getSearchConsoleMockResponse } from '../../modules/search-console/util/data-mock';
+import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -29,6 +37,19 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 )( KeyMetricsSetupCTAWidget );
 
 const Template = () => <WidgetWithComponentProps />;
+
+const searchConsoleReportOptions = {
+	dimensions: 'date',
+	startDate: '2020-07-14',
+	endDate: '2020-09-07',
+};
+
+const analytics4ReportOptions = {
+	dimensions: [ 'date' ],
+	metrics: [ { name: 'totalUsers' } ],
+	startDate: '2020-08-11',
+	endDate: '2020-09-07',
+};
 
 export const Default = Template.bind( {} );
 Default.storyName = 'SetupCTAWidget';
@@ -53,6 +74,29 @@ export default {
 						connected: true,
 					},
 				] );
+				provideUserAuthentication( registry );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+
+				// Provide reports to ensure "gathering data" is false for Analytics 4 and Search Console modules.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport(
+						getAnalytics4MockResponse( analytics4ReportOptions ),
+						{
+							options: analytics4ReportOptions,
+						}
+					);
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetReport(
+						getSearchConsoleMockResponse(
+							searchConsoleReportOptions
+						),
+						{
+							options: searchConsoleReportOptions,
+						}
+					);
 			};
 
 			return (
