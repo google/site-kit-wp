@@ -1084,7 +1084,7 @@ final class Assets {
 		if (
 			$product instanceof WP_Post_Type &&
 			$product->public &&
-			! empty( $product->rewrite['with_front'] )
+			! empty( $product->rewrite['slug'] )
 		) {
 			$product_base_paths[] = $product->rewrite['slug'];
 		}
