@@ -28,11 +28,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import UserInputSuccessBannerNotification from '../assets/js/components/notifications/UserInputSuccessBannerNotification';
 import BannerNotification from '../assets/js/components/notifications/BannerNotification';
-import UserInputPromptBannerNotification from '../assets/js/components/notifications/UserInputPromptBannerNotification';
-import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import AwardSVG from '../assets/svg/graphics/award.svg';
 
 storiesOf( 'Global/Notifications', module )
@@ -165,26 +162,6 @@ storiesOf( 'Global/Notifications', module )
 				pageIndex="First detected: 2/13/18"
 			/>
 		),
-		{
-			padding: 0,
-		}
-	)
-	.add(
-		'User Input Prompt Notification',
-		() => {
-			const setupRegistry = ( registry ) => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveIsUserInputCompleted( false );
-				provideSiteInfo( registry );
-			};
-
-			return (
-				<WithTestRegistry callback={ setupRegistry }>
-					<UserInputPromptBannerNotification />
-				</WithTestRegistry>
-			);
-		},
 		{
 			padding: 0,
 		}

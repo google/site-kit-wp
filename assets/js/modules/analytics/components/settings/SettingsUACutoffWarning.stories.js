@@ -32,6 +32,11 @@ Default.storyName = 'Default';
 Default.parameters = {
 	features: [ 'ga4Reporting' ],
 };
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-01' );
+	},
+};
 Default.scenario = {
 	label: 'Modules/Analytics/Components/UACutoffWarning/Default',
 };
