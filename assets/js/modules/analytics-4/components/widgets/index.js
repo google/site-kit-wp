@@ -17,6 +17,7 @@
  */
 
 export { default as ConnectGA4CTATileWidget } from './ConnectGA4CTATileWidget';
+export { default as ConnectGA4CTAWidget } from './ConnectGA4CTAWidget';
 export { default as EngagedTrafficSourceWidget } from './EngagedTrafficSourceWidget';
 export { default as LoyalVisitorsWidget } from './LoyalVisitorsWidget';
 export { default as NewVisitorsWidget } from './NewVisitorsWidget';
@@ -26,4 +27,3 @@ export { default as TopCitiesWidget } from './TopCitiesWidget';
 export { default as TopCountriesWidget } from './TopCountriesWidget';
 export { default as TopTrafficSourceWidget } from './TopTrafficSourceWidget';
 export { default as TopConvertingTrafficSourceWidget } from './TopConvertingTrafficSourceWidget';
-export { default as ConnectGA4CTAWidget } from './ConnectGA4CTAWidget';
