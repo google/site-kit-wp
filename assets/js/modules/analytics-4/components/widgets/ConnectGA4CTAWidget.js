@@ -33,18 +33,13 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../../googlesitekit/widgets/default-areas';
-import {
-	FORM_SETUP,
-	MODULES_ANALYTICS,
-} from '../../../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../../../../modules/analytics/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../../../../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../../../../hooks/useDebounce';
-import { snapshotAllStores } from '../../../../googlesitekit/data/create-snapshot-store';
 const { useSelect, useDispatch } = Data;
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
@@ -88,49 +83,23 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 		return `${ settingsURL }#connected-services/analytics/edit`;
 	} );
-	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
-	);
 	const isNavigatingToGA4URL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( connectGA4URL )
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
-	const { setValues } = useDispatch( CORE_FORMS );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const activateAnalytics = useActivateModuleCallback( 'analytics' );
 	const completeAnalyticsActivation =
 		useCompleteModuleActivationCallback( 'analytics' );
 
-	const handleCTAClick = useCallback( async () => {
-		if ( isAnalyticsConnected ) {
-			setValues( FORM_SETUP, {
-				// Pre-enable GA4 controls.
-				enableGA4: true,
-				// Enable tooltip highlighting GA4 property select.
-				enableGA4PropertyTooltip: true,
-			} );
-
-			await snapshotAllStores();
-
-			return navigateTo( connectGA4URL );
-		}
-
+	const handleCTAClick = useCallback( () => {
 		if ( isAnalyticsActive ) {
 			return completeAnalyticsActivation();
 		}
 
 		activateAnalytics();
-	}, [
-		activateAnalytics,
-		completeAnalyticsActivation,
-		connectGA4URL,
-		isAnalyticsActive,
-		isAnalyticsConnected,
-		navigateTo,
-		setValues,
-	] );
+	}, [ activateAnalytics, completeAnalyticsActivation, isAnalyticsActive ] );
 
 	const [ inProgress, setInProgress ] = useState( false );
 
