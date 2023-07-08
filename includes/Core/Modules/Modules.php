@@ -643,11 +643,11 @@ final class Modules {
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_module_connected( $slug ) {
-		try {
-			$module = $this->get_module( $slug );
-		} catch ( Exception $e ) {
+		if ( ! $this->is_module_active( $slug ) ) {
 			return false;
 		}
+
+		$module = $this->get_module( $slug );
 
 		// TODO: Remove this when UA is sunset.
 		// Consider UA to be connected if GA4 is connected.
