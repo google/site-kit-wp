@@ -26,8 +26,7 @@ import { _x, __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { Select, Option } from '../../../../material-components';
+import { ProgressBar, Select, Option } from 'googlesitekit-components';
 import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';

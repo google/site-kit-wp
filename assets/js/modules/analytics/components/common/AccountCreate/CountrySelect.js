@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, Option } from '../../../../../material-components';
+import { Select, Option } from 'googlesitekit-components';
 import {
 	allCountries,
 	countriesByCode,

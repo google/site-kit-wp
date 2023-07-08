@@ -40,8 +40,8 @@ import {
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
 } from '../../../datastore/constants';
+import { Select, Option } from 'googlesitekit-components';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import { Select, Option } from '../../../../../material-components';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch } = Data;

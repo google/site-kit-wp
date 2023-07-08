@@ -36,8 +36,8 @@ import {
 	MODULES_TAGMANAGER,
 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { Select, Option } from 'googlesitekit-components';
 import ContainerSelect from './ContainerSelect';
-import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;

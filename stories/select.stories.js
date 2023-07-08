@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, Option } from '../assets/js/material-components';
+import { Select, Option } from 'googlesitekit-components';
 
 storiesOf( 'Global', module ).add(
 	'Selects',
