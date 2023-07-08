@@ -869,17 +869,17 @@ final class Modules {
 	}
 
 	/**
-	 * Gets the shareable active modules.
+	 * Gets the shareable connected modules.
 	 *
 	 * @since 1.50.0
 	 *
 	 * @return array Shareable modules as $slug => $module pairs.
 	 */
 	public function get_shareable_modules() {
-		$all_active_modules = $this->get_active_modules();
+		$all_connected_modules = $this->get_connected_modules();
 
 		return array_filter(
-			$all_active_modules,
+			$all_connected_modules,
 			function( Module $module ) {
 				return $module->is_shareable();
 			}
@@ -1017,5 +1017,37 @@ final class Modules {
 	 */
 	public function delete_dashboard_sharing_settings() {
 		return $this->options->delete( Module_Sharing_Settings::OPTION );
+	}
+
+	/**
+	 * Gets the connected modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Connected modules as $slug => $module pairs.
+	 */
+	public function get_connected_modules() {
+		$modules = $this->get_available_modules();
+
+		return array_filter(
+			$modules,
+			function( Module $module ) {
+				return $this->is_module_connected( $module->slug );
+			}
+		);
+	}
+
+	/**
+	 * Checks whether the module identified by the given slug is shareable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Unique module slug.
+	 * @return bool True if module is shareable, false otherwise.
+	 */
+	public function is_module_shareable( $slug ) {
+		$modules = $this->get_shareable_modules();
+
+		return isset( $modules[ $slug ] );
 	}
 }
