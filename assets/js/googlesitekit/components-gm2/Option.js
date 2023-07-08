@@ -1,7 +1,7 @@
 /**
- * Public components entrypoint.
+ * Option component.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,32 +17,10 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import Components from './googlesitekit/components-gm2';
+import { Option as MaterialOption } from '@material/react-select';
 
-if ( typeof global.googlesitekit === 'undefined' ) {
-	global.googlesitekit = {};
+export default function Option( props ) {
+	return <MaterialOption { ...props } />;
 }
-
-global.googlesitekit.components = Components;
-
-export const {
-	Button,
-	Checkbox,
-	Chip,
-	CircularProgress,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogFooter,
-	Menu,
-	Option,
-	ProgressBar,
-	Radio,
-	Select,
-	SpinnerButton,
-	Switch,
-	TextField,
-	Tooltip,
-} = Components;
