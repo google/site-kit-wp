@@ -301,6 +301,12 @@ class ModulesTest extends TestCase {
 	public function test_is_module_connected_with_ga4_reporting() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
+		// A module being active is a pre-requisite for it to be connected.
+		update_option(
+			Modules::OPTION_ACTIVE_MODULES,
+			array( 'analytics', 'analytics-4' )
+		);
+
 		// Ensure the method returns false when the slug is not `analytics`
 		// and the test module (analytics-4) is not connected.
 		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
