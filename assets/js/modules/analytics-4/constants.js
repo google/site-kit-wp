@@ -29,3 +29,6 @@ export const REPORT_ARGS_SELECTED_METRIC_KEY = '_r.explorerCard..selmet';
 export const REPORT_ARGS_SELECTED_DIMENSION_KEY = '_r.explorerCard..seldim';
 export const REPORT_ARGS_DATA_FILTERS_KEY = '_r..dataFilters';
 export const REPORT_ARGS_NAV_KEY = '_r..nav';
+
+export const KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY =
+	'key-metrics-connect-ga4-cta-widget';

@@ -22,12 +22,23 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
+import Link from '../Link';
+import KeyMetricsCTAContent from './KeyMetricsCTAContent';
+import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { useFeature } from '../../hooks/useFeature';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
@@ -36,12 +47,14 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
-
 	const searchConsoleModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'search-console' )
 	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const ctaLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
 
 	if (
@@ -55,8 +68,46 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	return (
-		<Widget noPadding>
-			<div>TODO: UI for KeyMetricsSetupCTAWidget</div>
+		<Widget
+			noPadding
+			Footer={ () => {
+				/*
+				The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
+				In the future, it will be fleshed out with the logic to dismiss the widget.
+				*/
+				return <KeyMetricsCTAFooter onActionClick={ () => {} } />;
+			} }
+		>
+			<KeyMetricsCTAContent
+				title={ __(
+					'Get metrics and suggestions tailored to your specific goals',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Answer 3 questions to show relevant stats for your site',
+					'google-site-kit'
+				) }
+				actions={
+					<Fragment>
+						<Button
+							className="googlesitekit-key-metrics-cta-button"
+							href={ ctaLink }
+						>
+							{ __( 'Get tailored metrics', 'google-site-kit' ) }
+						</Button>
+						{ /*
+							The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
+							In the future, it will also serve the purpose of adding a track event.
+						*/ }
+						<Link onClick={ () => {} }>
+							{ __(
+								'I’ll pick metrics myself',
+								'google-site-kit'
+							) }
+						</Link>
+					</Fragment>
+				}
+			/>
 		</Widget>
 	);
 }
