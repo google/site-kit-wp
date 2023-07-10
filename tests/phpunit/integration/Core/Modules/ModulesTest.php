@@ -280,7 +280,7 @@ class ModulesTest extends TestCase {
 
 		$this->assertArrayHasKey( $inactive_module_slug, $modules->get_available_modules() );
 
-		// Update the Adsense settings to be connected.
+		// Update the AdSense settings to be connected.
 		update_option(
 			'googlesitekit_adsense_settings',
 			array(
@@ -614,7 +614,7 @@ class ModulesTest extends TestCase {
 			$shareable_modules
 		);
 
-		// Update the Adsense settings to be connected.
+		// Update the AdSense settings to be connected.
 		update_option(
 			'googlesitekit_adsense_settings',
 			array(

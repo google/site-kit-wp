@@ -541,6 +541,24 @@ final class Modules {
 	}
 
 	/**
+	 * Gets the connected modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Connected modules as $slug => $module pairs.
+	 */
+	public function get_connected_modules() {
+		$modules = $this->get_available_modules();
+
+		return array_filter(
+			$modules,
+			function( Module $module ) {
+				return $this->is_module_connected( $module->slug );
+			}
+		);
+	}
+
+	/**
 	 * Gets the module identified by the given slug.
 	 *
 	 * @since 1.0.0
@@ -661,6 +679,20 @@ final class Modules {
 		}
 
 		return (bool) $module->is_connected();
+	}
+
+	/**
+	 * Checks whether the module identified by the given slug is shareable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Unique module slug.
+	 * @return bool True if module is shareable, false otherwise.
+	 */
+	public function is_module_shareable( $slug ) {
+		$modules = $this->get_shareable_modules();
+
+		return isset( $modules[ $slug ] );
 	}
 
 	/**
@@ -872,6 +904,7 @@ final class Modules {
 	 * Gets the shareable connected modules.
 	 *
 	 * @since 1.50.0
+	 * @since n.e.x.t Updated to only return connected shareable modules.
 	 *
 	 * @return array Shareable modules as $slug => $module pairs.
 	 */
@@ -1017,37 +1050,5 @@ final class Modules {
 	 */
 	public function delete_dashboard_sharing_settings() {
 		return $this->options->delete( Module_Sharing_Settings::OPTION );
-	}
-
-	/**
-	 * Gets the connected modules.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array Connected modules as $slug => $module pairs.
-	 */
-	public function get_connected_modules() {
-		$modules = $this->get_available_modules();
-
-		return array_filter(
-			$modules,
-			function( Module $module ) {
-				return $this->is_module_connected( $module->slug );
-			}
-		);
-	}
-
-	/**
-	 * Checks whether the module identified by the given slug is shareable.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $slug Unique module slug.
-	 * @return bool True if module is shareable, false otherwise.
-	 */
-	public function is_module_shareable( $slug ) {
-		$modules = $this->get_shareable_modules();
-
-		return isset( $modules[ $slug ] );
 	}
 }
