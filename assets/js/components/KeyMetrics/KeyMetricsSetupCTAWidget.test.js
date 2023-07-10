@@ -118,7 +118,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when SC is in the gathering data state', async () => {
-		global._googlesitekitUserData.isUserInputCompleted = false;
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -157,7 +156,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when GA4 is in the gathering data state', async () => {
-		global._googlesitekitUserData.isUserInputCompleted = false;
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -208,7 +206,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does render the CTA when SC and GA4 are both connected', async () => {
-		global._googlesitekitUserData.isUserInputCompleted = false;
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
