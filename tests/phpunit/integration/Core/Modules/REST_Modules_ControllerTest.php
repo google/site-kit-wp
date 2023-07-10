@@ -578,6 +578,10 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$fake_module_with_data_available = new FakeModule_WithDataAvailable( $this->context );
+
+		// A module being active is a pre-requisite for it to be connected.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
+
 		$this->set_available_modules( array( $fake_module_with_data_available ) );
 		$this->assertEmpty( $fake_module_with_data_available->is_data_available() );
 
