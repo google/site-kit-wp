@@ -19,12 +19,7 @@ import {
 	MODULES_SEARCH_CONSOLE,
 } from '../../assets/js/modules/search-console/datastore/constants';
 
-function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
-	invariant(
-		isGatheringData !== true,
-		"Analytics 4 gathering data's `true` state relies on the current authentication and selected property state so is unreliable to set from a helper, and therefore unsupported."
-	);
-
+export function getAnalytics4HasZeroDataReportOptions( registry ) {
 	const { startDate, endDate } = registry
 		.select( CORE_USER )
 		.getDateRangeDates( {
@@ -42,6 +37,17 @@ function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
 	if ( url ) {
 		options.url = url;
 	}
+
+	return options;
+}
+
+function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
+	invariant(
+		isGatheringData !== true,
+		"Analytics 4 gathering data's `true` state relies on the current authentication and selected property state so is unreliable to set from a helper, and therefore unsupported."
+	);
+
+	const options = getAnalytics4HasZeroDataReportOptions( registry );
 
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )

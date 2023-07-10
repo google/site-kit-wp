@@ -22,9 +22,6 @@
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
-import { getSearchConsoleMockResponse } from '../../modules/search-console/util/data-mock';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	render,
@@ -32,7 +29,9 @@ import {
 	provideModules,
 	provideSiteInfo,
 	muteFetch,
+	provideGatheringDataState,
 	provideUserAuthentication,
+	getAnalytics4HasZeroDataReportOptions,
 } from '../../../../tests/js/test-utils';
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
@@ -40,19 +39,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 	const { Widget, WidgetNull } =
 		getWidgetComponentProps( 'keyMetricsSetupCTA' );
-
-	const searchConsoleReportOptions = {
-		dimensions: 'date',
-		startDate: '2020-07-14',
-		endDate: '2020-09-07',
-	};
-
-	const analytics4ReportOptions = {
-		dimensions: [ 'date' ],
-		metrics: [ { name: 'totalUsers' } ],
-		startDate: '2020-08-11',
-		endDate: '2020-09-07',
-	};
 
 	beforeEach( async () => {
 		registry = createTestRegistry();
@@ -117,15 +103,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		// Provide a report to ensure "gathering data" is false for the Search Console module.
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveGetReport(
-				getSearchConsoleMockResponse( searchConsoleReportOptions ),
-				{
-					options: searchConsoleReportOptions,
-				}
-			);
+		provideGatheringDataState( registry, { 'search-console': false } );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -160,15 +138,9 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		// Provide reports to ensure "gathering data" is false for Analytics 4 but true for the Search Console module.
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				getAnalytics4MockResponse( analytics4ReportOptions ),
-				{ options: analytics4ReportOptions }
-			);
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
-			options: searchConsoleReportOptions,
+		provideGatheringDataState( registry, {
+			'analytics-4': false,
+			'search-console': true,
 		} );
 
 		const { container, waitForRegistry } = render(
@@ -205,20 +177,21 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		// Explicitly set user authentication to false to ensure "gathering data" can return true for the Analytics 4 module.
+		provideGatheringDataState( registry, {
+			'search-console': false,
+		} );
+
+		// The provideGatheringDataState() helper cannot handle the true case for Analytics 4, due to its dependence on additional state
+		// that may vary between test scenarios. Therefore, we must manually set the state here. First, we set user authentication to false
+		// to ensure "gathering data" can return true for the Analytics 4 module.
 		provideUserAuthentication( registry, { authenticated: false } );
 
-		// Provide reports to ensure "gathering data" is true for Analytics 4 but false for the Search Console module.
+		// Then provide an empty report to ensure "gathering data" is true for Analytics 4.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( {}, { options: analytics4ReportOptions } );
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveGetReport(
-				getSearchConsoleMockResponse( searchConsoleReportOptions ),
-				{
-					options: searchConsoleReportOptions,
-				}
+				{},
+				{ options: getAnalytics4HasZeroDataReportOptions( registry ) }
 			);
 
 		const { container, waitForRegistry } = render(
@@ -255,23 +228,10 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		// Provide reports to ensure "gathering data" is false for Analytics 4 and Search Console modules.
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				getAnalytics4MockResponse( analytics4ReportOptions ),
-				{
-					options: analytics4ReportOptions,
-				}
-			);
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveGetReport(
-				getSearchConsoleMockResponse( searchConsoleReportOptions ),
-				{
-					options: searchConsoleReportOptions,
-				}
-			);
+		provideGatheringDataState( registry, {
+			'analytics-4': false,
+			'search-console': false,
+		} );
 
 		const { container, getByRole, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
