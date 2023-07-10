@@ -38,8 +38,8 @@ import {
 /**
  * Internal dependencies
  */
+import { Select, Tooltip } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { Tooltip, Select } from 'googlesitekit-components';
 import ModuleIcon from '../../ModuleIcon';
 import UserRoleSelect from '../UserRoleSelect';
 import useViewContext from '../../../hooks/useViewContext';

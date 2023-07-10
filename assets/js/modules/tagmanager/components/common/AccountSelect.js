@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar, Select, Option } from 'googlesitekit-components';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';

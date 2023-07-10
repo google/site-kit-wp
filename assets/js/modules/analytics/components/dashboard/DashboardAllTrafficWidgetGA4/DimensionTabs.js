@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
@@ -40,7 +41,6 @@ import {
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
 } from '../../../datastore/constants';
-import { Select, Option } from 'googlesitekit-components';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';

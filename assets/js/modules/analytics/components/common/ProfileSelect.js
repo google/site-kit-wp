@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar, Select, Option } from 'googlesitekit-components';
 import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import { isValidPropertySelection, isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
