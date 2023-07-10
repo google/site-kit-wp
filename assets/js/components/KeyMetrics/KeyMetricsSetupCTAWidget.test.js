@@ -32,6 +32,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	muteFetch,
+	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
@@ -116,7 +117,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		// Provide reports to ensure "gathering data" is false for the Search Console module.
+		// Provide a report to ensure "gathering data" is false for the Search Console module.
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveGetReport(
@@ -137,6 +138,101 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			}
 		);
 		await waitForRegistry();
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'does not render when SC is in the gathering data state', async () => {
+		global._googlesitekitUserData.isUserInputCompleted = false;
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		// Provide reports to ensure "gathering data" is false for Analytics 4 but true for the Search Console module.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				getAnalytics4MockResponse( analytics4ReportOptions ),
+				{ options: analytics4ReportOptions }
+			);
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+			options: searchConsoleReportOptions,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+				features: [ 'userInput' ],
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'does not render when GA4 is in the gathering data state', async () => {
+		global._googlesitekitUserData.isUserInputCompleted = false;
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		// Explicitly set user authentication to false to ensure "gathering data" can return true for the Analytics 4 module.
+		provideUserAuthentication( registry, { authenticated: false } );
+
+		// Provide reports to ensure "gathering data" is true for Analytics 4 but false for the Search Console module.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( {}, { options: analytics4ReportOptions } );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveGetReport(
+				getSearchConsoleMockResponse( searchConsoleReportOptions ),
+				{
+					options: searchConsoleReportOptions,
+				}
+			);
+
+		const { container, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+				features: [ 'userInput' ],
+			}
+		);
+		await waitForRegistry();
+
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
