@@ -31,8 +31,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button, ProgressBar, Tab, TabBar } from 'googlesitekit-components';
 import API from 'googlesitekit-api';
+import { Button, ProgressBar, Tab, TabBar } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import Link from '../../../../components/Link';
