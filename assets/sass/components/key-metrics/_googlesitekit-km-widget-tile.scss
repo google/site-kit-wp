@@ -113,5 +113,13 @@
 				font-weight: $fw-medium;
 			}
 		}
+
+		.googlesitekit-km-widget-tile__table-item-text {
+			color: $c-link;
+			font-family: $f-primary;
+			font-size: $fs-label-sm;
+			line-height: 17.16px;
+			margin: 0;
+		}
 	}
 }
