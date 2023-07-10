@@ -109,10 +109,9 @@ function TopCitiesWidget( { Widget, WidgetNull } ) {
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => {
-				const cityValue = fieldValue / totalUsers;
-				return <strong>{ numFmt( cityValue, '%' ) }</strong>;
-			},
+			Component: ( { fieldValue } ) => (
+				<strong>{ numFmt( fieldValue / totalUsers, '%' ) }</strong>
+			),
 		},
 	];
 
