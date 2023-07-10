@@ -129,18 +129,20 @@ const moduleProviderMap = {
  * @param {Object} moduleStates Object keyed by module slug with a boolean value indicating whether the module should be gathering data.
  */
 export function provideGatheringDataState( registry, moduleStates ) {
-	Object.entries( moduleStates ).forEach( ( [ module, isGatheringData ] ) => {
-		invariant(
-			isGatheringData !== undefined,
-			'Setting an undefined gathering data state is currently unsupported.'
-		);
+	Object.entries( moduleStates ).forEach(
+		( [ moduleSlug, isGatheringData ] ) => {
+			invariant(
+				isGatheringData !== undefined,
+				'Setting an undefined gathering data state is currently unsupported.'
+			);
 
-		const provideGatheringData = moduleProviderMap[ module ];
+			const provideGatheringData = moduleProviderMap[ moduleSlug ];
 
-		if ( ! provideGatheringData ) {
-			throw new Error( `Unhandled module: ${ module }` );
+			if ( ! provideGatheringData ) {
+				throw new Error( `Unhandled module: ${ moduleSlug }` );
+			}
+
+			provideGatheringData( registry, isGatheringData );
 		}
-
-		provideGatheringData( registry, isGatheringData );
-	} );
+	);
 }
