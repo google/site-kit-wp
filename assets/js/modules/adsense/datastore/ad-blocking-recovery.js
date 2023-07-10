@@ -1,5 +1,5 @@
 /**
- * `modules/adsense` data store: ad-blocking-recovery.
+ * `modules/adsense` data store: Ad Blocking Recovery.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -17,11 +17,30 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { MODULES_ADSENSE } from './constants';
+import { isValidAccountID } from '../util';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { extractExistingTag, getExistingTagURLs } from '../../../util/tag';
+import adBlockingRecoveryTagMatcher from '../util/ad-blocking-recovery-tag-matcher';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createReducer } from '../../../googlesitekit/data/create-reducer';
+
+const { createRegistryControl, createRegistrySelector } = Data;
+
+// Actions
+const FETCH_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
+	'FETCH_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG';
+const RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
+	'RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG';
 
 const fetchSyncAdBlockingRecoveryTagsStore = createFetchStore( {
 	baseName: 'syncAdBlockingRecoveryTags',
@@ -34,7 +53,35 @@ const fetchSyncAdBlockingRecoveryTagsStore = createFetchStore( {
 	},
 } );
 
-const baseActions = {
+const initialState = {
+	existingAdBlockingRecoveryTag: undefined,
+};
+
+const actions = {
+	fetchGetExistingAdBlockingRecoveryTag() {
+		return {
+			payload: {},
+			type: FETCH_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG,
+		};
+	},
+	receiveGetExistingAdBlockingRecoveryTag( existingAdBlockingRecoveryTag ) {
+		invariant(
+			existingAdBlockingRecoveryTag === null ||
+				'string' === typeof existingAdBlockingRecoveryTag,
+			'existingAdBlockingRecoveryTag must be a tag string or null.'
+		);
+
+		return {
+			payload: {
+				existingAdBlockingRecoveryTag: isValidAccountID(
+					existingAdBlockingRecoveryTag
+				)
+					? existingAdBlockingRecoveryTag
+					: null,
+			},
+			type: RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG,
+		};
+	},
 	/**
 	 * Triggers an API request to sync Ad Blocking Recovery and Error Protection tags on the server.
 	 *
@@ -47,8 +94,108 @@ const baseActions = {
 	},
 };
 
+const controls = {
+	[ FETCH_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG ]: createRegistryControl(
+		( registry ) => async () => {
+			const homeURL = registry.select( CORE_SITE ).getHomeURL();
+			const existingTagURLs = await getExistingTagURLs( {
+				homeURL,
+			} );
+
+			for ( const url of existingTagURLs ) {
+				await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
+				const html = registry.select( CORE_SITE ).getHTMLForURL( url );
+				const tagFound = extractExistingTag(
+					html,
+					adBlockingRecoveryTagMatcher
+				);
+				if ( tagFound ) {
+					return tagFound;
+				}
+			}
+
+			return null;
+		}
+	),
+};
+
+const reducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
+		case RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG: {
+			const { existingAdBlockingRecoveryTag } = payload;
+
+			return {
+				...state,
+				existingAdBlockingRecoveryTag,
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
+} );
+
+const resolvers = {
+	*getExistingAdBlockingRecoveryTag() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const existingAdBlockingRecoveryTag = registry
+			.select( MODULES_ADSENSE )
+			.getExistingAdBlockingRecoveryTag();
+
+		if ( existingAdBlockingRecoveryTag === undefined ) {
+			const fetchedAdBlockingRecoveryTag =
+				yield actions.fetchGetExistingAdBlockingRecoveryTag();
+
+			yield actions.receiveGetExistingAdBlockingRecoveryTag(
+				fetchedAdBlockingRecoveryTag
+			);
+		}
+	},
+};
+
+const selectors = {
+	/**
+	 * Gets the existing ad blocking recovery tag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null|undefined)} The existing ad blocking recovery tag `string` if present, `null` if not present, or `undefined` if not loaded yet.
+	 */
+	getExistingAdBlockingRecoveryTag( state ) {
+		return state.existingAdBlockingRecoveryTag;
+	},
+
+	/**
+	 * Checks whether or not an existing ad blocking recovery tag is present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} Boolean if ad blocking recovery tag is present, `undefined` if ad blocking recovery tag presence has not been resolved yet.
+	 */
+	hasExistingAdBlockingRecoveryTag: createRegistrySelector(
+		( select ) => () => {
+			const existingAdBlockingRecoveryTag =
+				select( MODULES_ADSENSE ).getExistingAdBlockingRecoveryTag();
+
+			if ( existingAdBlockingRecoveryTag === undefined ) {
+				return undefined;
+			}
+
+			return !! existingAdBlockingRecoveryTag;
+		}
+	),
+};
+
 const store = Data.combineStores( fetchSyncAdBlockingRecoveryTagsStore, {
-	actions: baseActions,
+	initialState,
+	actions,
+	reducer,
+	controls,
+	resolvers,
+	selectors,
 } );
 
 export default store;

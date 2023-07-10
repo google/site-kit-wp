@@ -43,8 +43,12 @@ import {
 } from '../../util';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { stringToDate } from '../../../../util';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../googlesitekit/constants';
 
-describe( 'AdSenseConnectCTA', () => {
+describe( 'AdBlockingRecoveryWidget', () => {
 	let registry;
 	const referenceDate = '2023-06-22';
 	const timestampThreeWeeksPrior =
@@ -57,8 +61,7 @@ describe( 'AdSenseConnectCTA', () => {
 		useSnippet: false,
 		accountStatus: ACCOUNT_STATUS_READY,
 		siteStatus: SITE_STATUS_READY,
-		adBlockingRecoverySetupStatus:
-			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+		adBlockingRecoverySetupStatus: '',
 	};
 
 	const { Widget, WidgetNull } =
@@ -84,71 +87,90 @@ describe( 'AdSenseConnectCTA', () => {
 	} );
 
 	describe( 'before click', () => {
-		it.each( [
+		const shouldRender = {
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			accountStatus: ACCOUNT_STATUS_READY,
+			siteStatus: SITE_STATUS_READY,
+			adBlockingRecoverySetupStatus: '',
+			isModuleConnected: true,
+			isNotificationDismissed: false,
+			setupCompletedTimestamp: timestampThreeWeeksPrior,
+			existingAdBlockingRecoveryTag: null,
+		};
+		const testData = [
+			[
+				'in view only dashboard',
+				{
+					...shouldRender,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+				},
+			],
 			[
 				'the Adsense module is not connected',
-				ACCOUNT_STATUS_PENDING,
-				SITE_STATUS_READY,
-				'',
-				false,
-				false,
-				timestampThreeWeeksPrior,
+				{
+					...shouldRender,
+					isModuleConnected: false,
+				},
 			],
 			[
 				'notification is dismissed',
-				ACCOUNT_STATUS_PENDING,
-				SITE_STATUS_READY,
-				'',
-				true,
-				true,
-				timestampThreeWeeksPrior,
+				{
+					...shouldRender,
+					isNotificationDismissed: true,
+				},
 			],
 			[
 				'the Adsense account status is not ready',
-				ACCOUNT_STATUS_PENDING,
-				SITE_STATUS_READY,
-				'',
-				true,
-				false,
-				timestampThreeWeeksPrior,
+				{
+					...shouldRender,
+					accountStatus: ACCOUNT_STATUS_PENDING,
+				},
 			],
 			[
 				'the Adsense site status is not ready',
-				ACCOUNT_STATUS_READY,
-				SITE_STATUS_ADDED,
-				'',
-				true,
-				false,
-				timestampThreeWeeksPrior,
+				{
+					...shouldRender,
+					siteStatus: SITE_STATUS_ADDED,
+				},
 			],
 			[
-				'the Ad blocking recovery status is an empty string',
-				ACCOUNT_STATUS_READY,
-				SITE_STATUS_READY,
-				'',
-				true,
-				false,
-				timestampThreeWeeksPrior,
+				'the Ad blocking recovery status is not an empty string',
+				{
+					...shouldRender,
+					adBlockingRecoverySetupStatus:
+						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+				},
 			],
 			[
 				'the setup completed timestamp is less than three weeks',
-				ACCOUNT_STATUS_READY,
-				SITE_STATUS_READY,
-				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
-				true,
-				false,
-				timestampLessThanThreeWeeksPrior,
+				{
+					...shouldRender,
+					setupCompletedTimestamp: timestampLessThanThreeWeeksPrior,
+				},
 			],
-		] )(
+			[
+				'an existing ad blocking recovery tag is detected',
+				{
+					...shouldRender,
+					existingAdBlockingRecoveryTag: 'pub-3467161886473746',
+				},
+			],
+		];
+
+		it.each( testData )(
 			'should not render the widget when %s',
 			(
-				testName,
-				accountStatus,
-				siteStatus,
-				adBlockingRecoverySetupStatus,
-				isModuleConnected,
-				isNotificationDismissed,
-				setupCompletedTimestamp
+				_,
+				{
+					viewContext,
+					accountStatus,
+					siteStatus,
+					adBlockingRecoverySetupStatus,
+					isModuleConnected,
+					isNotificationDismissed,
+					setupCompletedTimestamp,
+					existingAdBlockingRecoveryTag,
+				}
 			) => {
 				provideModules( registry, [
 					{
@@ -166,6 +188,11 @@ describe( 'AdSenseConnectCTA', () => {
 					setupCompletedTimestamp,
 				} );
 				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetExistingAdBlockingRecoveryTag(
+						existingAdBlockingRecoveryTag
+					);
+				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedItems( [
 						...( isNotificationDismissed
@@ -180,6 +207,7 @@ describe( 'AdSenseConnectCTA', () => {
 					/>,
 					{
 						registry,
+						viewContext,
 					}
 				);
 
@@ -191,6 +219,10 @@ describe( 'AdSenseConnectCTA', () => {
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
+
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
 
 			const { container } = render(
 				<AdBlockingRecoveryWidget
@@ -211,6 +243,10 @@ describe( 'AdSenseConnectCTA', () => {
 				...validSettings,
 				setupCompletedTimestamp: timestampThreeWeeksPrior,
 			} );
+
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
 
 			const { container } = render(
 				<AdBlockingRecoveryWidget
@@ -233,6 +269,9 @@ describe( 'AdSenseConnectCTA', () => {
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
 
 			container = render(
 				<div>

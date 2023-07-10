@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Class for AdSense Ad Blocker Recovery Tag.
+ * Class for AdSense Ad blocking recovery Tag.
  *
  * @since 1.104.0
  * @access private
