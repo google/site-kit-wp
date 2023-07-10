@@ -19,6 +19,14 @@ import {
 	MODULES_SEARCH_CONSOLE,
 } from '../../assets/js/modules/search-console/datastore/constants';
 
+/**
+ * Generates report options for the Analytics 4 report used in the zero data check, which is in turn used to determine the gathering data state.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Data registry object.
+ * @return {Object} Report options object.
+ */
 export function getAnalytics4HasZeroDataReportOptions( registry ) {
 	const { startDate, endDate } = registry
 		.select( CORE_USER )
@@ -41,6 +49,14 @@ export function getAnalytics4HasZeroDataReportOptions( registry ) {
 	return options;
 }
 
+/**
+ * Provides the required data to the given registry to ensure the gathering data state is set for the Analytics 4 module.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  registry        Data registry object.
+ * @param {boolean} isGatheringData The desired gathering data state.
+ */
 function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
 	invariant(
 		isGatheringData !== true,
@@ -56,6 +72,14 @@ function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
 		} );
 }
 
+/**
+ * Provides the required data to the given registry to ensure the gathering data state is set for the Search Console module.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  registry        Data registry object.
+ * @param {boolean} isGatheringData The desired gathering data state.
+ */
 function provideSearchConsoleGatheringDataState( registry, isGatheringData ) {
 	const rangeArgs = {
 		compare: true,
@@ -91,6 +115,19 @@ const moduleProviderMap = {
 	'search-console': provideSearchConsoleGatheringDataState,
 };
 
+/**
+ * Provides the required data to the given registry to ensure the gathering data state is set for the specified modules.
+ *
+ * Initially defined to support the Analytics 4 and Search Console modules, with more to be added as needed.
+ *
+ * Setting up Analytics 4 to return `true` for gathering data is unsupported as it relies on the current authentication and selected property state,
+ * making it impractical to set from a helper as these states will differ across test scenarios.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry     Registry to provide the data to.
+ * @param {Object} moduleStates Object keyed by module slug with a boolean value indicating whether the module should be gathering data.
+ */
 export function provideGatheringDataState( registry, moduleStates ) {
 	Object.entries( moduleStates ).forEach( ( [ module, isGatheringData ] ) => {
 		invariant(
