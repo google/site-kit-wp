@@ -25,6 +25,7 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
 import { getSearchConsoleMockResponse } from '../../modules/search-console/util/data-mock';
+import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	render,
 	createTestRegistry,
@@ -35,6 +36,9 @@ import {
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
+
+	const { Widget, WidgetNull } =
+		getWidgetComponentProps( 'keyMetricsSetupCTA' );
 
 	const searchConsoleReportOptions = {
 		dimensions: 'date',
@@ -89,9 +93,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		const Widget = ( { children } ) => <div>{ children }</div>;
-		const WidgetNull = () => <div>NULL</div>;
-
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
 				Widget={ Widget }
@@ -103,7 +104,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			}
 		);
 		await waitForRegistry();
-		expect( container ).toHaveTextContent( 'NULL' );
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'does not render when GA4 is not connected', async () => {
@@ -125,9 +126,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				}
 			);
 
-		const Widget = ( { children } ) => <div>{ children }</div>;
-		const WidgetNull = () => <div>NULL</div>;
-
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
 				Widget={ Widget }
@@ -139,7 +137,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			}
 		);
 		await waitForRegistry();
-		expect( container ).toHaveTextContent( 'NULL' );
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'does render the CTA when SC and GA4 are both connected', async () => {
@@ -178,9 +176,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 					options: searchConsoleReportOptions,
 				}
 			);
-
-		const Widget = ( { children } ) => <div>{ children }</div>;
-		const WidgetNull = () => <div>NULL</div>;
 
 		const { container, getByRole, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
