@@ -99,8 +99,9 @@ export default function Navigation() {
 	} );
 
 	const userInputEnabled = useFeature( 'userInput' );
-	const isKeyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
+	const isKeyMetricsWidgetHidden = useSelect(
+		( select ) =>
+			userInputEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
 	const widgetContextOptions = {
