@@ -25,7 +25,6 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 
@@ -59,9 +58,6 @@ export default {
 					},
 				] );
 				provideUserAuthentication( registry );
-
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-
 				provideGatheringDataState( registry, {
 					'analytics-4': false,
 					'search-console': false,

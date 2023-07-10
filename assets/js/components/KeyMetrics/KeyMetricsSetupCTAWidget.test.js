@@ -49,8 +49,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( true );
 
-		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-
 		fetchMock.getOnce(
 			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
 			{
