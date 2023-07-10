@@ -21,7 +21,6 @@ import Dialog, {
 	DialogContent,
 	DialogFooter,
 } from '@material/react-dialog';
-import Select, { Option } from '@material/react-select';
 
 /**
  * Internal dependencies
@@ -31,8 +30,10 @@ import Checkbox from './Checkbox';
 import Chip from './Chip';
 import CircularProgress from './CircularProgress';
 import Menu from './Menu';
+import Option from './Option';
 import ProgressBar from './ProgressBar';
 import Radio from './Radio';
+import Select from './Select';
 import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
 import TextField from './TextField';
