@@ -110,7 +110,7 @@ function provideSearchConsoleGatheringDataState( registry, isGatheringData ) {
 	} );
 }
 
-const moduleProviderMap = {
+const moduleDataProviderMap = {
 	'analytics-4': provideAnalytics4GatheringDataState,
 	'search-console': provideSearchConsoleGatheringDataState,
 };
@@ -136,7 +136,7 @@ export function provideGatheringDataState( registry, moduleStates ) {
 				'Setting an undefined gathering data state is currently unsupported.'
 			);
 
-			const provideGatheringData = moduleProviderMap[ moduleSlug ];
+			const provideGatheringData = moduleDataProviderMap[ moduleSlug ];
 
 			if ( ! provideGatheringData ) {
 				throw new Error( `Unhandled module: ${ moduleSlug }` );
