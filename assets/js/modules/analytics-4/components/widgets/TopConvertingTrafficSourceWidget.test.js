@@ -34,7 +34,7 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 		KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE
 	);
 
-	it( 'renders correctly with the expected metrics ', async () => {
+	it( 'renders correctly with the expected metrics', async () => {
 		const { container, waitForRegistry } = render(
 			<TopConvertingTrafficSourceWidget
 				Widget={ Widget }
