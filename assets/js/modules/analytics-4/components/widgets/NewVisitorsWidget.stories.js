@@ -102,7 +102,6 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				global._googlesitekitUserData.isUserInputCompleted = false;
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',

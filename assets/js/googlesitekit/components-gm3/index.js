@@ -34,6 +34,8 @@ import Radio from './Radio';
 import Select from './Select';
 import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
+import Tab from './Tab';
+import TabBar from './TabBar';
 import TextField from './TextField';
 import Tooltip from './Tooltip';
 
@@ -53,6 +55,8 @@ const Components = {
 	Select,
 	SpinnerButton,
 	Switch,
+	Tab,
+	TabBar,
 	TextField,
 	Tooltip,
 };

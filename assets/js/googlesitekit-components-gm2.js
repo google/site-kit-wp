@@ -43,6 +43,8 @@ export const {
 	Select,
 	SpinnerButton,
 	Switch,
+	Tab,
+	TabBar,
 	TextField,
 	Tooltip,
 } = Components;

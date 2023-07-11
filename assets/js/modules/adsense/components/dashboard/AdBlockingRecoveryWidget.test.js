@@ -220,6 +220,10 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
 
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
+
 			const { container } = render(
 				<AdBlockingRecoveryWidget
 					Widget={ Widget }
@@ -239,6 +243,10 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				...validSettings,
 				setupCompletedTimestamp: timestampThreeWeeksPrior,
 			} );
+
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
 
 			const { container } = render(
 				<AdBlockingRecoveryWidget

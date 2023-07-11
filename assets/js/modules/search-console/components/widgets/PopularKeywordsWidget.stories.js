@@ -86,7 +86,6 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				global._googlesitekitUserData.isUserInputCompleted = false;
 				provideModules( registry, [
 					{
 						slug: 'search-console',

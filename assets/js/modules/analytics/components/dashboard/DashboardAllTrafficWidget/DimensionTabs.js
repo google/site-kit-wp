@@ -20,8 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import Tab from '@material/react-tab';
-import TabBar from '@material/react-tab-bar';
 
 /**
  * WordPress dependencies
@@ -32,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Option, Select } from 'googlesitekit-components';
+import { Option, Select, Tab, TabBar } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
