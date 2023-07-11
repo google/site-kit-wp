@@ -37,6 +37,7 @@ import Switch from './Switch';
 import Tab from './Tab';
 import TabBar from './TabBar';
 import TextField from './TextField';
+import HelperText from './HelperText';
 import Tooltip from './Tooltip';
 
 const Components = {
@@ -48,6 +49,7 @@ const Components = {
 	DialogTitle,
 	DialogContent,
 	DialogFooter,
+	HelperText,
 	Menu,
 	Option,
 	ProgressBar,

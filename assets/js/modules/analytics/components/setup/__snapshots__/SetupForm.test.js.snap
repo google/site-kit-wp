@@ -588,7 +588,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Transi
                 >
                   <input
                     class="mdc-text-field__input"
-                    id=""
+                    id="googlesitekit-textfield-2"
                     value="All Web Site Data"
                   />
                   <div
@@ -602,7 +602,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Transi
                     >
                       <label
                         class="mdc-floating-label mdc-floating-label--float-above"
-                        for=""
+                        for="googlesitekit-textfield-2"
                         style=""
                       >
                         View Name
@@ -800,7 +800,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is UA 1`] = `
         >
           <input
             class="mdc-text-field__input"
-            id=""
+            id="googlesitekit-textfield-0"
             value="All Web Site Data"
           />
           <div
@@ -814,7 +814,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is UA 1`] = `
             >
               <label
                 class="mdc-floating-label mdc-floating-label--float-above"
-                for=""
+                for="googlesitekit-textfield-0"
                 style=""
               >
                 View Name

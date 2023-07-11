@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import TextField, { HelperText, Input } from '@material/react-text-field';
 import { MDCRipple } from '@material/ripple';
 import { MDCFormField } from '@material/form-field';
 import { MDCRadio } from '@material/radio';
@@ -31,9 +30,6 @@ import Dialog, { DialogContent, DialogFooter } from '@material/react-dialog';
 
 export * from './layout';
 export {
-	TextField,
-	HelperText,
-	Input,
 	MDCRipple,
 	MDCFormField,
 	MDCRadio,
