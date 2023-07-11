@@ -37,6 +37,8 @@ import KeyMetricsCTAContent from './KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
@@ -56,13 +58,25 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
+	const searchConsoleIsGatheringData = useSelect(
+		( select ) =>
+			searchConsoleModuleConnected &&
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const analyticsIsGatheringData = useSelect(
+		( select ) =>
+			analyticsModuleConnected &&
+			select( MODULES_ANALYTICS_4 ).isGatheringData()
+	);
 
 	if (
 		! userInputEnabled ||
 		isUserInputCompleted === undefined ||
 		isUserInputCompleted ||
 		! analyticsModuleConnected ||
-		! searchConsoleModuleConnected
+		! searchConsoleModuleConnected ||
+		analyticsIsGatheringData !== false ||
+		searchConsoleIsGatheringData !== false
 	) {
 		return <WidgetNull />;
 	}
