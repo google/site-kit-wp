@@ -85,6 +85,11 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					body: JSON.stringify( fixtures.createWebDataStream ),
 					status: 200,
 				} );
+			} else if ( url.match( 'analytics-4/data/google-tag-settings' ) ) {
+				request.respond( {
+					body: JSON.stringify( fixtures.googleTagSettings ),
+					status: 200,
+				} );
 			} else {
 				request.continue();
 			}

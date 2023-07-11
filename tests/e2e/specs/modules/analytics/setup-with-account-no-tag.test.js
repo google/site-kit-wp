@@ -142,6 +142,13 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					body: JSON.stringify( fixtures.createWebDataStream ),
 					status: 200,
 				} );
+			} else if (
+				request.url().match( 'analytics-4/data/google-tag-settings' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.googleTagSettings ),
+					status: 200,
+				} );
 			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
 				request.respond( {
 					status: 200,

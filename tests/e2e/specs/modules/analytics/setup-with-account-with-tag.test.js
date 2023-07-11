@@ -80,6 +80,13 @@ describe( 'setting up the Analytics module with an existing account and existing
 					status: 200,
 				} );
 			} else if (
+				request.url().match( 'analytics-4/data/google-tag-settings' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.googleTagSettings ),
+					status: 200,
+				} );
+			} else if (
 				request
 					.url()
 					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
