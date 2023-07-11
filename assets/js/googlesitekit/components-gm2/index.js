@@ -16,11 +16,17 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Dialog, {
 	DialogTitle,
 	DialogContent,
 	DialogFooter,
 } from '@material/react-dialog';
+import { Option } from '@material/react-select';
+import Tab from '@material/react-tab';
+import TabBar from '@material/react-tab-bar';
 
 /**
  * Internal dependencies
@@ -32,6 +38,7 @@ import CircularProgress from './CircularProgress';
 import Menu from './Menu';
 import ProgressBar from './ProgressBar';
 import Radio from './Radio';
+import Select from './Select';
 import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
 import TextField, { HelperText } from './TextField';
@@ -48,10 +55,14 @@ const Components = {
 	DialogFooter,
 	HelperText,
 	Menu,
+	Option,
 	ProgressBar,
 	Radio,
+	Select,
 	SpinnerButton,
 	Switch,
+	Tab,
+	TabBar,
 	TextField,
 	Tooltip,
 };

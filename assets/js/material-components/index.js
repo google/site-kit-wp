@@ -22,7 +22,6 @@
 import { MDCRipple } from '@material/ripple';
 import { MDCFormField } from '@material/form-field';
 import { MDCRadio } from '@material/radio';
-import Select, { Option } from '@material/react-select';
 import { MDCSwitch } from '@material/switch';
 import { MDCDialog } from '@material/dialog';
 import { MDCCheckbox } from '@material/checkbox';
@@ -34,8 +33,6 @@ export {
 	MDCRipple,
 	MDCFormField,
 	MDCRadio,
-	Select,
-	Option,
 	MDCSwitch,
 	MDCDialog,
 	MDCCheckbox,
