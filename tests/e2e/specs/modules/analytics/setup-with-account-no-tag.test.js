@@ -69,6 +69,9 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await page.setRequestInterception( true );
 
 		useRequestInterception( ( request ) => {
+			const measurementID = 'G-2B7M8YQ1K6';
+			const containerMock = fixtures.container[ measurementID ];
+
 			if (
 				request
 					.url()
@@ -147,6 +150,18 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			) {
 				request.respond( {
 					body: JSON.stringify( fixtures.googleTagSettings ),
+					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/container-lookup' )
+			) {
+				request.respond( {
+					body: JSON.stringify( containerMock ),
+					status: 200,
+				} );
+			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
+				request.respond( {
+					body: JSON.stringify( fixtures.properties[ 1 ] ),
 					status: 200,
 				} );
 			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
