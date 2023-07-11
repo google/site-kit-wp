@@ -42,10 +42,6 @@ import { numFmt } from '../../../../util';
 const { useSelect } = Data;
 
 export default function TopConvertingTrafficSourceWidget( { Widget } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
-	);
-
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -65,13 +61,9 @@ export default function TopConvertingTrafficSourceWidget( { Widget } ) {
 		orderBy: 'sessionConversionRate',
 	};
 
-	const report = useInViewSelect( ( select ) => {
-		if ( keyMetricsWidgetHidden !== false ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-	} );
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	);
 
 	const loading = useSelect(
 		( select ) =>
