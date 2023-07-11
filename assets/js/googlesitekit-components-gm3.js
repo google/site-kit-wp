@@ -41,6 +41,8 @@ export const {
 	Radio,
 	SpinnerButton,
 	Switch,
+	Tab,
+	TabBar,
 	TextField,
 	Tooltip,
 } = Components;

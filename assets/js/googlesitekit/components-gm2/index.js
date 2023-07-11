@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Dialog, {
 	DialogTitle,
 	DialogContent,
 	DialogFooter,
 } from '@material/react-dialog';
+import Tab from '@material/react-tab';
+import TabBar from '@material/react-tab-bar';
 
 /**
  * Internal dependencies
@@ -51,6 +56,8 @@ const Components = {
 	Radio,
 	SpinnerButton,
 	Switch,
+	Tab,
+	TabBar,
 	TextField,
 	Tooltip,
 };
