@@ -42,6 +42,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 1`] = 
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-4"
               style=""
             >
               Account
@@ -81,6 +82,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 1`] = 
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-5"
               style=""
             >
               Property
@@ -120,6 +122,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 1`] = 
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-6"
               style=""
             >
               Web Data Stream
@@ -191,6 +194,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Legacy
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-7"
               style=""
             >
               Account
@@ -230,6 +234,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Legacy
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-8"
               style=""
             >
               Property
@@ -269,6 +274,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Legacy
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-9"
               style=""
             >
               Web Data Stream
@@ -373,6 +379,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Transi
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-10"
               style=""
             >
               Account
@@ -412,6 +419,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Transi
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-11"
               style=""
             >
               Property
@@ -451,6 +459,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Transi
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-12"
               style=""
             >
               Web Data Stream
@@ -516,6 +525,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Transi
                   >
                     <label
                       class="mdc-floating-label mdc-floating-label--float-above"
+                      for="googlesitekit-select-13"
                       style=""
                     >
                       Property
@@ -555,6 +565,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Transi
                   >
                     <label
                       class="mdc-floating-label mdc-floating-label--float-above"
+                      for="googlesitekit-select-14"
                       style=""
                     >
                       View
@@ -686,6 +697,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is UA 1`] = `
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-0"
               style=""
             >
               Account
@@ -725,6 +737,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is UA 1`] = `
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-1"
               style=""
             >
               Property
@@ -764,6 +777,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is UA 1`] = `
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-3"
               style=""
             >
               View
