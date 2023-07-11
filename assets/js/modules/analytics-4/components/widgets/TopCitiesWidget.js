@@ -101,7 +101,7 @@ function TopCitiesWidget( { Widget, WidgetNull } ) {
 				const [ title ] = fieldValue;
 
 				return (
-					<p className="googlesitekit-km-widget-tile__table-item-text">
+					<p className="googlesitekit-km-widget-tile__table-plain-text">
 						{ title.value }
 					</p>
 				);
