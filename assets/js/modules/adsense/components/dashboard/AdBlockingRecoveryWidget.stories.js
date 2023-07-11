@@ -55,6 +55,10 @@ Ready.args = {
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.receiveGetSettings( validSettings );
+
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetExistingAdBlockingRecoveryTag( null );
 	},
 };
 Ready.scenario = {
