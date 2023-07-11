@@ -106,21 +106,35 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 			?.dimensionValues?.[ 0 ].value || '-';
 
 	const currentTotalUsers =
-		totalUsersReportRows.filter( makeFilter( 'date_range_0', 0 ) )[ 0 ]
-			?.metricValues?.[ 0 ]?.value || 0;
+		parseInt(
+			totalUsersReportRows.filter( makeFilter( 'date_range_0', 0 ) )[ 0 ]
+				?.metricValues?.[ 0 ]?.value,
+			10
+		) || 0;
 	const currentTopTrafficSourceUsers =
-		trafficSourceReportRows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
-			?.metricValues?.[ 0 ]?.value || 0;
+		parseInt(
+			trafficSourceReportRows.filter(
+				makeFilter( 'date_range_0', 1 )
+			)[ 0 ]?.metricValues?.[ 0 ]?.value,
+			10
+		) || 0;
 	const relativeCurrentTopTrafficSourceUsers = currentTotalUsers
 		? currentTopTrafficSourceUsers / currentTotalUsers
 		: 0;
 
 	const previousTotalUsers =
-		totalUsersReportRows.filter( makeFilter( 'date_range_1', 0 ) )[ 0 ]
-			?.metricValues?.[ 0 ]?.value || 0;
+		parseInt(
+			totalUsersReportRows.filter( makeFilter( 'date_range_1', 0 ) )[ 0 ]
+				?.metricValues?.[ 0 ]?.value,
+			10
+		) || 0;
 	const previousTopTrafficSourceUsers =
-		trafficSourceReportRows.filter( makeFilter( 'date_range_1', 1 ) )[ 0 ]
-			?.metricValues?.[ 0 ]?.value || 0;
+		parseInt(
+			trafficSourceReportRows.filter(
+				makeFilter( 'date_range_1', 1 )
+			)[ 0 ]?.metricValues?.[ 0 ]?.value,
+			10
+		) || 0;
 	const relativePreviousTopTrafficSourceUsers = previousTotalUsers
 		? previousTopTrafficSourceUsers / previousTotalUsers
 		: 0;
