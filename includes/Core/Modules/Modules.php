@@ -543,7 +543,7 @@ final class Modules {
 	/**
 	 * Gets the connected modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.105.0
 	 *
 	 * @return array Connected modules as $slug => $module pairs.
 	 */
@@ -684,7 +684,7 @@ final class Modules {
 	/**
 	 * Checks whether the module identified by the given slug is shareable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.105.0
 	 *
 	 * @param string $slug Unique module slug.
 	 * @return bool True if module is shareable, false otherwise.
@@ -904,7 +904,7 @@ final class Modules {
 	 * Gets the shareable connected modules.
 	 *
 	 * @since 1.50.0
-	 * @since n.e.x.t Updated to only return connected shareable modules.
+	 * @since 1.105.0 Updated to only return connected shareable modules.
 	 *
 	 * @return array Shareable modules as $slug => $module pairs.
 	 */
