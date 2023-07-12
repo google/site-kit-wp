@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * Internal dependencies
  */
 import {
@@ -27,6 +32,7 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsSetupCTA'
@@ -64,10 +70,35 @@ export default {
 				} );
 			};
 
+			const breakpoint = useBreakpoint();
+
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
+				<div
+					style={ {
+						minHeight: '200px',
+						display: 'flex',
+						alignItems: 'center',
+					} }
+				>
+					<div id="adminmenu">
+						{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
+						<a href="http://test.test/?page=googlesitekit-settings" />
+					</div>
+					<div
+						style={ { flex: 1 } }
+						className={ classnames( {
+							// Turn off animations for non-mobile breakpoints. The standard VRT behaviour is to set
+							// animation-duration to 0ms, this does not play well with this component as there is a
+							// continual chain of animation at non-mobile breakpoints.
+							'googlesitekit-vrt-animation-none':
+								breakpoint !== BREAKPOINT_SMALL,
+						} ) }
+					>
+						<WithRegistrySetup func={ setupRegistry }>
+							<Story />
+						</WithRegistrySetup>
+					</div>
+				</div>
 			);
 		},
 	],
