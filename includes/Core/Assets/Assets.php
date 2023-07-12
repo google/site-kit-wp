@@ -1086,13 +1086,15 @@ final class Assets {
 			// Now we need to create a fake product with a randomly created slug
 			// that we can find in the permalink to determine the product base URL.
 			$post_name = substr( str_shuffle( md5( microtime() ) ), 0, 10 );
-			$product   = new WP_Post( (object) array(
-				'ID'          => rand( 1, 10000 ),
-				'post_name'   => $post_name,
-				'post_type'   => 'product',
-				'post_status' => 'publish',
-				'filter'      => 'raw',
-			) );
+			$product   = new WP_Post(
+				(object) array(
+					'ID'          => wp_rand( 1, 10000 ),
+					'post_name'   => $post_name,
+					'post_type'   => 'product',
+					'post_status' => 'publish',
+					'filter'      => 'raw',
+				)
+			);
 
 			$permalink = get_permalink( $product );
 			if ( ! empty( $permalink ) ) {

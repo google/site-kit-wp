@@ -53,6 +53,13 @@ export default function PopularProductsWidget( props ) {
 	const reportOptions = {
 		...dates,
 		dimensions: [ 'pagePathPlusQueryString' ],
+		dimensionFilters: {
+			pagePathPlusQueryString: {
+				filterType: 'stringFilter',
+				matchType: 'BEGINS_WITH',
+				value: productBasePaths,
+			},
+		},
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [
 			{
@@ -83,6 +90,8 @@ export default function PopularProductsWidget( props ) {
 	if ( ! showWidget ) {
 		return <WidgetNull />;
 	}
+
+	global.console.log( report, loading );
 
 	return (
 		<Widget>
