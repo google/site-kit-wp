@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Tab, TabBar } from 'googlesitekit-components';
+import { Option, Select, Tab, TabBar } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
@@ -40,7 +40,6 @@ import {
 	UI_ACTIVE_ROW_INDEX,
 } from '../../../datastore/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import { Select, Option } from '../../../../../material-components';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch } = Data;
