@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { Input, TextField } from '../../../../../material-components';
+import { TextField } from 'googlesitekit-components';
 import classnames from 'classnames';
 
 export default function CreateAccountField( {
@@ -45,13 +45,8 @@ export default function CreateAccountField( {
 				setValue( event.target.value, name );
 			} }
 			outlined
-			required
-		>
-			<Input
-				name={ name }
-				value={ value }
-				id={ `googlesitekit_analytics_account_create_${ name }` }
-			/>
-		</TextField>
+			value={ value }
+			id={ `googlesitekit_analytics_account_create_${ name }` }
+		/>
 	);
 }

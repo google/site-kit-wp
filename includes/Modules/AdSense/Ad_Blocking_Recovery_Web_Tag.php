@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 /**
  * Class for Ad Blocking Recovery tag.
  *
- * @since n.e.x.t
+ * @since 1.105.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Ad_Blocking_Recovery_Web_Tag extends Tag {
 	/**
 	 * Ad_Blocking_Recovery_Tag instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.105.0
 	 * @var Ad_Blocking_Recovery_Tag
 	 */
 	protected $ad_blocking_recovery_tag;
@@ -37,7 +37,7 @@ class Ad_Blocking_Recovery_Web_Tag extends Tag {
 	/**
 	 * Use Error Protection Snippet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.105.0
 	 * @var bool
 	 */
 	protected $use_error_protection_snippet;
@@ -45,7 +45,7 @@ class Ad_Blocking_Recovery_Web_Tag extends Tag {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.105.0
 	 *
 	 * @param Ad_Blocking_Recovery_Tag $ad_blocking_recovery_tag Ad_Blocking_Recovery_Tag instance.
 	 * @param bool                     $use_error_protection_snippet Use Error Protection Snippet.
@@ -58,7 +58,7 @@ class Ad_Blocking_Recovery_Web_Tag extends Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.105.0
 	 */
 	public function register() {
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render' ) );
@@ -74,7 +74,7 @@ class Ad_Blocking_Recovery_Web_Tag extends Tag {
 	/**
 	 * Outputs the AdSense script tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.105.0
 	 */
 	protected function render() {
 		$tags = $this->ad_blocking_recovery_tag->get();

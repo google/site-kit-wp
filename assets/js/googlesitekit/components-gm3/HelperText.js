@@ -1,7 +1,7 @@
 /**
- * Public components entrypoint.
+ * HelperText component.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Components from './googlesitekit/components-gm3';
-
-if ( typeof global.googlesitekit === 'undefined' ) {
-	global.googlesitekit = {};
+export default function HelperText() {
+	return null;
 }
-
-global.googlesitekit.components = Components;
-
-export const {
-	Button,
-	Checkbox,
-	Chip,
-	CircularProgress,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogFooter,
-	Menu,
-	Option,
-	ProgressBar,
-	Radio,
-	Select,
-	SpinnerButton,
-	Switch,
-	Tab,
-	TabBar,
-	TextField,
-	Tooltip,
-} = Components;
