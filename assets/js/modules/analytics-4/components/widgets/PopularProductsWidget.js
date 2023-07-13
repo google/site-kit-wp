@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -32,6 +37,10 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MetricTileTable } from '../../../../components/KeyMetrics';
+import Link from '../../../../components/Link';
+import { ZeroDataMessage } from '../../../analytics/components/common';
+import { getFullURL, numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
 export default function PopularProductsWidget( props ) {
@@ -43,6 +52,9 @@ export default function PopularProductsWidget( props ) {
 	const productBasePaths = useSelect( ( select ) =>
 		select( CORE_SITE ).getProductBasePaths()
 	);
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -52,9 +64,9 @@ export default function PopularProductsWidget( props ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pagePathPlusQueryString' ],
+		dimensions: [ 'pageTitle', 'pagePath' ],
 		dimensionFilters: {
-			pagePathPlusQueryString: {
+			pagePath: {
 				filterType: 'stringFilter',
 				matchType: 'BEGINS_WITH',
 				value: productBasePaths,
@@ -67,7 +79,7 @@ export default function PopularProductsWidget( props ) {
 				desc: true,
 			},
 		],
-		limit: 100,
+		limit: 3,
 	};
 
 	const showWidget = isGA4ModuleConnected && productBasePaths?.length > 0;
@@ -91,12 +103,47 @@ export default function PopularProductsWidget( props ) {
 		return <WidgetNull />;
 	}
 
-	global.console.log( report, loading );
+	const { rows = [] } = report || {};
+
+	const columns = [
+		{
+			field: 'dimensionValues',
+			Component: ( { fieldValue } ) => {
+				const [ title, url ] = fieldValue;
+				const permaLink = getFullURL( siteURL, url.value );
+
+				return (
+					<Link
+						href={ permaLink }
+						title={ title.value }
+						external
+						hideExternalIndicator
+					>
+						{ title.value }
+					</Link>
+				);
+			},
+		},
+		{
+			field: 'metricValues.0.value',
+			Component: ( { fieldValue } ) => (
+				<strong>{ numFmt( fieldValue ) }</strong>
+			),
+		},
+	];
 
 	return (
-		<Widget>
-			<div>TODO: UI for PopularProductsWidget</div>
-		</Widget>
+		<MetricTileTable
+			Widget={ Widget }
+			title={ __(
+				'Most popular products by pageviews',
+				'google-site-kit'
+			) }
+			loading={ loading }
+			rows={ rows }
+			columns={ columns }
+			zeroState={ ZeroDataMessage }
+		/>
 	);
 }
 
