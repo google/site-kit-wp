@@ -36,11 +36,11 @@ import {
 	AD_BLOCKING_FORM_SETTINGS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { parseAccountIDFromExistingTag } from '../../util';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryToggle() {

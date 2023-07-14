@@ -41,8 +41,8 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
-import Link from '../../../../../../components/Link';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import Link from '../../../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
 export default function PlaceTagsStep( { setActiveStep } ) {
