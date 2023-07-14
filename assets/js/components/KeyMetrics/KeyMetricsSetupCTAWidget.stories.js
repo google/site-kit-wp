@@ -65,9 +65,23 @@ export default {
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
+				<div
+					style={ {
+						minHeight: '200px',
+						display: 'flex',
+						alignItems: 'center',
+					} }
+				>
+					<div id="adminmenu">
+						{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
+						<a href="http://test.test/?page=googlesitekit-settings" />
+					</div>
+					<div style={ { flex: 1 } }>
+						<WithRegistrySetup func={ setupRegistry }>
+							<Story />
+						</WithRegistrySetup>
+					</div>
+				</div>
 			);
 		},
 	],
