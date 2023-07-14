@@ -258,6 +258,26 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Gets whether an individual key metric identified by its slug is
+	 * active or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} True if the key metric widget tile is active, false if it is not, or undefined if the key metrics settings are not loaded.
+	 */
+	isKeyMetricActive: createRegistrySelector(
+		( select ) => ( state, widgetSlug ) => {
+			const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+			if ( keyMetrics === undefined ) {
+				return undefined;
+			}
+
+			return keyMetrics.includes( widgetSlug );
+		}
+	),
+
+	/**
 	 * Gets whether the key metrics widget is hidden.
 	 *
 	 * @since 1.103.0

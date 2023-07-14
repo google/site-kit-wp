@@ -29,7 +29,7 @@ import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/
  * This is a temporary utility until a solidified solution is implemented to effortlessly provide
  * widget registrations to the registry.
  *
- * @since n.e.x.t
+ * @since 1.105.0
  * @see {@link https://github.com/google/site-kit-wp/issues/7264} Initiative to implement a utility to provide widget registrations.
  *
  * @param {Object} registry The registry to set up.
