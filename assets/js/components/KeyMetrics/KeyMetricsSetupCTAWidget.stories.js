@@ -19,9 +19,13 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import {
+	provideGatheringDataState,
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -53,6 +57,11 @@ export default {
 						connected: true,
 					},
 				] );
+				provideUserAuthentication( registry );
+				provideGatheringDataState( registry, {
+					'analytics-4': false,
+					'search-console': false,
+				} );
 			};
 
 			return (

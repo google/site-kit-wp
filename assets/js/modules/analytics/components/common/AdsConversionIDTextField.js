@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { TextField, HelperText, Input } from '../../../../material-components';
+import { TextField } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
@@ -100,13 +100,10 @@ export default function AdsConversionIDTextField() {
 					'mdc-text-field--error': ! isValidValue,
 				} ) }
 				helperText={
-					! isValidValue && (
-						<HelperText persistent>
-							{ __(
-								'Conversion IDs must be in the format: AW-XXXXX',
-								'google-site-kit'
-							) }
-						</HelperText>
+					! isValidValue &&
+					__(
+						'Conversion IDs must be in the format: AW-XXXXX',
+						'google-site-kit'
 					)
 				}
 				trailingIcon={
@@ -119,9 +116,9 @@ export default function AdsConversionIDTextField() {
 					)
 				}
 				outlined
-			>
-				<Input value={ adsConversionID } onChange={ onChange } />
-			</TextField>
+				value={ adsConversionID }
+				onChange={ onChange }
+			/>
 
 			<p>
 				{ __(

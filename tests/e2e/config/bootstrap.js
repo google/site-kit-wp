@@ -75,6 +75,8 @@ const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
+// Set default timeout for Puppeteer waits. (Default: 30 sec)
+page.setDefaultTimeout( 5000 );
 // Set default timeout for individual expect-puppeteer assertions. (Default: 1000)
 setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 
@@ -218,6 +220,17 @@ function observeConsoleLogging() {
 		// non - unique IDs.
 		// See: https://core.trac.wordpress.org/ticket/23165
 		if ( text.includes( 'elements with non-unique id #_wpnonce' ) ) {
+			return;
+		}
+
+		// WordPress 6.3 moved the editor into an iframe and warns when
+		// when styles are added incorrectly.
+		// See https://github.com/WordPress/gutenberg/blob/5977e3d60b7aea6e22d4a452f7525d3f140c37b6/packages/block-editor/src/components/iframe/index.js#L170
+		// Here we ignore core those from core themes in case we add our own styles
+		// here in the future.
+		if (
+			text.match( /^twenty[a-z-]+ was added to the iframe incorrectly/ )
+		) {
 			return;
 		}
 

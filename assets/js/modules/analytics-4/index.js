@@ -30,12 +30,14 @@ import {
 	TopCountriesWidget,
 	TopTrafficSourceWidget,
 	TopConvertingTrafficSourceWidget,
+	ConnectGA4CTAWidget,
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
-import { isFeatureEnabled } from '../../features';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
+	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -46,6 +48,8 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../googlesitekit/datastore/user/constants';
+import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from './constants';
+import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -177,6 +181,40 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			'keyMetricsConnectGA4CTA',
+			{
+				Component: ConnectGA4CTAWidget,
+				width: [ widgets.WIDGET_WIDTHS.FULL ],
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) => {
+					const isCTADismissed = select( CORE_USER ).isItemDismissed(
+						KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
+					);
+					const isUserInputCompleted =
+						select( CORE_USER ).isUserInputCompleted();
+					const isGA4Connected =
+						select( CORE_MODULES ).isModuleConnected(
+							'analytics-4'
+						);
+
+					return (
+						! [
+							isCTADismissed,
+							isUserInputCompleted,
+							isGA4Connected,
+						].includes( undefined ) &&
+						! isCTADismissed &&
+						isUserInputCompleted &&
+						! isGA4Connected
+					);
+				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);

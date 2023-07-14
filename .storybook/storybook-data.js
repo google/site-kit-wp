@@ -268,19 +268,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--text-fields',
-		kind: 'Global',
-		name: 'Text Fields',
-		story: 'Text Fields',
-		parameters: {
-			fileName: './stories/text-field.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'global--visually-hidden',
 		kind: 'Global',
 		name: 'Visually Hidden',

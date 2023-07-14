@@ -25,20 +25,22 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../material-components';
-import GhostCardsSVG from './GhostCards';
+import Link from '../Link';
+import KeyMetricsCTAContent from './KeyMetricsCTAContent';
+import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { useFeature } from '../../hooks/useFeature';
-import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 const { useSelect } = Data;
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
@@ -56,96 +58,70 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-
-	const breakpoint = useBreakpoint();
-	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	const searchConsoleIsGatheringData = useSelect(
+		( select ) =>
+			searchConsoleModuleConnected &&
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const analyticsIsGatheringData = useSelect(
+		( select ) =>
+			analyticsModuleConnected &&
+			select( MODULES_ANALYTICS_4 ).isGatheringData()
+	);
 
 	if (
 		! userInputEnabled ||
 		isUserInputCompleted === undefined ||
 		isUserInputCompleted ||
 		! analyticsModuleConnected ||
-		! searchConsoleModuleConnected
+		! searchConsoleModuleConnected ||
+		analyticsIsGatheringData !== false ||
+		searchConsoleIsGatheringData !== false
 	) {
 		return <WidgetNull />;
 	}
 
-	const Footer = () => {
-		return (
-			<Row>
-				<Cell size={ 12 }>
-					{ /*
-					The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
-					In the future, it will be fleshed out with the logic to dismiss the widget.
-					*/ }
-					<Link onClick={ () => {} }>
-						{ __( 'Maybe later', 'google-site-kit' ) }
-					</Link>
-				</Cell>
-			</Row>
-		);
-	};
-
 	return (
-		<Widget noPadding Footer={ Footer }>
-			<section className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--key-metrics-setup-cta">
-				<Grid>
-					<Row>
-						<Cell smSize={ 6 } mdSize={ 5 } lgSize={ 6 }>
-							<div className="googlesitekit-widget-key-metrics-text__wrapper">
-								<h3 className="googlesitekit-publisher-win__title">
-									{ __(
-										'Get metrics and suggestions tailored to your specific goals',
-										'google-site-kit'
-									) }
-								</h3>
-								<p>
-									{ __(
-										'Answer 3 questions to show relevant stats for your site',
-										'google-site-kit'
-									) }
-								</p>
-							</div>
-							{ isMobileBreakpoint && (
-								<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
-									<GhostCardsSVG />
-								</Cell>
+		<Widget
+			noPadding
+			Footer={ () => {
+				/*
+				The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
+				In the future, it will be fleshed out with the logic to dismiss the widget.
+				*/
+				return <KeyMetricsCTAFooter onActionClick={ () => {} } />;
+			} }
+		>
+			<KeyMetricsCTAContent
+				title={ __(
+					'Get metrics and suggestions tailored to your specific goals',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Answer 3 questions to show relevant stats for your site',
+					'google-site-kit'
+				) }
+				actions={
+					<Fragment>
+						<Button
+							className="googlesitekit-key-metrics-cta-button"
+							href={ ctaLink }
+						>
+							{ __( 'Get tailored metrics', 'google-site-kit' ) }
+						</Button>
+						{ /*
+							The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
+							In the future, it will also serve the purpose of adding a track event.
+						*/ }
+						<Link onClick={ () => {} }>
+							{ __(
+								'I’ll pick metrics myself',
+								'google-site-kit'
 							) }
-							<div className="googlesitekit-widget-key-metrics-actions__wrapper">
-								<Button
-									className="googlesitekit-key-metrics-cta-button"
-									href={ ctaLink }
-								>
-									{ __(
-										'Get tailored metrics',
-										'google-site-kit'
-									) }
-								</Button>
-								{ /*
-								The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
-								In the future, it will also serve the purpose of adding a track event.
-								*/ }
-								<Link onClick={ () => {} }>
-									{ __(
-										'I’ll pick metrics myself',
-										'google-site-kit'
-									) }
-								</Link>
-							</div>
-						</Cell>
-						{ ! isMobileBreakpoint && (
-							<Cell
-								className="googlesitekit-widget-key-metrics-svg__wrapper"
-								smSize={ 6 }
-								mdSize={ 3 }
-								lgSize={ 6 }
-							>
-								<GhostCardsSVG />
-							</Cell>
-						) }
-					</Row>
-				</Grid>
-			</section>
+						</Link>
+					</Fragment>
+				}
+			/>
 		</Widget>
 	);
 }
