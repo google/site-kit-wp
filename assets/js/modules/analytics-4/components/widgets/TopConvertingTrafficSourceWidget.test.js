@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import { render } from '../../../../../../tests/js/test-utils';
-import { provideKeyMetrics } from '../../../../../../tests/js/utils';
+import {
+	provideKeyMetrics,
+	provideModules,
+} from '../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../utils/data-mock';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
@@ -47,6 +50,13 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 						.setReferenceDate( '2020-09-08' );
 
 					provideKeyMetrics( registry );
+					provideModules( registry, [
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
 					provideAnalytics4MockReport( registry, {
 						compareStartDate: '2020-07-14',
 						compareEndDate: '2020-08-10',
