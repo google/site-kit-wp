@@ -108,7 +108,7 @@ class AssetsTest extends TestCase {
 	public function test_register_dashboard_sharing() {
 		// For a user that can view shared dashboard, ensure the hooks are added.
 		$this->enable_feature( 'dashboardSharing' );
-		$contributor = self::factory()->user->create_and_get( array( 'role' => 'contributor' ) );
+		$contributor = $this->factory()->user->create_and_get( array( 'role' => 'contributor' ) );
 
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$settings        = new Module_Sharing_Settings( new Options( $context ) );
@@ -220,9 +220,58 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( '2020-01-01', $data['referenceDate'] );
 	}
 
-	public function test_base_data__product_base_paths__empty() {
+	public function test_base_data__product_base_paths__no_permalink_structure() {
 		$data = $this->get_inline_base_data();
 		$this->assertTrue( empty( $data['productBasePaths'] ) );
+	}
+
+	public function test_base_data__product_base_paths__empty() {
+		update_option( 'permalink_structure', '/%postname%/' );
+
+		$data = $this->get_inline_base_data();
+		$this->assertTrue( empty( $data['productBasePaths'] ) );
+	}
+
+	public function test_base_data__product_base_paths__hidden_post_type() {
+		update_option( 'permalink_structure', '/%postname%/' );
+
+		register_post_type( 'product', array( 'public' => false ) );
+		$data = $this->get_inline_base_data();
+		unregister_post_type( 'product' );
+
+		$this->assertTrue( empty( $data['productBasePaths'] ) );
+	}
+
+	/**
+	 * @dataProvider data_product_base_paths
+	 */
+	public function test_base_data__product_base_paths( $post_type_args, $expected ) {
+		update_option( 'permalink_structure', '/%postname%/' );
+
+		register_post_type( 'product', $post_type_args );
+		$data = $this->get_inline_base_data();
+		unregister_post_type( 'product' );
+
+		$this->assertEquals( $expected, $data['productBasePaths'] );
+	}
+
+	public function data_product_base_paths() {
+		return array(
+			'public post type'    => array(
+				array(
+					'public'  => true,
+					'rewrite' => true,
+				),
+				array( '/product/' ),
+			),
+			'custom rewrite rule' => array(
+				array(
+					'public'  => true,
+					'rewrite' => array( 'slug' => 'fancy-products' ),
+				),
+				array( '/fancy-products/' ),
+			),
+		);
 	}
 
 }
