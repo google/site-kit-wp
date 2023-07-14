@@ -34,27 +34,7 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 		KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE
 	);
 
-	it.each( [ undefined, true ] )(
-		'renders null when isKeyMetricsWidgetHidden() returns %s',
-		async ( isWidgetHidden ) => {
-			const { container, waitForRegistry } = render(
-				<TopConvertingTrafficSourceWidget
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>,
-				{
-					setupRegistry: ( registry ) => {
-						provideKeyMetrics( registry, { isWidgetHidden } );
-					},
-				}
-			);
-			await waitForRegistry();
-
-			expect( container ).toBeEmptyDOMElement();
-		}
-	);
-
-	it( 'renders correctly with the expected metrics when the Key Metrics widget is not hidden', async () => {
+	it( 'renders correctly with the expected metrics', async () => {
 		const { container, waitForRegistry } = render(
 			<TopConvertingTrafficSourceWidget
 				Widget={ Widget }

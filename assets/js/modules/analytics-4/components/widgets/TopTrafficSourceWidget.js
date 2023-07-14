@@ -41,11 +41,7 @@ import { get } from 'lodash';
 
 const { useSelect, useInViewSelect } = Data;
 
-export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
-	);
-
+export default function TopTrafficSourceWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -138,10 +134,6 @@ export default function TopTrafficSourceWidget( { Widget, WidgetNull } ) {
 	const relativePreviousTopTrafficSourceUsers = previousTotalUsers
 		? previousTopTrafficSourceUsers / previousTotalUsers
 		: 0;
-
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
 
 	const format = {
 		style: 'percent',
