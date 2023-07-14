@@ -24,7 +24,11 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,6 +41,8 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
+import Link from '../../../../../../components/Link';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function PlaceTagsStep( { setActiveStep } ) {
@@ -53,6 +59,10 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 			select( MODULES_ADSENSE ).getErrorForAction(
 				'syncAdBlockingRecoveryTags'
 			) || select( MODULES_ADSENSE ).getErrorForAction( 'saveSettings' )
+	);
+
+	const learnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ad-blocking-recovery' )
 	);
 
 	const {
@@ -126,9 +136,14 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 				) }
 			</Checkbox>
 			<p className="googlesitekit-ad-blocking-recovery__error-protection-tag-info">
-				{ __(
-					'If a site visitor’s ad blocker browser extension also blocks the standard ad blocking recovery tag, the error protection tag will show a non-customizable ad blocking recovery message to visitors when enabled.',
-					'google-site-kit'
+				{ createInterpolateElement(
+					__(
+						'If a site visitor’s ad blocker browser extension also blocks the standard ad blocking recovery tag, the error protection tag will show a non-customizable ad blocking recovery message to visitors when enabled. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: <Link href={ learnMoreURL } external />,
+					}
 				) }
 			</p>
 			{ error && <ErrorNotice error={ error } /> }
