@@ -38,7 +38,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import { numFmt } from '../../../../util';
-import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
+import { MetricTileText } from '../../../../components/KeyMetrics';
 const { useSelect, useInViewSelect } = Data;
 
 export default function TopTrafficSourceWidget( props ) {
