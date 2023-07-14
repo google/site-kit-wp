@@ -40,6 +40,7 @@ import Link from '../../../../components/Link';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { parseAccountIDFromExistingTag } from '../../util';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryToggle() {
@@ -62,6 +63,9 @@ export default function AdBlockingRecoveryToggle() {
 		select( MODULES_ADSENSE ).getServiceURL( {
 			path: `/${ accountID }/privacymessaging/ad_blocking`,
 		} )
+	);
+	const learnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ad-blocking-recovery' )
 	);
 	const adBlockingRecoveryToggle = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -176,9 +180,14 @@ export default function AdBlockingRecoveryToggle() {
 							hideLabel={ false }
 						/>
 						<p>
-							{ __(
-								'If a site visitor’s ad blocker browser extension also blocks the standard ad blocking recovery tag, the error protection tag will show a non-customizable ad blocking recovery message to visitors when enabled.',
-								'google-site-kit'
+							{ createInterpolateElement(
+								__(
+									'If a site visitor’s ad blocker browser extension also blocks the standard ad blocking recovery tag, the error protection tag will show a non-customizable ad blocking recovery message to visitors when enabled. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: <Link href={ learnMoreURL } external />,
+								}
 							) }
 						</p>
 					</div>
