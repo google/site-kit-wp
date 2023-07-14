@@ -112,7 +112,7 @@ export default function Navigation() {
 		if (
 			! userInputEnabled ||
 			dashboardType !== DASHBOARD_TYPE_MAIN ||
-			isKeyMetricsWidgetHidden !== false
+			isKeyMetricsWidgetHidden === true
 		) {
 			return false;
 		}

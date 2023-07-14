@@ -167,7 +167,7 @@ export default function DashboardMainApp() {
 
 				See: https://github.com/google/site-kit-wp/pull/6630#discussion_r1127229162
 			*/ }
-			{ userInputEnabled && isKeyMetricsWidgetHidden === false && (
+			{ userInputEnabled && isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
 					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
