@@ -38,13 +38,17 @@ class String_Filter implements Filter {
 			? $dimension_value['matchType']
 			: 'EXACT';
 
+		$filter_value = isset( $dimension_value['value'] )
+			? $dimension_value['value']
+			: $dimension_value;
+
 		// If there are many values for this filter, then it means that we want to find
 		// rows where dimension are included in the list of provided values. In this case,
 		// we need to create a nested filter expression that contains separate string filters
 		// for each item in the list and combined into the "OR" group.
-		if ( isset( $dimension_value['value'] ) && is_array( $dimension_value['value'] ) ) {
+		if ( is_array( $filter_value ) ) {
 			$expressions = array();
-			foreach ( $dimension_value['value'] as $value ) {
+			foreach ( $filter_value as $value ) {
 				$expressions[] = $this->compose_individual_filter_expression(
 					$dimension_name,
 					$match_type,
@@ -66,7 +70,7 @@ class String_Filter implements Filter {
 		return $this->compose_individual_filter_expression(
 			$dimension_name,
 			$match_type,
-			$dimension_value
+			$filter_value
 		);
 	}
 
