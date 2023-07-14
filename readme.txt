@@ -126,6 +126,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Fixed**
 
+* Fix bug that additionally requested UA Analytics reports on the WP dashboard when dashboard view was set to GA4. See [#7306](https://github.com/google/site-kit-wp/issues/7306).
 * Fix bug that caused PageSpeed Insights to appear in Dashboard Sharing Settings when PageSpeed Insights is not connected. See [#7197](https://github.com/google/site-kit-wp/issues/7197).
 * Fix bug that could cause infinite loop in Analytics setup flow if user had view-only permissions for an Analytics property. See [#7168](https://github.com/google/site-kit-wp/issues/7168).
 * Fix bug that caused Ad Blocking Recovery widget to appear/hide under the wrong conditions. See [#7164](https://github.com/google/site-kit-wp/issues/7164).
