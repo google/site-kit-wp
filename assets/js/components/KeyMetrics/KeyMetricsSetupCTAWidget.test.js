@@ -32,7 +32,9 @@ import {
 	provideGatheringDataState,
 	provideUserAuthentication,
 	getAnalytics4HasZeroDataReportOptions,
+	fireEvent,
 } from '../../../../tests/js/test-utils';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
@@ -48,6 +50,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( true );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.getOnce(
 			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
@@ -251,5 +255,109 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			'href',
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
 		);
+	} );
+
+	it( 'does not render when dismissed', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			'analytics-4': false,
+			'search-console': false,
+		} );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] );
+
+		const { container, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+				features: [ 'userInput' ],
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'does not render when dismissed and the tooltip is visible', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			'analytics-4': false,
+			'search-console': false,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<KeyMetricsSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>
+			</div>,
+			{
+				registry,
+				features: [ 'userInput' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win__title' )
+		).toHaveTextContent(
+			'Get metrics and suggestions tailored to your specific goals'
+		);
+
+		fireEvent.click(
+			container.querySelectorAll( 'button.googlesitekit-cta-link' )[ 1 ]
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win__title' )
+		).not.toBeInTheDocument();
+
+		expect(
+			document.querySelector( '.googlesitekit-tour-tooltip' )
+		).toBeInTheDocument();
 	} );
 } );

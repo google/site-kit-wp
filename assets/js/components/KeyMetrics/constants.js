@@ -1,5 +1,5 @@
 /**
- * TopCountriesWidget component.
+ * Key Metrics components - constants.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,20 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-export default function TopCountriesWidget( { Widget } ) {
-	return (
-		<Widget>
-			<div>TODO: UI for TopCountriesWidget</div>
-		</Widget>
-	);
-}
-
-TopCountriesWidget.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
-};
+export const KEY_METRICS_SETUP_CTA_WIDGET_SLUG = 'key-metrics-setup-cta-widget';

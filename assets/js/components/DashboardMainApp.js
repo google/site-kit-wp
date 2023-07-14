@@ -125,6 +125,11 @@ export default function DashboardMainApp() {
 		)
 	);
 
+	const isKeyMetricsWidgetHidden = useSelect(
+		( select ) =>
+			userInputEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
+
 	let lastWidgetAnchor = null;
 
 	if ( isMonetizationActive ) {
@@ -157,12 +162,12 @@ export default function DashboardMainApp() {
 				accidentally rendering the widget area if any child widgets accidentally
 				render when `userInputEnabled` is false.
 
-				This check can be removed once the User Input feature is fully launched
+				The userInputEnabled check can be removed once the User Input feature is fully launched
 				and we remove this feature flag.
 
 				See: https://github.com/google/site-kit-wp/pull/6630#discussion_r1127229162
 			*/ }
-			{ userInputEnabled && (
+			{ userInputEnabled && isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
 					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
