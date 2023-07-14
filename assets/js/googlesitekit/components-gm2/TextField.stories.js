@@ -53,16 +53,6 @@ const Template = () => (
 				outlined
 				value="https://www.sitekitbygoogle.com"
 				helperText="Helper Text"
-			/>
-		</div>
-
-		<div style={ { marginBottom: '50px' } }>
-			<TextField
-				label="With Persistent Helper Text"
-				name="textfield"
-				outlined
-				value="https://www.sitekitbygoogle.com"
-				helperText="Persistent Helper Text"
 				helperTextPersistent
 			/>
 		</div>

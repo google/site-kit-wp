@@ -37,15 +37,12 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import {
-	MetricTileNumeric,
-	whenKeyMetricsWidgetVisible,
-} from '../../../../components/KeyMetrics';
+import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util/i18n';
 
 const { useSelect, useInViewSelect } = Data;
 
-function NewVisitorsWidget( props ) {
+export default function NewVisitorsWidget( props ) {
 	const { Widget, WidgetNull } = props;
 
 	const isGA4ModuleConnected = useSelect( ( select ) =>
@@ -125,5 +122,3 @@ NewVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
-
-export default whenKeyMetricsWidgetVisible()( NewVisitorsWidget );

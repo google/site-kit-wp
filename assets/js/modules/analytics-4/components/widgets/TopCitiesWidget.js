@@ -21,23 +21,7 @@
  */
 import PropTypes from 'prop-types';
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-
-const { useSelect } = Data;
-
-export default function TopCitiesWidget( { Widget, WidgetNull } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
-	);
-
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
-
+export default function TopCitiesWidget( { Widget } ) {
 	return (
 		<Widget>
 			<div>TODO: UI for TopCitiesWidget</div>

@@ -148,11 +148,9 @@ const resolvers = {
 			const fetchedAdBlockingRecoveryTag =
 				yield actions.fetchGetExistingAdBlockingRecoveryTag();
 
-			yield registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetExistingAdBlockingRecoveryTag(
-					fetchedAdBlockingRecoveryTag
-				);
+			yield actions.receiveGetExistingAdBlockingRecoveryTag(
+				fetchedAdBlockingRecoveryTag
+			);
 		}
 	},
 };
@@ -161,7 +159,7 @@ const selectors = {
 	/**
 	 * Gets the existing ad blocking recovery tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.105.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} The existing ad blocking recovery tag `string` if present, `null` if not present, or `undefined` if not loaded yet.
@@ -173,7 +171,7 @@ const selectors = {
 	/**
 	 * Checks whether or not an existing ad blocking recovery tag is present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.105.0
 	 *
 	 * @return {(boolean|undefined)} Boolean if ad blocking recovery tag is present, `undefined` if ad blocking recovery tag presence has not been resolved yet.
 	 */

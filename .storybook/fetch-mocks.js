@@ -25,12 +25,13 @@ export function bootstrapFetchMocks() {
 	// Reset first to prevent errors when hot reloading.
 	fetchMock.reset();
 	fetchMockSaveSettings();
+	fetchMockSaveDataAvailable();
 	fetchMockGetModules();
 	fetchMockCatchAll();
 }
 
 export function fetchMockGetModules() {
-	fetchMock.get( /\/google-site-kit\/v1\/core\/modules\/data\/list/, {
+	fetchMock.get( new RegExp( '/google-site-kit/v1/core/modules/data/list' ), {
 		body: [],
 		status: 200,
 	} );
@@ -38,12 +39,24 @@ export function fetchMockGetModules() {
 
 export function fetchMockSaveSettings() {
 	fetchMock.post(
-		/\/google-site-kit\/v1\/modules\/[\w-]+\/data\/settings/,
+		new RegExp( '/google-site-kit/v1/modules/[\\w-]+/data/settings' ),
 		( url, opts ) => {
 			const { data } = JSON.parse( opts.body );
 			return {
 				status: 200,
 				body: JSON.stringify( data ),
+			};
+		}
+	);
+}
+
+export function fetchMockSaveDataAvailable() {
+	fetchMock.post(
+		new RegExp( '/google-site-kit/v1/modules/[\\w-]+/data/data-available' ),
+		() => {
+			return {
+				status: 200,
+				body: true,
 			};
 		}
 	);

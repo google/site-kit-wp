@@ -39,7 +39,7 @@ export function parseAccountID( clientID ) {
 /**
  * Parses the AdSense account ID from an existing tag.
  *
- * @since n.e.x.t
+ * @since 1.105.0
  *
  * @param {string} existingTag Existing tag.
  * @return {(string|undefined)} AdSense account ID, or undefined if invalid tag.

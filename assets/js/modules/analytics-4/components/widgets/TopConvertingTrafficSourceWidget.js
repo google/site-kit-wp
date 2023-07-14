@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -37,9 +36,11 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { numFmt } from '../../../../util';
+import { useInViewSelect } from '../../../../hooks/useInViewSelect';
 import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
-const { useSelect, useInViewSelect } = Data;
+import { numFmt } from '../../../../util';
+
+const { useSelect } = Data;
 
 export default function TopConvertingTrafficSourceWidget( props ) {
 	const { Widget, WidgetNull } = props;
@@ -57,15 +58,14 @@ export default function TopConvertingTrafficSourceWidget( props ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'sessionSource' ],
-		metrics: [ { name: 'engagementRate' } ],
-		orderby: [
+		dimensions: [ 'sessionDefaultChannelGroup' ],
+		metrics: [
 			{
-				metric: { metricName: 'engagementRate' },
-				desc: true,
+				name: 'sessionConversionRate',
 			},
 		],
 		limit: 1,
+		orderBy: 'sessionConversionRate',
 	};
 
 	const report = useInViewSelect( ( select ) =>
@@ -74,7 +74,7 @@ export default function TopConvertingTrafficSourceWidget( props ) {
 			: undefined
 	);
 
-	const loading = useInViewSelect( ( select ) =>
+	const loading = useSelect( ( select ) =>
 		isGA4ModuleConnected
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
@@ -87,21 +87,31 @@ export default function TopConvertingTrafficSourceWidget( props ) {
 		return <WidgetNull />;
 	}
 
-	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
-		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
+	const getRowForDateRange = ( dateRange ) => {
+		if ( ! report?.rows ) {
+			return null;
+		}
 
-	// Prevents running a filter on `report.rows` which could be undefined.
-	const { rows = [] } = report || {};
+		// Filter the report to get only rows that match the given date range.
+		const rows = report.rows.filter(
+			( { dimensionValues: [ , dateValue ] } ) =>
+				dateValue.value === dateRange
+		);
 
-	const curRange = rows.find( makeFilter( 'date_range_0', 1 ) );
-	const prevRange = rows.find( makeFilter( 'date_range_1', 1 ) );
+		// As the report is limited to 1 row per date range, return the first row.
+		return rows[ 0 ];
+	};
 
-	const topTrafficSource = curRange?.dimensionValues?.[ 0 ]?.value || '-';
+	const currentRow = getRowForDateRange( 'date_range_0' );
+	const previousRow = getRowForDateRange( 'date_range_1' );
 
-	const curEngagementRate =
-		parseFloat( curRange?.metricValues?.[ 0 ].value ) || 0;
-	const prevEngagementRate =
-		parseFloat( prevRange?.metricValues?.[ 0 ]?.value ) || 0;
+	const topChannelGroup = currentRow?.dimensionValues?.[ 0 ].value || '-';
+	const topConversionRate = parseFloat(
+		currentRow?.metricValues?.[ 0 ].value || '0'
+	);
+	const previousTopConversionRate = parseFloat(
+		previousRow?.metricValues?.[ 0 ].value || '0'
+	);
 
 	const format = {
 		style: 'percent',
@@ -112,16 +122,16 @@ export default function TopConvertingTrafficSourceWidget( props ) {
 	return (
 		<MetricTileText
 			Widget={ Widget }
-			title={ __( 'Most engaged traffic source', 'google-site-kit' ) }
-			metricValue={ topTrafficSource }
+			title={ __( 'Top converting traffic source', 'google-site-kit' ) }
+			metricValue={ topChannelGroup }
 			metricValueFormat={ format }
 			subText={ sprintf(
-				/* translators: %s: Percentage of engaged sessions for the current top traffic source compared to the number of total engaged sessions for all traffic sources. */
-				__( '%s of engaged sessions', 'google-site-kit' ),
-				numFmt( 1, format )
+				/* translators: %d: Percentage of visits that led to conversions. */
+				__( '%s of visits led to conversions', 'google-site-kit' ),
+				numFmt( topConversionRate, format )
 			) }
-			previousValue={ prevEngagementRate }
-			currentValue={ curEngagementRate }
+			previousValue={ previousTopConversionRate }
+			currentValue={ topConversionRate }
 			loading={ loading }
 		/>
 	);
