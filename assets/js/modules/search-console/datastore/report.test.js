@@ -188,23 +188,6 @@ describe( 'modules/search-console report', () => {
 				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
 			} );
 
-			it( 'should return TRUE if the returned report is an empty array', async () => {
-				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
-
-				const { isGatheringData } = registry.select(
-					MODULES_SEARCH_CONSOLE
-				);
-
-				expect( isGatheringData() ).toBeUndefined();
-
-				await subscribeUntil(
-					registry,
-					() => isGatheringData() !== undefined
-				);
-
-				expect( isGatheringData() ).toBe( true );
-			} );
-
 			it( 'should return `undefined` if report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
@@ -220,6 +203,23 @@ describe( 'modules/search-console report', () => {
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBeUndefined();
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
+			} );
+
+			it( 'should return TRUE if the returned report is an empty array', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
+
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( isGatheringData() ).toBe( true );
 			} );
 
 			it( 'should return FALSE if the returned report has rows', async () => {
@@ -265,23 +265,6 @@ describe( 'modules/search-console report', () => {
 				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
 			} );
 
-			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {
-				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
-
-				const { hasZeroData } = registry.select(
-					MODULES_SEARCH_CONSOLE
-				);
-
-				expect( hasZeroData() ).toBeUndefined();
-
-				await subscribeUntil(
-					registry,
-					() => hasZeroData() !== undefined
-				);
-
-				expect( hasZeroData() ).toBe( true );
-			} );
-
 			it( 'should return `undefined` if report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
@@ -298,6 +281,23 @@ describe( 'modules/search-console report', () => {
 
 				expect( hasZeroData() ).toBeUndefined();
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
+			} );
+
+			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
+
+				const { hasZeroData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect( hasZeroData() ).toBe( true );
 			} );
 
 			it( 'should return false if isGatheringData and isZeroReport return false', async () => {
