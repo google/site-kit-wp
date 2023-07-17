@@ -31,18 +31,24 @@ add_filter(
 	}
 );
 
+
 /**
  * Fake all required scopes have been granted.
  */
-add_filter(
-	'get_user_option_googlesitekit_auth_scopes',
-	function () {
-		global $wp_current_filter;
+$_force_all_scopes = function () {
+	global $_force_all_scopes;
 
-		if ( count( array_keys( $wp_current_filter, 'get_user_option_googlesitekit_auth_scopes', true ) ) > 1 ) {
-			return null;
-		}
+	// Remove the filter hook to prevent an infinite loop in the case where the option is retrieved again during the
+	// call to `get_required_scopes()`.
+	remove_filter( 'get_user_option_googlesitekit_auth_scopes', $_force_all_scopes );
 
-		return ( new OAuth_Client( Plugin::instance()->context() ) )->get_required_scopes();
-	}
-);
+	$required_scopes = ( new OAuth_Client( Plugin::instance()->context() ) )->get_required_scopes();
+
+	// Restore the filter hook for future calls to retrieve the `googlesitekit_auth_scopes` option.
+	add_filter( 'get_user_option_googlesitekit_auth_scopes', $_force_all_scopes );
+
+	return $required_scopes;
+};
+
+// Ensure the filter hook is initially applied.
+add_filter( 'get_user_option_googlesitekit_auth_scopes', $_force_all_scopes );
