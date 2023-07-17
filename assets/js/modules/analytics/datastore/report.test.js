@@ -29,7 +29,6 @@ import {
 	subscribeUntil,
 	muteFetch,
 	waitForTimeouts,
-	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { isZeroReport } from '../util';
@@ -384,7 +383,7 @@ describe( 'modules/analytics report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
+				await waitForTimeouts( 30 );
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBeUndefined();
