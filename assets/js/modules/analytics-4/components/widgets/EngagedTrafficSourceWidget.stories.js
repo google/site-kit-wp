@@ -62,7 +62,6 @@ Ready.args = {
 };
 Ready.scenario = {
 	label: 'KeyMetrics/EngagedTrafficSourceWidget/Ready',
-	delay: 250,
 };
 
 export const Loading = Template.bind( {} );
@@ -90,7 +89,6 @@ ZeroData.args = {
 };
 ZeroData.scenario = {
 	label: 'KeyMetrics/EngagedTrafficSourceWidget/ZeroData',
-	delay: 250,
 };
 
 export default {
