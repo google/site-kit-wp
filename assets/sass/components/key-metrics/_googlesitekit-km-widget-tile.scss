@@ -116,8 +116,9 @@
 
 		.googlesitekit-km-widget-tile__table-plain-text {
 			color: $c-surfaces-on-surface;
-			font-size: $fs-label-sm;
-			line-height: $lh-body-md;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 			margin: 0;
 		}
 	}
