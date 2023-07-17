@@ -32,6 +32,7 @@ import { Fragment } from '@wordpress/element';
 import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
+import MetricTileError from './MetricTileError';
 
 export default function MetricTileNumeric( props ) {
 	const {
@@ -43,11 +44,12 @@ export default function MetricTileNumeric( props ) {
 		subText,
 		previousValue,
 		currentValue,
+		error,
 	} = props;
 
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
-	return (
+	return ! error ? (
 		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
 				<h3 className="googlesitekit-km-widget-tile__title">
@@ -55,7 +57,7 @@ export default function MetricTileNumeric( props ) {
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <PreviewBlock width="100%" height="68px" /> }
-					{ ! loading && (
+					{ ! loading && ! error && (
 						<Fragment>
 							<div className="googlesitekit-km-widget-tile__metric-change-container">
 								<div className="googlesitekit-km-widget-tile__metric">
@@ -77,6 +79,8 @@ export default function MetricTileNumeric( props ) {
 				</div>
 			</div>
 		</Widget>
+	) : (
+		<MetricTileError error={ error } headerText={ title } />
 	);
 }
 
@@ -92,4 +96,8 @@ MetricTileNumeric.propTypes = {
 	subtext: PropTypes.string,
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ),
 };
