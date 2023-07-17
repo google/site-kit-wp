@@ -18,7 +18,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isEqual, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -44,9 +44,11 @@ const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
+const RESET_KEY_METRICS_SETTINGS = 'RESET_KEY_METRICS_SETTINGS';
 
 const baseInitialState = {
 	keyMetricsSettings: undefined,
+	savedKeyMetricsSettings: undefined,
 };
 
 const fetchGetKeyMetricsSettingsStore = createFetchStore( {
@@ -61,6 +63,7 @@ const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 	reducerCallback: ( state, keyMetricsSettings ) => ( {
 		...state,
 		keyMetricsSettings,
+		savedKeyMetricsSettings: keyMetricsSettings,
 	} ),
 } );
 
@@ -71,6 +74,7 @@ const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	reducerCallback: ( state, keyMetricsSettings ) => ( {
 		...state,
 		keyMetricsSettings,
+		savedKeyMetricsSettings: keyMetricsSettings,
 	} ),
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
@@ -124,6 +128,20 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	/**
+	 * Resets key metrics setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetKeyMetricsSettings() {
+		return {
+			type: RESET_KEY_METRICS_SETTINGS,
+			payload: {},
+		};
+	},
 };
 
 const baseControls = {};
@@ -137,6 +155,12 @@ const baseReducer = ( state, { type, payload } ) => {
 					...state.keyMetricsSettings,
 					[ payload.settingID ]: payload.value,
 				},
+			};
+		}
+		case RESET_KEY_METRICS_SETTINGS: {
+			return {
+				...state,
+				keyMetricsSettings: state.savedKeyMetricsSettings,
 			};
 		}
 		default: {
@@ -304,6 +328,20 @@ const baseSelectors = {
 	 */
 	getKeyMetricsSettings( state ) {
 		return state.keyMetricsSettings;
+	},
+
+	/**
+	 * Indicates whether the current key metrics settings have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the key metrics settings have changed, false otherwise.
+	 */
+	haveKeyMetricsSettingsChanged( state ) {
+		const { keyMetricsSettings, savedKeyMetricsSettings } = state;
+
+		return ! isEqual( keyMetricsSettings, savedKeyMetricsSettings );
 	},
 };
 
