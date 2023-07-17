@@ -53,6 +53,7 @@ export default function AdBlockingRecoveryCTA() {
 	);
 
 	if (
+		hasExistingAdBlockingRecoveryTag === undefined ||
 		hasExistingAdBlockingRecoveryTag ||
 		adBlockingRecoverySetupStatus !== '' ||
 		accountStatus !== ACCOUNT_STATUS_READY ||

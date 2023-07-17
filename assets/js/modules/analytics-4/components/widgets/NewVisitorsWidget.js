@@ -36,15 +36,12 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import {
-	MetricTileNumeric,
-	whenKeyMetricsWidgetVisible,
-} from '../../../../components/KeyMetrics';
+import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util/i18n';
 
 const { useSelect, useInViewSelect } = Data;
 
-function NewVisitorsWidget( { Widget } ) {
+export default function NewVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -110,5 +107,3 @@ function NewVisitorsWidget( { Widget } ) {
 NewVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
-
-export default whenKeyMetricsWidgetVisible()( NewVisitorsWidget );

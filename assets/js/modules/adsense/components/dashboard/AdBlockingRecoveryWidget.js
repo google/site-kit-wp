@@ -142,7 +142,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const shouldShowWidget =
 		! viewOnlyDashboard &&
 		adSenseModuleConnected &&
-		! hasExistingAdBlockingRecoveryTag &&
+		hasExistingAdBlockingRecoveryTag === false &&
 		isDismissed === false &&
 		adBlockingRecoverySetupStatus === '' &&
 		accountStatus === ACCOUNT_STATUS_READY &&

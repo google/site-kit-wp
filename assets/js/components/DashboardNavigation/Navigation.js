@@ -99,13 +99,21 @@ export default function Navigation() {
 	} );
 
 	const userInputEnabled = useFeature( 'userInput' );
+	const isKeyMetricsWidgetHidden = useSelect(
+		( select ) =>
+			userInputEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
 
 	const widgetContextOptions = {
 		modules: viewableModules ? viewableModules : undefined,
 	};
 
 	const showKeyMetrics = useSelect( ( select ) => {
-		if ( ! userInputEnabled || dashboardType !== DASHBOARD_TYPE_MAIN ) {
+		if (
+			! userInputEnabled ||
+			dashboardType !== DASHBOARD_TYPE_MAIN ||
+			isKeyMetricsWidgetHidden === true
+		) {
 			return false;
 		}
 
@@ -290,7 +298,7 @@ export default function Navigation() {
 			const margin = 20;
 
 			const areas = [
-				...( showKeyMetrics ? [ ANCHOR_ID_TRAFFIC ] : [] ),
+				...( showKeyMetrics ? [ ANCHOR_ID_KEY_METRICS ] : [] ),
 				...( showTraffic ? [ ANCHOR_ID_TRAFFIC ] : [] ),
 				...( showContent ? [ ANCHOR_ID_CONTENT ] : [] ),
 				...( showSpeed ? [ ANCHOR_ID_SPEED ] : [] ),

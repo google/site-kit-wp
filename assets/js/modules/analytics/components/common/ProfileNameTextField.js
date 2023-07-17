@@ -32,7 +32,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { TextField, HelperText, Input } from '../../../../material-components';
+import { TextField } from 'googlesitekit-components';
 import {
 	MODULES_ANALYTICS,
 	PROFILE_CREATE,
@@ -83,41 +83,34 @@ export default function ProfileNameTextField() {
 		return null;
 	}
 
-	let helperText;
-	let trailingIcon;
-
 	const existingProfile =
 		Array.isArray( profiles ) &&
 		profiles.some( ( { name } ) => name === profileName );
-	if ( existingProfile ) {
-		helperText = (
-			<HelperText persistent>
-				{ __(
-					'A view with this name already exists.',
-					'google-site-kit'
-				) }
-			</HelperText>
-		);
-
-		trailingIcon = (
-			<span className="googlesitekit-text-field-icon--warning">
-				<VisuallyHidden>
-					{ __( 'Warning', 'google-site-kit' ) }
-				</VisuallyHidden>
-			</span>
-		);
-	}
 
 	return (
 		<div className="googlesitekit-analytics-profilename">
 			<TextField
 				label={ __( 'View Name', 'google-site-kit' ) }
 				outlined
-				helperText={ helperText }
-				trailingIcon={ trailingIcon }
-			>
-				<Input value={ profileName } onChange={ onChange } />
-			</TextField>
+				helperText={
+					existingProfile &&
+					__(
+						'A view with this name already exists.',
+						'google-site-kit'
+					)
+				}
+				trailingIcon={
+					existingProfile && (
+						<span className="googlesitekit-text-field-icon--warning">
+							<VisuallyHidden>
+								{ __( 'Warning', 'google-site-kit' ) }
+							</VisuallyHidden>
+						</span>
+					)
+				}
+				value={ profileName }
+				onChange={ onChange }
+			/>
 
 			<p>
 				{ __(
