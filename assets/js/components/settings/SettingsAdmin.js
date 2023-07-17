@@ -24,6 +24,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
@@ -31,17 +35,39 @@ import ResetButton from '../ResetButton';
 import { useFeature } from '../../hooks/useFeature';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
+const { useSelect } = Data;
 
 export default function SettingsAdmin() {
 	const userInputEnabled = useFeature( 'userInput' );
 
+	const searchConsoleModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'search-console' )
+	);
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const searchConsoleIsGatheringData = useSelect(
+		( select ) =>
+			searchConsoleModuleConnected &&
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const analyticsIsGatheringData = useSelect(
+		( select ) =>
+			analyticsModuleConnected &&
+			select( MODULES_ANALYTICS_4 ).isGatheringData()
+	);
+
 	return (
 		<Row>
-			{ userInputEnabled && (
-				<Cell size={ 12 }>
-					<SettingsCardKeyMetrics />
-				</Cell>
-			) }
+			{ userInputEnabled &&
+				searchConsoleModuleConnected &&
+				analyticsModuleConnected &&
+				searchConsoleIsGatheringData === false &&
+				analyticsIsGatheringData === false && (
+					<Cell size={ 12 }>
+						<SettingsCardKeyMetrics />
+					</Cell>
+				) }
 
 			<Cell size={ 12 }>
 				<Layout
