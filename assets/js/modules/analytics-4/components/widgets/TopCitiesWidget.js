@@ -31,7 +31,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -41,14 +40,7 @@ import { numFmt } from '../../../../util';
 import { MetricTileTable } from '../../../../components/KeyMetrics';
 const { useSelect, useInViewSelect } = Data;
 
-function TopCitiesWidget( { Widget, WidgetNull } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
-	);
-	const isGA4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
+export default function TopCitiesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -82,10 +74,6 @@ function TopCitiesWidget( { Widget, WidgetNull } ) {
 			)
 	);
 
-	if ( ! isGA4ModuleConnected || keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
-
 	const { rows = [] } = topCitiesReport || {};
 
 	const totalUsers =
@@ -115,7 +103,7 @@ function TopCitiesWidget( { Widget, WidgetNull } ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'To cities driving traffic', 'google-site-kit' ) }
+			title={ __( 'Top cities driving traffic', 'google-site-kit' ) }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
@@ -126,7 +114,4 @@ function TopCitiesWidget( { Widget, WidgetNull } ) {
 
 TopCitiesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
-
-export default TopCitiesWidget;
