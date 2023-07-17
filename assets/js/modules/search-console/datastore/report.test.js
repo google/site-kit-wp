@@ -300,7 +300,7 @@ describe( 'modules/search-console report', () => {
 				expect( hasZeroData() ).toBe( true );
 			} );
 
-			it( 'should return false if isGatheringData and isZeroReport return false', async () => {
+			it( 'should return FALSE if isGatheringData and isZeroReport return false', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, {
 					body: fixtures.report,
 				} );

@@ -451,8 +451,6 @@ describe( 'modules/analytics report', () => {
 			it( 'should return `undefined` if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch( new RegExp( analyticsReportRegexp ) );
 
-				muteFetch( dataAvailableRegexp );
-
 				const { hasZeroData, isResolving } =
 					registry.select( MODULES_ANALYTICS );
 
