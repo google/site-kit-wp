@@ -1,5 +1,5 @@
 /**
- * PopularProductsWidget component.
+ * HelperText component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,20 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-export default function PopularProductsWidget( { Widget } ) {
-	return (
-		<Widget>
-			<div>TODO: UI for PopularProductsWidget</div>
-		</Widget>
-	);
+export default function HelperText() {
+	return null;
 }
-
-PopularProductsWidget.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
-};

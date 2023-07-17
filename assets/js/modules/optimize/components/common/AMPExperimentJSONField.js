@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Input, TextField } from '../../../../material-components';
+import { TextField } from 'googlesitekit-components';
 import classnames from 'classnames';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -80,9 +80,9 @@ export default function AMPExperimentJSONField() {
 				name="amp-experiment"
 				onChange={ onChange }
 				textarea
-			>
-				<Input inputType="textarea" value={ ampExperimentJSON } />
-			</TextField>
+				inputType="textarea"
+				value={ ampExperimentJSON }
+			/>
 			{ ! isValidAMPExperimentJSON( ampExperimentJSON ) && (
 				<ErrorText
 					message={ __(

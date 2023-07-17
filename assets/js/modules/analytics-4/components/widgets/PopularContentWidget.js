@@ -37,16 +37,13 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import {
-	MetricTileTable,
-	whenKeyMetricsWidgetVisible,
-} from '../../../../components/KeyMetrics';
+import { MetricTileTable } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import { getFullURL, numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
-function PopularContentWidget( { Widget, WidgetNull } ) {
+export default function PopularContentWidget( { Widget, WidgetNull } ) {
 	const isGA4ModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -138,5 +135,3 @@ PopularContentWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
-
-export default whenKeyMetricsWidgetVisible()( PopularContentWidget );

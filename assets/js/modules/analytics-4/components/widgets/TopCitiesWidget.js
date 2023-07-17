@@ -38,10 +38,7 @@ import {
 } from '../../datastore/constants';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
-import {
-	MetricTileTable,
-	whenKeyMetricsWidgetVisible,
-} from '../../../../components/KeyMetrics';
+import { MetricTileTable } from '../../../../components/KeyMetrics';
 const { useSelect, useInViewSelect } = Data;
 
 function TopCitiesWidget( { Widget, WidgetNull } ) {
@@ -132,4 +129,4 @@ TopCitiesWidget.propTypes = {
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
-export default whenKeyMetricsWidgetVisible()( TopCitiesWidget );
+export default TopCitiesWidget;

@@ -1,5 +1,5 @@
 /**
- * PopularProductsWidget component.
+ * Select component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -19,17 +19,18 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import MaterialSelect from '@material/react-select';
 
-export default function PopularProductsWidget( { Widget } ) {
-	return (
-		<Widget>
-			<div>TODO: UI for PopularProductsWidget</div>
-		</Widget>
-	);
+/**
+ * WordPress dependencies
+ */
+import { useInstanceId } from '@wordpress/compose';
+
+export default function Select( { id, ...props } ) {
+	// For accessibility, provide a generated id fallback if an id
+	// is not supplied. Adding an id is mandatory because otherwise the label
+	// is not able to associate with the select.
+	const idFallback = useInstanceId( Select, 'googlesitekit-select' );
+
+	return <MaterialSelect id={ id || idFallback } { ...props } />;
 }
-
-PopularProductsWidget.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
-};

@@ -28,13 +28,16 @@ import DialogTitle from './DialogTitle';
 import DialogContent from './DialogContent';
 import DialogFooter from './DialogFooter';
 import Menu from './Menu';
+import Option from './Option';
 import ProgressBar from './ProgressBar';
 import Radio from './Radio';
+import Select from './Select';
 import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
 import Tab from './Tab';
 import TabBar from './TabBar';
 import TextField from './TextField';
+import HelperText from './HelperText';
 import Tooltip from './Tooltip';
 
 const Components = {
@@ -46,9 +49,12 @@ const Components = {
 	DialogTitle,
 	DialogContent,
 	DialogFooter,
+	HelperText,
 	Menu,
+	Option,
 	ProgressBar,
 	Radio,
+	Select,
 	SpinnerButton,
 	Switch,
 	Tab,

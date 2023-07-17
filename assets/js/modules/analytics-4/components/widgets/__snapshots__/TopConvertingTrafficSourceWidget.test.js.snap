@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopConvertingTrafficSourceWidget renders correctly with the expected metrics when the Key Metrics widget is not hidden 1`] = `
+exports[`TopConvertingTrafficSourceWidget renders correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopConvertingTrafficSource googlesitekit-widget--no-padding"
