@@ -24,7 +24,6 @@ import { createExistingTagStore } from '../../../googlesitekit/data/create-exist
 import { MODULES_ANALYTICS_4 } from './constants';
 import { getTagMatchers } from '../utils/tag-matchers';
 import { isValidMeasurementID } from '../utils/validation';
-import { isFeatureEnabled } from '../../../features';
 
 const existingTagStore = createExistingTagStore( {
 	storeName: MODULES_ANALYTICS_4,
@@ -32,39 +31,35 @@ const existingTagStore = createExistingTagStore( {
 	isValidTag: isValidMeasurementID,
 } );
 
-if ( isFeatureEnabled( 'gteSupport' ) ) {
-	// Override the `getExistingTag()` resolver to provide the extended Google Tag behavior.
-	existingTagStore.resolvers.getExistingTag = function* () {
-		const registry = yield Data.commonActions.getRegistry();
+// Override the `getExistingTag()` resolver to provide the extended Google Tag behavior.
+existingTagStore.resolvers.getExistingTag = function* () {
+	const registry = yield Data.commonActions.getRegistry();
 
-		let existingTag = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getExistingTag();
+	let existingTag = registry.select( MODULES_ANALYTICS_4 ).getExistingTag();
 
-		if ( existingTag === undefined ) {
-			existingTag = yield existingTagStore.actions.fetchGetExistingTag();
+	if ( existingTag === undefined ) {
+		existingTag = yield existingTagStore.actions.fetchGetExistingTag();
+	}
+
+	// As it's not possible to directly look up a Google Tag container by one of its tag IDs, we look up the container by destination ID (the measurement ID).
+	// We then check if the tag ID is included in the container's tag IDs. If so, we have confirmed the existing tag is a Google Tag pointing to the given measurement ID.
+	// Otherwise, we ignore the existing tag (set it to null).
+	if ( existingTag !== null ) {
+		const container = yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getGoogleTagContainer( existingTag )
+		);
+
+		if ( ! container?.tagIds.includes( existingTag ) ) {
+			existingTag = null;
 		}
+	}
 
-		// As it's not possible to directly look up a Google Tag container by one of its tag IDs, we look up the container by destination ID (the measurement ID).
-		// We then check if the tag ID is included in the container's tag IDs. If so, we have confirmed the existing tag is a Google Tag pointing to the given measurement ID.
-		// Otherwise, we ignore the existing tag (set it to null).
-		if ( existingTag !== null ) {
-			const container = yield Data.commonActions.await(
-				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-					.getGoogleTagContainer( existingTag )
-			);
-
-			if ( ! container?.tagIds.includes( existingTag ) ) {
-				existingTag = null;
-			}
-		}
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetExistingTag( existingTag );
-	};
-}
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetExistingTag( existingTag );
+};
 
 const store = Data.combineStores( existingTagStore );
 

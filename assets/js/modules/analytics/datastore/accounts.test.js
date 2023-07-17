@@ -39,6 +39,7 @@ import {
 	untilResolved,
 	provideSiteInfo,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
@@ -171,6 +172,8 @@ describe( 'modules/analytics accounts', () => {
 
 		describe( 'resetAccounts', () => {
 			it( 'sets accounts and related values back to their initial values', async () => {
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
@@ -394,6 +397,8 @@ describe( 'modules/analytics accounts', () => {
 				const accountID =
 					fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
+				provideUserAuthentication( registry );
+
 				await registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
@@ -442,6 +447,8 @@ describe( 'modules/analytics accounts', () => {
 
 				const accountID =
 					fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				provideUserAuthentication( registry );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS )
@@ -492,7 +499,7 @@ describe( 'modules/analytics accounts', () => {
 					} );
 
 					provideSiteInfo( registry );
-
+					provideUserAuthentication( registry );
 					provideModules( registry, [
 						{
 							slug: 'analytics',
@@ -601,6 +608,8 @@ describe( 'modules/analytics accounts', () => {
 						status: 200,
 					}
 				);
+
+				provideUserAuthentication( registry );
 			} );
 
 			it( 'uses a resolver to make a network request', async () => {
@@ -893,6 +902,7 @@ describe( 'modules/analytics accounts', () => {
 				} );
 
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 				provideModules( registry, [
 					{
 						slug: 'analytics',
