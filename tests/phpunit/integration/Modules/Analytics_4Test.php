@@ -592,9 +592,9 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_scopes_gteSupport
+	 * @dataProvider data_scopes
 	 */
-	public function test_auth_scopes__gteSupport( array $granted_scopes, array $expected_scopes ) {
+	public function test_auth_scopes_( array $granted_scopes, array $expected_scopes ) {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		$this->analytics->register();
 
@@ -606,7 +606,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function data_scopes_gteSupport() {
+	public function data_scopes() {
 		return array(
 			'with analytics and tag manager scopes granted' => array(
 				array(
