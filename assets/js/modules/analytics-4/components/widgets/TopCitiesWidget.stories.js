@@ -119,9 +119,6 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveIsUserInputCompleted( false );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
