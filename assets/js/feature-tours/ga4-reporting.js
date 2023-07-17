@@ -57,7 +57,7 @@ const ga4Reporting = {
 			),
 			content: createInterpolateElement(
 				__(
-					'"Conversions" have replaced "Goals", since "Goals" no longer exist in GA4. <a>Learn how to set up Conversions</a>',
+					'"Conversions" have replaced "Goals," since "Goals" no longer exist in GA4. <a>Learn how to set up Conversions</a>',
 					'google-site-kit'
 				),
 				{

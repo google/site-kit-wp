@@ -31,6 +31,7 @@ import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 import {
 	provideSiteInfo,
+	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../../tests/js/utils';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
@@ -52,6 +53,7 @@ const propertyIDua = propertiesUA[ 0 ].id;
 
 const setupRegistry = ( registry ) => {
 	provideSiteInfo( registry );
+	provideUserAuthentication( registry );
 
 	const { dispatch } = registry;
 

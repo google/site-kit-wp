@@ -61,7 +61,6 @@ const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-	const gteSupportEnabled = useFeature( 'gteSupport' );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
@@ -178,11 +177,11 @@ export default function AccountCreate() {
 			scopes.push( PROVISIONING_SCOPE );
 			scopes.push( EDIT_SCOPE );
 		}
-		// The GTM scope should be granted if GTE is enabled but
+		// The GTM scope should be granted for GTE support, but
 		// it is possible for it not to be at this point.
 		// This saves an extra OAuth flow and is necessary for the
 		// Google tag sync at the end of the post-provisioning flow.
-		if ( gteSupportEnabled && ! hasGTMScope ) {
+		if ( ! hasGTMScope ) {
 			scopes.push( GTM_SCOPE );
 		}
 
@@ -224,7 +223,6 @@ export default function AccountCreate() {
 		hasProvisioningScope,
 		hasEditScope,
 		hasGTMScope,
-		gteSupportEnabled,
 		setPermissionScopeError,
 		setValues,
 		viewContext,
