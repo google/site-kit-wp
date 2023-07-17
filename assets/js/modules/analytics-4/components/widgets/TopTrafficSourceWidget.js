@@ -32,7 +32,6 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -42,11 +41,7 @@ import { MetricTileText } from '../../../../components/KeyMetrics';
 const { useSelect, useInViewSelect } = Data;
 
 export default function TopTrafficSourceWidget( props ) {
-	const { Widget, WidgetNull } = props;
-
-	const isGA4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
+	const { Widget } = props;
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -77,36 +72,24 @@ export default function TopTrafficSourceWidget( props ) {
 	};
 
 	const totalUsersReport = useInViewSelect( ( select ) =>
-		isGA4ModuleConnected
-			? select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions )
-			: undefined
+		select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions )
 	);
 
 	const trafficSourceReport = useInViewSelect( ( select ) =>
-		isGA4ModuleConnected
-			? select( MODULES_ANALYTICS_4 ).getReport(
-					trafficSourceReportOptions
-			  )
-			: undefined
+		select( MODULES_ANALYTICS_4 ).getReport( trafficSourceReportOptions )
 	);
 
 	const loading = useSelect(
-		isGA4ModuleConnected
-			? ( select ) =>
-					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ totalUsersReportOptions ]
-					) ||
-					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ trafficSourceReportOptions ]
-					)
-			: () => undefined
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ totalUsersReportOptions ]
+			) ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ trafficSourceReportOptions ]
+			)
 	);
-
-	if ( ! isGA4ModuleConnected ) {
-		return <WidgetNull />;
-	}
 
 	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
 		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
