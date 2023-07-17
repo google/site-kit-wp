@@ -71,3 +71,49 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 ];
+
+export const KEY_METRICS_SELECTION_PANEL_OPENED_KEY =
+	'googlesitekit-key-metrics-selection-panel-opened';
+
+export const KEY_METRICS_META = {
+	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+		title: '',
+		description: '',
+	},
+	[ KM_ANALYTICS_NEW_VISITORS ]: {
+		title: '',
+		description: '',
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE ]: {
+		title: '',
+		description: '',
+	},
+	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
+		title: '',
+		description: '',
+	},
+	[ KM_ANALYTICS_POPULAR_CONTENT ]: {
+		title: '',
+		description: '',
+	},
+	[ KM_ANALYTICS_POPULAR_PRODUCTS ]: {
+		title: '',
+		description: '',
+	},
+	[ KM_ANALYTICS_TOP_CITIES ]: {
+		title: '',
+		description: '',
+	},
+	[ KM_ANALYTICS_TOP_COUNTRIES ]: {
+		title: '',
+		description: '',
+	},
+	[ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ]: {
+		title: '',
+		description: '',
+	},
+	[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+		title: '',
+		description: '',
+	},
+};
