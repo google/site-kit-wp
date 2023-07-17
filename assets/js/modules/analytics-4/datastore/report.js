@@ -311,8 +311,10 @@ const baseSelectors = {
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
 	 * @since 1.95.0
+	 * @since n.e.x.t Returns `undefined` if the underlying report errors.
 	 *
-	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
+	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`.
+	 *                             Returns `undefined` while resolving or in the event of an error.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
