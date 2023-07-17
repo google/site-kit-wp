@@ -41,9 +41,7 @@ import { numFmt } from '../../../../util';
 
 const { useSelect } = Data;
 
-export default function TopConvertingTrafficSourceWidget( props ) {
-	const { Widget } = props;
-
+export default function TopConvertingTrafficSourceWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,

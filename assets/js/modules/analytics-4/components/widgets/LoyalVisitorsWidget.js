@@ -41,9 +41,7 @@ import { numFmt } from '../../../../util';
 
 const { useSelect, useInViewSelect } = Data;
 
-export default function LoyalVisitorsWidget( props ) {
-	const { Widget } = props;
-
+export default function LoyalVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -122,5 +120,4 @@ export default function LoyalVisitorsWidget( props ) {
 
 LoyalVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };

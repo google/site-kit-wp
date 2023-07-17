@@ -41,9 +41,7 @@ import { numFmt } from '../../../../util/i18n';
 
 const { useSelect, useInViewSelect } = Data;
 
-export default function NewVisitorsWidget( props ) {
-	const { Widget } = props;
-
+export default function NewVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -108,5 +106,4 @@ export default function NewVisitorsWidget( props ) {
 
 NewVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -31,18 +30,18 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import { numFmt } from '../../../../util';
-import { MetricTileText } from '../../../../components/KeyMetrics';
+import { get } from 'lodash';
+
 const { useSelect, useInViewSelect } = Data;
 
-export default function TopTrafficSourceWidget( props ) {
-	const { Widget } = props;
-
+export default function TopTrafficSourceWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -148,11 +147,14 @@ export default function TopTrafficSourceWidget( props ) {
 			title={ __( 'Top Traffic Source', 'google-site-kit' ) }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={ sprintf(
-				/* translators: %s: Percentage of users for the current top traffic source compared to the number of total users for all traffic sources. */
-				__( '%s of total traffic', 'google-site-kit' ),
-				numFmt( relativeCurrentTopTrafficSourceUsers, format )
-			) }
+			subText={
+				// eslint-disable-next-line @wordpress/valid-sprintf
+				sprintf(
+					/* translators: %d: Percentage of users for the current top traffic source compared to the number of total users for all traffic sources. */
+					__( '%s of total traffic', 'google-site-kit' ),
+					numFmt( relativeCurrentTopTrafficSourceUsers, format )
+				)
+			}
 			previousValue={ relativePreviousTopTrafficSourceUsers }
 			currentValue={ relativeCurrentTopTrafficSourceUsers }
 			loading={ loading }
