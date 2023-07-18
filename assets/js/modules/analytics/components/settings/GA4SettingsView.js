@@ -60,6 +60,9 @@ export default function GA4SettingsView() {
 			path: escapeURI`/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
 		} )
 	);
+	const googleTagID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+	);
 
 	if ( ! ga4PropertyID || ga4PropertyID === PROPERTY_CREATE ) {
 		return null;
@@ -105,6 +108,16 @@ export default function GA4SettingsView() {
 						<DisplaySetting value={ ga4MeasurementID } />
 					</p>
 				</div>
+				{ googleTagID && (
+					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Google Tag ID', 'google-site-kit' ) }
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting value={ googleTagID } />
+						</p>
+					</div>
+				) }
 				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
 					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
 						<Link href={ editDataStreamSettingsURL } external>
