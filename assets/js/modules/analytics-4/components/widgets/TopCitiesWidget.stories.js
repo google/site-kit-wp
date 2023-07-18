@@ -83,7 +83,6 @@ Ready.args = {
 };
 Ready.scenario = {
 	label: 'KeyMetrics/TopCitiesWidget/Ready',
-	delay: 250,
 };
 
 export const Loading = Template.bind( {} );
@@ -111,7 +110,6 @@ ZeroData.args = {
 };
 ZeroData.scenario = {
 	label: 'KeyMetrics/TopCitiesWidget/ZeroData',
-	delay: 250,
 };
 
 export default {
