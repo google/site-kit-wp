@@ -40,6 +40,14 @@
 			font-size: 12px;
 			margin: 0 34px;
 		}
+
+		@media (max-width: $bp-tablet) {
+			text-align: left;
+
+			p {
+				margin: 0;
+			}
+		}
 	}
 
 	.googlesitekit-ad-blocking-recovery__hero-graphic {
