@@ -35,12 +35,9 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import BannerNotification from './BannerNotification';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function ErrorNotifications() {
-	const gteSupportEnabled = useFeature( 'gteSupport' );
-
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -68,7 +65,7 @@ export default function ErrorNotifications() {
 	);
 
 	const showUnsatisfiedScopesAlertGTE =
-		gteSupportEnabled && ga4ModuleConnected && ! hasTagManagerReadScope;
+		ga4ModuleConnected && ! hasTagManagerReadScope;
 
 	return (
 		<Fragment>

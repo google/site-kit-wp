@@ -117,7 +117,7 @@ export default function AdBlockingRecoveryToggle() {
 		existingAdBlockingRecoveryTag === accountID
 	) {
 		existingAdBlockingRecoveryTagMessage = __(
-			'You’ve already got an Ad Blocking Recovery code on your site. We recommend you use Site Kit to manage this to get the most out of AdSense.',
+			'You’ve already enabled an ad blocking recovery message on your site. We recommend using Site Kit to manage this to get the most out of AdSense.',
 			'google-site-kit'
 		);
 	} else if ( existingAdBlockingRecoveryTag ) {

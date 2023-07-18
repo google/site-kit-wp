@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { provideModules, render } from '../../../tests/js/test-utils';
+import {
+	provideModules,
+	provideUserAuthentication,
+	render,
+} from '../../../tests/js/test-utils';
 import { mockCreateComponent } from '../../../tests/js/mock-component-utils';
 import DashboardEntryPoint from './DashboardEntryPoint';
 import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
@@ -31,6 +35,7 @@ jest.mock( './DashboardMainApp', () =>
 
 describe( 'DashboardEntryPoint', () => {
 	const setupRegistry = ( registry ) => {
+		provideUserAuthentication( registry );
 		provideModules( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	};
