@@ -152,7 +152,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 				isSaving={ isSaving }
 				disabled={ isSaving }
 			>
-				{ __( 'Place tag', 'google-site-kit' ) }
+				{ __( 'Enable message', 'google-site-kit' ) }
 			</SpinnerButton>
 		</Fragment>
 	);
