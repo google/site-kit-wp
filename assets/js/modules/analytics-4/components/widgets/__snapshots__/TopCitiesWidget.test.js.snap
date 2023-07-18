@@ -38,7 +38,7 @@ exports[`TopCitiesWidget renders correctly with the expected metrics 1`] = `
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  1,833.33%
+                  1,833.3%
                 </strong>
               </div>
             </div>
@@ -58,7 +58,7 @@ exports[`TopCitiesWidget renders correctly with the expected metrics 1`] = `
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  466.67%
+                  466.7%
                 </strong>
               </div>
             </div>
