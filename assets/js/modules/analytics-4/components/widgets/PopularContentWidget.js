@@ -126,7 +126,7 @@ export default function PopularContentWidget( { Widget, WidgetNull } ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			zeroState={ ZeroDataMessage }
+			ZeroState={ ZeroDataMessage }
 		/>
 	);
 }

@@ -110,7 +110,7 @@ export default function TopCitiesWidget( { Widget } ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			zeroState={ ZeroDataMessage }
+			ZeroState={ ZeroDataMessage }
 		/>
 	);
 }

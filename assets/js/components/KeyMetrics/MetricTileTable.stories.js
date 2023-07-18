@@ -70,7 +70,7 @@ ZeroData.args = {
 	title,
 	rows: [],
 	columns,
-	zeroState: () => 'No data available',
+	ZeroState: () => 'No data available',
 };
 ZeroData.scenario = {
 	label: 'KeyMetrics/MetricTileTable/ZeroData',
