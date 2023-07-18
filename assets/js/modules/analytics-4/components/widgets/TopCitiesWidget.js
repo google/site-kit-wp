@@ -77,10 +77,9 @@ export default function TopCitiesWidget( { Widget } ) {
 			)
 	);
 
-	const { rows = [] } = topCitiesReport || {};
+	const { rows = [], totals = [] } = topCitiesReport || {};
 
-	const totalUsers =
-		topCitiesReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
+	const totalUsers = totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 	const columns = [
 		{
