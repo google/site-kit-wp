@@ -42,7 +42,6 @@ import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { isFeatureEnabled } from '../../../features';
 const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -473,9 +472,6 @@ const baseActions = {
 
 		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( measurementID );
 
-		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
-			return;
-		}
 		// Wait for authentication to be resolved to check scopes.
 		yield commonActions.await(
 			__experimentalResolveSelect( CORE_USER ).getAuthentication()
@@ -554,10 +550,6 @@ const baseActions = {
 	 * @since 1.95.0
 	 */
 	*syncGoogleTagSettings() {
-		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
-			return;
-		}
-
 		const { select, dispatch, __experimentalResolveSelect } =
 			yield Data.commonActions.getRegistry();
 

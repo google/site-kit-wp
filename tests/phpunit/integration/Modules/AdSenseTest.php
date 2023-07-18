@@ -400,12 +400,15 @@ class AdSenseTest extends TestCase {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$options->set( Settings::OPTION, 'test-value' );
+		$options->set( Settings::OPTION, 'test-value-settings' );
+		$options->set( Ad_Blocking_Recovery_Tag::OPTION, 'test-value-ad-blocking-recovery-tag' );
 		$this->assertOptionExists( Settings::OPTION );
+		$this->assertOptionExists( Ad_Blocking_Recovery_Tag::OPTION );
 
 		$adsense->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
+		$this->assertOptionNotExists( Ad_Blocking_Recovery_Tag::OPTION );
 	}
 
 	public function test_get_datapoints() {

@@ -73,7 +73,7 @@ export default function AdBlockingRecoveryNotification() {
 			id={ NOTIFICATION_ID }
 			className="googlesitekit-ad-blocking-recovery-notification"
 			title={ __(
-				'You successfully added the ad blocking recovery tag',
+				'You successfully enabled the ad blocking recovery message',
 				'google-site-kit'
 			) }
 			description={ createInterpolateElement(
