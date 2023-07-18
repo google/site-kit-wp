@@ -88,31 +88,30 @@ const gatheringDataStore = createGatheringDataStore( 'search-console', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
-		const rangeArgs = {
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const { compareStartDate: startDate, endDate } = select(
+			CORE_USER
+		).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
-		};
+		} );
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } =
-			select( CORE_USER ).getDateRangeDates( rangeArgs );
-
-		const args = {
-			dimensions: 'date',
+		const reportArgs = {
 			startDate,
 			endDate,
+			dimensions: 'date',
 		};
 
 		if ( url ) {
-			args.url = url;
+			reportArgs.url = url;
 		}
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs );
 		const hasResolvedReport = select(
 			MODULES_SEARCH_CONSOLE
-		).hasFinishedResolution( 'getReport', [ args ] );
+		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
 		if ( ! hasResolvedReport ) {
 			return undefined;
@@ -120,7 +119,7 @@ const gatheringDataStore = createGatheringDataStore( 'search-console', {
 
 		const hasReportError = select(
 			MODULES_SEARCH_CONSOLE
-		).getErrorForSelector( 'getReport', [ args ] );
+		).getErrorForSelector( 'getReport', [ reportArgs ] );
 		// If there is an error, return `undefined` since we don't know if there is data or not.
 		if ( hasReportError || ! Array.isArray( report ) ) {
 			return undefined;
