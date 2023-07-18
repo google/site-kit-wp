@@ -94,7 +94,12 @@ export default function TopCitiesWidget( { Widget } ) {
 		{
 			field: 'metricValues.0.value',
 			Component: ( { fieldValue } ) => (
-				<strong>{ numFmt( fieldValue / totalUsers, '%' ) }</strong>
+				<strong>
+					{ numFmt( fieldValue / totalUsers, {
+						style: 'percent',
+						maximumFractionDigits: 1,
+					} ) }
+				</strong>
 			),
 		},
 	];
