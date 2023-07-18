@@ -66,7 +66,7 @@ export default function TopCitiesWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions )
 	);
 
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
