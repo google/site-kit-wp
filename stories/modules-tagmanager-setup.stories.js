@@ -54,20 +54,7 @@ import {
 	parseLiveContainerVersionIDs,
 } from '../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
-function buildAndReceiveProperties( registry, accountID, internalContainerID ) {
-	const propertyID = registry
-		.select( MODULES_TAGMANAGER )
-		.getLiveContainerAnalyticsPropertyID( accountID, internalContainerID );
-
-	const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
-	buildAndReceiveWebAndAMP( {
-		accountID,
-		webPropertyID: propertyID,
-		ampPropertyID: propertyID,
-	} );
-}
-
-function provideWebContainer( registry, accountID ) {
+function selectFirstWebContainer( registry, accountID ) {
 	const [ webContainer ] = registry
 		.select( MODULES_TAGMANAGER )
 		.getWebContainers( accountID );
@@ -81,7 +68,7 @@ function provideWebContainer( registry, accountID ) {
 		.setInternalContainerID( webContainer.containerId );
 }
 
-function provideAMPContainer( registry, accountID ) {
+function selectFirstAMPContainer( registry, accountID ) {
 	const [ ampContainer ] = registry
 		.select( MODULES_TAGMANAGER )
 		.getAMPContainers( accountID );
@@ -350,14 +337,23 @@ storiesOf( 'Tag Manager Module/Setup', module )
 							internalContainerID,
 						} );
 
-					buildAndReceiveProperties(
-						registry,
+					const propertyID = registry
+						.select( MODULES_TAGMANAGER )
+						.getLiveContainerAnalyticsPropertyID(
+							accountID,
+							internalContainerID
+						);
+
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
+					buildAndReceiveWebAndAMP( {
 						accountID,
-						internalContainerID
-					);
-					provideWebContainer( registry, accountID );
+						webPropertyID: propertyID,
+						ampPropertyID: propertyID,
+					} );
 				}
 			);
+			selectFirstWebContainer( registry, accountID );
 
 			return <Setup registry={ registry } />;
 		},
@@ -400,14 +396,16 @@ storiesOf( 'Tag Manager Module/Setup', module )
 						.dispatch( MODULES_ANALYTICS )
 						.setPropertyID( propertyID );
 
-					buildAndReceiveProperties(
-						registry,
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
+					buildAndReceiveWebAndAMP( {
 						accountID,
-						internalContainerID
-					);
-					provideWebContainer( registry, accountID );
+						webPropertyID: propertyID,
+						ampPropertyID: propertyID,
+					} );
 				}
 			);
+			selectFirstWebContainer( registry, accountID );
 			const activeModules = modulesFixtures.withActive(
 				'tagmanager',
 				'analytics'
@@ -501,14 +499,23 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 							internalContainerID,
 						} );
 
-					buildAndReceiveProperties(
-						registry,
+					const propertyID = registry
+						.select( MODULES_TAGMANAGER )
+						.getLiveContainerAnalyticsPropertyID(
+							accountID,
+							internalContainerID
+						);
+
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
+					buildAndReceiveWebAndAMP( {
 						accountID,
-						internalContainerID
-					);
-					provideAMPContainer( registry, accountID );
+						webPropertyID: propertyID,
+						ampPropertyID: propertyID,
+					} );
 				}
 			);
+			selectFirstAMPContainer( registry, accountID );
 
 			return <Setup registry={ registry } />;
 		},
@@ -550,14 +557,16 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 						.dispatch( MODULES_ANALYTICS )
 						.setPropertyID( propertyID );
 
-					buildAndReceiveProperties(
-						registry,
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
+					buildAndReceiveWebAndAMP( {
 						accountID,
-						internalContainerID
-					);
-					provideAMPContainer( registry, accountID );
+						webPropertyID: propertyID,
+						ampPropertyID: propertyID,
+					} );
 				}
 			);
+			selectFirstAMPContainer( registry, accountID );
 			const activeModules = modulesFixtures.withActive(
 				'tagmanager',
 				'analytics'
@@ -668,14 +677,23 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 							internalContainerID,
 						} );
 
-					buildAndReceiveProperties(
-						registry,
+					const propertyID = registry
+						.select( MODULES_TAGMANAGER )
+						.getLiveContainerAnalyticsPropertyID(
+							accountID,
+							internalContainerID
+						);
+
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
+					buildAndReceiveWebAndAMP( {
 						accountID,
-						internalContainerID
-					);
-					provideWebContainer( registry, accountID );
+						webPropertyID: propertyID,
+						ampPropertyID: propertyID,
+					} );
 				}
 			);
+			selectFirstWebContainer( registry, accountID );
 			parseLiveContainerVersionIDs(
 				ampContainerVersion,
 				( { internalContainerID } ) => {
@@ -685,9 +703,9 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 							accountID,
 							internalContainerID,
 						} );
-					provideAMPContainer( registry, accountID );
 				}
 			);
+			selectFirstAMPContainer( registry, accountID );
 
 			return <Setup registry={ registry } />;
 		},
@@ -725,14 +743,23 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 							internalContainerID,
 						} );
 
-					buildAndReceiveProperties(
-						registry,
+					const propertyID = registry
+						.select( MODULES_TAGMANAGER )
+						.getLiveContainerAnalyticsPropertyID(
+							accountID,
+							internalContainerID
+						);
+
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
+					buildAndReceiveWebAndAMP( {
 						accountID,
-						internalContainerID
-					);
-					provideWebContainer( registry, accountID );
+						webPropertyID: propertyID,
+						ampPropertyID: propertyID,
+					} );
 				}
 			);
+			selectFirstWebContainer( registry, accountID );
 			parseLiveContainerVersionIDs(
 				ampContainerVersion,
 				( { internalContainerID } ) => {
@@ -742,9 +769,9 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 							accountID,
 							internalContainerID,
 						} );
-					provideAMPContainer( registry, accountID );
 				}
 			);
+			selectFirstAMPContainer( registry, accountID );
 
 			return <Setup registry={ registry } />;
 		},
@@ -782,14 +809,23 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 							internalContainerID,
 						} );
 
-					buildAndReceiveProperties(
-						registry,
+					const propertyID = registry
+						.select( MODULES_TAGMANAGER )
+						.getLiveContainerAnalyticsPropertyID(
+							accountID,
+							internalContainerID
+						);
+
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
+					buildAndReceiveWebAndAMP( {
 						accountID,
-						internalContainerID
-					);
-					provideWebContainer( registry, accountID );
+						webPropertyID: propertyID,
+						ampPropertyID: propertyID,
+					} );
 				}
 			);
+			selectFirstWebContainer( registry, accountID );
 			parseLiveContainerVersionIDs(
 				ampContainerVersion,
 				( { internalContainerID } ) => {
@@ -799,9 +835,9 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 							accountID,
 							internalContainerID,
 						} );
-					provideAMPContainer( registry, accountID );
 				}
 			);
+			selectFirstAMPContainer( registry, accountID );
 			const activeModules = modulesFixtures.withActive(
 				'tagmanager',
 				'analytics'
@@ -855,14 +891,16 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 						.dispatch( MODULES_ANALYTICS )
 						.setPropertyID( propertyID );
 
-					buildAndReceiveProperties(
-						registry,
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
+					buildAndReceiveWebAndAMP( {
 						accountID,
-						internalContainerID
-					);
-					provideWebContainer( registry, accountID );
+						webPropertyID: propertyID,
+						ampPropertyID: propertyID,
+					} );
 				}
 			);
+			selectFirstWebContainer( registry, accountID );
 			parseLiveContainerVersionIDs(
 				ampContainerVersion,
 				( { internalContainerID } ) => {
@@ -872,9 +910,9 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 							accountID,
 							internalContainerID,
 						} );
-					provideAMPContainer( registry, accountID );
 				}
 			);
+			selectFirstAMPContainer( registry, accountID );
 			const activeModules = modulesFixtures.withActive(
 				'tagmanager',
 				'analytics'
