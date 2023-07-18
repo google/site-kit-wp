@@ -37,7 +37,10 @@ import {
 } from '../../datastore/constants';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
 const { useSelect, useInViewSelect } = Data;
 
 export default function TopCitiesWidget( { Widget } ) {
@@ -85,11 +88,7 @@ export default function TopCitiesWidget( { Widget } ) {
 			Component: ( { fieldValue } ) => {
 				const [ title ] = fieldValue;
 
-				return (
-					<p className="googlesitekit-km-widget-tile__table-plain-text">
-						{ title.value }
-					</p>
-				);
+				return <MetricTileTablePlainText content={ title.value } />;
 			},
 		},
 		{
