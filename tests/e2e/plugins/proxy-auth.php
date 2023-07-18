@@ -34,9 +34,20 @@ add_filter(
 /**
  * Fake all required scopes have been granted.
  */
-add_filter(
-	'get_user_option_googlesitekit_auth_scopes',
-	function () {
-		return ( new OAuth_Client( Plugin::instance()->context() ) )->get_required_scopes();
-	}
-);
+$_force_all_scopes = function () {
+	global $_force_all_scopes;
+
+	// Remove the filter hook to prevent an infinite loop in the case where the `googlesitekit_auth_scopes`
+	// option is retrieved again during the call to `get_required_scopes()`.
+	remove_filter( 'get_user_option_googlesitekit_auth_scopes', $_force_all_scopes );
+
+	$required_scopes = ( new OAuth_Client( Plugin::instance()->context() ) )->get_required_scopes();
+
+	// Restore the filter hook for future calls to retrieve the option.
+	add_filter( 'get_user_option_googlesitekit_auth_scopes', $_force_all_scopes );
+
+	return $required_scopes;
+};
+
+// Ensure the filter hook is initially applied.
+add_filter( 'get_user_option_googlesitekit_auth_scopes', $_force_all_scopes );
