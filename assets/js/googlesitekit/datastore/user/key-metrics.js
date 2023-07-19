@@ -45,10 +45,13 @@ const { createRegistrySelector } = Data;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
 const RESET_KEY_METRICS_SETTINGS = 'RESET_KEY_METRICS_SETTINGS';
+const SET_KEY_METRICS_SETTINGS_SAVING_FLAG =
+	'SET_KEY_METRICS_SETTINGS_SAVING_FLAG';
 
 const baseInitialState = {
 	keyMetricsSettings: undefined,
 	savedKeyMetricsSettings: undefined,
+	isSavingKeyMetricsSettings: false,
 };
 
 const fetchGetKeyMetricsSettingsStore = createFetchStore( {
@@ -116,6 +119,12 @@ const baseActions = {
 		const keyMetricsSettings = registry
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
+
+		yield {
+			type: SET_KEY_METRICS_SETTINGS_SAVING_FLAG,
+			payload: { isSaving: true },
+		};
+
 		const { response, error } =
 			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetricsSettings(
 				keyMetricsSettings
@@ -125,6 +134,11 @@ const baseActions = {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
 			yield receiveError( error, 'saveKeyMetricsSettings', [] );
 		}
+
+		yield {
+			type: SET_KEY_METRICS_SETTINGS_SAVING_FLAG,
+			payload: { isSaving: false },
+		};
 
 		return { response, error };
 	},
@@ -161,6 +175,12 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				keyMetricsSettings: state.savedKeyMetricsSettings,
+			};
+		}
+		case SET_KEY_METRICS_SETTINGS_SAVING_FLAG: {
+			return {
+				...state,
+				isSavingKeyMetricsSettings: payload.isSaving,
 			};
 		}
 		default: {
@@ -342,6 +362,18 @@ const baseSelectors = {
 		const { keyMetricsSettings, savedKeyMetricsSettings } = state;
 
 		return ! isEqual( keyMetricsSettings, savedKeyMetricsSettings );
+	},
+
+	/**
+	 * Determines whether the key metrics settings are being saved or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the key metrics settings are being saved, otherwise FALSE.
+	 */
+	isSavingKeyMetricsSettings( state ) {
+		return !! state?.isSavingKeyMetricsSettings;
 	},
 };
 
