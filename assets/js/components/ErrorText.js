@@ -32,16 +32,25 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import { sanitizeHTML } from '../util';
 
-function ErrorText( { message, reconnectURL } ) {
+function ErrorText( {
+	message,
+	reconnectURL,
+	prefix = __( 'Error: ', 'google-site-kit' ),
+} ) {
 	if ( ! message ) {
 		return null;
 	}
 
-	let error = sprintf(
-		/* translators: %s: Error message */
-		__( 'Error: %s', 'google-site-kit' ),
-		message
-	);
+	let error = message;
+
+	if ( prefix ) {
+		error = sprintf(
+			/* translators: 1: Prefix, 2: Error message */
+			__( '%1$s %2$s', 'google-site-kit' ),
+			prefix,
+			message
+		);
+	}
 
 	if ( reconnectURL && isURL( reconnectURL ) ) {
 		error =
@@ -74,10 +83,12 @@ function ErrorText( { message, reconnectURL } ) {
 ErrorText.propTypes = {
 	message: PropTypes.string.isRequired,
 	reconnectURL: PropTypes.string,
+	prefix: PropTypes.oneOfType( [ PropTypes.string, PropTypes.bool ] ),
 };
 
 ErrorText.defaultProps = {
 	reconnectURL: '',
+	prefix: __( 'Error: ', 'google-site-kit' ),
 };
 
 export default ErrorText;
