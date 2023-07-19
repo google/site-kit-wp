@@ -1,4 +1,6 @@
 /**
+ * MetricTileTablePlainText component.
+ *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +16,19 @@
  * limitations under the License.
  */
 
-export { default as KeyMetricsSetupCTAWidget } from './KeyMetricsSetupCTAWidget';
-export { default as MetricTileNumeric } from './MetricTileNumeric';
-export { default as MetricTileTable } from './MetricTileTable';
-export { default as MetricTileTablePlainText } from './MetricTileTablePlainText';
-export { default as MetricTileText } from './MetricTileText';
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+export default function MetricTileTablePlainText( { content } ) {
+	return (
+		<p className="googlesitekit-km-widget-tile__table-plain-text">
+			{ content }
+		</p>
+	);
+}
+
+MetricTileTablePlainText.propTypes = {
+	content: PropTypes.string.isRequired,
+};

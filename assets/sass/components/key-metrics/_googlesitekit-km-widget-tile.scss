@@ -113,5 +113,13 @@
 				font-weight: $fw-medium;
 			}
 		}
+
+		.googlesitekit-km-widget-tile__table-plain-text {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin: 0;
+		}
 	}
 }
