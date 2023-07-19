@@ -19,17 +19,57 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import {
+	CORE_USER,
+	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
+} from '../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import Link from '../../Link';
+import CloseIcon from '../../../../svg/icons/close.svg';
+const { useSelect, useDispatch } = Data;
+
 export default function Header() {
+	const selectedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
+
+	const { setValue } = useDispatch( CORE_UI );
+
+	const onCloseClick = useCallback( () => {
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+	}, [ setValue ] );
+
 	return (
 		<header className="googlesitekit-km-selection-panel-header">
-			<h3>{ __( 'Select your metrics', 'google-site-kit' ) }</h3>
+			<div className="googlesitekit-km-selection-panel-header__row">
+				<h3>{ __( 'Select your metrics', 'google-site-kit' ) }</h3>
+				<Link
+					className="googlesitekit-km-selection-panel-header__close"
+					onClick={ onCloseClick }
+				>
+					<CloseIcon width="15" height="15" />
+				</Link>
+			</div>
 			<p>
-				{ sprintf(
-					/* translators: %d: Number of selected metrics. */
-					__( '%d of 4 metrics selected', 'google-site-kit' ),
-					0
+				{ createInterpolateElement(
+					sprintf(
+						/* translators: %d: Number of selected metrics. */
+						__(
+							'<strong>%d of 4</strong> metrics selected',
+							'google-site-kit'
+						),
+						selectedMetrics?.length || 0
+					),
+					{
+						strong: <strong />,
+					}
 				) }
 			</p>
 		</header>

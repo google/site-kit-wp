@@ -47,6 +47,32 @@
 	.googlesitekit-km-selection-panel--open {
 		right: 0;
 	}
+
+	.googlesitekit-km-selection-panel-header {
+		padding: 24px;
+
+		h3 {
+			margin: 0;
+		}
+
+		p {
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin-top: 4px;
+		}
+
+		.googlesitekit-km-selection-panel-header__row {
+			align-items: center;
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.googlesitekit-km-selection-panel-header__close {
+			color: $c-surfaces-on-surface-variant;
+		}
+	}
+
 	.googlesitekit-km-selection-panel-overlay {
 		background-color: rgba(0, 0, 0, 0.6);
 		height: 100%;
