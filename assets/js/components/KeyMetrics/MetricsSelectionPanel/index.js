@@ -30,9 +30,10 @@ import { Fragment, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Header from './Header';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../googlesitekit/datastore/user/constants';
+import Header from './Header';
+import Footer from './Footer';
 const { useSelect } = Data;
 
 export default function MetricsSelectionPanel() {
@@ -57,6 +58,7 @@ export default function MetricsSelectionPanel() {
 				} ) }
 			>
 				<Header />
+				<Footer />
 			</section>
 			{ isOpen && (
 				<span className="googlesitekit-km-selection-panel-overlay" />
