@@ -50,10 +50,13 @@ export default function CreateMessageStep() {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
+	const setupSuccessURL = addQueryArgs( dashboardURL, {
+		notification: 'ad_blocking_recovery_setup_success',
+	} );
 	const isSaving = useSelect(
 		( select ) =>
 			select( MODULES_ADSENSE ).isDoingSaveSettings() ||
-			select( CORE_LOCATION ).isNavigatingTo( dashboardURL )
+			select( CORE_LOCATION ).isNavigatingTo( setupSuccessURL )
 	);
 	const createMessageCTAClicked = useSelect(
 		( select ) =>
@@ -86,19 +89,15 @@ export default function CreateMessageStep() {
 		const { error } = await saveSettings();
 
 		if ( ! error ) {
-			navigateTo(
-				addQueryArgs( dashboardURL, {
-					notification: 'ad_blocking_recovery_setup_success',
-				} )
-			);
+			navigateTo( setupSuccessURL );
 		}
 	}, [
 		createMessageCTAClicked,
-		dashboardURL,
 		navigateTo,
 		saveSettings,
 		setAdBlockingRecoverySetupStatus,
 		setValue,
+		setupSuccessURL,
 	] );
 
 	return (
