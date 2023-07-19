@@ -64,6 +64,9 @@ export default function SettingsView() {
 	const useAdBlockingRecoverySnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockingRecoverySnippet()
 	);
+	const useAdBlockingRecoveryErrorSnippet = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getUseAdBlockingRecoveryErrorSnippet()
+	);
 
 	const siteStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getSiteStatus()
@@ -196,7 +199,7 @@ export default function SettingsView() {
 							{ ! useAdBlockingRecoverySnippet && (
 								<p className="googlesitekit-settings-module__meta-item-data">
 									{ __(
-										'Ad blocking recovery tag is not placed',
+										'Ad blocking recovery message is not placed',
 										'google-site-kit'
 									) }
 								</p>
@@ -204,10 +207,15 @@ export default function SettingsView() {
 							{ useAdBlockingRecoverySnippet && (
 								<Fragment>
 									<p className="googlesitekit-settings-module__meta-item-data">
-										{ __(
-											'Ad blocking recovery tag is placed',
-											'google-site-kit'
-										) }
+										{ useAdBlockingRecoveryErrorSnippet
+											? __(
+													'Ad blocking recovery message enabled with error protection code',
+													'google-site-kit'
+											  )
+											: __(
+													'Ad blocking recovery message enabled without error protection code',
+													'google-site-kit'
+											  ) }
 									</p>
 									<p className="googlesitekit-settings-module__meta-item-data">
 										{ createInterpolateElement(
