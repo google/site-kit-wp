@@ -19,6 +19,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Fragment, useCallback } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -85,7 +86,11 @@ export default function CreateMessageStep() {
 		const { error } = await saveSettings();
 
 		if ( ! error ) {
-			navigateTo( dashboardURL );
+			navigateTo(
+				addQueryArgs( dashboardURL, {
+					notification: 'ad_blocking_recovery_setup_success',
+				} )
+			);
 		}
 	}, [
 		createMessageCTAClicked,
