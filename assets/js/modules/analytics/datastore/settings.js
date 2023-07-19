@@ -33,6 +33,7 @@ import {
 	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '../../analytics-4/datastore/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../analytics-4/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
@@ -46,6 +47,7 @@ import {
 	isValidProfileName,
 	isValidAdsConversionID,
 } from '../util';
+import { stringToDate } from '../../../util';
 import {
 	MODULES_ANALYTICS,
 	PROPERTY_CREATE,
@@ -317,6 +319,7 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
  * Gets the value of dashboardView from the Analytics settings.
  *
  * @since 1.98.0
+ * @since n.e.x.t Hardwire to `true` after the GA4 auto-switch date, if GA4 is connected.
  *
  * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
  */
@@ -336,6 +339,14 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 
 	if ( ! ga4ModuleConnected ) {
 		return false;
+	}
+
+	const referenceDate = select( CORE_USER ).getReferenceDate();
+
+	if (
+		stringToDate( referenceDate ) >= stringToDate( GA4_AUTO_SWITCH_DATE )
+	) {
+		return true;
 	}
 
 	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
