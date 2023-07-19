@@ -21,6 +21,7 @@
  */
 import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { removeQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -29,23 +30,18 @@ import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import Link from '../Link';
 import SuccessSVG from '../../../svg/graphics/ad-blocking-recovery-success.svg';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../modules/adsense/datastore/constants';
-const { useDispatch, useSelect } = Data;
+const { useSelect } = Data;
 
 export default function AdBlockingRecoveryNotification() {
 	const NOTIFICATION_ID = AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID;
 
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
-	);
-
-	const isNotificationDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( NOTIFICATION_ID )
 	);
 
 	const adsenseAccountID = useSelect( ( select ) =>
@@ -58,12 +54,17 @@ export default function AdBlockingRecoveryNotification() {
 		} )
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
+	const handleDismiss = () => {
+		const modifiedURL = removeQueryArgs(
+			global.location.href,
+			'notification'
+		);
+		global.history.replaceState( null, '', modifiedURL );
+	};
 
 	if (
 		adBlockingRecoverySetupStatus !==
-			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED ||
-		isNotificationDismissed
+		ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
 	) {
 		return null;
 	}
@@ -91,9 +92,9 @@ export default function AdBlockingRecoveryNotification() {
 					),
 				}
 			) }
-			ctaLink="#"
-			ctaLabel={ __( 'OK, Got it!', 'google-site-kit' ) }
-			onCTAClick={ () => dismissItem( NOTIFICATION_ID ) }
+			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+			onDismiss={ handleDismiss }
+			isDismissible
 			type="win-success"
 			WinImageSVG={ () => <SuccessSVG /> }
 			format="small"
