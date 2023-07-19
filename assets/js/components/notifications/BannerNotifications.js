@@ -103,6 +103,10 @@ export default function BannerNotifications() {
 				'user_input_success' === notification ) && (
 				<SetupSuccessBannerNotification />
 			) }
+			{ 'ad_blocking_recovery_setup_success' === notification &&
+				adBlockerDetectionEnabled && (
+					<AdBlockingRecoveryNotification />
+				) }
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
 			{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
@@ -118,7 +122,6 @@ export default function BannerNotifications() {
 			) }
 			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
-			{ adBlockerDetectionEnabled && <AdBlockingRecoveryNotification /> }
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 			{ ga4ReportingEnabled && analyticsModuleConnected && (
 				<SwitchGA4DashboardViewNotification />
