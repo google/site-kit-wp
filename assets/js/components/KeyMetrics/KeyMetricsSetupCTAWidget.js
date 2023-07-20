@@ -80,6 +80,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const dismissCallback = async () => {
+		showTooltip();
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	};
 
@@ -97,7 +98,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					onDismiss={ dismissCallback }
 					tooltipStateKey={ KEY_METRICS_SETUP_CTA_WIDGET_SLUG }
 				/>
 			</Fragment>
@@ -119,7 +119,9 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		<Widget
 			noPadding
 			Footer={ () => {
-				return <KeyMetricsCTAFooter onActionClick={ showTooltip } />;
+				return (
+					<KeyMetricsCTAFooter onActionClick={ dismissCallback } />
+				);
 			} }
 		>
 			<KeyMetricsCTAContent
