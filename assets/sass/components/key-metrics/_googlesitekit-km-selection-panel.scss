@@ -19,35 +19,8 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-km-selection-panel {
-		background-color: $c-surfaces-surface;
-		bottom: 0;
 		display: flex;
 		flex-direction: column;
-		overflow: hidden;
-		position: fixed;
-		right: -100%;
-		top: 0;
-		transition: right 1s;
-		width: 100%;
-		z-index: 10002;
-
-		@media (min-width: $bp-tablet) {
-			right: -384px;
-			top: 32px;
-			width: 384px;
-		}
-
-		body.admin-bar & {
-			top: 46px;
-
-			@media (min-width: $bp-wpAdminBarTablet) {
-				top: 32px;
-			}
-		}
-	}
-
-	.googlesitekit-km-selection-panel--open {
-		right: 0;
 	}
 
 	.googlesitekit-km-selection-panel-header {
@@ -151,15 +124,5 @@
 			color: $c-surfaces-on-surface;
 			margin: 1.15em 0 0;
 		}
-	}
-
-	.googlesitekit-km-selection-panel-overlay {
-		background-color: rgba(0, 0, 0, 0.6);
-		height: 100%;
-		left: 0;
-		position: fixed;
-		top: 0;
-		width: 100%;
-		z-index: 10001;
 	}
 }

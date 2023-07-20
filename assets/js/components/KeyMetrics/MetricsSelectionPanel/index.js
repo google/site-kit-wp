@@ -17,21 +17,12 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
- * WordPress dependencies
- */
-import { Fragment, useEffect } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../googlesitekit/datastore/user/constants';
+import SideSheet from '../../SideSheet';
 import Header from './Header';
 import Footer from './Footer';
 import Metrics from './Metrics';
@@ -42,29 +33,14 @@ export default function MetricsSelectionPanel() {
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
 
-	// Disable scrolling on document body when panel is open.
-	useEffect( () => {
-		if ( isOpen ) {
-			document.body.style.overflow = 'hidden';
-		} else {
-			document.body.style.removeProperty( 'overflow' );
-		}
-	}, [ isOpen ] );
-
 	return (
-		<Fragment>
-			<section
-				className={ classnames( 'googlesitekit-km-selection-panel', {
-					'googlesitekit-km-selection-panel--open': isOpen,
-				} ) }
-			>
-				<Header />
-				<Metrics />
-				<Footer />
-			</section>
-			{ isOpen && (
-				<span className="googlesitekit-km-selection-panel-overlay" />
-			) }
-		</Fragment>
+		<SideSheet
+			className="googlesitekit-km-selection-panel"
+			isOpen={ isOpen }
+		>
+			<Header />
+			<Metrics />
+			<Footer />
+		</SideSheet>
 	);
 }
