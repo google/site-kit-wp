@@ -73,29 +73,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		);
 	} );
 
-	it( 'does not render when SC is not connected', async () => {
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: false,
-			},
-		] );
-
-		const { container, waitForRegistry } = render(
-			<KeyMetricsSetupCTAWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-				features: [ 'userInput' ],
-			}
-		);
-		await waitForRegistry();
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'does not render when GA4 is not connected', async () => {
 		provideModules( registry, [
 			{
