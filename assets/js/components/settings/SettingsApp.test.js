@@ -31,8 +31,6 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
-	provideGatheringDataState,
-	muteFetch,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -95,27 +93,10 @@ describe( 'SettingsApp', () => {
 				connected: true,
 			},
 		] );
-
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
-
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-
-		muteFetch(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
-			)
-		);
-		muteFetch(
-			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/data-available'
-			)
-		);
 	} );
 
-	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', async () => {
+	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', () => {
 		fetchMock.getOnce(
 			coreUserTrackingSettingsEndpointRegExp,
 			coreUserTrackingResponse
@@ -123,18 +104,10 @@ describe( 'SettingsApp', () => {
 
 		history.push( '/admin-settings' );
 
-		const { getAllByRole, waitForRegistry } = render( <SettingsApp />, {
+		const { getAllByRole } = render( <SettingsApp />, {
 			history,
 			registry,
 		} );
-
-		await waitForRegistry();
-
-		muteFetch(
-			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/data-available'
-			)
-		);
 
 		fireEvent.click(
 			getAllByRole( 'tab' )[ getTabID( 'connected-services' ) ]
