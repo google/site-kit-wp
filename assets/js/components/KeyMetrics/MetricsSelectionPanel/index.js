@@ -34,6 +34,7 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../googlesitekit/datastore/user/constants';
 import Header from './Header';
 import Footer from './Footer';
+import Metrics from './Metrics';
 const { useSelect } = Data;
 
 export default function MetricsSelectionPanel() {
@@ -58,6 +59,7 @@ export default function MetricsSelectionPanel() {
 				} ) }
 			>
 				<Header />
+				<Metrics />
 				<Footer />
 			</section>
 			{ isOpen && (

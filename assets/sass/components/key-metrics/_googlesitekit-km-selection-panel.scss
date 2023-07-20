@@ -21,6 +21,8 @@
 	.googlesitekit-km-selection-panel {
 		background-color: $c-surfaces-surface;
 		bottom: 0;
+		display: flex;
+		flex-direction: column;
 		overflow: hidden;
 		position: fixed;
 		right: -100%;
@@ -59,7 +61,7 @@
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
-			margin-top: 4px;
+			margin: 4px 0 8px;
 		}
 
 		.googlesitekit-km-selection-panel-header__row {
@@ -73,11 +75,53 @@
 		}
 	}
 
+	.googlesitekit-km-selection-panel-metrics {
+		overflow: auto;
+
+		.googlesitekit-km-selection-panel-metrics__metric-item {
+			margin-bottom: $grid-gap-phone;
+			padding: 0 24px;
+
+			.googlesitekit-accordion {
+				border: 1px solid $c-neutral-n-66;
+				border-radius: 8px;
+				padding: 0 20px;
+
+				.googlesitekit-accordion__header {
+					padding: 12px 0;
+
+					.mdc-checkbox {
+						margin-left: -11px;
+
+						+ label {
+							font-weight: $fw-medium;
+						}
+					}
+				}
+
+				.googlesitekit-accordion__header::after {
+					right: 0;
+				}
+
+				.googlesitekit-accordion__content {
+					border-top: 1px solid $c-neutral-n-50;
+					padding: 16px 0 20px;
+				}
+
+				&.googlesitekit-accordion--disabled {
+
+					.mdc-checkbox + label {
+						color: $c-interactive-on-disable-container;
+					}
+				}
+			}
+		}
+	}
+
 	.googlesitekit-km-selection-panel-footer {
 		background-color: $c-surfaces-background;
-		bottom: 0;
+		margin-top: auto;
 		padding: $grid-gap-desktop / 2 $grid-gap-desktop $grid-gap-desktop;
-		position: absolute;
 		text-align: center;
 		width: 100%;
 
