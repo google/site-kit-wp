@@ -114,6 +114,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const dismissCallback = async () => {
+		showTooltip();
 		await dismissItem( AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG );
 	};
 
@@ -127,7 +128,6 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					onDismiss={ dismissCallback }
 					tooltipStateKey={ AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG }
 				/>
 			</Fragment>
@@ -191,9 +191,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 					<BannerActions
 						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 						ctaLink={ recoveryPageURL }
-						dismissCallback={ () => {
-							showTooltip();
-						} }
+						dismissCallback={ dismissCallback }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 					/>
 				</Cell>
