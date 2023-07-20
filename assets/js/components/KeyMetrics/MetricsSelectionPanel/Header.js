@@ -41,10 +41,13 @@ export default function Header() {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const { resetKeyMetricsSettings } = useDispatch( CORE_USER );
 
-	const onCloseClick = useCallback( () => {
+	const onCloseClick = useCallback( async () => {
+		await resetKeyMetricsSettings();
+
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
+	}, [ resetKeyMetricsSettings, setValue ] );
 
 	return (
 		<header className="googlesitekit-km-selection-panel-header">
