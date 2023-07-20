@@ -55,19 +55,14 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
-	const searchConsoleModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'search-console' )
-	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const searchConsoleIsGatheringData = useSelect(
-		( select ) =>
-			searchConsoleModuleConnected &&
-			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	const searchConsoleIsGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const analyticsIsGatheringData = useSelect(
 		( select ) =>
@@ -114,7 +109,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		isUserInputCompleted !== false ||
 		isDismissed !== false ||
 		! analyticsModuleConnected ||
-		! searchConsoleModuleConnected ||
 		analyticsIsGatheringData !== false ||
 		searchConsoleIsGatheringData !== false
 	) {

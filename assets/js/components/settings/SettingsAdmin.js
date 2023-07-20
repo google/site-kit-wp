@@ -40,16 +40,11 @@ const { useSelect } = Data;
 export default function SettingsAdmin() {
 	const userInputEnabled = useFeature( 'userInput' );
 
-	const searchConsoleModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'search-console' )
-	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
-	const searchConsoleIsGatheringData = useSelect(
-		( select ) =>
-			searchConsoleModuleConnected &&
-			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	const searchConsoleIsGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const analyticsIsGatheringData = useSelect(
 		( select ) =>
@@ -60,7 +55,6 @@ export default function SettingsAdmin() {
 	return (
 		<Row>
 			{ userInputEnabled &&
-				searchConsoleModuleConnected &&
 				analyticsModuleConnected &&
 				searchConsoleIsGatheringData === false &&
 				analyticsIsGatheringData === false && (
