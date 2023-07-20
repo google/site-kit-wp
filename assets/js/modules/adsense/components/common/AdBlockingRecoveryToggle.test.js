@@ -100,20 +100,20 @@ describe( 'AdBlockingRecoveryToggle', () => {
 
 		expect( container.textContent ).toContain( 'Ad blocking recovery' );
 		expect(
-			getByLabelText( /Place ad blocking recovery tag/i )
+			getByLabelText( /Enable ad blocking recovery message/i )
 		).toBeInTheDocument();
 
 		// The Material Design switch component is represented
 		// by multiple elements including a 'div' and an 'input'.
 		// We loop over all these to verify that they are checked.
 		const recoveryTagSwitchElements = getAllByRole( 'switch', {
-			name: /place ad blocking recovery tag/i,
+			name: /Enable ad blocking recovery message/i,
 		} );
 		recoveryTagSwitchElements.forEach( ( switchEl ) => {
 			expect( switchEl ).toBeChecked();
 		} );
 		const errorProtectionTagSwitchElements = getAllByRole( 'switch', {
-			name: /place error protection tag/i,
+			name: /Enable ad blocking recovery message/i,
 		} );
 		errorProtectionTagSwitchElements.forEach( ( switchEl ) => {
 			expect( switchEl ).toBeChecked();
@@ -145,18 +145,18 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		);
 
 		expect(
-			getByLabelText( /Place ad blocking recovery tag/i )
+			getByLabelText( /Enable ad blocking recovery message/i )
 		).toBeInTheDocument();
 
 		const recoveryTagSwitchElements = getAllByRole( 'switch', {
-			name: /place ad blocking recovery tag/i,
+			name: /Enable ad blocking recovery message/i,
 		} );
 		recoveryTagSwitchElements.forEach( ( switchEl ) => {
 			expect( switchEl ).not.toBeChecked();
 		} );
 
 		expect(
-			queryByLabelText( /Place error protection tag/i )
+			queryByLabelText( /Place error protection code/i )
 		).not.toBeInTheDocument();
 	} );
 
@@ -253,11 +253,11 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		);
 
 		expect(
-			getByLabelText( /Place ad blocking recovery tag/i )
+			getByLabelText( /Enable ad blocking recovery message/i )
 		).toBeInTheDocument();
 
 		const recoveryTagSwitchElements = getAllByRole( 'switch', {
-			name: /place ad blocking recovery tag/i,
+			name: /Enable ad blocking recovery message/i,
 		} );
 		// Verify that the switch is checked initially.
 		recoveryTagSwitchElements.forEach( ( switchEl ) => {
@@ -314,11 +314,11 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		);
 
 		expect(
-			getByLabelText( /Place ad blocking recovery tag/i )
+			getByLabelText( /Enable ad blocking recovery message/i )
 		).toBeInTheDocument();
 
 		const recoveryTagSwitchElements = getAllByRole( 'switch', {
-			name: /place ad blocking recovery tag/i,
+			name: /Enable ad blocking recovery message/i,
 		} );
 		// Verify that the switch is checked initially.
 		recoveryTagSwitchElements.forEach( ( switchEl ) => {

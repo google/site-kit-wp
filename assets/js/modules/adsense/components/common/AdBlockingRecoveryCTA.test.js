@@ -131,7 +131,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 
 		expect( container.textContent ).toContain( 'Ad blocking recovery' );
 		expect( container.textContent ).toContain(
-			'Start recovering revenue lost from ad blockers by deploying the ad blocking tag through Site Kit.'
+			'Start recovering revenue lost from ad blockers by deploying an ad blocking recovery message through Site Kit.'
 		);
 	} );
 } );
