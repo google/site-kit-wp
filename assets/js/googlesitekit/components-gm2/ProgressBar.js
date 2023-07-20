@@ -62,7 +62,8 @@ export default function ProgressBar( {
 
 	const margin =
 		typeof progressBarHeight !== 'undefined'
-			? Math.round( progressBarHeight / 2 )
+			? // 4px is the height of the progress bar.
+			  Math.round( ( progressBarHeight - 4 ) / 2 )
 			: undefined;
 	const transform = progress ? `scaleX(${ progress })` : undefined;
 
