@@ -33,6 +33,7 @@ export default function Accordion( {
 	initialOpen,
 	onOpen,
 	onClose,
+	disabled,
 } ) {
 	const [ isActive, setActive ] = useState( !! initialOpen );
 
@@ -44,12 +45,26 @@ export default function Accordion( {
 		}
 	}, [ isActive, onClose, onOpen ] );
 
+	useEffect( () => {
+		if ( disabled && isActive ) {
+			setActive( false );
+		}
+	}, [ disabled, isActive ] );
+
 	const toggleAccordion = useCallback( () => {
+		if ( disabled ) {
+			return;
+		}
+
 		setActive( ! isActive );
-	}, [ isActive ] );
+	}, [ disabled, isActive ] );
 
 	return (
-		<div className="googlesitekit-accordion">
+		<div
+			className={ classnames( 'googlesitekit-accordion', {
+				'googlesitekit-accordion--disabled': disabled,
+			} ) }
+		>
 			<div
 				className={ classnames( 'googlesitekit-accordion__header', {
 					'is-active': isActive,
@@ -78,4 +93,5 @@ Accordion.propTypes = {
 	initialOpen: PropTypes.bool,
 	onOpen: PropTypes.func,
 	onClose: PropTypes.func,
+	disabled: PropTypes.bool,
 };
