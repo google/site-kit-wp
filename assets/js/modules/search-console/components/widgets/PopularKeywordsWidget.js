@@ -126,7 +126,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			zeroState={ ZeroDataMessage }
+			ZeroState={ ZeroDataMessage }
 			limit={ 3 }
 		/>
 	);
