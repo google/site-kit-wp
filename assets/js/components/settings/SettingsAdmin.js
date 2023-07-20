@@ -40,28 +40,21 @@ const { useSelect } = Data;
 export default function SettingsAdmin() {
 	const userInputEnabled = useFeature( 'userInput' );
 
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-	const searchConsoleIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
-	);
-	const analyticsIsGatheringData = useSelect(
+	const showKeyMetricsSettings = useSelect(
 		( select ) =>
-			analyticsModuleConnected &&
-			select( MODULES_ANALYTICS_4 ).isGatheringData()
+			userInputEnabled &&
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) &&
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false &&
+			select( MODULES_ANALYTICS_4 ).isGatheringData() === false
 	);
 
 	return (
 		<Row>
-			{ userInputEnabled &&
-				analyticsModuleConnected &&
-				searchConsoleIsGatheringData === false &&
-				analyticsIsGatheringData === false && (
-					<Cell size={ 12 }>
-						<SettingsCardKeyMetrics />
-					</Cell>
-				) }
+			{ showKeyMetricsSettings && (
+				<Cell size={ 12 }>
+					<SettingsCardKeyMetrics />
+				</Cell>
+			) }
 
 			<Cell size={ 12 }>
 				<Layout
