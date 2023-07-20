@@ -98,9 +98,9 @@ ProgressBar.propTypes = {
 	indeterminate: PropTypes.bool,
 	progress: PropTypes.number,
 	height: PropTypes.number,
-	smallHeight: PropTypes.string,
-	tabletHeight: PropTypes.string,
-	desktopHeight: PropTypes.string,
+	smallHeight: PropTypes.number,
+	tabletHeight: PropTypes.number,
+	desktopHeight: PropTypes.number,
 };
 
 ProgressBar.defaultProps = {
