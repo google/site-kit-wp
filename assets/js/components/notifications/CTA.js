@@ -47,9 +47,7 @@ const CTA = ( {
 		} ) }
 	>
 		{ headerText && (
-			<span className="googlesitekit-cta__header_text">
-				{ headerText }
-			</span>
+			<h2 className="googlesitekit-cta__header_text">{ headerText }</h2>
 		) }
 		{ title && <h3 className="googlesitekit-cta__title">{ title }</h3> }
 		{ description && typeof description === 'string' && (
