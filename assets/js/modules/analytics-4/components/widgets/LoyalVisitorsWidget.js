@@ -51,8 +51,8 @@ export default function LoyalVisitorsWidget( { Widget } ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'newVsReturningFOO' ],
-		metrics: [ { name: 'activeUsers' } ],
+		dimensions: [ 'newVsReturningFoo' ],
+		metrics: [ { name: 'activeUsersFoo' } ],
 	};
 
 	const report = useInViewSelect( ( select ) =>
@@ -121,6 +121,7 @@ export default function LoyalVisitorsWidget( { Widget } ) {
 			currentValue={ currentPercentage }
 			loading={ loading }
 			error={ error }
+			moduleSlug="analytics-4"
 		/>
 	);
 }
