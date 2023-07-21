@@ -43,7 +43,10 @@ import {
 	useTooltipState,
 } from '../../../../components/AdminMenuTooltip';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import {
+	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
+	MODULES_ADSENSE,
+} from '../../datastore/constants';
 import { WEEK_IN_SECONDS, stringToDate } from '../../../../util';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import useViewOnly from '../../../../hooks/useViewOnly';
@@ -54,20 +57,18 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
-	const AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG =
-		'ad-blocking-recovery-notification';
 	const breakpoint = useBreakpoint();
 	const viewOnlyDashboard = useViewOnly();
 
 	const showTooltip = useShowTooltip(
-		AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG
+		AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
 	);
 	const { isTooltipVisible } = useTooltipState(
-		AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG
+		AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
 	);
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG
+			AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
 		)
 	);
 	const adSenseModuleConnected = useSelect( ( select ) =>
@@ -114,7 +115,8 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const dismissCallback = async () => {
-		await dismissItem( AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG );
+		showTooltip();
+		await dismissItem( AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY );
 	};
 
 	if ( isTooltipVisible ) {
@@ -127,8 +129,9 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					onDismiss={ dismissCallback }
-					tooltipStateKey={ AD_BLOCKING_RECOVERY_NOTIFICATION_SLUG }
+					tooltipStateKey={
+						AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
+					}
 				/>
 			</Fragment>
 		);
@@ -191,9 +194,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 					<BannerActions
 						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 						ctaLink={ recoveryPageURL }
-						dismissCallback={ () => {
-							showTooltip();
-						} }
+						dismissCallback={ dismissCallback }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 					/>
 				</Cell>
