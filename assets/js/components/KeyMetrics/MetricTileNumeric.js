@@ -54,7 +54,12 @@ export default function MetricTileNumeric( props ) {
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && <PreviewBlock width="100%" height="68px" /> }
+					{ loading && (
+						<div className="googlesitekit-km-widget-tile__loading">
+							<PreviewBlock width="100%" height="14px" />
+							<PreviewBlock width="100%" height="53px" />
+						</div>
+					) }
 					{ ! loading && (
 						<Fragment>
 							<div className="googlesitekit-km-widget-tile__metric-change-container">

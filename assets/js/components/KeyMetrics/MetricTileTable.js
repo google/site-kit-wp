@@ -90,11 +90,10 @@ export default function MetricTileTable( props ) {
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && (
-						<PreviewBlock
-							className="googlesitekit-km-widget-tile__table"
-							width="100%"
-							height="65px"
-						/>
+						<div className="googlesitekit-km-widget-tile__loading">
+							<PreviewBlock width="100%" height="14px" />
+							<PreviewBlock width="100%" height="53px" />
+						</div>
 					) }
 					{ ! loading && (
 						<div className="googlesitekit-km-widget-tile__table">
