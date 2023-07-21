@@ -99,7 +99,6 @@ export default function SettingsForm( {
 
 	return (
 		<Fragment>
-			<SettingsUACutoffWarning />
 			{ ! ga4ReportingEnabled && (
 				<Fragment>
 					<ExistingGTMPropertyNotice
@@ -128,6 +127,8 @@ export default function SettingsForm( {
 					</div>
 				</div>
 			) }
+
+			<SettingsUACutoffWarning />
 
 			{ ! ga4ReportingEnabled && (
 				<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
