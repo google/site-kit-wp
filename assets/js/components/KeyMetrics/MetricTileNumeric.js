@@ -50,7 +50,17 @@ export default function MetricTileNumeric( props ) {
 
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
-	return ! error ? (
+	if ( error ) {
+		return (
+			<MetricTileError
+				moduleSlug={ moduleSlug }
+				error={ error }
+				headerText={ title }
+			/>
+		);
+	}
+
+	return (
 		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
 				<h3 className="googlesitekit-km-widget-tile__title">
@@ -80,12 +90,6 @@ export default function MetricTileNumeric( props ) {
 				</div>
 			</div>
 		</Widget>
-	) : (
-		<MetricTileError
-			moduleSlug={ moduleSlug }
-			error={ error }
-			headerText={ title }
-		/>
 	);
 }
 
