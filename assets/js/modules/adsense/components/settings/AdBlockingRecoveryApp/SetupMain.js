@@ -151,7 +151,7 @@ export default function SetupMain() {
 				>
 					<Step
 						title={ __(
-							'Place the standard ad blocking recovery tag (required)',
+							'Enable ad blocking recovery message (required)',
 							'google-site-kit'
 						) }
 						className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-place-tags"
