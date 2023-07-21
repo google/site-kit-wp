@@ -29,7 +29,7 @@ import ReportErrorActions from '../ReportErrorActions';
 import { __ } from '@wordpress/i18n';
 
 export default function MetricTileError( props ) {
-	const { error, headerText } = props;
+	const { error, headerText, moduleSlug } = props;
 
 	return (
 		<CTA
@@ -38,7 +38,7 @@ export default function MetricTileError( props ) {
 			description=""
 			error={ error }
 		>
-			<ReportErrorActions moduleSlug="analytics-4" error={ error } />
+			<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
 		</CTA>
 	);
 }
@@ -49,4 +49,5 @@ MetricTileError.propTypes = {
 		PropTypes.object,
 	] ).isRequired,
 	headerText: PropTypes.string,
+	moduleSlug: PropTypes.string.isRequired,
 };

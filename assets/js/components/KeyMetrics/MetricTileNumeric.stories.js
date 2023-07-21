@@ -69,12 +69,6 @@ ZeroChange.scenario = {
 	delay: 250,
 };
 
-export const Loading = Template.bind( {} );
-Loading.storyName = 'Loading';
-Loading.args = {
-	loading: true,
-};
-
 export default {
 	title: 'Key Metrics/WidgetTiles/MetricTileNumeric',
 	component: MetricTileNumeric,

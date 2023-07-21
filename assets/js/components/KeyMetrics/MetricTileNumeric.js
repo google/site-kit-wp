@@ -45,6 +45,7 @@ export default function MetricTileNumeric( props ) {
 		previousValue,
 		currentValue,
 		error,
+		moduleSlug,
 	} = props;
 
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
@@ -80,7 +81,11 @@ export default function MetricTileNumeric( props ) {
 			</div>
 		</Widget>
 	) : (
-		<MetricTileError error={ error } headerText={ title } />
+		<MetricTileError
+			moduleSlug={ moduleSlug }
+			error={ error }
+			headerText={ title }
+		/>
 	);
 }
 
@@ -100,4 +105,5 @@ MetricTileNumeric.propTypes = {
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
 	] ),
+	moduleSlug: PropTypes.string.isRequired,
 };
