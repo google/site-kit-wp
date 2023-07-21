@@ -23,7 +23,6 @@ import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 import {
 	render,
 	provideModules,
-	fireEvent,
 	provideSiteInfo,
 } from '../../../../../../tests/js/test-utils';
 import {
@@ -225,121 +224,6 @@ describe( 'AdBlockingRecoveryToggle', () => {
 			container.querySelector( '.googlesitekit-settings-notice__text' )
 		).toHaveTextContent(
 			'Site Kit detected Ad Blocking Recovery code for a different account pub-1234567890123456 on your site. For a better ad blocking recovery experience, you should remove Ad Blocking Recovery code that’s not linked to this AdSense account.'
-		);
-	} );
-
-	it( 'should render the notice when the user unchecks the ad blocking recovery tag toggle', () => {
-		const { getByLabelText, getAllByRole, container } = render(
-			<AdBlockingRecoveryToggle />,
-			{
-				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideSiteInfo( registry );
-					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-						...validSettings,
-						adBlockingRecoverySetupStatus:
-							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-						useAdBlockingRecoverySnippet: true,
-						useAdBlockingRecoveryErrorSnippet: false,
-					} );
-				},
-			}
-		);
-
-		expect(
-			getByLabelText( /Enable ad blocking recovery message/i )
-		).toBeInTheDocument();
-
-		const recoveryTagSwitchElements = getAllByRole( 'switch', {
-			name: /Enable ad blocking recovery message/i,
-		} );
-		// Verify that the switch is checked initially.
-		recoveryTagSwitchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).toBeChecked();
-		} );
-		// Verify that the notice is not rendered.
-		expect(
-			container.querySelector( '.googlesitekit-settings-notice' )
-		).not.toBeInTheDocument();
-
-		// Uncheck the switch.
-		fireEvent.click( container.querySelector( '.mdc-switch' ) );
-
-		// Verify that the switch is unchecked.
-		recoveryTagSwitchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).not.toBeChecked();
-		} );
-
-		// Verify that the notice is rendered.
-		expect(
-			container.querySelector( '.googlesitekit-settings-notice__text' )
-		).toHaveTextContent(
-			'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed'
-		);
-	} );
-
-	it( 'should not render the notice when the user unchecks the ad blocking recovery tag toggle but there is an existing ad blocking recovery tag', () => {
-		const { getByLabelText, getAllByRole, container } = render(
-			<AdBlockingRecoveryToggle />,
-			{
-				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideSiteInfo( registry );
-					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-						...validSettings,
-						adBlockingRecoverySetupStatus:
-							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-						useAdBlockingRecoverySnippet: true,
-						useAdBlockingRecoveryErrorSnippet: false,
-					} );
-					registry
-						.dispatch( MODULES_ADSENSE )
-						.receiveGetExistingAdBlockingRecoveryTag(
-							'pub-87654321'
-						);
-				},
-			}
-		);
-
-		expect(
-			getByLabelText( /Enable ad blocking recovery message/i )
-		).toBeInTheDocument();
-
-		const recoveryTagSwitchElements = getAllByRole( 'switch', {
-			name: /Enable ad blocking recovery message/i,
-		} );
-		// Verify that the switch is checked initially.
-		recoveryTagSwitchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).toBeChecked();
-		} );
-		// Verify that the notice is not rendered.
-		expect( container ).not.toHaveTextContent(
-			'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed'
-		);
-
-		// Uncheck the switch.
-		fireEvent.click( container.querySelector( '.mdc-switch' ) );
-
-		// Verify that the switch is unchecked.
-		recoveryTagSwitchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).not.toBeChecked();
-		} );
-
-		// Verify that the notice is rendered.
-		expect( container ).not.toHaveTextContent(
-			'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed'
 		);
 	} );
 } );

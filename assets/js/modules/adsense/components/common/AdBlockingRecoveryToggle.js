@@ -193,15 +193,6 @@ export default function AdBlockingRecoveryToggle() {
 					</div>
 				) }
 			</div>
-			{ ! existingAdBlockingRecoveryTag &&
-				adBlockingRecoveryToggle === false && (
-					<SettingsNotice
-						notice={ __(
-							'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed',
-							'google-site-kit'
-						) }
-					/>
-				) }
 			{ existingAdBlockingRecoveryTag && (
 				<SettingsNotice
 					notice={ existingAdBlockingRecoveryTagMessage }
