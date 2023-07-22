@@ -33,6 +33,9 @@ export const AD_BLOCKING_FORM_SETTINGS = 'adsenseAdBlockingFormSettings';
 export const AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED =
 	'googlesitekit-ad-blocking-recovery-setup-create-message-cta-clicked';
 
+export const AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY =
+	'ad-blocking-recovery-notification';
+
 // Various ad blocking recovery setup statuses.
 export const ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS = {
 	TAG_PLACED: 'tag-placed',
