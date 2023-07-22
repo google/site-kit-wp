@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { pickBy } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -26,8 +31,10 @@ import { useCallback } from '@wordpress/element';
  */
 import { Checkbox } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
+import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import Accordion from '../../Accordion';
 const { useSelect, useDispatch } = Data;
 
@@ -37,6 +44,19 @@ export default function Metrics() {
 	);
 	const keyMetricsSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetricsSettings()
+	);
+	const availableMetrics = useSelect( ( select ) =>
+		pickBy( KEY_METRICS_WIDGETS, ( _value, key ) => {
+			const widget = select( CORE_WIDGETS ).getWidget( key );
+
+			if ( ! widget ) {
+				return false;
+			}
+
+			return widget.modules.every( ( module ) =>
+				select( CORE_MODULES ).isModuleConnected( module )
+			);
+		} )
 	);
 
 	const { setKeyMetricsSetting } = useDispatch( CORE_USER );
@@ -57,8 +77,8 @@ export default function Metrics() {
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
-			{ Object.keys( KEY_METRICS_WIDGETS ).map( ( metric ) => {
-				const { title, description } = KEY_METRICS_WIDGETS[ metric ];
+			{ Object.keys( availableMetrics ).map( ( metric ) => {
+				const { title, description } = availableMetrics[ metric ];
 
 				const id = `key-metric-selection-checkbox-${ metric }`;
 
