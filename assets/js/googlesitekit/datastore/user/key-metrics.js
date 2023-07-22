@@ -133,7 +133,7 @@ const baseActions = {
 			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetricsSettings(
 				{
 					...keyMetricsSettings,
-					settings,
+					...settings,
 				}
 			);
 
