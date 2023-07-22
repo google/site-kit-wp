@@ -40,7 +40,10 @@ const { useSelect, useDispatch } = Data;
 
 export default function Header() {
 	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getUserPickedMetrics()
+		select( CORE_FORMS ).getValue(
+			KEY_METRICS_SELECTION_FORM,
+			KEY_METRICS_SELECTED
+		)
 	);
 	const keyMetricsSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetricsSettings()
