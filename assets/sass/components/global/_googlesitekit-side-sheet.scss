@@ -28,7 +28,7 @@
 		transform: translateX(100%);
 		transition: transform 1s;
 		width: 100%;
-		z-index: 10002;
+		z-index: $z-index-sk-side-sheet;
 
 		@media (min-width: $bp-tablet) {
 			top: 32px;
@@ -55,6 +55,6 @@
 		position: fixed;
 		top: 0;
 		width: 100%;
-		z-index: 10001;
+		z-index: $z-index-sk-side-sheet - 10; // -10 for the side sheet to appear above the overlay.
 	}
 }
