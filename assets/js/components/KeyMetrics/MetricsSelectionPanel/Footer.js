@@ -57,14 +57,17 @@ export default function Footer() {
 			KEY_METRICS_SELECTED
 		)
 	);
-	const keyMetricsSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetricsSettings()
+	const keyMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetrics()
 	);
 
 	const haveSettingsChanged = useMemo( () => {
-		return ! isEqual( selectedMetrics, keyMetricsSettings?.widgetSlugs );
-	}, [ keyMetricsSettings?.widgetSlugs, selectedMetrics ] );
+		return ! isEqual( selectedMetrics, keyMetrics );
+	}, [ keyMetrics, selectedMetrics ] );
 
+	const keyMetricsSettings = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetricsSettings()
+	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
 	);
@@ -106,11 +109,11 @@ export default function Footer() {
 
 	const onCancelClick = useCallback( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: keyMetricsSettings?.widgetSlugs,
+			[ KEY_METRICS_SELECTED ]: keyMetrics,
 		} );
 
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ keyMetricsSettings?.widgetSlugs, setValue, setValues ] );
+	}, [ keyMetrics, setValue, setValues ] );
 
 	const onSettingsClick = useCallback(
 		() => navigateTo( `${ settingsURL }#/admin-settings` ),

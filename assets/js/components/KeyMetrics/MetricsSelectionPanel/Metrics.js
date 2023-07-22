@@ -24,7 +24,7 @@ import { pickBy } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,7 +33,6 @@ import { Checkbox } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import Accordion from '../../Accordion';
@@ -41,9 +40,6 @@ import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 const { useSelect, useDispatch } = Data;
 
 export default function Metrics() {
-	const keyMetricsSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetricsSettings()
-	);
 	const availableMetrics = useSelect( ( select ) =>
 		pickBy( KEY_METRICS_WIDGETS, ( _value, key ) => {
 			const widget = select( CORE_WIDGETS ).getWidget( key );
@@ -76,12 +72,6 @@ export default function Metrics() {
 		},
 		[ selectedMetrics, setValues ]
 	);
-
-	useEffect( () => {
-		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: keyMetricsSettings?.widgetSlugs,
-		} );
-	}, [ keyMetricsSettings?.widgetSlugs, setValues ] );
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">

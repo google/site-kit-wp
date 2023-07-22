@@ -45,8 +45,8 @@ export default function Header() {
 			KEY_METRICS_SELECTED
 		)
 	);
-	const keyMetricsSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetricsSettings()
+	const keyMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetrics()
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -54,11 +54,11 @@ export default function Header() {
 
 	const onCloseClick = useCallback( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: keyMetricsSettings?.widgetSlugs,
+			[ KEY_METRICS_SELECTED ]: keyMetrics,
 		} );
 
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ keyMetricsSettings?.widgetSlugs, setValue, setValues ] );
+	}, [ keyMetrics, setValue, setValues ] );
 
 	return (
 		<header className="googlesitekit-km-selection-panel-header">
