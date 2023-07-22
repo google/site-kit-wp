@@ -346,6 +346,42 @@ describe( 'core/user key metrics', () => {
 
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'optionally saves additional settings besides whatever is stored', async () => {
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						...coreKeyMetricsExpectedResponse,
+						isWidgetHidden: true,
+					},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( CORE_USER )
+					.saveKeyMetricsSettings( { isWidgetHidden: true } );
+
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					coreKeyMetricsEndpointRegExp,
+					{
+						body: {
+							data: {
+								settings: {
+									[ settingID ]: settingValue,
+									isWidgetHidden: true,
+								},
+							},
+						},
+					}
+				);
+
+				expect( store.getState().keyMetricsSettings ).toMatchObject( {
+					...coreKeyMetricsExpectedResponse,
+					isWidgetHidden: true,
+				} );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
 		} );
 	} );
 
