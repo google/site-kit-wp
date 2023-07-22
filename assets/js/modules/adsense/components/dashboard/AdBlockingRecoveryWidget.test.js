@@ -32,6 +32,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
+	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
@@ -265,7 +266,16 @@ describe( 'AdBlockingRecoveryWidget', () => {
 
 	describe( 'after click', () => {
 		let container;
-		beforeEach( () => {
+		beforeEach( async () => {
+			fetchMock.postOnce(
+				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+				{
+					body: JSON.stringify( [
+						AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
+					] ),
+					status: 200,
+				}
+			);
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
@@ -288,26 +298,18 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				{ registry }
 			).container;
 
-			fireEvent.click(
-				container.querySelector( 'button.googlesitekit-cta-link' )
-			);
-
-			fetchMock.postOnce(
-				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
-				{
-					body: JSON.stringify( [
-						'ad-blocking-recovery-notification',
-					] ),
-					status: 200,
-				}
-			);
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					container.querySelector( 'button.googlesitekit-cta-link' )
+				);
+			} );
 		} );
 
 		it( 'should open the tooltip', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).toBeInTheDocument();
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
 
 		it( 'should close the tooltip on clicking the close button', async () => {
@@ -320,7 +322,6 @@ describe( 'AdBlockingRecoveryWidget', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should close the modal on clicking the dismiss button', async () => {
@@ -335,7 +336,6 @@ describe( 'AdBlockingRecoveryWidget', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
 } );

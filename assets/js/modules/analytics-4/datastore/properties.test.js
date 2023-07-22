@@ -41,7 +41,6 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
-import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -165,6 +164,8 @@ describe( 'modules/analytics-4 properties', () => {
 					measurementID: 'abcd',
 				};
 
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( settings );
@@ -194,6 +195,7 @@ describe( 'modules/analytics-4 properties', () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.io',
 				} );
+				provideUserAuthentication( registry );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -229,6 +231,7 @@ describe( 'modules/analytics-4 properties', () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
 				} );
+				provideUserAuthentication( registry );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -277,6 +280,8 @@ describe( 'modules/analytics-4 properties', () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
 				} );
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( settings );
@@ -399,6 +404,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 
 				const properties = [
 					{
@@ -546,6 +552,8 @@ describe( 'modules/analytics-4 properties', () => {
 			it( 'should update the settings with the measurement ID.', async () => {
 				const measurementID = 'G-1A2BCD346E';
 
+				provideUserAuthentication( registry );
+
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.updateSettingsForMeasurementID( measurementID );
@@ -556,7 +564,6 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'dispatches a request to get and populate Google Tag settings', async () => {
-				enabledFeatures.add( 'gteSupport' );
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
 				} );
@@ -586,7 +593,6 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'requires the GTM readonly scope to dispatch a request for Google Tag settings', async () => {
-				enabledFeatures.add( 'gteSupport' );
 				provideUserAuthentication( registry );
 
 				await registry
@@ -597,7 +603,6 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'empties the Google Tag Settings if measurement ID is an empty string', async () => {
-				enabledFeatures.add( 'gteSupport' );
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
 				} );
@@ -674,10 +679,6 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'syncGoogleTagSettings', () => {
-			beforeEach( () => {
-				enabledFeatures.add( 'gteSupport' );
-			} );
-
 			it( 'should not execute if the Tag Manager readonly scope is not granted', async () => {
 				provideUserAuthentication( registry );
 

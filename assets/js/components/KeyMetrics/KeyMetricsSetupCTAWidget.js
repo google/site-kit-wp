@@ -55,19 +55,14 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
-	const searchConsoleModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'search-console' )
-	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const searchConsoleIsGatheringData = useSelect(
-		( select ) =>
-			searchConsoleModuleConnected &&
-			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	const searchConsoleIsGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const analyticsIsGatheringData = useSelect(
 		( select ) =>
@@ -85,6 +80,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const dismissCallback = async () => {
+		showTooltip();
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	};
 
@@ -102,7 +98,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					onDismiss={ dismissCallback }
 					tooltipStateKey={ KEY_METRICS_SETUP_CTA_WIDGET_SLUG }
 				/>
 			</Fragment>
@@ -114,7 +109,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		isUserInputCompleted !== false ||
 		isDismissed !== false ||
 		! analyticsModuleConnected ||
-		! searchConsoleModuleConnected ||
 		analyticsIsGatheringData !== false ||
 		searchConsoleIsGatheringData !== false
 	) {
@@ -125,7 +119,9 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		<Widget
 			noPadding
 			Footer={ () => {
-				return <KeyMetricsCTAFooter onActionClick={ showTooltip } />;
+				return (
+					<KeyMetricsCTAFooter onActionClick={ dismissCallback } />
+				);
 			} }
 		>
 			<KeyMetricsCTAContent
