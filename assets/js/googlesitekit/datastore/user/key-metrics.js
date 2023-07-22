@@ -44,13 +44,11 @@ const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
-const RESET_KEY_METRICS_SETTINGS = 'RESET_KEY_METRICS_SETTINGS';
 const SET_KEY_METRICS_SETTINGS_SAVING_FLAG =
 	'SET_KEY_METRICS_SETTINGS_SAVING_FLAG';
 
 const baseInitialState = {
 	keyMetricsSettings: undefined,
-	savedKeyMetricsSettings: undefined,
 	isSavingKeyMetricsSettings: false,
 };
 
@@ -66,7 +64,6 @@ const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 	reducerCallback: ( state, keyMetricsSettings ) => ( {
 		...state,
 		keyMetricsSettings,
-		savedKeyMetricsSettings: keyMetricsSettings,
 	} ),
 } );
 
@@ -77,7 +74,6 @@ const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	reducerCallback: ( state, keyMetricsSettings ) => ( {
 		...state,
 		keyMetricsSettings,
-		savedKeyMetricsSettings: keyMetricsSettings,
 	} ),
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
@@ -162,12 +158,6 @@ const baseReducer = ( state, { type, payload } ) => {
 					...state.keyMetricsSettings,
 					[ payload.settingID ]: payload.value,
 				},
-			};
-		}
-		case RESET_KEY_METRICS_SETTINGS: {
-			return {
-				...state,
-				keyMetricsSettings: state.savedKeyMetricsSettings,
 			};
 		}
 		case SET_KEY_METRICS_SETTINGS_SAVING_FLAG: {
