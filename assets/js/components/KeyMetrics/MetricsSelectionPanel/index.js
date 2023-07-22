@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../googlesitekit/datastore/user/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import SideSheet from '../../SideSheet';
 import Header from './Header';
 import Footer from './Footer';

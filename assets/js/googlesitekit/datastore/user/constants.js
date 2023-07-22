@@ -71,6 +71,3 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 ];
-
-export const KEY_METRICS_SELECTION_PANEL_OPENED_KEY =
-	'googlesitekit-key-metrics-selection-panel-opened';
