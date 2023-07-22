@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -46,9 +45,6 @@ const { useSelect, useInViewSelect } = Data;
 export default function PopularProductsWidget( props ) {
 	const { Widget, WidgetNull } = props;
 
-	const isGA4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
 	const productBasePaths = useSelect( ( select ) =>
 		select( CORE_SITE ).getProductBasePaths()
 	);
@@ -82,7 +78,7 @@ export default function PopularProductsWidget( props ) {
 		limit: 3,
 	};
 
-	const showWidget = isGA4ModuleConnected && productBasePaths?.length > 0;
+	const showWidget = productBasePaths?.length > 0;
 
 	const report = useInViewSelect( ( select ) =>
 		showWidget
