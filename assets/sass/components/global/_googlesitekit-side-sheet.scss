@@ -23,14 +23,14 @@
 		bottom: 0;
 		overflow: hidden;
 		position: fixed;
-		right: -100%;
+		right: 0;
 		top: 0;
-		transition: right 1s;
+		transform: translateX(100%);
+		transition: transform 1s;
 		width: 100%;
 		z-index: 10002;
 
 		@media (min-width: $bp-tablet) {
-			right: -384px;
 			top: 32px;
 			width: 384px;
 		}
@@ -45,7 +45,7 @@
 	}
 
 	.googlesitekit-side-sheet--open {
-		right: 0;
+		transform: translateX(0);
 	}
 
 	.googlesitekit-side-sheet-overlay {
