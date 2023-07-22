@@ -109,10 +109,14 @@ const baseActions = {
 	 * Saves key metrics settings.
 	 *
 	 * @since 1.103.0
+	 * @since n.e.x.t Accepts an optional `settings` parameter that allows saving additional settings.
 	 *
+	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*saveKeyMetricsSettings() {
+	*saveKeyMetricsSettings( settings = {} ) {
+		invariant( isPlainObject( settings ), 'Settings should be an object.' );
+
 		yield clearError( 'saveKeyMetricsSettings', [] );
 
 		const registry = yield Data.commonActions.getRegistry();
@@ -127,7 +131,10 @@ const baseActions = {
 
 		const { response, error } =
 			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetricsSettings(
-				keyMetricsSettings
+				{
+					...keyMetricsSettings,
+					settings,
+				}
 			);
 
 		if ( error ) {
