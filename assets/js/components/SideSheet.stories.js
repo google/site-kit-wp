@@ -44,7 +44,7 @@ const Template = ( args ) => {
 };
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
+Default.storyName = 'SideSheet';
 Default.scenario = {
 	label: 'Global/SideSheet',
 };
