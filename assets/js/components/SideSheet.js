@@ -26,6 +26,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -60,3 +61,9 @@ export default function SideSheet( { className, children, isOpen } ) {
 		</Portal>
 	);
 }
+
+SideSheet.propTypes = {
+	className: PropTypes.string,
+	children: PropTypes.node,
+	isOpen: PropTypes.bool,
+};
