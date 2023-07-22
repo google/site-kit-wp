@@ -26,11 +26,14 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
-} from '../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import {
+	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
+	KEY_METRICS_SELECTED,
+	KEY_METRICS_SELECTION_FORM,
+} from '../constants';
 import Link from '../../Link';
 import CloseIcon from '../../../../svg/icons/close.svg';
 const { useSelect, useDispatch } = Data;
@@ -39,15 +42,20 @@ export default function Header() {
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getUserPickedMetrics()
 	);
+	const keyMetricsSettings = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetricsSettings()
+	);
 
 	const { setValue } = useDispatch( CORE_UI );
-	const { resetKeyMetricsSettings } = useDispatch( CORE_USER );
+	const { setValues } = useDispatch( CORE_FORMS );
 
-	const onCloseClick = useCallback( async () => {
-		await resetKeyMetricsSettings();
+	const onCloseClick = useCallback( () => {
+		setValues( KEY_METRICS_SELECTION_FORM, {
+			[ KEY_METRICS_SELECTED ]: keyMetricsSettings?.widgetSlugs,
+		} );
 
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ resetKeyMetricsSettings, setValue ] );
+	}, [ keyMetricsSettings?.widgetSlugs, setValue, setValues ] );
 
 	return (
 		<header className="googlesitekit-km-selection-panel-header">

@@ -24,24 +24,23 @@ import { pickBy } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import Accordion from '../../Accordion';
+import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 const { useSelect, useDispatch } = Data;
 
 export default function Metrics() {
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getUserPickedMetrics()
-	);
 	const keyMetricsSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetricsSettings()
 	);
@@ -58,22 +57,31 @@ export default function Metrics() {
 			);
 		} )
 	);
+	const selectedMetrics = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			KEY_METRICS_SELECTION_FORM,
+			KEY_METRICS_SELECTED
+		)
+	);
 
-	const { setKeyMetricsSetting } = useDispatch( CORE_USER );
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const onMetricCheckboxChange = useCallback(
 		( event, metric ) => {
-			const { widgetSlugs } = keyMetricsSettings;
-
-			setKeyMetricsSetting(
-				'widgetSlugs',
-				event.target.checked
-					? widgetSlugs.concat( [ metric ] )
-					: widgetSlugs.filter( ( slug ) => slug !== metric )
-			);
+			setValues( KEY_METRICS_SELECTION_FORM, {
+				[ KEY_METRICS_SELECTED ]: event.target.checked
+					? selectedMetrics.concat( [ metric ] )
+					: selectedMetrics.filter( ( slug ) => slug !== metric ),
+			} );
 		},
-		[ keyMetricsSettings, setKeyMetricsSetting ]
+		[ selectedMetrics, setValues ]
 	);
+
+	useEffect( () => {
+		setValues( KEY_METRICS_SELECTION_FORM, {
+			[ KEY_METRICS_SELECTED ]: keyMetricsSettings?.widgetSlugs,
+		} );
+	}, [ keyMetricsSettings?.widgetSlugs, setValues ] );
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
