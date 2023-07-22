@@ -142,7 +142,7 @@ export default function PopularProductsWidget( props ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			zeroState={ ZeroDataMessage }
+			ZeroState={ ZeroDataMessage }
 		/>
 	);
 }
