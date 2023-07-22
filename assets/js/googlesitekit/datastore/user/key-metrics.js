@@ -18,7 +18,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isEqual, isPlainObject } from 'lodash';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -148,20 +148,6 @@ const baseActions = {
 		};
 
 		return { response, error };
-	},
-
-	/**
-	 * Resets key metrics setting.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Object} Redux-style action.
-	 */
-	resetKeyMetricsSettings() {
-		return {
-			type: RESET_KEY_METRICS_SETTINGS,
-			payload: {},
-		};
 	},
 };
 
@@ -355,20 +341,6 @@ const baseSelectors = {
 	 */
 	getKeyMetricsSettings( state ) {
 		return state.keyMetricsSettings;
-	},
-
-	/**
-	 * Indicates whether the current key metrics settings have changed from what is saved.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} True if the key metrics settings have changed, false otherwise.
-	 */
-	haveKeyMetricsSettingsChanged( state ) {
-		const { keyMetricsSettings, savedKeyMetricsSettings } = state;
-
-		return ! isEqual( keyMetricsSettings, savedKeyMetricsSettings );
 	},
 
 	/**
