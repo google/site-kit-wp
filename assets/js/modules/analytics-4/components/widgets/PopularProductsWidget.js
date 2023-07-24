@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -128,6 +129,16 @@ export default function PopularProductsWidget( props ) {
 		},
 	];
 
+	const infoTooltip = createInterpolateElement(
+		__(
+			'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
+			'google-site-kit'
+		),
+		{
+			a: <Link href="#" external hideExternalIndicator />,
+		}
+	);
+
 	return (
 		<MetricTileTable
 			Widget={ Widget }
@@ -138,6 +149,7 @@ export default function PopularProductsWidget( props ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
+			infoTooltip={ infoTooltip }
 			ZeroState={ ZeroDataMessage }
 		/>
 	);
