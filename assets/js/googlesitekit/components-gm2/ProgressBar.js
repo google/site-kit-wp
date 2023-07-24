@@ -63,7 +63,7 @@ export default function ProgressBar( {
 	let margin;
 
 	if ( progressBarHeight !== undefined ) {
-		// 4px is the height of the progress bar. Therre the height must be at least 4px.
+		// 4px is the height of the progress bar. Therefore the height must be at least 4px.
 		invariant( progressBarHeight >= 4, 'height must be >= 4.' );
 		margin = Math.round( ( progressBarHeight - 4 ) / 2 );
 	}
