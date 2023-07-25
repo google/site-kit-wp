@@ -42,9 +42,13 @@ export default function SideSheet( { className, children, isOpen } ) {
 	// Disable scrolling on document body when panel is open.
 	useEffect( () => {
 		if ( isOpen ) {
-			document.body.style.overflow = 'hidden';
+			document.body.classList.add(
+				'googlesitekit-side-sheet-scroll-lock'
+			);
 		} else {
-			document.body.style.removeProperty( 'overflow' );
+			document.body.classList.remove(
+				'googlesitekit-side-sheet-scroll-lock'
+			);
 		}
 	}, [ isOpen ] );
 

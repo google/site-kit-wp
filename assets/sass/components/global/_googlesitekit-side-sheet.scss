@@ -57,3 +57,7 @@
 		z-index: $z-index-sk-side-sheet - 10; // -10 for the side sheet to appear above the overlay.
 	}
 }
+
+body.googlesitekit-side-sheet-scroll-lock {
+	overflow: hidden; // Disable scrolling on document body when panel is open.
+}
