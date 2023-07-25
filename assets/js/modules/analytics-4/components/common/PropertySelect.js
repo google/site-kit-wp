@@ -31,9 +31,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { Select, Option } from '../../../../material-components';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -123,7 +122,7 @@ export default function PropertySelect( props ) {
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
 	} else if ( isLoading ) {
-		return <ProgressBar height={ 100 } small />;
+		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
 	}
 
 	const isValidSelection =

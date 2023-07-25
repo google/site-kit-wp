@@ -39,15 +39,12 @@ import { generateDateRangeArgs } from '../../util';
 import { numFmt } from '../../../../util';
 import Link from '../../../../components/Link';
 import useViewOnly from '../../../../hooks/useViewOnly';
-import {
-	MetricTileTable,
-	whenKeyMetricsWidgetVisible,
-} from '../../../../components/KeyMetrics';
+import { MetricTileTable } from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../common';
 
 const { useSelect, useInViewSelect } = Data;
 
-function PopularKeywordsWidget( { Widget } ) {
+export default function PopularKeywordsWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
 
 	const dates = useSelect( ( select ) =>
@@ -129,7 +126,7 @@ function PopularKeywordsWidget( { Widget } ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			zeroState={ ZeroDataMessage }
+			ZeroState={ ZeroDataMessage }
 			limit={ 3 }
 		/>
 	);
@@ -139,5 +136,3 @@ PopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
-
-export default whenKeyMetricsWidgetVisible()( PopularKeywordsWidget );

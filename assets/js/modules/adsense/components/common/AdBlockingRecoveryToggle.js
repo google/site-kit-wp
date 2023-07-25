@@ -36,9 +36,10 @@ import {
 	AD_BLOCKING_FORM_SETTINGS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { parseAccountIDFromExistingTag } from '../../util';
 const { useSelect, useDispatch } = Data;
 
@@ -62,6 +63,9 @@ export default function AdBlockingRecoveryToggle() {
 		select( MODULES_ADSENSE ).getServiceURL( {
 			path: `/${ accountID }/privacymessaging/ad_blocking`,
 		} )
+	);
+	const learnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ad-blocking-recovery' )
 	);
 	const adBlockingRecoveryToggle = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -113,7 +117,7 @@ export default function AdBlockingRecoveryToggle() {
 		existingAdBlockingRecoveryTag === accountID
 	) {
 		existingAdBlockingRecoveryTagMessage = __(
-			'You’ve already got an Ad Blocking Recovery code on your site. We recommend you use Site Kit to manage this to get the most out of AdSense.',
+			'You’ve already enabled an ad blocking recovery message on your site. We recommend using Site Kit to manage this to get the most out of AdSense.',
 			'google-site-kit'
 		);
 	} else if ( existingAdBlockingRecoveryTag ) {
@@ -140,7 +144,7 @@ export default function AdBlockingRecoveryToggle() {
 				<div className="googlesitekit-settings-module__meta-item">
 					<Switch
 						label={ __(
-							'Place ad blocking recovery tag',
+							'Enable ad blocking recovery message',
 							'google-site-kit'
 						) }
 						checked={ adBlockingRecoveryToggle }
@@ -150,7 +154,7 @@ export default function AdBlockingRecoveryToggle() {
 					<p>
 						{ createInterpolateElement(
 							__(
-								'Ad blocking recovery only works if you’ve also created and published a recovery message in AdSense. <a>Configure your message</a>',
+								'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
 								'google-site-kit'
 							),
 							{
@@ -168,7 +172,7 @@ export default function AdBlockingRecoveryToggle() {
 					<div className="googlesitekit-settings-module__meta-item">
 						<Switch
 							label={ __(
-								'Place error protection tag',
+								'Place error protection code',
 								'google-site-kit'
 							) }
 							checked={ adBlockingRecoveryErrorToggle }
@@ -176,23 +180,19 @@ export default function AdBlockingRecoveryToggle() {
 							hideLabel={ false }
 						/>
 						<p>
-							{ __(
-								'If a site visitor’s ad blocker browser extension also blocks the standard ad blocking recovery tag, the error protection tag will show a non-customizable ad blocking recovery message to visitors when enabled.',
-								'google-site-kit'
+							{ createInterpolateElement(
+								__(
+									'If a site visitor’s ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: <Link href={ learnMoreURL } external />,
+								}
 							) }
 						</p>
 					</div>
 				) }
 			</div>
-			{ ! existingAdBlockingRecoveryTag &&
-				adBlockingRecoveryToggle === false && (
-					<SettingsNotice
-						notice={ __(
-							'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed',
-							'google-site-kit'
-						) }
-					/>
-				) }
 			{ existingAdBlockingRecoveryTag && (
 				<SettingsNotice
 					notice={ existingAdBlockingRecoveryTagMessage }

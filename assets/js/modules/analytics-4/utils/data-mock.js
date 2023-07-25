@@ -46,6 +46,7 @@ const ANALYTICS_4_METRIC_TYPES = {
 	engagedSessions: 'TYPE_INTEGER',
 	engagementRate: 'TYPE_FLOAT',
 	averageSessionDuration: 'TYPE_SECONDS',
+	sessionConversionRate: 'TYPE_FLOAT',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {
@@ -71,6 +72,15 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Ukraine',
 		'Italy',
 		'Mexico',
+	],
+	city: [
+		'Dublin',
+		'(not set)',
+		'Cork',
+		'New York',
+		'London',
+		'Los Angeles',
+		'San Francisco',
 	],
 	deviceCategory: [ 'Desktop', 'Tablet', 'Mobile' ],
 	pageTitle: ( i ) => ( i <= 12 ? `Test Post ${ i }` : false ),

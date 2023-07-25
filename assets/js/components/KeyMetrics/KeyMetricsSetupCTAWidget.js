@@ -37,9 +37,17 @@ import KeyMetricsCTAContent from './KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+import {
+	AdminMenuTooltip,
+	useShowTooltip,
+	useTooltipState,
+} from '../AdminMenuTooltip';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
+const { useDispatch, useSelect } = Data;
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const userInputEnabled = useFeature( 'userInput' );
@@ -47,22 +55,62 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
-	const searchConsoleModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'search-console' )
-	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
+	const searchConsoleIsGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const analyticsIsGatheringData = useSelect(
+		( select ) =>
+			analyticsModuleConnected &&
+			select( MODULES_ANALYTICS_4 ).isGatheringData()
+	);
+
+	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
+	const { isTooltipVisible } = useTooltipState(
+		KEY_METRICS_SETUP_CTA_WIDGET_SLUG
+	);
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( KEY_METRICS_SETUP_CTA_WIDGET_SLUG )
+	);
+
+	const { dismissItem } = useDispatch( CORE_USER );
+	const dismissCallback = async () => {
+		showTooltip();
+		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
+	};
+
+	if ( isTooltipVisible ) {
+		return (
+			<Fragment>
+				<WidgetNull />
+				<AdminMenuTooltip
+					title={ __(
+						'You can always set up goals from Settings later',
+						'google-site-kit'
+					) }
+					content={ __(
+						'The Key Metrics section will be added back to your dashboard once you set your goals in Settings.',
+						'google-site-kit'
+					) }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					tooltipStateKey={ KEY_METRICS_SETUP_CTA_WIDGET_SLUG }
+				/>
+			</Fragment>
+		);
+	}
 
 	if (
 		! userInputEnabled ||
-		isUserInputCompleted === undefined ||
-		isUserInputCompleted ||
+		isUserInputCompleted !== false ||
+		isDismissed !== false ||
 		! analyticsModuleConnected ||
-		! searchConsoleModuleConnected
+		analyticsIsGatheringData !== false ||
+		searchConsoleIsGatheringData !== false
 	) {
 		return <WidgetNull />;
 	}
@@ -71,11 +119,9 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		<Widget
 			noPadding
 			Footer={ () => {
-				/*
-				The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
-				In the future, it will be fleshed out with the logic to dismiss the widget.
-				*/
-				return <KeyMetricsCTAFooter onActionClick={ () => {} } />;
+				return (
+					<KeyMetricsCTAFooter onActionClick={ dismissCallback } />
+				);
 			} }
 		>
 			<KeyMetricsCTAContent
