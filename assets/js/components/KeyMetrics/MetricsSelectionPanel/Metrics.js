@@ -22,22 +22,14 @@
 import { pickBy } from 'lodash';
 
 /**
- * WordPress dependencies
- */
-import { useCallback } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { Checkbox } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
-import Accordion from '../../Accordion';
-import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
-const { useSelect, useDispatch } = Data;
+import MetricItem from './MetricItem';
+const { useSelect } = Data;
 
 export default function Metrics() {
 	const availableMetrics = useSelect( ( select ) =>
@@ -53,69 +45,22 @@ export default function Metrics() {
 			);
 		} )
 	);
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
-	);
-
-	const { setValues } = useDispatch( CORE_FORMS );
-
-	const onMetricCheckboxChange = useCallback(
-		( event, metric ) => {
-			setValues( KEY_METRICS_SELECTION_FORM, {
-				[ KEY_METRICS_SELECTED ]: event.target.checked
-					? selectedMetrics.concat( [ metric ] )
-					: selectedMetrics.filter( ( slug ) => slug !== metric ),
-			} );
-		},
-		[ selectedMetrics, setValues ]
-	);
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
-			{ Object.keys( availableMetrics ).map( ( metric ) => {
-				const { title, description } = availableMetrics[ metric ];
+			{ Object.keys( availableMetrics ).map( ( slug ) => {
+				const { title, description } = availableMetrics[ slug ];
 
-				const id = `key-metric-selection-checkbox-${ metric }`;
+				const id = `key-metric-selection-checkbox-${ slug }`;
 
 				return (
-					<div
+					<MetricItem
 						key={ id }
-						className="googlesitekit-km-selection-panel-metrics__metric-item"
-					>
-						<Accordion
-							title={
-								<Checkbox
-									checked={ selectedMetrics?.includes(
-										metric
-									) }
-									onChange={ ( event ) => {
-										onMetricCheckboxChange( event, metric );
-									} }
-									onClick={ ( event ) => {
-										event.stopPropagation();
-									} }
-									disabled={
-										! selectedMetrics?.includes( metric ) &&
-										selectedMetrics?.length > 3
-									}
-									id={ id }
-									name={ id }
-									value={ metric }
-								>
-									{ title }
-								</Checkbox>
-							}
-							disabled={
-								! selectedMetrics?.includes( metric ) &&
-								selectedMetrics?.length > 3
-							}
-						>
-							{ description }
-						</Accordion>
-					</div>
+						id={ id }
+						slug={ slug }
+						title={ title }
+						description={ description }
+					/>
 				);
 			} ) }
 		</div>
