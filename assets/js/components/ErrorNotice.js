@@ -42,7 +42,7 @@ export default function ErrorNotice( {
 	storeName,
 	message = error.message,
 	shouldDisplayError = () => true,
-	prefix,
+	noPrefix = false,
 } ) {
 	const dispatch = useDispatch();
 
@@ -77,7 +77,7 @@ export default function ErrorNotice( {
 			<ErrorText
 				message={ message }
 				reconnectURL={ error.data?.reconnectURL }
-				prefix={ prefix }
+				noPrefix={ noPrefix }
 			/>
 			{ shouldDisplayRetry && (
 				<Button
@@ -98,5 +98,5 @@ ErrorNotice.propTypes = {
 	storeName: PropTypes.string,
 	message: PropTypes.string,
 	shouldDisplayError: PropTypes.func,
-	prefix: PropTypes.oneOfType( [ PropTypes.string, PropTypes.bool ] ),
+	noPrefix: PropTypes.bool,
 };

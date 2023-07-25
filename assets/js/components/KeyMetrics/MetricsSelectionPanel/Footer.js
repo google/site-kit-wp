@@ -125,7 +125,7 @@ export default function Footer() {
 			{ saveError && (
 				<ErrorNotice
 					error={ saveError }
-					prefix={ selectedMetrics?.length < 2 ? false : undefined }
+					noPrefix={ selectedMetrics?.length < 2 }
 				/>
 			) }
 			<div className="googlesitekit-km-selection-panel-footer__actions">
