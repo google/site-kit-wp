@@ -25,6 +25,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import {
@@ -143,9 +144,15 @@ export default function AccountCreate() {
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
-			navigateTo( accountTicketTermsOfServiceURL );
+			( async () => {
+				await API.invalidateCache(
+					'modules',
+					ga4ReportingEnabled ? 'analytics-4' : 'analytics'
+				);
+				navigateTo( accountTicketTermsOfServiceURL );
+			} )();
 		}
-	}, [ accountTicketTermsOfServiceURL, navigateTo ] );
+	}, [ accountTicketTermsOfServiceURL, ga4ReportingEnabled, navigateTo ] );
 
 	// Set form defaults on initial render.
 	useEffect( () => {
