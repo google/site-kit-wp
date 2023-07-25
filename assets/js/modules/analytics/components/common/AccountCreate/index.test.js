@@ -29,6 +29,7 @@ import {
 	render,
 } from '../../../../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
+import { mockUseInstanceID } from '../../../../../../../tests/js/mock-use-instance-id';
 
 import {
 	EDIT_SCOPE,
@@ -45,6 +46,8 @@ import AccountCreate from '.';
 
 describe( 'AccountCreate', () => {
 	mockLocation();
+	// Provide our own version of the `useInstanceId()` hook to avoid instability in test snapshots.
+	mockUseInstanceID();
 
 	let registry;
 
