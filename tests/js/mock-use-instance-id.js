@@ -10,25 +10,6 @@ import { useMemo } from '@wordpress/element';
 import { useInstanceId } from '@wordpress/compose';
 
 /**
- * Creates a new ID for a given object.
- *
- * This uses a `Map` to track object instances, as opposed to the `WeakMap` used in the original `useInstanceId()` from @wordpress/compose.
- * Using a regular `Map` to track objects will ensure they are not unpredictably garbage collected during tests, which can cause the
- * generated instance IDs to change, with resulting test failures.
- *
- * @since n.e.x.t
- *
- * @param {Map}    instanceMap Map of object instances to their current id.
- * @param {Object} object      Object reference to create an id for.
- * @return {number} The new id.
- */
-/*function createID( instanceMap, object ) {
-	const instances = instanceMap.get( object ) || 0;
-	instanceMap.set( object, instances + 1 );
-	return instances;
-}*/
-
-/**
  * Provides a unique instance ID.
  *
  * @since n.e.x.t
@@ -37,7 +18,7 @@ import { useInstanceId } from '@wordpress/compose';
  * @param {string} prefix Prefix for the unique id.
  * @return {string} The unique id.
  */
-function useInstanceID( object, prefix ) {
+function useMemoizedID( object, prefix ) {
 	return useMemo( () => {
 		const id = faker.datatype.uuid();
 		return prefix ? `${ prefix }-${ id }` : id;
@@ -52,24 +33,12 @@ function useInstanceID( object, prefix ) {
  * @since n.e.x.t
  */
 export function mockUseInstanceID() {
-	// const instanceMap = new Map();
-
 	beforeAll( () => {
 		// Note that `useInstanceId()` is a Jest spy, having been spied on in the global `@wordpress/compose` mock.
-		useInstanceId.mockImplementation(
-			useInstanceID
-			// useInstanceID.bind( null, instanceMap )
-		);
+		useInstanceId.mockImplementation( useMemoizedID );
 	} );
 
-	// beforeEach( () => {
-	// 	// Clear the cached object instances before each test to ensure a clean run.
-	// 	instanceMap.clear();
-	// } );
-
 	afterAll( () => {
-		// Clear the cached object instances after all tests to avoid memory leaks.
-		// instanceMap.clear();
 		useInstanceId.mockRestore();
 	} );
 }
