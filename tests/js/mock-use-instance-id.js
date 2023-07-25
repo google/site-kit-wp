@@ -32,9 +32,9 @@ import { useInstanceId } from '@wordpress/compose';
  *
  * @since n.e.x.t
  *
- * @param {Object} object Object reference to create an id for. This is unused and only included for compatibility with the original `useInstanceId()`.
- * @param {string} prefix Prefix for the unique id.
- * @return {string} The unique id.
+ * @param {Object} object Object reference to create an ID for. This is unused and only included for compatibility with the original `useInstanceId()`.
+ * @param {string} prefix Prefix for the unique ID.
+ * @return {string} The unique ID.
  */
 function useMemoizedID( object, prefix ) {
 	return useMemo( () => {
