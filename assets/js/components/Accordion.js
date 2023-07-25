@@ -46,12 +46,8 @@ export default function Accordion( {
 	}, [ isActive, onClose, onOpen ] );
 
 	const toggleAccordion = useCallback( () => {
-		if ( disabled ) {
-			return;
-		}
-
 		setActive( ! isActive );
-	}, [ disabled, isActive ] );
+	}, [ isActive ] );
 
 	return (
 		<div
