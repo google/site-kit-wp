@@ -111,7 +111,7 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveKeyMetricsSettings( settings = {} ) {
-		invariant( isPlainObject( settings ), 'Settings should be an object.' );
+		invariant( isPlainObject( settings ), 'key metric settings should be an object to save.' );
 
 		yield clearError( 'saveKeyMetricsSettings', [] );
 
