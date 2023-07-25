@@ -70,7 +70,7 @@ describe( 'MetricsSelectionPanel', () => {
 	} );
 
 	describe( 'Metrics', () => {
-		it( 'should only list metrics dependant on connected modules', () => {
+		it( 'should only list metrics dependent on connected modules', () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
