@@ -42,6 +42,7 @@ export const getWidgetComponentProps = memize( ( widgetSlug ) => {
 	// Scope widget-specific components to the widget instance so that the
 	// component does not need to (re-)specify the widget slug.
 	return {
+		widgetSlug,
 		Widget: withWidgetSlug( widgetSlug )( Widget ),
 		WidgetRecoverableModules: withWidgetSlug( widgetSlug )(
 			WidgetRecoverableModules

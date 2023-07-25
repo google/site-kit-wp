@@ -40,9 +40,11 @@ import { MetricTileTable } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import { getFullURL, numFmt } from '../../../../util';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 const { useSelect, useInViewSelect } = Data;
 
-export default function PopularContentWidget( props ) {
+function PopularContentWidget( props ) {
 	const { Widget } = props;
 
 	const siteURL = useSelect( ( select ) =>
@@ -128,3 +130,8 @@ PopularContentWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( PopularContentWidget );

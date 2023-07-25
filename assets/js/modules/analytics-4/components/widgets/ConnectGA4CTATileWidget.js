@@ -22,57 +22,24 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { useRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	CORE_USER,
-	keyMetricsGA4Widgets,
-} from '../../../../googlesitekit/datastore/user/constants';
+import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
+export default function ConnectGA4CTATileWidget( props ) {
+	const { widgetSlug } = props;
+	// Note: `analytics` is used as the slug here since GA4 "depends" on it.
+	const { current: metadata } = useRef( { moduleSlug: 'analytics' } );
+	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );
 
-const { useSelect } = Data;
-
-export default function ConnectGA4CTATileWidget( { Widget, WidgetNull } ) {
-	const isGA4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
-	const keyMetrics = useSelect( ( select ) => {
-		if ( isGA4ModuleConnected !== false ) {
-			return;
-		}
-		return select( CORE_USER ).getKeyMetrics();
-	} );
-
-	let hideWidget = true;
-
-	if ( keyMetrics?.length > 0 ) {
-		const kmAnalyticsWidgetCount = keyMetrics.filter( ( keyMetric ) =>
-			keyMetricsGA4Widgets.includes( keyMetric )
-		).length;
-
-		if ( kmAnalyticsWidgetCount > 0 && kmAnalyticsWidgetCount < 3 ) {
-			hideWidget = false;
-		}
-	}
-
-	if ( isGA4ModuleConnected !== false || hideWidget ) {
-		return <WidgetNull />;
-	}
-
-	return (
-		<ConnectModuleCTATile
-			Icon={ AnalyticsIcon }
-			moduleSlug="analytics"
-			Widget={ Widget }
-		/>
-	);
+	return <ConnectModuleCTATile moduleSlug="analytics4" />;
 }
 
 ConnectGA4CTATileWidget.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
+	widgetSlug: PropTypes.string.isRequired,
 };
