@@ -184,7 +184,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( '' );
 			} );
 
-			it( 'should set property ID only and reset datastream with measurement IDs when web data stream is not found', async () => {
+			it( 'should set property ID and the first web data stream when a matching web data stream is not found', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
@@ -203,6 +203,46 @@ describe( 'modules/analytics-4 properties', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectProperty( propertyID );
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
+				).toBe( propertyID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
+				).toBe( fixtures.webDataStreams[ 0 ]._id );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
+				).toBe(
+					// eslint-disable-next-line sitekit/acronym-case
+					fixtures.webDataStreams[ 0 ].webStreamData.measurementId
+				);
+			} );
+
+			it( 'should set property ID and reset datastream with measurement IDs when no web data streams are available', async () => {
+				const propertyID = '09876';
+				const settings = {
+					propertyID: '12345',
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+				};
+
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'https://www.example.io',
+				} );
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( [], {
+						// No web data streams are available for this property
 						propertyID,
 					} );
 				await registry
