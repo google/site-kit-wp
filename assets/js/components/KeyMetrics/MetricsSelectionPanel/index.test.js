@@ -27,10 +27,12 @@ import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../tests/js/utils';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../googlesitekit/datastore/user/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 
@@ -45,6 +47,10 @@ describe( 'MetricsSelectionPanel', () => {
 		registry = createTestRegistry();
 
 		freezeFetch( coreKeyMetricsEndpointRegExp );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 	} );
 
 	describe( 'Header', () => {

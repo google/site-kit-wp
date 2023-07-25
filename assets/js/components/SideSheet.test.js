@@ -58,8 +58,8 @@ describe( 'SideSheet', () => {
 	it( 'should lock document scroll when opened', () => {
 		render( <SideSheet isOpen>Side Sheet content</SideSheet> );
 
-		expect( global.window.getComputedStyle( document.body ).overflow ).toBe(
-			'hidden'
+		expect( document.body ).toHaveClass(
+			'googlesitekit-side-sheet-scroll-lock'
 		);
 	} );
 } );
