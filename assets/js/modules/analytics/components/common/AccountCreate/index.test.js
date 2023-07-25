@@ -78,19 +78,25 @@ describe( 'AccountCreate', () => {
 			.finishResolution( 'getAccounts', [] );
 	} );
 
-	it( 'renders correctly in a loading state', () => {
+	it( 'renders correctly in a loading state', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.invalidateResolution( 'getAccounts', [] );
 
-		const { container, getByRole } = render( <AccountCreate />, {
-			registry,
-			features: [ 'ga4Reporting' ],
-		} );
+		const { container, getByRole, waitForRegistry } = render(
+			<AccountCreate />,
+			{
+				registry,
+				features: [ 'ga4Reporting' ],
+			}
+		);
 
 		expect( container ).toMatchSnapshot();
 
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
+
+		// Wait for resolvers to finish to avoid an unhandled React state update.
+		await waitForRegistry();
 	} );
 
 	it( 'renders correctly when data has loaded', async () => {
