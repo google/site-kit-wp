@@ -54,7 +54,7 @@
 		position: fixed;
 		top: 0;
 		width: 100%;
-		z-index: $z-index-sk-side-sheet - 10; // -10 for the side sheet to appear above the overlay.
+		z-index: $z-index-sk-side-sheet-overlay;
 	}
 }
 
