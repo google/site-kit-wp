@@ -44,12 +44,9 @@ const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
-const SET_KEY_METRICS_SETTINGS_SAVING_FLAG =
-	'SET_KEY_METRICS_SETTINGS_SAVING_FLAG';
 
 const baseInitialState = {
 	keyMetricsSettings: undefined,
-	isSavingKeyMetricsSettings: false,
 };
 
 const fetchGetKeyMetricsSettingsStore = createFetchStore( {
@@ -123,11 +120,6 @@ const baseActions = {
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
 
-		yield {
-			type: SET_KEY_METRICS_SETTINGS_SAVING_FLAG,
-			payload: { isSaving: true },
-		};
-
 		const { response, error } =
 			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetricsSettings(
 				{
@@ -140,11 +132,6 @@ const baseActions = {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
 			yield receiveError( error, 'saveKeyMetricsSettings', [] );
 		}
-
-		yield {
-			type: SET_KEY_METRICS_SETTINGS_SAVING_FLAG,
-			payload: { isSaving: false },
-		};
 
 		return { response, error };
 	},
@@ -161,12 +148,6 @@ const baseReducer = ( state, { type, payload } ) => {
 					...state.keyMetricsSettings,
 					[ payload.settingID ]: payload.value,
 				},
-			};
-		}
-		case SET_KEY_METRICS_SETTINGS_SAVING_FLAG: {
-			return {
-				...state,
-				isSavingKeyMetricsSettings: payload.isSaving,
 			};
 		}
 		default: {
@@ -345,7 +326,11 @@ const baseSelectors = {
 	 * @return {boolean} TRUE if the key metrics settings are being saved, otherwise FALSE.
 	 */
 	isSavingKeyMetricsSettings( state ) {
-		return !! state?.isSavingKeyMetricsSettings;
+		// Since isFetchingSaveKeyMetricsSettings holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such request is in progress.
+		return Object.values( state.isFetchingSaveKeyMetricsSettings ).some(
+			Boolean
+		);
 	},
 };
 
