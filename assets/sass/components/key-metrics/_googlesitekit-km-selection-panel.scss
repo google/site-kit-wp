@@ -123,6 +123,10 @@
 		.googlesitekit-km-selection-panel-footer__note {
 			color: $c-surfaces-on-surface;
 			margin: 1.15em 0 0;
+
+			button {
+				color: $c-content-secondary;
+			}
 		}
 	}
 }
