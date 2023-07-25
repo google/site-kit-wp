@@ -131,14 +131,14 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 				alignLeft
 			>
 				{ __(
-					'Place the error protection tag (optional)',
+					'Enable error protection code (optional)',
 					'google-site-kit'
 				) }
 			</Checkbox>
 			<p className="googlesitekit-ad-blocking-recovery__error-protection-tag-info">
 				{ createInterpolateElement(
 					__(
-						'If a site visitor’s ad blocker browser extension also blocks the standard ad blocking recovery tag, the error protection tag will show a non-customizable ad blocking recovery message to visitors when enabled. <a>Learn more</a>',
+						'If a site visitor’s ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{
