@@ -95,6 +95,41 @@ ZeroData.scenario = {
 	delay: 250,
 };
 
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const errorObject = {
+			code: 400,
+			message:
+				'Did you mean newVsReturning? Field newVsReturningFOO is not a valid dimension. For a list of valid dimensions and metrics, see https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema ',
+			data: {
+				status: 400,
+				reason: 'badRequest',
+			},
+			selectorData: {
+				storeName: 'modules/analytics-4',
+				name: 'getReport',
+				args: [ reportOptions ],
+			},
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+Error.scenario = {
+	label: 'KeyMetrics/LoyalVisitors/Error',
+	delay: 250,
+};
+
 export default {
 	title: 'Key Metrics/LoyalVisitors',
 	decorators: [
