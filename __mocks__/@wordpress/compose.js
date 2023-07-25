@@ -18,7 +18,7 @@
 
 const lib = jest.requireActual( '@wordpress/compose' );
 
-// Here we ensure that the `useInstanceId` hook can be mocked, although
+// Here we ensure that the `useInstanceId()` hook can be mocked, although
 // it initially retains its original implementation.
 // The actual mocking of the hook happens in the separate `mockUseInstanceID()`
 // helper function.
