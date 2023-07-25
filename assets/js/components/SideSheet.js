@@ -27,19 +27,27 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import { useClickAway, useKey } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import Portal from './Portal';
 
-export default function SideSheet( { className, children, isOpen } ) {
-	// Disable scrolling on document body when panel is open.
+export default function SideSheet( {
+	className,
+	children,
+	isOpen,
+	closeFn = () => {},
+} ) {
+	const sideSheetRef = useRef();
+
 	useEffect( () => {
 		if ( isOpen ) {
 			document.body.classList.add(
@@ -52,9 +60,14 @@ export default function SideSheet( { className, children, isOpen } ) {
 		}
 	}, [ isOpen ] );
 
+	useClickAway( sideSheetRef, closeFn );
+
+	useKey( ( event ) => isOpen && ESCAPE === event.keyCode, closeFn );
+
 	return (
 		<Portal>
 			<section
+				ref={ sideSheetRef }
 				className={ classnames( 'googlesitekit-side-sheet', className, {
 					'googlesitekit-side-sheet--open': isOpen,
 				} ) }
@@ -70,4 +83,5 @@ SideSheet.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
 	isOpen: PropTypes.bool,
+	closeFn: PropTypes.func,
 };

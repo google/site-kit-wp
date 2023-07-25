@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -48,6 +48,7 @@ export default function MetricsSelectionPanel() {
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValue } = useDispatch( CORE_UI );
 
 	useEffect( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
@@ -55,10 +56,15 @@ export default function MetricsSelectionPanel() {
 		} );
 	}, [ keyMetrics, setValues ] );
 
+	const sideSheetCloseFn = useCallback( () => {
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+	}, [ setValue ] );
+
 	return (
 		<SideSheet
 			className="googlesitekit-km-selection-panel"
 			isOpen={ isOpen }
+			closeFn={ sideSheetCloseFn }
 		>
 			<Header />
 			<Metrics />
