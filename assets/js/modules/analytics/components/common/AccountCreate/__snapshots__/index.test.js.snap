@@ -68,7 +68,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
               <label
                 class="mdc-floating-label mdc-floating-label--float-above"
                 for="googlesitekit_analytics_account_create_account"
-                style="transition-duration: 0s;"
+                style=""
               >
                 Account
               </label>
@@ -103,7 +103,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
               <label
                 class="mdc-floating-label mdc-floating-label--float-above"
                 for="googlesitekit_analytics_account_create_property"
-                style="transition-duration: 0s;"
+                style=""
               >
                 Property
               </label>
@@ -138,7 +138,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
               <label
                 class="mdc-floating-label mdc-floating-label--float-above"
                 for="googlesitekit_analytics_account_create_dataStream"
-                style="transition-duration: 0s;"
+                style=""
               >
                 Web Data Stream
               </label>
@@ -183,7 +183,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
               for="googlesitekit-select-0"
-              style="transition-duration: 0s;"
+              style=""
             >
               Country
             </label>
@@ -223,7 +223,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
               for="googlesitekit-select-1"
-              style="transition-duration: 0s;"
+              style=""
             >
               Timezone
             </label>

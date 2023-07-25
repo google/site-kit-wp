@@ -90,11 +90,16 @@ describe( 'AccountCreate', () => {
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders correctly when data has loaded', () => {
-		const { container, getByRole } = render( <AccountCreate />, {
-			registry,
-			features: [ 'ga4Reporting' ],
-		} );
+	it( 'renders correctly when data has loaded', async () => {
+		const { container, getByRole, waitForRegistry } = render(
+			<AccountCreate />,
+			{
+				registry,
+				features: [ 'ga4Reporting' ],
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
