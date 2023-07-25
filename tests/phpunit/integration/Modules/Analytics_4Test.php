@@ -978,6 +978,16 @@ class Analytics_4Test extends TestCase {
 								),
 							),
 						),
+						// Verify the URL filter is correct.
+						array(
+							'filter' => array(
+								'fieldName'    => 'pagePath',
+								'stringFilter' => array(
+									'matchType' => 'EXACT',
+									'value'     => 'https://example.org/some-page-here/',
+								),
+							),
+						),
 						// Verify the single-value dimension filter is correct.
 						array(
 							'filter' => array(
@@ -994,16 +1004,6 @@ class Analytics_4Test extends TestCase {
 								'fieldName'    => 'pageTitle',
 								'inListFilter' => array(
 									'values' => array( 'Title Foo', 'Title Bar' ),
-								),
-							),
-						),
-						// Verify the URL filter is correct.
-						array(
-							'filter' => array(
-								'fieldName'    => 'pagePath',
-								'stringFilter' => array(
-									'matchType' => 'EXACT',
-									'value'     => 'https://example.org/some-page-here/',
 								),
 							),
 						),

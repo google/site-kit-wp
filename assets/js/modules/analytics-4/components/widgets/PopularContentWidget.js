@@ -119,7 +119,7 @@ export default function PopularContentWidget( props ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			zeroState={ ZeroDataMessage }
+			ZeroState={ ZeroDataMessage }
 		/>
 	);
 }

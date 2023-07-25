@@ -147,7 +147,7 @@ export default function WebDataStreamSelect( props ) {
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
 	} else if ( isLoading ) {
-		return <ProgressBar height={ 100 } small />;
+		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
 	}
 
 	const isValidSelection =
