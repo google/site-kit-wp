@@ -52,9 +52,4 @@ Default.scenario = {
 export default {
 	title: 'Components/SideSheet',
 	component: SideSheet,
-	decorators: [
-		( Story ) => {
-			return <Story />;
-		},
-	],
 };
