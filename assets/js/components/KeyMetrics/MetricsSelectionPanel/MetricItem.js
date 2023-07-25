@@ -63,22 +63,28 @@ export default function MetricItem( { id, slug, title, description } ) {
 		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
 			<Accordion
 				title={
-					<Checkbox
-						checked={ selectedMetrics?.includes( slug ) }
-						onChange={ onCheckboxChange }
+					<div
 						onClick={ ( event ) => {
 							event.stopPropagation();
 						} }
-						disabled={
-							! selectedMetrics?.includes( slug ) &&
-							selectedMetrics?.length > 3
-						}
-						id={ id }
-						name={ id }
-						value={ slug }
+						onKeyDown={ () => {} }
+						tabIndex={ 0 }
+						role="button"
 					>
-						{ title }
-					</Checkbox>
+						<Checkbox
+							checked={ selectedMetrics?.includes( slug ) }
+							onChange={ onCheckboxChange }
+							disabled={
+								! selectedMetrics?.includes( slug ) &&
+								selectedMetrics?.length > 3
+							}
+							id={ id }
+							name={ id }
+							value={ slug }
+						>
+							{ title }
+						</Checkbox>
+					</div>
 				}
 				disabled={
 					! selectedMetrics?.includes( slug ) &&

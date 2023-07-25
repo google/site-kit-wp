@@ -45,17 +45,7 @@ export default function Checkbox( props ) {
 		onKeyDown,
 		loading,
 		alignLeft,
-		onClick,
 	} = props;
-
-	const extraProps = {};
-
-	if ( onClick ) {
-		extraProps.onClick = onClick;
-		extraProps.onKeyDown = () => {};
-		extraProps.tabIndex = 0;
-		extraProps.role = 'button';
-	}
 
 	return (
 		<div className="mdc-form-field">
@@ -64,7 +54,6 @@ export default function Checkbox( props ) {
 					'mdc-checkbox--disabled': disabled,
 					'mdc-checkbox--align-left': alignLeft,
 				} ) }
-				{ ...extraProps }
 			>
 				{ loading ? (
 					<Spinner isSaving style={ { margin: '0' } } />
@@ -117,7 +106,6 @@ Checkbox.propTypes = {
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	loading: PropTypes.bool,
 	alignLeft: PropTypes.bool,
-	onClick: PropTypes.func,
 };
 
 Checkbox.defaultProps = {
@@ -127,5 +115,4 @@ Checkbox.defaultProps = {
 	onKeyDown: null,
 	loading: false,
 	alignLeft: false,
-	onClick: null,
 };
