@@ -95,7 +95,6 @@ export default function Footer() {
 	const { saveKeyMetricsSettings } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { setValues } = useDispatch( CORE_FORMS );
 
 	const onSaveClick = useCallback( async () => {
 		const { error } = await saveKeyMetricsSettings( {
@@ -108,12 +107,8 @@ export default function Footer() {
 	}, [ saveKeyMetricsSettings, selectedMetrics, setValue ] );
 
 	const onCancelClick = useCallback( () => {
-		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: keyMetrics,
-		} );
-
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ keyMetrics, setValue, setValues ] );
+	}, [ setValue ] );
 
 	const onSettingsClick = useCallback(
 		() => navigateTo( `${ settingsURL }#/admin-settings` ),

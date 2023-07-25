@@ -44,12 +44,15 @@ export default function SideSheet( {
 	className,
 	children,
 	isOpen,
+	onOpen = () => {},
 	closeFn = () => {},
 } ) {
 	const sideSheetRef = useRef();
 
 	useEffect( () => {
 		if ( isOpen ) {
+			onOpen();
+
 			document.body.classList.add(
 				'googlesitekit-side-sheet-scroll-lock'
 			);
@@ -58,7 +61,7 @@ export default function SideSheet( {
 				'googlesitekit-side-sheet-scroll-lock'
 			);
 		}
-	}, [ isOpen ] );
+	}, [ isOpen, onOpen ] );
 
 	useClickAway( sideSheetRef, closeFn );
 
@@ -83,5 +86,6 @@ SideSheet.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
 	isOpen: PropTypes.bool,
+	onOpen: PropTypes.func,
 	closeFn: PropTypes.func,
 };

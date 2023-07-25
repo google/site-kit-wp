@@ -27,7 +27,6 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
@@ -45,20 +44,12 @@ export default function Header() {
 			KEY_METRICS_SELECTED
 		)
 	);
-	const keyMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetrics()
-	);
 
 	const { setValue } = useDispatch( CORE_UI );
-	const { setValues } = useDispatch( CORE_FORMS );
 
 	const onCloseClick = useCallback( () => {
-		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: keyMetrics,
-		} );
-
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ keyMetrics, setValue, setValues ] );
+	}, [ setValue ] );
 
 	return (
 		<header className="googlesitekit-km-selection-panel-header">

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -50,7 +50,7 @@ export default function MetricsSelectionPanel() {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 
-	useEffect( () => {
+	const onSideSheetOpen = useCallback( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: keyMetrics || [],
 		} );
@@ -64,6 +64,7 @@ export default function MetricsSelectionPanel() {
 		<SideSheet
 			className="googlesitekit-km-selection-panel"
 			isOpen={ isOpen }
+			onOpen={ onSideSheetOpen }
 			closeFn={ sideSheetCloseFn }
 		>
 			<Header />
