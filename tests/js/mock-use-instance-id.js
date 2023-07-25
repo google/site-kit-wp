@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import faker from 'faker';
+
+/**
  * WordPress dependencies
  */
 import { useMemo } from '@wordpress/element';
@@ -17,27 +22,26 @@ import { useInstanceId } from '@wordpress/compose';
  * @param {Object} object      Object reference to create an id for.
  * @return {number} The new id.
  */
-function createID( instanceMap, object ) {
+/*function createID( instanceMap, object ) {
 	const instances = instanceMap.get( object ) || 0;
 	instanceMap.set( object, instances + 1 );
 	return instances;
-}
+}*/
 
 /**
  * Provides a unique instance ID.
  *
  * @since n.e.x.t
  *
- * @param {Map}    instanceMap Map of object instances to their current id.
- * @param {Object} object      Object reference to create an id for.
- * @param {string} prefix      Prefix for the unique id.
+ * @param {Object} object Object reference to create an id for. This is unused and only included for compatibility with the original `useInstanceId()`.
+ * @param {string} prefix Prefix for the unique id.
  * @return {string} The unique id.
  */
-function useInstanceID( instanceMap, object, prefix ) {
+function useInstanceID( object, prefix ) {
 	return useMemo( () => {
-		const id = createID( instanceMap, object );
+		const id = faker.datatype.uuid();
 		return prefix ? `${ prefix }-${ id }` : id;
-	}, [ instanceMap, object, prefix ] );
+	}, [ prefix ] );
 }
 
 /**
@@ -48,23 +52,24 @@ function useInstanceID( instanceMap, object, prefix ) {
  * @since n.e.x.t
  */
 export function mockUseInstanceID() {
-	const instanceMap = new Map();
+	// const instanceMap = new Map();
 
 	beforeAll( () => {
 		// Note that `useInstanceId()` is a Jest spy, having been spied on in the global `@wordpress/compose` mock.
 		useInstanceId.mockImplementation(
-			useInstanceID.bind( null, instanceMap )
+			useInstanceID
+			// useInstanceID.bind( null, instanceMap )
 		);
 	} );
 
-	beforeEach( () => {
-		// Clear the cached object instances before each test to ensure a clean run.
-		instanceMap.clear();
-	} );
+	// beforeEach( () => {
+	// 	// Clear the cached object instances before each test to ensure a clean run.
+	// 	instanceMap.clear();
+	// } );
 
 	afterAll( () => {
 		// Clear the cached object instances after all tests to avoid memory leaks.
-		instanceMap.clear();
+		// instanceMap.clear();
 		useInstanceId.mockRestore();
 	} );
 }
