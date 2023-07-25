@@ -10,7 +10,7 @@ import { useMemo } from '@wordpress/element';
 import { useInstanceId } from '@wordpress/compose';
 
 /**
- * Provides a unique instance ID.
+ * Provides a unique, memoized ID.
  *
  * @since n.e.x.t
  *
