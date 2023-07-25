@@ -34,7 +34,7 @@ export default function MetricTileTable( props ) {
 		rows = [],
 		columns = [],
 		limit,
-		zeroState: ZeroState,
+		ZeroState,
 	} = props;
 
 	let tileBody = null;
@@ -114,5 +114,5 @@ MetricTileTable.propTypes = {
 	rows: PropTypes.array,
 	columns: PropTypes.array,
 	limit: PropTypes.number,
-	zeroState: PropTypes.func,
+	ZeroState: PropTypes.elementType,
 };
