@@ -672,6 +672,26 @@ class Analytics_4Test extends TestCase {
 		$this->assertFalse( $this->analytics->is_data_available() );
 	}
 
+	public function test_on_activation() {
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+
+		$dismissed_items->add( 'key-metrics-connect-ga4-cta-widget' );
+
+		$this->assertEqualSets(
+			array(
+				'key-metrics-connect-ga4-cta-widget' => 0,
+			),
+			$dismissed_items->get()
+		);
+
+		$this->analytics->on_activation();
+
+		$this->assertEqualSets(
+			array(),
+			$dismissed_items->get()
+		);
+	}
+
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
