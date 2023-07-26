@@ -15,9 +15,6 @@ use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\TestCase;
 
-/**
- * @group test
- */
 class Dismissed_ItemsTest extends TestCase {
 
 	/**
