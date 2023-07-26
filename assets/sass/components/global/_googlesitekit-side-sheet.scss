@@ -26,7 +26,7 @@
 		right: 0;
 		top: 0;
 		transform: translateX(100%);
-		transition: transform 1s;
+		transition: transform $t-speed-3;
 		width: 100%;
 		z-index: $z-index-sk-side-sheet;
 
