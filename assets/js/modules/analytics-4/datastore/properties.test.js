@@ -242,7 +242,7 @@ describe( 'modules/analytics-4 properties', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreams( [], {
-						// No web data streams are available for this property
+						// No web data streams are available for this property.
 						propertyID,
 					} );
 				await registry
