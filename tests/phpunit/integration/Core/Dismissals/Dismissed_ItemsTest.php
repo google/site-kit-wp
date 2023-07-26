@@ -15,6 +15,9 @@ use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\TestCase;
 
+/**
+ * @group test
+ */
 class Dismissed_ItemsTest extends TestCase {
 
 	/**
@@ -54,6 +57,49 @@ class Dismissed_ItemsTest extends TestCase {
 			array(
 				'foo' => 0,
 				'bar' => time() + 100,
+			),
+			$this->user_options->get( Dismissed_Items::OPTION )
+		);
+	}
+
+	public function test_remove() {
+		$this->user_options->set(
+			Dismissed_Items::OPTION,
+			array(
+				'foo' => 0,
+				'bar' => time() + 100,
+				'baz' => time() + 200,
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				'foo' => 0,
+				'bar' => time() + 100,
+				'baz' => time() + 200,
+			),
+			$this->user_options->get( Dismissed_Items::OPTION )
+		);
+
+		$this->dismissed_items->remove( 'bar' );
+
+		$this->assertEquals(
+			array(
+				'foo' => 0,
+				'baz' => time() + 200,
+
+			),
+			$this->user_options->get( Dismissed_Items::OPTION )
+		);
+
+		// If the item is not in dismissed items, there should be no change.
+		$this->dismissed_items->remove( 'bar' );
+
+		$this->assertEquals(
+			array(
+				'foo' => 0,
+				'baz' => time() + 200,
+
 			),
 			$this->user_options->get( Dismissed_Items::OPTION )
 		);
