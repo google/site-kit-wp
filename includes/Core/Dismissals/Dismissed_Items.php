@@ -55,6 +55,12 @@ class Dismissed_Items extends User_Setting {
 	 */
 	public function remove( $item ) {
 		$items = $this->get();
+
+		// If the item is not in dismissed items, there's nothing to do.
+		if ( ! array_key_exists( $item, $items ) ) {
+			return;
+		}
+
 		unset( $items[ $item ] );
 
 		$this->set( $items );
