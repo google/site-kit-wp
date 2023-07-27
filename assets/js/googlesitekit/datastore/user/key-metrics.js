@@ -261,7 +261,7 @@ const baseSelectors = {
 	 * Gets whether an individual key metric identified by its slug is
 	 * active or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.106.0
 	 *
 	 * @return {boolean|undefined} True if the key metric widget tile is active, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
