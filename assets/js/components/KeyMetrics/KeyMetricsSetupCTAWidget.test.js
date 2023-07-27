@@ -24,6 +24,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
+	act,
 	render,
 	createTestRegistry,
 	provideModules,
@@ -71,29 +72,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				'^/google-site-kit/v1/modules/search-console/data/data-available'
 			)
 		);
-	} );
-
-	it( 'does not render when SC is not connected', async () => {
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: false,
-			},
-		] );
-
-		const { container, waitForRegistry } = render(
-			<KeyMetricsSetupCTAWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-				features: [ 'userInput' ],
-			}
-		);
-		await waitForRegistry();
-		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'does not render when GA4 is not connected', async () => {
@@ -300,6 +278,14 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when dismissed and the tooltip is visible', async () => {
+		fetchMock.postOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{
+				body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
+				status: 200,
+			}
+		);
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -348,9 +334,14 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			'Get metrics and suggestions tailored to your specific goals'
 		);
 
-		fireEvent.click(
-			container.querySelectorAll( 'button.googlesitekit-cta-link' )[ 1 ]
-		);
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				container.querySelectorAll(
+					'button.googlesitekit-cta-link'
+				)[ 1 ]
+			);
+		} );
 
 		expect(
 			container.querySelector( '.googlesitekit-publisher-win__title' )

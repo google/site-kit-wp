@@ -182,9 +182,14 @@ final class AdSense extends Module
 	 * Cleans up when the module is deactivated.
 	 *
 	 * @since 1.0.0
+	 * @since 1.106.0 Remove Ad Blocking Recovery Tag setting on deactivation.
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
+
+		if ( $this->ad_blocking_recovery_tag->has() ) {
+			$this->ad_blocking_recovery_tag->delete();
+		}
 	}
 
 	/**

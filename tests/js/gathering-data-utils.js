@@ -22,7 +22,7 @@ import {
 /**
  * Generates report options for the Analytics 4 report used in the zero data check, which is in turn used to determine the gathering data state.
  *
- * @since n.e.x.t
+ * @since 1.106.0
  *
  * @param {Object} registry Data registry object.
  * @return {Object} Report options object.
@@ -52,7 +52,7 @@ export function getAnalytics4HasZeroDataReportOptions( registry ) {
 /**
  * Provides the required data to the given registry to ensure the gathering data state is set for the Analytics 4 module.
  *
- * @since n.e.x.t
+ * @since 1.106.0
  *
  * @param {Object}  registry        Data registry object.
  * @param {boolean} isGatheringData The desired gathering data state.
@@ -75,7 +75,7 @@ function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
 /**
  * Provides the required data to the given registry to ensure the gathering data state is set for the Search Console module.
  *
- * @since n.e.x.t
+ * @since 1.106.0
  *
  * @param {Object}  registry        Data registry object.
  * @param {boolean} isGatheringData The desired gathering data state.
@@ -123,7 +123,7 @@ const moduleDataProviderMap = {
  * Setting up Analytics 4 to return `true` for gathering data is unsupported as it relies on the current authentication and selected property state,
  * making it impractical to set from a helper as these states will differ across test scenarios.
  *
- * @since n.e.x.t
+ * @since 1.106.0
  *
  * @param {Object} registry     Registry to provide the data to.
  * @param {Object} moduleStates Object keyed by module slug with a boolean value indicating whether the module should be gathering data.

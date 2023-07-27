@@ -298,7 +298,7 @@ export default function Navigation() {
 			const margin = 20;
 
 			const areas = [
-				...( showKeyMetrics ? [ ANCHOR_ID_TRAFFIC ] : [] ),
+				...( showKeyMetrics ? [ ANCHOR_ID_KEY_METRICS ] : [] ),
 				...( showTraffic ? [ ANCHOR_ID_TRAFFIC ] : [] ),
 				...( showContent ? [ ANCHOR_ID_CONTENT ] : [] ),
 				...( showSpeed ? [ ANCHOR_ID_SPEED ] : [] ),
