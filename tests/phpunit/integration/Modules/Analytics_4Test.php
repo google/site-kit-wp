@@ -1878,14 +1878,15 @@ class Analytics_4Test extends TestCase {
 		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
 
 		$settings = array(
-			'googleTagID' => 'GT-12345678',
+			'measurementID' => 'G-12345678',
+			'googleTagID'   => 'GT-12345678',
 		);
 
 		$this->analytics->get_settings()->merge( $settings );
 
 		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet contains the configured google tag ID when it is set.
-		$this->assertStringContainsString( 'window["ga-disable-' . $settings['googleTagID'] . '"] = true', $snippet_html );
+		// Ensure the snippet contains the configured measurement ID (not GT tag) when it is set.
+		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
 	}
 
 	public function test_register_allow_tracking_disabled() {
