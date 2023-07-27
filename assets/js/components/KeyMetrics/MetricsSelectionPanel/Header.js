@@ -65,12 +65,13 @@ export default function Header() {
 			<p>
 				{ createInterpolateElement(
 					sprintf(
-						/* translators: %d: Number of selected metrics. */
+						/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
 						__(
-							'<strong>%d of 4</strong> metrics selected',
+							'<strong>%1$d of %2$d</strong> metrics selected',
 							'google-site-kit'
 						),
-						selectedMetrics?.length || 0
+						selectedMetrics?.length || 0,
+						4
 					),
 					{
 						strong: <strong />,
