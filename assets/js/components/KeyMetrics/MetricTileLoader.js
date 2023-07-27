@@ -24,8 +24,16 @@ import PreviewBlock from '../PreviewBlock';
 export default function MetricTileLoader() {
 	return (
 		<div className="googlesitekit-km-widget-tile__loading">
-			<PreviewBlock width="100%" height="14px" />
-			<PreviewBlock width="100%" height="53px" />
+			<PreviewBlock
+				className="googlesitekit-km-widget-tile__loading-header"
+				width="100%"
+				height="14px"
+			/>
+			<PreviewBlock
+				className="googlesitekit-km-widget-tile__loading-body"
+				width="100%"
+				height="53px"
+			/>
 		</div>
 	);
 }
