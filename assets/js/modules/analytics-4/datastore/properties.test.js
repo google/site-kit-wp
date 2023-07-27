@@ -223,7 +223,7 @@ describe( 'modules/analytics-4 properties', () => {
 				);
 			} );
 
-			it( 'should set property ID and reset datastream with measurement IDs when no web data streams are available', async () => {
+			it( 'should set property ID, and reset datastream and measurement IDs when no web data streams are available', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
