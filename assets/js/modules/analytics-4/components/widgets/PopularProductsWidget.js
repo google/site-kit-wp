@@ -103,10 +103,13 @@ export default function PopularProductsWidget( props ) {
 			{
 				field: 'dimensionValues',
 				Component: ( { fieldValue } ) => {
-					const [ title ] = fieldValue;
+					const [ title, url ] = fieldValue;
 					const permaLink = select(
 						MODULES_ANALYTICS_4
-					).getServiceReportURL( 'ecomm-product', reportOptions );
+					).getServiceReportURL( 'all-pages-and-screens', {
+						filters: { unifiedPagePathScreen: url.value },
+						dates,
+					} );
 
 					return (
 						<Link
