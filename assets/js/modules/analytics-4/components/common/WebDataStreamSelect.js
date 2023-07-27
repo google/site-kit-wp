@@ -66,9 +66,7 @@ export default function WebDataStreamSelect( props ) {
 
 	const webDataStreams = useSelect( ( select ) =>
 		isValidPropertyID( propertyID ) && hasModuleAccess !== false
-			? select(
-					MODULES_ANALYTICS_4
-			  ).getMatchingWebDataStreamsByPropertyID( propertyID )
+			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
 			: []
 	);
 
