@@ -45,6 +45,12 @@ export default function Accordion( {
 		}
 	}, [ isActive, onClose, onOpen ] );
 
+	useEffect( () => {
+		if ( disabled && isActive ) {
+			setActive( false );
+		}
+	}, [ disabled, isActive ] );
+
 	const toggleAccordion = useCallback( () => {
 		setActive( ! isActive );
 	}, [ isActive ] );
@@ -57,7 +63,7 @@ export default function Accordion( {
 		>
 			<div
 				className={ classnames( 'googlesitekit-accordion__header', {
-					'is-active': isActive && ! disabled,
+					'is-active': isActive,
 				} ) }
 				onClick={ toggleAccordion }
 				onKeyDown={ () => {} }
@@ -68,7 +74,7 @@ export default function Accordion( {
 			</div>
 			<div
 				className={ classnames( 'googlesitekit-accordion__content', {
-					'is-active': isActive && ! disabled,
+					'is-active': isActive,
 				} ) }
 			>
 				{ children }
