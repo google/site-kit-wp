@@ -59,6 +59,9 @@ export default function MetricItem( { id, slug, title, description } ) {
 		[ selectedMetrics, setValues, slug ]
 	);
 
+	const isMetricSelected = selectedMetrics?.includes( slug );
+	const isMetricDisabled = ! isMetricSelected && selectedMetrics?.length > 3;
+
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
 			<Accordion
@@ -72,12 +75,9 @@ export default function MetricItem( { id, slug, title, description } ) {
 						role="button"
 					>
 						<Checkbox
-							checked={ selectedMetrics?.includes( slug ) }
+							checked={ isMetricSelected }
 							onChange={ onCheckboxChange }
-							disabled={
-								! selectedMetrics?.includes( slug ) &&
-								selectedMetrics?.length > 3
-							}
+							disabled={ isMetricDisabled }
 							id={ id }
 							name={ id }
 							value={ slug }
@@ -86,10 +86,7 @@ export default function MetricItem( { id, slug, title, description } ) {
 						</Checkbox>
 					</div>
 				}
-				disabled={
-					! selectedMetrics?.includes( slug ) &&
-					selectedMetrics?.length > 3
-				}
+				disabled={ isMetricDisabled }
 			>
 				{ description }
 			</Accordion>
