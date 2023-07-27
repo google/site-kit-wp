@@ -617,6 +617,11 @@ class OAuth_ClientTest extends TestCase {
 		// No other way around this but to mock the Google_Site_Kit_Client
 		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
 								->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+		// Deferred request execution is false by default.
+		$this->assertFalse( $google_client_mock->shouldDefer() );
+		// This ensures that the defer is disabled in the method under test. (See #7356)
+		// If not handled properly, the caller will not expect the response to be a Request and it will error.
+		$google_client_mock->setDefer( true );
 
 		FakeHttp::fake_google_http_handler(
 			$google_client_mock,
@@ -695,6 +700,9 @@ class OAuth_ClientTest extends TestCase {
 			$current_time,
 			wp_next_scheduled( OAuth_Client::CRON_REFRESH_PROFILE_DATA, array( $user_id_a ) )
 		);
+
+		// This ensures the previous defer was properly restored.
+		$this->assertTrue( $google_client_mock->shouldDefer() );
 	}
 
 	public function test_using_proxy() {
