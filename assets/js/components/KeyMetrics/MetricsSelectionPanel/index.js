@@ -26,8 +26,10 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
@@ -43,16 +45,37 @@ export default function MetricsSelectionPanel() {
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
-	const keyMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetrics()
-	);
+	const keyMetrics = useSelect( ( select ) => {
+		const metrics = select( CORE_USER ).getKeyMetrics();
+
+		if ( ! Array.isArray( metrics ) ) {
+			return [];
+		}
+
+		// Before setting metrics as selected, verify that they are available, i.e.
+		// the modules that they depend on are connected. This helps prevent metrics
+		// with disconnected dependencies appear as selected in the selection panel.
+		return metrics.filter( ( slug ) => {
+			const widget = select( CORE_WIDGETS ).getWidget( slug );
+
+			if ( ! widget ) {
+				return false;
+			}
+
+			const { isModuleConnected } = select( CORE_MODULES );
+
+			return widget.modules.every( ( module ) =>
+				isModuleConnected( module )
+			);
+		} );
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const onSideSheetOpen = useCallback( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: keyMetrics || [],
+			[ KEY_METRICS_SELECTED ]: keyMetrics,
 		} );
 	}, [ keyMetrics, setValues ] );
 
