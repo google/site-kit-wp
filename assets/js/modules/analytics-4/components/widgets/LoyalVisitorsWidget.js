@@ -51,8 +51,8 @@ export default function LoyalVisitorsWidget( { Widget } ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'newVsReturningFoo' ],
-		metrics: [ { name: 'activeUsersFoo' } ],
+		dimensions: [ 'newVsReturningFOO' ],
+		metrics: [ { name: 'activeUsersFOO' } ],
 	};
 
 	const report = useInViewSelect( ( select ) =>
