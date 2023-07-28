@@ -98,7 +98,7 @@ export default function PopularProductsWidget( props ) {
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ title, url ] = fieldValue;
-				const permaLink = select(
+				const serviceURL = select(
 					MODULES_ANALYTICS_4
 				).getServiceReportURL( 'all-pages-and-screens', {
 					filters: { unifiedPagePathScreen: url.value },
@@ -107,7 +107,7 @@ export default function PopularProductsWidget( props ) {
 
 				return (
 					<Link
-						href={ permaLink }
+						href={ serviceURL }
 						title={ title.value }
 						external
 						hideExternalIndicator
