@@ -40,8 +40,10 @@ export default function Metrics() {
 				return false;
 			}
 
+			const { isModuleConnected } = select( CORE_MODULES );
+
 			return widget.modules.every( ( module ) =>
-				select( CORE_MODULES ).isModuleConnected( module )
+				isModuleConnected( module )
 			);
 		} )
 	);
