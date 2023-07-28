@@ -44,19 +44,25 @@ export default function MetricItem( { id, slug, title, description } ) {
 		)
 	);
 
+	const { getValue } = useSelect( ( select ) => select( CORE_FORMS ) );
+
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const onCheckboxChange = useCallback(
 		( event ) => {
+			const metrics = getValue(
+				KEY_METRICS_SELECTION_FORM,
+				KEY_METRICS_SELECTED
+			);
 			setValues( KEY_METRICS_SELECTION_FORM, {
 				[ KEY_METRICS_SELECTED ]: event.target.checked
-					? selectedMetrics.concat( [ slug ] )
-					: selectedMetrics.filter(
+					? metrics.concat( [ slug ] )
+					: metrics.filter(
 							( selectedMetric ) => selectedMetric !== slug
 					  ),
 			} );
 		},
-		[ selectedMetrics, setValues, slug ]
+		[ getValue, setValues, slug ]
 	);
 
 	const isMetricSelected = selectedMetrics?.includes( slug );
