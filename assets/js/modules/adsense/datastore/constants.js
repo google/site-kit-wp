@@ -26,6 +26,8 @@ export const API_STATE_NEEDS_ATTENTION = 'NEEDS_ATTENTION';
 export const API_STATE_REQUIRES_REVIEW = 'REQUIRES_REVIEW';
 export const API_STATE_GETTING_READY = 'GETTING_READY';
 
+export const IS_COMPLETING_SETUP = 'adsense-is-completing-setup';
+
 export const AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID =
 	'ad-blocking-recovery-setup-success';
 export const AD_BLOCKING_FORM_SETTINGS = 'adsenseAdBlockingFormSettings';

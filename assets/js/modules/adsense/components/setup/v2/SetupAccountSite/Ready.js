@@ -28,7 +28,11 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import ViewContextContext from '../../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../../util';
-import { MODULES_ADSENSE } from '../../../../datastore/constants';
+import {
+	IS_COMPLETING_SETUP,
+	MODULES_ADSENSE,
+} from '../../../../datastore/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
 const { useSelect, useDispatch } = Data;
 
@@ -53,6 +57,8 @@ export default function Ready( { site, finishSetup } ) {
 	const { completeSiteSetup, completeAccountSetup } =
 		useDispatch( MODULES_ADSENSE );
 
+	const { setValue } = useDispatch( CORE_UI );
+
 	const enableAutoAdsHandler = useCallback(
 		( event ) => {
 			event.preventDefault();
@@ -76,8 +82,13 @@ export default function Ready( { site, finishSetup } ) {
 			return;
 		}
 
+		setValue( IS_COMPLETING_SETUP, true );
+
 		const successSiteSetupCompletion = await completeSiteSetup();
 		const successAccountSetupCompletion = await completeAccountSetup();
+
+		setValue( IS_COMPLETING_SETUP, false );
+
 		if (
 			successSiteSetupCompletion &&
 			successAccountSetupCompletion &&
@@ -87,9 +98,10 @@ export default function Ready( { site, finishSetup } ) {
 		}
 	}, [
 		isDoingSubmitChanges,
-		finishSetup,
+		setValue,
 		completeSiteSetup,
 		completeAccountSetup,
+		finishSetup,
 	] );
 
 	const uiProps = {};

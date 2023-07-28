@@ -39,7 +39,10 @@ import SetupCreateAccount from './SetupCreateAccount';
 import SetupSelectAccount from './SetupSelectAccount';
 import { trackEvent } from '../../../../../util';
 import { AdBlockerWarning, ErrorNotices } from '../../common';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import {
+	IS_COMPLETING_SETUP,
+	MODULES_ADSENSE,
+} from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
@@ -49,6 +52,7 @@ import {
 } from '../../../util/status';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useRefocus } from '../../../../../hooks/useRefocus';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -71,6 +75,9 @@ export default function SetupMain( { finishSetup } ) {
 	// Submit changes for determined parameters in the background when they are valid.
 	const [ isSubmittingInBackground, setIsSubmittingInBackground ] =
 		useState( false );
+	const isCompletingSetup = useSelect(
+		( select ) => !! select( CORE_UI ).getValue( IS_COMPLETING_SETUP )
+	);
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()
 	);
@@ -184,7 +191,8 @@ export default function SetupMain( { finishSetup } ) {
 		if (
 			! isAwaitingBackgroundSubmit ||
 			isSubmittingInBackground ||
-			! canSubmitChanges
+			! canSubmitChanges ||
+			isCompletingSetup
 		) {
 			return;
 		}
@@ -205,6 +213,7 @@ export default function SetupMain( { finishSetup } ) {
 		isSubmittingInBackground,
 		canSubmitChanges,
 		submitChanges,
+		isCompletingSetup,
 	] );
 
 	const reset = useCallback( () => {
