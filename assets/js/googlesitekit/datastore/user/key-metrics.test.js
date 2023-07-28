@@ -348,11 +348,13 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it( 'optionally saves additional settings besides whatever is stored', async () => {
+				const settings = {
+					[ settingID ]: settingValue,
+					isWidgetHidden: true,
+				};
+
 				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
-					body: {
-						...coreKeyMetricsExpectedResponse,
-						isWidgetHidden: true,
-					},
+					body: settings,
 					status: 200,
 				} );
 
@@ -366,19 +368,15 @@ describe( 'core/user key metrics', () => {
 					{
 						body: {
 							data: {
-								settings: {
-									[ settingID ]: settingValue,
-									isWidgetHidden: true,
-								},
+								settings,
 							},
 						},
 					}
 				);
 
-				expect( store.getState().keyMetricsSettings ).toMatchObject( {
-					...coreKeyMetricsExpectedResponse,
-					isWidgetHidden: true,
-				} );
+				expect( store.getState().keyMetricsSettings ).toEqual(
+					settings
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
