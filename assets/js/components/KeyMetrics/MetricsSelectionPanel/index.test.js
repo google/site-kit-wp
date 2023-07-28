@@ -29,7 +29,11 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
@@ -106,14 +110,17 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should disable unchecked metrics when four metrics are checked', () => {
+			const metrics = [
+				KM_ANALYTICS_LOYAL_VISITORS,
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_ANALYTICS_POPULAR_CONTENT,
+			];
+
 			provideModules( registry, [
 				{
 					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'adsense',
 					active: true,
 					connected: true,
 				},
@@ -121,31 +128,31 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations(
 				registry,
-				Object.keys( KEY_METRICS_WIDGETS ).reduce(
+				metrics.reduce(
 					( acc, widget ) => ( {
 						...acc,
 						[ widget ]: {
-							modules: [
-								'search-console',
-								'analytics-4',
-								'adsense',
-							],
+							modules: [ 'analytics-4' ],
 						},
 					} ),
 					{}
 				)
 			);
 
+			// Set the first four metrics as selected.
 			provideKeyMetrics( registry, {
-				widgetSlugs: Object.keys( KEY_METRICS_WIDGETS ).slice( 0, 4 ),
+				widgetSlugs: metrics.slice( 0, 4 ),
 			} );
 
-			render( <MetricsSelectionPanel />, { registry } );
+			const { getByRole } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
 
+			// Verify that the fifth metric is disabled.
 			expect(
-				document.querySelector(
-					'.googlesitekit-km-selection-panel-metrics input[type=checkbox]:not(:checked)'
-				)
+				getByRole( 'checkbox', {
+					name: /Most popular content/i,
+				} )
 			).toBeDisabled();
 		} );
 	} );
