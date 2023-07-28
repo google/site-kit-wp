@@ -33,25 +33,10 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-/**
- * Zero data message component for Analytics.
- *
- * @since n.e.x.t
- *
- * @param {Object}     props            Component props.
- * @param {WPElement?} props.children   Children to render instead of default
- *                                      message for zero data.
- * @param {boolean?}   props.skipPrefix Skip the prefix for the message.
- * @return {WPElement} Component contents.
- */
-export default function ZeroDataMessage( { children, skipPrefix } ) {
+export default function ZeroDataMessage( { skipPrefix } ) {
 	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
-
-	if ( children ) {
-		return children;
-	}
 
 	if ( skipPrefix ) {
 		return url
