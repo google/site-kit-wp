@@ -32,14 +32,16 @@ export default function MetricTileError( props ) {
 	const { error, headerText, moduleSlug } = props;
 
 	return (
-		<CTA
-			title={ __( 'Data Loading Failed', 'google-site-kit' ) }
-			headerText={ headerText }
-			description=""
-			error={ error }
-		>
-			<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
-		</CTA>
+		<div className="googlesitekit-km-widget-tile--error">
+			<CTA
+				title={ __( 'Data loading failed', 'google-site-kit' ) }
+				headerText={ headerText }
+				description=""
+				error
+			>
+				<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
+			</CTA>
+		</div>
 	);
 }
 
