@@ -422,7 +422,8 @@ final class Analytics_4 extends Module
 	 * @since 1.41.0
 	 */
 	private function analytics_tracking_opt_out() {
-		$tag_id = $this->get_tag_id();
+		// Opt-out should always use the measurement ID, even when using a GT tag.
+		$tag_id = $this->get_measurement_id();
 		if ( empty( $tag_id ) ) {
 			return;
 		}
