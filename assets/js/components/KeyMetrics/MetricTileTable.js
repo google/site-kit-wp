@@ -115,5 +115,4 @@ MetricTileTable.propTypes = {
 	columns: PropTypes.array,
 	limit: PropTypes.number,
 	ZeroState: PropTypes.elementType,
-	zeroStateContent: PropTypes.node,
 };
