@@ -70,7 +70,12 @@ export default function SideSheet( {
 
 	return (
 		<Portal>
-			<FocusTrap active={ !! isOpen }>
+			<FocusTrap
+				active={ !! isOpen }
+				focusTrapOptions={ {
+					fallbackFocus: 'body',
+				} }
+			>
 				<section
 					ref={ sideSheetRef }
 					className={ classnames(

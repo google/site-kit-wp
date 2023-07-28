@@ -33,7 +33,11 @@ const Template = ( args ) => {
 	return (
 		<Fragment>
 			<Button onClick={ () => setIsOpen( true ) }>Open Side Sheet</Button>
-			<SideSheet isOpen={ isOpen } { ...args }>
+			<SideSheet
+				isOpen={ isOpen }
+				closeFn={ () => setIsOpen( false ) }
+				{ ...args }
+			>
 				<div>Side Sheet content</div>
 				<Button onClick={ () => setIsOpen( false ) }>
 					Close Side Sheet
