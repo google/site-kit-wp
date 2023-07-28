@@ -101,8 +101,7 @@ Error.args = {
 	setupRegistry: ( { dispatch } ) => {
 		const errorObject = {
 			code: 400,
-			message:
-				'Did you mean newVsReturning? Field newVsReturningFOO is not a valid dimension. For a list of valid dimensions and metrics, see https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema ',
+			message: 'Test error message. ',
 			data: {
 				status: 400,
 				reason: 'badRequest',
