@@ -35,7 +35,6 @@ export default function MetricTileTable( props ) {
 		columns = [],
 		limit,
 		ZeroState,
-		zeroStateContent,
 	} = props;
 
 	let tileBody = null;
@@ -81,8 +80,6 @@ export default function MetricTileTable( props ) {
 				</div>
 			</div>
 		);
-	} else if ( !! zeroStateContent ) {
-		tileBody = zeroStateContent;
 	}
 
 	return (

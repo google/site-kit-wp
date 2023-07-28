@@ -38,7 +38,6 @@ import {
 } from '../../datastore/constants';
 import { MetricTileTable } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
@@ -94,43 +93,37 @@ export default function PopularProductsWidget( props ) {
 
 	const { rows = [] } = report || {};
 
-	const columns = useInViewSelect( ( select ) => {
-		if ( ! showWidget ) {
-			return [];
-		}
+	const columns = useSelect( ( select ) => [
+		{
+			field: 'dimensionValues',
+			Component: ( { fieldValue } ) => {
+				const [ title, url ] = fieldValue;
+				const permaLink = select(
+					MODULES_ANALYTICS_4
+				).getServiceReportURL( 'all-pages-and-screens', {
+					filters: { unifiedPagePathScreen: url.value },
+					dates,
+				} );
 
-		return [
-			{
-				field: 'dimensionValues',
-				Component: ( { fieldValue } ) => {
-					const [ title, url ] = fieldValue;
-					const permaLink = select(
-						MODULES_ANALYTICS_4
-					).getServiceReportURL( 'all-pages-and-screens', {
-						filters: { unifiedPagePathScreen: url.value },
-						dates,
-					} );
-
-					return (
-						<Link
-							href={ permaLink }
-							title={ title.value }
-							external
-							hideExternalIndicator
-						>
-							{ title.value }
-						</Link>
-					);
-				},
+				return (
+					<Link
+						href={ permaLink }
+						title={ title.value }
+						external
+						hideExternalIndicator
+					>
+						{ title.value }
+					</Link>
+				);
 			},
-			{
-				field: 'metricValues.0.value',
-				Component: ( { fieldValue } ) => (
-					<strong>{ numFmt( fieldValue ) }</strong>
-				),
-			},
-		];
-	} );
+		},
+		{
+			field: 'metricValues.0.value',
+			Component: ( { fieldValue } ) => (
+				<strong>{ numFmt( fieldValue ) }</strong>
+			),
+		},
+	] );
 
 	if ( ! showWidget ) {
 		return <WidgetNull />;
@@ -146,13 +139,11 @@ export default function PopularProductsWidget( props ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			zeroStateContent={
-				<ZeroDataMessage>
-					{ __(
-						'Analytics doesn’t have data for your site’s products yet',
-						'google-site-kit'
-					) }
-				</ZeroDataMessage>
+			ZeroState={ () =>
+				__(
+					'Analytics doesn’t have data for your site’s products yet',
+					'google-site-kit'
+				)
 			}
 		/>
 	);
