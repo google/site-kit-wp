@@ -63,6 +63,23 @@ describe( 'MetricsSelectionPanel', () => {
 				widgetSlugs: [ 'metric-a', 'metric-b' ],
 			} );
 
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				'metric-a': {
+					modules: [ 'search-console' ],
+				},
+				'metric-b': {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+
 			render( <MetricsSelectionPanel />, { registry } );
 
 			expect(
