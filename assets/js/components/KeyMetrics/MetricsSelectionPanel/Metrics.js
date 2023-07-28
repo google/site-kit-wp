@@ -32,21 +32,21 @@ import MetricItem from './MetricItem';
 const { useSelect } = Data;
 
 export default function Metrics() {
-	const availableMetrics = useSelect( ( select ) =>
-		pickBy( KEY_METRICS_WIDGETS, ( _value, key ) => {
+	const availableMetrics = useSelect( ( select ) => {
+		const { isModuleConnected } = select( CORE_MODULES );
+
+		return pickBy( KEY_METRICS_WIDGETS, ( _value, key ) => {
 			const widget = select( CORE_WIDGETS ).getWidget( key );
 
 			if ( ! widget ) {
 				return false;
 			}
 
-			const { isModuleConnected } = select( CORE_MODULES );
-
 			return widget.modules.every( ( module ) =>
 				isModuleConnected( module )
 			);
-		} )
-	);
+		} );
+	} );
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
