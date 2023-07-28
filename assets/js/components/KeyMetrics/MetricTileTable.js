@@ -25,6 +25,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import PreviewBlock from '../PreviewBlock';
+import MetricTileError from './MetricTileError';
 
 export default function MetricTileTable( props ) {
 	const {
@@ -35,7 +36,19 @@ export default function MetricTileTable( props ) {
 		columns = [],
 		limit,
 		ZeroState,
+		error,
+		moduleSlug,
 	} = props;
+
+	if ( error ) {
+		return (
+			<MetricTileError
+				moduleSlug={ moduleSlug }
+				error={ error }
+				headerText={ title }
+			/>
+		);
+	}
 
 	let tileBody = null;
 
@@ -115,4 +128,9 @@ MetricTileTable.propTypes = {
 	columns: PropTypes.array,
 	limit: PropTypes.number,
 	ZeroState: PropTypes.elementType,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ),
+	moduleSlug: PropTypes.string.isRequired,
 };

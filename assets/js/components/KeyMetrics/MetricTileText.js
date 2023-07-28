@@ -28,6 +28,7 @@ import ChangeBadge from '../ChangeBadge';
 import PreviewBlock from '../PreviewBlock';
 import { expandNumFmtOptions } from '../../util';
 import { Fragment } from 'react';
+import MetricTileError from './MetricTileError';
 
 export default function MetricTileText( {
 	Widget,
@@ -38,8 +39,20 @@ export default function MetricTileText( {
 	subText,
 	previousValue,
 	currentValue,
+	error,
+	moduleSlug,
 } ) {
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
+
+	if ( error ) {
+		return (
+			<MetricTileError
+				moduleSlug={ moduleSlug }
+				error={ error }
+				headerText={ title }
+			/>
+		);
+	}
 
 	return (
 		<Widget noPadding>
@@ -82,4 +95,9 @@ MetricTileText.propTypes = {
 	subtext: PropTypes.string,
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ),
+	moduleSlug: PropTypes.string.isRequired,
 };
