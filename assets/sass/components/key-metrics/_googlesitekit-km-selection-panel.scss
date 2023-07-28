@@ -65,12 +65,8 @@
 		.googlesitekit-accordion__header {
 			padding: 12px 0;
 
-			.mdc-checkbox {
-				margin-left: -11px;
-
-				+ label {
-					font-weight: $fw-medium;
-				}
+			.mdc-checkbox + label {
+				font-weight: $fw-medium;
 			}
 		}
 

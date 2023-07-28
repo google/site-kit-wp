@@ -81,6 +81,7 @@ export default function MetricItem( { id, slug, title, description } ) {
 						role="button"
 					>
 						<Checkbox
+							alignLeft
 							checked={ isMetricSelected }
 							onChange={ onCheckboxChange }
 							disabled={ isMetricDisabled }
