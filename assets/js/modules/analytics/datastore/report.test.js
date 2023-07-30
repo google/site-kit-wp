@@ -374,7 +374,7 @@ describe( 'modules/analytics report', () => {
 				await waitForTimeouts( 30 );
 			} );
 
-			it( 'should return `undefined` if report API returns error', async () => {
+			it( 'should return TRUE if report API returns error', async () => {
 				fetchMock.getOnce( analyticsReportRegexp, errorResponse );
 
 				const { isGatheringData } =
@@ -385,8 +385,14 @@ describe( 'modules/analytics report', () => {
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
 
+				const error = registry
+					.select( MODULES_ANALYTICS )
+					.getErrorForSelector( 'isGatheringData' );
+
+				expect( error ).not.toBeUndefined();
+
 				expect( console ).toHaveErroredWith( ...consoleError );
-				expect( isGatheringData() ).toBeUndefined();
+				expect( isGatheringData() ).toBe( true );
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
 
@@ -467,20 +473,19 @@ describe( 'modules/analytics report', () => {
 				expect( fetchMock ).toHaveFetched( analyticsReportRegexp );
 			} );
 
-			it( 'should return `undefined` if report API returns error', async () => {
+			it( 'should return TRUE if report API returns error', async () => {
 				fetchMock.getOnce( analyticsReportRegexp, errorResponse );
 
-				const { hasZeroData, hasErrors } =
-					registry.select( MODULES_ANALYTICS );
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS );
 
 				expect( hasZeroData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await subscribeUntil( registry, () => hasErrors() );
+				await waitForTimeouts( 30 );
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 
-				expect( hasZeroData() ).toBeUndefined();
+				expect( hasZeroData() ).toBe( true );
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
 

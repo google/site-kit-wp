@@ -249,7 +249,7 @@ describe( 'modules/analytics-4 report', () => {
 				expect( isGatheringData() ).toBe( false );
 			} );
 
-			it( 'should return `undefined` if the report request fails', async () => {
+			it( 'should return TRUE if report API returns error', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -269,7 +269,13 @@ describe( 'modules/analytics-4 report', () => {
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
 
-				expect( isGatheringData() ).toBeUndefined();
+				const error = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'isGatheringData' );
+
+				expect( error ).not.toBeUndefined();
+
+				expect( isGatheringData() ).toBe( true );
 				expect( console ).toHaveErrored();
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
@@ -479,7 +485,7 @@ describe( 'modules/analytics-4 report', () => {
 				await waitForTimeouts( 30 );
 			} );
 
-			it( 'should return `undefined` if the report request fails', async () => {
+			it( 'should return TRUE if report API returns error', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -498,7 +504,7 @@ describe( 'modules/analytics-4 report', () => {
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
 
-				expect( hasZeroData() ).toBeUndefined();
+				expect( hasZeroData() ).toBe( true );
 				expect( console ).toHaveErrored();
 			} );
 

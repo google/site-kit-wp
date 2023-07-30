@@ -188,7 +188,7 @@ describe( 'modules/search-console report', () => {
 				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
 			} );
 
-			it( 'should return `undefined` if report API returns error', async () => {
+			it( 'should return TRUE if report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
 				const { isGatheringData } = registry.select(
@@ -200,8 +200,14 @@ describe( 'modules/search-console report', () => {
 				// Wait for resolvers to run.
 				await waitForDefaultTimeouts();
 
+				const error = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getErrorForSelector( 'isGatheringData' );
+
+				expect( error ).not.toBeUndefined();
+
 				expect( console ).toHaveErroredWith( ...consoleError );
-				expect( isGatheringData() ).toBeUndefined();
+				expect( isGatheringData() ).toBe( true );
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
 
@@ -265,21 +271,21 @@ describe( 'modules/search-console report', () => {
 				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
 			} );
 
-			it( 'should return `undefined` if report API returns error', async () => {
+			it( 'should return TRUE if report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
-				const { hasZeroData, hasErrors } = registry.select(
+				const { hasZeroData } = registry.select(
 					MODULES_SEARCH_CONSOLE
 				);
 
 				expect( hasZeroData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await subscribeUntil( registry, () => hasErrors() );
+				await waitForTimeouts( 30 );
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 
-				expect( hasZeroData() ).toBeUndefined();
+				expect( hasZeroData() ).toBe( true );
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
 

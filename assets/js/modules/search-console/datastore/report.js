@@ -207,8 +207,13 @@ const baseSelectors = {
 		const isGatheringData = select(
 			MODULES_SEARCH_CONSOLE
 		).isGatheringData();
+
 		if ( isGatheringData === undefined ) {
 			return undefined;
+		}
+
+		if ( isGatheringData === true ) {
+			return true;
 		}
 
 		// Disable reason: select needs to be called here or it will never run.
@@ -227,12 +232,7 @@ const baseSelectors = {
 			return false;
 		}
 
-		const hasZeroReport = isZeroReport( report );
-		if ( isGatheringData === false && hasZeroReport === false ) {
-			return false;
-		}
-
-		return true;
+		return isZeroReport( report );
 	} ),
 };
 

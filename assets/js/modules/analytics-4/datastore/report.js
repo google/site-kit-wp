@@ -121,11 +121,43 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
 
-		if ( hasZeroData === undefined ) {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'date' ],
+			metrics: [ { name: 'totalUsers' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport || hasZeroData === undefined ) {
 			return undefined;
 		}
+
+		const hasReportError = select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ args ] );
+
+		// If there is an error, return `null` since we don't know if there is data or not.
+		if ( hasReportError ) {
+			return null;
+		}
+
 		if ( hasZeroData === false ) {
 			return true;
 		}
@@ -348,9 +380,9 @@ const baseSelectors = {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ args ] );
 
-		// If there is an error, return `null` since we don't know if there is data or not.
+		// If there is an error, we aasume it's a zero report.
 		if ( hasReportError ) {
-			return null;
+			return true;
 		}
 
 		return isZeroReport( report );
