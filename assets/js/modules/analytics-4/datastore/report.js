@@ -348,9 +348,9 @@ const baseSelectors = {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ args ] );
 
-		// If there is an error, return `undefined` since we don't know if there is data or not.
+		// If there is an error, return `null` since we don't know if there is data or not.
 		if ( hasReportError ) {
-			return undefined;
+			return null;
 		}
 
 		return isZeroReport( report );
