@@ -16,12 +16,53 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	render,
+} from '../../../../tests/js/test-utils';
 import ChangeMetricsCTA from './ChangeMetricsCTA';
 
 describe( 'ChangeMetricsCTA', () => {
+	let registry;
+
+	const coreKeyMetricsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/key-metrics'
+	);
+	const coreUserInputSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/user-input-settings'
+	);
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		freezeFetch( coreKeyMetricsEndpointRegExp );
+		freezeFetch( coreUserInputSettingsEndpointRegExp );
+	} );
+
+	it( 'should not render if key metrics are undefined', () => {
+		provideKeyMetrics( registry, { widgetSlugs: undefined } );
+
+		const { queryByRole } = render( <ChangeMetricsCTA />, { registry } );
+
+		const button = queryByRole( 'button' );
+		expect( button ).not.toBeInTheDocument();
+	} );
+
+	it( 'should not render if no key metrics are selected', () => {
+		provideKeyMetrics( registry, { widgetSlugs: [] } );
+
+		const { queryByRole } = render( <ChangeMetricsCTA />, { registry } );
+
+		const button = queryByRole( 'button' );
+		expect( button ).not.toBeInTheDocument();
+	} );
+
 	it( 'should render a button to change metrics', () => {
-		const { queryByRole } = render( <ChangeMetricsCTA /> );
+		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
+
+		const { queryByRole } = render( <ChangeMetricsCTA />, { registry } );
 
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();

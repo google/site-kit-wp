@@ -26,12 +26,21 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
-const { useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function ChangeMetricsCTA() {
+	const keyMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetrics()
+	);
+
 	const { setValue } = useDispatch( CORE_UI );
+
+	if ( ! Array.isArray( keyMetrics ) || ! keyMetrics?.length > 0 ) {
+		return null;
+	}
 
 	return (
 		<Link

@@ -19,6 +19,8 @@
 /**
  * Internal dependencies
  */
+import { provideKeyMetrics } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import ChangeMetricsCTA from './ChangeMetricsCTA';
 
 const Template = () => <ChangeMetricsCTA />;
@@ -32,4 +34,17 @@ Default.scenario = {
 export default {
 	title: 'Key Metrics/ChangeMetricsCTA',
 	component: ChangeMetricsCTA,
+	decorators: [
+		( Story ) => {
+			const setupRegistry = ( registry ) => {
+				provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
