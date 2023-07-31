@@ -41,9 +41,11 @@ import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 const { useSelect, useInViewSelect } = Data;
 
-export default function TopCitiesWidget( { Widget } ) {
+function TopCitiesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -118,3 +120,8 @@ export default function TopCitiesWidget( { Widget } ) {
 TopCitiesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( TopCitiesWidget );

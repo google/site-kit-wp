@@ -21,7 +21,13 @@
  */
 import PropTypes from 'prop-types';
 
-export default function PopularProductsWidget( { Widget } ) {
+/**
+ * Internal dependencies
+ */
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+
+function PopularProductsWidget( { Widget } ) {
 	return (
 		<Widget>
 			<div>TODO: UI for PopularProductsWidget</div>
@@ -31,5 +37,9 @@ export default function PopularProductsWidget( { Widget } ) {
 
 PopularProductsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( PopularProductsWidget );
