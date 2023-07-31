@@ -38,8 +38,7 @@ import {
 } from '../../datastore/constants';
 import { MetricTileTable } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics/components/common';
-import { getFullURL, numFmt } from '../../../../util';
+import { numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
 export default function PopularProductsWidget( props ) {
@@ -47,9 +46,6 @@ export default function PopularProductsWidget( props ) {
 
 	const productBasePaths = useSelect( ( select ) =>
 		select( CORE_SITE ).getProductBasePaths()
-	);
-	const siteURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getReferenceSiteURL()
 	);
 
 	const dates = useSelect( ( select ) =>
@@ -95,22 +91,23 @@ export default function PopularProductsWidget( props ) {
 			: undefined
 	);
 
-	if ( ! showWidget ) {
-		return <WidgetNull />;
-	}
-
 	const { rows = [] } = report || {};
 
-	const columns = [
+	const columns = useSelect( ( select ) => [
 		{
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ title, url ] = fieldValue;
-				const permaLink = getFullURL( siteURL, url.value );
+				const serviceURL = select(
+					MODULES_ANALYTICS_4
+				).getServiceReportURL( 'all-pages-and-screens', {
+					filters: { unifiedPagePathScreen: url.value },
+					dates,
+				} );
 
 				return (
 					<Link
-						href={ permaLink }
+						href={ serviceURL }
 						title={ title.value }
 						external
 						hideExternalIndicator
@@ -126,7 +123,11 @@ export default function PopularProductsWidget( props ) {
 				<strong>{ numFmt( fieldValue ) }</strong>
 			),
 		},
-	];
+	] );
+
+	if ( ! showWidget ) {
+		return <WidgetNull />;
+	}
 
 	return (
 		<MetricTileTable
@@ -138,7 +139,12 @@ export default function PopularProductsWidget( props ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			ZeroState={ ZeroDataMessage }
+			ZeroState={ () =>
+				__(
+					'Analytics doesn’t have data for your site’s products yet',
+					'google-site-kit'
+				)
+			}
 		/>
 	);
 }

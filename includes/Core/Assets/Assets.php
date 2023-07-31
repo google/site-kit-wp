@@ -1068,7 +1068,7 @@ final class Assets {
 	/**
 	 * Returns an array of product base paths.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.106.0
 	 *
 	 * @return array The array of product base paths.
 	 */
@@ -1110,7 +1110,7 @@ final class Assets {
 		 * the base path for the "product" post type if it is available in WordPress
 		 * and public.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.106.0
 		 *
 		 * @param array $product_base_paths Array of existing product base paths.
 		 */

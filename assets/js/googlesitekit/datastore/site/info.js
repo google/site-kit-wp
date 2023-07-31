@@ -766,7 +766,7 @@ export const selectors = {
 	/**
 	 * Gets base paths for products found in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.106.0
 	 *
 	 * @return {Array.<string>} The list of product base paths.
 	 */
