@@ -48,5 +48,10 @@ storiesOf( 'Global', module ).add( 'Accordion', () => (
 			magna. Ut in elit erat. Ut a libero in ante ultricies efficitur.
 			Quisque laoreet semper magna ac mollis.
 		</Accordion>
+		<Accordion title="Disabled" disabled>
+			Fusce sit amet tellus neque. Praesent egestas dapibus ipsum vel
+			vulputate. Nunc massa ante, interdum eget semper nec, malesuada
+			congue neque. Vestibulum ante ipsum primis in faucibus.
+		</Accordion>
 	</div>
 ) );
