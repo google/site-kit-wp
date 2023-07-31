@@ -27,7 +27,10 @@ import { __ } from '@wordpress/i18n';
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
-import { KeyMetricsSetupCTAWidget } from '../../components/KeyMetrics';
+import {
+	KeyMetricsSetupCTAWidget,
+	ChangeMetricsCTA,
+} from '../../components/KeyMetrics';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -84,6 +87,7 @@ export function registerDefaults( widgetsAPI ) {
 			),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
+			CTA: ChangeMetricsCTA,
 		},
 		CONTEXT_MAIN_DASHBOARD_KEY_METRICS
 	);
