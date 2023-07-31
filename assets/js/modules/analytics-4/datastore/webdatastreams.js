@@ -359,29 +359,6 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets matched web data streams for selected property.
-	 *
-	 * @since 1.98.0
-	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
-	 * @return {(Array.<Object>|undefined)} A web data stream objects if found, `undefined` if web data streams are not loaded.
-	 */
-	getMatchingWebDataStreamsByPropertyID: createRegistrySelector(
-		( select ) => ( _state, propertyID ) => {
-			const datastreams =
-				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
-			if ( datastreams === undefined ) {
-				return undefined;
-			}
-
-			return select( MODULES_ANALYTICS_4 ).getMatchingWebDataStreams(
-				datastreams
-			);
-		}
-	),
-
-	/**
 	 * Gets web data streams in batch for selected properties.
 	 *
 	 * @since 1.32.0

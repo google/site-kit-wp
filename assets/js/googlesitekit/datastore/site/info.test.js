@@ -49,6 +49,7 @@ describe( 'core/site site info', () => {
 				label: 'Post',
 			},
 		],
+		productBasePaths: [ '/product/' ],
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -323,6 +324,7 @@ describe( 'core/site site info', () => {
 			[ 'isPrimaryAMP', 'ampMode' ],
 			[ 'isSecondaryAMP', 'ampMode' ],
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
+			[ 'getProductBasePaths', 'productBasePaths' ],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;

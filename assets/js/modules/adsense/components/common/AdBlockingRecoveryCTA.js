@@ -82,7 +82,7 @@ export default function AdBlockingRecoveryCTA() {
 		>
 			{ createInterpolateElement(
 				__(
-					'Start recovering revenue lost from ad blockers by deploying the ad blocking tag through Site Kit. <a>Learn more</a>',
+					'Start recovering revenue lost from ad blockers by deploying an ad blocking recovery message through Site Kit. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{
