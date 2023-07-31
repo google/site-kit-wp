@@ -21,18 +21,18 @@
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
-	provideKeyMetrics,
 	provideModules,
+	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { KM_ANALYTICS_LOYAL_VISITORS } from '../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import Widget from '../../../../googlesitekit/widgets/components/Widget';
+import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-const WidgetWithComponentProps = withWidgetComponentProps(
-	'keyMetricsConnectGA4CTATile'
-)( ConnectGA4CTATileWidget );
-
-const Template = () => <WidgetWithComponentProps />;
+const Template = () => (
+	<Widget widgetSlug="some-widget">
+		<ConnectGA4CTATileWidget widgetSlug="some-widget" />
+	</Widget>
+);
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConnectGA4CTATileWidget';
@@ -49,16 +49,15 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserCapabilities( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: 'analytics',
 						active: false,
 						connected: false,
+						Icon: AnalyticsIcon,
 					},
 				] );
-				provideKeyMetrics( registry, {
-					widgetSlugs: [ KM_ANALYTICS_LOYAL_VISITORS ],
-				} );
 			};
 
 			return (

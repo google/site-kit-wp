@@ -14,13 +14,13 @@ exports[`ConnectGA4CTATileWidget should render the Connect GA4 CTA tile 1`] = `
         <p
           class="googlesitekit-km-connect-module-cta-tile__text"
         >
-          Analytics 4 is disconnected, some of your metrics can’t be displayed
+          Analytics is disconnected, some of your metrics can’t be displayed
         </p>
         <a
           class="googlesitekit-cta-link"
           href="#"
         >
-          Connect Analytics 4
+          Connect Analytics
         </a>
       </div>
     </div>

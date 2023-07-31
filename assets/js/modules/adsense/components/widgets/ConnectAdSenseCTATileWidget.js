@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
@@ -52,11 +51,9 @@ export default function ConnectAdSenseCTATileWidget( { Widget, WidgetNull } ) {
 		keyMetrics?.includes( KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT )
 	) {
 		return (
-			<ConnectModuleCTATile
-				Icon={ AdSenseIcon }
-				moduleSlug="adsense"
-				Widget={ Widget }
-			/>
+			<Widget>
+				<ConnectModuleCTATile moduleSlug="adsense" />
+			</Widget>
 		);
 	}
 

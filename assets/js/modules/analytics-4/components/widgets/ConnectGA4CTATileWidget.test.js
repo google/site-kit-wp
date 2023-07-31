@@ -33,19 +33,13 @@ describe( 'ConnectGA4CTATileWidget', () => {
 			{
 				setupRegistry: ( registry ) => {
 					provideUserCapabilities( registry );
-					provideModules( registry, [
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: true,
-						},
-					] );
+					provideModules( registry );
 				},
 			}
 		);
 
 		expect( container ).toMatchSnapshot();
 
-		expect( getByText( 'Connect Analytics 4' ) ).toBeInTheDocument();
+		expect( getByText( 'Connect Analytics' ) ).toBeInTheDocument();
 	} );
 } );
