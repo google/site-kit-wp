@@ -49,8 +49,6 @@ import {
 } from '../../../util/scroll';
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
-import Warning from '../../../../svg/icons/warning.svg';
-import ErrorIcon from '../../../../svg/icons/error.svg';
 import Link from '../../Link';
 import ModuleIcon from '../../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
@@ -59,6 +57,7 @@ import Banner from './Banner';
 import BannerTitle from './BannerTitle';
 import BannerActions from './BannerActions';
 import BannerBlockMarkup from './BannerBlockMarkup';
+import BannerIcon from './BannerIcon';
 import {
 	getContentCellOrderProperties,
 	getContentCellSizeProperties,
@@ -291,15 +290,6 @@ function BannerNotification( props ) {
 		hasWinImageSVG: !! WinImageSVG,
 	} );
 
-	let icon;
-	if ( 'win-warning' === type ) {
-		icon = <Warning width={ 34 } />;
-	} else if ( 'win-error' === type ) {
-		icon = <ErrorIcon width={ 28 } />;
-	} else {
-		icon = '';
-	}
-
 	const learnMoreAndPageIndex = (
 		<Fragment>
 			{ learnMoreLabel && (
@@ -496,13 +486,7 @@ function BannerNotification( props ) {
 				</Cell>
 			) }
 
-			{ ( 'win-error' === type || 'win-warning' === type ) && (
-				<Cell size={ 1 } smOrder={ 3 } mdOrder={ 3 } lgOrder={ 3 }>
-					<div className="googlesitekit-publisher-win__icons">
-						{ icon }
-					</div>
-				</Cell>
-			) }
+			<BannerIcon type={ type } />
 		</Banner>
 	);
 }
