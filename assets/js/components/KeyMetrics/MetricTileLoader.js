@@ -37,5 +37,3 @@ export default function MetricTileLoader() {
 		</div>
 	);
 }
-
-MetricTileLoader.propTypes = {};
