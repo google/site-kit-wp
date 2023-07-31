@@ -516,6 +516,7 @@ class Google_Proxy {
 	 * Gets remote features.
 	 *
 	 * @since 1.27.0
+	 * @since 1.104.0 Added `php_version` to request.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.
@@ -531,6 +532,7 @@ class Google_Proxy {
 			'platform'               => $platform . '/google-site-kit',
 			'version'                => GOOGLESITEKIT_VERSION,
 			'platform_version'       => $wp_version,
+			'php_version'            => phpversion(),
 			'user_count'             => $user_count['total_users'],
 			'connectable_user_count' => $connectable_user_count,
 			'connected_user_count'   => $this->count_connected_users(),

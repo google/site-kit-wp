@@ -230,19 +230,21 @@ final class Authentication {
 	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
 	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
 	 * @param Transients   $transients   Optional. Transient API instance. Default is a new instance.
+	 * @param User_Input   $user_input   Optional. User_Input instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
-		Transients $transients = null
+		Transients $transients = null,
+		User_Input $user_input = null
 	) {
 		$this->context              = $context;
 		$this->options              = $options ?: new Options( $this->context );
 		$this->user_options         = $user_options ?: new User_Options( $this->context );
 		$this->transients           = $transients ?: new Transients( $this->context );
 		$this->modules              = new Modules( $this->context, $this->options, $this->user_options, $this );
-		$this->user_input           = new User_Input( $context, $this->options, $this->user_options );
+		$this->user_input           = $user_input ?: new User_Input( $context, $this->options, $this->user_options );
 		$this->google_proxy         = new Google_Proxy( $this->context );
 		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
 		$this->verification         = new Verification( $this->user_options );
@@ -273,9 +275,6 @@ final class Authentication {
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
 		$this->initial_version->register();
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
-			$this->user_input->register();
-		}
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
@@ -1258,8 +1257,7 @@ final class Authentication {
 					$unsatisfied_scopes = $this->get_oauth_client()->get_unsatisfied_scopes();
 
 					if (
-						Feature_Flags::enabled( 'gteSupport' )
-						&& count( $unsatisfied_scopes ) === 1
+						count( $unsatisfied_scopes ) === 1
 						&& 'https://www.googleapis.com/auth/tagmanager.readonly' === $unsatisfied_scopes[0]
 					) {
 						return false;

@@ -26,15 +26,20 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Badge from './Badge';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../modules/analytics-4/constants';
+import { stringToDate } from '../util';
 import whenActive from '../util/when-active';
 import useViewOnly from '../hooks/useViewOnly';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 const DashboardViewIndicator = () => {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
+	const referenceDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
 	);
 
 	const viewOnly = useViewOnly();
@@ -43,10 +48,17 @@ const DashboardViewIndicator = () => {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return (
+			select( CORE_USER ).canViewSharedModule( 'analytics' ) ||
+			select( CORE_USER ).canViewSharedModule( 'analytics-4' )
+		);
 	} );
 
-	if ( ! canViewSharedAnalytics || isGA4DashboardView === undefined ) {
+	if (
+		! canViewSharedAnalytics ||
+		isGA4DashboardView === undefined ||
+		stringToDate( referenceDate ) >= stringToDate( GA4_AUTO_SWITCH_DATE )
+	) {
 		return null;
 	}
 

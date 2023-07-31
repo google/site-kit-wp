@@ -228,6 +228,9 @@ $c-setup-analytics-notice-text: $c-cape-cod;
 $c-search-funnel-analytics-cta-bg: $c-surfaces-surface-1;
 $c-search-funnel-analytics-cta-icon: $c-silver-2;
 
+// Overlay
+$c-overlay: rgba($c-black, 0.6);
+
 // Google MDC Theme Overrides
 $mdc-theme-primary: $c-content-primary;
 $mdc-theme-secondary: $c-brand;
@@ -311,3 +314,21 @@ $mdc-text-field-label: $c-interactive-on-disable-container;
 
 // Custom max width for settings notice content
 $max-width-settings-notice-content: 1098px;
+
+/*
+ * Custom z-Index values
+ *
+ * Important values within the WordPress dashboard are as follows:
+ * - Top admin bar and its child menus, at z-index 99999
+ * - Left most main/side admin menu wrapper, at z-index 9990
+ * - The left most main/side admin menu sub menus on hover, at z-index 9999
+ *
+ * It is important to note that WordPress generally employs a 10 step jump
+ * in values when moving between z-index layers and this should be adhered
+ * to where possible.
+ */
+
+// Ensures header does not interfere with important wp dashboard menu elements.
+$z-index-sk-side-sheet: 10000;
+$z-index-sk-side-sheet-overlay: 9990;
+$z-index-sk-header: 9980;

@@ -29,8 +29,6 @@ import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import { provideSearchConsoleMockReport } from '../../util/data-mock';
 
 const reportOptions = {
-	compareStartDate: '2020-07-14',
-	compareEndDate: '2020-08-10',
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
 	dimensions: 'query',
@@ -88,7 +86,6 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				global._googlesitekitUserData.isUserInputCompleted = false;
 				provideModules( registry, [
 					{
 						slug: 'search-console',

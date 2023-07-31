@@ -13,9 +13,11 @@ namespace Google\Site_Kit\Core\User_Input;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\User_Surveys\Survey_Queue;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Error;
 use WP_REST_Request;
+use WP_REST_Response;
 use WP_REST_Server;
 
 /**
@@ -36,14 +38,24 @@ class REST_User_Input_Controller {
 	protected $user_input;
 
 	/**
+	 * Survey_Queue instance.
+	 *
+	 * @since 1.104.0
+	 * @var Survey_Queue
+	 */
+	protected $survey_queue;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.90.0
 	 *
-	 * @param User_Input $user_input User_Input instance.
+	 * @param User_Input   $user_input   User_Input instance.
+	 * @param Survey_Queue $survey_queue Survey_Queue instance.
 	 */
-	public function __construct( User_Input $user_input ) {
-		$this->user_input = $user_input;
+	public function __construct( User_Input $user_input, Survey_Queue $survey_queue ) {
+		$this->user_input   = $user_input;
+		$this->survey_queue = $survey_queue;
 	}
 
 	/**
@@ -110,11 +122,19 @@ class REST_User_Input_Controller {
 								);
 							}
 
-							return rest_ensure_response(
+							$response = rest_ensure_response(
 								$this->user_input->set_answers(
 									$data['settings']
 								)
 							);
+
+							if ( $response instanceof WP_REST_Response ) {
+								$this->survey_queue->dequeue(
+									'user_input_answered_other_survey'
+								);
+							}
+
+							return $response;
 						},
 						'permission_callback' => $can_authenticate,
 						'args'                => array(

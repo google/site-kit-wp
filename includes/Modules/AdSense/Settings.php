@@ -171,7 +171,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the default value.
 	 *
 	 * @since 1.2.0
-	 * @since 1.102.0 Added settings for the AdSense Blocker Detection feature.
+	 * @since 1.102.0 Added settings for the Ad Blocking Recovery feature.
 	 *
 	 * @return array
 	 */
@@ -188,8 +188,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'useSnippet'                        => true,
 			'webStoriesAdUnit'                  => '',
 			'setupCompletedTimestamp'           => null,
-			'useAdBlockerDetectionSnippet'      => false,
-			'useAdBlockerDetectionErrorSnippet' => false,
+			'useAdBlockingRecoverySnippet'      => false,
+			'useAdBlockingRecoveryErrorSnippet' => false,
 			'adBlockingRecoverySetupStatus'     => '',
 		);
 	}
@@ -218,17 +218,18 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				}
 
 				if ( Feature_Flags::enabled( 'adBlockerDetection' ) ) {
-					if ( isset( $option['useAdBlockerDetectionSnippet'] ) ) {
-						$option['useAdBlockerDetectionSnippet'] = (bool) $option['useAdBlockerDetectionSnippet'];
+					if ( isset( $option['useAdBlockingRecoverySnippet'] ) ) {
+						$option['useAdBlockingRecoverySnippet'] = (bool) $option['useAdBlockingRecoverySnippet'];
 					}
-					if ( isset( $option['useAdBlockerDetectionErrorSnippet'] ) ) {
-						$option['useAdBlockerDetectionErrorSnippet'] = (bool) $option['useAdBlockerDetectionErrorSnippet'];
+					if ( isset( $option['useAdBlockingRecoveryErrorSnippet'] ) ) {
+						$option['useAdBlockingRecoveryErrorSnippet'] = (bool) $option['useAdBlockingRecoveryErrorSnippet'];
 					}
 					if (
 						isset( $option['adBlockingRecoverySetupStatus'] ) &&
 						! in_array(
 							$option['adBlockingRecoverySetupStatus'],
 							array(
+								'',
 								self::AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
 								self::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
 							),

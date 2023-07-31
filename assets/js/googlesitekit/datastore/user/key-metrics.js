@@ -82,7 +82,7 @@ const baseActions = {
 	/**
 	 * Sets key metrics setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @param {string}         settingID Setting key.
 	 * @param {Array.<string>} value     Setting value.
@@ -101,20 +101,31 @@ const baseActions = {
 	/**
 	 * Saves key metrics settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
+	 * @since n.e.x.t Accepts an optional `settings` parameter that allows saving additional settings.
 	 *
+	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*saveKeyMetricsSettings() {
+	*saveKeyMetricsSettings( settings = {} ) {
+		invariant(
+			isPlainObject( settings ),
+			'key metric settings should be an object to save.'
+		);
+
 		yield clearError( 'saveKeyMetricsSettings', [] );
 
 		const registry = yield Data.commonActions.getRegistry();
 		const keyMetricsSettings = registry
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
+
 		const { response, error } =
 			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetricsSettings(
-				keyMetricsSettings
+				{
+					...keyMetricsSettings,
+					...settings,
+				}
 			);
 
 		if ( error ) {
@@ -164,7 +175,7 @@ const baseSelectors = {
 	/**
 	 * Gets currently selected key metrics based on either the user picked metrics or the answer based metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @return {Array<string>|undefined} An array of key metric slugs, or undefined while loading.
 	 */
@@ -185,7 +196,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Key Metric widget slugs based on the user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the user input settings are not loaded.
 	 */
@@ -244,7 +255,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Key Metric widget slugs selected by the user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the key metrics settings are not loaded.
 	 */
@@ -258,9 +269,29 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Gets whether an individual key metric identified by its slug is
+	 * active or not.
+	 *
+	 * @since 1.106.0
+	 *
+	 * @return {boolean|undefined} True if the key metric widget tile is active, false if it is not, or undefined if the key metrics settings are not loaded.
+	 */
+	isKeyMetricActive: createRegistrySelector(
+		( select ) => ( state, widgetSlug ) => {
+			const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+			if ( keyMetrics === undefined ) {
+				return undefined;
+			}
+
+			return keyMetrics.includes( widgetSlug );
+		}
+	),
+
+	/**
 	 * Gets whether the key metrics widget is hidden.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
@@ -277,13 +308,29 @@ const baseSelectors = {
 	/**
 	 * Gets key metrics settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.103.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings. Returns `undefined` if not loaded.
 	 */
 	getKeyMetricsSettings( state ) {
 		return state.keyMetricsSettings;
+	},
+
+	/**
+	 * Determines whether the key metrics settings are being saved or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the key metrics settings are being saved, otherwise FALSE.
+	 */
+	isSavingKeyMetricsSettings( state ) {
+		// Since isFetchingSaveKeyMetricsSettings holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such request is in progress.
+		return Object.values( state.isFetchingSaveKeyMetricsSettings ).some(
+			Boolean
+		);
 	},
 };
 

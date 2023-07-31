@@ -38,14 +38,20 @@ import {
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../../analytics-4/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 import { isValidProfileID, isValidPropertyID } from '../../util';
+import { stringToDate } from '../../../../util';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const referenceDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
 	);
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
@@ -62,8 +68,6 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			<SettingsUACutoffWarning />
-
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
@@ -73,31 +77,35 @@ export default function SettingsView() {
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
-			{ ga4ReportingEnabled && isUAConnected && (
-				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Dashboard View', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting
-								value={
-									isGA4Connected &&
-									dashboardView === DASHBOARD_VIEW_GA4
-										? __(
-												'Google Analytics 4',
-												'google-site-kit'
-										  )
-										: __(
-												'Universal Analytics',
-												'google-site-kit'
-										  )
-								}
-							/>
-						</p>
+			{ ga4ReportingEnabled &&
+				isUAConnected &&
+				stringToDate( referenceDate ) <
+					stringToDate( GA4_AUTO_SWITCH_DATE ) && (
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __( 'Dashboard View', 'google-site-kit' ) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting
+									value={
+										isGA4Connected &&
+										dashboardView === DASHBOARD_VIEW_GA4
+											? __(
+													'Google Analytics 4',
+													'google-site-kit'
+											  )
+											: __(
+													'Universal Analytics',
+													'google-site-kit'
+											  )
+									}
+								/>
+							</p>
+							<SettingsUACutoffWarning />
+						</div>
 					</div>
-				</div>
-			) }
+				) }
 
 			{ ga4ReportingEnabled && (
 				<Fragment>

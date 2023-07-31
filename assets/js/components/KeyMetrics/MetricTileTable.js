@@ -19,11 +19,12 @@
  */
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
-import PreviewBlock from '../PreviewBlock';
+import MetricTileLoader from './MetricTileLoader';
 
 export default function MetricTileTable( props ) {
 	const {
@@ -33,16 +34,16 @@ export default function MetricTileTable( props ) {
 		rows = [],
 		columns = [],
 		limit,
-		zeroState: ZeroState,
+		ZeroState,
 	} = props;
 
-	let tbody = null;
+	let tileBody = null;
 
 	if ( rows?.length > 0 ) {
-		tbody = rows
+		tileBody = rows
 			.slice( 0, limit || rows.length )
 			.map( ( row, rowIndex ) => (
-				<tr key={ rowIndex }>
+				<div key={ rowIndex } className="googlesitekit-table__body-row">
 					{ columns.map(
 						( { Component, field, className }, colIndex ) => {
 							const fieldValue =
@@ -51,7 +52,13 @@ export default function MetricTileTable( props ) {
 									: undefined;
 
 							return (
-								<td key={ colIndex } className={ className }>
+								<div
+									key={ colIndex }
+									className={ classnames(
+										'googlesitekit-table__body-item',
+										className
+									) }
+								>
 									{ Component && (
 										<Component
 											row={ row }
@@ -59,40 +66,34 @@ export default function MetricTileTable( props ) {
 										/>
 									) }
 									{ ! Component && fieldValue }
-								</td>
+								</div>
 							);
 						}
 					) }
-				</tr>
+				</div>
 			) );
 	} else if ( !! ZeroState ) {
-		tbody = (
-			<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
-				<td className="googlesitekit-table__body-item">
+		tileBody = (
+			<div className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
+				<div className="googlesitekit-table__body-zero-data">
 					<ZeroState />
-				</td>
-			</tr>
+				</div>
+			</div>
 		);
 	}
 
 	return (
 		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-table">
+			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table">
 				<h3 className="googlesitekit-km-widget-tile__title">
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && (
-						<PreviewBlock
-							className="googlesitekit-km-widget-tile__table"
-							width="100%"
-							height="65px"
-						/>
-					) }
+					{ loading && <MetricTileLoader /> }
 					{ ! loading && (
-						<table className="googlesitekit-km-widget-tile__table">
-							<tbody>{ tbody }</tbody>
-						</table>
+						<div className="googlesitekit-km-widget-tile__table">
+							{ tileBody }
+						</div>
 					) }
 				</div>
 			</div>
@@ -107,5 +108,5 @@ MetricTileTable.propTypes = {
 	rows: PropTypes.array,
 	columns: PropTypes.array,
 	limit: PropTypes.number,
-	zeroState: PropTypes.func,
+	ZeroState: PropTypes.elementType,
 };

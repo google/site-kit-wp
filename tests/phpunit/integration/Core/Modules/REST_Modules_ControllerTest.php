@@ -17,12 +17,14 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\Modules\AnalyticsDashboardView;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
 class REST_Modules_ControllerTest extends TestCase {
 
+	use AnalyticsDashboardView;
 	use RestTestTrait;
 
 	/**
@@ -576,6 +578,10 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$fake_module_with_data_available = new FakeModule_WithDataAvailable( $this->context );
+
+		// A module being active is a pre-requisite for it to be connected.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
+
 		$this->set_available_modules( array( $fake_module_with_data_available ) );
 		$this->assertEmpty( $fake_module_with_data_available->is_data_available() );
 
@@ -834,6 +840,9 @@ class REST_Modules_ControllerTest extends TestCase {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
+
+		// Make sure Analytics 4 is the dashboard view.
+		$this->set_dashboard_view_ga4();
 
 		// Make analytics-4 a recoverable module
 		$analytics_4 = $this->modules->get_module( 'analytics-4' );

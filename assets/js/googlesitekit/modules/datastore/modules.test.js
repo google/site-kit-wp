@@ -2160,12 +2160,12 @@ describe( 'core/modules modules', () => {
 				expect( shareableModules ).toBeUndefined();
 			} );
 
-			it( 'should return an empty object if there are no non-internal shareable modules', async () => {
+			it( 'should return an empty object if there are no shareable modules', async () => {
 				// Create a version of the module fixtures where every module is
 				// marked as an internal module.
 				const fixturesWithAllModulesInternal = FIXTURES.map(
 					( module ) => {
-						return { ...module, internal: true };
+						return { ...module, shareable: false };
 					}
 				);
 
@@ -2189,7 +2189,7 @@ describe( 'core/modules modules', () => {
 				expect( shareableModules ).toEqual( {} );
 			} );
 
-			it( 'should return the modules object for each non-internal shareable module', () => {
+			it( 'should not care if a module is internal when showing shared modules', () => {
 				provideModuleRegistrations( registry );
 				registry
 					.dispatch( CORE_MODULES )
@@ -2201,13 +2201,13 @@ describe( 'core/modules modules', () => {
 
 				expect(
 					Object.values( shareableModules ).every(
-						( module ) => module.shareable && ! module.internal
+						( module ) => module.shareable
 					)
 				).toBeTruthy();
 
 				expect(
 					Object.values( shareableModules ).filter(
-						( module ) => module.shareable && ! module.internal
+						( module ) => module.shareable
 					).length
 				).toEqual( Object.values( shareableModules ).length );
 			} );

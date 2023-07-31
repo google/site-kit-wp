@@ -15,7 +15,6 @@ import {
 	setClientConfig,
 	setSearchConsoleProperty,
 	setSiteVerification,
-	useRequestInterception,
 } from '../utils';
 
 describe( 'Plugin Reset', () => {
@@ -25,24 +24,6 @@ describe( 'Plugin Reset', () => {
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();
-
-		await page.setRequestInterception( true );
-		useRequestInterception( ( request ) => {
-			const url = request.url();
-			if (
-				url.match( '/google-site-kit/v1/core/user/data/key-metrics' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {
-						widgetSlugs: [],
-						isWidgetHidden: false,
-					} ),
-				} );
-			} else {
-				request.continue();
-			}
-		} );
 	} );
 
 	beforeEach( async () => {
@@ -89,10 +70,17 @@ describe( 'Plugin Reset', () => {
 
 	it( 'disconnects Site Kit by clicking the "Reset" button in the confirmation dialog', async () => {
 		await page.waitForSelector( 'button.googlesitekit-cta-link' );
+
 		await expect( page ).toClick( 'button.googlesitekit-cta-link', {
 			text: 'Reset Site Kit',
 		} );
+
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button' );
+
+		// Further wait for the dialog to open, to avoid throwing a focus trap error.
+		// This timeout takes its value from `DIALOG_ANIMATION_OPEN_TIME_MS` in `@material/dialog`.
+		// See https://github.com/material-components/material-components-web/blob/3a1767ea4da308dbee272763a377deff39cf0471/packages/mdc-dialog/foundation.ts#L110-L114
+		await page.waitForTimeout( 150 );
 
 		await Promise.all( [
 			page.waitForNavigation(),

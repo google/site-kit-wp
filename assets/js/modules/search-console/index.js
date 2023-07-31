@@ -36,7 +36,10 @@ import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import { isFeatureEnabled } from '../../features';
 import { negateDefined } from '../../util/negate';
 import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
-import { KM_SEARCH_CONSOLE_POPULAR_KEYWORDS } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from '../../googlesitekit/datastore/user/constants';
 
 export { registerStore } from './datastore';
 
@@ -121,6 +124,10 @@ export const registerWidgets = ( widgets ) => {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'search-console' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);

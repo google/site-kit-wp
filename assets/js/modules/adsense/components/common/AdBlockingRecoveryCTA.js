@@ -33,11 +33,9 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SupportLink from '../../../../components/SupportLink';
 import Badge from '../../../../components/Badge';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function AdBlockingRecoveryCTA() {
-	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
 	);
@@ -47,12 +45,16 @@ export default function AdBlockingRecoveryCTA() {
 	const siteStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getSiteStatus()
 	);
+	const hasExistingAdBlockingRecoveryTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasExistingAdBlockingRecoveryTag()
+	);
 	const recoveryPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
 	);
 
 	if (
-		! adBlockerDetectionEnabled ||
+		hasExistingAdBlockingRecoveryTag === undefined ||
+		hasExistingAdBlockingRecoveryTag ||
 		adBlockingRecoverySetupStatus !== '' ||
 		accountStatus !== ACCOUNT_STATUS_READY ||
 		siteStatus !== SITE_STATUS_READY
@@ -80,7 +82,7 @@ export default function AdBlockingRecoveryCTA() {
 		>
 			{ createInterpolateElement(
 				__(
-					'Start recovering revenue lost from ad blockers by deploying the ad blocking tag through Site Kit. <a>Learn more</a>',
+					'Start recovering revenue lost from ad blockers by deploying an ad blocking recovery message through Site Kit. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{

@@ -23,10 +23,10 @@ import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 import {
 	render,
 	provideModules,
-	fireEvent,
+	provideSiteInfo,
 } from '../../../../../../tests/js/test-utils';
 import {
-	AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
@@ -41,45 +41,36 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		adBlockingRecoverySetupStatus: '',
 	};
 
-	it.each( [
-		[ 'the Ad blocker detection feature flag is not enabled', false ],
-		[ 'Ad blocker recovery setup status is empty', true ],
-	] )(
-		'should not render the Ad blocking recovery toggle when %s',
-		( testName, adBlockerDetectionEnabled ) => {
-			const { container } = render( <AdBlockingRecoveryToggle />, {
-				features: [].concat(
-					adBlockerDetectionEnabled ? 'adBlockerDetection' : []
-				),
-				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					registry
-						.dispatch( MODULES_ADSENSE )
-						.receiveGetSettings( validSettings );
-				},
-			} );
+	it( 'should not render the Ad blocking recovery toggle when Ad blocking recovery setup status is empty', () => {
+		const { container } = render( <AdBlockingRecoveryToggle />, {
+			setupRegistry: ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: true,
+					},
+				] );
+				provideSiteInfo( registry );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetSettings( validSettings );
+			},
+		} );
 
-			expect(
-				container.querySelector(
-					'.googlesitekit-settings-module__ad-blocking-recovery-toggles'
-				)
-			).toBeNull();
+		expect(
+			container.querySelector(
+				'.googlesitekit-settings-module__ad-blocking-recovery-toggles'
+			)
+		).toBeNull();
 
-			expect( container ).toBeEmptyDOMElement();
-		}
-	);
+		expect( container ).toBeEmptyDOMElement();
+	} );
 
 	it( 'should render the Ad blocking recovery toggle when the conditions are met', () => {
 		const { container, getByLabelText, getAllByRole } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -88,12 +79,13 @@ describe( 'AdBlockingRecoveryToggle', () => {
 							connected: true,
 						},
 					] );
+					provideSiteInfo( registry );
 					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
-							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
-						useAdBlockerDetectionSnippet: true,
-						useAdBlockerDetectionErrorSnippet: true,
+							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+						useAdBlockingRecoverySnippet: true,
+						useAdBlockingRecoveryErrorSnippet: true,
 					} );
 				},
 			}
@@ -107,20 +99,20 @@ describe( 'AdBlockingRecoveryToggle', () => {
 
 		expect( container.textContent ).toContain( 'Ad blocking recovery' );
 		expect(
-			getByLabelText( /Place ad blocking recovery tag/i )
+			getByLabelText( /Enable ad blocking recovery message/i )
 		).toBeInTheDocument();
 
 		// The Material Design switch component is represented
 		// by multiple elements including a 'div' and an 'input'.
 		// We loop over all these to verify that they are checked.
 		const recoveryTagSwitchElements = getAllByRole( 'switch', {
-			name: /place ad blocking recovery tag/i,
+			name: /Enable ad blocking recovery message/i,
 		} );
 		recoveryTagSwitchElements.forEach( ( switchEl ) => {
 			expect( switchEl ).toBeChecked();
 		} );
 		const errorProtectionTagSwitchElements = getAllByRole( 'switch', {
-			name: /place error protection tag/i,
+			name: /Enable ad blocking recovery message/i,
 		} );
 		errorProtectionTagSwitchElements.forEach( ( switchEl ) => {
 			expect( switchEl ).toBeChecked();
@@ -131,7 +123,6 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const { getByLabelText, getAllByRole, queryByLabelText } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				features: [ 'adBlockerDetection' ],
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -140,86 +131,99 @@ describe( 'AdBlockingRecoveryToggle', () => {
 							connected: true,
 						},
 					] );
+					provideSiteInfo( registry );
 					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 						...validSettings,
 						adBlockingRecoverySetupStatus:
-							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
-						useAdBlockerDetectionSnippet: false,
-						useAdBlockerDetectionErrorSnippet: false,
+							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+						useAdBlockingRecoverySnippet: false,
+						useAdBlockingRecoveryErrorSnippet: false,
 					} );
 				},
 			}
 		);
 
 		expect(
-			getByLabelText( /Place ad blocking recovery tag/i )
+			getByLabelText( /Enable ad blocking recovery message/i )
 		).toBeInTheDocument();
 
 		const recoveryTagSwitchElements = getAllByRole( 'switch', {
-			name: /place ad blocking recovery tag/i,
+			name: /Enable ad blocking recovery message/i,
 		} );
 		recoveryTagSwitchElements.forEach( ( switchEl ) => {
 			expect( switchEl ).not.toBeChecked();
 		} );
 
 		expect(
-			queryByLabelText( /Place error protection tag/i )
+			queryByLabelText( /Place error protection code/i )
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should render the notice when the user unchecks the ad blocking recovery tag toggle', () => {
-		const { getByLabelText, getAllByRole, container } = render(
-			<AdBlockingRecoveryToggle />,
-			{
-				features: [ 'adBlockerDetection' ],
-				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-						...validSettings,
-						adBlockingRecoverySetupStatus:
-							AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED,
-						useAdBlockerDetectionSnippet: true,
-						useAdBlockerDetectionErrorSnippet: false,
-					} );
-				},
-			}
-		);
-
-		expect(
-			getByLabelText( /Place ad blocking recovery tag/i )
-		).toBeInTheDocument();
-
-		const recoveryTagSwitchElements = getAllByRole( 'switch', {
-			name: /place ad blocking recovery tag/i,
-		} );
-		// Verify that the switch is checked initially.
-		recoveryTagSwitchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).toBeChecked();
-		} );
-		// Verify that the notice is not rendered.
-		expect(
-			container.querySelector( '.googlesitekit-settings-notice' )
-		).not.toBeInTheDocument();
-
-		// Uncheck the switch.
-		fireEvent.click( container.querySelector( '.mdc-switch' ) );
-
-		// Verify that the switch is unchecked.
-		recoveryTagSwitchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).not.toBeChecked();
+	it( 'should render the same account existing tag notice there is an existing ad blocking recovery tag for the same account', () => {
+		const { container } = render( <AdBlockingRecoveryToggle />, {
+			setupRegistry: ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: true,
+					},
+				] );
+				provideSiteInfo( registry );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+					...validSettings,
+					adBlockingRecoverySetupStatus:
+						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+					useAdBlockingRecoverySnippet: true,
+					useAdBlockingRecoveryErrorSnippet: false,
+				} );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetExistingAdBlockingRecoveryTag(
+						validSettings.accountID
+					);
+			},
 		} );
 
 		// Verify that the notice is rendered.
 		expect(
 			container.querySelector( '.googlesitekit-settings-notice__text' )
 		).toHaveTextContent(
-			'The ad blocking recovery message won’t be displayed to visitors unless the tag is placed'
+			'You’ve already enabled an ad blocking recovery message on your site. We recommend using Site Kit to manage this to get the most out of AdSense.'
+		);
+	} );
+
+	it( 'should render the different account existing tag notice there is an existing ad blocking recovery tag for a different account', () => {
+		const { container } = render( <AdBlockingRecoveryToggle />, {
+			setupRegistry: ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: true,
+					},
+				] );
+				provideSiteInfo( registry );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+					...validSettings,
+					adBlockingRecoverySetupStatus:
+						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+					useAdBlockingRecoverySnippet: true,
+					useAdBlockingRecoveryErrorSnippet: false,
+				} );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetExistingAdBlockingRecoveryTag(
+						'pub-1234567890123456'
+					);
+			},
+		} );
+
+		// Verify that the notice is rendered.
+		expect(
+			container.querySelector( '.googlesitekit-settings-notice__text' )
+		).toHaveTextContent(
+			'Site Kit detected Ad Blocking Recovery code for a different account pub-1234567890123456 on your site. For a better ad blocking recovery experience, you should remove Ad Blocking Recovery code that’s not linked to this AdSense account.'
 		);
 	} );
 } );

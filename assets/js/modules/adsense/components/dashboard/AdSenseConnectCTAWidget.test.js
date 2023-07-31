@@ -28,6 +28,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
+import { ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
@@ -48,7 +49,17 @@ describe( 'AdSenseConnectCTA', () => {
 
 	describe( 'after click', () => {
 		let container;
-		beforeEach( () => {
+		beforeEach( async () => {
+			fetchMock.postOnce(
+				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+				{
+					body: JSON.stringify( [
+						ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
+					] ),
+					status: 200,
+				}
+			);
+
 			const Widget = ( { children } ) => <div>{ children }</div>;
 			const WidgetNull = () => <div>NULL</div>;
 
@@ -67,24 +78,18 @@ describe( 'AdSenseConnectCTA', () => {
 				{ registry }
 			).container;
 
-			fireEvent.click(
-				container.querySelector( 'button.googlesitekit-cta-link' )
-			);
-
-			fetchMock.postOnce(
-				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
-				{
-					body: JSON.stringify( [ 'adsense-connect-cta' ] ),
-					status: 200,
-				}
-			);
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					container.querySelector( 'button.googlesitekit-cta-link' )
+				);
+			} );
 		} );
 
 		it( 'should open the tooltip', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).toBeInTheDocument();
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
 
 		it( 'should close the tooltip on clicking the close button', async () => {
@@ -97,7 +102,6 @@ describe( 'AdSenseConnectCTA', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should close the modal on clicking the dismiss button', async () => {
@@ -112,7 +116,6 @@ describe( 'AdSenseConnectCTA', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
 } );

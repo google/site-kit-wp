@@ -22,30 +22,99 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
+import { ZeroDataMessage } from '../../../analytics/components/common';
+import { numFmt } from '../../../../util';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
+const { useSelect, useInViewSelect } = Data;
 
-const { useSelect } = Data;
-
-export default function TopCitiesWidget( { Widget, WidgetNull } ) {
-	const keyMetricsWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricsWidgetHidden()
+export default function TopCitiesWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
 	);
 
-	if ( keyMetricsWidgetHidden !== false ) {
-		return <WidgetNull />;
-	}
+	const topcCitiesReportOptions = {
+		...dates,
+		dimensions: [ 'city' ],
+		metrics: [ { name: 'totalUsers' } ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
+		limit: 3,
+	};
+
+	const topCitiesReport = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions )
+	);
+
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ topcCitiesReportOptions ]
+			)
+	);
+
+	const { rows = [], totals = [] } = topCitiesReport || {};
+
+	const totalUsers = totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
+
+	const columns = [
+		{
+			field: 'dimensionValues',
+			Component: ( { fieldValue } ) => {
+				const [ title ] = fieldValue;
+
+				return <MetricTileTablePlainText content={ title.value } />;
+			},
+		},
+		{
+			field: 'metricValues.0.value',
+			Component: ( { fieldValue } ) => (
+				<strong>
+					{ numFmt( fieldValue / totalUsers, {
+						style: 'percent',
+						maximumFractionDigits: 1,
+					} ) }
+				</strong>
+			),
+		},
+	];
 
 	return (
-		<Widget>
-			<div>TODO: UI for TopCitiesWidget</div>
-		</Widget>
+		<MetricTileTable
+			Widget={ Widget }
+			title={ __( 'Top cities driving traffic', 'google-site-kit' ) }
+			loading={ loading }
+			rows={ rows }
+			columns={ columns }
+			ZeroState={ ZeroDataMessage }
+		/>
 	);
 }
 
 TopCitiesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };

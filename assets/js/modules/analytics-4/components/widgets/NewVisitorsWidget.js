@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -35,14 +36,12 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import {
-	MetricTileNumeric,
-	whenKeyMetricsWidgetVisible,
-} from '../../../../components/KeyMetrics';
+import { MetricTileNumeric } from '../../../../components/KeyMetrics';
+import { numFmt } from '../../../../util/i18n';
 
 const { useSelect, useInViewSelect } = Data;
 
-function NewVisitorsWidget( { Widget } ) {
+export default function NewVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -68,17 +67,25 @@ function NewVisitorsWidget( { Widget } ) {
 			)
 	);
 
-	const newVisitors =
-		parseInt( report?.rows?.[ 1 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const returningVisitors =
-		parseInt( report?.rows?.[ 3 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const totalVisitors = newVisitors + returningVisitors;
+	const { rows = [] } = report || {};
 
-	const compareNewVisitors =
-		parseInt( report?.rows?.[ 0 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const compareReturningVisitors =
-		parseInt( report?.rows?.[ 2 ]?.metricValues[ 0 ]?.value, 10 ) || 0;
-	const compareTotalVisitors = compareNewVisitors + compareReturningVisitors;
+	const makeFind = ( dateRange ) => ( row ) =>
+		get( row, 'dimensionValues.0.value' ) === 'new' &&
+		get( row, 'dimensionValues.1.value' ) === dateRange;
+	const makeFilter = ( dateRange ) => ( row ) =>
+		get( row, 'dimensionValues.1.value' ) === dateRange;
+	const reducer = ( acc, row ) =>
+		acc + ( parseInt( get( row, 'metricValues.0.value' ), 10 ) || 0 );
+
+	const newVisitors =
+		rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value ||
+		0;
+	const total = rows
+		.filter( makeFilter( 'date_range_0' ) )
+		.reduce( reducer, 0 );
+	const prevTotal = rows
+		.filter( makeFilter( 'date_range_1' ) )
+		.reduce( reducer, 0 );
 
 	return (
 		<MetricTileNumeric
@@ -87,11 +94,11 @@ function NewVisitorsWidget( { Widget } ) {
 			metricValue={ newVisitors }
 			subText={ sprintf(
 				/* translators: %d: Number of total visitors visiting the site. */
-				__( 'of %d total visitors', 'google-site-kit' ),
-				totalVisitors
+				__( 'of %s total visitors', 'google-site-kit' ),
+				numFmt( total, { style: 'decimal' } )
 			) }
-			previousValue={ compareTotalVisitors }
-			currentValue={ totalVisitors }
+			previousValue={ prevTotal }
+			currentValue={ total }
 			loading={ loading }
 		/>
 	);
@@ -100,5 +107,3 @@ function NewVisitorsWidget( { Widget } ) {
 NewVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
-
-export default whenKeyMetricsWidgetVisible()( NewVisitorsWidget );

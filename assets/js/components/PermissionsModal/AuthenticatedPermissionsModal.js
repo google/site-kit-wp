@@ -26,7 +26,7 @@ import { useEffect, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Dialog } from 'googlesitekit-components';
+import ModalDialog from '../ModalDialog';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
@@ -107,7 +107,7 @@ const AuthenticatedPermissionsModal = () => {
 
 	return (
 		<Portal>
-			<Dialog
+			<ModalDialog
 				title={ __(
 					'Additional Permissions Required',
 					'google-site-kit'

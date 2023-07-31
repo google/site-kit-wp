@@ -53,12 +53,13 @@ use WP_User;
  */
 class Analytics_4Test extends TestCase {
 
-	use Module_With_Scopes_ContractTests;
-	use Module_With_Settings_ContractTests;
-	use Module_With_Owner_ContractTests;
-	use Module_With_Service_Entity_ContractTests;
-	use UserAuthenticationTrait;
+	use AnalyticsDashboardView;
 	use Module_With_Data_Available_State_ContractTests;
+	use Module_With_Owner_ContractTests;
+	use Module_With_Scopes_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
+	use Module_With_Settings_ContractTests;
+	use UserAuthenticationTrait;
 
 	/**
 	 * Context object.
@@ -130,7 +131,10 @@ class Analytics_4Test extends TestCase {
 
 		// Adding required scopes.
 		$this->assertEquals(
-			$this->analytics->get_scopes(),
+			array_merge(
+				$this->analytics->get_scopes(),
+				array( 'https://www.googleapis.com/auth/tagmanager.readonly' )
+			),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
 	}
@@ -204,86 +208,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_handle_provisioning_callback() {
-		$account_id       = '12345678';
-		$property_id      = '1001';
-		$webdatastream_id = '2001';
-		$measurement_id   = '1A2BCD345E';
-
-		$options = new Options( $this->context );
-		$options->set(
-			Settings::OPTION,
-			array(
-				'accountID'       => $account_id,
-				'propertyID'      => '',
-				'webDataStreamID' => '',
-				'measurementID'   => '',
-			)
-		);
-
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id ) {
-				$url = parse_url( $request->getUri() );
-
-				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
-					return new Response( 200 );
-				}
-
-				switch ( $url['path'] ) {
-					case '/v1beta/properties':
-						return new Response(
-							200,
-							array(),
-							json_encode(
-								array(
-									'name' => "properties/{$property_id}",
-								)
-							)
-						);
-					case "/v1beta/properties/{$property_id}/dataStreams":
-						$data = new GoogleAnalyticsAdminV1betaDataStreamWebStreamData();
-						$data->setMeasurementId( $measurement_id );
-						$datastream = new GoogleAnalyticsAdminV1betaDataStream();
-						$datastream->setName( "properties/{$property_id}/dataStreams/{$webdatastream_id}" );
-						$datastream->setType( 'WEB_DATA_STREAM' );
-						$datastream->setWebStreamData( $data );
-
-						return new Response(
-							200,
-							array(),
-							json_encode( $datastream->toSimpleObject() )
-						);
-					default:
-						return new Response( 200 );
-				}
-			}
-		);
-
-		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
-
-		$this->analytics->register();
-
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
-
-		$this->assertEqualSetsWithIndex(
-			array(
-				'accountID'               => $account_id,
-				'propertyID'              => $property_id,
-				'webDataStreamID'         => $webdatastream_id,
-				'measurementID'           => $measurement_id,
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => '',
-				'googleTagAccountID'      => '',
-				'googleTagContainerID'    => '',
-				'googleTagLastSyncedAtMs' => 0,
-			),
-			$options->get( Settings::OPTION )
-		);
-	}
-
-	public function test_handle_provisioning_callback__gteSupport() {
-		$this->enable_feature( 'gteSupport' );
 		$account_id              = '12345678';
 		$property_id             = '1001';
 		$webdatastream_id        = '2001';
@@ -397,8 +321,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_handle_provisioning_callback__gteSupport__with_failing_container_lookup() {
-		$this->enable_feature( 'gteSupport' );
+	public function test_handle_provisioning_callback__with_failing_container_lookup() {
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
@@ -669,11 +592,9 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_scopes_gteSupport
+	 * @dataProvider data_scopes
 	 */
-	public function test_auth_scopes__gteSupport( array $granted_scopes, array $expected_scopes ) {
-		$this->enable_feature( 'gteSupport' );
-
+	public function test_auth_scopes_( array $granted_scopes, array $expected_scopes ) {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		$this->analytics->register();
 
@@ -685,7 +606,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function data_scopes_gteSupport() {
+	public function data_scopes() {
 		return array(
 			'with analytics and tag manager scopes granted' => array(
 				array(
@@ -751,6 +672,26 @@ class Analytics_4Test extends TestCase {
 		$this->assertFalse( $this->analytics->is_data_available() );
 	}
 
+	public function test_on_activation() {
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+
+		$dismissed_items->add( 'key-metrics-connect-ga4-cta-widget' );
+
+		$this->assertEqualSets(
+			array(
+				'key-metrics-connect-ga4-cta-widget' => 0,
+			),
+			$dismissed_items->get()
+		);
+
+		$this->analytics->on_activation();
+
+		$this->assertEqualSets(
+			array(),
+			$dismissed_items->get()
+		);
+	}
+
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
@@ -791,8 +732,6 @@ class Analytics_4Test extends TestCase {
 	 * @param array $tag_ids_data Tag IDs and expected result.
 	 */
 	public function test_google_tag_settings_datapoint( $tag_ids_data ) {
-		$this->enable_feature( 'gteSupport' );
-
 		$scopes   = $this->analytics->get_scopes();
 		$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
 		$this->authentication->get_oauth_client()->set_granted_scopes( $scopes );
@@ -1059,6 +998,16 @@ class Analytics_4Test extends TestCase {
 								),
 							),
 						),
+						// Verify the URL filter is correct.
+						array(
+							'filter' => array(
+								'fieldName'    => 'pagePath',
+								'stringFilter' => array(
+									'matchType' => 'EXACT',
+									'value'     => 'https://example.org/some-page-here/',
+								),
+							),
+						),
 						// Verify the single-value dimension filter is correct.
 						array(
 							'filter' => array(
@@ -1075,16 +1024,6 @@ class Analytics_4Test extends TestCase {
 								'fieldName'    => 'pageTitle',
 								'inListFilter' => array(
 									'values' => array( 'Title Foo', 'Title Bar' ),
-								),
-							),
-						),
-						// Verify the URL filter is correct.
-						array(
-							'filter' => array(
-								'fieldName'    => 'pagePath',
-								'stringFilter' => array(
-									'matchType' => 'EXACT',
-									'value'     => 'https://example.org/some-page-here/',
 								),
 							),
 						),
@@ -1584,6 +1523,7 @@ class Analytics_4Test extends TestCase {
 
 	public function test_report__shared_metric_validation() {
 		$this->enable_feature( 'dashboardSharing' );
+		$this->enable_feature( 'ga4Reporting' );
 
 		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
 		// TODO: Remove this when `dashboardSharing` feature flag is removed.
@@ -1602,6 +1542,8 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_metrics( 'sessions', 'totalUsers' );
 
 		$this->enable_shared_credentials();
+		$this->set_dashboard_view_ga4();
+		$this->assertTrue( $this->analytics->is_shareable() );
 
 		$data = $this->analytics->get_data(
 			'report',
@@ -1641,6 +1583,8 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_dimensions( 'date', 'pageTitle' );
 
 		$this->enable_shared_credentials();
+		$this->set_dashboard_view_ga4();
+		$this->assertTrue( $this->analytics->is_shareable() );
 
 		$data = $this->analytics->get_data(
 			'report',
@@ -1941,24 +1885,6 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->register();
 
 		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet is not output when the measurement ID is empty.
-		$this->assertEmpty( $snippet_html );
-
-		$settings = array(
-			'measurementID' => 'G-12345678',
-		);
-		$this->analytics->get_settings()->merge( $settings );
-
-		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet contains the configured measurement ID.
-		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
-	}
-
-	public function test_tracking_opt_out_snippet__gteSupport() {
-		$this->enable_feature( 'gteSupport' );
-		$this->analytics->register();
-
-		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
 		// Ensure the snippet is not output when both measurement ID and google tag ID are empty.
 		$this->assertEmpty( $snippet_html );
 
@@ -1972,14 +1898,15 @@ class Analytics_4Test extends TestCase {
 		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
 
 		$settings = array(
-			'googleTagID' => 'GT-12345678',
+			'measurementID' => 'G-12345678',
+			'googleTagID'   => 'GT-12345678',
 		);
 
 		$this->analytics->get_settings()->merge( $settings );
 
 		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet contains the configured google tag ID when it is set.
-		$this->assertStringContainsString( 'window["ga-disable-' . $settings['googleTagID'] . '"] = true', $snippet_html );
+		// Ensure the snippet contains the configured measurement ID (not GT tag) when it is set.
+		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
 	}
 
 	public function test_register_allow_tracking_disabled() {

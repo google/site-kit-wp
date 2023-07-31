@@ -52,20 +52,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--modal-dialog',
-		kind: 'Global',
-		name: 'Modal Dialog',
-		story: 'Modal Dialog',
-		parameters: {
-			fileName: './stories/modal-dialog.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 1000,
-			},
-		},
-	},
-	{
 		id: 'adsense-module-components-module-overview-widget--loaded',
 		kind: 'AdSense Module',
 		name: 'Overview Widget',
@@ -275,19 +261,6 @@ module.exports = [
 		story: 'Switches',
 		parameters: {
 			fileName: './stories/switch.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global--text-fields',
-		kind: 'Global',
-		name: 'Text Fields',
-		story: 'Text Fields',
-		parameters: {
-			fileName: './stories/text-field.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
