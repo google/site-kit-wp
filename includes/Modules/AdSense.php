@@ -202,36 +202,80 @@ final class AdSense extends Module
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
-			'adsense_account_id'            => array(
+		$fields = array(
+			'adsense_account_id'                => array(
 				'label' => __( 'AdSense account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'], 7 ),
 			),
-			'adsense_client_id'             => array(
+			'adsense_client_id'                 => array(
 				'label' => __( 'AdSense client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['clientID'], 10 ),
 			),
-			'adsense_account_status'        => array(
+			'adsense_account_status'            => array(
 				'label' => __( 'AdSense account status', 'google-site-kit' ),
 				'value' => $settings['accountStatus'],
 			),
-			'adsense_site_status'           => array(
+			'adsense_site_status'               => array(
 				'label' => __( 'AdSense site status', 'google-site-kit' ),
 				'value' => $settings['siteStatus'],
 			),
-			'adsense_use_snippet'           => array(
+			'adsense_use_snippet'               => array(
 				'label' => __( 'AdSense snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
-			'adsense_web_stories_adunit_id' => array(
+			'adsense_web_stories_adunit_id'     => array(
 				'label' => __( 'Web Stories Ad Unit ID', 'google-site-kit' ),
 				'value' => $settings['webStoriesAdUnit'],
 				'debug' => $settings['webStoriesAdUnit'],
 			),
+			'adsense_setup_completed_timestamp' => array(
+				'label' => __( 'AdSense setup completed at', 'google-site-kit' ),
+				'value' => date_i18n(
+					get_option( 'date_format' ),
+					$settings['setupCompletedTimestamp']
+				),
+				'debug' => $settings['setupCompletedTimestamp'],
+			),
 		);
+
+		if ( Feature_Flags::enabled( 'adBlockerDetection' ) ) {
+			$fields = array_merge(
+				$fields,
+				array(
+					'adsense_abr_use_snippet'  => array(
+						'label' => __(
+							'Ad Blocking Recovery snippet placed',
+							'google-site-kit'
+						),
+						'value' => $settings['useAdBlockingRecoverySnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+						'debug' => $settings['useAdBlockingRecoverySnippet'] ? 'yes' : 'no',
+					),
+					'adsense_abr_use_error_protection_snippet' => array(
+						'label' => __(
+							'Ad Blocking Recovery error protection snippet placed',
+							'google-site-kit'
+						),
+						'value' => $settings['useAdBlockingRecoveryErrorSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+						'debug' => $settings['useAdBlockingRecoveryErrorSnippet'] ? 'yes' : 'no',
+					),
+					'adsense_abr_setup_status' => array(
+						'label' => __(
+							'Ad Blocking Recovery setup status',
+							'google-site-kit'
+						),
+						'value' => $this->get_ad_blocking_recovery_setup_status_label(
+							$settings['adBlockingRecoverySetupStatus']
+						),
+						'debug' => $settings['adBlockingRecoverySetupStatus'],
+					),
+				)
+			);
+		}
+
+		return $fields;
 	}
 
 	/**
@@ -1042,6 +1086,25 @@ final class AdSense extends Module
 			);
 
 			throw new Invalid_Report_Dimensions_Exception( $message );
+		}
+	}
+
+	/**
+	 * Gets the Ad Blocking Recovery setup status label.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $setup_status The saved raw setting.
+	 * @return string The status label based on the raw setting.
+	 */
+	private function get_ad_blocking_recovery_setup_status_label( $setup_status ) {
+		switch ( $setup_status ) {
+			case Settings::AD_BLOCKING_RECOVERY_SETUP_STATUS_TAG_PLACED:
+				return __( 'Snippet is placed', 'google-site-kit' );
+			case Settings::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED:
+				return __( 'Setup complete', 'google-site-kit' );
+			default:
+				return __( 'Not set up', 'google-site-kit' );
 		}
 	}
 }
