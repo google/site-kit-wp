@@ -17,6 +17,8 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Dependencies;
+use WP_Post_Type;
+use WP_Post;
 
 /**
  * Class managing assets.
@@ -723,6 +725,7 @@ final class Assets {
 			'postTypes'        => $this->get_post_types(),
 			'storagePrefix'    => $this->get_storage_prefix(),
 			'referenceDate'    => apply_filters( 'googlesitekit_reference_date', null ),
+			'productBasePaths' => $this->get_product_base_paths(),
 		);
 
 		/**
@@ -1060,6 +1063,60 @@ final class Assets {
 		$session_token = isset( $auth_cookie['token'] ) ? $auth_cookie['token'] : '';
 
 		return wp_hash( $current_user->user_login . '|' . $session_token . '|' . $blog_id );
+	}
+
+	/**
+	 * Returns an array of product base paths.
+	 *
+	 * @since 1.106.0
+	 *
+	 * @return array The array of product base paths.
+	 */
+	private function get_product_base_paths() {
+		// Return early if permalinks are not used.
+		if ( ! get_option( 'permalink_structure' ) ) {
+			return array();
+		}
+
+		$product_base_paths = array();
+		$product_type       = get_post_type_object( 'product' );
+
+		// Check whether the product post type is available and public.
+		if ( $product_type instanceof WP_Post_Type && $product_type->public ) {
+			// Now we need to create a fake product with a randomly created slug
+			// that we can find in the permalink to determine the product base URL.
+			$post_name = substr( str_shuffle( md5( microtime() ) ), 0, 10 );
+			$product   = new WP_Post(
+				(object) array(
+					'ID'          => wp_rand( 1, 10000 ),
+					'post_name'   => $post_name,
+					'post_type'   => 'product',
+					'post_status' => 'publish',
+					'filter'      => 'raw',
+				)
+			);
+
+			$permalink = get_permalink( $product );
+			if ( ! empty( $permalink ) ) {
+				$product_url_path  = wp_parse_url( $permalink, PHP_URL_PATH );
+				$product_base_path = explode( $post_name, $product_url_path, 2 );
+
+				$product_base_paths[] = $product_base_path[0];
+			}
+		}
+
+		/**
+		 * Filters product base paths found in WordPress. By default the array contains
+		 * the base path for the "product" post type if it is available in WordPress
+		 * and public.
+		 *
+		 * @since 1.106.0
+		 *
+		 * @param array $product_base_paths Array of existing product base paths.
+		 */
+		$product_base_paths = apply_filters( 'googlesitekit_product_base_paths', $product_base_paths );
+
+		return $product_base_paths;
 	}
 
 }

@@ -152,7 +152,7 @@ export default function UserInputQuestionnaire() {
 
 	const settingsProgress = (
 		<ProgressBar
-			height={ 0 }
+			height={ 4 }
 			indeterminate={ false }
 			progress={
 				( activeSlugIndex + 1 ) /

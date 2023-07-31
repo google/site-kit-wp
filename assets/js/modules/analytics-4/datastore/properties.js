@@ -228,9 +228,19 @@ const baseActions = {
 
 			yield webDataStreamActions.waitForWebDataStreams( propertyID );
 
-			const webdatastream = registry
+			let webdatastream = registry
 				.select( MODULES_ANALYTICS_4 )
 				.getMatchingWebDataStreamByPropertyID( propertyID );
+
+			if ( ! webdatastream ) {
+				const webdatastreams = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getWebDataStreams( propertyID );
+
+				if ( webdatastreams && webdatastreams.length > 0 ) {
+					webdatastream = webdatastreams[ 0 ];
+				}
+			}
 
 			if ( webdatastream ) {
 				registry

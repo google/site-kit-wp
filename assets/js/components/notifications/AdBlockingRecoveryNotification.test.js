@@ -29,9 +29,7 @@ import {
 import {
 	MODULES_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '../../modules/adsense/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 describe( 'AdBlockingRecoveryNotification', () => {
 	let registry;
@@ -53,33 +51,11 @@ describe( 'AdBlockingRecoveryNotification', () => {
 	} );
 
 	it( 'should not render notification if ad blocking recovery setup status is not "setup-confirmed"', () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.setAdBlockingRecoverySetupStatus(
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
 			);
-
-		const { container } = render( <AdBlockingRecoveryNotification />, {
-			registry,
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render notification if it is already dismissed', () => {
-		registry
-			.dispatch( MODULES_ADSENSE )
-			.setAdBlockingRecoverySetupStatus(
-				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
-			);
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
-			] );
 
 		const { container } = render( <AdBlockingRecoveryNotification />, {
 			registry,
@@ -94,8 +70,6 @@ describe( 'AdBlockingRecoveryNotification', () => {
 			.setAdBlockingRecoverySetupStatus(
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
 			);
-
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { container } = render( <AdBlockingRecoveryNotification />, {
 			registry,

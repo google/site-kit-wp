@@ -76,25 +76,40 @@ describe( 'Analytics 4 Reporting API validation', () => {
 	} );
 
 	describe( 'isValidDimensionFilters', () => {
-		it( 'should return TRUE if a valid object is passed with a valid dimension', () => {
-			expect( isValidDimensionFilters( { test: 'foo' } ) ).toBe( true );
-			expect( isValidDimensionFilters( { foo: [ 'foo', 'bar' ] } ) ).toBe(
-				true
-			);
+		it.each( [
+			[
+				'a string filter is passed using short notation',
+				{ test: 'foo' },
+			],
+			[
+				'an in-list filter is passed using short notation',
+				{ foo: [ 'foo', 'bar' ] },
+			],
+			[ 'an empty object is passed', {} ],
+			[
+				'a filter with expanded notation is used',
+				{ test: { filterType: 'inList', value: [ 'a', 'b', 'c' ] } },
+			],
+		] )( 'should return TRUE if %s', ( _, filters ) => {
+			expect( isValidDimensionFilters( filters ) ).toBe( true );
 		} );
-		it( 'should return TRUE if no dimensionFilters are passed.', () => {
-			expect( isValidDimensionFilters( {} ) ).toBe( true );
-			expect( isValidDimensionFilters( {} ) ).toBe( true );
-		} );
-		it( 'should return FALSE if an invalid dimensionFilters object is passed', () => {
-			expect( isValidDimensionFilters( { foo: false } ) ).toBe( false );
-			expect( isValidDimensionFilters( { foo: 'bar', baz: null } ) ).toBe(
-				false
-			);
-			expect( isValidDimensionFilters( { foo: 3 } ) ).toBe( false );
-			expect( isValidDimensionFilters( { foo: [ 3, 'foo' ] } ) ).toBe(
-				false
-			);
+
+		it.each( [
+			[ 'an invalid filter is passed', { foo: false } ],
+			[
+				'a mixed values are passed in short notation',
+				{ foo: [ 3, 'foo' ] },
+			],
+			[
+				'a filter with the expanded notation misses the filterType property',
+				{ test: { value: [ 'a', 'b', 'c' ] } },
+			],
+			[
+				'a filter with the expanded notation misses the value property',
+				{ test: { filterType: 'inList', values: [ 'a', 'b', 'c' ] } },
+			],
+		] )( 'should return FALSE if %s', ( _, filters ) => {
+			expect( isValidDimensionFilters( filters ) ).toBe( false );
 		} );
 	} );
 

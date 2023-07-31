@@ -68,8 +68,6 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			<SettingsUACutoffWarning />
-
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
@@ -104,6 +102,7 @@ export default function SettingsView() {
 									}
 								/>
 							</p>
+							<SettingsUACutoffWarning />
 						</div>
 					</div>
 				) }

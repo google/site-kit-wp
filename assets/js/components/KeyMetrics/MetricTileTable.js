@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import PreviewBlock from '../PreviewBlock';
+import MetricTileLoader from './MetricTileLoader';
 
 export default function MetricTileTable( props ) {
 	const {
@@ -34,7 +34,7 @@ export default function MetricTileTable( props ) {
 		rows = [],
 		columns = [],
 		limit,
-		zeroState: ZeroState,
+		ZeroState,
 	} = props;
 
 	let tileBody = null;
@@ -89,13 +89,7 @@ export default function MetricTileTable( props ) {
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && (
-						<PreviewBlock
-							className="googlesitekit-km-widget-tile__table"
-							width="100%"
-							height="65px"
-						/>
-					) }
+					{ loading && <MetricTileLoader /> }
 					{ ! loading && (
 						<div className="googlesitekit-km-widget-tile__table">
 							{ tileBody }
@@ -114,5 +108,5 @@ MetricTileTable.propTypes = {
 	rows: PropTypes.array,
 	columns: PropTypes.array,
 	limit: PropTypes.number,
-	zeroState: PropTypes.func,
+	ZeroState: PropTypes.elementType,
 };
