@@ -53,12 +53,13 @@ export default function MetricsSelectionPanel() {
 		}
 
 		const { isModuleConnected } = select( CORE_MODULES );
+		const { getWidget } = select( CORE_WIDGETS );
 
 		// Before setting metrics as selected, verify that they are available, i.e.
 		// the modules that they depend on are connected. This helps prevent metrics
 		// with disconnected dependencies appear as selected in the selection panel.
 		return metrics.filter( ( slug ) => {
-			const widget = select( CORE_WIDGETS ).getWidget( slug );
+			const widget = getWidget( slug );
 
 			if ( ! widget ) {
 				return false;

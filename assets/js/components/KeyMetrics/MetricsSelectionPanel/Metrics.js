@@ -34,9 +34,10 @@ const { useSelect } = Data;
 export default function Metrics() {
 	const availableMetrics = useSelect( ( select ) => {
 		const { isModuleConnected } = select( CORE_MODULES );
+		const { getWidget } = select( CORE_WIDGETS );
 
 		return pickBy( KEY_METRICS_WIDGETS, ( _value, key ) => {
-			const widget = select( CORE_WIDGETS ).getWidget( key );
+			const widget = getWidget( key );
 
 			if ( ! widget ) {
 				return false;

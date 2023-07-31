@@ -26,6 +26,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import FocusTrap from 'focus-trap-react';
 import PropTypes from 'prop-types';
 import { useClickAway, useKey } from 'react-use';
 
@@ -39,7 +40,6 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Portal from './Portal';
-import FocusTrap from 'focus-trap-react';
 
 export default function SideSheet( {
 	className,
