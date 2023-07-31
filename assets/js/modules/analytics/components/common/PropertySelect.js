@@ -110,11 +110,14 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		);
 	}
 
+	const displayProperties = [ ...properties ];
 	if (
 		! ga4ReportingEnabled &&
-		! properties.some( ( property ) => property.id === PROPERTY_CREATE )
+		! displayProperties.some(
+			( property ) => property.id === PROPERTY_CREATE
+		)
 	) {
-		properties.push( {
+		displayProperties.push( {
 			id: PROPERTY_CREATE,
 			name: __( 'Set up a new property', 'google-site-kit' ),
 		} );
@@ -129,7 +132,7 @@ export default function PropertySelect( { hasModuleAccess } ) {
 			enhanced
 			outlined
 		>
-			{ properties.map(
+			{ displayProperties.map(
 				(
 					// eslint-disable-next-line sitekit/acronym-case
 					{ id, name, internalWebPropertyId },
