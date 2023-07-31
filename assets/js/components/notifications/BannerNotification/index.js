@@ -175,17 +175,18 @@ function BannerNotification( props ) {
 		}
 	} );
 
-	async function handleDismiss( e ) {
+	const handleDismiss = async ( e ) => {
 		e.persist();
 		e.preventDefault();
 
 		if ( onDismiss ) {
 			await onDismiss( e );
 		}
-		dismissNotification();
-	}
 
-	function dismissNotification() {
+		dismissNotification();
+	};
+
+	const dismissNotification = () => {
 		setIsClosed( true );
 
 		setTimeout( async () => {
@@ -199,14 +200,14 @@ function BannerNotification( props ) {
 			const event = new Event( 'notificationDismissed' );
 			document.dispatchEvent( event );
 		}, 350 );
-	}
+	};
 
 	const isNavigatingToCTALink = useSelect( ( select ) =>
 		ctaLink ? select( CORE_LOCATION ).isNavigatingTo( ctaLink ) : false
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	async function handleCTAClick( e ) {
+	const handleCTAClick = async ( e ) => {
 		e.persist();
 
 		let dismissOnCTAClick = true;
@@ -226,7 +227,7 @@ function BannerNotification( props ) {
 			e.preventDefault();
 			navigateTo( ctaLink );
 		}
-	}
+	};
 
 	const handleAnchorLinkClick = useCallback(
 		( event ) => {
@@ -244,13 +245,12 @@ function BannerNotification( props ) {
 		[ anchorLink, breakpoint ]
 	);
 
-	function handleLearnMore( e ) {
+	const handleLearnMore = ( e ) => {
 		e.persist();
-
 		onLearnMoreClick?.();
-	}
+	};
 
-	async function expireDismiss() {
+	const expireDismiss = async () => {
 		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
 		if ( dismissed ) {
@@ -263,7 +263,7 @@ function BannerNotification( props ) {
 				await deleteItem( cacheKeyDismissed );
 			}
 		}
-	}
+	};
 
 	// isDismissed will be undefined until resolved from browser storage.
 	// isNavigating will be true until the navigation is complete.
