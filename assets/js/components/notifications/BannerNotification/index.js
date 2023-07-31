@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { map } from 'lodash';
 import { useMount, useMountedState, useIntersection } from 'react-use';
 import { useWindowWidth } from '@react-hook/window-size/throttled';
 
@@ -50,7 +49,6 @@ import {
 } from '../../../util/scroll';
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
-import DataBlock from '../../DataBlock';
 import Warning from '../../../../svg/icons/warning.svg';
 import ErrorIcon from '../../../../svg/icons/error.svg';
 import Link from '../../Link';
@@ -60,6 +58,7 @@ import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import Banner from './Banner';
 import BannerTitle from './BannerTitle';
 import BannerActions from './BannerActions';
+import BannerBlockMarkup from './BannerBlockMarkup';
 import {
 	getContentCellOrderProperties,
 	getContentCellSizeProperties,
@@ -301,24 +300,6 @@ function BannerNotification( props ) {
 		icon = '';
 	}
 
-	const dataBlockMarkup = (
-		<Fragment>
-			{ blockData && (
-				<Row>
-					{ map( blockData, ( block, i ) => {
-						return (
-							<Cell key={ i } lgSize={ inlineLayout ? 5 : 4 }>
-								<div className="googlesitekit-publisher-win__stats">
-									<DataBlock { ...block } />
-								</div>
-							</Cell>
-						);
-					} ) }
-				</Row>
-			) }
-		</Fragment>
-	);
-
 	const learnMoreAndPageIndex = (
 		<Fragment>
 			{ learnMoreLabel && (
@@ -463,13 +444,19 @@ function BannerNotification( props ) {
 							{ inlineMarkup }
 						</Cell>
 						<Cell alignBottom mdSize={ 8 } lgSize={ 7 }>
-							{ dataBlockMarkup }
+							<BannerBlockMarkup
+								blockData={ blockData }
+								inlineLayout={ inlineLayout }
+							/>
 						</Cell>
 					</Row>
 				) : (
 					<Fragment>
 						{ inlineMarkup }
-						{ dataBlockMarkup }
+						<BannerBlockMarkup
+							blockData={ blockData }
+							inlineLayout={ inlineLayout }
+						/>
 					</Fragment>
 				) }
 
