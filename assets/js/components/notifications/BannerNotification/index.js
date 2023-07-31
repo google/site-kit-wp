@@ -41,7 +41,6 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Row } from '../../../material-components';
 import {
 	getContextScrollTop,
@@ -50,7 +49,6 @@ import {
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
 import Link from '../../Link';
-import ModuleIcon from '../../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
 import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import Banner from './Banner';
@@ -58,6 +56,7 @@ import BannerTitle from './BannerTitle';
 import BannerActions from './BannerActions';
 import BannerBlockMarkup from './BannerBlockMarkup';
 import BannerIcon from './BannerIcon';
+import BannerLogo from './BannerLogo';
 import {
 	getContentCellOrderProperties,
 	getContentCellSizeProperties,
@@ -374,20 +373,6 @@ function BannerNotification( props ) {
 		</Fragment>
 	);
 
-	const logoSVG = module ? (
-		<ModuleIcon slug={ module } size={ 19 } />
-	) : (
-		<GoogleLogoIcon height="34" width="32" />
-	);
-
-	const logoCellProps = inlineLayout
-		? {
-				size: 12,
-				smOrder: 2,
-				mdOrder: 1,
-		  }
-		: { size: 12 };
-
 	return (
 		<Banner
 			id={ id }
@@ -402,16 +387,11 @@ function BannerNotification( props ) {
 			ref={ bannerNotificationRef }
 		>
 			{ logo && (
-				<Cell { ...logoCellProps }>
-					<div className="googlesitekit-publisher-win__logo">
-						{ logoSVG }
-					</div>
-					{ moduleName && (
-						<div className="googlesitekit-publisher-win__module-name">
-							{ moduleName }
-						</div>
-					) }
-				</Cell>
+				<BannerLogo
+					module={ module }
+					moduleName={ moduleName }
+					inlineLayout={ inlineLayout }
+				/>
 			) }
 
 			{ SmallImageSVG && (
