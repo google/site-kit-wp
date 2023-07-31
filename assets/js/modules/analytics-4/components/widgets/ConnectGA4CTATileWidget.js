@@ -38,7 +38,7 @@ export default function ConnectGA4CTATileWidget( { widgetSlug } ) {
 
 	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );
 
-	return <ConnectModuleCTATile moduleSlug="analytics-4" />;
+	return <ConnectModuleCTATile moduleSlug="analytics" />;
 }
 
 ConnectGA4CTATileWidget.propTypes = {
