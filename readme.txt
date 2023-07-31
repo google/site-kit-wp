@@ -120,7 +120,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Update Ad Blocking Recovery message status language in settings. See [#7287](https://github.com/google/site-kit-wp/issues/7287).
 * Update key metric tiles to be full-width on mobile viewports. See [#7159](https://github.com/google/site-kit-wp/issues/7159).
 * Hide Key Metric widget tiles when the feature isn't setup. See [#7061](https://github.com/google/site-kit-wp/issues/7061).
-* Fix a minor grammatical error in the copy used on the first step of the GA4 Reporting feature tour. See [#6927](https://github.com/google/site-kit-wp/issues/6927).
 * Move Universal Analytics notice in settings page. See [#6809](https://github.com/google/site-kit-wp/issues/6809).
 * Display Google Tag ID in Analytics Settings view. See [#6769](https://github.com/google/site-kit-wp/issues/6769).
 * Replace direct usage of components from `@material/react-text-field` with the new `TextField` component. See [#6651](https://github.com/google/site-kit-wp/issues/6651).
