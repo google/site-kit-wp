@@ -24,17 +24,18 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useRef } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
 import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
-export default function ConnectGA4CTATileWidget( props ) {
-	const { widgetSlug } = props;
+
+export default function ConnectGA4CTATileWidget( { widgetSlug } ) {
 	// Note: `analytics` is used as the slug here since GA4 "depends" on it.
-	const { current: metadata } = useRef( { moduleSlug: 'analytics' } );
+	const metadata = useMemo( () => ( { moduleSlug: 'analytics' } ), [] );
+
 	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );
 
 	return <ConnectModuleCTATile moduleSlug="analytics4" />;
