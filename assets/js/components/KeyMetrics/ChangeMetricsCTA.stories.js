@@ -1,4 +1,6 @@
 /**
+ * Key Metrics ChangeMetricsCTA Component Stories.
+ *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +16,20 @@
  * limitations under the License.
  */
 
-export { default as ChangeMetricsCTA } from './ChangeMetricsCTA';
-export { default as KeyMetricsSetupCTAWidget } from './KeyMetricsSetupCTAWidget';
-export { default as MetricTileNumeric } from './MetricTileNumeric';
-export { default as MetricTileTable } from './MetricTileTable';
-export { default as MetricTileTablePlainText } from './MetricTileTablePlainText';
-export { default as MetricTileText } from './MetricTileText';
+/**
+ * Internal dependencies
+ */
+import ChangeMetricsCTA from './ChangeMetricsCTA';
+
+const Template = () => <ChangeMetricsCTA />;
+
+export const Default = Template.bind( {} );
+Default.storyName = 'ChangeMetricsCTA';
+Default.scenario = {
+	label: 'KeyMetrics/ChangeMetricsCTA',
+};
+
+export default {
+	title: 'Key Metrics/ChangeMetricsCTA',
+	component: ChangeMetricsCTA,
+};

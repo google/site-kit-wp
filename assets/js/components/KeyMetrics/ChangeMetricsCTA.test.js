@@ -1,4 +1,6 @@
 /**
+ * Key Metrics ChangeMetricsCTA component tests.
+ *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +16,15 @@
  * limitations under the License.
  */
 
-export { default as ChangeMetricsCTA } from './ChangeMetricsCTA';
-export { default as KeyMetricsSetupCTAWidget } from './KeyMetricsSetupCTAWidget';
-export { default as MetricTileNumeric } from './MetricTileNumeric';
-export { default as MetricTileTable } from './MetricTileTable';
-export { default as MetricTileTablePlainText } from './MetricTileTablePlainText';
-export { default as MetricTileText } from './MetricTileText';
+import { render } from '../../../../tests/js/test-utils';
+import ChangeMetricsCTA from './ChangeMetricsCTA';
+
+describe( 'ChangeMetricsCTA', () => {
+	it( 'should render a button to change metrics', () => {
+		const { queryByRole } = render( <ChangeMetricsCTA /> );
+
+		const button = queryByRole( 'button' );
+		expect( button ).toBeInTheDocument();
+		expect( button ).toHaveTextContent( 'Change Metrics' );
+	} );
+} );
