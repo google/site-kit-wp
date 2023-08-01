@@ -33,6 +33,7 @@ import {
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../googlesitekit/datastore/user/constants';
@@ -171,6 +172,50 @@ describe( 'MetricsSelectionPanel', () => {
 					name: /Most popular content/i,
 				} )
 			).toBeDisabled();
+		} );
+
+		it( 'should order pre-saved metrics to the top', () => {
+			const metrics = [
+				KM_ANALYTICS_LOYAL_VISITORS,
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+			];
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations(
+				registry,
+				metrics.reduce(
+					( acc, widget ) => ( {
+						...acc,
+						[ widget ]: {
+							modules: [ 'analytics-4' ],
+						},
+					} ),
+					{}
+				)
+			);
+
+			// Set the last metric as selected.
+			provideKeyMetrics( registry, {
+				widgetSlugs: [ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ],
+			} );
+
+			render( <MetricsSelectionPanel />, { registry } );
+
+			// Verify that the last metric is positioned at the top.
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-metrics__metric-item:first-child label'
+				)
+			).toHaveTextContent( 'Top converting traffic source' );
 		} );
 	} );
 

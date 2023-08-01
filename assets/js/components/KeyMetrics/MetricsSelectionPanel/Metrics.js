@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { pickBy } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
@@ -31,22 +31,33 @@ import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants
 import MetricItem from './MetricItem';
 const { useSelect } = Data;
 
-export default function Metrics() {
+export default function Metrics( { savedMetrics } ) {
 	const availableMetrics = useSelect( ( select ) => {
 		const { isModuleConnected } = select( CORE_MODULES );
 		const { getWidget } = select( CORE_WIDGETS );
 
-		return pickBy( KEY_METRICS_WIDGETS, ( _value, key ) => {
-			const widget = getWidget( key );
+		return Object.keys( KEY_METRICS_WIDGETS )
+			.sort(
+				( a, b ) =>
+					savedMetrics.indexOf( b ) - savedMetrics.indexOf( a )
+			)
+			.reduce( ( acc, metric ) => {
+				const widget = getWidget( metric );
 
-			if ( ! widget ) {
-				return false;
-			}
+				if ( ! widget ) {
+					return acc;
+				}
 
-			return widget.modules.every( ( module ) =>
-				isModuleConnected( module )
-			);
-		} );
+				const isMetricAvailable = widget.modules.every( ( module ) =>
+					isModuleConnected( module )
+				);
+
+				if ( ! isMetricAvailable ) {
+					return acc;
+				}
+
+				return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
+			}, {} );
 	} );
 
 	return (
@@ -69,3 +80,7 @@ export default function Metrics() {
 		</div>
 	);
 }
+
+Metrics.propTypes = {
+	savedMetrics: PropTypes.array,
+};
