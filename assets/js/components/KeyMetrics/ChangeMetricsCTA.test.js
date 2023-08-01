@@ -18,10 +18,13 @@
 
 import {
 	createTestRegistry,
+	fireEvent,
 	freezeFetch,
 	provideKeyMetrics,
 	render,
 } from '../../../../tests/js/test-utils';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import ChangeMetricsCTA from './ChangeMetricsCTA';
 
 describe( 'ChangeMetricsCTA', () => {
@@ -67,5 +70,25 @@ describe( 'ChangeMetricsCTA', () => {
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Change Metrics' );
+	} );
+
+	it( 'should set UI store key correctly when button is clicked', () => {
+		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+
+		const { getByRole } = render( <ChangeMetricsCTA />, { registry } );
+
+		const button = getByRole( 'button', { name: /change metrics/i } );
+
+		fireEvent.click( button );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
+		).toBe( true );
 	} );
 } );

@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
 const { useSelect, useDispatch } = Data;
@@ -38,6 +40,10 @@ export default function ChangeMetricsCTA() {
 
 	const { setValue } = useDispatch( CORE_UI );
 
+	const openMetricsSelectionPanel = useCallback( () => {
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+	}, [ setValue ] );
+
 	if ( ! Array.isArray( keyMetrics ) || ! keyMetrics?.length > 0 ) {
 		return null;
 	}
@@ -45,7 +51,7 @@ export default function ChangeMetricsCTA() {
 	return (
 		<Link
 			className="googlesitekit-km-change-metrics-cta"
-			onClick={ () => setValue( '', true ) }
+			onClick={ openMetricsSelectionPanel }
 		>
 			<PencilIcon width={ 22 } height={ 22 } />
 			{ __( 'Change Metrics', 'google-site-kit' ) }
