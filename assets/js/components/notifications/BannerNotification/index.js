@@ -27,13 +27,7 @@ import { useWindowWidth } from '@react-hook/window-size/throttled';
 /*
  * WordPress dependencies
  */
-import {
-	useEffect,
-	useRef,
-	useState,
-	Fragment,
-	isValidElement,
-} from '@wordpress/element';
+import { useEffect, useRef, useState, Fragment } from '@wordpress/element';
 import { isURL } from '@wordpress/url';
 
 /*
@@ -42,8 +36,6 @@ import { isURL } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { Cell, Row } from '../../../material-components';
 import { getStickyHeaderHeightWithoutNav } from '../../../util/scroll';
-import { sanitizeHTML } from '../../../util/sanitize';
-import Link from '../../Link';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
 import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import Banner from './Banner';
@@ -52,6 +44,7 @@ import BannerActions from './BannerActions';
 import BannerBlockMarkup from './BannerBlockMarkup';
 import BannerIcon from './BannerIcon';
 import BannerLogo from './BannerLogo';
+import { LEARN_MORE_TARGET } from './constants';
 import {
 	getContentCellOrderProperties,
 	getContentCellSizeProperties,
@@ -61,12 +54,10 @@ import {
 import { stringToDate } from '../../../util/date-range/string-to-date';
 import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+import BannerDescription from './BannerDescription';
 const { useSelect, useDispatch } = Data;
 
-export const LEARN_MORE_TARGET = {
-	EXTERNAL: 'external',
-	INTERNAL: 'internal',
-};
+export * from './constants';
 
 // eslint-disable-next-line complexity
 export default function BannerNotification( props ) {
@@ -219,11 +210,6 @@ export default function BannerNotification( props ) {
 		}
 	};
 
-	const handleLearnMore = ( e ) => {
-		e.persist();
-		onLearnMoreClick?.();
-	};
-
 	const expireDismiss = async () => {
 		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
@@ -264,22 +250,6 @@ export default function BannerNotification( props ) {
 		hasWinImageSVG: !! WinImageSVG,
 	} );
 
-	let learnMoreAndPageIndex;
-	if ( learnMoreLabel ) {
-		learnMoreAndPageIndex = (
-			<Fragment>
-				<Link
-					onClick={ handleLearnMore }
-					href={ learnMoreURL }
-					external={ learnMoreTarget === LEARN_MORE_TARGET.EXTERNAL }
-				>
-					{ learnMoreLabel }
-				</Link>
-				{ learnMoreDescription }
-			</Fragment>
-		);
-	}
-
 	const inlineMarkup = (
 		<Fragment>
 			<BannerTitle
@@ -295,34 +265,15 @@ export default function BannerNotification( props ) {
 				}
 			/>
 
-			{ description && (
-				<div className="googlesitekit-publisher-win__desc">
-					{ isValidElement( description ) ? (
-						<Fragment>
-							{ description }
-							<p>{ learnMoreAndPageIndex }</p>
-						</Fragment>
-					) : (
-						<p>
-							<span
-								dangerouslySetInnerHTML={ sanitizeHTML(
-									description,
-									{
-										ALLOWED_TAGS: [
-											'strong',
-											'em',
-											'br',
-											'a',
-										],
-										ALLOWED_ATTR: [ 'href' ],
-									}
-								) }
-							/>{ ' ' }
-							{ learnMoreAndPageIndex }
-						</p>
-					) }
-				</div>
-			) }
+			<BannerDescription
+				description={ description }
+				learnMoreURL={ learnMoreURL }
+				learnMoreLabel={ learnMoreLabel }
+				learnMoreTarget={ learnMoreTarget }
+				learnMoreDescription={ learnMoreDescription }
+				onLearnMoreClick={ onLearnMoreClick }
+			/>
+
 			{ children }
 		</Fragment>
 	);
