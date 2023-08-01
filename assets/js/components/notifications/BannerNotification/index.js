@@ -59,7 +59,6 @@ const { useSelect, useDispatch } = Data;
 
 export * from './constants';
 
-// eslint-disable-next-line complexity
 export default function BannerNotification( props ) {
 	const {
 		badgeLabel,
