@@ -28,7 +28,6 @@ import { useWindowWidth } from '@react-hook/window-size/throttled';
  * WordPress dependencies
  */
 import {
-	useCallback,
 	useEffect,
 	useRef,
 	useState,
@@ -42,11 +41,7 @@ import { isURL } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { Cell, Row } from '../../../material-components';
-import {
-	getContextScrollTop,
-	getStickyHeaderHeightWithoutNav,
-} from '../../../util/scroll';
-import { isHashOnly } from '../../../util/urls';
+import { getStickyHeaderHeightWithoutNav } from '../../../util/scroll';
 import { sanitizeHTML } from '../../../util/sanitize';
 import Link from '../../Link';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
@@ -74,28 +69,25 @@ export const LEARN_MORE_TARGET = {
 };
 
 // eslint-disable-next-line complexity
-function BannerNotification( props ) {
+export default function BannerNotification( props ) {
 	const {
-		anchorLink,
-		anchorLinkLabel,
 		badgeLabel,
 		blockData,
 		children,
-		className,
+		className = '',
 		ctaLabel,
 		ctaLink,
 		ctaTarget,
 		description,
-		descriptionIcon,
 		dismiss,
-		dismissExpires,
+		dismissExpires = 0,
 		format = '',
 		id,
-		isDismissible,
+		isDismissible = true,
 		learnMoreDescription,
 		learnMoreLabel,
 		learnMoreURL,
-		learnMoreTarget,
+		learnMoreTarget = LEARN_MORE_TARGET.EXTERNAL,
 		logo,
 		module,
 		moduleName,
@@ -104,7 +96,7 @@ function BannerNotification( props ) {
 		onDismiss,
 		onLearnMoreClick,
 		pageIndex,
-		showOnce,
+		showOnce = false,
 		SmallImageSVG,
 		title,
 		type,
@@ -228,22 +220,6 @@ function BannerNotification( props ) {
 		}
 	};
 
-	const handleAnchorLinkClick = useCallback(
-		( event ) => {
-			if ( isHashOnly( anchorLink ) ) {
-				event.preventDefault();
-
-				global.history.replaceState( {}, '', anchorLink );
-
-				global.scrollTo( {
-					top: getContextScrollTop( anchorLink, breakpoint ),
-					behavior: 'smooth',
-				} );
-			}
-		},
-		[ anchorLink, breakpoint ]
-	);
-
 	const handleLearnMore = ( e ) => {
 		e.persist();
 		onLearnMoreClick?.();
@@ -328,21 +304,8 @@ function BannerNotification( props ) {
 				}
 			/>
 
-			{ anchorLink && anchorLinkLabel && (
-				<p className="googlesitekit-publisher-win__link">
-					<Link href={ anchorLink } onClick={ handleAnchorLinkClick }>
-						{ anchorLinkLabel }
-					</Link>
-				</p>
-			) }
 			{ description && (
 				<div className="googlesitekit-publisher-win__desc">
-					{ descriptionIcon && (
-						<div className="googlesitekit-publisher-win__icon">
-							{ descriptionIcon }
-						</div>
-					) }
-
 					{ isValidElement( description ) ? (
 						<Fragment>
 							{ description }
@@ -476,7 +439,6 @@ BannerNotification.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
-	descriptionIcon: PropTypes.node,
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
@@ -500,8 +462,6 @@ BannerNotification.propTypes = {
 	onView: PropTypes.func,
 	onDismiss: PropTypes.func,
 	onLearnMoreClick: PropTypes.func,
-	anchorLink: PropTypes.string,
-	anchorLinkLabel: PropTypes.string,
 	badgeLabel: PropTypes.string,
 	rounded: PropTypes.bool,
 	footer: PropTypes.node,
@@ -512,13 +472,3 @@ BannerNotification.propTypes = {
 	mediumWinImageSVGWidth: PropTypes.number,
 	mediumWinImageSVGHeight: PropTypes.number,
 };
-
-BannerNotification.defaultProps = {
-	isDismissible: true,
-	className: '',
-	dismissExpires: 0,
-	showOnce: false,
-	learnMoreTarget: LEARN_MORE_TARGET.EXTERNAL,
-};
-
-export default BannerNotification;

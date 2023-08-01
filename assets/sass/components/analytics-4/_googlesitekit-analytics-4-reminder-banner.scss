@@ -23,25 +23,6 @@
 		.googlesitekit-publisher-win__desc {
 			align-items: center;
 			display: inline-flex;
-
-			.googlesitekit-ga4-reminder-banner__description-icon {
-				margin-right: 10px;
-				vertical-align: middle;
-			}
-
-			.googlesitekit-ga4-reminder-banner__description-icon--info {
-
-				path {
-					fill: $c-content-primary;
-				}
-			}
-
-			.googlesitekit-ga4-reminder-banner__description-icon--error {
-
-				path {
-					fill: $c-thunderbird;
-				}
-			}
 		}
 
 		.googlesitekit-publisher-win__icon {

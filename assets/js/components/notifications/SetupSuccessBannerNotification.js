@@ -194,26 +194,7 @@ function SetupSuccessBannerNotification() {
 				}
 			}
 
-			const anchor = {
-				link: '',
-				label: '',
-			};
-
-			if ( 'pagespeed-insights' === slug ) {
-				anchor.link = '#speed';
-				anchor.label = __(
-					'Jump to the bottom of the dashboard to see how fast your home page is',
-					'google-site-kit'
-				);
-			}
-
-			if (
-				! (
-					winData.description ||
-					winData.learnMore.label ||
-					anchor.label
-				)
-			) {
+			if ( ! winData.description && ! winData.learnMore.label ) {
 				winData.description = __(
 					'Connect more services to see more stats.',
 					'google-site-kit'
@@ -249,8 +230,6 @@ function SetupSuccessBannerNotification() {
 						learnMoreDescription={ winData.learnMore.description }
 						learnMoreURL={ winData.learnMore.url }
 						learnMoreTarget={ winData.learnMore.target }
-						anchorLink={ anchor.link }
-						anchorLinkLabel={ anchor.label }
 					/>
 				</Fragment>
 			);

@@ -24,38 +24,34 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
+import { Cell, Grid, Row } from '../../../../../material-components';
+import { ProgressBar } from 'googlesitekit-components';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
-import { stringToDate } from '../../../../../util';
 import { trackEvent } from '../../../../../util/tracking';
-import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { Cell, Grid, Row } from '../../../../../material-components';
 import useViewContext from '../../../../../hooks/useViewContext';
 import CheckIcon from '../../../../../../svg/icons/check_circle.svg';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( {
-	isDismissed,
-	onSubmitSuccess,
-	children,
-} ) {
+export default function ReminderBanner( props ) {
+	const { isDismissed, onSubmitSuccess, children } = props;
+
 	const hasAnalyticsAccess = useSelect( ( select ) => {
 		if ( isDismissed ) {
 			return undefined;
@@ -85,13 +81,7 @@ export default function ReminderBanner( {
 	);
 
 	const viewContext = useViewContext();
-
-	const referenceDate = stringToDate( referenceDateString );
-
-	const eventCategory =
-		stringToDate( '2023-07-01' ) <= referenceDate
-			? `${ viewContext }_ua-stale-notification`
-			: `${ viewContext }_ga4-reminder-notification`;
+	const eventCategory = `${ viewContext }_ua-stale-notification`;
 
 	useMount( () => {
 		if (
@@ -149,50 +139,15 @@ export default function ReminderBanner( {
 		);
 	}
 
-	let title;
-	let description = __(
-		'Google Analytics 4 is the newest version of Google Analytics. It will replace Universal Analytics on July 1, 2023. After that, Universal Analytics properties will no longer collect new data.',
+	const title = __(
+		'Universal Analytics stopped collecting data on July 1, 2023',
 		'google-site-kit'
 	);
-	let descriptionIcon = null;
 
-	if ( referenceDate < stringToDate( '2023-06-01' ) ) {
-		title = __(
-			'Set up Google Analytics 4 now to join the future of Analytics',
-			'google-site-kit'
-		);
-		if ( hasAnalyticsAccess ) {
-			descriptionIcon = (
-				<InfoIcon
-					height="14"
-					width="14"
-					className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--info"
-				/>
-			);
-		}
-	} else if (
-		stringToDate( '2023-06-01' ) <= referenceDate &&
-		referenceDate < stringToDate( '2023-07-01' )
-	) {
-		const remainingDays = 30 - referenceDate.getDate();
-		title = sprintf(
-			/* translators: %s: Number of days remaining before the user can set up Google Analytics 4 */
-			__(
-				'You only have %d more days to set up Google Analytics 4',
-				'google-site-kit'
-			),
-			remainingDays
-		);
-	} else {
-		title = __(
-			'Universal Analytics stopped collecting data on July 1, 2023',
-			'google-site-kit'
-		);
-		description = __(
-			'Set up Google Analytics 4, the new version of Google Analytics, to continue seeing data in Site Kit.',
-			'google-site-kit'
-		);
-	}
+	const description = __(
+		'Set up Google Analytics 4, the new version of Google Analytics, to continue seeing data in Site Kit.',
+		'google-site-kit'
+	);
 
 	const secondaryPane = (
 		<section>
@@ -230,7 +185,6 @@ export default function ReminderBanner( {
 			<ReminderBannerNoAccess
 				title={ title }
 				description={ description }
-				descriptionIcon={ descriptionIcon }
 				dismissExpires={ getBannerDismissalExpiryTime(
 					referenceDateString
 				) }
