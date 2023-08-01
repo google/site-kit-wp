@@ -233,10 +233,10 @@ final class AdSense extends Module
 			),
 			'adsense_setup_completed_timestamp' => array(
 				'label' => __( 'AdSense setup completed at', 'google-site-kit' ),
-				'value' => date_i18n(
+				'value' => $settings['setupCompletedTimestamp'] ? date_i18n(
 					get_option( 'date_format' ),
 					$settings['setupCompletedTimestamp']
-				),
+				) : __( 'Not available', 'google-site-kit' ),
 				'debug' => $settings['setupCompletedTimestamp'],
 			),
 		);
