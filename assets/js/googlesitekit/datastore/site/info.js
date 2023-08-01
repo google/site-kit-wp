@@ -139,6 +139,7 @@ export const reducer = ( state, { payload, type } ) => {
 				changePluginAutoUpdatesCapacity,
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
+				productBasePaths,
 			} = payload.siteInfo;
 
 			return {
@@ -169,6 +170,7 @@ export const reducer = ( state, { payload, type } ) => {
 					changePluginAutoUpdatesCapacity,
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
+					productBasePaths,
 				},
 			};
 		}
@@ -234,6 +236,7 @@ export const resolvers = {
 			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
+			productBasePaths,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -269,6 +272,7 @@ export const resolvers = {
 			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
+			productBasePaths,
 		} );
 	},
 };
@@ -758,6 +762,15 @@ export const selectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets base paths for products found in WordPress.
+	 *
+	 * @since 1.106.0
+	 *
+	 * @return {Array.<string>} The list of product base paths.
+	 */
+	getProductBasePaths: getSiteInfoProperty( 'productBasePaths' ),
 };
 
 export default {

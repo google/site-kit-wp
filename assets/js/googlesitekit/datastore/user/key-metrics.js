@@ -102,19 +102,30 @@ const baseActions = {
 	 * Saves key metrics settings.
 	 *
 	 * @since 1.103.0
+	 * @since n.e.x.t Accepts an optional `settings` parameter that allows saving additional settings.
 	 *
+	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*saveKeyMetricsSettings() {
+	*saveKeyMetricsSettings( settings = {} ) {
+		invariant(
+			isPlainObject( settings ),
+			'key metric settings should be an object to save.'
+		);
+
 		yield clearError( 'saveKeyMetricsSettings', [] );
 
 		const registry = yield Data.commonActions.getRegistry();
 		const keyMetricsSettings = registry
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
+
 		const { response, error } =
 			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetricsSettings(
-				keyMetricsSettings
+				{
+					...keyMetricsSettings,
+					...settings,
+				}
 			);
 
 		if ( error ) {
@@ -261,7 +272,7 @@ const baseSelectors = {
 	 * Gets whether an individual key metric identified by its slug is
 	 * active or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.106.0
 	 *
 	 * @return {boolean|undefined} True if the key metric widget tile is active, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
@@ -304,6 +315,22 @@ const baseSelectors = {
 	 */
 	getKeyMetricsSettings( state ) {
 		return state.keyMetricsSettings;
+	},
+
+	/**
+	 * Determines whether the key metrics settings are being saved or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the key metrics settings are being saved, otherwise FALSE.
+	 */
+	isSavingKeyMetricsSettings( state ) {
+		// Since isFetchingSaveKeyMetricsSettings holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such request is in progress.
+		return Object.values( state.isFetchingSaveKeyMetricsSettings ).some(
+			Boolean
+		);
 	},
 };
 

@@ -220,7 +220,7 @@ export default function SettingsView() {
 									<p className="googlesitekit-settings-module__meta-item-data">
 										{ createInterpolateElement(
 											__(
-												'Ad blocking recovery only works if you’ve also created and published a recovery message in AdSense. <a>Configure your message</a>',
+												'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
 												'google-site-kit'
 											),
 											{

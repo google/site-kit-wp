@@ -97,24 +97,30 @@ export function isValidDimensions( dimensions ) {
  *
  * @since 1.94.0
  *
- * @param {Object} dimensionFilters The dimension filters to check.
+ * @param {Object} filters The dimension filters to check.
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
  */
-export function isValidDimensionFilters( dimensionFilters ) {
+export function isValidDimensionFilters( filters ) {
 	// Ensure every dimensionFilter key corresponds to a valid dimension.
 	const validType = [ 'string' ];
-	return Object.keys( dimensionFilters ).every(
-		( dimension ) =>
-			( validType.includes( typeof dimensionFilters[ dimension ] ) &&
-				typeof dimension === 'string' ) ||
-			( Array.isArray( dimensionFilters[ dimension ] ) &&
-				Object.keys( dimensionFilters[ dimension ] ).every(
-					( param ) =>
-						validType.includes(
-							typeof dimensionFilters[ dimension ][ param ]
-						) && validType.includes( typeof param )
-				) )
-	);
+	return Object.keys( filters ).every( ( dimension ) => {
+		if ( validType.includes( typeof filters[ dimension ] ) ) {
+			return true;
+		}
+
+		if ( Array.isArray( filters[ dimension ] ) ) {
+			return filters[ dimension ].every( ( param ) =>
+				validType.includes( typeof param )
+			);
+		}
+
+		if ( isPlainObject( filters[ dimension ] ) ) {
+			const props = Object.keys( filters[ dimension ] );
+			return props.includes( 'filterType' ) && props.includes( 'value' );
+		}
+
+		return false;
+	} );
 }
 
 /**
