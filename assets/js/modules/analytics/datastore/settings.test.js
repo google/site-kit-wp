@@ -35,6 +35,7 @@ import {
 	DASHBOARD_VIEW_GA4,
 	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../analytics-4/constants';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
@@ -55,6 +56,7 @@ import {
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
+import { getDateString, stringToDate } from '../../../util';
 import { enabledFeatures, isFeatureEnabled } from '../../../features';
 import ga4Reporting from '../../../feature-tours/ga4-reporting';
 
@@ -1385,6 +1387,10 @@ describe( 'modules/analytics settings', () => {
 		} );
 
 		describe( 'isGA4DashboardView', () => {
+			const date = stringToDate( GA4_AUTO_SWITCH_DATE );
+			date.setDate( date.getDate() + 1 );
+			const dayAfterGA4AutoSwitchDate = getDateString( date );
+
 			// This is necessary to reset the top-level `provideModules` mock.
 			beforeEach( () => {
 				registry = createTestRegistry();
@@ -1492,6 +1498,37 @@ describe( 'modules/analytics settings', () => {
 					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
 				).toBe( true );
 			} );
+
+			it.each( [
+				[ 'on the GA4 auto-switch date', GA4_AUTO_SWITCH_DATE ],
+				[ 'after the GA4 auto-switch date', dayAfterGA4AutoSwitchDate ],
+			] )(
+				'should return true %s, regardless of the dashboard view setting',
+				( _, referenceDate ) => {
+					enabledFeatures.add( 'ga4Reporting' );
+					provideModules( registry, [
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
+					// Set the dashboard view to UA, to verify that the auto-switch date overrides it.
+					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+						dashboardView: DASHBOARD_VIEW_UA,
+					} );
+
+					registry
+						.dispatch( CORE_USER )
+						.setReferenceDate( referenceDate );
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS )
+							.isGA4DashboardView()
+					).toBe( true );
+				}
+			);
 		} );
 
 		describe( 'shouldPromptGA4DashboardView', () => {

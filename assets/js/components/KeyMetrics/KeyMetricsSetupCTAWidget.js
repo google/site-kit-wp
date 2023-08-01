@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,14 +39,18 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { useFeature } from '../../hooks/useFeature';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import {
+	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
+	KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
+} from './constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
 	useTooltipState,
 } from '../AdminMenuTooltip';
-import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
+import { useFeature } from '../../hooks/useFeature';
 const { useDispatch, useSelect } = Data;
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
@@ -79,10 +83,16 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
+
 	const dismissCallback = async () => {
 		showTooltip();
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	};
+
+	const openMetricsSelectionPanel = useCallback( () => {
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+	}, [ setValue ] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -145,7 +155,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 							The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
 							In the future, it will also serve the purpose of adding a track event.
 						*/ }
-						<Link onClick={ () => {} }>
+						<Link onClick={ openMetricsSelectionPanel }>
 							{ __(
 								'I’ll pick metrics myself',
 								'google-site-kit'

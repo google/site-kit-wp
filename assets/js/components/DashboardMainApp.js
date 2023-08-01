@@ -49,6 +49,8 @@ import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
+import DashboardViewIndicator from './DashboardViewIndicator';
+import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_KEY_METRICS,
@@ -60,7 +62,6 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
-import DashboardViewIndicator from './DashboardViewIndicator';
 const { useSelect } = Data;
 
 export default function DashboardMainApp() {
@@ -216,6 +217,8 @@ export default function DashboardMainApp() {
 			/>
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
+
+			{ userInputEnabled && <MetricsSelectionPanel /> }
 		</Fragment>
 	);
 }
