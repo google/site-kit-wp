@@ -110,18 +110,17 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		);
 	}
 
-	const displayProperties = [ ...properties ];
-	if (
-		! ga4ReportingEnabled &&
-		! displayProperties.some(
-			( property ) => property.id === PROPERTY_CREATE
-		)
-	) {
-		displayProperties.push( {
-			id: PROPERTY_CREATE,
-			name: __( 'Set up a new property', 'google-site-kit' ),
-		} );
-	}
+	const displayProperties =
+		ga4ReportingEnabled ||
+		properties.some( ( property ) => property.id === PROPERTY_CREATE )
+			? properties
+			: [
+					...properties,
+					{
+						id: PROPERTY_CREATE,
+						name: __( 'Set up a new property', 'google-site-kit' ),
+					},
+			  ];
 
 	return (
 		<Select

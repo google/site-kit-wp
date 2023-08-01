@@ -116,16 +116,17 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 		);
 	}
 
-	const displayProfiles = [ ...profiles ];
-	if (
-		! ga4ReportingEnabled &&
-		! displayProfiles.some( ( profile ) => profile.id === PROFILE_CREATE )
-	) {
-		displayProfiles.push( {
-			id: PROFILE_CREATE,
-			name: __( 'Set up a new view', 'google-site-kit' ),
-		} );
-	}
+	const displayProfiles =
+		ga4ReportingEnabled ||
+		profiles.some( ( profile ) => profile.id === PROFILE_CREATE )
+			? profiles
+			: [
+					...profiles,
+					{
+						id: PROFILE_CREATE,
+						name: __( 'Set up a new view', 'google-site-kit' ),
+					},
+			  ];
 
 	return (
 		<Select
