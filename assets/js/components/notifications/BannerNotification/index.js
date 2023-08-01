@@ -27,21 +27,20 @@ import { useWindowWidth } from '@react-hook/window-size/throttled';
 /*
  * WordPress dependencies
  */
-import { useEffect, useRef, useState, Fragment } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { isURL } from '@wordpress/url';
 
 /*
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Cell, Row } from '../../../material-components';
+import { Cell } from '../../../material-components';
 import { getStickyHeaderHeightWithoutNav } from '../../../util/scroll';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
 import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import Banner from './Banner';
 import BannerTitle from './BannerTitle';
 import BannerActions from './BannerActions';
-import BannerBlockMarkup from './BannerBlockMarkup';
 import BannerIcon from './BannerIcon';
 import BannerLogo from './BannerLogo';
 import { LEARN_MORE_TARGET } from './constants';
@@ -62,7 +61,6 @@ export * from './constants';
 export default function BannerNotification( props ) {
 	const {
 		badgeLabel,
-		blockData,
 		children,
 		className = '',
 		ctaLabel,
@@ -236,46 +234,16 @@ export default function BannerNotification( props ) {
 
 	const closedClass =
 		! isNavigatingToCTALink && isClosed ? 'is-closed' : 'is-open';
-	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
 	const imageCellSizeProperties = getImageCellSizeProperties( format );
 	const imageCellOrderProperties = getImageCellOrderProperties( format );
 	const contentCellOrderProperties = getContentCellOrderProperties( format );
 	const contentCellSizeProperties = getContentCellSizeProperties( {
 		format,
-		inlineLayout,
 		hasErrorOrWarning: 'win-error' === type || 'win-warning' === type,
 		hasSmallImageSVG: !! SmallImageSVG,
 		hasWinImageSVG: !! WinImageSVG,
 	} );
-
-	const inlineMarkup = (
-		<Fragment>
-			<BannerTitle
-				title={ title }
-				badgeLabel={ badgeLabel }
-				smallWinImageSVGHeight={ smallWinImageSVGHeight }
-				smallWinImageSVGWidth={ smallWinImageSVGWidth }
-				winImageFormat={ format }
-				WinImageSVG={
-					! isMinWidthTablet && showSmallWinImage
-						? WinImageSVG
-						: undefined
-				}
-			/>
-
-			<BannerDescription
-				description={ description }
-				learnMoreURL={ learnMoreURL }
-				learnMoreLabel={ learnMoreLabel }
-				learnMoreTarget={ learnMoreTarget }
-				learnMoreDescription={ learnMoreDescription }
-				onLearnMoreClick={ onLearnMoreClick }
-			/>
-
-			{ children }
-		</Fragment>
-	);
 
 	return (
 		<Banner
@@ -291,11 +259,7 @@ export default function BannerNotification( props ) {
 			ref={ bannerNotificationRef }
 		>
 			{ logo && (
-				<BannerLogo
-					module={ module }
-					moduleName={ moduleName }
-					inlineLayout={ inlineLayout }
-				/>
+				<BannerLogo module={ module } moduleName={ moduleName } />
 			) }
 
 			{ SmallImageSVG && (
@@ -312,27 +276,29 @@ export default function BannerNotification( props ) {
 				{ ...contentCellOrderProperties }
 				className="googlesitekit-publisher-win__content"
 			>
-				{ inlineLayout ? (
-					<Row>
-						<Cell mdSize={ 8 } lgSize={ 5 }>
-							{ inlineMarkup }
-						</Cell>
-						<Cell alignBottom mdSize={ 8 } lgSize={ 7 }>
-							<BannerBlockMarkup
-								blockData={ blockData }
-								inlineLayout={ inlineLayout }
-							/>
-						</Cell>
-					</Row>
-				) : (
-					<Fragment>
-						{ inlineMarkup }
-						<BannerBlockMarkup
-							blockData={ blockData }
-							inlineLayout={ inlineLayout }
-						/>
-					</Fragment>
-				) }
+				<BannerTitle
+					title={ title }
+					badgeLabel={ badgeLabel }
+					smallWinImageSVGHeight={ smallWinImageSVGHeight }
+					smallWinImageSVGWidth={ smallWinImageSVGWidth }
+					winImageFormat={ format }
+					WinImageSVG={
+						! isMinWidthTablet && showSmallWinImage
+							? WinImageSVG
+							: undefined
+					}
+				/>
+
+				<BannerDescription
+					description={ description }
+					learnMoreURL={ learnMoreURL }
+					learnMoreLabel={ learnMoreLabel }
+					learnMoreTarget={ learnMoreTarget }
+					learnMoreDescription={ learnMoreDescription }
+					onLearnMoreClick={ onLearnMoreClick }
+				/>
+
+				{ children }
 
 				<BannerActions
 					ctaLink={ ctaLink }
@@ -384,7 +350,6 @@ BannerNotification.propTypes = {
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
 	learnMoreTarget: PropTypes.oneOf( Object.values( LEARN_MORE_TARGET ) ),
-	blockData: PropTypes.array,
 	WinImageSVG: PropTypes.elementType,
 	SmallImageSVG: PropTypes.elementType,
 	format: PropTypes.string,

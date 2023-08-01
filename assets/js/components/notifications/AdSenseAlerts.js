@@ -78,6 +78,7 @@ function AdSenseAlerts() {
 						type={ severity }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 						isDismissible={ isDismissable || true }
+						logo
 						module="adsense"
 						moduleName={ _x(
 							'AdSense',

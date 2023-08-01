@@ -27,14 +27,10 @@ import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import ModuleIcon from '../../ModuleIcon';
 
 export default function BannerLogo( props ) {
-	const { module, moduleName, inlineLayout } = props;
+	const { module, moduleName } = props;
 
 	return (
-		<Cell
-			size={ 12 }
-			smOrder={ inlineLayout ? 2 : undefined }
-			mdOrder={ inlineLayout ? 1 : undefined }
-		>
+		<Cell size={ 12 }>
 			<div className="googlesitekit-publisher-win__logo">
 				{ module && <ModuleIcon slug={ module } size={ 19 } /> }
 				{ ! module && <GoogleLogoIcon height="34" width="32" /> }
@@ -51,5 +47,4 @@ export default function BannerLogo( props ) {
 BannerLogo.propTypes = {
 	module: PropTypes.string,
 	moduleName: PropTypes.string,
-	inlineLayout: PropTypes.bool,
 };
