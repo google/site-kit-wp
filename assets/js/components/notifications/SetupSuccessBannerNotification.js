@@ -38,12 +38,17 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
+import { getContextScrollTop } from '../../util/scroll';
 import useViewContext from '../../hooks/useViewContext';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
+import Link from '../Link';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const slug = getQueryParameter( 'slug' );
 	const notification = getQueryParameter( 'notification' );
+
+	const breakpoint = useBreakpoint();
 	const viewContext = useViewContext();
 
 	const modules = useSelect( ( select ) =>
@@ -194,7 +199,34 @@ function SetupSuccessBannerNotification() {
 				}
 			}
 
-			if ( ! winData.description && ! winData.learnMore.label ) {
+			if ( 'pagespeed-insights' === slug ) {
+				const anchorLink = '#speed';
+				const onJumpLinkClick = ( e ) => {
+					e.preventDefault();
+
+					global.history.replaceState( {}, '', anchorLink );
+					global.scrollTo( {
+						top: getContextScrollTop( anchorLink, breakpoint ),
+						behavior: 'smooth',
+					} );
+				};
+
+				winData.description = (
+					<Fragment>
+						<p className="googlesitekit-publisher-win__link">
+							<Link
+								href={ anchorLink }
+								onClick={ onJumpLinkClick }
+							>
+								{ __(
+									'Jump to the bottom of the dashboard to see how fast your home page is',
+									'google-site-kit'
+								) }
+							</Link>
+						</p>
+					</Fragment>
+				);
+			} else if ( ! winData.description && ! winData.learnMore.label ) {
 				winData.description = __(
 					'Connect more services to see more stats.',
 					'google-site-kit'
