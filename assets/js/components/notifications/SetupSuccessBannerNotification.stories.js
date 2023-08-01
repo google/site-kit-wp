@@ -76,19 +76,6 @@ ModuleWithDescription.scenario = {
 	label: 'Global/SetupSuccessBannerNotification/ModuleWithDescription',
 };
 
-export const PageSpeedInsights = Template.bind( {} );
-PageSpeedInsights.storyName = 'Authentication Success - Page Speed Insights';
-PageSpeedInsights.parameters = {
-	module: { slug: 'pagespeed-insights' },
-	query: {
-		notification: 'authentication_success',
-		slug: 'pagespeed-insights',
-	},
-};
-PageSpeedInsights.scenario = {
-	label: 'Global/SetupSuccessBannerNotification/PageSpeedInsights',
-};
-
 export const UserInputSuccess = Template.bind( {} );
 UserInputSuccess.storyName = 'User Input Success';
 UserInputSuccess.parameters = {
