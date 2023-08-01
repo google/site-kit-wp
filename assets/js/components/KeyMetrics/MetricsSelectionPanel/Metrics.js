@@ -26,15 +26,20 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
+import useViewOnly from '../../../hooks/useViewOnly';
 import MetricItem from './MetricItem';
 const { useSelect } = Data;
 
 export default function Metrics( { savedMetrics } ) {
+	const isViewOnly = useViewOnly();
+
 	const availableMetrics = useSelect( ( select ) => {
-		const { isModuleConnected } = select( CORE_MODULES );
+		const { getModule } = select( CORE_MODULES );
 		const { getWidget } = select( CORE_WIDGETS );
+		const { canViewSharedModule } = select( CORE_USER );
 
 		return Object.keys( KEY_METRICS_WIDGETS )
 			.sort(
@@ -48,9 +53,23 @@ export default function Metrics( { savedMetrics } ) {
 					return acc;
 				}
 
-				const isMetricAvailable = widget.modules.every( ( module ) =>
-					isModuleConnected( module )
-				);
+				const isMetricAvailable = widget.modules.every( ( slug ) => {
+					const module = getModule( slug );
+
+					if ( ! module || ! module.connected ) {
+						return false;
+					}
+
+					if (
+						isViewOnly &&
+						module.shareable &&
+						! canViewSharedModule( slug )
+					) {
+						return false;
+					}
+
+					return true;
+				} );
 
 				if ( ! isMetricAvailable ) {
 					return acc;

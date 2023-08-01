@@ -29,6 +29,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
+	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -39,6 +40,7 @@ import {
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 
 describe( 'MetricsSelectionPanel', () => {
@@ -216,6 +218,52 @@ describe( 'MetricsSelectionPanel', () => {
 					'.googlesitekit-km-selection-panel-metrics__metric-item:first-child label'
 				)
 			).toHaveTextContent( 'Top converting traffic source' );
+		} );
+
+		it( 'should not list metrics dependent on modules that a view-only user does not have access to', () => {
+			provideKeyMetrics( registry );
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+
+			// Provide shared access to Search Console but not to GA4.
+			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+				'googlesitekit_read_shared_module_data::["analytics-4"]': false,
+				'googlesitekit_read_shared_module_data::["search-console"]': true,
+			} );
+
+			render( <MetricsSelectionPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			} );
+
+			// Verify that a metric dependent on GA4 isn't listed.
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-metrics'
+				)
+			).not.toHaveTextContent( 'Loyal visitors' );
+
+			// Verify that a metric dependent on Search Console is listed.
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-metrics'
+				)
+			).toHaveTextContent( 'How people find your site' );
 		} );
 	} );
 

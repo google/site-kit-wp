@@ -35,6 +35,7 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
+import useViewOnly from '../../../hooks/useViewOnly';
 import SideSheet from '../../SideSheet';
 import Header from './Header';
 import Footer from './Footer';
@@ -42,6 +43,8 @@ import Metrics from './Metrics';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
+	const isViewOnly = useViewOnly();
+
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
@@ -52,22 +55,43 @@ export default function MetricsSelectionPanel() {
 			return [];
 		}
 
-		const { isModuleConnected } = select( CORE_MODULES );
+		const { getModule } = select( CORE_MODULES );
 		const { getWidget } = select( CORE_WIDGETS );
+		const { canViewSharedModule } = select( CORE_USER );
 
 		// Verify that the metrics are available, i.e. the modules that they depend
-		// on are connected. This helps prevent metrics with disconnected dependencies
-		// appear in the selection panel.
-		return metrics.filter( ( slug ) => {
-			const widget = getWidget( slug );
+		// on are connected and a view-only user has access to it. This helps prevent
+		// metrics with disconnected dependencies appear in the selection panel.
+		return metrics.filter( ( metric ) => {
+			const widget = getWidget( metric );
 
 			if ( ! widget ) {
 				return false;
 			}
 
-			return widget.modules.every( ( module ) =>
-				isModuleConnected( module )
-			);
+			const isMetricAvailable = widget.modules.every( ( slug ) => {
+				const module = getModule( slug );
+
+				if ( ! module || ! module.connected ) {
+					return false;
+				}
+
+				if (
+					isViewOnly &&
+					module.shareable &&
+					! canViewSharedModule( slug )
+				) {
+					return false;
+				}
+
+				return true;
+			} );
+
+			if ( ! isMetricAvailable ) {
+				return false;
+			}
+
+			return true;
 		} );
 	} );
 
