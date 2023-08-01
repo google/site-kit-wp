@@ -93,7 +93,7 @@ export default function MetricsSelectionPanel() {
 		>
 			<Header />
 			<Metrics savedMetrics={ savedMetrics } />
-			<Footer />
+			<Footer savedMetrics={ savedMetrics } />
 		</SideSheet>
 	);
 }
