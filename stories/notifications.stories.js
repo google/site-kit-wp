@@ -131,7 +131,6 @@ storiesOf( 'Global/Notifications', module )
 				ctaLink="http://google.com"
 				ctaLabel={ __( 'Validate', 'google-site-kit' ) }
 				type="win-warning"
-				pageIndex="First detected: 2/13/18"
 			/>
 		),
 		{
@@ -159,7 +158,6 @@ storiesOf( 'Global/Notifications', module )
 				ctaLink="http://google.com"
 				ctaLabel={ __( 'Validate', 'google-site-kit' ) }
 				type="win-warning"
-				pageIndex="First detected: 2/13/18"
 			/>
 		),
 		{

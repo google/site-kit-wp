@@ -95,7 +95,6 @@ export default function BannerNotification( props ) {
 		onView,
 		onDismiss,
 		onLearnMoreClick,
-		pageIndex,
 		showOnce = false,
 		SmallImageSVG,
 		title,
@@ -265,29 +264,21 @@ export default function BannerNotification( props ) {
 		hasWinImageSVG: !! WinImageSVG,
 	} );
 
-	const learnMoreAndPageIndex = (
-		<Fragment>
-			{ learnMoreLabel && (
-				<Fragment>
-					<Link
-						onClick={ handleLearnMore }
-						href={ learnMoreURL }
-						external={
-							learnMoreTarget === LEARN_MORE_TARGET.EXTERNAL
-						}
-					>
-						{ learnMoreLabel }
-					</Link>
-					{ learnMoreDescription }
-				</Fragment>
-			) }
-			{ pageIndex && (
-				<span className="googlesitekit-publisher-win__detect">
-					{ pageIndex }
-				</span>
-			) }
-		</Fragment>
-	);
+	let learnMoreAndPageIndex;
+	if ( learnMoreLabel ) {
+		learnMoreAndPageIndex = (
+			<Fragment>
+				<Link
+					onClick={ handleLearnMore }
+					href={ learnMoreURL }
+					external={ learnMoreTarget === LEARN_MORE_TARGET.EXTERNAL }
+				>
+					{ learnMoreLabel }
+				</Link>
+				{ learnMoreDescription }
+			</Fragment>
+		);
+	}
 
 	const inlineMarkup = (
 		<Fragment>
@@ -455,7 +446,6 @@ BannerNotification.propTypes = {
 	logo: PropTypes.bool,
 	module: PropTypes.string,
 	moduleName: PropTypes.string,
-	pageIndex: PropTypes.string,
 	dismissExpires: PropTypes.number,
 	showOnce: PropTypes.bool,
 	onCTAClick: PropTypes.func,
