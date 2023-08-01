@@ -51,7 +51,7 @@ export default function ConnectAdSenseCTATileWidget( { Widget, WidgetNull } ) {
 		keyMetrics?.includes( KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT )
 	) {
 		return (
-			<Widget>
+			<Widget noPadding>
 				<ConnectModuleCTATile moduleSlug="adsense" />
 			</Widget>
 		);

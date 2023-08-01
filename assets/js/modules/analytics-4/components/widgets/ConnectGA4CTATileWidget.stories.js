@@ -29,7 +29,7 @@ import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 const Template = () => (
-	<Widget widgetSlug="some-widget">
+	<Widget noPadding widgetSlug="some-widget">
 		<ConnectGA4CTATileWidget widgetSlug="some-widget" />
 	</Widget>
 );
