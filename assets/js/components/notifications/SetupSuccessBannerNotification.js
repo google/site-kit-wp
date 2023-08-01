@@ -212,19 +212,14 @@ function SetupSuccessBannerNotification() {
 				};
 
 				winData.description = (
-					<Fragment>
-						<p className="googlesitekit-publisher-win__link">
-							<Link
-								href={ anchorLink }
-								onClick={ onJumpLinkClick }
-							>
-								{ __(
-									'Jump to the bottom of the dashboard to see how fast your home page is',
-									'google-site-kit'
-								) }
-							</Link>
-						</p>
-					</Fragment>
+					<p className="googlesitekit-publisher-win__link">
+						<Link href={ anchorLink } onClick={ onJumpLinkClick }>
+							{ __(
+								'Jump to the bottom of the dashboard to see how fast your home page is',
+								'google-site-kit'
+							) }
+						</Link>
+					</p>
 				);
 			} else if ( ! winData.description && ! winData.learnMore.label ) {
 				winData.description = __(
