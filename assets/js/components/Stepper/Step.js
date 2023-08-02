@@ -34,11 +34,11 @@ export default function Step( { children, title, stepStatus } ) {
 			>
 				{ title }
 			</h2>
-			{ stepStatus === STEP_STATUS.ACTIVE && (
-				<div className="googlesitekit-stepper__step-content">
-					{ children }
-				</div>
-			) }
+			<div
+				className={ `googlesitekit-stepper__step-content googlesitekit-stepper__step-content--${ stepStatus }` }
+			>
+				{ children }
+			</div>
 		</div>
 	);
 }
