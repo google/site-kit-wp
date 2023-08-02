@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,10 +37,12 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
 import { MetricTileTable } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
-const { useSelect, useInViewSelect } = Data;
+const { useSelect, useInViewSelect, useDispatch } = Data;
 
 export default function PopularProductsWidget( props ) {
 	const { Widget, WidgetNull } = props;
@@ -54,6 +56,12 @@ export default function PopularProductsWidget( props ) {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
+
+	const { setValue } = useDispatch( CORE_UI );
+
+	const openMetricsSelectionPanel = useCallback( () => {
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+	}, [ setValue ] );
 
 	const reportOptions = {
 		...dates,
@@ -136,7 +144,7 @@ export default function PopularProductsWidget( props ) {
 			'google-site-kit'
 		),
 		{
-			a: <Link href="#" external hideExternalIndicator />,
+			a: <Link onClick={ openMetricsSelectionPanel } />,
 		}
 	);
 
