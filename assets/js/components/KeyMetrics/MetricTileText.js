@@ -25,9 +25,9 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import ChangeBadge from '../ChangeBadge';
-import PreviewBlock from '../PreviewBlock';
 import { expandNumFmtOptions } from '../../util';
 import { Fragment } from 'react';
+import MetricTileLoader from './MetricTileLoader';
 
 export default function MetricTileText( {
 	Widget,
@@ -48,7 +48,7 @@ export default function MetricTileText( {
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && <PreviewBlock width="100%" height="84px" /> }
+					{ loading && <MetricTileLoader /> }
 					{ ! loading && (
 						<Fragment>
 							<div className="googlesitekit-km-widget-tile__metric">

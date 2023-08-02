@@ -110,15 +110,17 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		);
 	}
 
-	if (
-		! ga4ReportingEnabled &&
-		! properties.some( ( property ) => property.id === PROPERTY_CREATE )
-	) {
-		properties.push( {
-			id: PROPERTY_CREATE,
-			name: __( 'Set up a new property', 'google-site-kit' ),
-		} );
-	}
+	const displayProperties =
+		ga4ReportingEnabled ||
+		properties.some( ( property ) => property.id === PROPERTY_CREATE )
+			? properties
+			: [
+					...properties,
+					{
+						id: PROPERTY_CREATE,
+						name: __( 'Set up a new property', 'google-site-kit' ),
+					},
+			  ];
 
 	return (
 		<Select
@@ -129,7 +131,7 @@ export default function PropertySelect( { hasModuleAccess } ) {
 			enhanced
 			outlined
 		>
-			{ properties.map(
+			{ displayProperties.map(
 				(
 					// eslint-disable-next-line sitekit/acronym-case
 					{ id, name, internalWebPropertyId },

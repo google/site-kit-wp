@@ -308,7 +308,7 @@ class Request extends Report {
 	/**
 	 * Parses dimension filters and returns a filter expression that should be added to the report request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.106.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression to use with the report request.
@@ -343,7 +343,7 @@ class Request extends Report {
 	/**
 	 * Parses and returns a single dimension filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.106.0
 	 *
 	 * @param string $dimension_name The dimension name.
 	 * @param mixed  $dimension_value The dimension fileter settings.

@@ -18,7 +18,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\StringFilter as Go
 /**
  * Class for parsing the dimension string filter.
  *
- * @since n.e.x.t
+ * @since 1.106.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class String_Filter implements Filter {
 	/**
 	 * Converts the dimension filter into the GA4 compatible dimension filter expression.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.106.0
 	 *
 	 * @param string $dimension_name The dimension name.
 	 * @param mixed  $dimension_value The dimension filter value.
@@ -77,7 +77,7 @@ class String_Filter implements Filter {
 	/**
 	 * Composes individual filter expression and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.106.0
 	 *
 	 * @param string $dimension_name The dimension name.
 	 * @param string $match_type The dimension filter match type.

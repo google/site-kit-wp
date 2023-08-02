@@ -25,7 +25,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { Tooltip } from 'googlesitekit-components';
-import PreviewBlock from '../PreviewBlock';
+import MetricTileLoader from './MetricTileLoader';
 import InfoIcon from '../../../svg/icons/info-green.svg';
 
 export default function MetricTileTable( props ) {
@@ -108,13 +108,7 @@ export default function MetricTileTable( props ) {
 					) }
 				</div>
 				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && (
-						<PreviewBlock
-							className="googlesitekit-km-widget-tile__table"
-							width="100%"
-							height="65px"
-						/>
-					) }
+					{ loading && <MetricTileLoader /> }
 					{ ! loading && (
 						<div className="googlesitekit-km-widget-tile__table">
 							{ tileBody }

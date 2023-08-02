@@ -31,7 +31,7 @@ import { Fragment } from '@wordpress/element';
  */
 import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
-import PreviewBlock from '../PreviewBlock';
+import MetricTileLoader from './MetricTileLoader';
 
 export default function MetricTileNumeric( props ) {
 	const {
@@ -54,7 +54,7 @@ export default function MetricTileNumeric( props ) {
 					{ title }
 				</h3>
 				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && <PreviewBlock width="100%" height="68px" /> }
+					{ loading && <MetricTileLoader /> }
 					{ ! loading && (
 						<Fragment>
 							<div className="googlesitekit-km-widget-tile__metric-change-container">

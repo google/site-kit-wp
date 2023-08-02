@@ -175,7 +175,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 						<p>
 							{ createInterpolateElement(
 								__(
-									'Display a message to give site visitors with an ad blocker the option to allow ads on your site. Site Kit will place an ad blocking recovery tag on your site. <a>Learn more</a>',
+									'Display a message to give site visitors with an ad blocker the option to allow ads on your site. <a>Learn more</a>',
 									'google-site-kit'
 								),
 								{
