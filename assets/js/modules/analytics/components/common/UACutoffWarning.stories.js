@@ -21,6 +21,7 @@
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { UA_CUTOFF_DATE } from '../../../../modules/analytics/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../../../modules/analytics-4/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import UACutoffWarning from './UACutoffWarning';
@@ -33,13 +34,27 @@ Default.parameters = {
 	features: [ 'ga4Reporting' ],
 };
 Default.scenario = {
-	label: 'Modules/Analytics/Components/UACutoffWarning',
+	label: 'Modules/Analytics/Components/UACutoffWarning/Default',
+};
+
+export const PostGA4AutoSwitch = Template.bind( {} );
+PostGA4AutoSwitch.storyName = 'PostGA4AutoSwitch';
+PostGA4AutoSwitch.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+PostGA4AutoSwitch.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).setReferenceDate( GA4_AUTO_SWITCH_DATE );
+	},
+};
+PostGA4AutoSwitch.scenario = {
+	label: 'Modules/Analytics/Components/UACutoffWarning/PostGA4AutoSwitch',
 };
 
 export default {
 	title: 'Modules/Analytics/Components/UACutoffWarning',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -57,6 +72,9 @@ export default {
 				registry
 					.dispatch( CORE_USER )
 					.setReferenceDate( UA_CUTOFF_DATE );
+
+				// Call story-specific setup.
+				args.setupRegistry?.( registry );
 			};
 
 			return (

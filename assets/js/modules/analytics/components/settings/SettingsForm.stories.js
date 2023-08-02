@@ -21,12 +21,15 @@
  */
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DASHBOARD_VIEW_GA4,
 	FORM_SETUP,
 	MODULES_ANALYTICS,
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../..//analytics-4/constants';
 import { createBuildAndReceivers } from '../../../../modules/tagmanager/datastore/__factories__/utils';
 import {
 	provideModules,
@@ -36,7 +39,6 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 
 const account = fixtures.accountsPropertiesProfiles.accounts[ 0 ];
 const properties = [
@@ -481,6 +483,34 @@ WithDashboardViewLabel.decorators = [
 WithDashboardViewLabel.scenario = {
 	label: 'Modules/Analytics/Settings/SettingsEdit/WithDashboardViewLabel',
 	delay: 250,
+};
+
+export const PostGA4AutoSwitch = Template.bind( null );
+PostGA4AutoSwitch.storyName = 'Post GA4 auto-switch';
+PostGA4AutoSwitch.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+PostGA4AutoSwitch.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+PostGA4AutoSwitch.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( CORE_USER )
+				.setReferenceDate( GA4_AUTO_SWITCH_DATE );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+PostGA4AutoSwitch.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/PostGA4AutoSwitch',
 };
 
 export default {
