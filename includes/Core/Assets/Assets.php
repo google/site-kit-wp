@@ -1073,6 +1073,10 @@ final class Assets {
 	 * @return array The array of product base paths.
 	 */
 	private function get_product_base_paths() {
+		if ( ! Feature_Flags::enabled( 'userInput' ) ) {
+			return array();
+		}
+
 		// Return early if permalinks are not used.
 		if ( ! get_option( 'permalink_structure' ) ) {
 			return array();
