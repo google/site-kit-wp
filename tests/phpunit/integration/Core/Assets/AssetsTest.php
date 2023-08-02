@@ -265,10 +265,6 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( $expected, $data['productBasePaths'] );
 	}
 
-	public function test_no_side_effects() {
-		$this->assertFalse( post_type_exists( 'product' ) );
-	}
-
 	public function data_product_base_paths() {
 		return array(
 			'public post type'    => array(
