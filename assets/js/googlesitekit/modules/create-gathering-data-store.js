@@ -50,7 +50,7 @@ const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
  *                                               This is a function that should return a boolean, or undefined while resolving.
  *                                               Since logic to determine data availability is different for every module,
  *                                               this selector must be provided by the module. If the data availability can
- * 												 not be determined, the selector should return null.
+ *                                               not be determined, the selector should return null.
  * @return {Object} The gathering data store object.
  */
 export const createGatheringDataStore = (
@@ -186,7 +186,7 @@ export const createGatheringDataStore = (
 
 			if ( dataAvailability === null ) {
 				yield receiveError(
-					'Unable to determine gathering data state.',
+					{ message: 'Unable to determine gathering data state.' },
 					'isGatheringData',
 					[]
 				);
@@ -205,9 +205,9 @@ export const createGatheringDataStore = (
 		 * @since 1.96.0
 		 * @since n.e.x.t Returns null if the data availability can not be determined.
 		 *
-		 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE.
-		 * 							   If the request is still being resolved, returns undefined.
-		 * 							   If the data availability can not be determined, returns null.
+		 * @return {boolean|undefined|null} Returns TRUE if data is available, otherwise FALSE.
+		 *                                  If the request is still being resolved, returns undefined.
+		 *                                  If the data availability can not be determined, returns null.
 		 */
 		selectDataAvailability,
 

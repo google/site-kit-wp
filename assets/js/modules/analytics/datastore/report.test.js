@@ -390,6 +390,9 @@ describe( 'modules/analytics report', () => {
 					.getErrorForSelector( 'isGatheringData' );
 
 				expect( error ).not.toBeUndefined();
+				expect( error.message ).toBe(
+					'Unable to determine gathering data state.'
+				);
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBe( true );

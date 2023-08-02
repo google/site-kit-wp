@@ -49,6 +49,34 @@ import {
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
+/**
+ * Returns report args for the zero data report.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select The select function of the registry.
+ * @return {Object} Report args.
+ */
+const getZeroDataReportArgs = ( select ) => {
+	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} );
+
+	const args = {
+		dimensions: [ 'date' ],
+		metrics: [ { name: 'totalUsers' } ],
+		startDate,
+		endDate,
+	};
+
+	const url = select( CORE_SITE ).getCurrentEntityURL();
+	if ( url ) {
+		args.url = url;
+	}
+
+	return args;
+};
+
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
@@ -121,25 +149,11 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
-		// Disable reason: select needs to be called here or it will never run.
+		// Disable reason: This needs to be run here in order for the report to be resolved.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
 
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'date' ],
-			metrics: [ { name: 'totalUsers' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
+		const args = getZeroDataReportArgs( select );
 
 		const hasResolvedReport = select(
 			MODULES_ANALYTICS_4
@@ -346,24 +360,10 @@ const baseSelectors = {
 	 * @since n.e.x.t Returns `undefined` if the underlying report errors.
 	 *
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`.
-	 *                             Returns `undefined` while resolving or in the event of an error.
+	 *                             Returns `undefined` while resolving.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'date' ],
-			metrics: [ { name: 'totalUsers' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
+		const args = getZeroDataReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -380,7 +380,7 @@ const baseSelectors = {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ args ] );
 
-		// If there is an error, we aasume it's a zero report.
+		// If there is an error, we assume it's a zero report.
 		if ( hasReportError ) {
 			return true;
 		}

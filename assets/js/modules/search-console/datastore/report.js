@@ -40,6 +40,36 @@ import { isZeroReport } from '../util';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
+/**
+ * Returns report args for the zero data report.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select The select function of the registry.
+ * @return {Object} Report args.
+ */
+const getZeroDataReportArgs = ( select ) => {
+	const url = select( CORE_SITE ).getCurrentEntityURL();
+	const { compareStartDate: startDate, endDate } = select(
+		CORE_USER
+	).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} );
+
+	const args = {
+		startDate,
+		endDate,
+		dimensions: 'date',
+	};
+
+	if ( url ) {
+		args.url = url;
+	}
+
+	return args;
+};
+
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	storeName: MODULES_SEARCH_CONSOLE,
@@ -88,24 +118,7 @@ const gatheringDataStore = createGatheringDataStore( 'search-console', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } = select(
-			CORE_USER
-		).getDateRangeDates( {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const reportArgs = {
-			startDate,
-			endDate,
-			dimensions: 'date',
-		};
-
-		if ( url ) {
-			reportArgs.url = url;
-		}
-
+		const reportArgs = getZeroDataReportArgs( select );
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const report = select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs );
@@ -120,6 +133,7 @@ const gatheringDataStore = createGatheringDataStore( 'search-console', {
 		const hasReportError = select(
 			MODULES_SEARCH_CONSOLE
 		).getErrorForSelector( 'getReport', [ reportArgs ] );
+
 		// If there is an error, return `null` since we don't know if there is data or not.
 		if ( hasReportError || ! Array.isArray( report ) ) {
 			return null;
@@ -185,25 +199,6 @@ const baseSelectors = {
 	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const rangeArgs = {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } =
-			select( CORE_USER ).getDateRangeDates( rangeArgs );
-
-		const args = {
-			dimensions: 'date',
-			startDate,
-			endDate,
-		};
-
-		if ( url ) {
-			args.url = url;
-		}
-
 		const isGatheringData = select(
 			MODULES_SEARCH_CONSOLE
 		).isGatheringData();
@@ -215,6 +210,8 @@ const baseSelectors = {
 		if ( isGatheringData === true ) {
 			return true;
 		}
+
+		const args = getZeroDataReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
