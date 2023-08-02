@@ -156,8 +156,9 @@
 	max-width: 160px;
 	padding: 12px;
 
-	> a {
+	> button {
 		background: none;
+		border: none;
 		color: $c-surfaces-inverse-on-surface;
 		padding-right: 0;
 		text-decoration: underline;
