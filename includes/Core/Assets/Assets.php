@@ -1092,7 +1092,7 @@ final class Assets {
 			$permastruct               = $wp_rewrite->get_extra_permastruct( 'product' );
 			$permalink_template        = home_url( $permastruct );
 			$product_url_path          = URL::parse( $permalink_template, PHP_URL_PATH );
-			list( $product_base_path ) = explode( '%product%', $product_url_path, 2 ) + array( '' );
+			list( $product_base_path ) = explode( '%product%', $product_url_path, 2 );
 			$product_base_paths[]      = $product_base_path;
 		}
 
