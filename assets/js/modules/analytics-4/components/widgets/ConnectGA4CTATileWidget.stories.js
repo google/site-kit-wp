@@ -24,15 +24,15 @@ import {
 	provideModules,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import Widget from '../../../../googlesitekit/widgets/components/Widget';
 import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-const Template = () => (
-	<Widget noPadding widgetSlug="some-widget">
-		<ConnectGA4CTATileWidget widgetSlug="some-widget" />
-	</Widget>
-);
+const WidgetWithComponentProps = withWidgetComponentProps(
+	'keyMetricsConnectAdSenseCTATile'
+)( ConnectGA4CTATileWidget );
+
+const Template = () => <WidgetWithComponentProps />;
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConnectGA4CTATileWidget';

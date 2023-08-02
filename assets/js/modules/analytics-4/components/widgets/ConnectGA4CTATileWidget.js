@@ -22,25 +22,29 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { useMemo } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
 import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
 
-export default function ConnectGA4CTATileWidget( { widgetSlug } ) {
-	// Note: `analytics` is used as the slug here since GA4 "depends" on it.
-	const metadata = useMemo( () => ( { moduleSlug: 'analytics' } ), [] );
+// Note: `analytics` is used as the slug here since GA4 "depends" on it.
+const metadata = { moduleSlug: 'analytics' };
 
+export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
 	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );
 
-	return <ConnectModuleCTATile moduleSlug="analytics" />;
+	// Note that we need to render the Widget component as a wrapper here so this component will display
+	// correctly when used as a FallbackComponent for the whenActive HOC. Conversely, when ConnectModuleCTATile
+	// is rendered as an OverrideComponent in WidgetRenderer, it is wrapped with a Widget component - the net
+	// result being the ConnectModuleCTATile is correctly wrapped in both cases.
+	return (
+		<Widget>
+			<ConnectModuleCTATile { ...metadata } />
+		</Widget>
+	);
 }
 
 ConnectGA4CTATileWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
 	widgetSlug: PropTypes.string.isRequired,
 };

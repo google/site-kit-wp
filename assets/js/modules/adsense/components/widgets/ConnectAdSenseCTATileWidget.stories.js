@@ -20,12 +20,8 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import {
-	provideKeyMetrics,
-	provideModules,
-} from '../../../../../../tests/js/utils';
+import { provideModules } from '../../../../../../tests/js/utils';
 import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
-import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
@@ -58,9 +54,6 @@ export default {
 						Icon: AdSenseIcon,
 					},
 				] );
-				provideKeyMetrics( registry, {
-					widgetSlugs: [ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ],
-				} );
 			};
 
 			return (

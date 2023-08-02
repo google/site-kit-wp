@@ -27,6 +27,8 @@
 			align-items: center;
 			display: flex;
 			flex: 1;
+
+			// TODO: Update the padding once Sigal has confirmed the design.
 			padding: $grid-gap-phone;
 
 			@media (min-width: $bp-tablet) {
