@@ -228,6 +228,9 @@ $c-setup-analytics-notice-text: $c-cape-cod;
 $c-search-funnel-analytics-cta-bg: $c-surfaces-surface-1;
 $c-search-funnel-analytics-cta-icon: $c-silver-2;
 
+// Overlay
+$c-overlay: rgba($c-black, 0.6);
+
 // Google MDC Theme Overrides
 $mdc-theme-primary: $c-content-primary;
 $mdc-theme-secondary: $c-brand;
@@ -326,4 +329,6 @@ $max-width-settings-notice-content: 1098px;
  */
 
 // Ensures header does not interfere with important wp dashboard menu elements.
+$z-index-sk-side-sheet: 10000;
+$z-index-sk-side-sheet-overlay: 9990;
 $z-index-sk-header: 9980;

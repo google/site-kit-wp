@@ -11,11 +11,15 @@ exports[`TopCitiesWidget renders correctly with the expected metrics 1`] = `
       <div
         class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
       >
-        <h3
-          class="googlesitekit-km-widget-tile__title"
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
         >
-          Top cities driving traffic
-        </h3>
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Top cities driving traffic
+          </h3>
+        </div>
         <div
           class="googlesitekit-km-widget-tile__body"
         >
