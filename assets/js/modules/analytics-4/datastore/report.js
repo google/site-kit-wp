@@ -357,10 +357,9 @@ const baseSelectors = {
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
 	 * @since 1.95.0
-	 * @since n.e.x.t Returns `undefined` if the underlying report errors.
+	 * @since n.e.x.t Returns `true` if the report request has an error to be consistent with `hasZeroData` selectors of other modules.
 	 *
-	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`.
-	 *                             Returns `undefined` while resolving.
+	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
 		const args = getZeroDataReportArgs( select );
