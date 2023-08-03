@@ -20,7 +20,14 @@
  * Internal dependencies
  */
 import AdBlockingRecoveryCTA from './AdBlockingRecoveryCTA';
-import { render, provideModules } from '../../../../../../tests/js/test-utils';
+import {
+	render,
+	provideModules,
+	act,
+	fireEvent,
+	provideSiteInfo,
+	createTestRegistry,
+} from '../../../../../../tests/js/test-utils';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
@@ -31,8 +38,24 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
+import * as tracking from '../../../../util/tracking';
+import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdBlockingRecoveryCTA', () => {
+	let testRegistry;
+
+	mockLocation();
+
+	beforeEach( () => {
+		mockTrackEvent.mockClear();
+		testRegistry = createTestRegistry();
+	} );
+
 	it.each( [
 		[
 			'Adsense account status is not ready',
@@ -69,6 +92,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			existingAdBlockingRecoveryTag = null
 		) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
+				registry: testRegistry,
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -99,11 +123,15 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			expect( container.textContent ).not.toContain(
 				'Ad blocking recovery'
 			);
+
+			// If the CTA is not rendered, no tracking event should fire.
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
 		}
 	);
 
 	it( 'should render the CTA when Ad Blocking Recovery is not set up', () => {
 		const { container } = render( <AdBlockingRecoveryCTA />, {
+			registry: testRegistry,
 			setupRegistry: ( registry ) => {
 				provideModules( registry, [
 					{
@@ -121,6 +149,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 					.dispatch( MODULES_ADSENSE )
 					.receiveGetExistingAdBlockingRecoveryTag( null );
 			},
+			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
 		expect(
@@ -133,5 +162,57 @@ describe( 'AdBlockingRecoveryCTA', () => {
 		expect( container.textContent ).toContain(
 			'Start recovering revenue lost from ad blockers by deploying an ad blocking recovery message through Site Kit.'
 		);
+
+		// The tracking event should fire when the widget is rendered.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_adsense-abr-cta-widget',
+			'view_notification'
+		);
+	} );
+
+	it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
+		const { container } = render( <AdBlockingRecoveryCTA />, {
+			registry: testRegistry,
+			setupRegistry: ( registry ) => {
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+					accountStatus: ACCOUNT_STATUS_READY,
+					siteStatus: SITE_STATUS_READY,
+					adBlockingRecoverySetupStatus: '',
+				} );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetExistingAdBlockingRecoveryTag( null );
+			},
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		const abrURL = testRegistry
+			.select( CORE_SITE )
+			.getAdminURL( 'googlesitekit-ad-blocking-recovery' );
+
+		// Reset the mockTrackEvent mock as we don't want to track the event for the initial render.
+		mockTrackEvent.mockClear();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( container.querySelector( 'button.mdc-button' ) );
+		} );
+
+		// The tracking event should fire when the widget is rendered.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_adsense-abr-cta-widget',
+			'confirm_notification'
+		);
+
+		expect( global.location.assign ).toHaveBeenCalled();
+		expect( global.location.assign ).toHaveBeenCalledWith( abrURL );
 	} );
 } );
