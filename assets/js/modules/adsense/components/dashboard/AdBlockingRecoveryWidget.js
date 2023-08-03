@@ -250,6 +250,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 					</div>
 
 					<BannerActions
+						ctaLink="#"
 						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 						ctaCallback={ handleCTAClick }
 						dismissCallback={ handleDismissClick }
