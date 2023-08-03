@@ -27,12 +27,10 @@
 			align-items: center;
 			display: flex;
 			flex: 1;
-
-			// TODO: Update the padding once Sigal has confirmed the design.
-			padding: $grid-gap-phone;
+			padding: $grid-gap-phone 0;
 
 			@media (min-width: $bp-tablet) {
-				padding: $grid-gap-desktop;
+				padding: $grid-gap-desktop 0;
 			}
 
 			.googlesitekit-km-connect-module-cta-tile__icon {
