@@ -21,7 +21,9 @@
  */
 import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
 import {
+	act,
 	createTestRegistry,
+	fireEvent,
 	provideModules,
 	provideSiteInfo,
 	render,
@@ -30,11 +32,17 @@ import {
 	MODULES_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 } from '../../modules/adsense/datastore/constants';
+import * as tracking from '../../util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdBlockingRecoveryNotification', () => {
 	let registry;
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideModules( registry, [
@@ -62,19 +70,40 @@ describe( 'AdBlockingRecoveryNotification', () => {
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
+
+		// If the notification is not rendered, no tracking event should fire.
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should render notification otherwise', () => {
+	it( 'should render notification otherwise', async () => {
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.setAdBlockingRecoverySetupStatus(
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
 			);
 
-		const { container } = render( <AdBlockingRecoveryNotification />, {
-			registry,
-		} );
+		const { container, getByRole } = render(
+			<AdBlockingRecoveryNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		expect( container.childElementCount ).toBe( 1 );
+
+		// TODO: The `view_notification` event is not firing in this test because it depends on
+		// intersaction observer, which is not easy to mock.
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /Ok, got it!/i } ) );
+		} );
+
+		// The tracking event should fire when the notification is confirmed.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_adsense-abr-success-notification',
+			'confirm_notification'
+		);
 	} );
 } );
