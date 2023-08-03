@@ -20,16 +20,10 @@
  * Internal dependencies
  */
 import {
-	freezeFetch,
 	provideModules,
+	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { provideKeyMetrics } from '../../../../../../tests/js/utils';
-import {
-	CORE_USER,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-} from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
@@ -38,57 +32,10 @@ describe( 'ConnectAdSenseCTATileWidget', () => {
 		'keyMetricsConnectAdSenseCTATile'
 	)( ConnectAdSenseCTATileWidget );
 
-	const coreModileListEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/modules/data/list'
-	);
-
-	const coreKeyMetricsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/key-metrics'
-	);
-
-	it( 'should render nothing when module list is not yet available', () => {
-		freezeFetch( coreModileListEndpointRegExp );
-
-		const { container } = render( <WidgetWithComponentProps /> );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should render nothing when `adsense` is connected', () => {
-		const { container } = render( <WidgetWithComponentProps />, {
-			setupRegistry: ( registry ) =>
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] ),
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should render nothing when key metrics settings have not yet loaded', () => {
-		freezeFetch( coreKeyMetricsEndpointRegExp );
-
-		const { container } = render( <WidgetWithComponentProps />, {
-			setupRegistry: ( registry ) =>
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: false,
-						connected: false,
-					},
-				] ),
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should render nothing if there are no key metrics widgets', () => {
+	it( 'should render the Connect AdSense CTA tile', () => {
 		const { container } = render( <WidgetWithComponentProps />, {
 			setupRegistry: ( registry ) => {
+				provideUserCapabilities( registry );
 				provideModules( registry, [
 					{
 						slug: 'adsense',
@@ -96,56 +43,11 @@ describe( 'ConnectAdSenseCTATileWidget', () => {
 						connected: false,
 					},
 				] );
-				provideKeyMetrics( registry, { widgetSlugs: [] } );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( {} );
 			},
 		} );
 
-		expect( container ).toBeEmptyDOMElement();
-	} );
+		expect( container ).toMatchSnapshot();
 
-	it( 'should render nothing if there are no adsense key metrics widgets', () => {
-		const { container } = render( <WidgetWithComponentProps />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: false,
-						connected: false,
-					},
-				] );
-				provideKeyMetrics( registry, {
-					widgetSlugs: [ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ],
-				} );
-			},
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should render the widget if there is `adsense` key metrics widget', () => {
-		freezeFetch(
-			new RegExp( '^/google-site-kit/v1/core/user/data/permissions' )
-		);
-		const { container } = render( <WidgetWithComponentProps />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: false,
-						connected: false,
-					},
-				] );
-				provideKeyMetrics( registry, {
-					widgetSlugs: [ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ],
-				} );
-			},
-		} );
-
-		expect( container ).toHaveTextContent(
-			'AdSense is disconnected, some of your metrics can’t be displayed'
-		);
+		expect( container ).toHaveTextContent( 'Connect AdSense' );
 	} );
 } );

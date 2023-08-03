@@ -24,19 +24,21 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 describe( 'ConnectGA4CTATileWidget', () => {
+	const WidgetWithComponentProps = withWidgetComponentProps(
+		'keyMetricsConnectGA4CTATile'
+	)( ConnectGA4CTATileWidget );
+
 	it( 'should render the Connect GA4 CTA tile', () => {
-		const { container, getByText } = render(
-			<ConnectGA4CTATileWidget widgetSlug="some-widget" />,
-			{
-				setupRegistry: ( registry ) => {
-					provideUserCapabilities( registry );
-					provideModules( registry );
-				},
-			}
-		);
+		const { container, getByText } = render( <WidgetWithComponentProps />, {
+			setupRegistry: ( registry ) => {
+				provideUserCapabilities( registry );
+				provideModules( registry );
+			},
+		} );
 
 		expect( container ).toMatchSnapshot();
 
