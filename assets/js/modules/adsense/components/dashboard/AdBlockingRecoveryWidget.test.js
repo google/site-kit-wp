@@ -44,10 +44,16 @@ import {
 } from '../../util';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { stringToDate } from '../../../../util';
+import * as tracking from '../../../../util/tracking';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../googlesitekit/constants';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdBlockingRecoveryWidget', () => {
 	let registry;
@@ -69,6 +75,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 		getWidgetComponentProps( 'adBlockingRecovery' );
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
@@ -87,7 +94,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'before click', () => {
+	describe( 'widget rendering', () => {
 		const shouldRender = {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			accountStatus: ACCOUNT_STATUS_READY,
@@ -213,6 +220,9 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				);
 
 				expect( container ).toBeEmptyDOMElement();
+
+				// If the widget is not rendered, no tracking event should fire.
+				expect( mockTrackEvent ).not.toHaveBeenCalled();
 			}
 		);
 
@@ -232,10 +242,17 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				/>,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 			expect( container ).toHaveTextContent(
 				'Recover revenue lost to ad blockers'
+			);
+
+			// The tracking event should fire when the widget is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'view_notification'
 			);
 		} );
 
@@ -256,17 +273,28 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				/>,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 			expect( container ).toHaveTextContent(
 				'Recover revenue lost to ad blockers'
 			);
+
+			// The tracking event should fire when the widget is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'view_notification'
+			);
 		} );
 	} );
 
-	describe( 'after click', () => {
+	describe( 'CTA actions', () => {
 		let container;
-		beforeEach( async () => {
+
+		// This is needed for `navigateTo` to work in test.
+		mockLocation();
+
+		beforeEach( () => {
 			fetchMock.postOnce(
 				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
 				{
@@ -295,36 +323,106 @@ describe( 'AdBlockingRecoveryWidget', () => {
 						WidgetNull={ WidgetNull }
 					/>
 				</div>,
-				{ registry }
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			).container;
 
+			// Reset the mockTrackEvent mock as we don't want to track the event for the initial render.
+			mockTrackEvent.mockClear();
+		} );
+
+		it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
+			const abrURL = registry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-ad-blocking-recovery' );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					container.querySelector(
+						'a.googlesitekit-notification__cta'
+					)
+				);
+			} );
+
+			// The tracking event should fire when the CTA is clicked.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'confirm_notification'
+			);
+
+			expect( global.location.assign ).toHaveBeenCalled();
+			expect( global.location.assign ).toHaveBeenCalledWith( abrURL );
+		} );
+
+		it( 'should dismiss the CTA and open the tooltip when dismiss button is clicked', async () => {
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
 					container.querySelector( 'button.googlesitekit-cta-link' )
 				);
 			} );
-		} );
 
-		it( 'should open the tooltip', () => {
+			expect( container ).not.toHaveTextContent(
+				'Recover revenue lost to ad blockers'
+			);
+
+			// The tracking event should fire when the CTA is clicked.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'dismiss_notification'
+			);
+
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).toBeInTheDocument();
+
+			// The tracking event should fire when the tooltip is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr',
+				'view_tooltip'
+			);
 		} );
 
-		it( 'should close the tooltip on clicking the close button', async () => {
+		it( 'should close the tooltip on clicking the `X` button', async () => {
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					container.querySelector( 'button.googlesitekit-cta-link' )
+				);
+			} );
+
+			// Reset the mockTrackEvent mock
+			mockTrackEvent.mockClear();
+
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
 					document.querySelector( '.googlesitekit-tooltip-close' )
 				);
 			} );
+
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
+
+			// The tracking event should fire when the tooltip is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr',
+				'dismiss_tooltip'
+			);
 		} );
 
-		it( 'should close the modal on clicking the dismiss button', async () => {
+		it( 'should close the tooltip on clicking the `Got it` button', async () => {
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					container.querySelector( 'button.googlesitekit-cta-link' )
+				);
+			} );
+
+			// Reset the mockTrackEvent mock
+			mockTrackEvent.mockClear();
+
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
@@ -333,9 +431,16 @@ describe( 'AdBlockingRecoveryWidget', () => {
 					)
 				);
 			} );
+
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
+
+			// The tracking event should fire when the tooltip is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr',
+				'dismiss_tooltip'
+			);
 		} );
 	} );
 } );
