@@ -128,7 +128,6 @@ function PopularContentWidget( props ) {
 
 PopularContentWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( {

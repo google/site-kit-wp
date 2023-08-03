@@ -166,7 +166,6 @@ function TopTrafficSourceWidget( { Widget } ) {
 
 TopTrafficSourceWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( {

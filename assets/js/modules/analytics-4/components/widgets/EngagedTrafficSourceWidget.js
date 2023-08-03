@@ -118,7 +118,6 @@ function EngagedTrafficSourceWidget( props ) {
 
 EngagedTrafficSourceWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( {

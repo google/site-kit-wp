@@ -41,11 +41,10 @@ import Link from '../../../../components/Link';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { MetricTileTable } from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../common';
-import whenActive from '../../../../util/when-active';
 
 const { useSelect, useInViewSelect } = Data;
 
-function PopularKeywordsWidget( { Widget } ) {
+export default function PopularKeywordsWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
 
 	const dates = useSelect( ( select ) =>
@@ -136,7 +135,3 @@ function PopularKeywordsWidget( { Widget } ) {
 PopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
-
-export default whenActive( {
-	moduleName: 'search-console',
-} )( PopularKeywordsWidget );
