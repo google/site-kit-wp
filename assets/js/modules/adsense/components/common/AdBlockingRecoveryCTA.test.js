@@ -215,4 +215,39 @@ describe( 'AdBlockingRecoveryCTA', () => {
 		expect( global.location.assign ).toHaveBeenCalled();
 		expect( global.location.assign ).toHaveBeenCalledWith( abrURL );
 	} );
+
+	it( 'Should fire track event when learn more is clicked', async () => {
+		const { getByRole } = render( <AdBlockingRecoveryCTA />, {
+			registry: testRegistry,
+			setupRegistry: ( registry ) => {
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+					accountStatus: ACCOUNT_STATUS_READY,
+					siteStatus: SITE_STATUS_READY,
+					adBlockingRecoverySetupStatus: '',
+				} );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetExistingAdBlockingRecoveryTag( null );
+			},
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+		} );
+
+		// The tracking event should fire when the CTA is clicked.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_adsense-abr-cta-widget',
+			'click_learn_more_link'
+		);
+	} );
 } );

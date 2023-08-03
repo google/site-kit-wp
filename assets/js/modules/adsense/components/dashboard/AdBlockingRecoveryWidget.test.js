@@ -290,6 +290,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 
 	describe( 'CTA actions', () => {
 		let container;
+		let getByRole;
 
 		// This is needed for `navigateTo` to work in test.
 		mockLocation();
@@ -311,7 +312,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingAdBlockingRecoveryTag( null );
 
-			container = render(
+			const renderResult = render(
 				<div>
 					<div id="adminmenu">
 						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -324,7 +325,10 @@ describe( 'AdBlockingRecoveryWidget', () => {
 					/>
 				</div>,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-			).container;
+			);
+
+			container = renderResult.container;
+			getByRole = renderResult.getByRole;
 
 			// Reset the mockTrackEvent mock as we don't want to track the event for the initial render.
 			mockTrackEvent.mockClear();
@@ -338,9 +342,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
-					container.querySelector(
-						'a.googlesitekit-notification__cta'
-					)
+					getByRole( 'button', { name: /Set up now/i } )
 				);
 			} );
 
@@ -358,7 +360,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
-					container.querySelector( 'button.googlesitekit-cta-link' )
+					getByRole( 'button', { name: /Maybe later/i } )
 				);
 			} );
 
@@ -387,7 +389,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
-					container.querySelector( 'button.googlesitekit-cta-link' )
+					getByRole( 'button', { name: /Maybe later/i } )
 				);
 			} );
 
@@ -396,9 +398,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 
 			// eslint-disable-next-line require-await
 			await act( async () => {
-				fireEvent.click(
-					document.querySelector( '.googlesitekit-tooltip-close' )
-				);
+				fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
 			} );
 
 			expect(
@@ -416,7 +416,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
-					container.querySelector( 'button.googlesitekit-cta-link' )
+					getByRole( 'button', { name: /Maybe later/i } )
 				);
 			} );
 
@@ -425,11 +425,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 
 			// eslint-disable-next-line require-await
 			await act( async () => {
-				fireEvent.click(
-					document.querySelector(
-						'.googlesitekit-tooltip-buttons > button'
-					)
-				);
+				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
 			} );
 
 			expect(
@@ -440,6 +436,19 @@ describe( 'AdBlockingRecoveryWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_adsense-abr',
 				'dismiss_tooltip'
+			);
+		} );
+
+		it( 'Should fire track event when learn more is clicked', async () => {
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+			} );
+
+			// The tracking event should fire when the CTA is clicked.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'click_learn_more_link'
 			);
 		} );
 	} );
