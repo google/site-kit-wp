@@ -33,10 +33,11 @@ const metadata = { moduleSlug: 'analytics' };
 export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
 	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );
 
-	// Note that we need to render the Widget component as a wrapper here so this component will display
-	// correctly when used as a FallbackComponent for the whenActive HOC. Conversely, when ConnectModuleCTATile
-	// is rendered as an OverrideComponent in WidgetRenderer, it is wrapped with a Widget component - the net
-	// result being the ConnectModuleCTATile is correctly wrapped in both cases.
+	// Note that we need to render the `Widget` component as a wrapper here so this component will display
+	// correctly when used as a `FallbackComponent` for the `whenActive` HOC. Conversely, when `ConnectModuleCTATile`
+	// is rendered as an `OverrideComponent` in `WidgetRenderer` (as a result of multiple adjacent widgets rendering
+	// this component and thus sharing the same state), it is wrapped with a `Widget` component - the net
+	// result being the ConnectModuleCTATile is correctly wrapped in a `Widget` in both cases.
 	return (
 		<Widget>
 			<ConnectModuleCTATile { ...metadata } />
