@@ -34,6 +34,8 @@ global._googlesitekitLegacyData = {
 
 global._googlesitekitUserData = {
 	user: {},
+	connectURL:
+		'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 };
 
 global._googlesitekitBaseData = {
