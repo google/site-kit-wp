@@ -30,6 +30,7 @@ import Link from '../Link';
 
 const CTA = ( {
 	title,
+	headerText,
 	description,
 	ctaLink,
 	ctaLabel,
@@ -45,6 +46,9 @@ const CTA = ( {
 			'googlesitekit-cta--error': error,
 		} ) }
 	>
+		{ headerText && (
+			<h2 className="googlesitekit-cta__header_text">{ headerText }</h2>
+		) }
 		{ title && <h3 className="googlesitekit-cta__title">{ title }</h3> }
 		{ description && typeof description === 'string' && (
 			<p className="googlesitekit-cta__description">{ description }</p>
@@ -81,6 +85,7 @@ const CTA = ( {
 
 CTA.propTypes = {
 	title: PropTypes.string.isRequired,
+	headerText: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	ctaLink: PropTypes.string,
 	ctaLinkExternal: PropTypes.bool,
@@ -94,6 +99,7 @@ CTA.propTypes = {
 
 CTA.defaultProps = {
 	title: '',
+	headerText: '',
 	description: '',
 	ctaLink: '',
 	ctaLabel: '',

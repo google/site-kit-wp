@@ -25,6 +25,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { Tooltip } from 'googlesitekit-components';
+import MetricTileError from './MetricTileError';
 import MetricTileLoader from './MetricTileLoader';
 import InfoIcon from '../../../svg/icons/info-green.svg';
 
@@ -38,7 +39,19 @@ export default function MetricTileTable( props ) {
 		limit,
 		infoTooltip,
 		ZeroState,
+		error,
+		moduleSlug,
 	} = props;
+
+	if ( error ) {
+		return (
+			<MetricTileError
+				moduleSlug={ moduleSlug }
+				error={ error }
+				headerText={ title }
+			/>
+		);
+	}
 
 	let tileBody = null;
 
@@ -129,4 +142,9 @@ MetricTileTable.propTypes = {
 	limit: PropTypes.number,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	ZeroState: PropTypes.elementType,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ),
+	moduleSlug: PropTypes.string.isRequired,
 };
