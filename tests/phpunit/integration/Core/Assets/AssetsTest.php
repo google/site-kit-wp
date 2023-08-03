@@ -62,6 +62,14 @@ class AssetsTest extends TestCase {
 		wp_styles()->queue       = array();
 	}
 
+	public function tear_down() {
+		parent::tear_down();
+		// Ensure registered post types are cleaned up.
+		if ( post_type_exists( 'product' ) ) {
+			unregister_post_type( 'product' );
+		}
+	}
+
 	public function test_register() {
 		$actions_to_test = array(
 			'admin_enqueue_scripts',
@@ -221,23 +229,25 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_base_data__product_base_paths__no_permalink_structure() {
+		$this->enable_feature( 'userInput' );
 		$data = $this->get_inline_base_data();
 		$this->assertTrue( empty( $data['productBasePaths'] ) );
 	}
 
 	public function test_base_data__product_base_paths__empty() {
-		update_option( 'permalink_structure', '/%postname%/' );
+		$this->enable_feature( 'userInput' );
+		$this->set_permalink_structure( '/%postname%/' );
 
 		$data = $this->get_inline_base_data();
 		$this->assertTrue( empty( $data['productBasePaths'] ) );
 	}
 
 	public function test_base_data__product_base_paths__hidden_post_type() {
-		update_option( 'permalink_structure', '/%postname%/' );
+		$this->enable_feature( 'userInput' );
+		$this->set_permalink_structure( '/%postname%/' );
 
 		register_post_type( 'product', array( 'public' => false ) );
 		$data = $this->get_inline_base_data();
-		unregister_post_type( 'product' );
 
 		$this->assertTrue( empty( $data['productBasePaths'] ) );
 	}
@@ -246,11 +256,11 @@ class AssetsTest extends TestCase {
 	 * @dataProvider data_product_base_paths
 	 */
 	public function test_base_data__product_base_paths( $post_type_args, $expected ) {
-		update_option( 'permalink_structure', '/%postname%/' );
-
+		$this->enable_feature( 'userInput' );
+		$this->set_permalink_structure( '/%postname%/' );
 		register_post_type( 'product', $post_type_args );
+
 		$data = $this->get_inline_base_data();
-		unregister_post_type( 'product' );
 
 		$this->assertEquals( $expected, $data['productBasePaths'] );
 	}
