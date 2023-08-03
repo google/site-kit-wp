@@ -7,7 +7,7 @@ on:
             - main
         # Only run if PHP-related files changed.
         paths:
-            - '.github/workflows/php-tests-wp-latest-php-7-4.yml'
+            - '.github/workflows/php-tests.yml'
             - includes/**
             - tests/phpunit/**
             - /*.php
@@ -34,7 +34,7 @@ on:
             - synchronize
 
 concurrency:
-    group: php-tests-wp-latest-php-7-4-${{ github.ref }}
+    group: php-tests-${{ github.ref }}
     cancel-in-progress: true
 
 jobs:
@@ -97,3 +97,7 @@ jobs:
               run: tests/phpunit/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
             - name: Run Unit Tests
               run: composer test -- --verbose
+              if: ${{ !matrix.wp_multisite }}
+            - name: Run Unit Tests
+              run: composer test:multisite -- --verbose
+              if: ${{ matrix.wp_multisite }}
