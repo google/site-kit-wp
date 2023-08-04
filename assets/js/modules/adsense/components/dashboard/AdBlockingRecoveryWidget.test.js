@@ -329,9 +329,6 @@ describe( 'AdBlockingRecoveryWidget', () => {
 
 			container = renderResult.container;
 			getByRole = renderResult.getByRole;
-
-			// Reset the mockTrackEvent mock as we don't want to track the event for the initial render.
-			mockTrackEvent.mockClear();
 		} );
 
 		it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
@@ -393,9 +390,6 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				);
 			} );
 
-			// Reset the mockTrackEvent mock
-			mockTrackEvent.mockClear();
-
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
@@ -419,9 +413,6 @@ describe( 'AdBlockingRecoveryWidget', () => {
 					getByRole( 'button', { name: /Maybe later/i } )
 				);
 			} );
-
-			// Reset the mockTrackEvent mock
-			mockTrackEvent.mockClear();
 
 			// eslint-disable-next-line require-await
 			await act( async () => {

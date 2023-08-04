@@ -198,9 +198,6 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			.select( CORE_SITE )
 			.getAdminURL( 'googlesitekit-ad-blocking-recovery' );
 
-		// Reset the mockTrackEvent mock as we don't want to track the event for the initial render.
-		mockTrackEvent.mockClear();
-
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click( container.querySelector( 'button.mdc-button' ) );
