@@ -44,18 +44,20 @@ jobs:
         timeout-minutes: 20
         strategy:
             matrix:
+                composer_php_version: ['']
                 php_version: ['7.4', '8.0']
                 wp_multisite: ['']
                 wp_version: ['latest']
                 include:
-                    - php_version: '5.6'
-                      wp_multisite: ''
+                    # PHP 7.4 is necessary for `composer install` to work,
+                    # so override it when using PHP 5.6.
+                    - composer_php_version: '7.4'
+                      php_version: '5.6'
                       wp_version: '5.2'
                     - php_version: '7.4'
                       wp_multisite: '1'
                       wp_version: 'latest'
                     - php_version: '7.4'
-                      wp_multisite: ''
                       wp_version: 'nightly'
         services:
             mysql:
@@ -79,9 +81,7 @@ jobs:
               with:
                   extensions: mysqli, runkit7, uopz
                   tools: composer:2.1
-                  # PHP 7.4 is necessary for `composer install` to work,
-                  # so override it when using PHP 5.6.
-                  php-version: ${{ matrix.php_version == '5.6' ? '7.4' : matrix.php_version }}
+                  php-version: ${{ matrix.composer_php_version || matrix.php_version }}
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Get Composer Cache Directory
