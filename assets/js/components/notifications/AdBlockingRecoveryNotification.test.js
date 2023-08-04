@@ -38,6 +38,19 @@ import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
+// Mock the useIntersection hook.
+jest.mock( 'react-use', () => {
+	return {
+		__esModule: true,
+		...jest.requireActual( 'react-use' ),
+		useIntersection: jest.fn( () => {
+			return {
+				isIntersecting: true,
+			};
+		} ),
+	};
+} );
+
 describe( 'AdBlockingRecoveryNotification', () => {
 	let registry;
 
@@ -92,8 +105,11 @@ describe( 'AdBlockingRecoveryNotification', () => {
 
 		expect( container.childElementCount ).toBe( 1 );
 
-		// TODO: The `view_notification` event is not firing in this test because it depends on
-		// intersaction observer, which is not easy to mock.
+		// The tracking event should fire when the notification is viewed.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_adsense-abr-success-notification',
+			'view_notification'
+		);
 
 		// eslint-disable-next-line require-await
 		await act( async () => {
