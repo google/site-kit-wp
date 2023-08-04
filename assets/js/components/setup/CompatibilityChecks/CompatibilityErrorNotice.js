@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -40,7 +41,6 @@ import {
 	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
 import GetHelpLink from './GetHelpLink';
-import { createInterpolateElement } from '@wordpress/element';
 
 const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
 	const { installed, active, installURL, activateURL, configureURL } =

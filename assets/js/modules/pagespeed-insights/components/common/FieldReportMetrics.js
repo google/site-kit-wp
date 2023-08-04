@@ -25,6 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -36,7 +37,6 @@ import ErrorText from '../../../../components/ErrorText';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import { getReportErrorMessage } from '../../../../util/errors';
 import { CATEGORY_AVERAGE } from '../../util/constants';
-import { createInterpolateElement } from '@wordpress/element';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {

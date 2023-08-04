@@ -37,6 +37,7 @@ import {
 	isValidElement,
 	createInterpolateElement,
 } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
 /*
@@ -70,7 +71,6 @@ import {
 import { stringToDate } from '../../../util/date-range/string-to-date';
 import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { __, sprintf } from '@wordpress/i18n';
 const { useSelect, useDispatch } = Data;
 
 export const LEARN_MORE_TARGET = {

@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,7 +28,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_OPTIMIZE } from '../../../optimize/datastore/constants';
 import Link from '../../../../components/Link';
-import { createInterpolateElement } from '@wordpress/element';
 
 const { useSelect } = Data;
 

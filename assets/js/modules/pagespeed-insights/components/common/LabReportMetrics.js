@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -36,7 +37,6 @@ import { CATEGORY_AVERAGE } from '../../util/constants';
 import { getReportErrorMessage } from '../../../../util/errors';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import ErrorText from '../../../../components/ErrorText';
-import { createInterpolateElement } from '@wordpress/element';
 
 export default function LabReportMetrics( { data, error } ) {
 	const largestContentfulPaint =

@@ -23,6 +23,11 @@ import { storiesOf } from '@storybook/react';
 import fetchMock from 'fetch-mock';
 
 /**
+ * WordPress dependencies
+ */
+import { createInterpolateElement } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -32,7 +37,6 @@ import TourTooltips from '../assets/js/components/TourTooltips';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 import { CORE_UI } from '../assets/js/googlesitekit/datastore/ui/constants';
-import { createInterpolateElement } from '@wordpress/element';
 const { useDispatch } = Data;
 
 // Create Mock WP Dashboard component to decouple tests to prevent future false negative.
