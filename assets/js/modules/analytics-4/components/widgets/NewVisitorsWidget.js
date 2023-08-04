@@ -59,6 +59,12 @@ export default function NewVisitorsWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
 	);
 
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] )
+	);
+
 	const loading = useInViewSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
@@ -100,6 +106,8 @@ export default function NewVisitorsWidget( { Widget } ) {
 			previousValue={ prevTotal }
 			currentValue={ total }
 			loading={ loading }
+			error={ error }
+			moduleSlug="analytics-4"
 		/>
 	);
 }

@@ -72,6 +72,12 @@ export default function PopularContentWidget( props ) {
 		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
 	);
 
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] )
+	);
+
 	const loading = useInViewSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
@@ -120,6 +126,8 @@ export default function PopularContentWidget( props ) {
 			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
+			error={ error }
+			moduleSlug="analytics-4"
 		/>
 	);
 }

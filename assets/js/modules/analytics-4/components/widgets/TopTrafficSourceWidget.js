@@ -78,6 +78,12 @@ export default function TopTrafficSourceWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReport( trafficSourceReportOptions )
 	);
 
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			trafficSourceReportOptions,
+		] )
+	);
+
 	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
@@ -158,6 +164,8 @@ export default function TopTrafficSourceWidget( { Widget } ) {
 			previousValue={ relativePreviousTopTrafficSourceUsers }
 			currentValue={ relativeCurrentTopTrafficSourceUsers }
 			loading={ loading }
+			error={ error }
+			moduleSlug="analytics-4"
 		/>
 	);
 }
