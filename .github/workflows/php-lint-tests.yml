@@ -34,10 +34,38 @@ on:
       - synchronize
 
 concurrency:
-  group: php-tests-${{ github.ref }}
+  group: php-lint-tests-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  php-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate Composer configuration
+        run: composer validate --strict
+      - name: Composer Install
+        run: composer install --no-interaction --no-progress
+      - name: PHP Lint
+        run: composer lint
   php-tests:
     name: PHP Tests (PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }}${{ matrix.wp_multisite && ', Multisite' }})
     runs-on: ubuntu-latest
