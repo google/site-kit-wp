@@ -93,7 +93,7 @@ jobs:
           php-version: ${{ matrix.composer_php_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: matrix.composer_php_version
+        if: ${{ matrix.composer_php_version }}
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -112,20 +112,20 @@ jobs:
           extensions: mysqli, runkit, uopz
           tools: composer:2.1
           php-version: ${{ matrix.php_version }}
-        if: matrix.composer_php_version
+        if: ${{ matrix.composer_php_version }}
 
       - name: Update PHPUnit
         run: |
           composer config --unset platform.php
           composer update phpunit/phpunit --with-dependencies --no-scripts
-        if: matrix.php_version == '8.0'
+        if: ${{ matrix.php_version == '8.0' }}
 
       - name: Set up PHP test data
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
 
       - name: Run Unit Tests
         run: composer test -- --verbose
-        if: !matrix.wp_multisite
+        if: ${{ !matrix.wp_multisite }}
       - name: Run Unit Tests
         run: composer test:multisite -- --verbose
-        if: matrix.wp_multisite
+        if: ${{ matrix.wp_multisite }}
