@@ -39,6 +39,7 @@ concurrency:
 
 jobs:
   php-lint:
+    name: PHP Lint
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
