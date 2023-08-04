@@ -35,6 +35,7 @@ import {
 	useState,
 	Fragment,
 	isValidElement,
+	createInterpolateElement,
 } from '@wordpress/element';
 import { isURL } from '@wordpress/url';
 
@@ -69,6 +70,7 @@ import {
 import { stringToDate } from '../../../util/date-range/string-to-date';
 import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+import { __, sprintf } from '@wordpress/i18n';
 const { useSelect, useDispatch } = Data;
 
 export const LEARN_MORE_TARGET = {
@@ -380,21 +382,37 @@ function BannerNotification( props ) {
 						</Fragment>
 					) : (
 						<p>
-							<span
-								dangerouslySetInnerHTML={ sanitizeHTML(
-									description,
-									{
-										ALLOWED_TAGS: [
-											'strong',
-											'em',
-											'br',
-											'a',
-										],
-										ALLOWED_ATTR: [ 'href' ],
-									}
-								) }
-							/>{ ' ' }
-							{ learnMoreAndPageIndex }
+							{ createInterpolateElement(
+								sprintf(
+									/* translators: Banner notification text. 1: Description in banner. 2: Learn more link. */
+									__( '%1$s %2$s', 'google-site-kit' ),
+									'<description />',
+									'<learnMore />'
+								),
+								{
+									description: (
+										<span
+											dangerouslySetInnerHTML={ sanitizeHTML(
+												description,
+												{
+													ALLOWED_TAGS: [
+														'strong',
+														'em',
+														'br',
+														'a',
+													],
+													ALLOWED_ATTR: [ 'href' ],
+												}
+											) }
+										/>
+									),
+									learnMore: (
+										<Fragment>
+											{ learnMoreAndPageIndex }
+										</Fragment>
+									),
+								}
+							) }
 						</p>
 					) }
 				</div>

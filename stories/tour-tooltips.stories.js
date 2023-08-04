@@ -32,6 +32,7 @@ import TourTooltips from '../assets/js/components/TourTooltips';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 import { CORE_UI } from '../assets/js/googlesitekit/datastore/ui/constants';
+import { createInterpolateElement } from '@wordpress/element';
 const { useDispatch } = Data;
 
 // Create Mock WP Dashboard component to decouple tests to prevent future false negative.
@@ -395,11 +396,16 @@ storiesOf( 'Global', module ).add( 'TourTooltips', () => {
 			title: 'Generic step title for the fourth step',
 			content: (
 				<div>
-					This is the fourth step with an external link that should go
-					to Google,{ ' ' }
-					<Link href="http://google.com" external>
-						link.
-					</Link>
+					{ createInterpolateElement(
+						'This is the fourth step with an external link that should go to Google, <link />',
+						{
+							link: (
+								<Link href="http://google.com" external>
+									link.
+								</Link>
+							),
+						}
+					) }
 				</div>
 			),
 		},

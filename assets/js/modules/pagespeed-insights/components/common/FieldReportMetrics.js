@@ -36,6 +36,7 @@ import ErrorText from '../../../../components/ErrorText';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import { getReportErrorMessage } from '../../../../util/errors';
 import { CATEGORY_AVERAGE } from '../../util/constants';
+import { createInterpolateElement } from '@wordpress/element';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {
@@ -95,11 +96,15 @@ export default function FieldReportMetrics( { data, error } ) {
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
-					{ __(
-						'Field data shows how real users actually loaded and interacted with your page over time.',
-						'google-site-kit'
-					) }{ ' ' }
-					<MetricsLearnMoreLink />
+					{ createInterpolateElement(
+						__(
+							'Field data shows how real users actually loaded and interacted with your page over time. <LearnMoreLink />',
+							'google-site-kit'
+						),
+						{
+							LearnMoreLink: <MetricsLearnMoreLink />,
+						}
+					) }
 				</p>
 			</div>
 			<table

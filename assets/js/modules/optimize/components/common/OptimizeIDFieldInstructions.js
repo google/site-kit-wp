@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_OPTIMIZE } from '../../../optimize/datastore/constants';
 import Link from '../../../../components/Link';
+import { createInterpolateElement } from '@wordpress/element';
 
 const { useSelect } = Data;
 
@@ -37,13 +38,22 @@ export default function OptimizeIDFieldInstructions() {
 
 	return (
 		<p>
-			{ __(
-				'Please copy and paste your Optimize Container ID to complete your setup.',
-				'google-site-kit'
-			) }{ ' ' }
-			<Link href={ accountURL } external>
-				{ __( 'You can locate this here', 'google-site-kit' ) }
-			</Link>
+			{ createInterpolateElement(
+				__(
+					'Please copy and paste your Optimize Container ID to complete your setup.',
+					'google-site-kit'
+				),
+				{
+					LearnMoreLink: (
+						<Link href={ accountURL } external>
+							{ __(
+								'You can locate this here',
+								'google-site-kit'
+							) }
+						</Link>
+					),
+				}
+			) }
 		</p>
 	);
 }

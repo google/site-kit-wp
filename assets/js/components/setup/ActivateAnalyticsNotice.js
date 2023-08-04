@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -63,18 +63,15 @@ export default function ActivateAnalyticsNotice() {
 					checked={ checked }
 					onChange={ handleOnChange }
 				>
-					<strong>
-						{ __(
-							'Connect Google Analytics as part of your setup.',
+					{ createInterpolateElement(
+						__(
+							'<strong>Connect Google Analytics as part of your setup.</strong> Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.',
 							'google-site-kit'
-						) }{ ' ' }
-					</strong>
-					<span>
-						{ __(
-							'Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.',
-							'google-site-kit'
-						) }
-					</span>
+						),
+						{
+							strong: <strong />,
+						}
+					) }
 				</Checkbox>
 			</div>
 			<div className="googlesitekit-setup-analytics-notice__icon">

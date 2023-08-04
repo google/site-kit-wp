@@ -36,6 +36,7 @@ import { CATEGORY_AVERAGE } from '../../util/constants';
 import { getReportErrorMessage } from '../../../../util/errors';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import ErrorText from '../../../../components/ErrorText';
+import { createInterpolateElement } from '@wordpress/element';
 
 export default function LabReportMetrics( { data, error } ) {
 	const largestContentfulPaint =
@@ -66,11 +67,15 @@ export default function LabReportMetrics( { data, error } ) {
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
-					{ __(
-						'Lab data is a snapshot of how your page performs right now, measured in tests we run in a controlled environment.',
-						'google-site-kit'
-					) }{ ' ' }
-					<MetricsLearnMoreLink />
+					{ createInterpolateElement(
+						__(
+							'Lab data is a snapshot of how your page performs right now, measured in tests we run in a controlled environment. <LearnMoreLink />',
+							'google-site-kit'
+						),
+						{
+							LearnMoreLink: <MetricsLearnMoreLink />,
+						}
+					) }
 				</p>
 			</div>
 			<table className="googlesitekit-table googlesitekit-table--with-list">

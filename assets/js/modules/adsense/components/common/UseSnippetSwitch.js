@@ -25,7 +25,11 @@ import { useUpdateEffect } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment } from '@wordpress/element';
+import {
+	useCallback,
+	Fragment,
+	createInterpolateElement,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -80,17 +84,26 @@ export default function UseSnippetSwitch( props ) {
 	return (
 		<Fragment>
 			<div className="googlesitekit-setup-module__switch">
-				<Switch
-					label={ label }
-					onClick={ onChange }
-					checked={ useSnippet }
-					disabled={ isDoingSaveUseSnippet }
-					hideLabel={ false }
-				/>{ ' ' }
-				<Badge
-					className="googlesitekit-badge--primary"
-					label={ __( 'Recommended', 'google-site-kit' ) }
-				></Badge>
+				{ createInterpolateElement(
+					__( '<Switch /> <Badge/>', 'google-site-kit' ),
+					{
+						Switch: (
+							<Switch
+								label={ label }
+								onClick={ onChange }
+								checked={ useSnippet }
+								disabled={ isDoingSaveUseSnippet }
+								hideLabel={ false }
+							/>
+						),
+						Badge: (
+							<Badge
+								className="googlesitekit-badge--primary"
+								label={ __( 'Recommended', 'google-site-kit' ) }
+							/>
+						),
+					}
+				) }
 			</div>
 			{ useSnippet && checkedMessage && (
 				<SettingsNotice notice={ checkedMessage } />
