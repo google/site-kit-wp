@@ -81,9 +81,17 @@ jobs:
               with:
                   extensions: mysqli, runkit7, uopz
                   tools: composer:2.1
-                  php-version: ${{ matrix.composer_php_version || matrix.php_version }}
+                  php-version: ${{ matrix.php_version }}
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              if: ${{ !matrix.composer_php_version }}
+            - uses: shivammathur/setup-php@v2
+              with:
+                  tools: composer:2.1
+                  php-version: ${{ matrix.composer_php_version }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              if: ${{ matrix.composer_php_version }}
             - name: Get Composer Cache Directory
               id: composer-cache
               run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
@@ -95,6 +103,12 @@ jobs:
                       ${{ runner.os }}-composer-
             - name: Composer Install
               run: composer install --no-interaction --no-progress
+            - uses: shivammathur/setup-php@v2
+              with:
+                  extensions: mysqli, runkit, uopz
+                  tools: composer:2.1
+                  php-version: ${{ matrix.php_version }}
+              if: ${{ matrix.composer_php_version }}
             - name: Set up PHP test data
               run: tests/phpunit/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
             - name: Run Unit Tests
