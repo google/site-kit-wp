@@ -249,6 +249,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 					...validSettings,
 					adBlockingRecoverySetupStatus:
 						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+					// Set the initial values to true - both toggles are enabled.
 					useAdBlockingRecoverySnippet: true,
 					useAdBlockingRecoveryErrorSnippet: true,
 				} );
