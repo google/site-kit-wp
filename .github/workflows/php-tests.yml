@@ -39,7 +39,7 @@ concurrency:
 
 jobs:
     php-tests:
-        name: PHP Tests (PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }} ${{ matrix.wp_multisite && 'Multisite' }})
+        name: PHP Tests (PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }}${{ matrix.wp_multisite && ', Multisite' }})
         runs-on: ubuntu-latest
         timeout-minutes: 20
         strategy:
