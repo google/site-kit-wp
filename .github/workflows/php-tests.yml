@@ -95,7 +95,7 @@ jobs:
               if: ${{ matrix.composer_php_version }}
             - name: Get Composer Cache Directory
               id: composer-cache
-              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+              run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
             - uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
@@ -116,7 +116,7 @@ jobs:
                   composer update phpunit/phpunit --with-dependencies --no-scripts
               if: ${{ matrix.php_version == '8.0' }}
             - name: Set up PHP test data
-              run: tests/phpunit/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
+              run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
             - name: Run Unit Tests
               run: composer test -- --verbose
               if: ${{ !matrix.wp_multisite }}
