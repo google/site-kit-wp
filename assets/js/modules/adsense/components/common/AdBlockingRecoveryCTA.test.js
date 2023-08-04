@@ -19,15 +19,18 @@
 /**
  * Internal dependencies
  */
-import AdBlockingRecoveryCTA from './AdBlockingRecoveryCTA';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
-	render,
-	provideModules,
 	act,
-	fireEvent,
-	provideSiteInfo,
 	createTestRegistry,
+	fireEvent,
+	provideModules,
+	provideSiteInfo,
+	render,
 } from '../../../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import * as tracking from '../../../../util/tracking';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
@@ -38,10 +41,7 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
-import * as tracking from '../../../../util/tracking';
-import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import AdBlockingRecoveryCTA from './AdBlockingRecoveryCTA';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

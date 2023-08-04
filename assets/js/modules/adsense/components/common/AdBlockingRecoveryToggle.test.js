@@ -19,20 +19,20 @@
 /**
  * Internal dependencies
  */
-import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 import {
-	render,
+	fireEvent,
 	provideModules,
 	provideSiteInfo,
-	fireEvent,
+	render,
 } from '../../../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
+import * as tracking from '../../../../util/tracking';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import * as tracking from '../../../../util/tracking';
-import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
+import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

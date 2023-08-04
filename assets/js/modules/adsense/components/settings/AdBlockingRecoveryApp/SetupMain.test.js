@@ -17,8 +17,19 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
+import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
+import {
+	act,
+	fireEvent,
+	render,
+} from '../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -26,18 +37,11 @@ import {
 	provideSiteInfo,
 	unsubscribeFromAll,
 } from '../../../../../../../tests/js/utils';
+import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '../../../../../googlesitekit/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import * as tracking from '../../../../../util/tracking';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
-import {
-	act,
-	fireEvent,
-	render,
-} from '../../../../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
-import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '../../../../../googlesitekit/constants';
 import SetupMain from './SetupMain';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { addQueryArgs } from '@wordpress/url';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

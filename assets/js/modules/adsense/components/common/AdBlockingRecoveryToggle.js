@@ -30,19 +30,19 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
+import Data from 'googlesitekit-data';
+import Link from '../../../../components/Link';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 import {
 	AD_BLOCKING_FORM_SETTINGS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
-import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { parseAccountIDFromExistingTag } from '../../util';
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryToggle() {

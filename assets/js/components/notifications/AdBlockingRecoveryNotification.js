@@ -27,21 +27,20 @@ import { removeQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
-import Link from '../Link';
 import SuccessSVG from '../../../svg/graphics/ad-blocking-recovery-success.svg';
+import useViewContext from '../../hooks/useViewContext';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../modules/adsense/datastore/constants';
-import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
+import Link from '../Link';
+import BannerNotification from './BannerNotification';
+
 const { useSelect } = Data;
 
 export default function AdBlockingRecoveryNotification() {
-	const NOTIFICATION_ID = AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID;
-
 	const viewContext = useViewContext();
 
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
@@ -87,7 +86,7 @@ export default function AdBlockingRecoveryNotification() {
 
 	return (
 		<BannerNotification
-			id={ NOTIFICATION_ID }
+			id={ AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID }
 			className="googlesitekit-ad-blocking-recovery-notification"
 			title={ __(
 				'You successfully enabled the ad blocking recovery message',

@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
 import {
 	act,
 	createTestRegistry,
@@ -28,12 +27,13 @@ import {
 	provideSiteInfo,
 	render,
 } from '../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import {
-	MODULES_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	MODULES_ADSENSE,
 } from '../../modules/adsense/datastore/constants';
 import * as tracking from '../../util/tracking';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

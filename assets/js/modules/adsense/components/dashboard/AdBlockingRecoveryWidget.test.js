@@ -19,18 +19,26 @@
 /**
  * Internal dependencies
  */
-import AdBlockingRecoveryWidget from './AdBlockingRecoveryWidget';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	act,
-	fireEvent,
-	render,
 	createTestRegistry,
+	fireEvent,
+	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	provideModules,
+	render,
 	unsubscribeFromAll,
 } from '../../../../../../tests/js/test-utils';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../googlesitekit/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { stringToDate } from '../../../../util';
+import * as tracking from '../../../../util/tracking';
 import {
 	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
@@ -42,15 +50,7 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { stringToDate } from '../../../../util';
-import * as tracking from '../../../../util/tracking';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import AdBlockingRecoveryWidget from './AdBlockingRecoveryWidget';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
