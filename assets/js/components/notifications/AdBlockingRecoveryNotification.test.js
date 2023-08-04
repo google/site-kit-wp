@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import {
@@ -38,18 +43,11 @@ import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-// Mock the useIntersection hook.
-jest.mock( 'react-use', () => {
-	return {
-		__esModule: true,
-		...jest.requireActual( 'react-use' ),
-		useIntersection: jest.fn( () => {
-			return {
-				isIntersecting: true,
-			};
-		} ),
-	};
-} );
+jest.mock( 'react-use' );
+
+mockUseIntersection.mockImplementation( () => ( {
+	isIntersecting: true,
+} ) );
 
 describe( 'AdBlockingRecoveryNotification', () => {
 	let registry;
