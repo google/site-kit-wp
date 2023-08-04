@@ -41,9 +41,13 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { parseAccountIDFromExistingTag } from '../../util';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryToggle() {
+	const viewContext = useViewContext();
+
 	const adBlockingRecoverySnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockingRecoverySnippet()
 	);
@@ -86,25 +90,37 @@ export default function AdBlockingRecoveryToggle() {
 		setUseAdBlockingRecoveryErrorSnippet,
 	} = useDispatch( MODULES_ADSENSE );
 
-	const handleDetectionToggleClick = () => {
+	const handleAdBlockingRecoveryToggleClick = () => {
+		const toggleValue = ! adBlockingRecoveryToggle;
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
-			adBlockingRecoveryToggle: ! adBlockingRecoveryToggle,
+			adBlockingRecoveryToggle: toggleValue,
 		} );
-		setUseAdBlockingRecoverySnippet( ! adBlockingRecoveryToggle );
+		setUseAdBlockingRecoverySnippet( toggleValue );
+
+		trackEvent(
+			`${ viewContext }_adsense-abr`,
+			toggleValue ? 'enable_tag' : 'disable_tag',
+			'abr_tag'
+		);
 	};
 
-	const handleErrorToggleClick = () => {
+	const handleErrorProtectionToggleClick = () => {
+		const toggleValue = ! adBlockingRecoveryErrorToggle;
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
-			adBlockingRecoveryErrorToggle: ! adBlockingRecoveryErrorToggle,
+			adBlockingRecoveryErrorToggle: toggleValue,
 		} );
-		setUseAdBlockingRecoveryErrorSnippet( ! adBlockingRecoveryErrorToggle );
+		setUseAdBlockingRecoveryErrorSnippet( toggleValue );
+
+		trackEvent(
+			`${ viewContext }_adsense-abr`,
+			toggleValue ? 'enable_tag' : 'disable_tag',
+			'error_protection_tag'
+		);
 	};
 
 	useMount( () => {
 		const initialToggleValues = {
-			// Set the initial toggle value to `undefined` if the saved value is `false`
-			// to prevent the SettingsNotice from showing up on mount.
-			adBlockingRecoveryToggle: adBlockingRecoverySnippet || undefined,
+			adBlockingRecoveryToggle: adBlockingRecoverySnippet,
 			adBlockingRecoveryErrorToggle: adBlockingRecoveryErrorSnippet,
 		};
 
@@ -148,7 +164,7 @@ export default function AdBlockingRecoveryToggle() {
 							'google-site-kit'
 						) }
 						checked={ adBlockingRecoveryToggle }
-						onClick={ handleDetectionToggleClick }
+						onClick={ handleAdBlockingRecoveryToggleClick }
 						hideLabel={ false }
 					/>
 					<p>
@@ -176,7 +192,7 @@ export default function AdBlockingRecoveryToggle() {
 								'google-site-kit'
 							) }
 							checked={ adBlockingRecoveryErrorToggle }
-							onClick={ handleErrorToggleClick }
+							onClick={ handleErrorProtectionToggleClick }
 							hideLabel={ false }
 						/>
 						<p>
