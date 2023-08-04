@@ -79,7 +79,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 
 	const onErrorProtectionTagOptionChange = useCallback(
 		( { target } ) => {
-			const isChecked = !!! target.checked;
+			const isChecked = !! target.checked;
 
 			setUseAdBlockingRecoveryErrorSnippet( isChecked );
 
