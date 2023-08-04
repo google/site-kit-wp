@@ -22,7 +22,6 @@
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	act,
-	createTestRegistry,
 	fireEvent,
 	provideModules,
 	provideSiteInfo,
@@ -47,13 +46,10 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdBlockingRecoveryCTA', () => {
-	let testRegistry;
-
 	mockLocation();
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
-		testRegistry = createTestRegistry();
 	} );
 
 	it.each( [
@@ -92,7 +88,6 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			existingAdBlockingRecoveryTag = null
 		) => {
 			const { container } = render( <AdBlockingRecoveryCTA />, {
-				registry: testRegistry,
 				setupRegistry: ( registry ) => {
 					provideModules( registry, [
 						{
@@ -131,7 +126,6 @@ describe( 'AdBlockingRecoveryCTA', () => {
 
 	it( 'should render the CTA when Ad Blocking Recovery is not set up', () => {
 		const { container } = render( <AdBlockingRecoveryCTA />, {
-			registry: testRegistry,
 			setupRegistry: ( registry ) => {
 				provideModules( registry, [
 					{
@@ -171,30 +165,29 @@ describe( 'AdBlockingRecoveryCTA', () => {
 	} );
 
 	it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
-		const { container } = render( <AdBlockingRecoveryCTA />, {
-			registry: testRegistry,
-			setupRegistry: ( registry ) => {
-				provideSiteInfo( registry );
-				provideModules( registry, [
+		const { container, registry } = render( <AdBlockingRecoveryCTA />, {
+			setupRegistry: ( testRegistry ) => {
+				provideSiteInfo( testRegistry );
+				provideModules( testRegistry, [
 					{
 						slug: 'adsense',
 						active: true,
 						connected: true,
 					},
 				] );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				testRegistry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 					accountStatus: ACCOUNT_STATUS_READY,
 					siteStatus: SITE_STATUS_READY,
 					adBlockingRecoverySetupStatus: '',
 				} );
-				registry
+				testRegistry
 					.dispatch( MODULES_ADSENSE )
 					.receiveGetExistingAdBlockingRecoveryTag( null );
 			},
 			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
-		const abrURL = testRegistry
+		const abrURL = registry
 			.select( CORE_SITE )
 			.getAdminURL( 'googlesitekit-ad-blocking-recovery' );
 
@@ -215,7 +208,6 @@ describe( 'AdBlockingRecoveryCTA', () => {
 
 	it( 'Should fire track event when learn more is clicked', async () => {
 		const { getByRole } = render( <AdBlockingRecoveryCTA />, {
-			registry: testRegistry,
 			setupRegistry: ( registry ) => {
 				provideSiteInfo( registry );
 				provideModules( registry, [
