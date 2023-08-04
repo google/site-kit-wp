@@ -43,6 +43,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 20
         strategy:
+            fail-fast: false
             matrix:
                 composer_php_version: ['']
                 php_version: ['7.4', '8.0']
@@ -109,6 +110,11 @@ jobs:
                   tools: composer:2.1
                   php-version: ${{ matrix.php_version }}
               if: ${{ matrix.composer_php_version }}
+            - name: Update PHPUnit
+              run: |
+                  composer config --unset platform.php
+                  composer update phpunit/phpunit --with-dependencies --no-scripts
+              if: ${{ matrix.php_version == '8.0' }}
             - name: Set up PHP test data
               run: tests/phpunit/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
             - name: Run Unit Tests
