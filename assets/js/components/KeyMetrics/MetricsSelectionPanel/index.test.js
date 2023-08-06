@@ -310,51 +310,53 @@ describe( 'MetricsSelectionPanel', () => {
 			).toBeDisabled();
 		} );
 
-		it( "CTA copy should be 'Save Selection' if there are no pre-saved key metrics", () => {
-			provideKeyMetrics( registry );
+		describe( 'CTA', () => {
+			it( "should have 'Save Selection' label if there are no pre-saved key metrics", () => {
+				provideKeyMetrics( registry );
 
-			const { getByRole } = render( <MetricsSelectionPanel />, {
-				registry,
+				const { getByRole } = render( <MetricsSelectionPanel />, {
+					registry,
+				} );
+
+				expect(
+					getByRole( 'button', {
+						name: /Save Selection/i,
+					} )
+				).toBeInTheDocument();
 			} );
 
-			expect(
-				getByRole( 'button', {
-					name: /Save Selection/i,
-				} )
-			).toBeInTheDocument();
-		} );
+			it( "should have 'Apply changes' label if there are pre-saved key metrics", () => {
+				provideKeyMetrics( registry, {
+					widgetSlugs: [ 'metric-a', 'metric-b' ],
+				} );
 
-		it( "CTA copy should be 'Apply changes' if there are pre-saved key metrics", () => {
-			provideKeyMetrics( registry, {
-				widgetSlugs: [ 'metric-a', 'metric-b' ],
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideKeyMetricsWidgetRegistrations( registry, {
+					'metric-a': {
+						modules: [ 'search-console' ],
+					},
+					'metric-b': {
+						modules: [ 'analytics-4' ],
+					},
+				} );
+
+				const { getByRole } = render( <MetricsSelectionPanel />, {
+					registry,
+				} );
+
+				expect(
+					getByRole( 'button', {
+						name: /Apply changes/i,
+					} )
+				).toBeInTheDocument();
 			} );
-
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			provideKeyMetricsWidgetRegistrations( registry, {
-				'metric-a': {
-					modules: [ 'search-console' ],
-				},
-				'metric-b': {
-					modules: [ 'analytics-4' ],
-				},
-			} );
-
-			const { getByRole } = render( <MetricsSelectionPanel />, {
-				registry,
-			} );
-
-			expect(
-				getByRole( 'button', {
-					name: /Apply changes/i,
-				} )
-			).toBeInTheDocument();
 		} );
 	} );
 } );
