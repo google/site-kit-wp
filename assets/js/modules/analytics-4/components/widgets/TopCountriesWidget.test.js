@@ -45,7 +45,7 @@ describe( 'TopCountriesWidget', () => {
 					provideAnalytics4MockReport( registry, {
 						startDate: '2020-08-11',
 						endDate: '2020-09-07',
-						dimensions: [ 'city' ],
+						dimensions: [ 'country' ],
 						metrics: [ { name: 'totalUsers' } ],
 						orderby: [
 							{
