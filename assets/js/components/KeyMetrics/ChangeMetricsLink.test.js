@@ -1,5 +1,5 @@
 /**
- * Key Metrics ChangeMetricsCTA component tests.
+ * Key Metrics ChangeMetricsLink component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -25,9 +25,9 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import ChangeMetricsCTA from './ChangeMetricsCTA';
+import ChangeMetricsLink from './ChangeMetricsLink';
 
-describe( 'ChangeMetricsCTA', () => {
+describe( 'ChangeMetricsLink', () => {
 	let registry;
 
 	const coreKeyMetricsEndpointRegExp = new RegExp(
@@ -47,7 +47,7 @@ describe( 'ChangeMetricsCTA', () => {
 	it( 'should not render if key metrics are undefined', () => {
 		provideKeyMetrics( registry, { widgetSlugs: undefined } );
 
-		const { queryByRole } = render( <ChangeMetricsCTA />, { registry } );
+		const { queryByRole } = render( <ChangeMetricsLink />, { registry } );
 
 		const button = queryByRole( 'button' );
 		expect( button ).not.toBeInTheDocument();
@@ -56,7 +56,7 @@ describe( 'ChangeMetricsCTA', () => {
 	it( 'should not render if no key metrics are selected', () => {
 		provideKeyMetrics( registry, { widgetSlugs: [] } );
 
-		const { queryByRole } = render( <ChangeMetricsCTA />, { registry } );
+		const { queryByRole } = render( <ChangeMetricsLink />, { registry } );
 
 		const button = queryByRole( 'button' );
 		expect( button ).not.toBeInTheDocument();
@@ -65,7 +65,7 @@ describe( 'ChangeMetricsCTA', () => {
 	it( 'should render a button to change metrics', () => {
 		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
 
-		const { queryByRole } = render( <ChangeMetricsCTA />, { registry } );
+		const { queryByRole } = render( <ChangeMetricsLink />, { registry } );
 
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe( 'ChangeMetricsCTA', () => {
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 
-		const { getByRole } = render( <ChangeMetricsCTA />, { registry } );
+		const { getByRole } = render( <ChangeMetricsLink />, { registry } );
 
 		const button = getByRole( 'button', { name: /change metrics/i } );
 

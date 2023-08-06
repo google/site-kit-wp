@@ -1,5 +1,5 @@
 /**
- * Key Metrics ChangeMetricsCTA component.
+ * Key Metrics ChangeMetricsLink component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -33,7 +33,7 @@ import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
 const { useSelect, useDispatch } = Data;
 
-export default function ChangeMetricsCTA() {
+export default function ChangeMetricsLink() {
 	const keyMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetrics()
 	);

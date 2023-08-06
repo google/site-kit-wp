@@ -1,5 +1,5 @@
 /**
- * Key Metrics ChangeMetricsCTA Component Stories.
+ * Key Metrics ChangeMetricsLink Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -21,19 +21,19 @@
  */
 import { provideKeyMetrics } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import ChangeMetricsCTA from './ChangeMetricsCTA';
+import ChangeMetricsLink from './ChangeMetricsLink';
 
-const Template = () => <ChangeMetricsCTA />;
+const Template = () => <ChangeMetricsLink />;
 
 export const Default = Template.bind( {} );
-Default.storyName = 'ChangeMetricsCTA';
+Default.storyName = 'ChangeMetricsLink';
 Default.scenario = {
-	label: 'KeyMetrics/ChangeMetricsCTA',
+	label: 'KeyMetrics/ChangeMetricsLink',
 };
 
 export default {
-	title: 'Key Metrics/ChangeMetricsCTA',
-	component: ChangeMetricsCTA,
+	title: 'Key Metrics/ChangeMetricsLink',
+	component: ChangeMetricsLink,
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
