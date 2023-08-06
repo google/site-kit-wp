@@ -43,7 +43,7 @@ export default function MetricsSelectionPanel() {
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
-	const savedMetrics = useSelect( ( select ) => {
+	const savedViewableMetrics = useSelect( ( select ) => {
 		const metrics = select( CORE_USER ).getKeyMetrics();
 
 		if ( ! Array.isArray( metrics ) ) {
@@ -60,9 +60,9 @@ export default function MetricsSelectionPanel() {
 
 	const onSideSheetOpen = useCallback( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: savedMetrics,
+			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
 		} );
-	}, [ savedMetrics, setValues ] );
+	}, [ savedViewableMetrics, setValues ] );
 
 	const sideSheetCloseFn = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
@@ -76,8 +76,8 @@ export default function MetricsSelectionPanel() {
 			closeFn={ sideSheetCloseFn }
 		>
 			<Header />
-			<Metrics savedMetrics={ savedMetrics } />
-			<Footer savedMetrics={ savedMetrics } />
+			<Metrics savedMetrics={ savedViewableMetrics } />
+			<Footer savedMetrics={ savedViewableMetrics } />
 		</SideSheet>
 	);
 }
