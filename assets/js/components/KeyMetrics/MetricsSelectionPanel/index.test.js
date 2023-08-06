@@ -26,6 +26,7 @@ import {
 	freezeFetch,
 	provideKeyMetrics,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
@@ -54,6 +55,8 @@ describe( 'MetricsSelectionPanel', () => {
 		registry = createTestRegistry();
 
 		freezeFetch( coreKeyMetricsEndpointRegExp );
+
+		provideUserAuthentication( registry );
 
 		registry
 			.dispatch( CORE_UI )
@@ -221,6 +224,8 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should not list metrics dependent on modules that a view-only user does not have access to', () => {
+			provideUserAuthentication( registry, { authenticated: false } );
+
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [

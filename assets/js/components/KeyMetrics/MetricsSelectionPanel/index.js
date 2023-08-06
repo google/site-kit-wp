@@ -26,16 +26,13 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
-import useViewOnly from '../../../hooks/useViewOnly';
 import SideSheet from '../../SideSheet';
 import Header from './Header';
 import Footer from './Footer';
@@ -43,8 +40,6 @@ import Metrics from './Metrics';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
-	const isViewOnly = useViewOnly();
-
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
@@ -55,44 +50,9 @@ export default function MetricsSelectionPanel() {
 			return [];
 		}
 
-		const { getModule } = select( CORE_MODULES );
-		const { getWidget } = select( CORE_WIDGETS );
-		const { canViewSharedModule } = select( CORE_USER );
+		const { isKeyMetricAvailable } = select( CORE_USER );
 
-		// Verify that the metrics are available, i.e. the modules that they depend
-		// on are connected and a view-only user has access to it. This helps prevent
-		// metrics with disconnected dependencies appear in the selection panel.
-		return metrics.filter( ( metric ) => {
-			const widget = getWidget( metric );
-
-			if ( ! widget ) {
-				return false;
-			}
-
-			const isMetricAvailable = widget.modules.every( ( slug ) => {
-				const module = getModule( slug );
-
-				if ( ! module || ! module.connected ) {
-					return false;
-				}
-
-				if (
-					isViewOnly &&
-					module.shareable &&
-					! canViewSharedModule( slug )
-				) {
-					return false;
-				}
-
-				return true;
-			} );
-
-			if ( ! isMetricAvailable ) {
-				return false;
-			}
-
-			return true;
-		} );
+		return metrics.filter( isKeyMetricAvailable );
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
