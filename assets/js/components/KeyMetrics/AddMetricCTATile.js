@@ -26,7 +26,7 @@ import propTypes from 'prop-types';
  */
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ENTER } from '@wordpress/keycodes';
+import { ENTER, SPACE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -42,10 +42,16 @@ export default function AddMetricCTATile( { Widget } ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const openMetricsSelectionPanel = useCallback(
-		( { type, keyCode } ) => {
-			if ( type === 'keydown' && keyCode !== ENTER ) {
+		( event ) => {
+			if (
+				event.type === 'keydown' &&
+				! [ ENTER, SPACE ].includes( event.keyCode )
+			) {
 				return;
 			}
+
+			// Prevent scroll when spacebar is hit.
+			event.preventDefault();
 
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 		},
