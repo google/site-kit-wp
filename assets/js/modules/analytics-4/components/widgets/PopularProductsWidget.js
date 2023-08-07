@@ -161,17 +161,17 @@ export default function PopularProductsWidget( props ) {
 		return <WidgetNull />;
 	}
 
-	const infoTooltip =
-		showTooltip &&
-		createInterpolateElement(
-			__(
-				'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
-				'google-site-kit'
-			),
-			{
-				a: <Link onClick={ openMetricsSelectionPanel } />,
-			}
-		);
+	const infoTooltip = showTooltip
+		? createInterpolateElement(
+				__(
+					'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
+					'google-site-kit'
+				),
+				{
+					a: <Link onClick={ openMetricsSelectionPanel } />,
+				}
+		  )
+		: null;
 
 	return (
 		<MetricTileTable
