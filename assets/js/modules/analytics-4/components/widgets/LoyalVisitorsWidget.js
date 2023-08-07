@@ -73,29 +73,23 @@ export default function LoyalVisitorsWidget( { Widget } ) {
 			)
 	);
 
-	const { rows = [] } = report || {};
+	const { rows = [], totals = [] } = report || {};
 
 	const makeFind = ( dateRange ) => ( row ) =>
 		get( row, 'dimensionValues.0.value' ) === 'returning' &&
 		get( row, 'dimensionValues.1.value' ) === dateRange;
-	const makeFilter = ( dateRange ) => ( row ) =>
-		get( row, 'dimensionValues.1.value' ) === dateRange;
-	const reducer = ( acc, row ) =>
-		acc + ( parseInt( get( row, 'metricValues.0.value' ), 10 ) || 0 );
 
 	const returning =
 		rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value ||
 		0;
-	const total = rows
-		.filter( makeFilter( 'date_range_0' ) )
-		.reduce( reducer, 0 );
+
+	const total = totals[ 0 ]?.metricValues?.[ 0 ]?.value || 0;
 
 	const prevReturning =
 		rows.find( makeFind( 'date_range_1' ) )?.metricValues?.[ 0 ]?.value ||
 		0;
-	const prevTotal = rows
-		.filter( makeFilter( 'date_range_1' ) )
-		.reduce( reducer, 0 );
+
+	const prevTotal = totals[ 1 ]?.metricValues?.[ 0 ]?.value || 0;
 
 	const currentPercentage = total > 0 ? returning / total : 0;
 	const prevPercentage = prevTotal > 0 ? prevReturning / prevTotal : 0;
