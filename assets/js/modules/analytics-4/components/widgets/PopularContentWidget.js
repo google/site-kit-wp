@@ -57,7 +57,7 @@ export default function PopularContentWidget( props ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pageTitle', 'pagePath' ],
+		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [
 			{
@@ -78,31 +78,41 @@ export default function PopularContentWidget( props ) {
 		] )
 	);
 
+	const titles = useInViewSelect( ( select ) =>
+		! error
+			? select( MODULES_ANALYTICS_4 ).getPageTitles(
+					report,
+					reportOptions
+			  )
+			: undefined
+	);
+
 	const loading = useInViewSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
 				[ reportOptions ]
-			)
+			) || titles === undefined
 	);
 
 	const { rows = [] } = report || {};
 
 	const columns = [
 		{
-			field: 'dimensionValues',
+			field: 'dimensionValues.0.value',
 			Component: ( { fieldValue } ) => {
-				const [ title, url ] = fieldValue;
-				const permaLink = getFullURL( siteURL, url.value );
+				const url = fieldValue;
+				const title = titles[ url ];
+				const permaLink = getFullURL( siteURL, url );
 
 				return (
 					<Link
 						href={ permaLink }
-						title={ title.value }
+						title={ title }
 						external
 						hideExternalIndicator
 					>
-						{ title.value }
+						{ title }
 					</Link>
 				);
 			},
