@@ -60,6 +60,10 @@
 			border: 1px solid $c-neutral-n-66;
 			border-radius: 8px;
 			padding: 0 20px;
+
+			&:focus-within {
+				border: 2px solid $c-content-primary;
+			}
 		}
 
 		.googlesitekit-accordion__header {
