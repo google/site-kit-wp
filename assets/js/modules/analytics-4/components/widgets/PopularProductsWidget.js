@@ -42,9 +42,11 @@ import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/K
 import { MetricTileTable } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
-export default function PopularProductsWidget( props ) {
+function PopularProductsWidget( props ) {
 	const { Widget, WidgetNull } = props;
 
 	const productBasePaths = useSelect( ( select ) =>
@@ -181,3 +183,8 @@ PopularProductsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( PopularProductsWidget );
