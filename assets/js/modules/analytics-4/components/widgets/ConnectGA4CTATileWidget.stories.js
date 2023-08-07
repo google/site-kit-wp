@@ -21,10 +21,10 @@
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
+	provideModuleRegistrations,
 	provideModules,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
@@ -55,9 +55,9 @@ export default {
 						slug: 'analytics',
 						active: false,
 						connected: false,
-						Icon: AnalyticsIcon,
 					},
 				] );
+				provideModuleRegistrations( registry );
 			};
 
 			return (

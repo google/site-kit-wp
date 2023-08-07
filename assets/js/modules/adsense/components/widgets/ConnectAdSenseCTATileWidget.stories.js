@@ -20,8 +20,10 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { provideModules } from '../../../../../../tests/js/utils';
-import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
+import {
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
@@ -51,9 +53,9 @@ export default {
 						slug: 'adsense',
 						active: false,
 						connected: false,
-						Icon: AdSenseIcon,
 					},
 				] );
+				provideModuleRegistrations( registry );
 			};
 
 			return (
