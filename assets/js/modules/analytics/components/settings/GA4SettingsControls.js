@@ -103,6 +103,12 @@ export default function GA4SettingsControls( props ) {
 		} );
 	}, [ eventCategory, setValues ] );
 
+	const toggleDocumentClass = useCallback( () => {
+		global.document.body.classList.toggle(
+			'googlesitekit--has-visible-tooltip'
+		);
+	}, [] );
+
 	const isDisabled = ! propertyID && ! enableGA4;
 	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
 
@@ -166,6 +172,8 @@ export default function GA4SettingsControls( props ) {
 								</Button>
 							}
 							onView={ onViewTooltip }
+							onTourStart={ toggleDocumentClass }
+							onTourEnd={ toggleDocumentClass }
 						/>
 					) }
 			</div>
