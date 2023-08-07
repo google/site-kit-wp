@@ -40,7 +40,7 @@ import SetupSelectAccount from './SetupSelectAccount';
 import { trackEvent } from '../../../../../util';
 import { AdBlockerWarning, ErrorNotices } from '../../common';
 import {
-	SUSPEND_BACKGROUND_SUBMIT,
+	BACKGROUND_SUBMIT_SUSPENDED,
 	MODULES_ADSENSE,
 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -76,7 +76,8 @@ export default function SetupMain( { finishSetup } ) {
 	const [ isSubmittingInBackground, setIsSubmittingInBackground ] =
 		useState( false );
 	const backgroundSubmissionSuspended = useSelect(
-		( select ) => !! select( CORE_UI ).getValue( SUSPEND_BACKGROUND_SUBMIT )
+		( select ) =>
+			!! select( CORE_UI ).getValue( BACKGROUND_SUBMIT_SUSPENDED )
 	);
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()

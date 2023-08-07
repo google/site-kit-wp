@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import ViewContextContext from '../../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../../util';
 import {
-	SUSPEND_BACKGROUND_SUBMIT,
+	BACKGROUND_SUBMIT_SUSPENDED,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
@@ -86,13 +86,13 @@ export default function Ready( { site, finishSetup } ) {
 		// pending completion of the below async tasks. This prevents a
 		// rare race condition from occurring.
 		// @see https://github.com/google/site-kit-wp/issues/5614.
-		setValue( SUSPEND_BACKGROUND_SUBMIT, true );
+		setValue( BACKGROUND_SUBMIT_SUSPENDED, true );
 
 		const successSiteSetupCompletion = await completeSiteSetup();
 		const successAccountSetupCompletion = await completeAccountSetup();
 
 		// Re-enable ability to perform background submission(s).
-		setValue( SUSPEND_BACKGROUND_SUBMIT, false );
+		setValue( BACKGROUND_SUBMIT_SUSPENDED, false );
 
 		if (
 			successSiteSetupCompletion &&
