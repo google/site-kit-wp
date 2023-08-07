@@ -28,7 +28,11 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import ViewContextContext from '../../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../../util';
-import { MODULES_ADSENSE } from '../../../../datastore/constants';
+import {
+	BACKGROUND_SUBMIT_SUSPENDED,
+	MODULES_ADSENSE,
+} from '../../../../datastore/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
 const { useSelect, useDispatch } = Data;
 
@@ -53,6 +57,8 @@ export default function Ready( { site, finishSetup } ) {
 	const { completeSiteSetup, completeAccountSetup } =
 		useDispatch( MODULES_ADSENSE );
 
+	const { setValue } = useDispatch( CORE_UI );
+
 	const enableAutoAdsHandler = useCallback(
 		( event ) => {
 			event.preventDefault();
@@ -76,8 +82,18 @@ export default function Ready( { site, finishSetup } ) {
 			return;
 		}
 
+		// Temporarily suspend ability to perform background submission(s)
+		// pending completion of the below async tasks. This prevents a
+		// rare race condition from occurring.
+		// @see https://github.com/google/site-kit-wp/issues/5614.
+		setValue( BACKGROUND_SUBMIT_SUSPENDED, true );
+
 		const successSiteSetupCompletion = await completeSiteSetup();
 		const successAccountSetupCompletion = await completeAccountSetup();
+
+		// Re-enable ability to perform background submission(s).
+		setValue( BACKGROUND_SUBMIT_SUSPENDED, false );
+
 		if (
 			successSiteSetupCompletion &&
 			successAccountSetupCompletion &&
@@ -87,9 +103,10 @@ export default function Ready( { site, finishSetup } ) {
 		}
 	}, [
 		isDoingSubmitChanges,
-		finishSetup,
+		setValue,
 		completeSiteSetup,
 		completeAccountSetup,
+		finishSetup,
 	] );
 
 	const uiProps = {};
