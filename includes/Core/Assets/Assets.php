@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\URL;
 use WP_Dependencies;
 use WP_Post_Type;
 use WP_Post;
@@ -1073,6 +1074,10 @@ final class Assets {
 	 * @return array The array of product base paths.
 	 */
 	private function get_product_base_paths() {
+		if ( ! Feature_Flags::enabled( 'userInput' ) ) {
+			return array();
+		}
+
 		// Return early if permalinks are not used.
 		if ( ! get_option( 'permalink_structure' ) ) {
 			return array();
@@ -1083,26 +1088,12 @@ final class Assets {
 
 		// Check whether the product post type is available and public.
 		if ( $product_type instanceof WP_Post_Type && $product_type->public ) {
-			// Now we need to create a fake product with a randomly created slug
-			// that we can find in the permalink to determine the product base URL.
-			$post_name = substr( str_shuffle( md5( microtime() ) ), 0, 10 );
-			$product   = new WP_Post(
-				(object) array(
-					'ID'          => wp_rand( 1, 10000 ),
-					'post_name'   => $post_name,
-					'post_type'   => 'product',
-					'post_status' => 'publish',
-					'filter'      => 'raw',
-				)
-			);
-
-			$permalink = get_permalink( $product );
-			if ( ! empty( $permalink ) ) {
-				$product_url_path  = wp_parse_url( $permalink, PHP_URL_PATH );
-				$product_base_path = explode( $post_name, $product_url_path, 2 );
-
-				$product_base_paths[] = $product_base_path[0];
-			}
+			global $wp_rewrite;
+			$permastruct               = $wp_rewrite->get_extra_permastruct( 'product' );
+			$permalink_template        = home_url( $permastruct );
+			$product_url_path          = URL::parse( $permalink_template, PHP_URL_PATH );
+			list( $product_base_path ) = explode( '%product%', $product_url_path, 2 );
+			$product_base_paths[]      = $product_base_path;
 		}
 
 		/**
