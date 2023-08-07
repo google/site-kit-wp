@@ -25,7 +25,11 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -58,10 +62,16 @@ export default function PopularProductsWidget( props ) {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const [ showTooltip, setShowTooltip ] = useState( true );
 
 	const openMetricsSelectionPanel = useCallback( () => {
+		setShowTooltip( false );
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 	}, [ setValue ] );
+
+	const handleWidgetBlurOrMouseLeave = useCallback( () => {
+		setShowTooltip( true );
+	}, [] );
 
 	const reportOptions = {
 		...dates,
@@ -144,36 +154,43 @@ export default function PopularProductsWidget( props ) {
 		return <WidgetNull />;
 	}
 
-	const infoTooltip = createInterpolateElement(
-		__(
-			'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
-			'google-site-kit'
-		),
-		{
-			a: <Link onClick={ openMetricsSelectionPanel } />,
-		}
-	);
+	const infoTooltip =
+		showTooltip &&
+		createInterpolateElement(
+			__(
+				'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
+				'google-site-kit'
+			),
+			{
+				a: <Link onClick={ openMetricsSelectionPanel } />,
+			}
+		);
 
 	return (
-		<MetricTileTable
-			Widget={ Widget }
-			title={ __(
-				'Most popular products by pageviews',
-				'google-site-kit'
-			) }
-			loading={ loading }
-			rows={ rows }
-			columns={ columns }
-			infoTooltip={ infoTooltip }
-			ZeroState={ () =>
-				__(
-					'Analytics doesn’t have data for your site’s products yet',
+		<div
+			onBlur={ handleWidgetBlurOrMouseLeave }
+			onMouseLeave={ handleWidgetBlurOrMouseLeave }
+		>
+			<MetricTileTable
+				Widget={ Widget }
+				title={ __(
+					'Most popular products by pageviews',
 					'google-site-kit'
-				)
-			}
-			error={ error }
-			moduleSlug="analytics-4"
-		/>
+				) }
+				loading={ loading }
+				rows={ rows }
+				columns={ columns }
+				infoTooltip={ infoTooltip }
+				ZeroState={ () =>
+					__(
+						'Analytics doesn’t have data for your site’s products yet',
+						'google-site-kit'
+					)
+				}
+				error={ error }
+				moduleSlug="analytics-4"
+			/>
+		</div>
 	);
 }
 
