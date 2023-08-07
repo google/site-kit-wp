@@ -69,6 +69,12 @@ export default function TopCitiesWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions )
 	);
 
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			topcCitiesReportOptions,
+		] )
+	);
+
 	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
@@ -111,6 +117,8 @@ export default function TopCitiesWidget( { Widget } ) {
 			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
+			error={ error }
+			moduleSlug="analytics-4"
 		/>
 	);
 }

@@ -62,6 +62,12 @@ export default function EngagedTrafficSourceWidget( props ) {
 		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
 	);
 
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] )
+	);
+
 	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
@@ -110,6 +116,8 @@ export default function EngagedTrafficSourceWidget( props ) {
 			previousValue={ previousEngagementRate }
 			currentValue={ currentEngagementRate }
 			loading={ loading }
+			error={ error }
+			moduleSlug="analytics-4"
 		/>
 	);
 }
