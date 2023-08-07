@@ -211,8 +211,8 @@
 	max-width: 160px;
 	padding: 12px;
 
-	// This is required to override the button styles from the tooltip component.
-	// Moving it inside the selector above breaks the button styles.
+	// Incorporating these styles within the preceding selector affects the button's appearance.
+	// Hence, the stylelint rule for no-descending-specificity is disabled for the following line.
 	/* stylelint-disable-next-line no-descending-specificity */
 	> button {
 		background: none;
