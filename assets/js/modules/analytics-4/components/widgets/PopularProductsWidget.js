@@ -65,13 +65,20 @@ export default function PopularProductsWidget( props ) {
 	const [ showTooltip, setShowTooltip ] = useState( true );
 
 	const openMetricsSelectionPanel = useCallback( () => {
+		// Hide the tooltip so it doesn't remain visible, above the panel we're
+		// opening.
 		setShowTooltip( false );
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
 
-	const handleWidgetBlurOrMouseLeave = useCallback( () => {
-		setShowTooltip( true );
-	}, [] );
+		// Open the panel.
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+		// Wait for the panel to be open before we re-enable the tooltip.
+		// This prevents it from appearing above the slide-out panel, see:
+		// https://github.com/google/site-kit-wp/issues/7060#issuecomment-1664827831
+		setTimeout( () => {
+			setShowTooltip( true );
+		}, 0 );
+	}, [ setValue ] );
 
 	const reportOptions = {
 		...dates,
@@ -167,30 +174,25 @@ export default function PopularProductsWidget( props ) {
 		);
 
 	return (
-		<div
-			onBlur={ handleWidgetBlurOrMouseLeave }
-			onMouseLeave={ handleWidgetBlurOrMouseLeave }
-		>
-			<MetricTileTable
-				Widget={ Widget }
-				title={ __(
-					'Most popular products by pageviews',
+		<MetricTileTable
+			Widget={ Widget }
+			title={ __(
+				'Most popular products by pageviews',
+				'google-site-kit'
+			) }
+			loading={ loading }
+			rows={ rows }
+			columns={ columns }
+			infoTooltip={ infoTooltip }
+			ZeroState={ () =>
+				__(
+					'Analytics doesn’t have data for your site’s products yet',
 					'google-site-kit'
-				) }
-				loading={ loading }
-				rows={ rows }
-				columns={ columns }
-				infoTooltip={ infoTooltip }
-				ZeroState={ () =>
-					__(
-						'Analytics doesn’t have data for your site’s products yet',
-						'google-site-kit'
-					)
-				}
-				error={ error }
-				moduleSlug="analytics-4"
-			/>
-		</div>
+				)
+			}
+			error={ error }
+			moduleSlug="analytics-4"
+		/>
 	);
 }
 
