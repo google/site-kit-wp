@@ -175,7 +175,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		</WidgetCellWrapper>
 	) );
 
-	const { Icon, title, style, subtitle } = widgetArea;
+	const { Icon, title, style, subtitle, CTA } = widgetArea;
 
 	// Here we render the bare output as it is guaranteed to render empty.
 	// This is important compared to returning `null` so that the area
@@ -223,10 +223,20 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 							</h3>
 						) }
 
-						{ subtitle && (
-							<h4 className="googlesitekit-widget-area-header__subtitle">
-								{ subtitle }
-							</h4>
+						{ ( subtitle || CTA ) && (
+							<div className="googlesitekit-widget-area-header__details">
+								{ subtitle && (
+									<h4 className="googlesitekit-widget-area-header__subtitle">
+										{ subtitle }
+									</h4>
+								) }
+
+								{ CTA && (
+									<div className="googlesitekit-widget-area-header__cta">
+										<CTA />
+									</div>
+								) }
+							</div>
 						) }
 					</Cell>
 				</Row>

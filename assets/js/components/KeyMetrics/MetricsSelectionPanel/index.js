@@ -26,10 +26,8 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
@@ -45,30 +43,16 @@ export default function MetricsSelectionPanel() {
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
-	const keyMetrics = useSelect( ( select ) => {
+	const savedViewableMetrics = useSelect( ( select ) => {
 		const metrics = select( CORE_USER ).getKeyMetrics();
 
 		if ( ! Array.isArray( metrics ) ) {
 			return [];
 		}
 
-		const { isModuleConnected } = select( CORE_MODULES );
-		const { getWidget } = select( CORE_WIDGETS );
+		const { isKeyMetricAvailable } = select( CORE_USER );
 
-		// Before setting metrics as selected, verify that they are available, i.e.
-		// the modules that they depend on are connected. This helps prevent metrics
-		// with disconnected dependencies appear as selected in the selection panel.
-		return metrics.filter( ( slug ) => {
-			const widget = getWidget( slug );
-
-			if ( ! widget ) {
-				return false;
-			}
-
-			return widget.modules.every( ( module ) =>
-				isModuleConnected( module )
-			);
-		} );
+		return metrics.filter( isKeyMetricAvailable );
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -76,9 +60,9 @@ export default function MetricsSelectionPanel() {
 
 	const onSideSheetOpen = useCallback( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: keyMetrics,
+			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
 		} );
-	}, [ keyMetrics, setValues ] );
+	}, [ savedViewableMetrics, setValues ] );
 
 	const sideSheetCloseFn = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
@@ -92,8 +76,8 @@ export default function MetricsSelectionPanel() {
 			closeFn={ sideSheetCloseFn }
 		>
 			<Header />
-			<Metrics />
-			<Footer />
+			<Metrics savedMetrics={ savedViewableMetrics } />
+			<Footer savedMetrics={ savedViewableMetrics } />
 		</SideSheet>
 	);
 }

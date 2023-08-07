@@ -38,9 +38,11 @@ import {
 } from '../../datastore/constants';
 import { MetricTileText } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import whenActive from '../../../../util/when-active';
 const { useSelect, useInViewSelect } = Data;
 
-export default function EngagedTrafficSourceWidget( props ) {
+function EngagedTrafficSourceWidget( props ) {
 	const { Widget } = props;
 
 	const dates = useSelect( ( select ) =>
@@ -124,5 +126,9 @@ export default function EngagedTrafficSourceWidget( props ) {
 
 EngagedTrafficSourceWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( EngagedTrafficSourceWidget );

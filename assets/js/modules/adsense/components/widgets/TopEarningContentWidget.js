@@ -1,5 +1,5 @@
 /**
- * TopCountriesWidget component.
+ * TopEarningContentWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -22,24 +22,36 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { compose } from '@wordpress/compose';
+
+/**
  * Internal dependencies
  */
 import whenActive from '../../../../util/when-active';
-import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import ConnectGA4CTATileWidget from '../../../analytics-4/components/widgets/ConnectGA4CTATileWidget';
+import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
-function TopCountriesWidget( { Widget } ) {
+function TopEarningContentWidget( { Widget } ) {
 	return (
 		<Widget>
-			<div>TODO: UI for TopCountriesWidget</div>
+			<div>TODO: UI for TopEarningContentWidget</div>
 		</Widget>
 	);
 }
 
-TopCountriesWidget.propTypes = {
+TopEarningContentWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( {
-	moduleName: 'analytics-4',
-	FallbackComponent: ConnectGA4CTATileWidget,
-} )( TopCountriesWidget );
+export default compose(
+	whenActive( {
+		moduleName: 'analytics-4',
+		FallbackComponent: ConnectGA4CTATileWidget,
+	} ),
+	whenActive( {
+		moduleName: 'adsense',
+		FallbackComponent: ConnectAdSenseCTATileWidget,
+	} )
+)( TopEarningContentWidget );
