@@ -114,7 +114,7 @@ const AuthenticatedPermissionsModal = () => {
 				) }
 				subtitle={ permissionsError.message }
 				confirmButton={ __( 'Proceed', 'google-site-kit' ) }
-				dialogActive={ true }
+				dialogActive
 				handleConfirm={ onConfirm }
 				handleDialog={ onCancel }
 			/>

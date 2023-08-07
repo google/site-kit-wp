@@ -78,7 +78,7 @@ describe( 'UseSnippetSwitch', () => {
 
 	it( 'should persist useSnippet when saveOnChange prop is enabled', async () => {
 		const { container, registry } = render(
-			<UseSnippetSwitch saveOnChange={ true } />,
+			<UseSnippetSwitch saveOnChange />,
 			{ setupRegistry: getSetupRegistry( false ) }
 		);
 		const originalUseSnippet = registry
