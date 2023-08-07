@@ -255,7 +255,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 
 	const analyticsError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
-			return false;
+			return null;
 		}
 
 		return (
