@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -70,12 +70,12 @@ export default function AdBlockingRecoveryNotification() {
 		global.history.replaceState( null, '', modifiedURL );
 	};
 
-	const handleView = () => {
+	const handleView = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_adsense-abr-success-notification`,
 			'view_notification'
 		);
-	};
+	}, [ viewContext ] );
 
 	if (
 		adBlockingRecoverySetupStatus !==
