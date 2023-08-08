@@ -289,9 +289,6 @@ describe( 'AdBlockingRecoveryWidget', () => {
 	} );
 
 	describe( 'CTA actions', () => {
-		let container;
-		let getByRole;
-
 		// This is needed for `navigateTo` to work in test.
 		mockLocation();
 
@@ -311,8 +308,10 @@ describe( 'AdBlockingRecoveryWidget', () => {
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingAdBlockingRecoveryTag( null );
+		} );
 
-			const renderResult = render(
+		it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
+			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
 						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -324,14 +323,11 @@ describe( 'AdBlockingRecoveryWidget', () => {
 						WidgetNull={ WidgetNull }
 					/>
 				</div>,
-				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
 			);
-
-			container = renderResult.container;
-			getByRole = renderResult.getByRole;
-		} );
-
-		it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
 			const abrURL = registry
 				.select( CORE_SITE )
 				.getAdminURL( 'googlesitekit-ad-blocking-recovery' );
@@ -354,6 +350,23 @@ describe( 'AdBlockingRecoveryWidget', () => {
 		} );
 
 		it( 'should dismiss the CTA and open the tooltip when dismiss button is clicked', async () => {
+			const { container, getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdBlockingRecoveryWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
@@ -383,6 +396,23 @@ describe( 'AdBlockingRecoveryWidget', () => {
 		} );
 
 		it( 'should close the tooltip on clicking the `X` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdBlockingRecoveryWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
@@ -407,6 +437,23 @@ describe( 'AdBlockingRecoveryWidget', () => {
 		} );
 
 		it( 'should close the tooltip on clicking the `Got it` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdBlockingRecoveryWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
@@ -431,6 +478,23 @@ describe( 'AdBlockingRecoveryWidget', () => {
 		} );
 
 		it( 'Should fire track event when learn more is clicked', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdBlockingRecoveryWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
