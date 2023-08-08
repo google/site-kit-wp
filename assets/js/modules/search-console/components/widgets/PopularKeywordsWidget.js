@@ -142,5 +142,4 @@ export default function PopularKeywordsWidget( { Widget } ) {
 
 PopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };

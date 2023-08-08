@@ -19,34 +19,33 @@
 /**
  * External dependencies
  */
-import { pickBy } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import MetricItem from './MetricItem';
 const { useSelect } = Data;
 
-export default function Metrics() {
+export default function Metrics( { savedMetrics } ) {
 	const availableMetrics = useSelect( ( select ) => {
-		const { isModuleConnected } = select( CORE_MODULES );
-		const { getWidget } = select( CORE_WIDGETS );
+		const { isKeyMetricAvailable } = select( CORE_USER );
 
-		return pickBy( KEY_METRICS_WIDGETS, ( _value, key ) => {
-			const widget = getWidget( key );
+		return Object.keys( KEY_METRICS_WIDGETS )
+			.sort(
+				( a, b ) =>
+					savedMetrics.indexOf( b ) - savedMetrics.indexOf( a )
+			)
+			.reduce( ( acc, metric ) => {
+				if ( ! isKeyMetricAvailable( metric ) ) {
+					return acc;
+				}
 
-			if ( ! widget ) {
-				return false;
-			}
-
-			return widget.modules.every( ( module ) =>
-				isModuleConnected( module )
-			);
-		} );
+				return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
+			}, {} );
 	} );
 
 	return (
@@ -69,3 +68,7 @@ export default function Metrics() {
 		</div>
 	);
 }
+
+Metrics.propTypes = {
+	savedMetrics: PropTypes.array,
+};
