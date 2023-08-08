@@ -247,7 +247,7 @@ export default function Header( { slug } ) {
 										'Experimental',
 										'google-site-kit'
 									) }
-									hasLeftSpacing={ true }
+									hasLeftSpacing
 								/>
 							) }
 						</div>

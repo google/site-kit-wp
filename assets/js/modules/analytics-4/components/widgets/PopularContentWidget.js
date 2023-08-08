@@ -40,9 +40,11 @@ import { MetricTileTable } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import { getFullURL, numFmt } from '../../../../util';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 const { useSelect, useInViewSelect } = Data;
 
-export default function PopularContentWidget( props ) {
+function PopularContentWidget( props ) {
 	const { Widget } = props;
 
 	const siteURL = useSelect( ( select ) =>
@@ -57,7 +59,7 @@ export default function PopularContentWidget( props ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pageTitle', 'pagePath' ],
+		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [
 			{
@@ -78,31 +80,41 @@ export default function PopularContentWidget( props ) {
 		] )
 	);
 
+	const titles = useInViewSelect( ( select ) =>
+		! error
+			? select( MODULES_ANALYTICS_4 ).getPageTitles(
+					report,
+					reportOptions
+			  )
+			: undefined
+	);
+
 	const loading = useInViewSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
 				[ reportOptions ]
-			)
+			) || titles === undefined
 	);
 
 	const { rows = [] } = report || {};
 
 	const columns = [
 		{
-			field: 'dimensionValues',
+			field: 'dimensionValues.0.value',
 			Component: ( { fieldValue } ) => {
-				const [ title, url ] = fieldValue;
-				const permaLink = getFullURL( siteURL, url.value );
+				const url = fieldValue;
+				const title = titles[ url ];
+				const permaLink = getFullURL( siteURL, url );
 
 				return (
 					<Link
 						href={ permaLink }
-						title={ title.value }
+						title={ title }
 						external
 						hideExternalIndicator
 					>
-						{ title.value }
+						{ title }
 					</Link>
 				);
 			},
@@ -134,5 +146,9 @@ export default function PopularContentWidget( props ) {
 
 PopularContentWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( PopularContentWidget );
