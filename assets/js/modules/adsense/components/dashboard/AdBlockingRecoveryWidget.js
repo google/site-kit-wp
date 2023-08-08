@@ -46,7 +46,6 @@ import BannerTitle from '../../../../components/notifications/BannerNotification
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
@@ -61,10 +60,11 @@ import {
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
+import whenActive from '../../../../util/when-active';
 
 const { useSelect, useDispatch } = Data;
 
-export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
+function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const breakpoint = useBreakpoint();
 	const viewOnlyDashboard = useViewOnly();
 	const inView = useInView();
@@ -81,9 +81,6 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isItemDismissed(
 			AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
 		)
-	);
-	const adSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) => {
 		if ( viewOnlyDashboard ) {
@@ -131,20 +128,18 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const setupCompletedTimestampInMilliseconds =
 		setupCompletedTimestamp * 1000;
 	const threeWeeksInMilliseconds = WEEK_IN_SECONDS * 3 * 1000;
+	const isThreeWeeksAfterSetupCompleted =
+		referenceDateInMilliseconds - setupCompletedTimestampInMilliseconds >=
+		threeWeeksInMilliseconds;
 
 	const shouldShowWidget =
 		! viewOnlyDashboard &&
-		adSenseModuleConnected &&
 		hasExistingAdBlockingRecoveryTag === false &&
 		isDismissed === false &&
 		adBlockingRecoverySetupStatus === '' &&
 		accountStatus === ACCOUNT_STATUS_READY &&
 		siteStatus === SITE_STATUS_READY &&
-		// Show the widget if setupCompletedTimestamp is not set, or it is 3 weeks or more in the past.
-		( ! setupCompletedTimestamp ||
-			referenceDateInMilliseconds -
-				setupCompletedTimestampInMilliseconds >=
-				threeWeeksInMilliseconds );
+		( ! setupCompletedTimestamp || isThreeWeeksAfterSetupCompleted );
 
 	useEffect( () => {
 		if ( inView && shouldShowWidget ) {
@@ -170,7 +165,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	};
 
 	const handleDismissClick = async () => {
-		await trackEvent(
+		trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'dismiss_notification'
 		);
@@ -288,3 +283,7 @@ AdBlockingRecoveryWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( { moduleName: 'adsense' } )(
+	AdBlockingRecoveryWidget
+);
