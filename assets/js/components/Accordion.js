@@ -26,6 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useState, useCallback, useEffect } from '@wordpress/element';
+import { ENTER, SPACE } from '@wordpress/keycodes';
 
 export default function Accordion( {
 	title,
@@ -33,6 +34,7 @@ export default function Accordion( {
 	initialOpen,
 	onOpen,
 	onClose,
+	disabled,
 } ) {
 	const [ isActive, setActive ] = useState( !! initialOpen );
 
@@ -44,19 +46,42 @@ export default function Accordion( {
 		}
 	}, [ isActive, onClose, onOpen ] );
 
-	const toggleAccordion = useCallback( () => {
-		setActive( ! isActive );
-	}, [ isActive ] );
+	useEffect( () => {
+		if ( disabled && isActive ) {
+			setActive( false );
+		}
+	}, [ disabled, isActive ] );
+
+	const toggleAccordion = useCallback(
+		( event ) => {
+			if (
+				event.type === 'keydown' &&
+				! [ ENTER, SPACE ].includes( event.keyCode )
+			) {
+				return;
+			}
+
+			// Prevent scroll when spacebar is hit.
+			event.preventDefault();
+
+			setActive( ! isActive );
+		},
+		[ isActive ]
+	);
 
 	return (
-		<div className="googlesitekit-accordion">
+		<div
+			className={ classnames( 'googlesitekit-accordion', {
+				'googlesitekit-accordion--disabled': disabled,
+			} ) }
+		>
 			<div
 				className={ classnames( 'googlesitekit-accordion__header', {
 					'is-active': isActive,
 				} ) }
 				onClick={ toggleAccordion }
-				onKeyDown={ () => {} }
-				tabIndex={ 0 }
+				onKeyDown={ toggleAccordion }
+				tabIndex={ disabled ? -1 : 0 }
 				role="button"
 			>
 				{ title }
@@ -78,4 +103,5 @@ Accordion.propTypes = {
 	initialOpen: PropTypes.bool,
 	onOpen: PropTypes.func,
 	onClose: PropTypes.func,
+	disabled: PropTypes.bool,
 };

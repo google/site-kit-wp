@@ -24,55 +24,28 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	CORE_USER,
-	keyMetricsGA4Widgets,
-} from '../../../../googlesitekit/datastore/user/constants';
+import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
 
-const { useSelect } = Data;
+// Note: `analytics` is used as the slug here since GA4 "depends" on it.
+const metadata = { moduleSlug: 'analytics' };
 
-export default function ConnectGA4CTATileWidget( { Widget, WidgetNull } ) {
-	const isGA4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
+export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
+	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );
 
-	const keyMetrics = useSelect( ( select ) => {
-		if ( isGA4ModuleConnected !== false ) {
-			return;
-		}
-		return select( CORE_USER ).getKeyMetrics();
-	} );
-
-	let hideWidget = true;
-
-	if ( keyMetrics?.length > 0 ) {
-		const kmAnalyticsWidgetCount = keyMetrics.filter( ( keyMetric ) =>
-			keyMetricsGA4Widgets.includes( keyMetric )
-		).length;
-
-		if ( kmAnalyticsWidgetCount > 0 && kmAnalyticsWidgetCount < 3 ) {
-			hideWidget = false;
-		}
-	}
-
-	if ( isGA4ModuleConnected !== false || hideWidget ) {
-		return <WidgetNull />;
-	}
-
+	// Note that we need to render the `Widget` component as a wrapper here so this component will display
+	// correctly when used as a `FallbackComponent` for the `whenActive` HOC. Conversely, when `ConnectModuleCTATile`
+	// is rendered as an `OverrideComponent` in `WidgetRenderer` (as a result of multiple adjacent widgets rendering
+	// this component and thus sharing the same state), it is wrapped with a `Widget` component - the net
+	// result being the ConnectModuleCTATile is correctly wrapped in a `Widget` in both cases.
 	return (
-		<ConnectModuleCTATile
-			Icon={ AnalyticsIcon }
-			moduleSlug="analytics"
-			Widget={ Widget }
-		/>
+		<Widget>
+			<ConnectModuleCTATile { ...metadata } />
+		</Widget>
 	);
 }
 
 ConnectGA4CTATileWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
+	widgetSlug: PropTypes.string.isRequired,
 };

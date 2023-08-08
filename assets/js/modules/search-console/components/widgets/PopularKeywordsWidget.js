@@ -63,6 +63,12 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportOptions )
 	);
 
+	const error = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] )
+	);
+
 	const loading = useInViewSelect(
 		( select ) =>
 			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
@@ -128,11 +134,12 @@ export default function PopularKeywordsWidget( { Widget } ) {
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			limit={ 3 }
+			error={ error }
+			moduleSlug="search-console"
 		/>
 	);
 }
 
 PopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };

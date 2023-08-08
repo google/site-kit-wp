@@ -94,7 +94,7 @@ export const Checkboxes = () => (
 				id="googlesitekit-checkbox-4"
 				name="googlesitekit__checkbox"
 				value="value-4"
-				loading={ true }
+				loading
 				{ ...defaultProps }
 			>
 				Loading Checkbox

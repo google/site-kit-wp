@@ -49,4 +49,10 @@
 		line-height: $lh-body-md;
 		margin: 0;
 	}
+
+	.googlesitekit-widget-area-header__details {
+		align-items: flex-start;
+		display: flex;
+		justify-content: space-between;
+	}
 }

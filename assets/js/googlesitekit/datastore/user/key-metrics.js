@@ -36,6 +36,8 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
+import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
@@ -102,19 +104,30 @@ const baseActions = {
 	 * Saves key metrics settings.
 	 *
 	 * @since 1.103.0
+	 * @since n.e.x.t Accepts an optional `settings` parameter that allows saving additional settings.
 	 *
+	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*saveKeyMetricsSettings() {
+	*saveKeyMetricsSettings( settings = {} ) {
+		invariant(
+			isPlainObject( settings ),
+			'key metric settings should be an object to save.'
+		);
+
 		yield clearError( 'saveKeyMetricsSettings', [] );
 
 		const registry = yield Data.commonActions.getRegistry();
 		const keyMetricsSettings = registry
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
+
 		const { response, error } =
 			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetricsSettings(
-				keyMetricsSettings
+				{
+					...keyMetricsSettings,
+					...settings,
+				}
 			);
 
 		if ( error ) {
@@ -305,6 +318,72 @@ const baseSelectors = {
 	getKeyMetricsSettings( state ) {
 		return state.keyMetricsSettings;
 	},
+
+	/**
+	 * Determines whether the key metrics settings are being saved or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the key metrics settings are being saved, otherwise FALSE.
+	 */
+	isSavingKeyMetricsSettings( state ) {
+		// Since isFetchingSaveKeyMetricsSettings holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such request is in progress.
+		return Object.values( state.isFetchingSaveKeyMetricsSettings ).some(
+			Boolean
+		);
+	},
+
+	/**
+	 * Gets whether an individual key metric identified by its slug is
+	 * available, i.e. the modules that it depends on are connected and
+	 * a view-only user has access to it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} widgetSlug The key metric widget slug.
+	 * @return {boolean|undefined} True if the key metric is available, false if it is not, or undefined if the authentication state has not loaded.
+	 */
+	isKeyMetricAvailable: createRegistrySelector(
+		( select ) => ( _state, widgetSlug ) => {
+			invariant( widgetSlug, 'Key metric widget slug required.' );
+
+			const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+			if ( isAuthenticated === undefined ) {
+				return undefined;
+			}
+
+			const widget = select( CORE_WIDGETS ).getWidget( widgetSlug );
+
+			if ( ! widget ) {
+				return false;
+			}
+
+			const { getModule } = select( CORE_MODULES );
+			const { canViewSharedModule } = select( CORE_USER );
+
+			return widget.modules.every( ( slug ) => {
+				const module = getModule( slug );
+
+				if ( ! module || ! module.connected ) {
+					return false;
+				}
+
+				if (
+					! isAuthenticated &&
+					module.shareable &&
+					! canViewSharedModule( slug )
+				) {
+					return false;
+				}
+
+				return true;
+			} );
+		}
+	),
 };
 
 const store = Data.combineStores(
