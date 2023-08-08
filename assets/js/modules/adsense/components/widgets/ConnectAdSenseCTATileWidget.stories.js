@@ -21,10 +21,9 @@
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
-	provideKeyMetrics,
+	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
@@ -56,9 +55,7 @@ export default {
 						connected: false,
 					},
 				] );
-				provideKeyMetrics( registry, {
-					widgetSlugs: [ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ],
-				} );
+				provideModuleRegistrations( registry );
 			};
 
 			return (

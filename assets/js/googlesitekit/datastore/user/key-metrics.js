@@ -36,6 +36,8 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
+import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
@@ -332,6 +334,56 @@ const baseSelectors = {
 			Boolean
 		);
 	},
+
+	/**
+	 * Gets whether an individual key metric identified by its slug is
+	 * available, i.e. the modules that it depends on are connected and
+	 * a view-only user has access to it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} widgetSlug The key metric widget slug.
+	 * @return {boolean|undefined} True if the key metric is available, false if it is not, or undefined if the authentication state has not loaded.
+	 */
+	isKeyMetricAvailable: createRegistrySelector(
+		( select ) => ( _state, widgetSlug ) => {
+			invariant( widgetSlug, 'Key metric widget slug required.' );
+
+			const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+			if ( isAuthenticated === undefined ) {
+				return undefined;
+			}
+
+			const widget = select( CORE_WIDGETS ).getWidget( widgetSlug );
+
+			if ( ! widget ) {
+				return false;
+			}
+
+			const { getModule } = select( CORE_MODULES );
+			const { canViewSharedModule } = select( CORE_USER );
+
+			return widget.modules.every( ( slug ) => {
+				const module = getModule( slug );
+
+				if ( ! module || ! module.connected ) {
+					return false;
+				}
+
+				if (
+					! isAuthenticated &&
+					module.shareable &&
+					! canViewSharedModule( slug )
+				) {
+					return false;
+				}
+
+				return true;
+			} );
+		}
+	),
 };
 
 const store = Data.combineStores(

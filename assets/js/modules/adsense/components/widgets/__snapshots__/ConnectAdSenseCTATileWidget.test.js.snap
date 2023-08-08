@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConnectAdSenseCTATileWidget should render the Connect AdSense CTA tile 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectAdSenseCTATile"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-widget--connectModuleCTATile"
+      >
+        <div
+          class="googlesitekit-km-connect-module-cta-tile"
+        >
+          <div
+            class="googlesitekit-km-connect-module-cta-tile__content"
+          >
+            <p
+              class="googlesitekit-km-connect-module-cta-tile__text"
+            >
+              AdSense is disconnected, some of your metrics can’t be displayed
+            </p>
+            <a
+              class="googlesitekit-cta-link"
+              href="#"
+            >
+              Connect AdSense
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
