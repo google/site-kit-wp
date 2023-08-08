@@ -22,7 +22,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useEffect,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -30,35 +34,41 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import AdsenseAdBlockingRecoverySVG from '../../../../../svg/graphics/adsense-ad-blocking-recovery.svg';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { Cell } from '../../../../material-components';
-import BannerTitle from '../../../../components/notifications/BannerNotification/BannerTitle';
-import BannerActions from '../../../../components/notifications/BannerNotification/BannerActions';
-import Banner from '../../../../components/notifications/BannerNotification/Banner';
-import Link from '../../../../components/Link';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
 	useTooltipState,
 } from '../../../../components/AdminMenuTooltip';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
-	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { WEEK_IN_SECONDS, stringToDate } from '../../../../util';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import useViewOnly from '../../../../hooks/useViewOnly';
+import Link from '../../../../components/Link';
+import Banner from '../../../../components/notifications/BannerNotification/Banner';
+import BannerActions from '../../../../components/notifications/BannerNotification/BannerActions';
+import BannerTitle from '../../../../components/notifications/BannerNotification/BannerTitle';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
+import { useInView } from '../../../../hooks/useInView';
+import useViewContext from '../../../../hooks/useViewContext';
+import useViewOnly from '../../../../hooks/useViewOnly';
+import { Cell } from '../../../../material-components';
+import { WEEK_IN_SECONDS, stringToDate, trackEvent } from '../../../../util';
+import {
+	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
+	MODULES_ADSENSE,
+} from '../../datastore/constants';
+import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
+import whenActive from '../../../../util/when-active';
+
 const { useSelect, useDispatch } = Data;
 
-export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
+function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const breakpoint = useBreakpoint();
 	const viewOnlyDashboard = useViewOnly();
+	const inView = useInView();
+	const viewContext = useViewContext();
 
 	const showTooltip = useShowTooltip(
 		AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
@@ -66,13 +76,11 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	const { isTooltipVisible } = useTooltipState(
 		AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
 	);
+
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
 		)
-	);
-	const adSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) => {
 		if ( viewOnlyDashboard ) {
@@ -114,9 +122,66 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
-	const dismissCallback = async () => {
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const referenceDateInMilliseconds = stringToDate( referenceDate ).getTime();
+	const setupCompletedTimestampInMilliseconds =
+		setupCompletedTimestamp * 1000;
+	const threeWeeksInMilliseconds = WEEK_IN_SECONDS * 3 * 1000;
+	const isThreeWeeksAfterSetupCompleted =
+		referenceDateInMilliseconds - setupCompletedTimestampInMilliseconds >=
+		threeWeeksInMilliseconds;
+
+	const shouldShowWidget =
+		! viewOnlyDashboard &&
+		hasExistingAdBlockingRecoveryTag === false &&
+		isDismissed === false &&
+		adBlockingRecoverySetupStatus === '' &&
+		accountStatus === ACCOUNT_STATUS_READY &&
+		siteStatus === SITE_STATUS_READY &&
+		( ! setupCompletedTimestamp || isThreeWeeksAfterSetupCompleted );
+
+	useEffect( () => {
+		if ( inView && shouldShowWidget ) {
+			trackEvent(
+				`${ viewContext }_adsense-abr-cta-widget`,
+				'view_notification'
+			);
+		}
+	}, [ inView, shouldShowWidget, viewContext ] );
+
+	useEffect( () => {
+		if ( isTooltipVisible ) {
+			trackEvent( `${ viewContext }_adsense-abr`, 'view_tooltip' );
+		}
+	}, [ isTooltipVisible, viewContext ] );
+
+	const handleCTAClick = async () => {
+		await trackEvent(
+			`${ viewContext }_adsense-abr-cta-widget`,
+			'confirm_notification'
+		);
+		return navigateTo( recoveryPageURL );
+	};
+
+	const handleDismissClick = async () => {
+		trackEvent(
+			`${ viewContext }_adsense-abr-cta-widget`,
+			'dismiss_notification'
+		);
 		showTooltip();
 		await dismissItem( AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY );
+	};
+
+	const handleLearnMoreClick = () => {
+		trackEvent(
+			`${ viewContext }_adsense-abr-cta-widget`,
+			'click_learn_more_link'
+		);
+	};
+
+	const handleDismissTooltip = () => {
+		trackEvent( `${ viewContext }_adsense-abr`, 'dismiss_tooltip' );
 	};
 
 	if ( isTooltipVisible ) {
@@ -129,6 +194,7 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					onDismiss={ handleDismissTooltip }
 					tooltipStateKey={
 						AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
 					}
@@ -136,25 +202,6 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 			</Fragment>
 		);
 	}
-
-	const referenceDateInMilliseconds = stringToDate( referenceDate ).getTime();
-	const setupCompletedTimestampInMilliseconds =
-		setupCompletedTimestamp * 1000;
-	const threeWeeksInMilliseconds = WEEK_IN_SECONDS * 3 * 1000;
-
-	const shouldShowWidget =
-		! viewOnlyDashboard &&
-		adSenseModuleConnected &&
-		hasExistingAdBlockingRecoveryTag === false &&
-		isDismissed === false &&
-		adBlockingRecoverySetupStatus === '' &&
-		accountStatus === ACCOUNT_STATUS_READY &&
-		siteStatus === SITE_STATUS_READY &&
-		// Show the widget if setupCompletedTimestamp is not set, or it is 3 weeks or more in the past.
-		( ! setupCompletedTimestamp ||
-			referenceDateInMilliseconds -
-				setupCompletedTimestampInMilliseconds >=
-				threeWeeksInMilliseconds );
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;
@@ -179,7 +226,13 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 									'google-site-kit'
 								),
 								{
-									a: <Link href={ learnMoreURL } external />,
+									a: (
+										<Link
+											onClick={ handleLearnMoreClick }
+											href={ learnMoreURL }
+											external
+										/>
+									),
 								}
 							) }
 						</p>
@@ -192,9 +245,10 @@ export default function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 					</div>
 
 					<BannerActions
+						ctaLink="#"
 						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
-						ctaLink={ recoveryPageURL }
-						dismissCallback={ dismissCallback }
+						ctaCallback={ handleCTAClick }
+						dismissCallback={ handleDismissClick }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 					/>
 				</Cell>
@@ -229,3 +283,7 @@ AdBlockingRecoveryWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( { moduleName: 'adsense' } )(
+	AdBlockingRecoveryWidget
+);

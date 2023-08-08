@@ -19,18 +19,26 @@
 /**
  * Internal dependencies
  */
-import AdBlockingRecoveryWidget from './AdBlockingRecoveryWidget';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	act,
-	fireEvent,
-	render,
 	createTestRegistry,
+	fireEvent,
+	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	provideModules,
+	render,
 	unsubscribeFromAll,
 } from '../../../../../../tests/js/test-utils';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../googlesitekit/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { stringToDate } from '../../../../util';
+import * as tracking from '../../../../util/tracking';
 import {
 	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
@@ -42,12 +50,10 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { stringToDate } from '../../../../util';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
+import AdBlockingRecoveryWidget from './AdBlockingRecoveryWidget';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdBlockingRecoveryWidget', () => {
 	let registry;
@@ -69,6 +75,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 		getWidgetComponentProps( 'adBlockingRecovery' );
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
@@ -87,7 +94,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'before click', () => {
+	describe( 'widget rendering', () => {
 		const shouldRender = {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			accountStatus: ACCOUNT_STATUS_READY,
@@ -213,6 +220,9 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				);
 
 				expect( container ).toBeEmptyDOMElement();
+
+				// If the widget is not rendered, no tracking event should fire.
+				expect( mockTrackEvent ).not.toHaveBeenCalled();
 			}
 		);
 
@@ -232,10 +242,17 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				/>,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 			expect( container ).toHaveTextContent(
 				'Recover revenue lost to ad blockers'
+			);
+
+			// The tracking event should fire when the widget is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'view_notification'
 			);
 		} );
 
@@ -256,17 +273,26 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				/>,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 			expect( container ).toHaveTextContent(
 				'Recover revenue lost to ad blockers'
 			);
+
+			// The tracking event should fire when the widget is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'view_notification'
+			);
 		} );
 	} );
 
-	describe( 'after click', () => {
-		let container;
-		beforeEach( async () => {
+	describe( 'CTA actions', () => {
+		// This is needed for `navigateTo` to work in test.
+		mockLocation();
+
+		beforeEach( () => {
 			fetchMock.postOnce(
 				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
 				{
@@ -282,8 +308,10 @@ describe( 'AdBlockingRecoveryWidget', () => {
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingAdBlockingRecoveryTag( null );
+		} );
 
-			container = render(
+		it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
+			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
 						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -295,47 +323,188 @@ describe( 'AdBlockingRecoveryWidget', () => {
 						WidgetNull={ WidgetNull }
 					/>
 				</div>,
-				{ registry }
-			).container;
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+			const abrURL = registry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-ad-blocking-recovery' );
 
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
-					container.querySelector( 'button.googlesitekit-cta-link' )
+					getByRole( 'button', { name: /Set up now/i } )
 				);
 			} );
+
+			// The tracking event should fire when the CTA is clicked.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'confirm_notification'
+			);
+
+			expect( global.location.assign ).toHaveBeenCalled();
+			expect( global.location.assign ).toHaveBeenCalledWith( abrURL );
 		} );
 
-		it( 'should open the tooltip', () => {
+		it( 'should dismiss the CTA and open the tooltip when dismiss button is clicked', async () => {
+			const { container, getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdBlockingRecoveryWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			expect( container ).not.toHaveTextContent(
+				'Recover revenue lost to ad blockers'
+			);
+
+			// The tracking event should fire when the CTA is clicked.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'dismiss_notification'
+			);
+
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).toBeInTheDocument();
+
+			// The tracking event should fire when the tooltip is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr',
+				'view_tooltip'
+			);
 		} );
 
-		it( 'should close the tooltip on clicking the close button', async () => {
+		it( 'should close the tooltip on clicking the `X` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdBlockingRecoveryWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
-					document.querySelector( '.googlesitekit-tooltip-close' )
+					getByRole( 'button', { name: /Maybe later/i } )
 				);
 			} );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
+			} );
+
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
+
+			// The tracking event should fire when the tooltip is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr',
+				'dismiss_tooltip'
+			);
 		} );
 
-		it( 'should close the modal on clicking the dismiss button', async () => {
+		it( 'should close the tooltip on clicking the `Got it` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdBlockingRecoveryWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
-					document.querySelector(
-						'.googlesitekit-tooltip-buttons > button'
-					)
+					getByRole( 'button', { name: /Maybe later/i } )
 				);
 			} );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+			} );
+
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
+
+			// The tracking event should fire when the tooltip is rendered.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr',
+				'dismiss_tooltip'
+			);
+		} );
+
+		it( 'Should fire track event when learn more is clicked', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdBlockingRecoveryWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+			} );
+
+			// The tracking event should fire when the CTA is clicked.
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_adsense-abr-cta-widget',
+				'click_learn_more_link'
+			);
 		} );
 	} );
 } );
