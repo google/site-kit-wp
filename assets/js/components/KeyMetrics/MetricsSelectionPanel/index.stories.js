@@ -23,6 +23,7 @@ import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import {
 	provideKeyMetrics,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
@@ -44,6 +45,8 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry );
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
