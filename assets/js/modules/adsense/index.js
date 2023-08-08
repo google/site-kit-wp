@@ -127,7 +127,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 1,
 				wrapWidget: false,
-				modules: [ 'adsense, analytics-4' ],
+				modules: [ 'adsense', 'analytics-4' ],
 				isActive: ( select ) =>
 					select( CORE_USER ).isKeyMetricActive(
 						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
