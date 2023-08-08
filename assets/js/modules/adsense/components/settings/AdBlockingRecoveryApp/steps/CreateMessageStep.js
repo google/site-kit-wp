@@ -170,7 +170,8 @@ export default function CreateMessageStep() {
 							<Link
 								onClick={ handleSecondaryCTAClick }
 								href={ privacyMessagingURL }
-								target="_blank"
+								external
+								hideExternalIndicator
 							>
 								{ __( 'Create message', 'google-site-kit' ) }
 							</Link>
