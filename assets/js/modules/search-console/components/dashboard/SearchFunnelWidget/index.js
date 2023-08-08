@@ -236,20 +236,15 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 			return false;
 		}
 
-		return (
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				analyticsOverviewArgs,
-			] ) ||
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				analyticsStatsArgs,
-			] ) ||
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+		const { hasFinishedResolution } = select( MODULES_ANALYTICS );
+
+		return ! (
+			hasFinishedResolution( 'getReport', [ analyticsOverviewArgs ] ) &&
+			hasFinishedResolution( 'getReport', [ analyticsStatsArgs ] ) &&
+			hasFinishedResolution( 'getReport', [
 				analyticsVisitorsOverviewAndStatsArgs,
-			] ) ||
-			! select( MODULES_ANALYTICS ).hasFinishedResolution(
-				'getGoals',
-				[]
-			)
+			] ) &&
+			hasFinishedResolution( 'getGoals', [] )
 		);
 	} );
 
@@ -258,17 +253,15 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 			return null;
 		}
 
+		const { getErrorForSelector } = select( MODULES_ANALYTICS );
+
 		return (
-			select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-				analyticsOverviewArgs,
-			] ) ||
-			select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-				analyticsStatsArgs,
-			] ) ||
-			select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+			getErrorForSelector( 'getReport', [ analyticsOverviewArgs ] ) ||
+			getErrorForSelector( 'getReport', [ analyticsStatsArgs ] ) ||
+			getErrorForSelector( 'getReport', [
 				analyticsVisitorsOverviewAndStatsArgs,
 			] ) ||
-			select( MODULES_ANALYTICS ).getErrorForSelector( 'getGoals', [] )
+			getErrorForSelector( 'getGoals', [] )
 		);
 	} );
 
