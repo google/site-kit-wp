@@ -28,7 +28,6 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
-	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
@@ -198,7 +197,7 @@ describe( 'modules/search-console report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
+				await waitForTimeouts( 30 );
 
 				const error = registry
 					.select( MODULES_SEARCH_CONSOLE )
