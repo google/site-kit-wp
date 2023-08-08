@@ -16,6 +16,25 @@
  * limitations under the License.
  */
 
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-km-widget-tile-title__tooltip {
+	border-radius: $br-xs;
+	font-family: $f-primary;
+	font-size: $fs-body-sm;
+	font-weight: $fw-normal;
+	letter-spacing: $ls-xs;
+	line-height: $lh-body-sm;
+	max-width: 160px;
+	padding: 12px;
+
+	> button {
+		background: none;
+		border: none;
+		color: $c-surfaces-inverse-on-surface;
+		padding-right: 0;
+		text-decoration: underline;
+	}
+}
+
 .googlesitekit-plugin {
 
 	.googlesitekit-km-widget-tile {
@@ -198,27 +217,5 @@
 				}
 			}
 		}
-	}
-}
-
-.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-km-widget-tile-title__tooltip {
-	border-radius: $br-xs;
-	font-family: $f-primary;
-	font-size: $fs-body-sm;
-	font-weight: $fw-normal;
-	letter-spacing: $ls-xs;
-	line-height: $lh-body-sm;
-	max-width: 160px;
-	padding: 12px;
-
-	// Incorporating these styles within the preceding selector affects the button's appearance.
-	// Hence, the stylelint rule for no-descending-specificity is disabled for the following line.
-	/* stylelint-disable-next-line no-descending-specificity */
-	> button {
-		background: none;
-		border: none;
-		color: $c-surfaces-inverse-on-surface;
-		padding-right: 0;
-		text-decoration: underline;
 	}
 }
