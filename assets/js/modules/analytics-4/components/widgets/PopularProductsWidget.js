@@ -25,7 +25,11 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -42,9 +46,11 @@ import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/K
 import { MetricTileTable } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
-export default function PopularProductsWidget( props ) {
+function PopularProductsWidget( props ) {
 	const { Widget, WidgetNull } = props;
 
 	const productBasePaths = useSelect( ( select ) =>
@@ -58,9 +64,22 @@ export default function PopularProductsWidget( props ) {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const [ showTooltip, setShowTooltip ] = useState( true );
 
 	const openMetricsSelectionPanel = useCallback( () => {
+		// Hide the tooltip so it doesn't remain visible, above the panel we're
+		// opening.
+		setShowTooltip( false );
+
+		// Open the panel.
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+		// Wait for the panel to be open before we re-enable the tooltip.
+		// This prevents it from appearing above the slide-out panel, see:
+		// https://github.com/google/site-kit-wp/issues/7060#issuecomment-1664827831
+		setTimeout( () => {
+			setShowTooltip( true );
+		}, 0 );
 	}, [ setValue ] );
 
 	const reportOptions = {
@@ -89,6 +108,12 @@ export default function PopularProductsWidget( props ) {
 		showWidget
 			? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
 			: undefined
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] )
 	);
 
 	const loading = useInViewSelect( ( select ) =>
@@ -158,13 +183,15 @@ export default function PopularProductsWidget( props ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			infoTooltip={ infoTooltip }
+			infoTooltip={ showTooltip ? infoTooltip : null }
 			ZeroState={ () =>
 				__(
 					'Analytics doesn’t have data for your site’s products yet',
 					'google-site-kit'
 				)
 			}
+			error={ error }
+			moduleSlug="analytics-4"
 		/>
 	);
 }
@@ -173,3 +200,8 @@ PopularProductsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( PopularProductsWidget );

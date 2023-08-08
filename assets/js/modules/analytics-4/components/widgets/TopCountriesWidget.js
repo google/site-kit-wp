@@ -21,7 +21,13 @@
  */
 import PropTypes from 'prop-types';
 
-export default function TopCountriesWidget( { Widget } ) {
+/**
+ * Internal dependencies
+ */
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+
+function TopCountriesWidget( { Widget } ) {
 	return (
 		<Widget>
 			<div>TODO: UI for TopCountriesWidget</div>
@@ -31,5 +37,9 @@ export default function TopCountriesWidget( { Widget } ) {
 
 TopCountriesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( TopCountriesWidget );

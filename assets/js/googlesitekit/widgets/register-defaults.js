@@ -29,7 +29,10 @@ import * as WIDGET_AREAS from './default-areas';
 import { CORE_USER } from '../datastore/user/constants';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
-import { KeyMetricsSetupCTAWidget } from '../../components/KeyMetrics';
+import {
+	KeyMetricsSetupCTAWidget,
+	ChangeMetricsLink,
+} from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
@@ -87,6 +90,7 @@ export function registerDefaults( widgetsAPI ) {
 			),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
+			CTA: ChangeMetricsLink,
 		},
 		CONTEXT_MAIN_DASHBOARD_KEY_METRICS
 	);

@@ -38,9 +38,11 @@ import {
 } from '../../datastore/constants';
 import { MetricTileText } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import whenActive from '../../../../util/when-active';
 const { useSelect, useInViewSelect } = Data;
 
-export default function EngagedTrafficSourceWidget( props ) {
+function EngagedTrafficSourceWidget( props ) {
 	const { Widget } = props;
 
 	const dates = useSelect( ( select ) =>
@@ -60,6 +62,12 @@ export default function EngagedTrafficSourceWidget( props ) {
 
 	const report = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] )
 	);
 
 	const loading = useSelect(
@@ -110,11 +118,17 @@ export default function EngagedTrafficSourceWidget( props ) {
 			previousValue={ previousEngagementRate }
 			currentValue={ currentEngagementRate }
 			loading={ loading }
+			error={ error }
+			moduleSlug="analytics-4"
 		/>
 	);
 }
 
 EngagedTrafficSourceWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( EngagedTrafficSourceWidget );

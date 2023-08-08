@@ -38,10 +38,12 @@ import {
 } from '../../datastore/constants';
 import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 const { useSelect, useInViewSelect } = Data;
 
-export default function LoyalVisitorsWidget( { Widget } ) {
+function LoyalVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -59,6 +61,12 @@ export default function LoyalVisitorsWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
 	);
 
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] )
+	);
+
 	const loading = useInViewSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
@@ -67,29 +75,23 @@ export default function LoyalVisitorsWidget( { Widget } ) {
 			)
 	);
 
-	const { rows = [] } = report || {};
+	const { rows = [], totals = [] } = report || {};
 
 	const makeFind = ( dateRange ) => ( row ) =>
 		get( row, 'dimensionValues.0.value' ) === 'returning' &&
 		get( row, 'dimensionValues.1.value' ) === dateRange;
-	const makeFilter = ( dateRange ) => ( row ) =>
-		get( row, 'dimensionValues.1.value' ) === dateRange;
-	const reducer = ( acc, row ) =>
-		acc + ( parseInt( get( row, 'metricValues.0.value' ), 10 ) || 0 );
 
 	const returning =
 		rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value ||
 		0;
-	const total = rows
-		.filter( makeFilter( 'date_range_0' ) )
-		.reduce( reducer, 0 );
+
+	const total = totals[ 0 ]?.metricValues?.[ 0 ]?.value || 0;
 
 	const prevReturning =
 		rows.find( makeFind( 'date_range_1' ) )?.metricValues?.[ 0 ]?.value ||
 		0;
-	const prevTotal = rows
-		.filter( makeFilter( 'date_range_1' ) )
-		.reduce( reducer, 0 );
+
+	const prevTotal = totals[ 1 ]?.metricValues?.[ 0 ]?.value || 0;
 
 	const currentPercentage = total > 0 ? returning / total : 0;
 	const prevPercentage = prevTotal > 0 ? prevReturning / prevTotal : 0;
@@ -114,6 +116,8 @@ export default function LoyalVisitorsWidget( { Widget } ) {
 			previousValue={ prevPercentage }
 			currentValue={ currentPercentage }
 			loading={ loading }
+			error={ error }
+			moduleSlug="analytics-4"
 		/>
 	);
 }
@@ -121,3 +125,8 @@ export default function LoyalVisitorsWidget( { Widget } ) {
 LoyalVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( LoyalVisitorsWidget );

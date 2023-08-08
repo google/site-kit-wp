@@ -26,6 +26,9 @@ export const API_STATE_NEEDS_ATTENTION = 'NEEDS_ATTENTION';
 export const API_STATE_REQUIRES_REVIEW = 'REQUIRES_REVIEW';
 export const API_STATE_GETTING_READY = 'GETTING_READY';
 
+// State to determine whether background submission is allowable.
+export const BACKGROUND_SUBMIT_SUSPENDED = 'background-submit-suspended';
+
 export const AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID =
 	'ad-blocking-recovery-setup-success';
 export const AD_BLOCKING_FORM_SETTINGS = 'adsenseAdBlockingFormSettings';
