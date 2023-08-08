@@ -163,17 +163,15 @@ function PopularProductsWidget( props ) {
 		return <WidgetNull />;
 	}
 
-	const infoTooltip = showTooltip
-		? createInterpolateElement(
-				__(
-					'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
-					'google-site-kit'
-				),
-				{
-					a: <Link onClick={ openMetricsSelectionPanel } />,
-				}
-		  )
-		: null;
+	const infoTooltip = createInterpolateElement(
+		__(
+			'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
+			'google-site-kit'
+		),
+		{
+			a: <Link onClick={ openMetricsSelectionPanel } />,
+		}
+	);
 
 	return (
 		<MetricTileTable
@@ -185,7 +183,7 @@ function PopularProductsWidget( props ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			infoTooltip={ infoTooltip }
+			infoTooltip={ showTooltip ? infoTooltip : null }
 			ZeroState={ () =>
 				__(
 					'Analytics doesn’t have data for your site’s products yet',
