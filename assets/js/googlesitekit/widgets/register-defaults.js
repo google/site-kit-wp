@@ -260,7 +260,10 @@ export function registerDefaults( widgetsAPI ) {
 				isActive: ( select ) => {
 					const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
-					if ( ! Array.isArray( keyMetrics ) ) {
+					if (
+						! Array.isArray( keyMetrics ) ||
+						keyMetrics.length < 2
+					) {
 						return false;
 					}
 
@@ -281,7 +284,10 @@ export function registerDefaults( widgetsAPI ) {
 				isActive: ( select ) => {
 					const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
-					if ( ! Array.isArray( keyMetrics ) ) {
+					if (
+						! Array.isArray( keyMetrics ) ||
+						keyMetrics.length < 2
+					) {
 						return false;
 					}
 
