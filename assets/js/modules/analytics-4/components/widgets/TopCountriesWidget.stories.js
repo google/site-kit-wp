@@ -47,8 +47,9 @@ const reportOptions = {
 	limit: 3,
 };
 
-const WidgetWithComponentProps =
-	withWidgetComponentProps( 'test' )( TopCountriesWidget );
+const WidgetWithComponentProps = withWidgetComponentProps(
+	'kmAnalyticsTopCountries'
+)( TopCountriesWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -61,21 +62,19 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		const report = getAnalytics4MockResponse( reportOptions );
-		// Calculate sum of metricValues for all rows
+		// Calculate sum of metricValues for all rows to get the total count
+		// visits from all countries in the report.
 		const rowsSum = report.rows.reduce( ( total, row ) => {
 			return total + Number( row.metricValues[ 0 ].value );
 		}, 0 );
 
-		// Generate totalValueForAllCities that is higher than the sum
-		const totalValueForAllCities = rowsSum * 2;
+		// Generate totalValueForAllCountries that is higher than the sum since
+		// the total visits from all countries include those not in the report.
+		const totalValueForAllCountries = rowsSum * 2;
 
-		// Adjust totals field in the mock response
-		report.totals = [
-			{
-				dimensionValues: [ { value: 'RESERVED_TOTAL' } ],
-				metricValues: [ { value: totalValueForAllCities.toString() } ],
-			},
-		];
+		// Adjust totals field in the mock response.
+		report.totals[ 0 ].metricValues[ 0 ].value =
+			totalValueForAllCountries.toString();
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
 			options: reportOptions,
 		} );

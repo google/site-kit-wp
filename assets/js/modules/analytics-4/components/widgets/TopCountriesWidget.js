@@ -52,7 +52,7 @@ function TopCountriesWidget( { Widget } ) {
 		} )
 	);
 
-	const topcCountriesReportOptions = {
+	const topCountriesReportOptions = {
 		...dates,
 		dimensions: [ 'country' ],
 		metrics: [ { name: 'totalUsers' } ],
@@ -68,12 +68,12 @@ function TopCountriesWidget( { Widget } ) {
 	};
 
 	const topCountriesReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( topcCountriesReportOptions )
+		select( MODULES_ANALYTICS_4 ).getReport( topCountriesReportOptions )
 	);
 
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			topcCountriesReportOptions,
+			topCountriesReportOptions,
 		] )
 	);
 
@@ -81,13 +81,13 @@ function TopCountriesWidget( { Widget } ) {
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
-				[ topcCountriesReportOptions ]
+				[ topCountriesReportOptions ]
 			)
 	);
 
 	const { rows = [], totals = [] } = topCountriesReport || {};
 
-	const totalUsers = totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
+	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 	const columns = [
 		{
