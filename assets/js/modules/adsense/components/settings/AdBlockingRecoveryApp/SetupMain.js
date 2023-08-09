@@ -17,34 +17,39 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Layout from '../../../../../components/layout/Layout';
-import { Cell, Grid, Row } from '../../../../../material-components';
-import Content from './Content';
-import PlaceTagsStep from './steps/PlaceTagsStep';
-import CreateMessageStep from './steps/CreateMessageStep';
 import Link from '../../../../../components/Link';
+import PageHeader from '../../../../../components/PageHeader';
 import Stepper from '../../../../../components/Stepper';
 import Step from '../../../../../components/Stepper/Step';
-import PageHeader from '../../../../../components/PageHeader';
+import Layout from '../../../../../components/layout/Layout';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import useViewContext from '../../../../../hooks/useViewContext';
+import { Cell, Grid, Row } from '../../../../../material-components';
+import { trackEvent } from '../../../../../util';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
 } from '../../../datastore/constants';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
+import Content from './Content';
+import CreateMessageStep from './steps/CreateMessageStep';
+import PlaceTagsStep from './steps/PlaceTagsStep';
+
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain() {
+	const viewContext = useViewContext();
+
 	const settingsURL = useSelect(
 		( select ) =>
 			`${ select( CORE_SITE ).getAdminURL(
@@ -93,10 +98,20 @@ export default function SetupMain() {
 
 	const onCancel = useCallback( async () => {
 		if ( activeStep === 0 ) {
+			await trackEvent(
+				`${ viewContext }_adsense-abr`,
+				'cancel_setup',
+				'on_place_tag_step'
+			);
 			return navigateTo( dashboardURL );
 		}
 
 		if ( createMessageCTAClicked ) {
+			await trackEvent(
+				`${ viewContext }_adsense-abr`,
+				'cancel_setup',
+				'on_final_step'
+			);
 			return navigateTo( settingsURL );
 		}
 
@@ -105,6 +120,12 @@ export default function SetupMain() {
 		setUseAdBlockingRecoveryErrorSnippet( false );
 
 		const { error } = await saveSettings();
+
+		await trackEvent(
+			`${ viewContext }_adsense-abr`,
+			'cancel_setup',
+			'on_create_message_step'
+		);
 
 		if ( ! error ) {
 			navigateTo( dashboardURL );
@@ -119,6 +140,7 @@ export default function SetupMain() {
 		setUseAdBlockingRecoveryErrorSnippet,
 		setUseAdBlockingRecoverySnippet,
 		settingsURL,
+		viewContext,
 	] );
 
 	useEffect( () => {

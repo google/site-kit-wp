@@ -113,6 +113,11 @@ describe( 'createInfoStore store', () => {
 		} );
 
 		describe( 'getAdminReauthURL', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveConnectURL( 'http://example.com/connect' );
+			} );
 			// It generates an adminReauthURL with no slug passed.
 			it( 'works with no slug passed', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {

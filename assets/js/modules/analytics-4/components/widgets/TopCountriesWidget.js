@@ -42,8 +42,10 @@ import {
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
 const { useSelect, useInViewSelect } = Data;
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-export default function TopCountriesWidget( { Widget } ) {
+function TopCountriesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -126,3 +128,8 @@ export default function TopCountriesWidget( { Widget } ) {
 TopCountriesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( TopCountriesWidget );

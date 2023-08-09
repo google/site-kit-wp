@@ -35,18 +35,22 @@ import TourTooltip from './TourTooltip';
 import Portal from './Portal';
 import { joyrideStyles, floaterProps } from './TourTooltips';
 
-export default function JoyrideTooltip( {
-	title,
-	content,
-	dismissLabel,
-	target,
-	onDismiss = () => {},
-	cta = false,
-	className,
-	styles = {},
-	slug = '',
-	onView = () => {},
-} ) {
+export default function JoyrideTooltip( props ) {
+	const {
+		title,
+		content,
+		dismissLabel,
+		target,
+		cta = false,
+		className,
+		styles = {},
+		slug = '',
+		onDismiss = () => {},
+		onView = () => {},
+		onTourStart = () => {},
+		onTourEnd = () => {},
+	} = props;
+
 	const checkIfTargetExists = () =>
 		!! global.document.querySelector( target );
 
@@ -100,25 +104,35 @@ export default function JoyrideTooltip( {
 		last: dismissLabel,
 	};
 
+	const callback = ( { type } ) => {
+		switch ( type ) {
+			case EVENTS.TOUR_START:
+				onTourStart();
+				break;
+			case EVENTS.TOUR_END:
+				onTourEnd();
+				break;
+			case EVENTS.STEP_AFTER:
+				// This is not strictly necessary as the tooltip will hide without it,
+				// but this allows the consumer of the component to clean up
+				// post-dismiss.
+				onDismiss();
+				break;
+			case EVENTS.TOOLTIP:
+				onView();
+				break;
+		}
+	};
+
 	return (
 		<Portal slug={ slug }>
 			<Joyride
-				callback={ ( { type } ) => {
-					if ( type === EVENTS.STEP_AFTER ) {
-						// This is not strictly necessary as the tooltip will hide without it, but this allows the consumer of the component to clean up post-dismiss.
-						onDismiss();
-					}
-
-					if ( type === EVENTS.TOOLTIP ) {
-						onView();
-					}
-				} }
+				callback={ callback }
 				disableOverlay
 				disableScrolling
 				spotlightPadding={ 0 }
 				floaterProps={ floaterProps }
 				locale={ joyrideLocale }
-				run
 				steps={ steps }
 				styles={ {
 					...joyrideStyles,
@@ -133,6 +147,7 @@ export default function JoyrideTooltip( {
 					},
 				} }
 				tooltipComponent={ TourTooltip }
+				run
 			/>
 		</Portal>
 	);

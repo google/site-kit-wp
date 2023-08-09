@@ -15,30 +15,39 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { SpinnerButton, Button } from 'googlesitekit-components';
-import Link from '../../../../../../components/Link';
 import ErrorNotice from '../../../../../../components/ErrorNotice';
+import Link from '../../../../../../components/Link';
+import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../util';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function CreateMessageStep() {
+	const viewContext = useViewContext();
+
 	const adsenseAccountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
@@ -75,6 +84,11 @@ export default function CreateMessageStep() {
 
 	const onCTAClick = useCallback( async () => {
 		if ( ! createMessageCTAClicked ) {
+			await trackEvent(
+				`${ viewContext }_adsense-abr`,
+				'create_message',
+				'primary_cta'
+			);
 			setValue(
 				AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 				true
@@ -89,6 +103,11 @@ export default function CreateMessageStep() {
 		const { error } = await saveSettings();
 
 		if ( ! error ) {
+			await trackEvent(
+				`${ viewContext }_adsense-abr`,
+				'confirm_message_ready'
+			);
+
 			navigateTo( setupSuccessURL );
 		}
 	}, [
@@ -98,7 +117,26 @@ export default function CreateMessageStep() {
 		setAdBlockingRecoverySetupStatus,
 		setValue,
 		setupSuccessURL,
+		viewContext,
 	] );
+
+	useMount( () => {
+		trackEvent( `${ viewContext }_adsense-abr`, 'setup_create_message' );
+	} );
+
+	useEffect( () => {
+		if ( createMessageCTAClicked ) {
+			trackEvent( `${ viewContext }_adsense-abr`, 'setup_final_step' );
+		}
+	}, [ createMessageCTAClicked, viewContext ] );
+
+	const handleSecondaryCTAClick = () => {
+		trackEvent(
+			`${ viewContext }_adsense-abr`,
+			'create_message',
+			'secondary_cta'
+		);
+	};
 
 	return (
 		<Fragment>
@@ -129,7 +167,12 @@ export default function CreateMessageStep() {
 									'google-site-kit'
 								) }
 							</SpinnerButton>
-							<Link href={ privacyMessagingURL } target="_blank">
+							<Link
+								onClick={ handleSecondaryCTAClick }
+								href={ privacyMessagingURL }
+								external
+								hideExternalIndicator
+							>
 								{ __( 'Create message', 'google-site-kit' ) }
 							</Link>
 						</Fragment>

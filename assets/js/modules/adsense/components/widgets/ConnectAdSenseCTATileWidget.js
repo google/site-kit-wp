@@ -24,46 +24,28 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	CORE_USER,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '../../../../googlesitekit/datastore/user/constants';
+import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
 
-const { useSelect } = Data;
+// Ensure the metadata instance is static when rerendering.
+const metadata = { moduleSlug: 'adsense' };
 
-export default function ConnectAdSenseCTATileWidget( { Widget, WidgetNull } ) {
-	const isAdSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
+export default function ConnectAdSenseCTATileWidget( { Widget, widgetSlug } ) {
+	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );
+
+	// Note that we need to render the `Widget` component as a wrapper here so this component will display
+	// correctly when used as a `FallbackComponent` for the `whenActive` HOC. Conversely, when `ConnectModuleCTATile`
+	// is rendered as an `OverrideComponent` in `WidgetRenderer` (as a result of multiple adjacent widgets rendering
+	// this component and thus sharing the same state), it is wrapped with a `Widget` component - the net
+	// result being the ConnectModuleCTATile is correctly wrapped in a `Widget` in both cases.
+	return (
+		<Widget>
+			<ConnectModuleCTATile { ...metadata } />
+		</Widget>
 	);
-
-	const keyMetrics = useSelect( ( select ) => {
-		if ( isAdSenseModuleConnected !== false ) {
-			return;
-		}
-		return select( CORE_USER ).getKeyMetrics();
-	} );
-
-	if (
-		isAdSenseModuleConnected === false &&
-		keyMetrics?.includes( KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT )
-	) {
-		return (
-			<ConnectModuleCTATile
-				Icon={ AdSenseIcon }
-				moduleSlug="adsense"
-				Widget={ Widget }
-			/>
-		);
-	}
-
-	return <WidgetNull />;
 }
 
 ConnectAdSenseCTATileWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
+	widgetSlug: PropTypes.string.isRequired,
 };

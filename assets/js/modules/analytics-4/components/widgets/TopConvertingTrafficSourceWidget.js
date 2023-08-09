@@ -38,10 +38,12 @@ import {
 import { useInViewSelect } from '../../../../hooks/useInViewSelect';
 import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
 import { numFmt } from '../../../../util';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 const { useSelect } = Data;
 
-export default function TopConvertingTrafficSourceWidget( { Widget } ) {
+function TopConvertingTrafficSourceWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -133,5 +135,9 @@ export default function TopConvertingTrafficSourceWidget( { Widget } ) {
 
 TopConvertingTrafficSourceWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( TopConvertingTrafficSourceWidget );
