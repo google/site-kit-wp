@@ -264,7 +264,7 @@ export function registerDefaults( widgetsAPI ) {
 						return false;
 					}
 
-					return keyMetrics.length < 4;
+					return keyMetrics.length >= 2 && keyMetrics.length < 4;
 				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
@@ -285,7 +285,7 @@ export function registerDefaults( widgetsAPI ) {
 						return false;
 					}
 
-					return keyMetrics.length < 3;
+					return keyMetrics.length >= 2 && keyMetrics.length < 3;
 				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
