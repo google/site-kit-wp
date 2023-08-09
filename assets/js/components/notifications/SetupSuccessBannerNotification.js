@@ -31,6 +31,7 @@ import { getQueryParameter } from '../../util';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
+import { ANCHOR_ID_SPEED } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -200,9 +201,9 @@ function SetupSuccessBannerNotification() {
 			}
 
 			if ( 'pagespeed-insights' === slug ) {
-				const anchorLink = '#speed';
-				const onJumpLinkClick = ( e ) => {
-					e.preventDefault();
+				const anchorLink = `#${ ANCHOR_ID_SPEED }`;
+				const onJumpLinkClick = ( event ) => {
+					event.preventDefault();
 
 					global.history.replaceState( {}, '', anchorLink );
 					global.scrollTo( {

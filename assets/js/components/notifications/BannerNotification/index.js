@@ -153,12 +153,12 @@ export default function BannerNotification( props ) {
 		}
 	} );
 
-	const handleDismiss = async ( e ) => {
-		e.persist();
-		e.preventDefault();
+	const handleDismiss = async ( event ) => {
+		event.persist();
+		event.preventDefault();
 
 		if ( onDismiss ) {
-			await onDismiss( e );
+			await onDismiss( event );
 		}
 
 		dismissNotification();
@@ -185,12 +185,13 @@ export default function BannerNotification( props ) {
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const handleCTAClick = async ( e ) => {
-		e.persist();
+	const handleCTAClick = async ( event ) => {
+		event.persist();
 
 		let dismissOnCTAClick = true;
 		if ( onCTAClick ) {
-			( { dismissOnCTAClick = true } = ( await onCTAClick( e ) ) || {} );
+			( { dismissOnCTAClick = true } =
+				( await onCTAClick( event ) ) || {} );
 		}
 
 		if ( isDismissible && dismissOnCTAClick ) {
@@ -200,9 +201,9 @@ export default function BannerNotification( props ) {
 		if (
 			isURL( ctaLink ) &&
 			ctaTarget !== '_blank' &&
-			! e.defaultPrevented
+			! event.defaultPrevented
 		) {
-			e.preventDefault();
+			event.preventDefault();
 			navigateTo( ctaLink );
 		}
 	};

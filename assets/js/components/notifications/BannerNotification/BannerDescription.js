@@ -45,14 +45,14 @@ export default function BannerDescription( props ) {
 		return null;
 	}
 
-	const handleLearnMore = ( e ) => {
-		e.persist();
+	const handleLearnMore = ( event ) => {
+		event.persist();
 		onLearnMoreClick?.();
 	};
 
-	let learnMoreAndPageIndex;
+	let learnMore;
 	if ( learnMoreLabel ) {
-		learnMoreAndPageIndex = (
+		learnMore = (
 			<Fragment>
 				<Link
 					onClick={ handleLearnMore }
@@ -71,7 +71,7 @@ export default function BannerDescription( props ) {
 			{ isValidElement( description ) ? (
 				<Fragment>
 					{ description }
-					<p>{ learnMoreAndPageIndex }</p>
+					<p>{ learnMore }</p>
 				</Fragment>
 			) : (
 				<p>
@@ -81,7 +81,7 @@ export default function BannerDescription( props ) {
 							ALLOWED_ATTR: [ 'href' ],
 						} ) }
 					/>{ ' ' }
-					{ learnMoreAndPageIndex }
+					{ learnMore }
 				</p>
 			) }
 		</div>
