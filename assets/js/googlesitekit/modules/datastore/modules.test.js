@@ -42,7 +42,6 @@ import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { DASHBOARD_VIEW_GA4 } from '../../../modules/analytics/datastore/constants';
-import { resetGlobals } from '../../../../../.storybook/utils/resetGlobals';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -219,7 +218,6 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'includes the `moduleReauthURL` when activation requires reauthentication', async () => {
-				resetGlobals();
 				const connectURL = 'http://example.com/connect';
 				global._googlesitekitUserData.connectURL = connectURL;
 				provideUserAuthentication( registry );

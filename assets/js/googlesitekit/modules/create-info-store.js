@@ -35,6 +35,9 @@ import { CORE_USER } from '../datastore/user/constants';
 
 const { createRegistryControl, createRegistrySelector } = Data;
 
+// Actions
+const WAIT_FOR_REAUTH_RESOLVERS = 'WAIT_FOR_REAUTH_RESOLVERS';
+
 /**
  * Creates a store object that has selectors for managing site info.
  *
@@ -53,8 +56,6 @@ export const createInfoStore = (
 ) => {
 	invariant( storeName, 'storeName is required.' );
 
-	const WAIT_FOR_REAUTH_RESOLVERS = 'WAIT_FOR_REAUTH_RESOLVERS';
-
 	const initialState = {};
 	const actions = {};
 	const controls = {
@@ -71,7 +72,8 @@ export const createInfoStore = (
 					getAuthentication(),
 					// Site info is needed for the `adminURL`.
 					getSiteInfo(),
-					// connectURL is needed for the reAuthURL when reauthentication is needed.
+					// `connectURL` is needed for the `reAuthURL` when reauthentication
+					// is needed.
 					getConnectURL(),
 				] );
 			}
