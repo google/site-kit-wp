@@ -81,7 +81,7 @@ describe( 'Reporting API validation', () => {
 					fieldName: 'city',
 					sortOrder: 'ASCENDING',
 				} )
-			).toBeTruthy();
+			).toBe( true );
 		} );
 
 		it( 'should return TRUE if multiple valid order objects are passed', () => {
@@ -96,7 +96,7 @@ describe( 'Reporting API validation', () => {
 						sortOrder: 'DESCENDING',
 					},
 				] )
-			).toBeTruthy();
+			).toBe( true );
 		} );
 
 		it( 'should return FALSE if a non object item is passed in the array', () => {
@@ -112,7 +112,7 @@ describe( 'Reporting API validation', () => {
 						sortOrder: 'DESCENDING',
 					},
 				] )
-			).toBeFalsy();
+			).toBe( false );
 		} );
 
 		it( 'should return FALSE if a non object item is passed', () => {
@@ -125,7 +125,7 @@ describe( 'Reporting API validation', () => {
 					fieldName: 'city',
 					sortOrder: 'test',
 				} )
-			).toBeFalsy();
+			).toBe( false );
 		} );
 
 		it( 'should return FALSE if fieldName is undefined', () => {
@@ -133,7 +133,7 @@ describe( 'Reporting API validation', () => {
 				isValidOrders( {
 					sortOrder: 'DESCENDING',
 				} )
-			).toBeFalsy();
+			).toBe( false );
 		} );
 	} );
 } );
