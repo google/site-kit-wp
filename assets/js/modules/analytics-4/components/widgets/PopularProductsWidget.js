@@ -48,10 +48,13 @@ import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function PopularProductsWidget( props ) {
 	const { Widget, WidgetNull } = props;
+
+	const viewOnlyDashboard = useViewOnly();
 
 	const productBasePaths = useSelect( ( select ) =>
 		select( CORE_SITE ).getProductBasePaths()
@@ -127,16 +130,23 @@ function PopularProductsWidget( props ) {
 
 	const { rows = [] } = report || {};
 
-	const columns = useSelect( ( select ) => [
+	const columns = [
 		{
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ title, url ] = fieldValue;
-				const serviceURL = select(
-					MODULES_ANALYTICS_4
-				).getServiceReportURL( 'all-pages-and-screens', {
-					filters: { unifiedPagePathScreen: url.value },
-					dates,
+				const serviceURL = useSelect( ( select ) => {
+					return ! viewOnlyDashboard
+						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+								'all-pages-and-screens',
+								{
+									filters: {
+										unifiedPagePathScreen: url.value,
+									},
+									dates,
+								}
+						  )
+						: null;
 				} );
 
 				return (
@@ -157,7 +167,7 @@ function PopularProductsWidget( props ) {
 				<strong>{ numFmt( fieldValue ) }</strong>
 			),
 		},
-	] );
+	];
 
 	if ( ! showWidget ) {
 		return <WidgetNull />;
