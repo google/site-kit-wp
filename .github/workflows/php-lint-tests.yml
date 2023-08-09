@@ -10,7 +10,8 @@ on:
       - '.github/workflows/php-lint-tests.yml'
       - includes/**
       - tests/phpunit/**
-      - /*.php
+      - '**.php'
+      - 'phpcs.xml.dist'
       - 'phpunit*.xml*'
       - 'composer.json'
       - 'composer.lock'
@@ -24,7 +25,8 @@ on:
       - '.github/workflows/php-lint-tests.yml'
       - includes/**
       - tests/phpunit/**
-      - /*.php
+      - '**.php'
+      - 'phpcs.xml.dist'
       - 'phpunit*.xml*'
       - 'composer.json'
       - 'composer.lock'
