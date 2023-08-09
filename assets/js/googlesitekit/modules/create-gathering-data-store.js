@@ -203,7 +203,7 @@ export const createGatheringDataStore = (
 		 * Determines whether data is available for the module.
 		 *
 		 * @since 1.96.0
-		 * @since n.e.x.t Returns null if the data availability can not be determined.
+		 * @since 1.107.0 Returns null if the data availability can not be determined.
 		 *
 		 * @return {boolean|undefined|null} Returns TRUE if data is available, otherwise FALSE.
 		 *                                  If the request is still being resolved, returns undefined.

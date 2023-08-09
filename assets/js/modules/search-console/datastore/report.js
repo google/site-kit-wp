@@ -43,7 +43,7 @@ const { createRegistrySelector } = Data;
 /**
  * Returns report args for the zero data report.
  *
- * @since n.e.x.t
+ * @since 1.107.0
  *
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
