@@ -319,7 +319,7 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
  * Gets the value of dashboardView from the Analytics settings.
  *
  * @since 1.98.0
- * @since n.e.x.t Hardwire to `true` after the GA4 auto-switch date, if GA4 is connected.
+ * @since 1.107.0 Hardwire to `true` after the GA4 auto-switch date, if GA4 is connected.
  *
  * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
  */
