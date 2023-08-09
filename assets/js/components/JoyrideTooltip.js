@@ -104,7 +104,7 @@ export default function JoyrideTooltip( props ) {
 		last: dismissLabel,
 	};
 
-	const cb = ( { type } ) => {
+	const callback = ( { type } ) => {
 		switch ( type ) {
 			case EVENTS.TOUR_START:
 				onTourStart();
@@ -113,7 +113,9 @@ export default function JoyrideTooltip( props ) {
 				onTourEnd();
 				break;
 			case EVENTS.STEP_AFTER:
-				// This is not strictly necessary as the tooltip will hide without it, but this allows the consumer of the component to clean up post-dismiss.
+				// This is not strictly necessary as the tooltip will hide without it,
+				// but this allows the consumer of the component to clean up
+				// post-dismiss.
 				onDismiss();
 				break;
 			case EVENTS.TOOLTIP:
@@ -125,7 +127,7 @@ export default function JoyrideTooltip( props ) {
 	return (
 		<Portal slug={ slug }>
 			<Joyride
-				callback={ cb }
+				callback={ callback }
 				disableOverlay
 				disableScrolling
 				spotlightPadding={ 0 }
