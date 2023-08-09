@@ -26,11 +26,14 @@ import { __ } from '@wordpress/i18n';
  */
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
+import { CORE_USER } from '../datastore/user/constants';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
+import { isFeatureEnabled } from '../../features';
 import {
 	KeyMetricsSetupCTAWidget,
 	ChangeMetricsLink,
 } from '../../components/KeyMetrics';
+import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -237,4 +240,55 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
+
+	if ( isFeatureEnabled( 'userInput' ) ) {
+		/**
+		 * Since we allow selecting at least two and at most four key
+		 * metrics, we're adding two instances of the same AddMetricCTATile
+		 * widget. Using the isActive property, we'll show one
+		 * AddMetricCTATile widget if the user has selected three
+		 * key metrics, or both if they have selected two key metrics.
+		 */
+		widgetsAPI.registerWidget(
+			'keyMetricsAddMetricFirst',
+			{
+				Component: AddMetricCTATile,
+				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+				priority: 2,
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+				isActive: ( select ) => {
+					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+					if ( ! Array.isArray( keyMetrics ) ) {
+						return false;
+					}
+
+					return keyMetrics.length < 4;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgetsAPI.registerWidget(
+			'keyMetricsAddMetricSecond',
+			{
+				Component: AddMetricCTATile,
+				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+				priority: 2,
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+				isActive: ( select ) => {
+					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+					if ( ! Array.isArray( keyMetrics ) ) {
+						return false;
+					}
+
+					return keyMetrics.length < 3;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 }
