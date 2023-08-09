@@ -260,11 +260,14 @@ export function registerDefaults( widgetsAPI ) {
 				isActive: ( select ) => {
 					const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
-					if ( ! Array.isArray( keyMetrics ) ) {
+					if (
+						! Array.isArray( keyMetrics ) ||
+						keyMetrics.length < 2
+					) {
 						return false;
 					}
 
-					return keyMetrics.length >= 2 && keyMetrics.length < 4;
+					return keyMetrics.length < 4;
 				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
@@ -281,11 +284,14 @@ export function registerDefaults( widgetsAPI ) {
 				isActive: ( select ) => {
 					const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
-					if ( ! Array.isArray( keyMetrics ) ) {
+					if (
+						! Array.isArray( keyMetrics ) ||
+						keyMetrics.length < 2
+					) {
 						return false;
 					}
 
-					return keyMetrics.length >= 2 && keyMetrics.length < 3;
+					return keyMetrics.length < 3;
 				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
