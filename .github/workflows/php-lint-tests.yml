@@ -7,7 +7,7 @@ on:
       - main
     # Only run if PHP-related files changed.
     paths:
-      - '.github/workflows/php-tests.yml'
+      - '.github/workflows/php-lint-tests.yml'
       - includes/**
       - tests/phpunit/**
       - /*.php
@@ -21,7 +21,7 @@ on:
       - 'feature/**'
     # Only run if PHP-related files changed.
     paths:
-      - '.github/workflows/php-tests-wp-latest-php-7-4.yml'
+      - '.github/workflows/php-lint-tests.yml'
       - includes/**
       - tests/phpunit/**
       - /*.php
@@ -147,7 +147,7 @@ jobs:
         run: |
           composer config --unset platform.php
           composer update phpunit/phpunit --with-dependencies --no-scripts
-        if: ${{ matrix.php_version == '8.0' }}
+        if: startsWith( matrix.php_version,  '8.' )
 
       - name: Set up PHP test data
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
