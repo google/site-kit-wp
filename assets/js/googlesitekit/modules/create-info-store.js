@@ -33,7 +33,10 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
 
-const { createRegistrySelector } = Data;
+const { createRegistryControl, createRegistrySelector } = Data;
+
+// Actions
+const WAIT_FOR_REAUTH_RESOLVERS = 'WAIT_FOR_REAUTH_RESOLVERS';
 
 /**
  * Creates a store object that has selectors for managing site info.
@@ -55,11 +58,37 @@ export const createInfoStore = (
 
 	const initialState = {};
 	const actions = {};
-	const controls = {};
+	const controls = {
+		[ WAIT_FOR_REAUTH_RESOLVERS ]: createRegistryControl(
+			( registry ) => async () => {
+				const { __experimentalResolveSelect } = registry;
+				const { getAuthentication, getConnectURL } =
+					__experimentalResolveSelect( CORE_USER );
+				const { getSiteInfo } =
+					__experimentalResolveSelect( CORE_SITE );
+
+				await Promise.all( [
+					// Authentication is needed for checking `needsReauthentication`.
+					getAuthentication(),
+					// Site info is needed for the `adminURL`.
+					getSiteInfo(),
+					// `connectURL` is needed for the `reAuthURL` when reauthentication
+					// is needed.
+					getConnectURL(),
+				] );
+			}
+		),
+	};
 	const reducer = ( state ) => {
 		return state;
 	};
-	const resolvers = {};
+	const resolvers = {
+		*getAdminReauthURL() {
+			yield {
+				type: WAIT_FOR_REAUTH_RESOLVERS,
+			};
+		},
+	};
 	const selectors = {
 		/**
 		 * Returns admin screen URL.

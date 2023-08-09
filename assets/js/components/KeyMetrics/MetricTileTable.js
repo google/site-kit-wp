@@ -24,7 +24,10 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
+import { Tooltip } from 'googlesitekit-components';
+import MetricTileError from './MetricTileError';
 import MetricTileLoader from './MetricTileLoader';
+import InfoIcon from '../../../svg/icons/info-green.svg';
 
 export default function MetricTileTable( props ) {
 	const {
@@ -34,8 +37,21 @@ export default function MetricTileTable( props ) {
 		rows = [],
 		columns = [],
 		limit,
+		infoTooltip,
 		ZeroState,
+		error,
+		moduleSlug,
 	} = props;
+
+	if ( error ) {
+		return (
+			<MetricTileError
+				moduleSlug={ moduleSlug }
+				error={ error }
+				headerText={ title }
+			/>
+		);
+	}
 
 	let tileBody = null;
 
@@ -85,9 +101,25 @@ export default function MetricTileTable( props ) {
 	return (
 		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table">
-				<h3 className="googlesitekit-km-widget-tile__title">
-					{ title }
-				</h3>
+				<div className="googlesitekit-km-widget-tile__title-container">
+					<h3 className="googlesitekit-km-widget-tile__title">
+						{ title }
+					</h3>
+					{ infoTooltip && (
+						<Tooltip
+							tooltipClassName="googlesitekit-km-widget-tile-title__tooltip"
+							title={ infoTooltip }
+							placement="top"
+							enterTouchDelay={ 0 }
+							leaveTouchDelay={ 5000 }
+							interactive
+						>
+							<span>
+								<InfoIcon width="16" height="16" />
+							</span>
+						</Tooltip>
+					) }
+				</div>
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <MetricTileLoader /> }
 					{ ! loading && (
@@ -108,5 +140,11 @@ MetricTileTable.propTypes = {
 	rows: PropTypes.array,
 	columns: PropTypes.array,
 	limit: PropTypes.number,
+	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	ZeroState: PropTypes.elementType,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ),
+	moduleSlug: PropTypes.string.isRequired,
 };

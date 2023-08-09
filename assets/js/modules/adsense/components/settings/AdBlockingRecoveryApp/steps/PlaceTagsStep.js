@@ -23,29 +23,33 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { Checkbox, SpinnerButton } from 'googlesitekit-components';
+import Data from 'googlesitekit-data';
 import ErrorNotice from '../../../../../../components/ErrorNotice';
+import Link from '../../../../../../components/Link';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../util';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
 export default function PlaceTagsStep( { setActiveStep } ) {
+	const viewContext = useViewContext();
+
 	const useAdBlockingRecoveryErrorSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseAdBlockingRecoveryErrorSnippet()
 	);
@@ -75,9 +79,16 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 
 	const onErrorProtectionTagOptionChange = useCallback(
 		( { target } ) => {
-			setUseAdBlockingRecoveryErrorSnippet( !! target.checked );
+			const isChecked = !! target.checked;
+
+			setUseAdBlockingRecoveryErrorSnippet( isChecked );
+
+			trackEvent(
+				`${ viewContext }_adsense-abr`,
+				isChecked ? 'check_box' : 'uncheck_box'
+			);
 		},
-		[ setUseAdBlockingRecoveryErrorSnippet ]
+		[ setUseAdBlockingRecoveryErrorSnippet, viewContext ]
 	);
 
 	const onCTAClick = useCallback( async () => {
@@ -98,6 +109,8 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 			return;
 		}
 
+		await trackEvent( `${ viewContext }_adsense-abr`, 'setup_enable_tag' );
+
 		setActiveStep( ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.CREATE_MESSAGE );
 	}, [
 		saveSettings,
@@ -105,13 +118,15 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 		setAdBlockingRecoverySetupStatus,
 		setUseAdBlockingRecoverySnippet,
 		syncAdBlockingRecoveryTags,
+		viewContext,
 	] );
 
-	// Error snippet option is enabled by default.
 	useMount( () => {
+		// Error snippet option is enabled by default.
 		if ( ! useAdBlockingRecoveryErrorSnippet ) {
 			setUseAdBlockingRecoveryErrorSnippet( true );
 		}
+		trackEvent( `${ viewContext }_adsense-abr`, 'setup_place_tag' );
 	} );
 
 	return (
