@@ -25,19 +25,31 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../googlesitekit/widgets/default-areas';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import MetricItem from './MetricItem';
 const { useSelect } = Data;
 
 export default function Metrics( { savedMetrics } ) {
 	const availableMetrics = useSelect( ( select ) => {
+		const widgets =
+			select( CORE_WIDGETS ).getWidgets(
+				AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY
+			) || [];
+
+		const metrics = widgets
+			.filter( ( { slug } ) => savedMetrics.includes( slug ) )
+			.map( ( { slug } ) => slug );
+
 		const { isKeyMetricAvailable } = select( CORE_USER );
 
 		return Object.keys( KEY_METRICS_WIDGETS )
 			.sort(
 				( a, b ) =>
-					savedMetrics.indexOf( b ) - savedMetrics.indexOf( a )
+					metrics.includes( b ) - metrics.includes( a ) ||
+					metrics.indexOf( a ) - metrics.indexOf( b )
 			)
 			.reduce( ( acc, metric ) => {
 				if ( ! isKeyMetricAvailable( metric ) ) {

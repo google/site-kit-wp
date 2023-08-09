@@ -19,17 +19,23 @@
 /**
  * Internal dependencies
  */
-import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 import {
-	render,
+	fireEvent,
 	provideModules,
 	provideSiteInfo,
+	render,
 } from '../../../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
+import * as tracking from '../../../../util/tracking';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
+import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdBlockingRecoveryToggle', () => {
 	const validSettings = {
@@ -224,6 +230,70 @@ describe( 'AdBlockingRecoveryToggle', () => {
 			container.querySelector( '.googlesitekit-settings-notice__text' )
 		).toHaveTextContent(
 			'Site Kit detected Ad Blocking Recovery code for a different account pub-1234567890123456 on your site. For a better ad blocking recovery experience, you should remove Ad Blocking Recovery code that’s not linked to this AdSense account.'
+		);
+	} );
+
+	it( 'should fire appropriate tracking events when toggles are clicked', () => {
+		const { getByLabelText } = render( <AdBlockingRecoveryToggle />, {
+			viewContext: VIEW_CONTEXT_SETTINGS,
+			setupRegistry: ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: true,
+					},
+				] );
+				provideSiteInfo( registry );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+					...validSettings,
+					adBlockingRecoverySetupStatus:
+						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+					// Set the initial values to true - both toggles are enabled.
+					useAdBlockingRecoverySnippet: true,
+					useAdBlockingRecoveryErrorSnippet: true,
+				} );
+			},
+		} );
+
+		// Click the recovery tag toggle.
+		fireEvent.click(
+			getByLabelText( /Enable ad blocking recovery message/i )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_adsense-abr',
+			'disable_tag',
+			'abr_tag'
+		);
+
+		// Click the recovery tag toggle again.
+		fireEvent.click(
+			getByLabelText( /Enable ad blocking recovery message/i )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_adsense-abr',
+			'enable_tag',
+			'abr_tag'
+		);
+
+		// Click the error protection tag toggle.
+		fireEvent.click( getByLabelText( /Place error protection code/i ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_adsense-abr',
+			'disable_tag',
+			'error_protection_tag'
+		);
+
+		// Click the error protection tag toggle again.
+		fireEvent.click( getByLabelText( /Place error protection code/i ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_adsense-abr',
+			'enable_tag',
+			'error_protection_tag'
 		);
 	} );
 } );

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -27,18 +27,21 @@ import { removeQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
-import Link from '../Link';
 import SuccessSVG from '../../../svg/graphics/ad-blocking-recovery-success.svg';
+import useViewContext from '../../hooks/useViewContext';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../modules/adsense/datastore/constants';
+import { trackEvent } from '../../util';
+import Link from '../Link';
+import BannerNotification from './BannerNotification';
+
 const { useSelect } = Data;
 
 export default function AdBlockingRecoveryNotification() {
-	const NOTIFICATION_ID = AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID;
+	const viewContext = useViewContext();
 
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
@@ -55,12 +58,24 @@ export default function AdBlockingRecoveryNotification() {
 	);
 
 	const handleDismiss = () => {
+		trackEvent(
+			`${ viewContext }_adsense-abr-success-notification`,
+			'confirm_notification'
+		);
+
 		const modifiedURL = removeQueryArgs(
 			global.location.href,
 			'notification'
 		);
 		global.history.replaceState( null, '', modifiedURL );
 	};
+
+	const handleView = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_adsense-abr-success-notification`,
+			'view_notification'
+		);
+	}, [ viewContext ] );
 
 	if (
 		adBlockingRecoverySetupStatus !==
@@ -71,7 +86,7 @@ export default function AdBlockingRecoveryNotification() {
 
 	return (
 		<BannerNotification
-			id={ NOTIFICATION_ID }
+			id={ AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID }
 			className="googlesitekit-ad-blocking-recovery-notification"
 			title={ __(
 				'You successfully enabled the ad blocking recovery message',
@@ -95,6 +110,7 @@ export default function AdBlockingRecoveryNotification() {
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			onDismiss={ handleDismiss }
 			isDismissible
+			onView={ handleView }
 			type="win-success"
 			WinImageSVG={ () => <SuccessSVG /> }
 			format="small"

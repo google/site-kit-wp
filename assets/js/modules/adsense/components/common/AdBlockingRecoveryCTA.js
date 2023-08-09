@@ -19,23 +19,35 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useEffect,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SupportLink from '../../../../components/SupportLink';
+import Data from 'googlesitekit-data';
 import Badge from '../../../../components/Badge';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import SupportLink from '../../../../components/SupportLink';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { useInView } from '../../../../hooks/useInView';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-const { useSelect } = Data;
+
+const { useDispatch, useSelect } = Data;
 
 export default function AdBlockingRecoveryCTA() {
+	const inView = useInView();
+	const viewContext = useViewContext();
+
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
 	);
@@ -52,13 +64,40 @@ export default function AdBlockingRecoveryCTA() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
 	);
 
-	if (
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const isCTAHidden =
 		hasExistingAdBlockingRecoveryTag === undefined ||
 		hasExistingAdBlockingRecoveryTag ||
 		adBlockingRecoverySetupStatus !== '' ||
 		accountStatus !== ACCOUNT_STATUS_READY ||
-		siteStatus !== SITE_STATUS_READY
-	) {
+		siteStatus !== SITE_STATUS_READY;
+
+	useEffect( () => {
+		if ( inView && ! isCTAHidden ) {
+			trackEvent(
+				`${ viewContext }_adsense-abr-cta-widget`,
+				'view_notification'
+			);
+		}
+	}, [ inView, isCTAHidden, viewContext ] );
+
+	const handleCTAClick = async () => {
+		await trackEvent(
+			`${ viewContext }_adsense-abr-cta-widget`,
+			'confirm_notification'
+		);
+		return navigateTo( recoveryPageURL );
+	};
+
+	const handleLearnMoreClick = () => {
+		trackEvent(
+			`${ viewContext }_adsense-abr-cta-widget`,
+			'click_learn_more_link'
+		);
+	};
+
+	if ( isCTAHidden ) {
 		return null;
 	}
 
@@ -75,7 +114,7 @@ export default function AdBlockingRecoveryCTA() {
 			}
 			className="googlesitekit-settings-notice-ad-blocking-recovery-cta"
 			OuterCTA={ () => (
-				<Button href={ recoveryPageURL }>
+				<Button onClick={ handleCTAClick }>
 					{ __( 'Set up now', 'google-site-kit' ) }
 				</Button>
 			) }
@@ -91,6 +130,7 @@ export default function AdBlockingRecoveryCTA() {
 							path="/adsense/answer/11576589"
 							external
 							hideExternalIndicator
+							onClick={ handleLearnMoreClick }
 						/>
 					),
 				}
