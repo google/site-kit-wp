@@ -30,7 +30,7 @@ import { useInstanceId } from '@wordpress/compose';
 /**
  * Provides a unique, memoized ID.
  *
- * @since n.e.x.t
+ * @since 1.107.0
  *
  * @param {Object} object Object reference to create an ID for. This is unused and only included for compatibility with the original `useInstanceId()`.
  * @param {string} prefix Prefix for the unique ID.
@@ -52,7 +52,7 @@ function useMemoizedID( object, prefix ) {
  * due to differing memory constraints. This results in different instance IDs being generated, which causes
  * instability in test snapshots.
  *
- * @since n.e.x.t
+ * @since 1.107.0
  */
 export function mockUseInstanceID() {
 	beforeAll( () => {

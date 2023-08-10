@@ -1092,7 +1092,7 @@ final class AdSense extends Module
 	/**
 	 * Gets the Ad Blocking Recovery setup status label.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.107.0
 	 *
 	 * @param string $setup_status The saved raw setting.
 	 * @return string The status label based on the raw setting.

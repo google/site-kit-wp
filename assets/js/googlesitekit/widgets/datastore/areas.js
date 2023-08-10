@@ -80,7 +80,7 @@ export const actions = {
 	 * Creates a widget area with a given name and settings.
 	 *
 	 * @since 1.9.0
-	 * @since n.e.x.t Extended to support an optional CTA component.
+	 * @since 1.107.0 Extended to support an optional CTA component.
 	 *
 	 * @param {string}      slug                Widget Area's slug.
 	 * @param {Object}      settings            Widget Area's settings.

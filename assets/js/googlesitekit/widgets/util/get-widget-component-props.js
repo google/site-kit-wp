@@ -34,7 +34,7 @@ import WidgetRecoverableModules from '../components/WidgetRecoverableModules';
  * Gets the props to pass to a widget's component.
  *
  * @since 1.25.0
- * @since n.e.x.t Added `widgetSlug` to the returned props.
+ * @since 1.107.0 Added `widgetSlug` to the returned props.
  *
  * @param {string} widgetSlug The widget's slug.
  * @return {Object} Props to pass to the widget component.
