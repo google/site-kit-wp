@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import ReminderBanner from './ReminderBanner';
@@ -26,9 +31,65 @@ import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
+	provideUserInfo,
 } from '../../../../../../../tests/js/utils';
 
 const Template = () => <ReminderBanner onSubmitSuccess={ () => {} } />;
+
+export const InitialNotice = Template.bind( {} );
+InitialNotice.storyName = 'Before 1 June 2023';
+InitialNotice.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-31' );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const InitialNoticeWithoutAccess = Template.bind( {} );
+InitialNoticeWithoutAccess.storyName = 'Before 1 June 2023 - Without Access';
+InitialNoticeWithoutAccess.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-31' );
+			provideUserInfo( registry, { id: 2 } );
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/check-access'
+				),
+				{ body: { access: false } }
+			);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const LastMonth = Template.bind( {} );
+LastMonth.storyName = 'During June 2023';
+LastMonth.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2023-06-01' );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export const PostCutoff = Template.bind( {} );
 PostCutoff.storyName = 'After 30 June 2023';
