@@ -36,6 +36,9 @@ WithImage.args = {
 	SmallImageSVG: AwardSVG,
 	type: 'win-success',
 };
+WithImage.scenario = {
+	label: 'Components/BannerNotification',
+};
 
 export const WithNoImage = Template.bind( {} );
 WithNoImage.storyName = 'With No Image';
