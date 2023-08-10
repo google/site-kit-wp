@@ -3,7 +3,7 @@
 exports[`TopCountriesWidget renders correctly with the expected metrics 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCities googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCountries googlesitekit-widget--no-padding"
   >
     <div
       class="googlesitekit-widget__body"
