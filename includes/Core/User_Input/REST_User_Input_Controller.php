@@ -94,10 +94,6 @@ class REST_User_Input_Controller {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_authenticate = function() {
-			return current_user_can( Permissions::AUTHENTICATE );
-		};
-
 		return array(
 			new REST_Route(
 				'core/user/data/user-input-settings',
@@ -105,9 +101,25 @@ class REST_User_Input_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function() {
-							return rest_ensure_response( $this->user_input->get_answers() );
+							$response = rest_ensure_response( $this->user_input->get_answers() );
+
+							// Iterating over each setting in the response data to remove the 'author' key.
+							// We use pass-by-reference (&$setting) to directly modify the original $response data.
+							// This is done to ensure that if the current user doesn't have the `list_users` capability,
+							// they won't be able to see the `{setting}.author` key of each answer object.
+							if ( ! current_user_can( 'list_users' ) ) {
+								foreach ( $response->data as &$setting ) {
+									if ( isset( $setting['author'] ) ) {
+										unset( $setting['author'] );
+									}
+								}
+							}
+
+							return $response;
 						},
-						'permission_callback' => $can_authenticate,
+						'permission_callback' => function() {
+							return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
+						},
 					),
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
@@ -136,7 +148,9 @@ class REST_User_Input_Controller {
 
 							return $response;
 						},
-						'permission_callback' => $can_authenticate,
+						'permission_callback' => function() {
+							return current_user_can( Permissions::AUTHENTICATE );
+						},
 						'args'                => array(
 							'data' => array(
 								'type'       => 'object',
