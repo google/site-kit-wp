@@ -73,8 +73,14 @@ Ready.args = {
 		const totalValueForAllCountries = rowsSum * 2;
 
 		// Adjust totals field in the mock response.
-		report.totals[ 0 ].metricValues[ 0 ].value =
-			totalValueForAllCountries.toString();
+		report.totals = [
+			{
+				dimensionValues: [ { value: 'RESERVED_TOTAL' } ],
+				metricValues: [
+					{ value: totalValueForAllCountries.toString() },
+				],
+			},
+		];
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
 			options: reportOptions,
 		} );

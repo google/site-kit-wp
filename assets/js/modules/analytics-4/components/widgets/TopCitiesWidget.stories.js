@@ -73,8 +73,12 @@ Ready.args = {
 		const totalValueForAllCities = rowsSum * 2;
 
 		// Adjust totals field in the mock response.
-		report.totals[ 0 ].metricValues[ 0 ].value =
-			totalValueForAllCities.toString();
+		report.totals = [
+			{
+				dimensionValues: [ { value: 'RESERVED_TOTAL' } ],
+				metricValues: [ { value: totalValueForAllCities.toString() } ],
+			},
+		];
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
 			options: reportOptions,
 		} );
