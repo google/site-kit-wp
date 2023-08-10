@@ -103,6 +103,10 @@ class REST_User_Input_Controller {
 						'callback'            => function() {
 							$response = rest_ensure_response( $this->user_input->get_answers() );
 
+							// Iterating over each setting in the response data to remove the 'author' key.
+							// We use pass-by-reference (&$setting) to directly modify the original $response data.
+							// This is done to ensure that if the current user doesn't have the `list_users` capability,
+							// they won't be able to see the `{setting}.author` key of each answer object.
 							if ( ! current_user_can( 'list_users' ) ) {
 								foreach ( $response->data as &$setting ) {
 									if ( isset( $setting['author'] ) ) {
