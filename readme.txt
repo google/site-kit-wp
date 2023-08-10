@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.3
 Requires PHP:      5.6
-Stable tag:        1.106.0
+Stable tag:        1.107.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -109,6 +109,28 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.107.0 =
+
+**Enhanced**
+
+* Update key metric widget rendering for consistency with other widgets regarding module dependencies. See [#7337](https://github.com/google/site-kit-wp/issues/7337).
+* Add error and retry UI for Key Metric Widgets. See [#7310](https://github.com/google/site-kit-wp/issues/7310).
+* Add Ad Blocking Recovery information to Site Health. See [#7290](https://github.com/google/site-kit-wp/issues/7290).
+* Update loading state for Key Metric widget tiles. See [#7158](https://github.com/google/site-kit-wp/issues/7158).
+* Add a learn more tooltip to the most popular products KM widget. See [#7060](https://github.com/google/site-kit-wp/issues/7060).
+* Prevent "data available" state being persisted when the state cannot reliably be determined due to an API error. See [#6698](https://github.com/google/site-kit-wp/issues/6698).
+* Automatically switch users to GA4 dashboard on October 1, 2023 (when no more Universal Analytics data will be available). See [#6549](https://github.com/google/site-kit-wp/issues/6549).
+* Update key metrics area to support editing selected metrics. See [#6259](https://github.com/google/site-kit-wp/issues/6259).
+* Add management panel for selected key metrics. See [#6258](https://github.com/google/site-kit-wp/issues/6258).
+
+**Fixed**
+
+* Fix a potential PHP error in WPML introduced in `1.106.0` on a site with a `product` post type. See [#7389](https://github.com/google/site-kit-wp/issues/7389).
+* Address data inconsistencies in the "Loyal visitors", "New visitors", and "Most popular content" Key Metrics widgets. See [#7366](https://github.com/google/site-kit-wp/issues/7366).
+* Remove the requirement for a web data stream's URL to match the current site URL for it to be selectable. See [#7052](https://github.com/google/site-kit-wp/issues/7052).
+* Fix bug that caused cached Analytics data not to refresh when a new account is created. See [#6852](https://github.com/google/site-kit-wp/issues/6852).
+* Fix potential bug in AdSense set up which could leave the setup incomplete. See [#5614](https://github.com/google/site-kit-wp/issues/5614).
 
 = 1.106.0 =
 
