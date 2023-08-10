@@ -24,9 +24,9 @@ function Template( { ...args } ) {
 	return <BannerNotification { ...args } />;
 }
 
-export const SmallWithImage = Template.bind( {} );
-SmallWithImage.storyName = 'Small with Image';
-SmallWithImage.args = {
+export const WithImage = Template.bind( {} );
+WithImage.storyName = 'With Image';
+WithImage.args = {
 	id: 'notification-id',
 	title: 'Congrats on your first post!',
 	description: 'We sent your sitemap to Googlebot.',
@@ -37,9 +37,9 @@ SmallWithImage.args = {
 	type: 'win-success',
 };
 
-export const SmallWithNoImage = Template.bind( {} );
-SmallWithNoImage.storyName = 'Small with No Image';
-SmallWithNoImage.args = {
+export const WithNoImage = Template.bind( {} );
+WithNoImage.storyName = 'With No Image';
+WithNoImage.args = {
 	id: 'notification-id',
 	title: 'Your Site is Now Registered!',
 	description: 'Congrats your site is registered with Search Console!',
@@ -51,9 +51,9 @@ SmallWithNoImage.args = {
 	type: 'win-success',
 };
 
-export const SmallWithError = Template.bind( {} );
-SmallWithError.storyName = 'Small with Error';
-SmallWithError.args = {
+export const WithError = Template.bind( {} );
+WithError.storyName = 'With Error';
+WithError.args = {
 	id: 'notification-id',
 	title: 'AMP Validation Error',
 	description: 'There are validation errors that need to be fixed.',
@@ -66,9 +66,9 @@ SmallWithError.args = {
 	type: 'win-error',
 };
 
-export const SmallWithWarnign = Template.bind( {} );
-SmallWithWarnign.storyName = 'Small with Warning';
-SmallWithWarnign.args = {
+export const WithWarnign = Template.bind( {} );
+WithWarnign.storyName = 'With Warning';
+WithWarnign.args = {
 	id: 'notification-id',
 	title: 'Index Warning',
 	description: 'Indexed, though blocked by robots.txt.',
@@ -81,9 +81,9 @@ SmallWithWarnign.args = {
 	type: 'win-warning',
 };
 
-export const SmallWithElementDescription = Template.bind( {} );
-SmallWithElementDescription.storyName = 'Small with Element Description';
-SmallWithElementDescription.args = {
+export const WithElementDescription = Template.bind( {} );
+WithElementDescription.storyName = 'With Element Description';
+WithElementDescription.args = {
 	id: 'notification-id',
 	title: 'Index Warning',
 	description: <p>This description is a React element.</p>,
@@ -94,6 +94,78 @@ SmallWithElementDescription.args = {
 	ctaLink: 'http://google.com',
 	ctaLabel: 'Validate',
 	type: 'win-warning',
+};
+
+export const WithBadge = Template.bind( {} );
+WithBadge.storyName = 'With Badge';
+WithBadge.args = {
+	id: 'notification-id',
+	title: 'Congrats on your first post!',
+	description: 'We sent your sitemap to Googlebot.',
+	learnMore: 'Learn more',
+	dismiss: 'OK, Got it!',
+	format: 'small',
+	SmallImageSVG: AwardSVG,
+	type: 'win-success',
+	badgeLabel: 'New',
+};
+
+export const Rounded = Template.bind( {} );
+Rounded.storyName = 'With Rounded Corners';
+Rounded.args = {
+	id: 'notification-id',
+	title: 'Congrats on your first post!',
+	description: 'We sent your sitemap to Googlebot.',
+	learnMore: 'Learn more',
+	dismiss: 'OK, Got it!',
+	format: 'small',
+	SmallImageSVG: AwardSVG,
+	type: 'win-success',
+	rounded: true,
+};
+
+export const WithFooter = Template.bind( {} );
+WithFooter.storyName = 'With Footer';
+WithFooter.args = {
+	id: 'notification-id',
+	title: 'Congrats on your first post!',
+	description: 'We sent your sitemap to Googlebot.',
+	learnMore: 'Learn more',
+	dismiss: 'OK, Got it!',
+	format: 'small',
+	SmallImageSVG: AwardSVG,
+	type: 'win-success',
+	footer: (
+		<p>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed commodo
+			urna vitae commodo sollicitudin. Quisque vitae faucibus eros, eu
+			faucibus eros. Phasellus malesuada sapien eu leo sagittis, ut
+			iaculis purus aliquam. Cras quis lorem placerat, convallis urna ut,
+			euismod eros. In non quam sit amet augue placerat aliquam id et est.
+		</p>
+	),
+};
+
+export const WithSecondaryPane = Template.bind( {} );
+WithSecondaryPane.storyName = 'With Secondary Pane';
+WithSecondaryPane.args = {
+	id: 'notification-id',
+	title: 'Congrats on your first post!',
+	description: 'We sent your sitemap to Googlebot.',
+	learnMore: 'Learn more',
+	dismiss: 'OK, Got it!',
+	format: 'small',
+	SmallImageSVG: AwardSVG,
+	type: 'win-success',
+	secondaryPane: (
+		<p>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed commodo
+			urna vitae commodo sollicitudin. Quisque vitae faucibus eros, eu
+			faucibus eros. Phasellus malesuada sapien eu leo sagittis, ut
+			iaculis purus aliquam. Cras quis lorem placerat, convallis urna ut,
+			euismod eros. In non quam sit amet augue placerat aliquam id et est.
+		</p>
+	),
 };
 
 export default {
