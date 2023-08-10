@@ -43,7 +43,10 @@ import {
 } from '../../datastore/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
@@ -148,6 +151,10 @@ function PopularProductsWidget( props ) {
 						  )
 						: null;
 				} );
+
+				if ( viewOnlyDashboard ) {
+					return <MetricTileTablePlainText content={ title.value } />;
+				}
 
 				return (
 					<Link
