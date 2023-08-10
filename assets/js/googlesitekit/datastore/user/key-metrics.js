@@ -104,7 +104,7 @@ const baseActions = {
 	 * Saves key metrics settings.
 	 *
 	 * @since 1.103.0
-	 * @since n.e.x.t Accepts an optional `settings` parameter that allows saving additional settings.
+	 * @since 1.107.0 Accepts an optional `settings` parameter that allows saving additional settings.
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
@@ -322,7 +322,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the key metrics settings are being saved or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.107.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the key metrics settings are being saved, otherwise FALSE.
@@ -340,7 +340,7 @@ const baseSelectors = {
 	 * available, i.e. the modules that it depends on are connected and
 	 * a view-only user has access to it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.107.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} widgetSlug The key metric widget slug.

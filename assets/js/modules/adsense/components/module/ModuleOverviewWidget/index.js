@@ -48,6 +48,7 @@ import Overview from './Overview';
 import Stats from './Stats';
 import Data from 'googlesitekit-data';
 import StatusMigration from './StatusMigration';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 const ModuleOverviewWidget = ( {
@@ -55,16 +56,23 @@ const ModuleOverviewWidget = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
+	const viewOnlyDashboard = useViewOnly();
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
 
-	const accountStatus = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAccountStatus()
-	);
+	const accountStatus = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getAccountStatus();
+	} );
 
-	const siteStatus = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getSiteStatus()
-	);
+	const siteStatus = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getSiteStatus();
+	} );
 
 	const legacyStatus =
 		legacyAccountStatuses.includes( accountStatus ) ||
@@ -180,7 +188,9 @@ const ModuleOverviewWidget = ( {
 
 	return (
 		<Widget noPadding Header={ Header } Footer={ Footer }>
-			{ adsenseSetupV2Enabled && legacyStatus && <StatusMigration /> }
+			{ adsenseSetupV2Enabled && ! viewOnlyDashboard && legacyStatus && (
+				<StatusMigration />
+			) }
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }
