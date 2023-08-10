@@ -138,6 +138,11 @@ function PopularProductsWidget( props ) {
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ title, url ] = fieldValue;
+				// Utilizing `useSelect` inside the component rather than
+				// returning its direct value to the `columns` array.
+				// This pattern ensures that the component re-renders correctly based on changes in state,
+				// preventing potential issues with stale or out-of-sync data.
+				// Note: This pattern is replicated in a few other spots within our codebase.
 				const serviceURL = useSelect( ( select ) => {
 					return ! viewOnlyDashboard
 						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
