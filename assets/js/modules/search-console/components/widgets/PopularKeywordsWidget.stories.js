@@ -27,6 +27,11 @@ import PopularKeywordsWidget from './PopularKeywordsWidget';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import { provideSearchConsoleMockReport } from '../../util/data-mock';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../googlesitekit/constants';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -39,9 +44,13 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
 	PopularKeywordsWidget
 );
 
-const Template = ( { setupRegistry, ...args } ) => (
+const Template = ( { setupRegistry, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
+			<WidgetWithComponentProps { ...args } />
+		</ViewContextProvider>
 	</WithRegistrySetup>
 );
 
@@ -54,6 +63,19 @@ Ready.args = {
 };
 Ready.scenario = {
 	label: 'Key Metrics/PopularKeywordsWidget/Ready',
+	delay: 250,
+};
+
+export const ReadyViewOnly = Template.bind( {} );
+ReadyViewOnly.storyName = 'Ready View Only';
+ReadyViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		provideSearchConsoleMockReport( registry, reportOptions );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+ReadyViewOnly.scenario = {
+	label: 'Key Metrics/PopularKeywordsWidget/ReadyViewOnly',
 	delay: 250,
 };
 
