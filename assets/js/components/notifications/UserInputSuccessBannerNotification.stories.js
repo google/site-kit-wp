@@ -25,6 +25,9 @@ function Template( { ...args } ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Components/UserInputSuccessBannerNotification',
+};
 
 export default {
 	title: 'Components/UserInputSuccessBannerNotification',

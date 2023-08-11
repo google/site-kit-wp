@@ -69,9 +69,9 @@ WithError.args = {
 	type: 'win-error',
 };
 
-export const WithWarnign = Template.bind( {} );
-WithWarnign.storyName = 'With Warning';
-WithWarnign.args = {
+export const WithWarning = Template.bind( {} );
+WithWarning.storyName = 'With Warning';
+WithWarning.args = {
 	id: 'notification-id',
 	title: 'Index Warning',
 	description: 'Indexed, though blocked by robots.txt.',
