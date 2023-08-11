@@ -87,7 +87,7 @@ function TopCitiesWidget( { Widget } ) {
 
 	const { rows = [], totals = [] } = topCitiesReport || {};
 
-	const totalUsers = totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
+	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 	const columns = [
 		{
