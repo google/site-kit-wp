@@ -31,7 +31,6 @@ import {
 	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
-import { ERROR_DETERMINING_GATHERING_DATA_STATE } from '../../../googlesitekit/modules/create-gathering-data-store';
 
 describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = new RegExp(
@@ -199,15 +198,6 @@ describe( 'modules/search-console report', () => {
 
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
-
-				const error = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.getErrorForSelector( 'isGatheringData' );
-
-				expect( error ).not.toBeUndefined();
-				expect( error.message ).toBe(
-					ERROR_DETERMINING_GATHERING_DATA_STATE
-				);
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBe( true );

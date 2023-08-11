@@ -27,17 +27,11 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../data/create-fetch-store';
-import { actions as errorStoreActions } from '../data/create-error-store';
-
-const { receiveError } = errorStoreActions;
 
 const { createRegistryControl } = Data;
 
 const RECEIVE_GATHERING_DATA = 'RECEIVE_GATHERING_DATA';
 const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
-
-export const ERROR_DETERMINING_GATHERING_DATA_STATE =
-	'error_determining_gathering_data_state';
 
 /**
  * Creates a store object that includes actions and selectors for gathering data state for a module.
@@ -186,14 +180,6 @@ export const createGatheringDataStore = (
 				.selectDataAvailability();
 
 			yield actions.receiveIsGatheringData( ! dataAvailability );
-
-			if ( dataAvailability === null ) {
-				yield receiveError(
-					{ message: ERROR_DETERMINING_GATHERING_DATA_STATE },
-					'isGatheringData',
-					[]
-				);
-			}
 
 			if ( dataAvailability ) {
 				yield fetchSaveDataAvailableStateStore.actions.fetchSaveDataAvailableState();

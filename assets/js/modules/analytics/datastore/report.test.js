@@ -32,7 +32,6 @@ import {
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { isZeroReport } from '../util';
-import { ERROR_DETERMINING_GATHERING_DATA_STATE } from '../../../googlesitekit/modules/create-gathering-data-store';
 
 describe( 'modules/analytics report', () => {
 	let registry;
@@ -385,15 +384,6 @@ describe( 'modules/analytics report', () => {
 
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
-
-				const error = registry
-					.select( MODULES_ANALYTICS )
-					.getErrorForSelector( 'isGatheringData' );
-
-				expect( error ).not.toBeUndefined();
-				expect( error.message ).toBe(
-					ERROR_DETERMINING_GATHERING_DATA_STATE
-				);
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBe( true );

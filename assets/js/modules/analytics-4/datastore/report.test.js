@@ -34,7 +34,6 @@ import {
 import { DAY_IN_SECONDS } from '../../../util';
 import { isZeroReport } from '../utils';
 import * as fixtures from './__fixtures__';
-import { ERROR_DETERMINING_GATHERING_DATA_STATE } from '../../../googlesitekit/modules/create-gathering-data-store';
 
 describe( 'modules/analytics-4 report', () => {
 	let registry;
@@ -269,15 +268,6 @@ describe( 'modules/analytics-4 report', () => {
 
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
-
-				const error = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getErrorForSelector( 'isGatheringData' );
-
-				expect( error ).not.toBeUndefined();
-				expect( error.message ).toBe(
-					ERROR_DETERMINING_GATHERING_DATA_STATE
-				);
 
 				expect( isGatheringData() ).toBe( true );
 				expect( console ).toHaveErrored();
