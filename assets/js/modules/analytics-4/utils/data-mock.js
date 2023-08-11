@@ -520,7 +520,7 @@ export function getAnalytics4MockResponse(
 							value: 'RESERVED_MIN',
 						};
 					} ),
-					metricValues: [ ...( rows[ 0 ]?.metricValues || [] ) ],
+					metricValues: cloneDeep( rows[ 0 ]?.metricValues || [] ),
 				},
 			].concat(
 				hasDateRange
@@ -562,9 +562,9 @@ export function getAnalytics4MockResponse(
 							value: 'RESERVED_MAX',
 						};
 					} ),
-					metricValues: [
-						...( rows[ firstItemIndex ]?.metricValues || [] ),
-					],
+					metricValues: cloneDeep(
+						rows[ firstItemIndex ]?.metricValues || []
+					),
 				},
 			].concat(
 				hasDateRange
@@ -604,9 +604,9 @@ export function getAnalytics4MockResponse(
 							value: 'RESERVED_TOTAL',
 						};
 					} ),
-					metricValues: [
-						...( rows[ firstItemIndex ]?.metricValues || [] ),
-					],
+					metricValues: cloneDeep(
+						rows[ firstItemIndex ]?.metricValues || []
+					),
 				},
 			].concat(
 				hasDateRange
