@@ -35,7 +35,6 @@ import { Button } from 'googlesitekit-components';
 import Link from '../Link';
 import KeyMetricsCTAContent from './KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -45,6 +44,7 @@ import {
 	KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
 } from './constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import whenActive from '../../util/when-active';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
@@ -57,19 +57,14 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const keyMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetrics()
 	);
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
 	const searchConsoleIsGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
-	const analyticsIsGatheringData = useSelect(
-		( select ) =>
-			analyticsModuleConnected &&
-			select( MODULES_ANALYTICS_4 ).isGatheringData()
+	const analyticsIsGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
 	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
@@ -169,4 +164,6 @@ KeyMetricsSetupCTAWidget.propTypes = {
 	WidgetNull: PropTypes.elementType,
 };
 
-export default KeyMetricsSetupCTAWidget;
+export default whenActive( { moduleName: 'analytics-4' } )(
+	KeyMetricsSetupCTAWidget
+);
