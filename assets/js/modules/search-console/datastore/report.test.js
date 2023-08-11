@@ -31,6 +31,7 @@ import {
 	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { ERROR_DETERMINING_GATHERING_DATA_STATE } from '../../../googlesitekit/modules/create-gathering-data-store';
 
 describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = new RegExp(
@@ -205,7 +206,7 @@ describe( 'modules/search-console report', () => {
 
 				expect( error ).not.toBeUndefined();
 				expect( error.message ).toBe(
-					'Unable to determine gathering data state.'
+					ERROR_DETERMINING_GATHERING_DATA_STATE
 				);
 
 				expect( console ).toHaveErroredWith( ...consoleError );

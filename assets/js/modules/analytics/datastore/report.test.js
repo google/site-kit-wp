@@ -32,6 +32,7 @@ import {
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { isZeroReport } from '../util';
+import { ERROR_DETERMINING_GATHERING_DATA_STATE } from '../../../googlesitekit/modules/create-gathering-data-store';
 
 describe( 'modules/analytics report', () => {
 	let registry;
@@ -391,7 +392,7 @@ describe( 'modules/analytics report', () => {
 
 				expect( error ).not.toBeUndefined();
 				expect( error.message ).toBe(
-					'Unable to determine gathering data state.'
+					ERROR_DETERMINING_GATHERING_DATA_STATE
 				);
 
 				expect( console ).toHaveErroredWith( ...consoleError );

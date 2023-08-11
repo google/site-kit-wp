@@ -36,6 +36,9 @@ const { createRegistryControl } = Data;
 const RECEIVE_GATHERING_DATA = 'RECEIVE_GATHERING_DATA';
 const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
 
+export const ERROR_DETERMINING_GATHERING_DATA_STATE =
+	'error_determining_gathering_data_state';
+
 /**
  * Creates a store object that includes actions and selectors for gathering data state for a module.
  *
@@ -186,7 +189,7 @@ export const createGatheringDataStore = (
 
 			if ( dataAvailability === null ) {
 				yield receiveError(
-					{ message: 'Unable to determine gathering data state.' },
+					{ message: ERROR_DETERMINING_GATHERING_DATA_STATE },
 					'isGatheringData',
 					[]
 				);

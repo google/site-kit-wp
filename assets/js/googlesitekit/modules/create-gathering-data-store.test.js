@@ -26,7 +26,10 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../tests/js/utils';
-import { createGatheringDataStore } from './create-gathering-data-store';
+import {
+	ERROR_DETERMINING_GATHERING_DATA_STATE,
+	createGatheringDataStore,
+} from './create-gathering-data-store';
 import { createErrorStore } from '../data/create-error-store';
 
 const MODULE_SLUG = 'test-slug';
@@ -343,7 +346,7 @@ describe( 'createGatheringDataStore', () => {
 
 				expect( error ).not.toBeUndefined();
 				expect( error.message ).toBe(
-					'Unable to determine gathering data state.'
+					ERROR_DETERMINING_GATHERING_DATA_STATE
 				);
 			} );
 		} );
