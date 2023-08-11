@@ -50,14 +50,12 @@ import {
 	useShowTooltip,
 	useTooltipState,
 } from '../AdminMenuTooltip';
-import { useFeature } from '../../hooks/useFeature';
+
 const { useDispatch, useSelect } = Data;
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
-	const userInputEnabled = useFeature( 'userInput' );
-
-	const isUserInputCompleted = useSelect( ( select ) =>
-		select( CORE_USER ).isUserInputCompleted()
+	const keyMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetrics()
 	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
@@ -115,10 +113,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if (
-		! userInputEnabled ||
-		isUserInputCompleted !== false ||
+		( Array.isArray( keyMetrics ) && keyMetrics.length > 0 ) ||
 		isDismissed !== false ||
-		! analyticsModuleConnected ||
 		analyticsIsGatheringData !== false ||
 		searchConsoleIsGatheringData !== false
 	) {

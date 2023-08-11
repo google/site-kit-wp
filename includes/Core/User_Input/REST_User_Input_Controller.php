@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\User_Input;
 
+use Google\Site_Kit\Core\Key_Metrics\Is_Key_Metrics_Setup_Complete;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -46,16 +47,26 @@ class REST_User_Input_Controller {
 	protected $survey_queue;
 
 	/**
+	 * Is_Key_Metrics_Setup_Complete instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Is_Key_Metrics_Setup_Complete
+	 */
+	protected $is_key_metrics_setup_complete;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.90.0
 	 *
-	 * @param User_Input   $user_input   User_Input instance.
-	 * @param Survey_Queue $survey_queue Survey_Queue instance.
+	 * @param User_Input                    $user_input   User_Input instance.
+	 * @param Survey_Queue                  $survey_queue Survey_Queue instance.
+	 * @param Is_Key_Metrics_Setup_Complete $is_key_metrics_setup_complete Is_Key_Metrics_Setup_Complete instance.
 	 */
-	public function __construct( User_Input $user_input, Survey_Queue $survey_queue ) {
-		$this->user_input   = $user_input;
-		$this->survey_queue = $survey_queue;
+	public function __construct( User_Input $user_input, Survey_Queue $survey_queue, Is_Key_Metrics_Setup_Complete $is_key_metrics_setup_complete ) {
+		$this->user_input                    = $user_input;
+		$this->survey_queue                  = $survey_queue;
+		$this->is_key_metrics_setup_complete = $is_key_metrics_setup_complete;
 	}
 
 	/**
@@ -144,6 +155,9 @@ class REST_User_Input_Controller {
 								$this->survey_queue->dequeue(
 									'user_input_answered_other_survey'
 								);
+							}
+							if ( ! is_wp_error( $response ) ) {
+								$this->is_key_metrics_setup_complete->set( true );
 							}
 
 							return $response;

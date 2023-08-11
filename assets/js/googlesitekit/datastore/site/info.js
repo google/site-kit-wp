@@ -140,6 +140,7 @@ export const reducer = ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productBasePaths,
+				isKeyMetricsSetupComplete,
 			} = payload.siteInfo;
 
 			return {
@@ -171,6 +172,7 @@ export const reducer = ( state, { payload, type } ) => {
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
 					productBasePaths,
+					isKeyMetricsSetupComplete,
 				},
 			};
 		}
@@ -237,6 +239,7 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productBasePaths,
+			isKeyMetricsSetupComplete,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -273,6 +276,7 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productBasePaths,
+			isKeyMetricsSetupComplete,
 		} );
 	},
 };
@@ -771,6 +775,18 @@ export const selectors = {
 	 * @return {Array.<string>} The list of product base paths.
 	 */
 	getProductBasePaths: getSiteInfoProperty( 'productBasePaths' ),
+
+	/**
+	 * Checks if the Key Metrics widget has been setup either if at least one user
+	 * has answered the User Input questionnaire or picked their own metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean)} `true` if the Key Metrics widget has been setup, otherwise `false`.
+	 */
+	isKeyMetricsSetupComplete: getSiteInfoProperty(
+		'isKeyMetricsSetupComplete'
+	),
 };
 
 export default {

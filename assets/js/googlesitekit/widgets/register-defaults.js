@@ -34,6 +34,7 @@ import {
 	ChangeMetricsLink,
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
+import { CORE_SITE } from '../datastore/site/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -229,19 +230,22 @@ export function registerDefaults( widgetsAPI ) {
 		CONTEXT_ENTITY_DASHBOARD_MONETIZATION
 	);
 
-	widgetsAPI.registerWidget(
-		'keyMetricsSetupCTA',
-		{
-			Component: KeyMetricsSetupCTAWidget,
-			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
-			priority: 1,
-			wrapWidget: false,
-			modules: [ 'search-console' ],
-		},
-		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-	);
-
 	if ( isFeatureEnabled( 'userInput' ) ) {
+		widgetsAPI.registerWidget(
+			'keyMetricsSetupCTA',
+			{
+				Component: KeyMetricsSetupCTAWidget,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isAuthenticated() &&
+					! select( CORE_SITE ).isKeyMetricsSetupComplete(),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
 		/**
 		 * Since we allow selecting at least two and at most four key
 		 * metrics, we're adding two instances of the same AddMetricCTATile

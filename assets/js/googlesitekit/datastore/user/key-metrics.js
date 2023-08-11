@@ -192,7 +192,28 @@ const baseSelectors = {
 			return userPickedMetrics;
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics();
+		const answerBasedMetrics = select( CORE_USER ).getAnswerBasedMetrics();
+
+		if ( answerBasedMetrics === undefined ) {
+			return undefined;
+		}
+
+		if ( answerBasedMetrics.length ) {
+			return answerBasedMetrics;
+		}
+
+		const isKeyMetricsSetupComplete =
+			select( CORE_SITE ).isKeyMetricsSetupComplete();
+
+		if ( isKeyMetricsSetupComplete ) {
+			return [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			];
+		}
+		return [];
 	} ),
 
 	/**
