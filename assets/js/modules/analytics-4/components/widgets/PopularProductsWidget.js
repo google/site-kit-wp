@@ -43,15 +43,21 @@ import {
 } from '../../datastore/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function PopularProductsWidget( props ) {
 	const { Widget, WidgetNull } = props;
+
+	const viewOnlyDashboard = useViewOnly();
 
 	const productBasePaths = useSelect( ( select ) =>
 		select( CORE_SITE ).getProductBasePaths()
@@ -127,17 +133,33 @@ function PopularProductsWidget( props ) {
 
 	const { rows = [] } = report || {};
 
-	const columns = useSelect( ( select ) => [
+	const columns = [
 		{
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ title, url ] = fieldValue;
-				const serviceURL = select(
-					MODULES_ANALYTICS_4
-				).getServiceReportURL( 'all-pages-and-screens', {
-					filters: { unifiedPagePathScreen: url.value },
-					dates,
+				// Utilizing `useSelect` inside the component rather than
+				// returning its direct value to the `columns` array.
+				// This pattern ensures that the component re-renders correctly based on changes in state,
+				// preventing potential issues with stale or out-of-sync data.
+				// Note: This pattern is replicated in a few other spots within our codebase.
+				const serviceURL = useSelect( ( select ) => {
+					return ! viewOnlyDashboard
+						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+								'all-pages-and-screens',
+								{
+									filters: {
+										unifiedPagePathScreen: url.value,
+									},
+									dates,
+								}
+						  )
+						: null;
 				} );
+
+				if ( viewOnlyDashboard ) {
+					return <MetricTileTablePlainText content={ title.value } />;
+				}
 
 				return (
 					<Link
@@ -157,7 +179,7 @@ function PopularProductsWidget( props ) {
 				<strong>{ numFmt( fieldValue ) }</strong>
 			),
 		},
-	] );
+	];
 
 	if ( ! showWidget ) {
 		return <WidgetNull />;
