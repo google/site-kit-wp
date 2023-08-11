@@ -50,7 +50,7 @@ import { createGatheringDataStore } from '../../../googlesitekit/modules/create-
 const { createRegistrySelector } = Data;
 
 /**
- * Returns report args for the zero data report.
+ * Returns report args for a sample report.
  *
  * @since 1.107.0
  *
