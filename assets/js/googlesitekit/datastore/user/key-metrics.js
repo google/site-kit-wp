@@ -182,7 +182,9 @@ const baseSelectors = {
 	 * @return {Array<string>|undefined} An array of key metric slugs, or undefined while loading.
 	 */
 	getKeyMetrics: createRegistrySelector( ( select ) => () => {
-		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
+		const { getAnswerBasedMetrics, getUserPickedMetrics } =
+			select( CORE_USER );
+		const userPickedMetrics = getUserPickedMetrics();
 
 		if ( userPickedMetrics === undefined ) {
 			return undefined;
@@ -192,7 +194,7 @@ const baseSelectors = {
 			return userPickedMetrics;
 		}
 
-		const answerBasedMetrics = select( CORE_USER ).getAnswerBasedMetrics();
+		const answerBasedMetrics = getAnswerBasedMetrics();
 
 		if ( answerBasedMetrics === undefined ) {
 			return undefined;
