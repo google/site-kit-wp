@@ -1,5 +1,5 @@
 /**
- * TopCitiesWidget component stories.
+ * TopCountriesWidget component stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -29,12 +29,12 @@ import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util
 import { getAnalytics4MockResponse } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import TopCitiesWidget from './TopCitiesWidget';
+import TopCountriesWidget from './TopCountriesWidget';
 
 const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
-	dimensions: [ 'city' ],
+	dimensions: [ 'country' ],
 	metrics: [ { name: 'totalUsers' } ],
 	orderby: [
 		{
@@ -48,8 +48,8 @@ const reportOptions = {
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'kmAnalyticsTopCities'
-)( TopCitiesWidget );
+	'kmAnalyticsTopCountries'
+)( TopCountriesWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -63,25 +63,25 @@ Ready.args = {
 	setupRegistry: ( registry ) => {
 		const report = getAnalytics4MockResponse( reportOptions );
 		// Calculate sum of metricValues for all rows to get the total count
-		// visits from all cities in the report.
+		// visits from all countries in the report.
 		const rowsSum = report.rows.reduce( ( total, row ) => {
 			return total + Number( row.metricValues[ 0 ].value );
 		}, 0 );
 
-		// Generate totalValueForAllCities that is higher than the sum since
-		// the total visits from all cities include those not in the report.
-		const totalValueForAllCities = rowsSum * 2;
+		// Generate totalValueForAllCountries that is higher than the sum since
+		// the total visits from all countries include those not in the report.
+		const totalValueForAllCountries = rowsSum * 2;
 
 		// Adjust totals field in the mock response.
 		report.totals[ 0 ].metricValues[ 0 ].value =
-			totalValueForAllCities.toString();
+			totalValueForAllCountries.toString();
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
 			options: reportOptions,
 		} );
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/TopCitiesWidget/Ready',
+	label: 'KeyMetrics/TopCountriesWidget/Ready',
 };
 
 export const Loading = Template.bind( {} );
@@ -108,7 +108,7 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'KeyMetrics/TopCitiesWidget/ZeroData',
+	label: 'KeyMetrics/TopCountriesWidget/ZeroData',
 };
 
 export const Error = Template.bind( {} );
@@ -141,12 +141,12 @@ Error.args = {
 	},
 };
 Error.scenario = {
-	label: 'KeyMetrics/TopCitiesWidget/Error',
+	label: 'KeyMetrics/TopCountriesWidget/Error',
 	delay: 250,
 };
 
 export default {
-	title: 'Key Metrics/TopCitiesWidget',
+	title: 'Key Metrics/TopCountriesWidget',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
