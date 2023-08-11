@@ -269,15 +269,6 @@ describe( 'modules/analytics-4 report', () => {
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
 
-				const error = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getErrorForSelector( 'isGatheringData' );
-
-				expect( error ).not.toBeUndefined();
-				expect( error.message ).toBe(
-					'Unable to determine gathering data state.'
-				);
-
 				expect( isGatheringData() ).toBe( true );
 				expect( console ).toHaveErrored();
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );

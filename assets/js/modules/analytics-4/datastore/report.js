@@ -50,14 +50,14 @@ import { createGatheringDataStore } from '../../../googlesitekit/modules/create-
 const { createRegistrySelector } = Data;
 
 /**
- * Returns report args for the zero data report.
+ * Returns report args for a sample report.
  *
  * @since 1.107.0
  *
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
  */
-const getZeroDataReportArgs = ( select ) => {
+const getSampleReportArgs = ( select ) => {
 	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} );
@@ -153,7 +153,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
 
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		const hasResolvedReport = select(
 			MODULES_ANALYTICS_4
@@ -362,7 +362,7 @@ const baseSelectors = {
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
