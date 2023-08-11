@@ -539,9 +539,9 @@ export function getAnalytics4MockResponse(
 										};
 									}
 								),
-								metricValues: [
-									...( rows[ 1 ]?.metricValues || [] ),
-								],
+								metricValues: cloneDeep(
+									rows[ 1 ]?.metricValues || []
+								),
 							},
 					  ]
 					: []
@@ -583,10 +583,9 @@ export function getAnalytics4MockResponse(
 										};
 									}
 								),
-								metricValues: [
-									...( rows[ rows.length - 1 ]
-										?.metricValues || [] ),
-								],
+								metricValues: cloneDeep(
+									rows[ rows.length - 1 ]?.metricValues || []
+								),
 							},
 					  ]
 					: []
@@ -625,10 +624,9 @@ export function getAnalytics4MockResponse(
 										};
 									}
 								),
-								metricValues: [
-									...( rows[ rows.length - 1 ]
-										?.metricValues || [] ),
-								],
+								metricValues: cloneDeep(
+									rows[ rows.length - 1 ]?.metricValues || []
+								),
 							},
 					  ]
 					: []
