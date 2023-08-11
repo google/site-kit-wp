@@ -42,7 +42,6 @@ import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/Adm
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 import { stringToDate } from '../../../../../util';
 import { trackEvent } from '../../../../../util/tracking';
-import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../../../material-components';
@@ -51,11 +50,9 @@ import CheckIcon from '../../../../../../svg/icons/check_circle.svg';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( {
-	isDismissed,
-	onSubmitSuccess,
-	children,
-} ) {
+export default function ReminderBanner( props ) {
+	const { isDismissed, onSubmitSuccess, children } = props;
+
 	const hasAnalyticsAccess = useSelect( ( select ) => {
 		if ( isDismissed ) {
 			return undefined;
@@ -154,22 +151,12 @@ export default function ReminderBanner( {
 		'Google Analytics 4 is the newest version of Google Analytics. It will replace Universal Analytics on July 1, 2023. After that, Universal Analytics properties will no longer collect new data.',
 		'google-site-kit'
 	);
-	let descriptionIcon = null;
 
 	if ( referenceDate < stringToDate( '2023-06-01' ) ) {
 		title = __(
 			'Set up Google Analytics 4 now to join the future of Analytics',
 			'google-site-kit'
 		);
-		if ( hasAnalyticsAccess ) {
-			descriptionIcon = (
-				<InfoIcon
-					height="14"
-					width="14"
-					className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--info"
-				/>
-			);
-		}
 	} else if (
 		stringToDate( '2023-06-01' ) <= referenceDate &&
 		referenceDate < stringToDate( '2023-07-01' )
@@ -230,7 +217,6 @@ export default function ReminderBanner( {
 			<ReminderBannerNoAccess
 				title={ title }
 				description={ description }
-				descriptionIcon={ descriptionIcon }
 				dismissExpires={ getBannerDismissalExpiryTime(
 					referenceDateString
 				) }
