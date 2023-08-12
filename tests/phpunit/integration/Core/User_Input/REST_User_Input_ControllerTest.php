@@ -11,7 +11,9 @@
 namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Input\REST_User_Input_Controller;
 use Google\Site_Kit\Core\User_Input\User_Input;
@@ -56,7 +58,8 @@ class REST_User_Input_ControllerTest extends TestCase {
 		$this->user_input   = new User_Input( $context );
 		$this->controller   = new REST_User_Input_Controller(
 			$this->user_input,
-			new Survey_Queue( $this->user_options )
+			new Survey_Queue( $this->user_options ),
+			new Key_Metrics_Setup_Completed( new Options( $context ) )
 		);
 
 		$this->user_input->register();

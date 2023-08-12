@@ -12,8 +12,10 @@ namespace Google\Site_Kit\Tests\Core\Key_Metrics;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
 use Google\Site_Kit\Core\Key_Metrics\REST_Key_Metrics_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -44,10 +46,11 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
 		$user_options = new User_Options( $context, $user_id );
 
 		$this->settings   = new Key_Metrics_Settings( $user_options );
-		$this->controller = new REST_Key_Metrics_Controller( $this->settings );
+		$this->controller = new REST_Key_Metrics_Controller( $this->settings, new Key_Metrics_Setup_Completed( $options ) );
 	}
 
 	public function tear_down() {
