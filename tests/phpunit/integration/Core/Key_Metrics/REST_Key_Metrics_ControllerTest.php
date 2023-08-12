@@ -143,12 +143,18 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 	public function provider_wrong_data() {
 		return array(
-			'wrong data type'              => array(
+			'wrong data type'       => array(
 				'{}',
 			),
-			'wrong number of widget slugs' => array(
+			'too many widget slugs' => array(
 				array(
 					'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4' ),
+					'isWidgetHidden' => true,
+				),
+			),
+			'no widget slugs'       => array(
+				array(
+					'widgetSlugs'    => array(),
 					'isWidgetHidden' => true,
 				),
 			),
