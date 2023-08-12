@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryWidget - SetupMain component test.
+ * AdBlockingRecoverySetupCTAWidget - SetupMain component test.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -46,7 +46,7 @@ import SetupMain from './SetupMain';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'AdBlockingRecoveryWidget - SetupMain', () => {
+describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 	mockLocation();
 
 	let registry;

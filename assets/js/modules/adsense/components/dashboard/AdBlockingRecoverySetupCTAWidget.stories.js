@@ -1,4 +1,6 @@
 /**
+ * AdBlockingRecoverySetupCTAWidget component stories.
+ *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,13 +31,13 @@ import {
 	useBreakpoint,
 	BREAKPOINT_SMALL,
 } from '../../../../hooks/useBreakpoint';
-import AdBlockingRecoveryWidget from './AdBlockingRecoveryWidget';
+import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'adBlockingRecovery'
-)( AdBlockingRecoveryWidget );
+)( AdBlockingRecoverySetupCTAWidget );
 
 const Template = () => <WidgetWithComponentProps />;
 
@@ -62,12 +64,12 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Global/AdBlockingRecoveryWidget/Ready',
+	label: 'Global/AdBlockingRecoverySetupCTAWidget/Ready',
 	delay: 250,
 };
 
 export default {
-	title: 'Modules/AdSense/Widgets/AdBlockingRecoveryWidget',
+	title: 'Modules/AdSense/Widgets/AdBlockingRecoverySetupCTAWidget',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
