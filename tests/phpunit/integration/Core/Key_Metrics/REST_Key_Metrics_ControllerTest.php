@@ -147,7 +147,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			)
 		);
 
-		$res = rest_get_server()->dispatch( $request );
+		rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( $expected, $this->key_metrics_setup_completed->get() );
 	}
