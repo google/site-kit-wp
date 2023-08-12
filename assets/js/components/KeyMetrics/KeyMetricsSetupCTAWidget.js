@@ -119,11 +119,9 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	return (
 		<Widget
 			noPadding
-			Footer={ () => {
-				return (
-					<KeyMetricsCTAFooter onActionClick={ dismissCallback } />
-				);
-			} }
+			Footer={ () => (
+				<KeyMetricsCTAFooter onActionClick={ dismissCallback } />
+			) }
 		>
 			<KeyMetricsCTAContent
 				title={ __(
