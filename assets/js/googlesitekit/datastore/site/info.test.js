@@ -325,6 +325,7 @@ describe( 'core/site site info', () => {
 			[ 'isSecondaryAMP', 'ampMode' ],
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
 			[ 'getProductBasePaths', 'productBasePaths' ],
+			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompleted' ],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
