@@ -192,7 +192,7 @@ class REST_User_Input_ControllerTest extends TestCase {
 			$this->user_options->get( Survey_Queue::OPTION )
 		);
 
-		// Verify KM setup is marked as completed
+		// Verify KM setup is marked as completed.
 		$this->assertTrue( $this->key_metrics_setup_completed->get() );
 	}
 }
