@@ -37,7 +37,7 @@ import {
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import AdBlockingRecoverySetupCTANotice from '../common/AdBlockingRecoverySetupCTANotice';
+import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import { useFeature } from '../../../../hooks/useFeature';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 

@@ -18,7 +18,6 @@
 
 export { default as AccountSelect } from './AccountSelect';
 export { default as AdBlockerWarning } from './AdBlockerWarning';
-export { default as AdBlockingRecoverySetupCTANotice } from './AdBlockingRecoverySetupCTANotice';
 export { default as ErrorNotices } from './ErrorNotices';
 export { default as SiteSteps } from './SiteSteps';
 export { default as UserProfile } from './UserProfile';
