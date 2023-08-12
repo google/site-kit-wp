@@ -140,7 +140,7 @@ export const reducer = ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productBasePaths,
-				isKeyMetricsSetupComplete,
+				keyMetricsSetupCompleted,
 			} = payload.siteInfo;
 
 			return {
@@ -172,7 +172,7 @@ export const reducer = ( state, { payload, type } ) => {
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
 					productBasePaths,
-					isKeyMetricsSetupComplete,
+					keyMetricsSetupCompleted,
 				},
 			};
 		}
@@ -239,7 +239,7 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productBasePaths,
-			isKeyMetricsSetupComplete,
+			keyMetricsSetupCompleted,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -276,7 +276,7 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productBasePaths,
-			isKeyMetricsSetupComplete,
+			keyMetricsSetupCompleted,
 		} );
 	},
 };
@@ -784,8 +784,8 @@ export const selectors = {
 	 *
 	 * @return {(boolean)} `true` if the Key Metrics widget has been setup, otherwise `false`.
 	 */
-	isKeyMetricsSetupComplete: getSiteInfoProperty(
-		'isKeyMetricsSetupComplete'
+	isKeyMetricsSetupCompleted: getSiteInfoProperty(
+		'keyMetricsSetupCompleted'
 	),
 };
 

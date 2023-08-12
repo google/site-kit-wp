@@ -36,24 +36,27 @@ class REST_Key_Metrics_Controller {
 	protected $settings;
 
 	/**
-	 * Is_Key_Metrics_Setup_Complete instance.
+	 * Key_Metrics_Setup_Completed instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Is_Key_Metrics_Setup_Complete
+	 * @var Key_Metrics_Setup_Completed
 	 */
-	protected $is_key_metrics_setup_complete;
+	protected $key_metrics_setup_completed;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.93.0
 	 *
-	 * @param Key_Metrics_Settings          $settings Key Metrics settings.
-	 * @param Is_Key_Metrics_Setup_Complete $is_key_metrics_setup_complete Site-wide option to check if key metrics set up is complete.
+	 * @param Key_Metrics_Settings        $settings                    Key Metrics settings.
+	 * @param Key_Metrics_Setup_Completed $key_metrics_setup_completed Site-wide option to check if key metrics set up is complete.
 	 */
-	public function __construct( Key_Metrics_Settings $settings, Is_Key_Metrics_Setup_Complete $is_key_metrics_setup_complete ) {
-		$this->settings                      = $settings;
-		$this->is_key_metrics_setup_complete = $is_key_metrics_setup_complete;
+	public function __construct(
+		Key_Metrics_Settings $settings,
+		Key_Metrics_Setup_Completed $key_metrics_setup_completed
+	) {
+		$this->settings                    = $settings;
+		$this->key_metrics_setup_completed = $key_metrics_setup_completed;
 	}
 
 	/**
@@ -130,7 +133,7 @@ class REST_Key_Metrics_Controller {
 						}
 
 						$this->settings->merge( $data['settings'] );
-						$this->is_key_metrics_setup_complete->set( true );
+						$this->key_metrics_setup_completed->set( true );
 
 						return new WP_REST_Response( $this->settings->get() );
 					},

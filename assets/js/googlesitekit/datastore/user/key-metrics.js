@@ -204,10 +204,10 @@ const baseSelectors = {
 			return answerBasedMetrics;
 		}
 
-		const isKeyMetricsSetupComplete =
-			select( CORE_SITE ).isKeyMetricsSetupComplete();
+		const isKeyMetricsSetupCompleted =
+			select( CORE_SITE ).isKeyMetricsSetupCompleted();
 
-		if ( isKeyMetricsSetupComplete ) {
+		if ( isKeyMetricsSetupCompleted ) {
 			return [
 				KM_ANALYTICS_NEW_VISITORS,
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,

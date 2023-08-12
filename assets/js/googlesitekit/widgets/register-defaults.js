@@ -241,7 +241,7 @@ export function registerDefaults( widgetsAPI ) {
 				modules: [ 'search-console' ],
 				isActive: ( select ) =>
 					select( CORE_USER ).isAuthenticated() &&
-					! select( CORE_SITE ).isKeyMetricsSetupComplete(),
+					select( CORE_SITE ).isKeyMetricsSetupCompleted() === false,
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);

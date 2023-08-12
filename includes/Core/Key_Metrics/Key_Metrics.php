@@ -38,9 +38,9 @@ class Key_Metrics {
 	 * Is_Key_Metrics_Setup_Complete instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Is_Key_Metrics_Setup_Complete
+	 * @var Key_Metrics_Setup_Completed
 	 */
-	protected $is_key_metrics_setup_complete;
+	protected $key_metrics_setup_completed;
 
 	/**
 	 * REST_Key_Metrics_Controller instance.
@@ -60,9 +60,9 @@ class Key_Metrics {
 	 * @param Options      $options        Optional. Option API instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, User_Options $user_options = null, Options $options = null ) {
-		$this->key_metrics_settings          = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
-		$this->is_key_metrics_setup_complete = new Is_Key_Metrics_Setup_Complete( $options ?: new Options( $context ) );
-		$this->rest_controller               = new REST_Key_Metrics_Controller( $this->key_metrics_settings, $this->is_key_metrics_setup_complete );
+		$this->key_metrics_settings        = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
+		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options ?: new Options( $context ) );
+		$this->rest_controller             = new REST_Key_Metrics_Controller( $this->key_metrics_settings, $this->key_metrics_setup_completed );
 	}
 
 	/**
@@ -72,7 +72,7 @@ class Key_Metrics {
 	 */
 	public function register() {
 		$this->key_metrics_settings->register();
-		$this->is_key_metrics_setup_complete->register();
+		$this->key_metrics_setup_completed->register();
 		$this->rest_controller->register();
 
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
@@ -87,7 +87,7 @@ class Key_Metrics {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
-		$data['isKeyMetricsSetupComplete'] = (bool) $this->is_key_metrics_setup_complete->get();
+		$data['keyMetricsSetupCompleted'] = (bool) $this->key_metrics_setup_completed->get();
 
 		return $data;
 	}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Key_Metrics\Is_Key_Metrics_Setup_Complete
+ * Class Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed
  *
  * @package   Google\Site_Kit\Core\Key_Metrics
  * @copyright 2023 Google LLC
@@ -13,18 +13,18 @@ namespace Google\Site_Kit\Core\Key_Metrics;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Class for handling the site specific answers in User Input.
+ * Class for handling the setup completion state of Key Metrics.
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-class Is_Key_Metrics_Setup_Complete extends Setting {
+class Key_Metrics_Setup_Completed extends Setting {
 
 	/**
 	 * The option_name for this setting.
 	 */
-	const OPTION = 'googlesitekit_is_key_metrics_setup_complete';
+	const OPTION = 'googlesitekit_key_metrics_setup_completed';
 
 	/**
 	 * Gets the expected value type.
