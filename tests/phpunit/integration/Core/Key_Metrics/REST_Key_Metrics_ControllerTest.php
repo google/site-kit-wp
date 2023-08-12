@@ -39,6 +39,13 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 	 */
 	private $controller;
 
+	/**
+	 * Key_Metrics_Setup_Completed instance.
+	 *
+	 * @var Key_Metrics_Setup_Completed
+	 */
+	private $key_metrics_setup_completed;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -49,8 +56,9 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$options      = new Options( $context );
 		$user_options = new User_Options( $context, $user_id );
 
-		$this->settings   = new Key_Metrics_Settings( $user_options );
-		$this->controller = new REST_Key_Metrics_Controller( $this->settings, new Key_Metrics_Setup_Completed( $options ) );
+		$this->settings                    = new Key_Metrics_Settings( $user_options );
+		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options );
+		$this->controller                  = new REST_Key_Metrics_Controller( $this->settings, $this->key_metrics_setup_completed );
 	}
 
 	public function tear_down() {
@@ -117,6 +125,50 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data() );
+	}
+
+	/**
+	 * @dataProvider data_setup_completed
+	 * @param bool $expected
+	 * @param array $settings
+	 */
+	public function test_setup_completed( $expected, $settings ) {
+		$this->settings->register();
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->assertFalse( $this->key_metrics_setup_completed->get() );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => $settings,
+				),
+			)
+		);
+
+		$res = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( $expected, $this->key_metrics_setup_completed->get() );
+	}
+
+	public function data_setup_completed() {
+		return array(
+			'completed on success' => array(
+				true,
+				array(
+					'widgetSlugs'    => array( 'widgetA' ),
+					'isWidgetHidden' => false,
+				),
+			),
+			'incomplete on error'  => array(
+				false,
+				array(
+					'widgetSlugs'    => array(), // insufficient
+					'isWidgetHidden' => false,
+				),
+			),
+		);
 	}
 
 	/**

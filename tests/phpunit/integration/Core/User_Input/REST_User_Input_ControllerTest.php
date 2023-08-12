@@ -47,19 +47,27 @@ class REST_User_Input_ControllerTest extends TestCase {
 	 */
 	private $user_options;
 
+	/**
+	 * Key_Metrics_Setup_Completed instance.
+	 *
+	 * @var Key_Metrics_Setup_Completed
+	 */
+	private $key_metrics_setup_completed;
+
 	public function set_up() {
 		parent::set_up();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->user_options = new User_Options( $context );
-		$this->user_input   = new User_Input( $context );
-		$this->controller   = new REST_User_Input_Controller(
+		$context                           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options                = new User_Options( $context );
+		$this->user_input                  = new User_Input( $context );
+		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( new Options( $context ) );
+		$this->controller                  = new REST_User_Input_Controller(
 			$this->user_input,
 			new Survey_Queue( $this->user_options ),
-			new Key_Metrics_Setup_Completed( new Options( $context ) )
+			$this->key_metrics_setup_completed
 		);
 
 		$this->user_input->register();
@@ -157,6 +165,9 @@ class REST_User_Input_ControllerTest extends TestCase {
 			)
 		);
 
+		// Ensure KM setup is not completed yet to test below.
+		$this->assertFalse( $this->key_metrics_setup_completed->get() );
+
 		$this->assertEqualSets(
 			array(
 				'purpose'       => array(
@@ -180,5 +191,8 @@ class REST_User_Input_ControllerTest extends TestCase {
 			array(),
 			$this->user_options->get( Survey_Queue::OPTION )
 		);
+
+		// Verify KM setup is marked as completed
+		$this->assertTrue( $this->key_metrics_setup_completed->get() );
 	}
 }
