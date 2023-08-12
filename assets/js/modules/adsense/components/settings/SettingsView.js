@@ -39,7 +39,7 @@ import {
 	getSnippetLabel,
 	getAutoAdsDisabledMessage,
 } from './utils';
-import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
+import AdBlockingRecoverySetupCTANotice from '../common/AdBlockingRecoverySetupCTANotice';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -243,7 +243,7 @@ export default function SettingsView() {
 
 			{ adBlockerDetectionEnabled &&
 				! adBlockingRecoverySetupStatus?.length && (
-					<AdBlockingRecoveryCTA />
+					<AdBlockingRecoverySetupCTANotice />
 				) }
 		</div>
 	);

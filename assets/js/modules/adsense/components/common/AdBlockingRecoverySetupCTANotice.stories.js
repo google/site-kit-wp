@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryCTA Component Stories.
+ * AdBlockingRecoverySetupCTANotice component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -26,9 +26,9 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import AdBlockingRecoveryCTA from './AdBlockingRecoveryCTA';
+import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 
-const Template = () => <AdBlockingRecoveryCTA />;
+const Template = () => <AdBlockingRecoverySetupCTANotice />;
 
 const validSettings = {
 	accountID: 'pub-12345678',
@@ -42,11 +42,11 @@ const validSettings = {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.scenario = {
-	label: 'Global/AdBlockingRecoveryCTA/Ready',
+	label: 'Global/AdBlockingRecoverySetupCTANotice/Ready',
 };
 
 export default {
-	title: 'Modules/AdSense/Components/AdBlockingRecoveryCTA',
+	title: 'Modules/AdSense/Components/AdBlockingRecoverySetupCTANotice',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

@@ -18,7 +18,7 @@
 
 export { default as AccountSelect } from './AccountSelect';
 export { default as AdBlockerWarning } from './AdBlockerWarning';
-export { default as AdBlockingRecoveryCTA } from './AdBlockingRecoveryCTA';
+export { default as AdBlockingRecoverySetupCTANotice } from './AdBlockingRecoverySetupCTANotice';
 export { default as AdBlockingRecoveryToggle } from './AdBlockingRecoveryToggle';
 export { default as ErrorNotices } from './ErrorNotices';
 export { default as SiteSteps } from './SiteSteps';
