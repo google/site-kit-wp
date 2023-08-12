@@ -35,7 +35,7 @@ class Key_Metrics {
 	protected $key_metrics_settings;
 
 	/**
-	 * Is_Key_Metrics_Setup_Complete instance.
+	 * Key_Metrics_Setup_Completed instance.
 	 *
 	 * @since n.e.x.t
 	 * @var Key_Metrics_Setup_Completed
