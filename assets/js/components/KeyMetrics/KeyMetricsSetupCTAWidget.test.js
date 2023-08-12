@@ -31,7 +31,6 @@ import {
 	provideSiteInfo,
 	muteFetch,
 	provideGatheringDataState,
-	provideKeyMetrics,
 	provideUserAuthentication,
 	getAnalytics4HasZeroDataReportOptions,
 	fireEvent,
@@ -48,10 +47,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry, { homeURL: 'http://example.com' } );
-
-		provideKeyMetrics( registry, { widgetSlugs: [] } );
-
-		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
 
 		await registry
 			.dispatch( CORE_USER )

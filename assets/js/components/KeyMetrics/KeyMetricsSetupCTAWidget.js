@@ -54,9 +54,6 @@ import {
 const { useDispatch, useSelect } = Data;
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
-	const keyMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetrics()
-	);
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
@@ -108,7 +105,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if (
-		( Array.isArray( keyMetrics ) && keyMetrics.length > 0 ) ||
 		isDismissed !== false ||
 		analyticsIsGatheringData !== false ||
 		searchConsoleIsGatheringData !== false
