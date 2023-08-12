@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryToggle Component Stories.
+ * AdBlockingRecoveryToggle component stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
