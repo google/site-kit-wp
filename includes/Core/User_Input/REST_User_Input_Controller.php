@@ -149,19 +149,18 @@ class REST_User_Input_Controller {
 								);
 							}
 
-							$response = rest_ensure_response(
-								$this->user_input->set_answers(
-									$data['settings']
-								)
-							);
+							$answers = $this->user_input->set_answers( $data['settings'] );
+
+							if ( ! empty( $answers['purpose']['values'] ) ) {
+								$this->key_metrics_setup_completed->set( true );
+							}
+
+							$response = rest_ensure_response( $answers );
 
 							if ( $response instanceof WP_REST_Response ) {
 								$this->survey_queue->dequeue(
 									'user_input_answered_other_survey'
 								);
-							}
-							if ( ! is_wp_error( $response ) ) {
-								$this->key_metrics_setup_completed->set( true );
 							}
 
 							return $response;
