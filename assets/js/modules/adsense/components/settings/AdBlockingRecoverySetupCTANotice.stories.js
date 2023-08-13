@@ -46,7 +46,7 @@ Ready.scenario = {
 };
 
 export default {
-	title: 'Modules/AdSense/Components/AdBlockingRecoverySetupCTANotice',
+	title: ' Modules/AdSense/Components/Settings/AdBlockingRecoverySetupCTANotice',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
