@@ -36,8 +36,9 @@ export const KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY =
 /**
  * Date that Site Kit will automatically switch to using GA4: September 25, 2023.
  *
- * With Site Kit's maximum date range being less than three months, once this period has passed since the UA cutoff date,
+ * With Site Kit's maximum date range being three months, once this period has passed since the UA cutoff date,
  * it will no longer be able to show any historical data for UA and will automatically switch to GA4.
+ * For operational reasons, we automatically make the switch a few days before the three month cutoff point.
  *
  * @since 1.107.0
  * @see UA_CUTOFF_DATE.
