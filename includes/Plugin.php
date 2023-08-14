@@ -213,7 +213,7 @@ final class Plugin {
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context, $user_options ) )->register();
 
 				if ( Feature_Flags::enabled( 'userInput' ) ) {
-					( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options ) )->register();
+					( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 				}
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
