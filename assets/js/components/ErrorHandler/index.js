@@ -30,11 +30,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import GenericErrorHandlerActions from '../GenericErrorHandlerActions';
 import ViewContextContext from '../Root/ViewContextContext';
 import Notification from '../notifications/BannerNotification';
-import Link from '../Link';
 import { trackEvent } from '../../util';
-import ReportErrorButton from '../ReportErrorButton';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
@@ -78,18 +77,10 @@ class ErrorHandler extends Component {
 					'google-site-kit'
 				) }
 				description={
-					<div className="googlesitekit-error-handler__error-actions">
-						<ReportErrorButton
-							message={ error.message }
-							componentStack={ info.componentStack }
-						/>
-						<Link
-							href="https://wordpress.org/support/plugin/google-site-kit/"
-							external
-						>
-							{ __( 'Report this problem', 'google-site-kit' ) }
-						</Link>
-					</div>
+					<GenericErrorHandlerActions
+						message={ error.message }
+						componentStack={ info.componentStack }
+					/>
 				}
 				isDismissible={ false }
 				format="small"
