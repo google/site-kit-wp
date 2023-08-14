@@ -144,6 +144,58 @@ describe( 'core/site site info', () => {
 				);
 			} );
 		} );
+
+		describe( 'setKeyMetricsSetupCompleted', () => {
+			it( 'sets the keyMetricsSetupCompleted property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompleted( true );
+
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( true );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompleted( false );
+
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+			} );
+
+			it( 'requires a boolean argument', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted();
+				} ).toThrow( 'keyMetricsSetupCompleted must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted( undefined );
+				} ).toThrow( 'keyMetricsSetupCompleted must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted( 0 );
+				} ).toThrow( 'keyMetricsSetupCompleted must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted( true );
+
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted( false );
+				} ).not.toThrow(
+					'keyMetricsSetupCompleted must be a boolean.'
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

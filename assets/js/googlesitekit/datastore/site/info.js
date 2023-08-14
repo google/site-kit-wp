@@ -47,6 +47,7 @@ function getSiteInfoProperty( propName ) {
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
 const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
+const SET_KEY_METRICS_SETUP_COMPLETED = 'SET_KEY_METRICS_SETUP_COMPLETED';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -104,6 +105,26 @@ export const actions = {
 		return {
 			payload: { siteKitAutoUpdatesEnabled },
 			type: SET_SITE_KIT_AUTO_UPDATES_ENABLED,
+		};
+	},
+
+	/**
+	 * Sets the `keyMetricsSetupCompleted` boolean value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} keyMetricsSetupCompleted Whether key metrics setup is completed.
+	 * @return {Object} Redux-style action.
+	 */
+	setKeyMetricsSetupCompleted( keyMetricsSetupCompleted ) {
+		invariant(
+			typeof keyMetricsSetupCompleted === 'boolean',
+			'keyMetricsSetupCompleted must be a boolean.'
+		);
+
+		return {
+			payload: { keyMetricsSetupCompleted },
+			type: SET_KEY_METRICS_SETUP_COMPLETED,
 		};
 	},
 };
@@ -191,6 +212,16 @@ export const reducer = ( state, { payload, type } ) => {
 				siteInfo: {
 					...state.siteInfo,
 					siteKitAutoUpdatesEnabled,
+				},
+			};
+
+		case SET_KEY_METRICS_SETUP_COMPLETED:
+			const { keyMetricsSetupCompleted } = payload;
+			return {
+				...state,
+				siteInfo: {
+					...state.siteInfo,
+					keyMetricsSetupCompleted,
 				},
 			};
 
