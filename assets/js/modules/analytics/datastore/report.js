@@ -240,7 +240,6 @@ const baseSelectors = {
 	 * @param {string}         options.dateRange           Required, alternative to startDate and endDate. A date range string such as 'last-28-days'.
 	 * @param {Array.<string>} options.metrics             Required. List of metrics to query.
 	 * @param {boolean}        [options.compareDateRanges] Optional. Only relevant with dateRange. Default false.
-	 * @param {boolean}        [options.multiDateRange]    Optional. Only relevant with dateRange. Default false.
 	 * @param {string}         [options.compareStartDate]  Optional. Start date to compare report data for as YYYY-mm-dd.
 	 * @param {string}         [options.compareEndDate]    Optional. End date to compare report data for as YYYY-mm-dd.
 	 * @param {Array.<string>} [options.dimensions]        Optional. List of dimensions to group results by. Default an empty array.
