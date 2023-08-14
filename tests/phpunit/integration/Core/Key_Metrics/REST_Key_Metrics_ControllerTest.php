@@ -164,7 +164,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			'incomplete on error'  => array(
 				false,
 				array(
-					'widgetSlugs'    => array(), // insufficient
+					'widgetSlugs'    => array(), // Insufficient number of widget slugs.
 					'isWidgetHidden' => false,
 				),
 			),
