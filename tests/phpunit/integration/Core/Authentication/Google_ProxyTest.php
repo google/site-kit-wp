@@ -460,6 +460,7 @@ class Google_ProxyTest extends TestCase {
 				'connected_user_count'   => 0, // No authenticated users - tested in test_count_connected_users() below.
 				'active_modules'         => 'site-verification search-console pagespeed-insights',
 				'connected_modules'      => 'site-verification search-console pagespeed-insights',
+				'php_version'            => phpversion(),
 			),
 			$this->request_args['body']
 		);

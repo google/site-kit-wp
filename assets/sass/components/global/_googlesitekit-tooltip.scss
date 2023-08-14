@@ -37,3 +37,10 @@
 		color: $c-surfaces-inverse-surface;
 	}
 }
+
+.googlesitekit--has-visible-tooltip {
+
+	#adminmenuwrap {
+		z-index: 10;
+	}
+}

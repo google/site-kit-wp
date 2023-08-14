@@ -19,7 +19,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse 
 /**
  * Class for Analytics 4 report responses.
  *
- * @since n.e.x.t
+ * @since 1.99.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Response extends Report {
 	/**
 	 * Parses the report response, and pads the report data with zero-data rows where rows are missing. This only applies for reports which request a single `date` dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Data_Request                                   $data     Data request object.
 	 * @param Google_Service_AnalyticsData_RunReportResponse $response Request response.
@@ -120,7 +120,7 @@ class Response extends Report {
 	/**
 	 * Gets the response row key composed from the date and the date range index values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param string   $date             The date of the row to return key for.
 	 * @param int|bool $date_range_index The date range index, or FALSE if no index is available.
@@ -134,7 +134,7 @@ class Response extends Report {
 	 * Returns sorted and filtered date ranges received in the request params. All corrupted date ranges
 	 * are ignored and not included in the returning list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_DateRange[] An array of AnalyticsData DateRange objects.
@@ -173,7 +173,7 @@ class Response extends Report {
 	 * Sorts response rows using the algorithm similar to the one that Analytics 4 uses internally
 	 * and returns sorted rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Google_Service_AnalyticsData_Row[]       $rows        The current report rows.
 	 * @param Google_Service_AnalyticsData_DateRange[] $date_ranges The report date ranges.
@@ -206,7 +206,7 @@ class Response extends Report {
 	/**
 	 * Iterates over the date ranges and calls callback for each date in each range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Google_Service_AnalyticsData_DateRange[] $date_ranges The report date ranges.
 	 * @param callable                                 $callback    The callback to execute for each date.

@@ -49,6 +49,8 @@ import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
+import DashboardViewIndicator from './DashboardViewIndicator';
+import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_KEY_METRICS,
@@ -66,12 +68,15 @@ export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const viewOnlyDashboard = useViewOnly();
 
 	useMount( () => {
-		// Render the current survey portal in 5 seconds after the initial rendering.
-		setTimeout( () => setShowSurveyPortal( true ), 5000 );
+		if ( ! viewOnlyDashboard ) {
+			// Render the current survey portal in 5 seconds after the initial rendering.
+			setTimeout( () => setShowSurveyPortal( true ), 5000 );
+		}
 	} );
 
 	const viewableModules = useSelect( ( select ) => {
@@ -121,6 +126,11 @@ export default function DashboardMainApp() {
 		)
 	);
 
+	const isKeyMetricsWidgetHidden = useSelect(
+		( select ) =>
+			userInputEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
+
 	let lastWidgetAnchor = null;
 
 	if ( isMonetizationActive ) {
@@ -147,17 +157,18 @@ export default function DashboardMainApp() {
 				) }
 				<HelpMenu />
 			</Header>
+			{ ga4ReportingEnabled && <DashboardViewIndicator /> }
 			{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally
 				render when `userInputEnabled` is false.
 
-				This check can be removed once the User Input feature is fully launched
+				The userInputEnabled check can be removed once the User Input feature is fully launched
 				and we remove this feature flag.
 
 				See: https://github.com/google/site-kit-wp/pull/6630#discussion_r1127229162
 			*/ }
-			{ userInputEnabled && (
+			{ userInputEnabled && isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
 					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
@@ -206,6 +217,8 @@ export default function DashboardMainApp() {
 			/>
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
+
+			{ userInputEnabled && <MetricsSelectionPanel /> }
 		</Fragment>
 	);
 }

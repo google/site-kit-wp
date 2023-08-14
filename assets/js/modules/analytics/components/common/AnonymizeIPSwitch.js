@@ -30,10 +30,14 @@ import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SupportLink from '../../../../components/SupportLink';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { TYPE_INFO } from '../../../../components/SettingsNotice';
+import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect, useDispatch } = Data;
 
 export default function AnonymizeIPSwitch() {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const anonymizeIP = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAnonymizeIP()
 	);
@@ -43,6 +47,7 @@ export default function AnonymizeIPSwitch() {
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
 	const { setAnonymizeIP } = useDispatch( MODULES_ANALYTICS );
+
 	const onChange = useCallback( () => {
 		setAnonymizeIP( ! anonymizeIP );
 	}, [ anonymizeIP, setAnonymizeIP ] );
@@ -53,9 +58,11 @@ export default function AnonymizeIPSwitch() {
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
-			<h4 className="googlesitekit-settings-module__fields-group-title">
-				{ __( 'IP addresses', 'google-site-kit' ) }
-			</h4>
+			{ ! ga4ReportingEnabled && (
+				<h4 className="googlesitekit-settings-module__fields-group-title">
+					{ __( 'IP addresses', 'google-site-kit' ) }
+				</h4>
+			) }
 			<div className="googlesitekit-settings-module__meta-item">
 				<div className="googlesitekit-analytics-anonymizeip">
 					<Switch
@@ -99,6 +106,27 @@ export default function AnonymizeIPSwitch() {
 					</p>
 				</div>
 			</div>
+			{ ga4ReportingEnabled && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					notice={ __(
+						'In Google Analytics 4, IP masking is not necessary since IP addresses are not logged or stored.',
+						'google-site-kit'
+					) }
+					LearnMore={ () => (
+						<SupportLink
+							path="/analytics/answer/2763052"
+							external
+							aria-label={ __(
+								'Learn more about IP anonymization.',
+								'google-site-kit'
+							) }
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</SupportLink>
+					) }
+				/>
+			) }
 		</div>
 	);
 }

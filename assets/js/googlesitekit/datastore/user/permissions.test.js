@@ -57,6 +57,7 @@ describe( 'core/user authentication', () => {
 			'googlesitekit_read_shared_module_data::["adsense"]': false,
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["analytics"]': true,
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
 		},
 	};
@@ -360,6 +361,7 @@ describe( 'core/user authentication', () => {
 					'search-console',
 					'analytics',
 					'pagespeed-insights',
+					'analytics-4',
 				] );
 			} );
 		} );

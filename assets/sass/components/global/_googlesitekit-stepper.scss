@@ -1,0 +1,95 @@
+/**
+ * Stepper styles.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-stepper {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.googlesitekit-stepper__step {
+		display: flex;
+		gap: 10px;
+		margin: 0;
+	}
+
+	.googlesitekit-stepper__step-progress {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.googlesitekit-stepper__step-number {
+		align-items: center;
+		background-color: $c-surfaces-on-surface;
+		border-radius: 12px;
+		color: $c-content-on-primary;
+		display: flex;
+		font-size: $fs-label-sm;
+		height: 24px;
+		justify-content: center;
+		width: 24px;
+	}
+
+	.googlesitekit-stepper__step-number--completed {
+		color: $c-content-on-secondary;
+
+		svg {
+			height: 10px;
+			width: 10px;
+		}
+	}
+
+	.googlesitekit-stepper__step-number--upcoming {
+		background-color: $c-surfaces-on-surface-variant;
+	}
+
+	.googlesitekit-stepper__step-progress-line {
+		background-color: $c-surfaces-surface-2;
+		flex: 1;
+		height: 100%;
+		margin: 5px auto;
+		min-height: 30px;
+		width: 1px;
+	}
+
+	.googlesitekit-stepper__step-title {
+		align-items: center;
+		color: $c-surfaces-on-surface;
+		display: flex;
+		font-family: $f-primary;
+		font-size: $fs-title-md;
+		height: 24px;
+		line-height: $lh-title-md;
+		margin: 0;
+	}
+
+	.googlesitekit-stepper__step-title--upcoming {
+		color: $c-surfaces-on-surface-variant;
+	}
+
+	.googlesitekit-stepper__step-content {
+		margin-bottom: 24px;
+	}
+
+	.googlesitekit-stepper__step:last-child {
+		.googlesitekit-stepper__step-content {
+			margin-bottom: 0;
+		}
+	}
+}

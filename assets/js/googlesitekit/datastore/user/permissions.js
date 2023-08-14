@@ -30,6 +30,7 @@ import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { getMetaCapabilityPropertyName } from '../util/permissions';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 const { createRegistrySelector } = Data;
 
 // Actions
@@ -221,30 +222,33 @@ const baseSelectors = {
 	 * Gets viewable module slugs of the current user.
 	 *
 	 * @since 1.72.0
+	 * @since 1.101.0 Filters out the duplicate module slugs if the user has both ‘analytics’ and ‘analytics-4’ and shows only one based on whether the user is viewing the GA4 dashboard.
 	 *
 	 * @return {(Array|undefined)} An array of viewable module slugs. `undefined` if `modules` are not loaded yet.
 	 */
 	getViewableModules: createRegistrySelector( ( select ) => () => {
 		const modules = select( CORE_MODULES ).getModules();
+		const isGA4DashboardView =
+			select( MODULES_ANALYTICS ).isGA4DashboardView();
 
-		if ( modules === undefined ) {
+		if ( modules === undefined || isGA4DashboardView === undefined ) {
 			return undefined;
 		}
 
 		// Return an array of module slugs for modules that are
 		// shareable and the user has the "read shared module data"
 		// capability for.
-		return Object.values( modules ).reduce( ( moduleSlugs, module ) => {
+		return Object.values( modules ).reduce( ( slugs, module ) => {
 			const hasCapability = select( CORE_USER ).hasCapability(
 				PERMISSION_READ_SHARED_MODULE_DATA,
 				module.slug
 			);
 
 			if ( module.shareable && hasCapability ) {
-				return [ ...moduleSlugs, module.slug ];
+				return [ ...slugs, module.slug ];
 			}
 
-			return moduleSlugs;
+			return slugs;
 		}, [] );
 	} ),
 

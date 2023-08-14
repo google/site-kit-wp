@@ -39,6 +39,7 @@ import { UA_CUTOFF_DATE } from '../../../analytics/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { getDateString } from '../../../../util';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 /**
@@ -66,15 +67,13 @@ function extractChartData(
 	chartDataFormats
 ) {
 	if ( moduleSlug === 'analytics-4' ) {
-		return (
-			extractAnalytics4DashboardData(
-				data,
-				selectedStats,
-				dateRangeLength,
-				dataLabels,
-				tooltipDataFormats,
-				chartDataFormats
-			) || []
+		return extractAnalytics4DashboardData(
+			data,
+			selectedStats,
+			dateRangeLength,
+			dataLabels,
+			tooltipDataFormats,
+			chartDataFormats
 		);
 	}
 	return (
@@ -103,6 +102,8 @@ export default function AnalyticsStats( props ) {
 		moduleSlug,
 	} = props;
 
+	const isViewOnly = useViewOnly();
+
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( moduleSlug )
 	);
@@ -113,16 +114,20 @@ export default function AnalyticsStats( props ) {
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 
-	const propertyID = useSelect( ( select ) =>
-		isGA4DashboardView
-			? select( MODULES_ANALYTICS_4 ).getPropertyID()
-			: null
-	);
-	const property = useSelect( ( select ) =>
-		propertyID
-			? select( MODULES_ANALYTICS_4 ).getProperty( propertyID )
-			: null
-	);
+	const property = useSelect( ( select ) => {
+		if ( isViewOnly || ! isGA4DashboardView ) {
+			return null;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( ! propertyID ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+	} );
+
 	const propertyCreatedDate = property?.createTime
 		? getDateString( new Date( property.createTime ) )
 		: null;
@@ -141,7 +146,7 @@ export default function AnalyticsStats( props ) {
 		];
 	}
 
-	if ( ! isGA4DashboardView ) {
+	if ( isGA4DashboardView === false ) {
 		dateMarkers = [
 			{
 				date: UA_CUTOFF_DATE,

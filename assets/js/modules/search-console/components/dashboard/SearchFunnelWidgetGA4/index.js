@@ -65,12 +65,12 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 
 	const viewOnly = useViewOnly();
 
-	const isAnalyticsAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	const isAnalytics4Available = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( ! isAnalyticsAvailable ) {
+	const canViewSharedAnalytics4 = useSelect( ( select ) => {
+		if ( ! isAnalytics4Available ) {
 			return false;
 		}
 
@@ -78,7 +78,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
 	} );
 
 	const isGA4Connected = useSelect( ( select ) =>
@@ -119,19 +119,19 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'analytics' );
+		return Object.keys( recoverableModules ).includes( 'analytics-4' );
 	} );
 
 	const ga4ConversionsData = useInViewSelect( ( select ) => {
 		return isGA4Connected &&
-			canViewSharedAnalytics &&
+			canViewSharedAnalytics4 &&
 			! showRecoverableAnalytics
 			? select( MODULES_ANALYTICS_4 ).getConversionEvents()
 			: [];
 	} );
 
 	const ga4ConversionsLoading = useSelect( ( select ) =>
-		isGA4Connected && canViewSharedAnalytics && ! showRecoverableAnalytics
+		isGA4Connected && canViewSharedAnalytics4 && ! showRecoverableAnalytics
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getConversionEvents',
 					[]
@@ -236,7 +236,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	const ga4OverviewLoading = useSelect( ( select ) => {
 		if (
 			! isGA4Connected ||
-			! canViewSharedAnalytics ||
+			! canViewSharedAnalytics4 ||
 			showRecoverableAnalytics
 		) {
 			return false;
@@ -250,7 +250,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	const ga4OverviewData = useInViewSelect( ( select ) => {
 		if (
 			! isGA4Connected ||
-			! canViewSharedAnalytics ||
+			! canViewSharedAnalytics4 ||
 			showRecoverableAnalytics
 		) {
 			return null;
@@ -271,7 +271,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	const ga4StatsLoading = useSelect( ( select ) => {
 		if (
 			! isGA4Connected ||
-			! canViewSharedAnalytics ||
+			! canViewSharedAnalytics4 ||
 			showRecoverableAnalytics
 		) {
 			return false;
@@ -285,7 +285,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	const ga4StatsData = useInViewSelect( ( select ) => {
 		if (
 			! isGA4Connected ||
-			! canViewSharedAnalytics ||
+			! canViewSharedAnalytics4 ||
 			showRecoverableAnalytics
 		) {
 			return null;
@@ -306,7 +306,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	const ga4VisitorsOverviewAndStatsLoading = useSelect( ( select ) => {
 		if (
 			! isGA4Connected ||
-			! canViewSharedAnalytics ||
+			! canViewSharedAnalytics4 ||
 			showRecoverableAnalytics
 		) {
 			return false;
@@ -320,7 +320,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	const ga4VisitorsOverviewAndStatsData = useInViewSelect( ( select ) => {
 		if (
 			! isGA4Connected ||
-			! canViewSharedAnalytics ||
+			! canViewSharedAnalytics4 ||
 			showRecoverableAnalytics
 		) {
 			return null;
@@ -341,7 +341,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	} );
 
 	const isGA4GatheringData = useInViewSelect( ( select ) =>
-		isGA4Connected && canViewSharedAnalytics && ! showRecoverableAnalytics
+		isGA4Connected && canViewSharedAnalytics4 && ! showRecoverableAnalytics
 			? select( MODULES_ANALYTICS_4 ).isGatheringData()
 			: false
 	);
@@ -414,7 +414,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 				/>
 			) }
 
-			{ canViewSharedAnalytics &&
+			{ canViewSharedAnalytics4 &&
 				( ! isGA4Active || ! isGA4Connected ) &&
 				BREAKPOINT_SMALL === breakpoint && (
 					<Grid>
@@ -451,7 +451,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 				/>
 			) }
 
-			{ canViewSharedAnalytics &&
+			{ canViewSharedAnalytics4 &&
 				( selectedStats === 3 || selectedStats === 4 ) && (
 					<AnalyticsStats
 						data={ ga4StatsData }

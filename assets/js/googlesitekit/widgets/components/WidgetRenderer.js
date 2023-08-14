@@ -66,6 +66,10 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 		[ recoverableModules, widget ]
 	);
 
+	const isWidgetPreloaded = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetPreloaded( slug )
+	);
+
 	if ( ! widget ) {
 		return <WidgetNull />;
 	}
@@ -101,6 +105,11 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 		// Otherwise, wrap the component only if that is requested for this
 		// widget.
 		widgetElement = <Widget>{ widgetElement }</Widget>;
+	}
+
+	if ( isWidgetPreloaded ) {
+		// If the widget is preloaded, hide it.
+		return <div className={ HIDDEN_CLASS }>{ widgetElement }</div>;
 	}
 
 	return widgetElement;

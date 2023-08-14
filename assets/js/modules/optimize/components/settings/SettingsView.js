@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { OptimizeSunsetNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -40,6 +41,8 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--optimize">
+			<OptimizeSunsetNotice />
+
 			<StoreErrorNotices
 				moduleSlug="optimize"
 				storeName={ MODULES_OPTIMIZE }

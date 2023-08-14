@@ -14,6 +14,8 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Analytics_4;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -341,8 +343,8 @@ class REST_Modules_Controller {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 
-							if ( ! $this->modules->is_module_connected( $slug ) ) {
-								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
+							if ( ! $module->is_connected() ) {
+								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 
 							if ( ! $module instanceof Module_With_Service_Entity ) {
@@ -354,7 +356,7 @@ class REST_Modules_Controller {
 									);
 								}
 
-								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 400 ) );
+								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 
 							$access = $module->check_service_entity_access();
@@ -686,6 +688,27 @@ class REST_Modules_Controller {
 									continue;
 								}
 
+								// Since currently the Analytics_4 module doesn't have an ownerID setting,
+								// it uses the ownerID from Analytics as the source of truth. Hence,
+								// instead of updating ownerID for Analytics_4, we should be updating that
+								// of Analytics.
+								if ( Analytics_4::MODULE_SLUG === $slug ) {
+									try {
+										$module = $this->modules->get_module( Analytics::MODULE_SLUG );
+									} catch ( Exception $e ) {
+										$response = $this->handle_module_recovery_error(
+											$slug,
+											$response,
+											new WP_Error(
+												'invalid_module_slug',
+												$e->getMessage(),
+												array( 'status' => 404 )
+											)
+										);
+										continue;
+									}
+								}
+
 								// Update the module's ownerID to the ID of the user making the request.
 								$module_setting_updates = array(
 									'ownerID' => get_current_user_id(),
@@ -732,8 +755,8 @@ class REST_Modules_Controller {
 			'internal'     => $module->internal,
 			'order'        => $module->order,
 			'forceActive'  => $module->force_active,
-			'shareable'    => $module->is_shareable(),
 			'recoverable'  => $module->is_recoverable(),
+			'shareable'    => $this->modules->is_module_shareable( $module->slug ),
 			'active'       => $this->modules->is_module_active( $module->slug ),
 			'connected'    => $this->modules->is_module_connected( $module->slug ),
 			'dependencies' => $this->modules->get_module_dependencies( $module->slug ),

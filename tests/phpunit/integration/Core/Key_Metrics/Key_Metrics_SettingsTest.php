@@ -39,7 +39,7 @@ class Key_Metrics_SettingsTest extends TestCase {
 		$this->key_metrics_settings->register();
 	}
 
-	public function data_answers() {
+	public function data_key_metrics_settings() {
 		return array(
 			'empty by default' => array(
 				null,
@@ -58,7 +58,9 @@ class Key_Metrics_SettingsTest extends TestCase {
 					'widgetSlugs'    => array(),
 					'isWidgetHidden' => null,
 				),
-				array(),
+				array(
+					'widgetSlugs' => array(),
+				),
 			),
 			'array of widgetSlugs with non-string elements' => array(
 				array( 'widgetSlugs' => array( 'validWidgetSlug1', false, true, null, array(), 'validWidgetSlug2', '' ) ),
@@ -118,7 +120,7 @@ class Key_Metrics_SettingsTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_answers
+	 * @dataProvider data_key_metrics_settings
 	 *
 	 * @param mixed $input    Values to pass to the `set()` method.
 	 * @param array $expected The expected sanitized array.

@@ -1,12 +1,17 @@
 import { useCallback } from '@wordpress/element';
 
 import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 
-const { useDispatch } = Data;
+const { useDispatch, useSelect } = Data;
 
 export function useShowTooltip( tooltipStateKey ) {
 	const { setValue } = useDispatch( CORE_UI );
+
+	const hasMinimumWordPress62 = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMinimumWordPressVersion( '6.2' )
+	);
 
 	return useCallback( async () => {
 		// Check if the WordPress admin menu is open, and if not, open it.
@@ -41,10 +46,21 @@ export function useShowTooltip( tooltipStateKey ) {
 			document.querySelector( adminSubMenuSelector ).click();
 		}
 
+		// This is a hack to prevent the WordPress admin menu from auto-closing when the tooltip takes the focus.
+		// This is applicable for WordPress versions 6.2 and up.
+		// See https://github.com/WordPress/wordpress-develop/commit/a9fc43e.
+		if ( hasMinimumWordPress62 ) {
+			const originalHasFocus = document.hasFocus;
+			document.hasFocus = () => {
+				document.hasFocus = originalHasFocus;
+				return false;
+			};
+		}
+
 		setValue( tooltipStateKey, {
 			isTooltipVisible: true,
 			rehideAdminMenu: ! isAdminMenuOpen,
 			rehideAdminSubMenu: isAdminSubMenuHidden,
 		} );
-	}, [ setValue, tooltipStateKey ] );
+	}, [ hasMinimumWordPress62, setValue, tooltipStateKey ] );
 }

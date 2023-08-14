@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../../util';
-import { calculateChange } from '../../../../../../util';
+import { calculateChange, trackEvent } from '../../../../../../util';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
@@ -47,6 +47,7 @@ import useDashboardType, {
 } from '../../../../../../hooks/useDashboardType';
 import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
+import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
 import ga4Reporting from '../../../../../../feature-tours/ga4-reporting';
@@ -81,13 +82,14 @@ export default function Overview( props ) {
 	const dashboardType = useDashboardType();
 
 	const viewOnly = useViewOnly();
+	const viewContext = useViewContext();
 
-	const analyticsModuleAvailable = useSelect( ( select ) =>
+	const isAnalytics4ModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( ! analyticsModuleAvailable ) {
+	const canViewSharedAnalytics4 = useSelect( ( select ) => {
+		if ( ! isAnalytics4ModuleAvailable ) {
 			return false;
 		}
 
@@ -95,22 +97,11 @@ export default function Overview( props ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
 	} );
 
 	const canShowGA4ReportingFeatureTour = useSelect( ( select ) => {
-		// Don't show the GA4 report feature tour if feature tours are on cooldown.
-		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
-			return false;
-		}
-
-		// Don't show the GA4 report feature tour if we have already shown a feature tour
-		// during the current page view.
-		if ( !! select( CORE_USER ).getShownTour() ) {
-			return false;
-		}
-
-		return true;
+		return select( CORE_UI ).getValue( 'showGA4ReportingTour' );
 	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
@@ -134,6 +125,11 @@ export default function Overview( props ) {
 	const conversionsRateLearnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/9267568',
+		} )
+	);
+	const engagementRateLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/12195621',
 		} )
 	);
 
@@ -179,12 +175,11 @@ export default function Overview( props ) {
 	}
 
 	const showGA4 =
-		canViewSharedAnalytics &&
+		canViewSharedAnalytics4 &&
 		ga4ModuleConnected &&
 		! error &&
 		! showRecoverableAnalytics;
 
-	const { setValue } = useDispatch( CORE_UI );
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	useEffect( () => {
 		if (
@@ -195,15 +190,17 @@ export default function Overview( props ) {
 			return;
 		}
 
-		setValue( 'forceInView', true );
 		triggerOnDemandTour( ga4Reporting );
 	}, [
 		showGA4,
 		dashboardType,
-		setValue,
 		triggerOnDemandTour,
 		canShowGA4ReportingFeatureTour,
 	] );
+
+	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
+		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
+	}, [ viewContext ] );
 
 	const showConversionsCTA =
 		isAuthenticated &&
@@ -297,6 +294,7 @@ export default function Overview( props ) {
 									'google-site-kit'
 								) }
 								learnMoreLink={ conversionsRateLearnMoreURL }
+								onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
 							/>
 						),
 					},
@@ -312,6 +310,16 @@ export default function Overview( props ) {
 						datapointUnit: '%',
 						change: ga4EngagementRateChange,
 						isGatheringData: isGA4GatheringData,
+						badge: (
+							<NewBadge
+								tooltipTitle={ __(
+									'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
+									'google-site-kit'
+								) }
+								learnMoreLink={ engagementRateLearnMoreURL }
+								onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
+							/>
+						),
 					},
 			  ]
 			: [] ),
@@ -331,6 +339,14 @@ export default function Overview( props ) {
 		3: oneThirdCellProps,
 		4: quarterCellProps,
 	};
+
+	// Check if any of the data blocks have a badge.
+	//
+	// If no data blocks have a badge, we shouldn't even render an
+	// empty badge container, and save some vertical space in the `DataBlock`.
+	const hasMetricWithBadge = dataBlocks.some( ( { badge } ) => {
+		return !! badge;
+	} );
 
 	return (
 		<Grid>
@@ -364,7 +380,9 @@ export default function Overview( props ) {
 									}
 									handleStatSelection={ handleStatsSelection }
 									gatheringData={ dataBlock.isGatheringData }
-									badge={ dataBlock.badge }
+									badge={
+										dataBlock.badge || hasMetricWithBadge
+									}
 								/>
 							</Cell>
 						) ) }
@@ -372,7 +390,7 @@ export default function Overview( props ) {
 				</Cell>
 
 				<OptionalCells
-					canViewSharedAnalytics={ canViewSharedAnalytics }
+					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
 					error={ error }
 					halfCellProps={ halfCellProps }
 					quarterCellProps={ quarterCellProps }

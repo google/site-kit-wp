@@ -35,6 +35,7 @@ import {
 	OptimizeIDFieldInstructions,
 	PlaceAntiFlickerSwitch,
 	AnalyticsNotice,
+	OptimizeSunsetNotice,
 } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
@@ -46,6 +47,7 @@ export default function SettingsForm() {
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
+			<OptimizeSunsetNotice />
 			<StoreErrorNotices
 				moduleSlug="optimize"
 				storeName={ MODULES_OPTIMIZE }

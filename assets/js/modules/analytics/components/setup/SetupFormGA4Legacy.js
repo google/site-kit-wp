@@ -53,6 +53,9 @@ export default function SetupFormGA4Legacy() {
 		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
 		[];
 
+	const uaHasExistingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
+	);
 	const ga4HasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
@@ -119,7 +122,7 @@ export default function SetupFormGA4Legacy() {
 						'google-site-kit'
 					) }
 				>
-					<SetupUseSnippetSwitchUA />
+					{ uaHasExistingTag && <SetupUseSnippetSwitchUA /> }
 				</GA4PropertyNotice>
 			) }
 		</Fragment>

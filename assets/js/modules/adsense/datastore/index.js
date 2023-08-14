@@ -32,6 +32,7 @@ import settings from './settings';
 import adblocker from './adblocker';
 import service from './service';
 import sites from './sites';
+import adBlockingRecovery from './ad-blocking-recovery';
 import { MODULES_ADSENSE } from './constants';
 
 const store = Data.combineStores(
@@ -46,7 +47,8 @@ const store = Data.combineStores(
 	settings,
 	adblocker,
 	service,
-	sites
+	sites,
+	adBlockingRecovery
 );
 
 export const initialState = store.initialState;

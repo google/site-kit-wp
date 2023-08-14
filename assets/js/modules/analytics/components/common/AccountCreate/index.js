@@ -25,6 +25,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import {
@@ -33,7 +34,10 @@ import {
 	PROVISIONING_SCOPE,
 	EDIT_SCOPE,
 } from '../../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import {
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
@@ -90,6 +94,9 @@ export default function AccountCreate() {
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
+	const hasGTMScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( GTM_SCOPE )
+	);
 	const hasAccountCreateForm = useSelect( ( select ) =>
 		select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE )
 	);
@@ -137,9 +144,15 @@ export default function AccountCreate() {
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
-			navigateTo( accountTicketTermsOfServiceURL );
+			( async () => {
+				await API.invalidateCache(
+					'modules',
+					ga4ReportingEnabled ? 'analytics-4' : 'analytics'
+				);
+				navigateTo( accountTicketTermsOfServiceURL );
+			} )();
 		}
-	}, [ accountTicketTermsOfServiceURL, navigateTo ] );
+	}, [ accountTicketTermsOfServiceURL, ga4ReportingEnabled, navigateTo ] );
 
 	// Set form defaults on initial render.
 	useEffect( () => {
@@ -170,6 +183,13 @@ export default function AccountCreate() {
 		if ( ! hasProvisioningScope || ! hasEditScope ) {
 			scopes.push( PROVISIONING_SCOPE );
 			scopes.push( EDIT_SCOPE );
+		}
+		// The GTM scope should be granted for GTE support, but
+		// it is possible for it not to be at this point.
+		// This saves an extra OAuth flow and is necessary for the
+		// Google tag sync at the end of the post-provisioning flow.
+		if ( ! hasGTMScope ) {
+			scopes.push( GTM_SCOPE );
 		}
 
 		// If scope not granted, trigger scope error right away. These are
@@ -209,6 +229,7 @@ export default function AccountCreate() {
 		setIsNavigating,
 		hasProvisioningScope,
 		hasEditScope,
+		hasGTMScope,
 		setPermissionScopeError,
 		setValues,
 		viewContext,
@@ -243,6 +264,10 @@ export default function AccountCreate() {
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
+			/>
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
 			<h3 className="googlesitekit-heading-4">

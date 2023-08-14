@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,10 +39,12 @@ import {
 	getSnippetLabel,
 	getAutoAdsDisabledMessage,
 } from './utils';
+import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
+	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
@@ -58,12 +61,23 @@ export default function SettingsView() {
 	const accountStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountStatus()
 	);
+	const useAdBlockingRecoverySnippet = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getUseAdBlockingRecoverySnippet()
+	);
+	const useAdBlockingRecoveryErrorSnippet = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getUseAdBlockingRecoveryErrorSnippet()
+	);
+
 	const siteStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getSiteStatus()
 	);
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseSnippet()
 	);
+	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
+	);
+
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
 	);
@@ -72,6 +86,12 @@ export default function SettingsView() {
 	);
 	const autoAdsDisabled = useSelect(
 		( select ) => select( MODULES_ADSENSE ).getAutoAdsDisabled() || []
+	);
+
+	const privacyMessagingURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getServiceURL( {
+			path: `/${ accountID }/privacymessaging/ad_blocking`,
+		} )
 	);
 
 	const accountStatusLabel = getAccountStatusLabel( accountStatus );
@@ -151,29 +171,80 @@ export default function SettingsView() {
 			{ webStoriesActive && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
-						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
-								{ __(
-									'Web Stories Ad Unit',
-									'google-site-kit'
-								) }
-							</h5>
-							<p className="googlesitekit-settings-module__meta-item-data">
-								{ ! webStoriesAdUnit && (
-									<span>
-										{ __( 'None', 'google-site-kit' ) }
-									</span>
-								) }
-								{ webStoriesAdUnit && (
-									<DisplaySetting
-										value={ webStoriesAdUnit }
-									/>
-								) }
-							</p>
-						</div>
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							{ ! webStoriesAdUnit && (
+								<span>{ __( 'None', 'google-site-kit' ) }</span>
+							) }
+							{ webStoriesAdUnit && (
+								<DisplaySetting value={ webStoriesAdUnit } />
+							) }
+						</p>
 					</div>
 				</div>
 			) }
+
+			{ adBlockerDetectionEnabled &&
+				adBlockingRecoverySetupStatus?.length > 0 && (
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __(
+									'Ad blocking recovery',
+									'google-site-kit'
+								) }
+							</h5>
+							{ ! useAdBlockingRecoverySnippet && (
+								<p className="googlesitekit-settings-module__meta-item-data">
+									{ __(
+										'Ad blocking recovery message is not placed',
+										'google-site-kit'
+									) }
+								</p>
+							) }
+							{ useAdBlockingRecoverySnippet && (
+								<Fragment>
+									<p className="googlesitekit-settings-module__meta-item-data">
+										{ useAdBlockingRecoveryErrorSnippet
+											? __(
+													'Ad blocking recovery message enabled with error protection code',
+													'google-site-kit'
+											  )
+											: __(
+													'Ad blocking recovery message enabled without error protection code',
+													'google-site-kit'
+											  ) }
+									</p>
+									<p className="googlesitekit-settings-module__meta-item-data">
+										{ createInterpolateElement(
+											__(
+												'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
+												'google-site-kit'
+											),
+											{
+												a: (
+													<Link
+														href={
+															privacyMessagingURL
+														}
+														external
+													/>
+												),
+											}
+										) }
+									</p>
+								</Fragment>
+							) }
+						</div>
+					</div>
+				) }
+
+			{ adBlockerDetectionEnabled &&
+				! adBlockingRecoverySetupStatus?.length && (
+					<AdBlockingRecoveryCTA />
+				) }
 		</div>
 	);
 }

@@ -27,29 +27,33 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
-import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
 import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
-import { GTM_SCOPE } from '../../modules/analytics-4/datastore/constants';
+import SwitchedToGA4Banner from './SwitchedToGA4Banner';
+import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
+import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
+import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const userInputEnabled = useFeature( 'userInput' );
-	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
-	const gteSupportEnabled = useFeature( 'gteSupport' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
 	const viewOnly = useViewOnly();
 
@@ -70,36 +74,57 @@ export default function BannerNotifications() {
 		select( CORE_USER ).hasScope( GTM_SCOPE )
 	);
 
+	const isGA4ModuleOwner = useSelect( ( select ) => {
+		// Bail early if we're in view-only dashboard or the GA4 module is not connected.
+		if ( viewOnly || ! ga4ModuleConnected ) {
+			return false;
+		}
+
+		const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+
+		const loggedInUserID = select( CORE_USER ).getID();
+
+		if ( ga4OwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
+
+		return ga4OwnerID === loggedInUserID;
+	} );
+
 	const [ notification ] = useQueryArg( 'notification' );
+
+	if ( viewOnly ) {
+		return <ZeroDataStateNotifications />;
+	}
 
 	return (
 		<Fragment>
-			{ ! viewOnly && (
+			{ ( 'authentication_success' === notification ||
+				'user_input_success' === notification ) && (
+				<SetupSuccessBannerNotification />
+			) }
+			{ 'ad_blocking_recovery_setup_success' === notification &&
+				adBlockerDetectionEnabled && (
+					<AdBlockingRecoveryNotification />
+				) }
+			<EnableAutoUpdateBannerNotification />
+			{ isAuthenticated && <CoreSiteBannerNotifications /> }
+			{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
+			{ ga4ReportingEnabled &&
+				analyticsModuleConnected &&
+				ga4ModuleConnected && <SwitchedToGA4Banner /> }
+			<ActivationBanner />
+			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
 				<Fragment>
-					{ ( 'authentication_success' === notification ||
-						'user_input_success' === notification ) && (
-						<SetupSuccessBannerNotification />
-					) }
-					<EnableAutoUpdateBannerNotification />
-					{ isAuthenticated && <CoreSiteBannerNotifications /> }
-					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
-					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-					{ gteSupportEnabled &&
-						ga4ModuleConnected &&
-						hasGTMScope && <GoogleTagIDMismatchNotification /> }
+					<GoogleTagIDMismatchNotification />
+					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }
+			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
-			{ ! viewOnly && (
-				<Fragment>
-					{ userInputEnabled && (
-						<UserInputPromptBannerNotification />
-					) }
-					{ adSenseModuleActive && <AdSenseAlerts /> }
-					{ ga4ReportingEnabled && analyticsModuleConnected && (
-						<SwitchGA4DashboardViewNotification />
-					) }
-				</Fragment>
+			{ adSenseModuleActive && <AdSenseAlerts /> }
+			{ ga4ReportingEnabled && analyticsModuleConnected && (
+				<SwitchGA4DashboardViewNotification />
 			) }
 		</Fragment>
 	);

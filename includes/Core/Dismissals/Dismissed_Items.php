@@ -47,6 +47,26 @@ class Dismissed_Items extends User_Setting {
 	}
 
 	/**
+	 * Removes one or more items from the list of dismissed items.
+	 *
+	 * @since 1.107.0
+	 *
+	 * @param string $item Item to remove.
+	 */
+	public function remove( $item ) {
+		$items = $this->get();
+
+		// If the item is not in dismissed items, there's nothing to do.
+		if ( ! array_key_exists( $item, $items ) ) {
+			return;
+		}
+
+		unset( $items[ $item ] );
+
+		$this->set( $items );
+	}
+
+	/**
 	 * Gets the value of the setting.
 	 *
 	 * @since 1.37.0

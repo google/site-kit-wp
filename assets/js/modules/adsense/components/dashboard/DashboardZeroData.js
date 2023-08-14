@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Cell, Grid, Row } from '../../../../material-components';
 import SiteSteps from '../common/SiteSteps';
+import useViewOnly from '../../../../hooks/useViewOnly';
 
 /*
  * This component is essentially a reduced version of SetupSiteAdded, which
@@ -35,6 +36,14 @@ import SiteSteps from '../common/SiteSteps';
  * that.
  */
 export default function DashboardZeroData() {
+	const viewOnlyDashboard = useViewOnly();
+
+	const description = viewOnlyDashboard
+		? __( 'You don’t have any ad impressions yet.', 'google-site-kit' )
+		: __(
+				'You don’t have any ad impressions yet. Make sure you’ve completed these steps in AdSense:',
+				'google-site-kit'
+		  );
 	return (
 		<Grid fill>
 			<Row>
@@ -43,14 +52,9 @@ export default function DashboardZeroData() {
 						{ __( 'No ad impressions yet', 'google-site-kit' ) }
 					</h3>
 
-					<p>
-						{ __(
-							'You don’t have any ad impressions yet. Make sure you’ve completed these steps in AdSense:',
-							'google-site-kit'
-						) }
-					</p>
+					<p>{ description }</p>
 
-					<SiteSteps />
+					{ ! viewOnlyDashboard && <SiteSteps /> }
 				</Cell>
 			</Row>
 		</Grid>

@@ -541,6 +541,24 @@ final class Modules {
 	}
 
 	/**
+	 * Gets the connected modules.
+	 *
+	 * @since 1.105.0
+	 *
+	 * @return array Connected modules as $slug => $module pairs.
+	 */
+	public function get_connected_modules() {
+		$modules = $this->get_available_modules();
+
+		return array_filter(
+			$modules,
+			function( Module $module ) {
+				return $this->is_module_connected( $module->slug );
+			}
+		);
+	}
+
+	/**
 	 * Gets the module identified by the given slug.
 	 *
 	 * @since 1.0.0
@@ -643,11 +661,11 @@ final class Modules {
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_module_connected( $slug ) {
-		try {
-			$module = $this->get_module( $slug );
-		} catch ( Exception $e ) {
+		if ( ! $this->is_module_active( $slug ) ) {
 			return false;
 		}
+
+		$module = $this->get_module( $slug );
 
 		// TODO: Remove this when UA is sunset.
 		// Consider UA to be connected if GA4 is connected.
@@ -661,6 +679,20 @@ final class Modules {
 		}
 
 		return (bool) $module->is_connected();
+	}
+
+	/**
+	 * Checks whether the module identified by the given slug is shareable.
+	 *
+	 * @since 1.105.0
+	 *
+	 * @param string $slug Unique module slug.
+	 * @return bool True if module is shareable, false otherwise.
+	 */
+	public function is_module_shareable( $slug ) {
+		$modules = $this->get_shareable_modules();
+
+		return isset( $modules[ $slug ] );
 	}
 
 	/**
@@ -869,17 +901,18 @@ final class Modules {
 	}
 
 	/**
-	 * Gets the shareable active modules.
+	 * Gets the shareable connected modules.
 	 *
 	 * @since 1.50.0
+	 * @since 1.105.0 Updated to only return connected shareable modules.
 	 *
 	 * @return array Shareable modules as $slug => $module pairs.
 	 */
 	public function get_shareable_modules() {
-		$all_active_modules = $this->get_active_modules();
+		$all_connected_modules = $this->get_connected_modules();
 
 		return array_filter(
-			$all_active_modules,
+			$all_connected_modules,
 			function( Module $module ) {
 				return $module->is_shareable();
 			}

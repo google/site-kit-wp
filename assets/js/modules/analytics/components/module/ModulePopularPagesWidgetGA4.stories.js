@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../../../tests/js/utils';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -258,9 +261,11 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics',
+						slug: 'analytics-4',
 					},
 				] );
+
+				provideUserAuthentication( registry );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
 

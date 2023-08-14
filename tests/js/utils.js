@@ -249,6 +249,8 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 				label: 'Media',
 			},
 		],
+		productBasePaths: [ '/product/' ],
+		keyMetricsSetupCompleted: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -402,6 +404,25 @@ export function provideTracking( registry, enabled = true ) {
 }
 
 /**
+ * Provides key metrics settings data to the given registry.
+ *
+ * @since 1.103.0
+ *
+ * @param {Object} registry    The registry to set up.
+ * @param {Object} [extraData] Extra data to merge with the default settings.
+ */
+export const provideKeyMetrics = ( registry, extraData = {} ) => {
+	const defaults = {
+		widgetSlugs: [ 'test-slug' ],
+		isWidgetHidden: false,
+	};
+	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
  * Mutes a fetch request to the given URL once.
  *
  * Useful for mocking a request for the purpose of preventing a fetch error
@@ -529,6 +550,20 @@ export const unsubscribeFromAll = () => {
 export const waitForDefaultTimeouts = () => {
 	return new Promise( ( resolve ) => {
 		setTimeout( resolve, 5 );
+	} );
+};
+
+/**
+ * Creates a delay in the execution of subsequent code for a specified duration in milliseconds.
+ *
+ * @since 1.102.0
+ *
+ * @param {number} timeout The duration to wait before resolving the promise, in milliseconds.
+ * @return {Promise} A promise that resolves after the specified `timeout` duration.
+ */
+export const waitForTimeouts = ( timeout ) => {
+	return new Promise( ( resolve ) => {
+		setTimeout( resolve, timeout );
 	} );
 };
 

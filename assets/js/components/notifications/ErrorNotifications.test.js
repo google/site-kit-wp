@@ -93,6 +93,13 @@ describe( 'ErrorNotifications', () => {
 	} );
 
 	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', () => {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
 				'https://www.googleapis.com/auth/tagmanager.readonly',
@@ -101,7 +108,6 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
-			features: [ 'gteSupport' ],
 		} );
 
 		expect( container ).toHaveTextContent(
@@ -120,7 +126,6 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
-			features: [ 'gteSupport' ],
 		} );
 
 		expect( container ).toHaveTextContent(

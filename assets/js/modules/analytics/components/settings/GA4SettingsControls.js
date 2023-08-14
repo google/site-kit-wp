@@ -43,15 +43,21 @@ import {
 } from '../../../analytics-4/components/common';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4SettingsNotice from './GA4SettingsNotice';
 import { useFeature } from '../../../../hooks/useFeature';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
 
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+
+	const viewContext = useViewContext();
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { matchAndSelectProperty } = useDispatch( MODULES_ANALYTICS_4 );
@@ -83,11 +89,25 @@ export default function GA4SettingsControls( props ) {
 		matchAndSelectProperty( accountID );
 	}, [ matchAndSelectProperty, accountID ] );
 
+	const eventCategory = `${ viewContext }_ga4-setup`;
+
+	const onViewTooltip = useCallback( () => {
+		trackEvent( eventCategory, 'feature_tooltip_view' );
+	}, [ eventCategory ] );
+
 	const onDismissTooltip = useCallback( () => {
+		trackEvent( eventCategory, 'feature_tooltip_dismiss' );
+
 		setValues( FORM_SETUP, {
 			enableGA4PropertyTooltip: false,
 		} );
-	}, [ setValues ] );
+	}, [ eventCategory, setValues ] );
+
+	const toggleDocumentClass = useCallback( () => {
+		global.document.body.classList.toggle(
+			'googlesitekit--has-visible-tooltip'
+		);
+	}, [] );
 
 	const isDisabled = ! propertyID && ! enableGA4;
 	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
@@ -97,7 +117,14 @@ export default function GA4SettingsControls( props ) {
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'Google Analytics 4', 'google-site-kit' ) }
 			</h4>
-
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
+			/>
+			<PropertyOrWebDataStreamNotAvailableError
+				hasModuleAccess={ hasModuleAccess }
+				isDisabled={ isDisabled }
+			/>
 			<div className="googlesitekit-setup-module__inputs">
 				{ ga4ReportingEnabled && (
 					<AccountSelect hasModuleAccess={ hasModuleAccess } />
@@ -129,7 +156,7 @@ export default function GA4SettingsControls( props ) {
 							) }
 							styles={ {
 								options: {
-									zIndex: 9999,
+									zIndex: 10,
 								},
 							} }
 							target=".googlesitekit-analytics-4__select-property--loaded"
@@ -144,9 +171,18 @@ export default function GA4SettingsControls( props ) {
 									{ __( 'Learn more', 'google-site-kit' ) }
 								</Button>
 							}
+							onView={ onViewTooltip }
+							onTourStart={ toggleDocumentClass }
+							onTourEnd={ toggleDocumentClass }
 						/>
 					) }
 			</div>
+
+			<GA4SettingsNotice
+				isGA4Connected={ isModuleConnected }
+				hasAnalyticsAccess={ hasAnalyticsAccess }
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
 
 			{ isDisabled && (
 				<GA4ActivateSwitch
@@ -160,12 +196,6 @@ export default function GA4SettingsControls( props ) {
 					<SettingsUseSnippetSwitch />
 				</div>
 			) }
-
-			<GA4SettingsNotice
-				isGA4Connected={ isModuleConnected }
-				hasAnalyticsAccess={ hasAnalyticsAccess }
-				hasAnalytics4Access={ hasAnalytics4Access }
-			/>
 		</div>
 	);
 }

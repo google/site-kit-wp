@@ -34,23 +34,21 @@ import { useMount } from 'react-use';
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
 import {
-	Fragment,
 	useEffect,
 	useLayoutEffect,
 	useRef,
 	useState,
 } from '@wordpress/element';
-import { Icon, info } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
-import { Tooltip } from 'googlesitekit-components';
 import PreviewBlock from '../PreviewBlock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
 import Data from 'googlesitekit-data';
 import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
+import DateMarker from './DateMarker';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import useViewContext from '../../hooks/useViewContext';
 import { isSiteKitScreen } from '../../util/is-site-kit-screen';
@@ -286,8 +284,8 @@ export default function GoogleChart( props ) {
 			// Align the dotted line with the date for this marker.
 			Object.assign( chartLine.style, {
 				left: `${ dateCoordinateX - 1 }px`,
-				top: `${ Math.floor( chartArea.top ) + iconSize }px`,
-				height: `${ Math.floor( chartArea.height ) - iconSize }px`,
+				top: `${ Math.floor( chartArea.top ) }px`,
+				height: `${ Math.floor( chartArea.height ) }px`,
 				opacity: 1,
 			} );
 
@@ -305,11 +303,34 @@ export default function GoogleChart( props ) {
 				// Align the tooltip component with the date line.
 				Object.assign( tooltip.style, {
 					left: `${ dateCoordinateX - iconSize / 2 }px`,
-					top: `${ Math.floor( chartArea.top ) }px`,
+					top: `${ Math.floor( chartArea.top ) - iconSize }px`,
 					opacity: 1,
 				} );
 			}
 		} );
+
+		const legendElement = document.querySelector(
+			`#googlesitekit-chart-${ instanceID } svg:first-of-type > g:first-of-type > g > g > text`
+		)?.parentElement.parentElement.parentElement;
+
+		// A legend is present if there are more than three `g` elements; charts
+		// without legends won't have that many `g` elements so we don't need to
+		// modify anything.
+		const hasLegend =
+			!! legendElement &&
+			document.querySelectorAll(
+				`#googlesitekit-chart-${ instanceID } svg:first-of-type > g`
+			).length >= 3;
+
+		// If there is a legend, move it up to make room for the date marker icon.
+		if ( hasLegend ) {
+			// `10px` is the best size to use to accommodate the bounding box of the
+			// chart without needing to modify the chart's height.
+			//
+			// It allows the legend and the icon to fit without moving anything else
+			// and without things feeling cramped or being cut off.
+			legendElement.style.transform = 'translateY(-10px)';
+		}
 	};
 
 	if ( googleChartsCollisionError ) {
@@ -364,6 +385,7 @@ export default function GoogleChart( props ) {
 					`googlesitekit-chart--${ chartType }`,
 					className
 				) }
+				id={ `googlesitekit-chart-${ instanceID }` }
 				tabIndex={ -1 }
 			>
 				<Chart
@@ -417,30 +439,11 @@ export default function GoogleChart( props ) {
 				{ !! dateMarkersInRange.length &&
 					dateMarkersInRange.map( ( dateMarker, index ) => {
 						return (
-							<Fragment
+							<DateMarker
 								key={ `googlesitekit-chart__date-marker--${ instanceID }-${ index }` }
-							>
-								<div
-									id={ `googlesitekit-chart__date-marker-line--${ instanceID }-${ index }` }
-									className="googlesitekit-chart__date-marker-line"
-								/>
-								{ dateMarker.text && (
-									<div
-										id={ `googlesitekit-chart__date-marker-tooltip--${ instanceID }-${ index }` }
-										className="googlesitekit-chart__date-marker-tooltip"
-									>
-										<Tooltip title={ dateMarker.text }>
-											<span>
-												<Icon
-													fill="currentColor"
-													icon={ info }
-													size={ iconSize }
-												/>
-											</span>
-										</Tooltip>
-									</div>
-								) }
-							</Fragment>
+								id={ `${ instanceID }-${ index }` }
+								text={ dateMarker.text }
+							/>
 						);
 					} ) }
 				{ children }

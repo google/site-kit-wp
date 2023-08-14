@@ -16,6 +16,120 @@
  * limitations under the License.
  */
 
-export default function TopCitiesWidget() {
-	return <div>TODO: UI for TopCitiesWidget</div>;
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
+import { ZeroDataMessage } from '../../../analytics/components/common';
+import { numFmt } from '../../../../util';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+const { useSelect, useInViewSelect } = Data;
+
+function TopCitiesWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
+	const topcCitiesReportOptions = {
+		...dates,
+		dimensions: [ 'city' ],
+		metrics: [ { name: 'totalUsers' } ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
+		limit: 3,
+	};
+
+	const topCitiesReport = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions )
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			topcCitiesReportOptions,
+		] )
+	);
+
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ topcCitiesReportOptions ]
+			)
+	);
+
+	const { rows = [], totals = [] } = topCitiesReport || {};
+
+	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
+
+	const columns = [
+		{
+			field: 'dimensionValues',
+			Component: ( { fieldValue } ) => {
+				const [ title ] = fieldValue;
+
+				return <MetricTileTablePlainText content={ title.value } />;
+			},
+		},
+		{
+			field: 'metricValues.0.value',
+			Component: ( { fieldValue } ) => (
+				<strong>
+					{ numFmt( fieldValue / totalUsers, {
+						style: 'percent',
+						maximumFractionDigits: 1,
+					} ) }
+				</strong>
+			),
+		},
+	];
+
+	return (
+		<MetricTileTable
+			Widget={ Widget }
+			title={ __( 'Top cities driving traffic', 'google-site-kit' ) }
+			loading={ loading }
+			rows={ rows }
+			columns={ columns }
+			ZeroState={ ZeroDataMessage }
+			error={ error }
+			moduleSlug="analytics-4"
+		/>
+	);
 }
+
+TopCitiesWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+};
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( TopCitiesWidget );

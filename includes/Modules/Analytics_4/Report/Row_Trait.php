@@ -18,7 +18,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Row as Google_Serv
 /**
  * A trait that adds a helper method to create report rows.
  *
- * @since n.e.x.t
+ * @since 1.99.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ trait Row_Trait {
 	/**
 	 * Creates and returns a new zero-value row for provided date and metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Google_Service_AnalyticsData_MetricHeader[] $metric_headers   Metric headers from the report response.
 	 * @param string                                      $current_date     The current date to create a zero-value row for.

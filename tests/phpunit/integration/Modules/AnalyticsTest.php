@@ -517,8 +517,13 @@ class AnalyticsTest extends TestCase {
 			// When tracking is active, the `googlesitekit_analytics_tracking_opt_out` action should not be called.
 			$this->assertEquals( 0, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
 		} else {
-			// When tracking is disabled, the opt out snippet should be present.
-			$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $head_html );
+			if ( empty( $settings['propertyID'] ) ) {
+				// When propertyID is not set, the opt out snippet should not be present.
+				$this->assertStringNotContainsString( 'window["ga-disable-', $head_html );
+			} else {
+				// When tracking is disabled and propertyID is set, the opt out snippet should be present.
+				$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $head_html );
+			}
 
 			// When tracking is disabled, the `googlesitekit_analytics_tracking_opt_out` action should be called.
 			$this->assertEquals( 1, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
@@ -577,6 +582,19 @@ class AnalyticsTest extends TestCase {
 			// Tracking is not active for content creators if disabled for logged-in users (logged-in users setting overrides content creators setting)
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				true,
+				false,
+				true,
+			),
+			// Analytics is enabled and tracking is disabled for logged-in users but property is not configured
+			array(
+				array_merge(
+					$base_settings,
+					array(
+						'trackingDisabled' => array( 'loggedinUsers' ),
+						'propertyID'       => '',
+					)
+				),
 				true,
 				false,
 				true,
@@ -808,6 +826,37 @@ class AnalyticsTest extends TestCase {
 		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
 		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
 		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
+	}
+
+	public function test_get_debug_fields() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				'analytics_account_id',
+				'analytics_property_id',
+				'analytics_profile_id',
+				'analytics_use_snippet',
+			),
+			array_keys( $analytics->get_debug_fields() )
+		);
+	}
+
+	public function test_get_debug_fields__ga4Reporting() {
+		$this->enable_feature( 'ga4Reporting' );
+
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				'analytics_dashboard_view',
+				'analytics_account_id',
+				'analytics_property_id',
+				'analytics_profile_id',
+				'analytics_use_snippet',
+			),
+			array_keys( $analytics->get_debug_fields() )
+		);
 	}
 
 	/**

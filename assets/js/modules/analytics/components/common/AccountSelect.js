@@ -19,18 +19,27 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { Select, Option } from '../../../../material-components';
-import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	ACCOUNT_CREATE,
+	FORM_SETUP,
+} from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from '../../../analytics-4/datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { isValidPropertyID } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect( { hasModuleAccess } ) {
@@ -45,6 +54,34 @@ export default function AccountSelect( { hasModuleAccess } ) {
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
+	const properties = useSelect( ( select ) => {
+		if ( ! accountID || hasModuleAccess === false ) {
+			return [];
+		}
+
+		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
+	} );
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const isUAEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
+	);
+
+	const { setPropertyID } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	useEffect( () => {
+		if (
+			isUAEnabled &&
+			! isValidPropertyID( propertyID ) &&
+			hasModuleAccess !== false && // Show disabled UA settings for Admins who do not have access to the connected Analytics Property.
+			properties.length === 0
+		) {
+			setValues( FORM_SETUP, { enableUA: false } );
+		}
+	}, [ isUAEnabled, properties, setValues, hasModuleAccess, propertyID ] );
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
@@ -52,6 +89,9 @@ export default function AccountSelect( { hasModuleAccess } ) {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
 				selectAccount( newAccountID );
+
+				// Reset the property ID.
+				setPropertyID( PROPERTY_CREATE );
 				const action =
 					newAccountID === ACCOUNT_CREATE
 						? 'change_account_new'
@@ -59,7 +99,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 				trackEvent( `${ viewContext }_analytics`, action );
 			}
 		},
-		[ accountID, selectAccount, viewContext ]
+		[ accountID, selectAccount, setPropertyID, viewContext ]
 	);
 
 	if ( ! hasResolvedAccounts ) {

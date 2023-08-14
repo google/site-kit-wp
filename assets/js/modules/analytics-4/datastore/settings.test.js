@@ -22,6 +22,7 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	provideUserAuthentication,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
@@ -73,6 +74,8 @@ describe( 'modules/analytics-4 settings', () => {
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			beforeEach( () => {
+				provideUserAuthentication( registry );
+
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					accountID: fixtures.createProperty._accountID,
 				} );

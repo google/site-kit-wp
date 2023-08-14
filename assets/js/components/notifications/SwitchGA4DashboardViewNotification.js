@@ -20,36 +20,85 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
+import GA4SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
 	DASHBOARD_VIEW_GA4,
+	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 	MODULES_ANALYTICS,
 } from '../../modules/analytics/datastore/constants';
-import GA4SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
-
+import BannerNotification from './BannerNotification';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function SwitchGA4DashboardViewNotification() {
-	const shouldPromptGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).shouldPromptGA4DashboardView()
-	);
+	const viewContext = useViewContext();
+
+	const shouldPromptGA4DashboardView = useSelect( ( select ) => {
+		const isNotificationDismissed = select( CORE_USER ).isItemDismissed(
+			GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+		);
+
+		if ( isNotificationDismissed ) {
+			return false;
+		}
+
+		return select( MODULES_ANALYTICS ).shouldPromptGA4DashboardView();
+	} );
 
 	const ga4DocumentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'using-the-site-kit-dashboard-with-ga4'
+		)
 	);
 
+	const { setValue } = useDispatch( CORE_UI );
+	const { dismissItem } = useDispatch( CORE_USER );
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
 
-	const handleCTAClick = async () => {
-		await setDashboardView( DASHBOARD_VIEW_GA4 );
-		await saveSettings();
-	};
+	const eventCategory = `${ viewContext }_ga4-display-notification`;
+
+	const handleOnView = useCallback( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	}, [ eventCategory ] );
+
+	const handleCTAClick = useCallback( () => {
+		trackEvent( eventCategory, 'confirm_notification' );
+
+		setValue( 'forceInView', true );
+		setValue( 'showGA4ReportingTour', true );
+
+		setDashboardView( DASHBOARD_VIEW_GA4 );
+		saveSettings();
+		dismissItem( GA4_DASHBOARD_VIEW_NOTIFICATION_ID );
+
+		return { dismissOnCTAClick: false };
+	}, [
+		dismissItem,
+		eventCategory,
+		saveSettings,
+		setDashboardView,
+		setValue,
+	] );
+
+	const handleDismiss = useCallback( () => {
+		trackEvent( eventCategory, 'dismiss_notification' );
+
+		dismissItem( GA4_DASHBOARD_VIEW_NOTIFICATION_ID );
+	}, [ dismissItem, eventCategory ] );
+
+	const handleLearnMoreClick = useCallback( () => {
+		trackEvent( eventCategory, 'click_learn_more_link' );
+	}, [ eventCategory ] );
 
 	if ( ! shouldPromptGA4DashboardView ) {
 		return null;
@@ -57,7 +106,7 @@ export default function SwitchGA4DashboardViewNotification() {
 
 	return (
 		<BannerNotification
-			id="switch-ga4-dashboard-view"
+			id={ GA4_DASHBOARD_VIEW_NOTIFICATION_ID }
 			title={ __(
 				'Display data from Google Analytics 4 on your dashboard',
 				'google-site-kit'
@@ -70,9 +119,12 @@ export default function SwitchGA4DashboardViewNotification() {
 			ctaLabel={ __( 'Update dashboard', 'google-site-kit' ) }
 			onCTAClick={ handleCTAClick }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
-			WinImageSVG={ GA4SuccessGreenSVG }
+			onDismiss={ handleDismiss }
+			WinImageSVG={ () => <GA4SuccessGreenSVG /> }
 			learnMoreLabel={ __( 'Learn what’s new', 'google-site-kit' ) }
 			learnMoreURL={ ga4DocumentationURL }
+			onView={ handleOnView }
+			onLearnMoreClick={ handleLearnMoreClick }
 		/>
 	);
 }

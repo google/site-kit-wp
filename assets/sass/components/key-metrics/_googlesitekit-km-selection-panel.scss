@@ -1,0 +1,132 @@
+/**
+ * Key Metrics Selection Panel styles.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-km-selection-panel {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.googlesitekit-km-selection-panel-header {
+		padding: $grid-gap-desktop;
+
+		h3 {
+			margin: 0;
+		}
+
+		p {
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin: 4px 0 8px;
+		}
+	}
+
+	.googlesitekit-km-selection-panel-header__row {
+		align-items: center;
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.googlesitekit-km-selection-panel-header__close {
+		color: $c-surfaces-on-surface-variant;
+	}
+
+	.googlesitekit-km-selection-panel-metrics {
+		overflow: auto;
+	}
+
+	.googlesitekit-km-selection-panel-metrics__metric-item {
+		margin-bottom: $grid-gap-phone;
+		padding: 0 $grid-gap-desktop;
+
+		.googlesitekit-accordion {
+			border: 1px solid $c-neutral-n-66;
+			border-radius: 8px;
+			padding: 0 20px;
+
+			&:focus-within {
+				border: 2px solid $c-content-primary;
+			}
+		}
+
+		.googlesitekit-accordion__header {
+			padding: 12px 0;
+
+			.mdc-checkbox + label {
+				font-weight: $fw-medium;
+			}
+		}
+
+		.googlesitekit-accordion__header::after {
+			right: 0;
+		}
+
+		.googlesitekit-accordion__content {
+			border-top: 1px solid $c-neutral-n-50;
+			padding: 16px 0 20px;
+		}
+
+		.googlesitekit-accordion--disabled {
+
+			.mdc-checkbox + label {
+				color: $c-interactive-on-disable-container;
+			}
+		}
+	}
+
+	.googlesitekit-km-selection-panel-footer {
+		background-color: $c-surfaces-background;
+		margin-top: auto;
+		padding: $grid-gap-desktop / 2 $grid-gap-desktop $grid-gap-desktop;
+		text-align: center;
+		width: 100%;
+
+		p {
+			font-size: $fs-label-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-label-sm;
+		}
+
+		.googlesitekit-error-text p {
+			margin: 0;
+		}
+	}
+
+	.googlesitekit-km-selection-panel-footer__actions {
+		align-items: center;
+		column-gap: $grid-gap-desktop;
+		display: flex;
+		justify-content: center;
+		margin-top: $grid-gap-desktop / 2;
+
+		.googlesitekit-cta-link {
+			color: $c-surfaces-on-surface-variant;
+		}
+	}
+
+	.googlesitekit-km-selection-panel-footer__note {
+		color: $c-surfaces-on-surface;
+		margin: 14px 0 0;
+
+		button {
+			color: $c-content-secondary;
+		}
+	}
+}

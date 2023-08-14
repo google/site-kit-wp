@@ -33,13 +33,18 @@ import {
 	ErrorNotices,
 	UseSnippetSwitch,
 	AutoAdExclusionSwitches,
+	AdBlockingRecoveryToggle,
 } from '../common';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
+	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
+
 	const webStoriesActive = useSelect( ( select ) =>
 		select( CORE_SITE ).isWebStoriesActive()
 	);
@@ -53,7 +58,22 @@ export default function SettingsForm() {
 		select( MODULES_ADSENSE ).hasFinishedResolution( 'getExistingTag' )
 	);
 
-	if ( ! hasResolvedGetExistingTag ) {
+	// This is called here to ensure that the progress bar is displayed while
+	// the Ad Blocking Recovery existing tag is being resolved to prevent a
+	// layout shift.
+	useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingAdBlockingRecoveryTag()
+	);
+	const hasResolvedGetExistingAdBlockingRecoveryTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasFinishedResolution(
+			'getExistingAdBlockingRecoveryTag'
+		)
+	);
+
+	if (
+		! hasResolvedGetExistingTag ||
+		! hasResolvedGetExistingAdBlockingRecoveryTag
+	) {
 		return <ProgressBar />;
 	}
 
@@ -122,6 +142,13 @@ export default function SettingsForm() {
 			) }
 
 			<AutoAdExclusionSwitches />
+
+			{ adBlockerDetectionEnabled && (
+				<Fragment>
+					<AdBlockingRecoveryCTA />
+					<AdBlockingRecoveryToggle />
+				</Fragment>
+			) }
 		</div>
 	);
 }

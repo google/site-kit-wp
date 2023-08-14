@@ -25,9 +25,8 @@ import { _x, __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { Select, Option } from '../../../../material-components';
 import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
@@ -111,15 +110,17 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		);
 	}
 
-	if (
-		! ga4ReportingEnabled &&
-		! properties.some( ( property ) => property.id === PROPERTY_CREATE )
-	) {
-		properties.push( {
-			id: PROPERTY_CREATE,
-			name: __( 'Set up a new property', 'google-site-kit' ),
-		} );
-	}
+	const displayProperties =
+		ga4ReportingEnabled ||
+		properties.some( ( property ) => property.id === PROPERTY_CREATE )
+			? properties
+			: [
+					...properties,
+					{
+						id: PROPERTY_CREATE,
+						name: __( 'Set up a new property', 'google-site-kit' ),
+					},
+			  ];
 
 	return (
 		<Select
@@ -130,7 +131,7 @@ export default function PropertySelect( { hasModuleAccess } ) {
 			enhanced
 			outlined
 		>
-			{ properties.map(
+			{ displayProperties.map(
 				(
 					// eslint-disable-next-line sitekit/acronym-case
 					{ id, name, internalWebPropertyId },

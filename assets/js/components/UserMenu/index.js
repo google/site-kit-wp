@@ -31,14 +31,15 @@ import {
 	useEffect,
 	useCallback,
 } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, Dialog, Menu } from 'googlesitekit-components';
+import { Button, Menu } from 'googlesitekit-components';
+import ModalDialog from '../ModalDialog';
 import { trackEvent } from '../../util';
 import { clearCache } from '../../googlesitekit/api/cache';
 import Portal from '../Portal';
@@ -73,13 +74,16 @@ export default function UserMenu() {
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
+	const menuButtonRef = useRef();
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
-		setMenuOpen( false )
-	);
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => {
+		setMenuOpen( false );
+		// Reinstate menu button focus when menu is closed.
+		menuButtonRef.current?.focus();
+	} );
 
 	useEffect( () => {
 		const handleDialogClose = ( e ) => {
@@ -162,6 +166,33 @@ export default function UserMenu() {
 		return null;
 	}
 
+	let accountLabel;
+
+	if ( userFullName && userEmail ) {
+		accountLabel = sprintf(
+			/* translators: Account info text. 1: User's (full) name 2: User's email address. */
+			__( 'Google Account for %1$s (Email: %2$s)', 'google-site-kit' ),
+			userFullName,
+			userEmail
+		);
+	}
+
+	if ( userFullName && ! userEmail ) {
+		accountLabel = sprintf(
+			/* translators: Account info text. 1: User's (full) name. */
+			__( 'Google Account for %1$s', 'google-site-kit' ),
+			userFullName
+		);
+	}
+
+	if ( ! userFullName && userEmail ) {
+		accountLabel = sprintf(
+			/* translators: Account info text. 1: User's email address. */
+			__( 'Google Account (Email: %1$s)', 'google-site-kit' ),
+			userEmail
+		);
+	}
+
 	return (
 		<Fragment>
 			<div
@@ -169,6 +200,7 @@ export default function UserMenu() {
 				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
 			>
 				<Button
+					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
 					text
 					onClick={ handleMenu }
@@ -195,7 +227,7 @@ export default function UserMenu() {
 					aria-label={ __( 'Account', 'google-site-kit' ) }
 					tooltip
 					customizedTooltip={
-						<Fragment>
+						<span aria-label={ accountLabel }>
 							<strong>
 								{ __( 'Google Account', 'google-site-kit' ) }
 							</strong>
@@ -204,7 +236,7 @@ export default function UserMenu() {
 							{ userFullName }
 							{ userFullName && <br /> }
 							{ userEmail }
-						</Fragment>
+						</span>
 					}
 				/>
 
@@ -245,7 +277,7 @@ export default function UserMenu() {
 				</Menu>
 			</div>
 			<Portal>
-				<Dialog
+				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
 					handleDialog={ handleDialog }

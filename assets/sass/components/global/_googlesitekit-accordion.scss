@@ -80,6 +80,18 @@
 			margin-top: 0;
 		}
 	}
+
+	&.googlesitekit-accordion--disabled {
+
+		.googlesitekit-accordion__header {
+			pointer-events: none;
+
+			&::after {
+				// This is the expand_more icon (arrow/chevron down), in the color $c-interactive-on-disable-container.
+				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%23030E07%22%20fill-opacity%3D%220.32%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
+			}
+		}
+	}
 }
 
 .googlesitekit-accordion + .googlesitekit-accordion {

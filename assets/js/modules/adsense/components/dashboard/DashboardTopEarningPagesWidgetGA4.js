@@ -44,6 +44,7 @@ import SettingsNotice from '../../../../components/SettingsNotice';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import ReportTable from '../../../../components/ReportTable';
 import Null from '../../../../components/Null';
+import InfoIcon from '../../../../../svg/icons/info-circle.svg';
 import { Grid } from '../../../../material-components';
 const { useSelect } = Data;
 
@@ -90,11 +91,6 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 			primary: true,
 			Component: Null,
 		},
-		{
-			title: __( 'Earnings', 'google-site-kit' ),
-			tooltip: __( 'Earnings', 'google-site-kit' ),
-			Component: Null,
-		},
 	];
 
 	return (
@@ -103,12 +99,13 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 
 			<Grid className="googlesitekit-padding-top-0">
 				<SettingsNotice
+					Icon={ InfoIcon }
 					notice={ __(
-						'Top earning pages are not yet available in Google Analytics 4.',
+						'Top earning pages are not yet available in Google Analytics 4',
 						'google-site-kit'
 					) }
 					dismiss={ DISMISSED_KEY }
-					className="googlesitekit-margin-top-0 googlesitekit-margin-bottom-0"
+					className="googlesitekit-margin-top-0 googlesitekit-margin-bottom-0 googlesitekit-settings-notice-adsense-top-earning-pages-widget"
 				>
 					{ __(
 						'Site Kit will notify you as soon as you can connect AdSense and Analytics again.',

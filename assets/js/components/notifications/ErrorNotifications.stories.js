@@ -21,7 +21,10 @@
  */
 import ErrorNotifications from './ErrorNotifications';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { provideUserAuthentication } from '../../../../tests/js/utils';
+import {
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
 
 function Template( { ...args } ) {
 	return <ErrorNotifications { ...args } />;
@@ -32,15 +35,19 @@ UnsatisfiedScopeGTESupport.storyName =
 	'Unsatisfied Scope - GTE Support for GA4';
 UnsatisfiedScopeGTESupport.args = {
 	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
 				'https://www.googleapis.com/auth/tagmanager.readonly',
 			],
 		} );
 	},
-};
-UnsatisfiedScopeGTESupport.parameters = {
-	features: [ 'gteSupport' ],
 };
 UnsatisfiedScopeGTESupport.scenario = {
 	label: 'Global/ErrorNotifications/UnsatisfiedScopeGTESupport',

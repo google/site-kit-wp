@@ -29,6 +29,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	Fragment,
 	useCallback,
+	useEffect,
+	useRef,
 	createInterpolateElement,
 } from '@wordpress/element';
 
@@ -36,7 +38,7 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Switch } from 'googlesitekit-components';
+import { ProgressBar, Switch } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS, FORM_SETUP } from '../../datastore/constants';
@@ -44,18 +46,24 @@ import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import ProfileSelect from './ProfileSelect';
 import PropertySelect from './PropertySelect';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import ExistingGTMPropertyNotice from './ExistingGTMPropertyNotice';
+import { isValidPropertyID } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function EnableUniversalAnalytics( {
 	children,
 	hasModuleAccess = true,
+	showErrors = false,
+	showTitle = false,
 } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const properties = useSelect( ( select ) => {
-		if ( ! accountID ) {
+		if ( ! accountID || ! hasModuleAccess ) {
 			return [];
 		}
 
@@ -70,10 +78,22 @@ export default function EnableUniversalAnalytics( {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+	);
+	const gtmAnalyticsPropertyID = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { resetPropertyAndProfileIDs, revertPropertyAndProfileIDs } =
-		useDispatch( MODULES_ANALYTICS );
+	const {
+		resetPropertyAndProfileIDs,
+		revertPropertyAndProfileIDs,
+		findMatchedProperty,
+		selectProperty,
+	} = useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback( () => {
 		if ( isUAEnabled ) {
@@ -90,6 +110,32 @@ export default function EnableUniversalAnalytics( {
 		revertPropertyAndProfileIDs,
 	] );
 
+	const loadedProperties = useSelect( ( select ) =>
+		hasModuleAccess !== false
+			? select( MODULES_ANALYTICS ).hasFinishedResolution(
+					'getProperties',
+					[ accountID ]
+			  )
+			: true
+	);
+
+	useEffect( () => {
+		if ( isUAEnabled && ! propertyID ) {
+			( async () => {
+				const matchedProperty = await findMatchedProperty( accountID );
+				if ( matchedProperty?.id ) {
+					selectProperty( matchedProperty.id );
+				}
+			} )();
+		}
+	}, [
+		isUAEnabled,
+		propertyID,
+		findMatchedProperty,
+		selectProperty,
+		accountID,
+	] );
+
 	const formattedOwnerName = module?.owner?.login
 		? `<strong>${ module.owner.login }</strong>`
 		: __( 'Another admin', 'google-site-kit' );
@@ -100,12 +146,36 @@ export default function EnableUniversalAnalytics( {
 		}
 	} );
 
-	if ( properties.length === 0 ) {
+	const initialValuesRef = useRef( {
+		initialAccountID: accountID,
+		isInitialConnectedAccount: isValidPropertyID( propertyID ),
+	} );
+
+	const { initialAccountID, isInitialConnectedAccount } =
+		initialValuesRef.current;
+
+	useEffect( () => {
+		if ( accountID !== initialAccountID ) {
+			initialValuesRef.current.isInitialConnectedAccount = false;
+		}
+	}, [ accountID, initialAccountID ] );
+
+	if (
+		! isInitialConnectedAccount &&
+		hasModuleAccess !== false &&
+		properties.length === 0
+	) {
 		return null;
 	}
 
 	return (
-		<Fragment>
+		<div className="googlesitekit-settings-module__fields-group">
+			{ showTitle && (
+				<h4 className="googlesitekit-settings-module__fields-group-title">
+					{ __( 'Universal Analytics', 'google-site-kit' ) }
+				</h4>
+			) }
+
 			<div className="googlesitekit-analytics-enable">
 				<Switch
 					label={ __(
@@ -115,6 +185,7 @@ export default function EnableUniversalAnalytics( {
 					checked={ isUAEnabled }
 					onClick={ onChange }
 					hideLabel={ false }
+					disabled={ ! hasModuleAccess }
 				/>
 				<p>
 					{ __(
@@ -125,10 +196,28 @@ export default function EnableUniversalAnalytics( {
 			</div>
 			{ isUAEnabled && (
 				<Fragment>
-					<div className="googlesitekit-setup-module__inputs">
-						<PropertySelect hasModuleAccess={ hasModuleAccess } />
-						<ProfileSelect hasModuleAccess={ hasModuleAccess } />
-					</div>
+					<ExistingGTMPropertyNotice
+						gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+					/>
+					{ showErrors && (
+						<StoreErrorNotices
+							moduleSlug="analytics"
+							storeName={ MODULES_ANALYTICS }
+						/>
+					) }
+
+					{ ! loadedProperties && <ProgressBar /> }
+
+					{ loadedProperties && (
+						<div className="googlesitekit-setup-module__inputs">
+							<PropertySelect
+								hasModuleAccess={ hasModuleAccess }
+							/>
+							<ProfileSelect
+								hasModuleAccess={ hasModuleAccess }
+							/>
+						</div>
+					) }
 
 					{ /* Renders the SetupUseSnippetSwitch or SettingsUseSnippetSwitch */ }
 					{ children }
@@ -155,11 +244,13 @@ export default function EnableUniversalAnalytics( {
 					) }
 				</Fragment>
 			) }
-		</Fragment>
+		</div>
 	);
 }
 
 EnableUniversalAnalytics.propTypes = {
 	children: PropTypes.node.isRequired,
 	hasModuleAccess: PropTypes.bool,
+	showErrors: PropTypes.bool,
+	showTitle: PropTypes.bool,
 };

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as AdBlockingRecoveryApp } from './AdBlockingRecoveryApp';
 export { default as SettingsEdit } from './SettingsEdit';
 export { default as SettingsForm } from './SettingsForm';
 export { default as SettingsSetupIncomplete } from './SettingsSetupIncomplete';

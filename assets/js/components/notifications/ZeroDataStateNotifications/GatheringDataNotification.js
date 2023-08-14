@@ -24,16 +24,19 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import BannerNotification from '../BannerNotification';
 import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { getTimeInSeconds, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
+const { useSelect } = Data;
 
 export default function GatheringDataNotification( { title } ) {
 	const viewContext = useViewContext();
@@ -45,13 +48,23 @@ export default function GatheringDataNotification( { title } ) {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
 
+	const isGA4DashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGA4DashboardView()
+	);
+
+	const gatheringDataWaitTime = isGA4DashboardView ? '72' : '48';
+
 	return (
 		<BannerNotification
 			id="gathering-data-notification"
 			title={ title }
-			description={ __(
-				'It can take up to 48 hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-				'google-site-kit'
+			description={ sprintf(
+				/* translators: %s: the number of hours the site can be in a gathering data state */
+				__(
+					'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+					'google-site-kit'
+				),
+				gatheringDataWaitTime
 			) }
 			format="small"
 			onView={ handleOnView }

@@ -29,9 +29,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { Select, Option } from '../../../../material-components';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
@@ -66,10 +65,8 @@ export default function WebDataStreamSelect( props ) {
 	);
 
 	const webDataStreams = useSelect( ( select ) =>
-		isValidPropertyID( propertyID )
-			? select(
-					MODULES_ANALYTICS_4
-			  ).getMatchingWebDataStreamsByPropertyID( propertyID )
+		isValidPropertyID( propertyID ) && hasModuleAccess !== false
+			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
 			: []
 	);
 
@@ -81,16 +78,21 @@ export default function WebDataStreamSelect( props ) {
 		const loadedAccounts =
 			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
 
-		const loadedProperties = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getProperties', [ accountID ] );
+		const loadedProperties =
+			hasModuleAccess !== false
+				? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getProperties',
+						[ accountID ]
+				  )
+				: true;
 
-		const loadedWebDataStreams = isValidPropertyID( propertyID )
-			? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getWebDataStreams',
-					[ propertyID ]
-			  )
-			: true;
+		const loadedWebDataStreams =
+			isValidPropertyID( propertyID ) && hasModuleAccess !== false
+				? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getWebDataStreams',
+						[ propertyID ]
+				  )
+				: true;
 
 		const finishedSelectingAccount =
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() !== false;
@@ -143,7 +145,7 @@ export default function WebDataStreamSelect( props ) {
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
 	} else if ( isLoading ) {
-		return <ProgressBar height={ 100 } small />;
+		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
 	}
 
 	const isValidSelection =

@@ -29,14 +29,16 @@ import { get } from 'lodash';
  */
 import GatheringDataNotice from './GatheringDataNotice';
 
-export default function ReportTable( {
-	rows,
-	columns,
-	className,
-	limit,
-	zeroState: ZeroState,
-	gatheringData = false,
-} ) {
+export default function ReportTable( props ) {
+	const {
+		rows,
+		columns,
+		className,
+		limit,
+		zeroState: ZeroState,
+		gatheringData = false,
+	} = props;
+
 	invariant( Array.isArray( rows ), 'rows must be an array.' );
 	invariant( Array.isArray( columns ), 'columns must be an array.' );
 	columns.forEach( ( { Component, field = null } ) => {
@@ -49,7 +51,9 @@ export default function ReportTable( {
 		Number.isInteger( limit ) || limit === undefined,
 		'limit must be an integer, if provided.'
 	);
+
 	const mobileColumns = columns.filter( ( col ) => ! col.hideOnMobile );
+	const hasBadges = columns.some( ( { badge } ) => !! badge );
 
 	return (
 		<div
@@ -68,6 +72,48 @@ export default function ReportTable( {
 				) }
 			>
 				<thead className="googlesitekit-table__head">
+					{ hasBadges && (
+						<tr
+							className={ classnames(
+								'googlesitekit-table__head-badges',
+								{
+									'hidden-on-mobile': ! columns.some(
+										( { badge, hideOnMobile } ) =>
+											!! badge && ! hideOnMobile
+									),
+								}
+							) }
+						>
+							{ columns.map(
+								(
+									{
+										badge,
+										primary,
+										hideOnMobile,
+										className: columnClassName,
+									},
+									colIndex
+								) => (
+									<th
+										className={ classnames(
+											'googlesitekit-table__head-item',
+											'googlesitekit-table__head-item--badge',
+											{
+												'googlesitekit-table__head-item--primary':
+													primary,
+												'hidden-on-mobile':
+													hideOnMobile,
+											},
+											columnClassName
+										) }
+										key={ `googlesitekit-table__head-row-badge-${ colIndex }` }
+									>
+										{ badge }
+									</th>
+								)
+							) }
+						</tr>
+					) }
 					<tr className="googlesitekit-table__head-row">
 						{ columns.map(
 							(
@@ -77,7 +123,6 @@ export default function ReportTable( {
 									primary,
 									hideOnMobile,
 									className: columnClassName,
-									badge,
 								},
 								colIndex
 							) => (
@@ -87,15 +132,14 @@ export default function ReportTable( {
 										{
 											'googlesitekit-table__head-item--primary':
 												primary,
+											'hidden-on-mobile': hideOnMobile,
 										},
-										{ 'hidden-on-mobile': hideOnMobile },
 										columnClassName
 									) }
 									data-tooltip={ description }
 									key={ `googlesitekit-table__head-row-${ colIndex }` }
 								>
 									{ title }
-									{ badge }
 								</th>
 							)
 						) }

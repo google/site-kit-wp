@@ -62,6 +62,10 @@ concurrency:
   group: zips-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  GCS_BUCKET: site-kit-github-artifacts
+  GCS_ROOT_PATH: builds
+
 jobs:
   build-zips:
     name: Build Zips
@@ -113,59 +117,93 @@ jobs:
           name: zip-files
           path: ${{ github.ref }}
 
-  deploy-to-wiki:
-    name: Deploy To Wiki
+  upload-to-cloud-storage:
+    name: Upload to GCS
     runs-on: ubuntu-latest
     needs: build-zips
     steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: ${{ github.repository }}.wiki
-          # GitHub Wikis use this term as their main branch; this cannot be
-          # changed so we need to continue using it for now.
-          ref: master
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v3
         with:
           name: zip-files
           path: ${{ github.ref }}
-      - name: Commit updates
-        run: |
-          git add .
-          git status
-          git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
-          git pull --no-edit --quiet
-          git commit -m "Build and publish ${{ github.ref }}"
-          git push origin master
-        env:
-          GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
-          GIT_AUTHOR_NAME: ${{ github.actor }}
-          GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
-          GIT_COMMITTER_NAME: ${{ github.actor }}
+      - uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - name: Upload PR files
+        uses: 'google-github-actions/upload-cloud-storage@v1'
+        with:
+          path: ${{ github.ref }}
+          destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
+          parent: false
 
-  remove-pr:
+  add-comment-to-pr:
+    name: Add comment to PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: upload-to-cloud-storage
+    steps:
+      - name: Check the comment exists
+        id: find-comment
+        uses: peter-evans/find-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: github-actions[bot]
+          body-includes: Build files for
+      - name: Get comment body
+        id: get-comment-body
+        # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
+        run: |
+          body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
+          - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
+          - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})"
+          delimiter="${body//$'\n'/'%0A'}"
+          echo "body<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
+      - name: Create comment on PR with links to build files
+        if: ${{ steps.find-comment.outputs.comment-id == '' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+      - name: Update comment on PR with links to build files
+        if: ${{ steps.find-comment.outputs.comment-id != '' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          edit-mode: replace
+          body: ${{ steps.get-comment-body.outputs.body }}
+
+  remove-zips:
     name: Remove Zips
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     steps:
-      - uses: actions/checkout@v3
+      - uses: google-github-actions/auth@v1
         with:
-          repository: ${{ github.repository }}.wiki
-          # GitHub Wikis use this term as their main branch; this cannot be
-          # changed so we need to continue using it for now.
-          ref: master
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - uses: google-github-actions/setup-gcloud@v1
       - name: Prune PR files
-        run: |
-          rm -rf "refs/pull/${{ github.event.pull_request.number }}"
-          git add .
-          git status
-          git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
-          git pull --no-edit --quiet
-          git commit -m "Prune refs/pull/${{ github.event.pull_request.number }}"
-          git push origin master
-        env:
-          GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
-          GIT_AUTHOR_NAME: ${{ github.actor }}
-          GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
-          GIT_COMMITTER_NAME: ${{ github.actor }}
+        run: gcloud storage rm gs://${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/refs/pull/${{ github.event.pull_request.number }}/**
+
+  update-after-removal:
+    name: Update comment after removal
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: remove-zips
+    steps:
+      - name: Check the comment exists
+        id: find-comment
+        uses: peter-evans/find-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: github-actions[bot]
+          body-includes: Build files for
+      - name: Update comment on PR with links to plugin builds
+        if: ${{ steps.find-comment.outputs.comment-id != '' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          edit-mode: replace
+          body: Build files for ${{ github.event.pull_request.head.sha }} have been deleted.

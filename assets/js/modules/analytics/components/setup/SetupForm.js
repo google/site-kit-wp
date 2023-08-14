@@ -92,6 +92,9 @@ export default function SetupForm( { finishSetup } ) {
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
+			// Disable autoSubmit unconditionally to prevent
+			// automatic invocation more than once.
+			setValues( FORM_SETUP, { autoSubmit: false } );
 
 			// Automatically switch sites going through the new GA4
 			// setup flow to the GA4 dashboard view.
@@ -103,11 +106,12 @@ export default function SetupForm( { finishSetup } ) {
 			}
 
 			const { error } = await submitChanges();
+
 			if ( isPermissionScopeError( error ) ) {
 				setValues( FORM_SETUP, { autoSubmit: true } );
 			}
+
 			if ( ! error ) {
-				setValues( FORM_SETUP, { autoSubmit: false } );
 				finishSetup();
 			}
 		},
@@ -150,12 +154,18 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-analytics-setup__form"
 			onSubmit={ submitForm }
 		>
+			{ ! ga4ReportingEnabled && (
+				<ExistingGTMPropertyNotice
+					gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+				/>
+			) }
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
 			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }

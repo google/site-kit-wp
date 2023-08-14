@@ -21,7 +21,7 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { isNull, cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -67,6 +67,7 @@ export default function UserDimensionsPieChart( props ) {
 		props;
 
 	const [ selectable, setSelectable ] = useState( false );
+	const [ isTooltipOpen, setIsTooltipOpen ] = useState( false );
 	const viewContext = useViewContext();
 
 	const otherSupportURL = useSelect( ( select ) =>
@@ -118,35 +119,27 @@ export default function UserDimensionsPieChart( props ) {
 
 		const currentContainerRef = containerRef.current;
 
-		const closeToolTip = () =>
-			setValues( {
-				[ UI_DIMENSION_VALUE ]: '',
-				[ UI_DIMENSION_COLOR ]: '',
-				[ UI_ACTIVE_ROW_INDEX ]: null,
-			} );
-
-		const isTooltipOpen = () =>
-			// If initial values are set, the tooltip is closed.
-			! isNull( activeRowIndex ) &&
-			activeRowIndex !== undefined &&
-			( !! dimensionValue || !! dimensionColor );
-
-		// When the user hits the 'escape' key and the tooltip is open, close the tooltip.
+		// When the user hits the 'escape' key and the tooltip is open, close the tooltip and reset UI vars.
 		const onEscape = ( event = {} ) => {
-			if ( event?.keyCode === ESCAPE && isTooltipOpen() ) {
-				closeToolTip();
+			if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
+				setIsTooltipOpen( false );
+				setValues( {
+					[ UI_DIMENSION_VALUE ]: '',
+					[ UI_DIMENSION_COLOR ]: '',
+					[ UI_ACTIVE_ROW_INDEX ]: null,
+				} );
 			}
 		};
 
 		// When the use clicks on anything except the legend while the tooltip is open, close the tooltip.
 		const onExitClick = ( event ) => {
 			if (
-				isTooltipOpen() &&
+				isTooltipOpen &&
 				! event?.target?.closest(
-					'.googlesitekit-widget--analyticsAllTraffic__legend'
+					'.googlesitekit-widget--analyticsAllTraffic__dimensions-chart'
 				)
 			) {
-				closeToolTip();
+				setIsTooltipOpen( false );
 			}
 		};
 
@@ -173,6 +166,7 @@ export default function UserDimensionsPieChart( props ) {
 		dimensionValue,
 		dimensionColor,
 		viewContext,
+		isTooltipOpen,
 	] );
 
 	const absOthers = {
@@ -352,12 +346,14 @@ export default function UserDimensionsPieChart( props ) {
 		const { row } =
 			chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
 		if ( row === index ) {
+			setIsTooltipOpen( false );
 			setValues( {
 				[ UI_DIMENSION_VALUE ]: '',
 				[ UI_DIMENSION_COLOR ]: '',
 				[ UI_ACTIVE_ROW_INDEX ]: null,
 			} );
 		} else if ( newDimensionValue ) {
+			setIsTooltipOpen( true );
 			setValues( {
 				[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
 				[ UI_DIMENSION_VALUE ]: newDimensionValue,
@@ -419,6 +415,7 @@ export default function UserDimensionsPieChart( props ) {
 						chart.setSelection( [ { row: activeRowIndex } ] );
 					}
 				} else {
+					setIsTooltipOpen( true );
 					setValues( {
 						[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
 						[ UI_DIMENSION_VALUE ]: newDimensionValue,
@@ -526,7 +523,7 @@ export default function UserDimensionsPieChart( props ) {
 		options.pieSliceText = 'none';
 	}
 
-	if ( dimensionValue?.length ) {
+	if ( isTooltipOpen ) {
 		options.tooltip.trigger = 'selection';
 	} else {
 		options.tooltip.trigger = 'focus';

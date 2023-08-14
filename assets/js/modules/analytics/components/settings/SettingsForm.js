@@ -35,18 +35,21 @@ import {
 	TrackingExclusionSwitches,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../../analytics-4/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID, isValidPropertyID } from '../../util';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { stringToDate } from '../../../../util';
 import GA4DashboardViewToggle from './GA4DashboardViewToggle';
 import { useFeature } from '../../../../hooks/useFeature';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 const { useSelect } = Data;
 
 export default function SettingsForm( {
@@ -64,7 +67,9 @@ export default function SettingsForm( {
 	const isUAEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
-
+	const referenceDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
+	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -87,17 +92,11 @@ export default function SettingsForm( {
 	const gtmContainersResolved = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
-	const properties = useSelect( ( select ) => {
-		if ( ! accountID ) {
-			return [];
-		}
 
-		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
-	} );
-
-	const showTrackingExclusion =
-		useAnalyticsSnippet ||
-		( useTagManagerSnippet && analyticsSinglePropertyID );
+	const showTrackingExclusion = ga4ReportingEnabled
+		? isGA4Connected || isUAConnected
+		: useAnalyticsSnippet ||
+		  ( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	if ( ! gtmContainersResolved ) {
 		return <ProgressBar />;
@@ -105,27 +104,38 @@ export default function SettingsForm( {
 
 	return (
 		<Fragment>
-			<SettingsUACutoffWarning />
-			<StoreErrorNotices
-				moduleSlug="analytics"
-				storeName={ MODULES_ANALYTICS }
-			/>
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
-			/>
-
-			{ ga4ReportingEnabled && isUAConnected && isUAEnabled && (
-				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
-					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Dashboard view', 'google-site-kit' ) }
-					</h4>
-					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
-						{ isGA4Connected && <GA4DashboardViewToggle /> }
-						{ ! isGA4Connected &&
-							__( 'Universal Analytics', 'google-site-kit' ) }
-					</div>
-				</div>
+			{ ! ga4ReportingEnabled && (
+				<Fragment>
+					<ExistingGTMPropertyNotice
+						gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
+					/>
+					<StoreErrorNotices
+						moduleSlug="analytics"
+						storeName={ MODULES_ANALYTICS }
+					/>
+				</Fragment>
 			) }
+			{ ga4ReportingEnabled &&
+				stringToDate( referenceDate ) <
+					stringToDate( GA4_AUTO_SWITCH_DATE ) && (
+					<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
+						<h4 className="googlesitekit-settings-module__fields-group-title">
+							{ __( 'Dashboard View', 'google-site-kit' ) }
+						</h4>
+						<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
+							{ isGA4Connected && (
+								<GA4DashboardViewToggle
+									isUAConnected={ isUAConnected }
+									isUAEnabled={ isUAEnabled }
+								/>
+							) }
+							{ ! isGA4Connected &&
+								__( 'Universal Analytics', 'google-site-kit' ) }
+						</div>
+					</div>
+				) }
+
+			<SettingsUACutoffWarning />
 
 			{ ! ga4ReportingEnabled && (
 				<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
@@ -136,29 +146,29 @@ export default function SettingsForm( {
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
 
-			{ ga4ReportingEnabled && properties.length > 0 && (
-				<div className="googlesitekit-settings-module__fields-group">
-					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Universal Analytics', 'google-site-kit' ) }
-					</h4>
-					<EnableUniversalAnalytics
-						hasModuleAccess={ hasAnalyticsAccess }
-					>
-						<SettingsUseSnippetSwitch />
-					</EnableUniversalAnalytics>
-				</div>
+			{ ga4ReportingEnabled && (
+				<EnableUniversalAnalytics
+					hasModuleAccess={ hasAnalyticsAccess }
+					showErrors
+					showTitle
+				>
+					{ isUAConnected && <SettingsUseSnippetSwitch /> }
+					{ useAnalyticsSnippet && <AnonymizeIPSwitch /> }
+				</EnableUniversalAnalytics>
 			) }
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
-					<AnonymizeIPSwitch />
+					{ ! ga4ReportingEnabled && <AnonymizeIPSwitch /> }
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
 				</Fragment>
 			) }
 
 			{ hasAnalyticsAccess && (
-				<EntityOwnershipChangeNotice slug="analytics" />
+				<EntityOwnershipChangeNotice
+					slug={ [ 'analytics', 'analytics-4' ] }
+				/>
 			) }
 		</Fragment>
 	);

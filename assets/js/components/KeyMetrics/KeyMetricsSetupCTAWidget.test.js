@@ -21,20 +21,38 @@
  */
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
+	act,
 	render,
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
+	muteFetch,
+	provideGatheringDataState,
+	provideUserAuthentication,
+	getAnalytics4HasZeroDataReportOptions,
+	fireEvent,
 } from '../../../../tests/js/test-utils';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
 
+	const { Widget, WidgetNull } =
+		getWidgetComponentProps( 'keyMetricsSetupCTA' );
+
 	beforeEach( async () => {
 		registry = createTestRegistry();
+
+		provideSiteInfo( registry, { homeURL: 'http://example.com' } );
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( true );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.getOnce(
 			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
@@ -42,32 +60,18 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				authenticated: true,
 			}
 		);
-	} );
 
-	it( 'does not render when SC is not connected', async () => {
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: false,
-			},
-		] );
-
-		const Widget = ( { children } ) => <div>{ children }</div>;
-		const WidgetNull = () => <div>NULL</div>;
-
-		const { container, waitForRegistry } = render(
-			<KeyMetricsSetupCTAWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-				features: [ 'userInput' ],
-			}
+		muteFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+			)
 		);
-		await waitForRegistry();
-		expect( container ).toHaveTextContent( 'NULL' );
+
+		muteFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/data-available'
+			)
+		);
 	} );
 
 	it( 'does not render when GA4 is not connected', async () => {
@@ -79,8 +83,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		const Widget = ( { children } ) => <div>{ children }</div>;
-		const WidgetNull = () => <div>NULL</div>;
+		provideGatheringDataState( registry, { 'search-console': false } );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -93,11 +96,10 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			}
 		);
 		await waitForRegistry();
-		expect( container ).toHaveTextContent( 'NULL' );
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'does render when SC and GA4 are both connected', async () => {
-		global._googlesitekitUserData.isUserInputCompleted = false;
+	it( 'does not render when SC is in the gathering data state', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -115,8 +117,10 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		const Widget = ( { children } ) => <div>{ children }</div>;
-		const WidgetNull = () => <div>NULL</div>;
+		provideGatheringDataState( registry, {
+			'analytics-4': false,
+			'search-console': true,
+		} );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -129,8 +133,222 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			}
 		);
 		await waitForRegistry();
-		expect( container ).toHaveTextContent(
-			'TODO: UI for KeyMetricsSetupCTAWidget'
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'does not render when GA4 is in the gathering data state', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			'search-console': false,
+		} );
+
+		// The provideGatheringDataState() helper cannot handle the true case for Analytics 4, due to its dependence on additional state
+		// that may vary between test scenarios. Therefore, we must manually set the state here. First, we set user authentication to false
+		// to ensure "gathering data" can return true for the Analytics 4 module.
+		provideUserAuthentication( registry, { authenticated: false } );
+
+		// Then provide an empty report to ensure "gathering data" is true for Analytics 4.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{},
+				{ options: getAnalytics4HasZeroDataReportOptions( registry ) }
+			);
+
+		const { container, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+				features: [ 'userInput' ],
+			}
 		);
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'does render the CTA when SC and GA4 are both connected', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			'analytics-4': false,
+			'search-console': false,
+		} );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+				features: [ 'userInput' ],
+			}
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win__title' )
+		).toHaveTextContent(
+			'Get metrics and suggestions tailored to your specific goals'
+		);
+		const button = getByRole( 'button', { name: /get tailored metrics/i } );
+		expect( button ).toBeInTheDocument();
+		expect( button ).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
+		);
+	} );
+
+	it( 'does not render when dismissed', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			'analytics-4': false,
+			'search-console': false,
+		} );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] );
+
+		const { container, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+				features: [ 'userInput' ],
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'does not render when dismissed and the tooltip is visible', async () => {
+		fetchMock.postOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{
+				body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
+				status: 200,
+			}
+		);
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			'analytics-4': false,
+			'search-console': false,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<KeyMetricsSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>
+			</div>,
+			{
+				registry,
+				features: [ 'userInput' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win__title' )
+		).toHaveTextContent(
+			'Get metrics and suggestions tailored to your specific goals'
+		);
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				container.querySelectorAll(
+					'button.googlesitekit-cta-link'
+				)[ 1 ]
+			);
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win__title' )
+		).not.toBeInTheDocument();
+
+		expect(
+			document.querySelector( '.googlesitekit-tour-tooltip' )
+		).toBeInTheDocument();
 	} );
 } );

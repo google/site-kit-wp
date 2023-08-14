@@ -20,8 +20,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import Tab from '@material/react-tab';
-import TabBar from '@material/react-tab-bar';
 
 /**
  * WordPress dependencies
@@ -31,6 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Tab, TabBar } from 'googlesitekit-components';
 import SettingsModules from '../assets/js/components/settings/SettingsModules';
 import Layout from '../assets/js/components/layout/Layout';
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';

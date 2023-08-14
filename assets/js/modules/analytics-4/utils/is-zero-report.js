@@ -44,7 +44,11 @@ export function isZeroReport( report ) {
 	}
 
 	// false means there _is_ some report data
-	return ! report.totals.some( ( totals ) =>
-		totals.metricValues.some( ( { value } ) => value > 0 )
-	);
+	return ! report.totals.some( ( totals ) => {
+		if ( ! totals.metricValues ) {
+			return false;
+		}
+
+		return totals.metricValues.some( ( { value } ) => value > 0 );
+	} );
 }

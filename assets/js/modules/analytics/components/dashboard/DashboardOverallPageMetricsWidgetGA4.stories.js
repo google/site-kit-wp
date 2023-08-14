@@ -24,6 +24,7 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
@@ -402,6 +403,8 @@ export default {
 						slug: 'analytics',
 					},
 				] );
+
+				provideUserAuthentication( registry );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 

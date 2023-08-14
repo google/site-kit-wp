@@ -27,11 +27,13 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '../../analytics-4/datastore/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../analytics-4/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
@@ -45,6 +47,7 @@ import {
 	isValidProfileName,
 	isValidAdsConversionID,
 } from '../util';
+import { stringToDate } from '../../../util';
 import {
 	MODULES_ANALYTICS,
 	PROPERTY_CREATE,
@@ -52,12 +55,13 @@ import {
 	FORM_SETUP,
 	DASHBOARD_VIEW_GA4,
 	DASHBOARD_VIEW_UA,
+	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { isPermissionScopeError } from '../../../util/errors';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
+import ga4Reporting from '../../../feature-tours/ga4-reporting';
 
 const { createRegistrySelector } = Data;
 
@@ -80,12 +84,7 @@ async function submitGA4Changes( { select, dispatch } ) {
 		return {};
 	}
 
-	const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
-	if ( isPermissionScopeError( error ) ) {
-		return { error };
-	}
-
-	return {};
+	return await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 }
 
 export async function submitChanges( registry ) {
@@ -94,58 +93,56 @@ export async function submitChanges( registry ) {
 	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
 
 	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
-	let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
-	if (
-		( ! ga4ReportingEnabled || isUAEnabled ) &&
-		propertyID === PROPERTY_CREATE
-	) {
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-		const { response: property, error } = await dispatch(
-			MODULES_ANALYTICS
-		).createProperty( accountID );
 
-		if ( error ) {
-			return { error };
+	if ( ! ga4ReportingEnabled || isUAEnabled ) {
+		let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
+		if ( propertyID === PROPERTY_CREATE ) {
+			const accountID = select( MODULES_ANALYTICS ).getAccountID();
+			const { response: property, error } = await dispatch(
+				MODULES_ANALYTICS
+			).createProperty( accountID );
+
+			if ( error ) {
+				return { error };
+			}
+
+			propertyID = property.id;
+			dispatch( MODULES_ANALYTICS ).setPropertyID( property.id );
+			dispatch( MODULES_ANALYTICS ).setInternalWebPropertyID(
+				// eslint-disable-next-line sitekit/acronym-case
+				property.internalWebPropertyId
+			);
 		}
 
-		propertyID = property.id;
-		dispatch( MODULES_ANALYTICS ).setPropertyID( property.id );
-		dispatch( MODULES_ANALYTICS ).setInternalWebPropertyID(
-			// eslint-disable-next-line sitekit/acronym-case
-			property.internalWebPropertyId
-		);
-	}
+		const profileID = select( MODULES_ANALYTICS ).getProfileID();
+		if ( profileID === PROFILE_CREATE ) {
+			const profileName = select( CORE_FORMS ).getValue(
+				FORM_SETUP,
+				'profileName'
+			);
+			const accountID = select( MODULES_ANALYTICS ).getAccountID();
+			const { response: profile, error } = await dispatch(
+				MODULES_ANALYTICS
+			).createProfile( accountID, propertyID, { profileName } );
 
-	const profileID = select( MODULES_ANALYTICS ).getProfileID();
-	if (
-		( ! ga4ReportingEnabled || isUAEnabled ) &&
-		profileID === PROFILE_CREATE
-	) {
-		const profileName = select( CORE_FORMS ).getValue(
-			FORM_SETUP,
-			'profileName'
-		);
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-		const { response: profile, error } = await dispatch(
-			MODULES_ANALYTICS
-		).createProfile( accountID, propertyID, { profileName } );
+			if ( error ) {
+				return { error };
+			}
 
-		if ( error ) {
-			return { error };
+			dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 		}
-
-		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
 	// If `ga4Reporting` is enabled, the dashboard view is set to UA
 	// and UA is not enabled, we need to set the dashboard view to GA4.
-	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
+	let dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
 	if (
 		ga4ReportingEnabled &&
 		dashboardView === DASHBOARD_VIEW_UA &&
 		! isUAEnabled
 	) {
 		dispatch( MODULES_ANALYTICS ).setDashboardView( DASHBOARD_VIEW_GA4 );
+		dashboardView = DASHBOARD_VIEW_GA4;
 	}
 
 	const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -165,7 +162,6 @@ export async function submitChanges( registry ) {
 	// but this prevents errors in tests.
 	if ( select( MODULES_ANALYTICS ).haveSettingsChanged() ) {
 		const { error } = await dispatch( MODULES_ANALYTICS ).saveSettings();
-
 		if ( error ) {
 			return { error };
 		}
@@ -176,6 +172,25 @@ export async function submitChanges( registry ) {
 	const { error } = await submitGA4Changes( registry );
 	if ( error ) {
 		return { error };
+	}
+
+	if ( dashboardView === DASHBOARD_VIEW_GA4 ) {
+		if ( ! select( CORE_USER ).isTourDismissed( ga4Reporting.slug ) ) {
+			dispatch( CORE_USER ).dismissTour( ga4Reporting.slug );
+		}
+
+		await registry
+			.__experimentalResolveSelect( CORE_USER )
+			.getDismissedItems();
+		if (
+			! select( CORE_USER ).isItemDismissed(
+				GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+			)
+		) {
+			dispatch( CORE_USER ).dismissItem(
+				GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+			);
+		}
 	}
 
 	return {};
@@ -304,6 +319,7 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
  * Gets the value of dashboardView from the Analytics settings.
  *
  * @since 1.98.0
+ * @since 1.107.0 Hardwire to `true` after the GA4 auto-switch date, if GA4 is connected.
  *
  * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
  */
@@ -317,14 +333,26 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 	const ga4ModuleConnected =
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
-	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
-
-	if ( ga4ModuleConnected === undefined || dashboardView === undefined ) {
+	if ( ga4ModuleConnected === undefined ) {
 		return undefined;
 	}
 
 	if ( ! ga4ModuleConnected ) {
 		return false;
+	}
+
+	const referenceDate = select( CORE_USER ).getReferenceDate();
+
+	if (
+		stringToDate( referenceDate ) >= stringToDate( GA4_AUTO_SWITCH_DATE )
+	) {
+		return true;
+	}
+
+	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
+
+	if ( dashboardView === undefined ) {
+		return undefined;
 	}
 
 	return dashboardView === DASHBOARD_VIEW_GA4;

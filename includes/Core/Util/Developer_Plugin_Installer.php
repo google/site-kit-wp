@@ -180,12 +180,13 @@ class Developer_Plugin_Installer {
 	 * Gets plugin data from the API.
 	 *
 	 * @since 1.3.0
+	 * @since 1.99.0 Update plugin data to pull from GCS bucket.
 	 *
 	 * @return array|null Associative array of plugin data, or null on failure.
 	 */
 	private function fetch_plugin_data() {
 		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
-		$response = wp_remote_get( 'https://sitekit.withgoogle.com/service/dev-plugin-updates/' );
+		$response = wp_remote_get( 'https://storage.googleapis.com/site-kit-dev-plugins/google-site-kit-dev-settings/updates.json' );
 
 		// Retrieve data from the body and decode json format.
 		return json_decode( wp_remote_retrieve_body( $response ), true );

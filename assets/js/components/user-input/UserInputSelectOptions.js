@@ -45,6 +45,7 @@ export default function UserInputSelectOptions( {
 	next,
 	isActive,
 	showInstructions,
+	alignLeftOptions,
 } ) {
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
@@ -133,6 +134,7 @@ export default function UserInputSelectOptions( {
 			checked: values.includes( optionSlug ),
 			tabIndex: ! isActive ? '-1' : undefined,
 			onKeyDown,
+			alignLeft: alignLeftOptions,
 			...onClickProps,
 		};
 
@@ -201,9 +203,11 @@ UserInputSelectOptions.propTypes = {
 	next: PropTypes.func,
 	isActive: PropTypes.bool,
 	showInstructions: PropTypes.bool,
+	alignLeftOptions: PropTypes.bool,
 };
 
 UserInputSelectOptions.defaultProps = {
 	max: 1,
 	showInstructions: false,
+	alignLeftOptions: false,
 };

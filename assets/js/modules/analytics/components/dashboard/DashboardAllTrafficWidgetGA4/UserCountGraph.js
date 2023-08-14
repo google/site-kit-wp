@@ -44,6 +44,7 @@ import { stringToDate } from '../../../../../util/date-range/string-to-date';
 import { createZeroDataRow } from './utils';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import { getDateString } from '../../../../../util';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
@@ -53,6 +54,8 @@ const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
 export default function UserCountGraph( props ) {
 	const { loaded, error, report, gatheringData } = props;
+
+	const isViewOnly = useViewOnly();
 
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -95,14 +98,20 @@ export default function UserCountGraph( props ) {
 		};
 	}, [] );
 
-	const propertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
-	const property = useSelect( ( select ) =>
-		propertyID
-			? select( MODULES_ANALYTICS_4 ).getProperty( propertyID )
-			: null
-	);
+	const property = useSelect( ( select ) => {
+		if ( isViewOnly ) {
+			return null;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( ! propertyID ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+	} );
+
 	const propertyCreatedDate = property?.createTime
 		? getDateString( new Date( property.createTime ) )
 		: null;

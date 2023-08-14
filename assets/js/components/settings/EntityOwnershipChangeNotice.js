@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -30,38 +35,68 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { useFeature } from '../../hooks/useFeature';
 import SettingsNotice from '../SettingsNotice/SettingsNotice';
 import { TYPE_WARNING } from '../SettingsNotice/utils';
+import { listFormat } from '../../util';
 const { useSelect } = Data;
 
 export default function EntityOwnershipChangeNotice( { slug } ) {
 	const isDashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
-	const storeName = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleStoreName( slug )
-	);
+	const slugs = Array.isArray( slug ) ? slug : [ slug ];
+
+	const storeNames = useSelect( ( select ) => {
+		const { getModuleStoreName, getSharedRoles } = select( CORE_MODULES );
+
+		return (
+			slugs
+				// Filter out modules that don't have any shared roles.
+				.filter( ( currentSlug ) => {
+					return !! getSharedRoles( currentSlug )?.length;
+				} )
+				.reduce( ( acc, currentSlug ) => {
+					const storeName = getModuleStoreName( currentSlug );
+
+					if ( storeName ) {
+						return { ...acc, [ currentSlug ]: storeName };
+					}
+
+					return acc;
+				}, {} )
+		);
+	} );
 
 	const haveOwnedSettingsChanged = useSelect( ( select ) =>
-		select( storeName )?.haveOwnedSettingsChanged()
+		Object.keys( storeNames ).reduce( ( acc, currentSlug ) => {
+			const storeName = storeNames[ currentSlug ];
+			const moduleOwnerID = select( storeName )?.getOwnerID();
+			const loggedInUserID = select( CORE_USER ).getID();
+			const haveSettingsChanged =
+				select( storeName )?.haveOwnedSettingsChanged();
+			if ( haveSettingsChanged && moduleOwnerID !== loggedInUserID ) {
+				acc[ currentSlug ] = haveSettingsChanged;
+			}
+
+			return acc;
+		}, {} )
 	);
 
-	const moduleOwnerID = useSelect( ( select ) =>
-		select( storeName )?.getOwnerID()
+	const haveModulesChanged = Object.values( haveOwnedSettingsChanged ).some(
+		( hasChanged ) => hasChanged
 	);
 
-	const loggedInUserID = useSelect( ( select ) =>
-		select( CORE_USER ).getID()
-	);
+	const moduleNames = useSelect( ( select ) => {
+		return Object.keys( haveOwnedSettingsChanged ).reduce(
+			( acc, moduleSlug ) => {
+				const module = select( CORE_MODULES ).getModule( moduleSlug );
+				if ( module ) {
+					acc.push( module.name );
+				}
+				return acc;
+			},
+			[]
+		);
+	} );
 
-	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( slug )
-	);
-
-	const isModuleOwnedByUser = moduleOwnerID === loggedInUserID;
-
-	if (
-		! isDashboardSharingEnabled ||
-		! haveOwnedSettingsChanged ||
-		isModuleOwnedByUser
-	) {
+	if ( ! isDashboardSharingEnabled || ! haveModulesChanged ) {
 		return null;
 	}
 
@@ -74,8 +109,15 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 					'By clicking confirm changes, you’re granting other users view-only access to data from %s via your Google account. You can always manage this later in the dashboard sharing settings.',
 					'google-site-kit'
 				),
-				module?.name
+				listFormat( moduleNames )
 			) }
 		/>
 	);
 }
+
+EntityOwnershipChangeNotice.propTypes = {
+	slug: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.arrayOf( PropTypes.string ),
+	] ).isRequired,
+};

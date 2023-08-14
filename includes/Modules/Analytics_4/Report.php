@@ -22,7 +22,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\OrderBy as Google_
 /**
  * The base class for Analytics 4 reports.
  *
- * @since n.e.x.t
+ * @since 1.99.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class Report {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 * @var Context
 	 */
 	protected $context;
@@ -39,7 +39,7 @@ class Report {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -50,7 +50,7 @@ class Report {
 	/**
 	 * Parses report dimensions received in the request params.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_Dimension[] An array of AnalyticsData Dimension objects.
@@ -92,7 +92,7 @@ class Report {
 	/**
 	 * Parses report date ranges received in the request params.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_DateRange[] An array of AnalyticsData DateRange objects.
@@ -135,7 +135,7 @@ class Report {
 	/**
 	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.

@@ -205,7 +205,7 @@ const baseSelectors = {
 			const currentSiteURL = select( CORE_SITE ).getReferenceSiteURL();
 			const url = new URL( currentSiteURL );
 
-			return select( MODULES_ADSENSE ).getSite( accountID, url.origin );
+			return select( MODULES_ADSENSE ).getSite( accountID, url.hostname );
 		}
 	),
 };

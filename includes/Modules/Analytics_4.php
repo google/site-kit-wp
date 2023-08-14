@@ -14,9 +14,11 @@ use Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -43,6 +45,7 @@ use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
@@ -72,7 +75,7 @@ use WP_Error;
  * @ignore
  */
 final class Analytics_4 extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Data_Available_State {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -85,10 +88,13 @@ final class Analytics_4 extends Module
 	 */
 	const MODULE_SLUG = 'analytics-4';
 
+	const DASHBOARD_VIEW = 'google-analytics-4';
+
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.30.0
+	 * @since 1.101.0 Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -122,6 +128,44 @@ final class Analytics_4 extends Module
 				$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
 			);
 		}
+
+		add_filter(
+			'googlesitekit_auth_scopes',
+			function( array $scopes ) {
+				$oauth_client = $this->authentication->get_oauth_client();
+
+				$needs_tagmanager_scope = false;
+
+				if ( $oauth_client->has_sufficient_scopes(
+					array(
+						Analytics::READONLY_SCOPE,
+						'https://www.googleapis.com/auth/tagmanager.readonly',
+					)
+				) ) {
+					$needs_tagmanager_scope = true;
+				} else {
+					// Ensure the Tag Manager scope is not added as a required scope in the case where the user has
+					// granted the Analytics scope but not the Tag Manager scope, in order to allow the GTE-specific
+					// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
+					// modal also appearing.
+					if ( ! $oauth_client->has_sufficient_scopes(
+						array(
+							Analytics::READONLY_SCOPE,
+						)
+					) ) {
+						$needs_tagmanager_scope = true;
+					}
+				}
+
+				if ( $needs_tagmanager_scope ) {
+					$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+				}
+
+				return $scopes;
+			}
+		);
+
+		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 	}
 
 	/**
@@ -132,13 +176,7 @@ final class Analytics_4 extends Module
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		$scopes = array(
-			Analytics::READONLY_SCOPE,
-		);
-		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
-			$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
-		}
-		return $scopes;
+		return array( Analytics::READONLY_SCOPE );
 	}
 
 	/**
@@ -168,6 +206,16 @@ final class Analytics_4 extends Module
 		}
 
 		return parent::is_connected();
+	}
+
+	/**
+	 * Cleans up when the module is activated.
+	 *
+	 * @since 1.107.0
+	 */
+	public function on_activation() {
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+		$dismissed_items->remove( 'key-metrics-connect-ga4-cta-widget' );
 	}
 
 	/**
@@ -237,17 +285,45 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
+		// GA4 is only shareable if ga4Reporting is also enabled.
+		$shareable = Feature_Flags::enabled( 'dashboardSharing' ) && Feature_Flags::enabled( 'ga4Reporting' );
+		if ( $shareable ) {
+			// The dashboard view setting is stored in the UA/original Analytics
+			// module, so fetch its settings to get the current dashboard view.
+			$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
+			$shareable          = self::DASHBOARD_VIEW === $analytics_settings['dashboardView'];
+		}
+
 		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
-			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
-			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'GET:container-lookup'       => array(
+				'service' => 'tagmanager',
+				'scopes'  => array(
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
+			'GET:container-destinations' => array(
+				'service' => 'tagmanager',
+				'scopes'  => array(
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
+			'GET:conversion-events'      => array(
+				'service'   => 'analyticsadmin',
+				'shareable' => $shareable,
+			),
 			'POST:create-account-ticket' => array(
 				'service'                => 'analyticsprovisioning',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			),
-			'GET:google-tag-settings'    => array( 'service' => 'tagmanager' ),
+			'GET:google-tag-settings'    => array(
+				'service' => 'tagmanager',
+				'scopes'  => array(
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
 			'POST:create-property'       => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
@@ -262,13 +338,12 @@ final class Analytics_4 extends Module
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
-			'GET:conversion-events'      => array( 'service' => 'analyticsadmin' ),
 		);
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			$datapoints['GET:report'] = array(
 				'service'   => 'analyticsdata',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => $shareable,
 			);
 		}
 
@@ -359,7 +434,8 @@ final class Analytics_4 extends Module
 	 * @since 1.41.0
 	 */
 	private function analytics_tracking_opt_out() {
-		$tag_id = $this->get_tag_id();
+		// Opt-out should always use the measurement ID, even when using a GT tag.
+		$tag_id = $this->get_measurement_id();
 		if ( empty( $tag_id ) ) {
 			return;
 		}
@@ -421,11 +497,29 @@ final class Analytics_4 extends Module
 			)
 		);
 
-		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
-			$container           = $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $measurement_id ) );
-			$google_tag_settings = $this->get_google_tag_settings_for_measurement_id( $container, $measurement_id );
-			$this->get_settings()->merge( $google_tag_settings );
+		$this->sync_google_tag_settings();
+	}
+
+	/**
+	 * Syncs Google tag settings for the currently configured measurementID.
+	 *
+	 * @since 1.102.0
+	 */
+	protected function sync_google_tag_settings() {
+		$settings       = $this->get_settings();
+		$measurement_id = $settings->get()['measurementID'];
+
+		if ( ! $measurement_id ) {
+			return;
 		}
+
+		$google_tag_settings = $this->get_data( 'google-tag-settings', array( 'measurementID' => $measurement_id ) );
+
+		if ( is_wp_error( $google_tag_settings ) ) {
+			return;
+		}
+
+		$settings->merge( $google_tag_settings );
 	}
 
 	/**
@@ -852,6 +946,7 @@ final class Analytics_4 extends Module
 						'googlesitekit-data',
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
 						'googlesitekit-datastore-forms',
 						'googlesitekit-components',
 						'googlesitekit-modules-data',
@@ -877,13 +972,15 @@ final class Analytics_4 extends Module
 	 * Registers the Analytics 4 tag.
 	 *
 	 * @since 1.31.0
+	 * @since 1.104.0 Added support for AMP tag.
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
-			return;
+			// AMP currently only works with the measurement ID.
+			$tag = new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG );
+		} else {
+			$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 		}
-
-		$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -894,6 +991,9 @@ final class Analytics_4 extends Module
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( $tag->can_register() ) {
+			$tag->set_home_domain(
+				URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST )
+			);
 			// Here we need to retrieve the ads conversion ID from the
 			// classic/UA Analytics settings as it does not exist yet for this module.
 			// TODO: Update the value to be sourced from GA4 module settings once decoupled.
@@ -1132,9 +1232,22 @@ final class Analytics_4 extends Module
 	private function get_tag_id() {
 		$settings = $this->get_settings()->get();
 
-		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
+		if ( ! empty( $settings['googleTagID'] ) ) {
 			return $settings['googleTagID'];
 		}
+		return $settings['measurementID'];
+	}
+
+	/**
+	 * Gets the currently configured measurement ID.
+	 *
+	 * @since 1.104.0
+	 *
+	 * @return string Google Analytics 4 measurement ID.
+	 */
+	protected function get_measurement_id() {
+		$settings = $this->get_settings()->get();
+
 		return $settings['measurementID'];
 	}
 
@@ -1157,6 +1270,29 @@ final class Analytics_4 extends Module
 		}
 
 		return $sharing_settings;
+	}
+
+	/**
+	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
+	 *
+	 * If the Analytics-4 module is enabled, and the snippet is enabled, then the option to exclude
+	 * the option to exclude certain users from tracking should be displayed.
+	 *
+	 * @since 1.101.0
+	 *
+	 * @param bool $allowed Whether to allow tracking exclusion.
+	 * @return bool Filtered value.
+	 */
+	private function filter_analytics_allow_tracking_disabled( $allowed ) {
+		if ( $allowed ) {
+			return $allowed;
+		}
+
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) && $this->get_settings()->get()['useSnippet'] ) {
+			return true;
+		}
+
+		return $allowed;
 	}
 
 }

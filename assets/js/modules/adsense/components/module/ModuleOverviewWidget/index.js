@@ -33,7 +33,11 @@ import { __ } from '@wordpress/i18n';
 import { useFeature } from '../../../../../hooks/useFeature';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { isZeroReport } from '../../../util';
+import {
+	SITE_STATUS_ADDED,
+	isZeroReport,
+	legacyAccountStatuses,
+} from '../../../util';
 import DashboardZeroData from '../../dashboard/DashboardZeroData';
 import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -43,6 +47,8 @@ import Footer from './Footer';
 import Overview from './Overview';
 import Stats from './Stats';
 import Data from 'googlesitekit-data';
+import StatusMigration from './StatusMigration';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 const ModuleOverviewWidget = ( {
@@ -50,8 +56,27 @@ const ModuleOverviewWidget = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
+	const viewOnlyDashboard = useViewOnly();
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
+
+	const accountStatus = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getAccountStatus();
+	} );
+
+	const siteStatus = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getSiteStatus();
+	} );
+
+	const legacyStatus =
+		legacyAccountStatuses.includes( accountStatus ) ||
+		siteStatus === SITE_STATUS_ADDED;
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
 		( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } )
@@ -163,6 +188,9 @@ const ModuleOverviewWidget = ( {
 
 	return (
 		<Widget noPadding Header={ Header } Footer={ Footer }>
+			{ adsenseSetupV2Enabled && ! viewOnlyDashboard && legacyStatus && (
+				<StatusMigration />
+			) }
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }

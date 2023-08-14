@@ -246,6 +246,40 @@ export const readableLargeNumber = ( number ) => {
 };
 
 /**
+ * Parses formatting options and returns an object with options for selected formatting.
+ *
+ * @since 1.103.0
+ *
+ * @param {(Intl.NumberFormatOptions|string)} options Formatting options or unit shorthand. Possible shorthand values are '%', 's', or a currency code.
+ * @return {Object} Formatting options.
+ */
+export function expandNumFmtOptions( options ) {
+	let formatOptions = {};
+
+	// Expand shorthand values for units.
+	if ( '%' === options ) {
+		formatOptions = {
+			style: 'percent',
+			maximumFractionDigits: 2,
+		};
+	} else if ( 's' === options ) {
+		formatOptions = {
+			style: 'duration',
+			unitDisplay: 'narrow',
+		};
+	} else if ( !! options && typeof options === 'string' ) {
+		formatOptions = {
+			style: 'currency',
+			currency: options,
+		};
+	} else if ( isPlainObject( options ) ) {
+		formatOptions = { ...options };
+	}
+
+	return formatOptions;
+}
+
+/**
  * Formats a number with unit using the JS Internationalization Number Format API.
  *
  * In addition to the supported 'style' values of the lower-level `numberFormat` function, this function
@@ -262,7 +296,7 @@ export const readableLargeNumber = ( number ) => {
  *                                                      or a currency code.
  * @return {string} The formatted number.
  */
-export const numFmt = ( number, options = {} ) => {
+export function numFmt( number, options = {} ) {
 	// Cast parsable values to numeric types.
 	number = isFinite( number ) ? number : Number( number );
 
@@ -272,38 +306,19 @@ export const numFmt = ( number, options = {} ) => {
 		number = 0;
 	}
 
-	let formatOptions = {};
-
-	// Expand shorthand values for units.
-	if ( '%' === options ) {
-		formatOptions = {
-			style: 'percent',
-			maximumFractionDigits: 2,
-		};
-	} else if ( 's' === options ) {
-		return durationFormat( number, {
-			unitDisplay: 'narrow',
-		} );
-	} else if ( !! options && typeof options === 'string' ) {
-		formatOptions = {
-			style: 'currency',
-			currency: options,
-		};
-	} else if ( isPlainObject( options ) ) {
-		formatOptions = { ...options };
-	}
-
-	// Note: `metric` is our custom, default style.
-	const { style = 'metric' } = formatOptions;
+	const formatOptions = expandNumFmtOptions( options );
+	const { style = 'metric' } = formatOptions; // Note: `metric` is our custom, default style.
 
 	if ( 'metric' === style ) {
 		return readableLargeNumber( number );
-	} else if ( 'duration' === style ) {
-		return durationFormat( number, options );
+	}
+
+	if ( 'duration' === style ) {
+		return durationFormat( number, formatOptions );
 	}
 
 	return numberFormat( number, formatOptions );
-};
+}
 
 // Warn once for a given message.
 const warnOnce = memize( console.warn ); // eslint-disable-line no-console

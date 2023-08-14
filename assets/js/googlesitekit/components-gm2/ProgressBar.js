@@ -21,6 +21,14 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import {
+	BREAKPOINT_DESKTOP,
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	BREAKPOINT_XLARGE,
+	useBreakpoint,
+} from '../../hooks/useBreakpoint';
+import invariant from 'invariant';
 
 export default function ProgressBar( {
 	className,
@@ -28,10 +36,38 @@ export default function ProgressBar( {
 	compress,
 	indeterminate,
 	height,
+	smallHeight,
+	tabletHeight,
+	desktopHeight,
 	progress,
 } ) {
-	const margin =
-		typeof height !== 'undefined' ? Math.round( height / 2 ) : undefined;
+	const breakpoint = useBreakpoint();
+
+	let progressBarHeight = height;
+
+	if ( BREAKPOINT_SMALL === breakpoint && smallHeight !== undefined ) {
+		progressBarHeight = smallHeight;
+	} else if (
+		BREAKPOINT_TABLET === breakpoint &&
+		tabletHeight !== undefined
+	) {
+		progressBarHeight = tabletHeight;
+	} else if (
+		( BREAKPOINT_XLARGE === breakpoint ||
+			BREAKPOINT_DESKTOP === breakpoint ) &&
+		desktopHeight !== undefined
+	) {
+		progressBarHeight = desktopHeight;
+	}
+
+	let margin;
+
+	if ( progressBarHeight !== undefined ) {
+		// 4px is the height of the progress bar. Therefore the height must be at least 4px.
+		invariant( progressBarHeight >= 4, 'height must be >= 4.' );
+		margin = Math.round( ( progressBarHeight - 4 ) / 2 );
+	}
+
 	const transform = progress ? `scaleX(${ progress })` : undefined;
 
 	return (
@@ -66,6 +102,9 @@ ProgressBar.propTypes = {
 	indeterminate: PropTypes.bool,
 	progress: PropTypes.number,
 	height: PropTypes.number,
+	smallHeight: PropTypes.number,
+	tabletHeight: PropTypes.number,
+	desktopHeight: PropTypes.number,
 };
 
 ProgressBar.defaultProps = {

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { isValidClientID } from './validation';
+import { isValidAccountID, isValidClientID } from './validation';
 
 /**
  * Parses the AdSense account ID from a given AdSense client ID.
@@ -34,4 +34,19 @@ export function parseAccountID( clientID ) {
 		return undefined;
 	}
 	return clientID.match( /pub-\d+$/ )[ 0 ];
+}
+
+/**
+ * Parses the AdSense account ID from an existing tag.
+ *
+ * @since 1.105.0
+ *
+ * @param {string} existingTag Existing tag.
+ * @return {(string|undefined)} AdSense account ID, or undefined if invalid tag.
+ */
+export function parseAccountIDFromExistingTag( existingTag ) {
+	if ( ! isValidAccountID( existingTag ) ) {
+		return undefined;
+	}
+	return existingTag.match( /pub-\d+$/ )[ 0 ];
 }

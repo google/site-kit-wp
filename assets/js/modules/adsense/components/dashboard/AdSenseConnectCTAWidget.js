@@ -74,8 +74,12 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 			`${ viewContext }_adsense-cta-widget`,
 			'dismiss_tooltip'
 		);
+	}, [ viewContext ] );
+
+	const handleDismissModule = useCallback( async () => {
+		showTooltip();
 		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
-	}, [ dismissItem, viewContext ] );
+	}, [ dismissItem, showTooltip ] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -103,7 +107,7 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	if ( adSenseModuleConnected === false && hasDismissedWidget === false ) {
 		return (
 			<Widget noPadding>
-				<AdSenseConnectCTA onDismissModule={ showTooltip } />
+				<AdSenseConnectCTA onDismissModule={ handleDismissModule } />
 			</Widget>
 		);
 	}
@@ -113,6 +117,7 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 
 AdSenseConnectCTAWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default AdSenseConnectCTAWidget;

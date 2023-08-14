@@ -42,6 +42,7 @@ export default function ErrorNotice( {
 	storeName,
 	message = error.message,
 	shouldDisplayError = () => true,
+	noPrefix = false,
 } ) {
 	const dispatch = useDispatch();
 
@@ -76,9 +77,13 @@ export default function ErrorNotice( {
 			<ErrorText
 				message={ message }
 				reconnectURL={ error.data?.reconnectURL }
+				noPrefix={ noPrefix }
 			/>
 			{ shouldDisplayRetry && (
-				<Button onClick={ handleRetry }>
+				<Button
+					className="googlesitekit-error-notice__retry-button"
+					onClick={ handleRetry }
+				>
 					{ __( 'Retry', 'google-site-kit' ) }
 				</Button>
 			) }
@@ -93,4 +98,5 @@ ErrorNotice.propTypes = {
 	storeName: PropTypes.string,
 	message: PropTypes.string,
 	shouldDisplayError: PropTypes.func,
+	noPrefix: PropTypes.bool,
 };

@@ -52,7 +52,6 @@ export default function WPDashboardPopularPages( props ) {
 
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
-			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);

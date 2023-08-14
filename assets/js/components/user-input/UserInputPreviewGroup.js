@@ -190,10 +190,11 @@ export default function UserInputPreviewGroup( {
 			{ isEditing && (
 				<Fragment>
 					<UserInputSelectOptions
-						isActive={ true }
+						isActive
 						slug={ slug }
 						max={ USER_INPUT_MAX_ANSWERS[ slug ] }
 						options={ options }
+						alignLeftOptions
 					/>
 					{ errorMessage && (
 						<p className="googlesitekit-error-text">

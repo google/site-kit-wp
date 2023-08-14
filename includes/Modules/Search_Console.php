@@ -570,6 +570,7 @@ final class Search_Console extends Module
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
+						'googlesitekit-datastore-user',
 						'googlesitekit-modules',
 						'googlesitekit-components',
 						'googlesitekit-modules-data',

@@ -43,6 +43,7 @@ import {
 	UseSnippetInstructions,
 	OptimizeIDFieldInstructions,
 	AnalyticsNotice,
+	OptimizeSunsetNotice,
 } from '../common';
 const { useSelect, useDispatch } = Data;
 
@@ -71,6 +72,7 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-optimize-setup__form"
 			onSubmit={ submitForm }
 		>
+			<OptimizeSunsetNotice />
 			<StoreErrorNotices
 				moduleSlug="optimize"
 				storeName={ MODULES_OPTIMIZE }

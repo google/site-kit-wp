@@ -27,6 +27,9 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../data/create-fetch-store';
+import { actions as errorStoreActions } from '../data/create-error-store';
+
+const { receiveError } = errorStoreActions;
 
 const { createRegistryControl } = Data;
 
@@ -46,7 +49,8 @@ const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
  * @param {Function} args.selectDataAvailability Selector to determine data availability.
  *                                               This is a function that should return a boolean, or undefined while resolving.
  *                                               Since logic to determine data availability is different for every module,
- *                                               this selector must be provided by the module.
+ *                                               this selector must be provided by the module. If the data availability can
+ *                                               not be determined, the selector should return null.
  * @return {Object} The gathering data store object.
  */
 export const createGatheringDataStore = (
@@ -180,6 +184,14 @@ export const createGatheringDataStore = (
 
 			yield actions.receiveIsGatheringData( ! dataAvailability );
 
+			if ( dataAvailability === null ) {
+				yield receiveError(
+					{ message: 'Unable to determine gathering data state.' },
+					'isGatheringData',
+					[]
+				);
+			}
+
 			if ( dataAvailability ) {
 				yield fetchSaveDataAvailableStateStore.actions.fetchSaveDataAvailableState();
 			}
@@ -191,8 +203,11 @@ export const createGatheringDataStore = (
 		 * Determines whether data is available for the module.
 		 *
 		 * @since 1.96.0
+		 * @since 1.107.0 Returns null if the data availability can not be determined.
 		 *
-		 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
+		 * @return {boolean|undefined|null} Returns TRUE if data is available, otherwise FALSE.
+		 *                                  If the request is still being resolved, returns undefined.
+		 *                                  If the data availability can not be determined, returns null.
 		 */
 		selectDataAvailability,
 

@@ -54,6 +54,7 @@ import { createValidationSelector } from '../data/utils';
  * @param {number}   args.storeName                  Store name to use.
  * @param {Array}    [args.settingSlugs]             Optional. If the module store should support settings, this needs to be a list of the slugs that are part of the module and handled by the module's 'modules/{slug}/data/settings' API endpoint. Default is undefined.
  * @param {Array}    [args.ownedSettingsSlugs]       Optional. List of "owned settings" for this module, if they exist.
+ * @param {Object}   [args.initialSettings]          Optional. An initial set of settings for the module as key-value pairs.
  * @param {boolean}  [args.requiresSetup]            Optional. Store flag for requires setup. Default is 'true'.
  * @param {Function} [args.submitChanges]            Optional. Submit settings changes handler.
  * @param {Function} [args.rollbackChanges]          Optional. Rollbacks settings changes handler.
@@ -67,6 +68,7 @@ export function createModuleStore( slug, args = {} ) {
 		storeName,
 		settingSlugs,
 		ownedSettingsSlugs = undefined,
+		initialSettings = undefined,
 		requiresSetup = true,
 		submitChanges,
 		rollbackChanges,
@@ -115,6 +117,7 @@ export function createModuleStore( slug, args = {} ) {
 				ownedSettingsSlugs,
 				storeName,
 				settingSlugs,
+				initialSettings,
 			}
 		);
 

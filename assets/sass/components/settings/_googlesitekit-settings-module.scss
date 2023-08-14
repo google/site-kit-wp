@@ -153,6 +153,10 @@
 			margin: 0;
 		}
 
+		.googlesitekit-error-notice__retry-button + .googlesitekit-settings-module__meta-items {
+			margin-top: 14px;
+		}
+
 		.googlesitekit-settings-module__meta-select {
 			margin: 0 $grid-gap-phone $grid-gap-phone 0;
 

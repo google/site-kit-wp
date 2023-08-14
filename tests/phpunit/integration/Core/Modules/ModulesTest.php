@@ -275,10 +275,37 @@ class ModulesTest extends TestCase {
 		$non_existent_module_slug = 'non-existent-module';
 		$this->assertArrayNotHasKey( $non_existent_module_slug, $modules->get_available_modules() );
 		$this->assertFalse( $modules->is_module_connected( $non_existent_module_slug ) );
+
+		$inactive_module_slug = 'adsense';
+
+		$this->assertArrayHasKey( $inactive_module_slug, $modules->get_available_modules() );
+
+		// Update the AdSense settings to be connected.
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		// It is not possible to connect a module without activating it.
+		$this->assertFalse( $modules->is_module_connected( $inactive_module_slug ) );
+
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'adsense' ) );
+
+		// Activating the module allows it to be connected.
+		$this->assertTrue( $modules->is_module_connected( $inactive_module_slug ) );
 	}
 
 	public function test_is_module_connected_with_ga4_reporting() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// A module being active is a pre-requisite for it to be connected.
+		update_option(
+			Modules::OPTION_ACTIVE_MODULES,
+			array( 'analytics', 'analytics-4' )
+		);
 
 		// Ensure the method returns false when the slug is not `analytics`
 		// and the test module (analytics-4) is not connected.
@@ -564,14 +591,48 @@ class ModulesTest extends TestCase {
 
 		$this->enable_feature( 'dashboardSharing' );
 
-		$shareable_active_modules = array_map( 'get_class', $modules->get_shareable_modules() );
+		$shareable_modules = array_map( 'get_class', $modules->get_shareable_modules() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
-			$shareable_active_modules
+			$shareable_modules
+		);
+
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'search-console', 'pagespeed-insights', 'adsense' ) );
+
+		$shareable_modules = array_map( 'get_class', $modules->get_shareable_modules() );
+
+		// Only activating a module doesn't make it shareable.
+		$this->assertEqualSetsWithIndex(
+			array(
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			$shareable_modules
+		);
+
+		// Update the AdSense settings to be connected.
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		$shareable_modules = array_map( 'get_class', $modules->get_shareable_modules() );
+
+		// Connecting the activated module makes it shareable.
+		$this->assertEqualSetsWithIndex(
+			array(
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
+			),
+			$shareable_modules
 		);
 	}
 
@@ -1064,6 +1125,65 @@ class ModulesTest extends TestCase {
 			$default_settings,
 			$settings
 		);
+	}
+
+	public function test_get_connected_modules() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$default_connected_modules = array(
+			'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+			'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
+			'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+		);
+
+		$this->assertEqualSetsWithIndex(
+			$default_connected_modules,
+			array_map( 'get_class', $modules->get_connected_modules() )
+		);
+
+		update_option(
+			Modules::OPTION_ACTIVE_MODULES,
+			array( 'pagespeed-insights', 'adsense' )
+		);
+
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		// Connecting a module adds it to the array returned by this method.
+		$this->assertEqualSetsWithIndex(
+			$default_connected_modules + array(
+				'adsense' => 'Google\\Site_Kit\\Modules\\AdSense',
+			),
+			array_map( 'get_class', $modules->get_connected_modules() )
+		);
+	}
+
+	public function test_is_module_shareable() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Deactivate all non-default modules.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array() );
+
+		$default_shareable_module = 'search-console';
+		$this->assertTrue( $modules->is_module_shareable( $default_shareable_module ) );
+
+		// A disconnected module cannot be shareable.
+		$this->assertFalse( $modules->is_module_shareable( 'pagespeed-insights' ) );
+
+		// Connect a module. Note that the PageSpeed Insights module is connected
+		// as soon as it is activated.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'pagespeed-insights' ) );
+
+		// Connecting the module makes it shareable.
+		$this->assertTrue( $modules->is_module_shareable( 'pagespeed-insights' ) );
+
 	}
 
 }

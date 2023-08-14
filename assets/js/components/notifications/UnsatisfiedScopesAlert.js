@@ -1,5 +1,5 @@
 /**
- * DashboardAuthAlert component.
+ * UnsatisfiedScopesAlert component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -24,6 +24,7 @@ import { uniq } from 'lodash';
 /**
  * WordPress dependencies
  */
+import { useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -35,7 +36,6 @@ import { listFormat } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
@@ -46,7 +46,6 @@ const scopeIDToSlug = {
 const MESSAGE_MULTIPLE = 'multiple';
 const MESSAGE_SINGULAR = 'single';
 const MESSAGE_GENERIC = 'generic';
-const MESSAGE_GTE = 'gte';
 
 function mapScopesToModuleNames( scopes, modules ) {
 	if ( modules === undefined ) {
@@ -71,9 +70,10 @@ function mapScopesToModuleNames( scopes, modules ) {
 }
 
 export default function UnsatisfiedScopesAlert() {
+	const doingCTARef = useRef();
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo(
-			/(\/o\/oauth2)|(action=googlesitekit_connect)/i
+			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
 		)
 	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
@@ -89,10 +89,12 @@ export default function UnsatisfiedScopesAlert() {
 		select( CORE_MODULES ).getModules()
 	);
 
-	const gteSupportEnabled = useFeature( 'gteSupport' );
-
+	// Some external scenarios where we navigate to the OAuth service or connect URL may coincide with a request which populates the
+	// list of unsatisfied scopes. In these scenarios we want to avoid showing this banner as the user is already being directed to
+	// address the missing scopes. However, we want to ensure we still do show this banner while navigating to the connect URL as a
+	// result of its own CTA.
 	if (
-		isNavigating ||
+		( isNavigating && ! doingCTARef.current ) ||
 		! unsatisfiedScopes?.length ||
 		connectURL === undefined
 	) {
@@ -102,13 +104,6 @@ export default function UnsatisfiedScopesAlert() {
 	let messageID;
 	let moduleNames;
 	if (
-		gteSupportEnabled &&
-		unsatisfiedScopes.length === 1 &&
-		unsatisfiedScopes[ 0 ] ===
-			'https://www.googleapis.com/auth/tagmanager.readonly'
-	) {
-		messageID = MESSAGE_GTE;
-	} else if (
 		// Determine if all scopes are in Google API format, otherwise use generic message.
 		unsatisfiedScopes.some(
 			( scope ) =>
@@ -132,10 +127,11 @@ export default function UnsatisfiedScopesAlert() {
 	}
 
 	let message;
-	let title = __( 'Site Kit can’t access necessary data', 'google-site-kit' );
-	let ctaLabel = __( 'Redo setup', 'google-site-kit' );
-	let learnMoreLabel;
-	let learnMoreURL;
+	const title = __(
+		'Site Kit can’t access necessary data',
+		'google-site-kit'
+	);
+	const ctaLabel = __( 'Redo setup', 'google-site-kit' );
 
 	switch ( messageID ) {
 		case MESSAGE_MULTIPLE:
@@ -164,21 +160,6 @@ export default function UnsatisfiedScopesAlert() {
 				'google-site-kit'
 			);
 			break;
-		case MESSAGE_GTE:
-			title = __(
-				'Site Kit needs additional permissions to detect updates to tags on your site',
-				'google-site-kit'
-			);
-			message = __(
-				'To continue using Analytics with Site Kit, you need to grant permission to check for any changes in your Google tag’s target Analytics property. The Google tag feature was recently updated to allow users to change a tag’s connected Analytics property without editing site code. Because of this change, Site Kit now must regularly check if the tag on your site matches the Analytics property destination.',
-				'google-site-kit'
-			);
-			learnMoreLabel = __( 'Learn more', 'google-site-kit' );
-			learnMoreURL =
-				'https://support.google.com/tagmanager/answer/11994839';
-
-			ctaLabel = __( 'Grant permission', 'google-site-kit' );
-			break;
 	}
 
 	return (
@@ -190,9 +171,10 @@ export default function UnsatisfiedScopesAlert() {
 			type="win-error"
 			isDismissible={ false }
 			ctaLink={ connectURL }
+			onCTAClick={ () => {
+				doingCTARef.current = true;
+			} }
 			ctaLabel={ ctaLabel }
-			learnMoreLabel={ learnMoreLabel }
-			learnMoreURL={ learnMoreURL }
 		/>
 	);
 }

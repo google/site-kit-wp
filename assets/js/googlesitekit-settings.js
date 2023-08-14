@@ -36,9 +36,7 @@ import { VIEW_CONTEXT_SETTINGS } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById(
-		'googlesitekit-settings-wrapper'
-	);
+	const renderTarget = document.getElementById( 'js-googlesitekit-settings' );
 
 	if ( renderTarget ) {
 		render(

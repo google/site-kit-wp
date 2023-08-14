@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
 import {
@@ -333,6 +334,7 @@ export default {
 
 			// Set some site information.
 			provideSiteInfo( registry );
+			provideUserAuthentication( registry );
 
 			provideSiteInfo( registry, {
 				currentEntityURL: 'https://www.elasticpress.io/features/',

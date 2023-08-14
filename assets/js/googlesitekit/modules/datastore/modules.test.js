@@ -25,12 +25,15 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
+import { enabledFeatures } from '../../../features';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -38,6 +41,7 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
+import { DASHBOARD_VIEW_GA4 } from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -211,6 +215,51 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( isActiveAfter ).toBe( false );
+			} );
+
+			it( 'includes the `moduleReauthURL` when activation requires reauthentication', async () => {
+				const connectURL = 'http://example.com/connect';
+				global._googlesitekitUserData.connectURL = connectURL;
+				provideUserAuthentication( registry );
+				provideModuleRegistrations( registry );
+				provideSiteInfo( registry );
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
+					{ body: { success: true } }
+				);
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
+					{
+						body: {
+							authenticated: true,
+							requiredScopes: [
+								'https://www.googleapis.com/auth/analytics.readonly',
+							],
+							grantedScopes: [],
+							unsatisfiedScopes: [
+								'https://www.googleapis.com/auth/analytics.readonly',
+							],
+							needsReauthentication: true,
+						},
+					}
+				);
+				fetchMock.get(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: withActive( 'analytics' ) }
+				);
+
+				const { response } = await registry
+					.dispatch( CORE_MODULES )
+					.activateModule( 'analytics' );
+
+				expect( response.moduleReauthURL ).toContain( connectURL );
+				expect(
+					response.moduleReauthURL.startsWith( connectURL )
+				).toBe( true );
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
@@ -1936,6 +1985,12 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					)
+				);
+
 				const initialRecoverableModules = registry
 					.select( CORE_MODULES )
 					.getRecoverableModules();
@@ -1952,6 +2007,64 @@ describe( 'core/modules modules', () => {
 
 				expect( recoverableModules ).toMatchObject(
 					convertArrayListToKeyedObjectMap( externalModules, 'slug' )
+				);
+			} );
+
+			it( 'should return analytics-4 instead of analytics in the GA4 dashboard view', async () => {
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModuleRegistrations( registry );
+
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{
+						body: [ ...FIXTURES, ...allModules ],
+						status: 200,
+					}
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
+					{
+						body: {
+							dashboardView: DASHBOARD_VIEW_GA4,
+						},
+						status: 200,
+					}
+				);
+
+				const initialRecoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+				expect( initialRecoverableModules ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_MODULES
+				).getRecoverableModules();
+
+				const recoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+
+				const externalModulesWithoutAnalytics = externalModules.filter(
+					( module ) => module.slug !== 'analytics'
+				);
+
+				expect( recoverableModules ).toMatchObject(
+					convertArrayListToKeyedObjectMap(
+						externalModulesWithoutAnalytics,
+						'slug'
+					)
+				);
+
+				expect( Object.keys( recoverableModules ) ).toContain(
+					'analytics-4'
+				);
+
+				expect( Object.keys( recoverableModules ) ).not.toContain(
+					'analytics'
 				);
 			} );
 		} );
@@ -2045,12 +2158,12 @@ describe( 'core/modules modules', () => {
 				expect( shareableModules ).toBeUndefined();
 			} );
 
-			it( 'should return an empty object if there are no non-internal shareable modules', async () => {
+			it( 'should return an empty object if there are no shareable modules', async () => {
 				// Create a version of the module fixtures where every module is
 				// marked as an internal module.
 				const fixturesWithAllModulesInternal = FIXTURES.map(
 					( module ) => {
-						return { ...module, internal: true };
+						return { ...module, shareable: false };
 					}
 				);
 
@@ -2074,7 +2187,7 @@ describe( 'core/modules modules', () => {
 				expect( shareableModules ).toEqual( {} );
 			} );
 
-			it( 'should return the modules object for each non-internal shareable module', () => {
+			it( 'should not care if a module is internal when showing shared modules', () => {
 				provideModuleRegistrations( registry );
 				registry
 					.dispatch( CORE_MODULES )
@@ -2086,13 +2199,13 @@ describe( 'core/modules modules', () => {
 
 				expect(
 					Object.values( shareableModules ).every(
-						( module ) => module.shareable && ! module.internal
+						( module ) => module.shareable
 					)
 				).toBeTruthy();
 
 				expect(
 					Object.values( shareableModules ).filter(
-						( module ) => module.shareable && ! module.internal
+						( module ) => module.shareable
 					).length
 				).toEqual( Object.values( shareableModules ).length );
 			} );

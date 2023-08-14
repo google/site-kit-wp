@@ -49,9 +49,7 @@ trait Module_With_Data_Available_State_Trait {
 	 * @return bool True on success, false otherwise.
 	 */
 	public function set_data_available() {
-		// TODO: Remove the expiration time once the gathering data state on error is sorted out.
-		// See: https://github.com/google/site-kit-wp/issues/6698 for more details.
-		return $this->transients->set( $this->get_data_available_transient_name(), true, 3600 );
+		return $this->transients->set( $this->get_data_available_transient_name(), true );
 	}
 
 	/**

@@ -41,7 +41,7 @@
 		right: 0;
 		top: 0;
 		transition: box-shadow $t-default ease-in-out;
-		z-index: 10000;
+		z-index: $z-index-sk-header;
 
 		.wp-responsive-open & {
 			margin-left: -18px;

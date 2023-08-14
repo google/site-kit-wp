@@ -30,6 +30,7 @@ import { provideModules, render } from '../../../../../tests/js/test-utils';
 const setupRegistry = ( {
 	Component = () => <div>Test</div>,
 	wrapWidget = false,
+	preloadWidget = false,
 	recoverableModules = [],
 } = {} ) => {
 	return ( registry ) => {
@@ -55,6 +56,7 @@ const setupRegistry = ( {
 		dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget', {
 			Component,
 			wrapWidget,
+			isPreloaded: () => preloadWidget,
 			modules: [ 'search-console', 'pagespeed-insights' ],
 		} );
 		dispatch( CORE_WIDGETS ).assignWidget(
@@ -83,6 +85,18 @@ describe( 'WidgetRenderer', () => {
 			'googlesitekit-widget',
 			'googlesitekit-widget--TestWidget',
 		] );
+
+		expect( container.firstChild ).toMatchSnapshot();
+	} );
+
+	it( 'should wrap the widget in a hidden container when the widget is preloaded', () => {
+		const { container } = render( <WidgetRenderer slug="TestWidget" />, {
+			setupRegistry: setupRegistry( { preloadWidget: true } ),
+		} );
+
+		expect( Object.values( container.firstChild.classList ) ).toContain(
+			'googlesitekit-hidden'
+		);
 
 		expect( container.firstChild ).toMatchSnapshot();
 	} );

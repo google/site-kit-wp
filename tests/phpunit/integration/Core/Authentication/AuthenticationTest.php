@@ -205,11 +205,6 @@ class AuthenticationTest extends TestCase {
 		remove_all_actions( 'googlesitekit_reauthorize_user' );
 		$auth->register();
 
-		// We cannot test that the hook has not been added to 'googlesitekit_authorize_user'
-		// since the `register` method also adds another unrelated callback to it unconditionally.
-		// That should be fine though since we're covering the integration below.
-		$this->assertFalse( has_action( 'googlesitekit_reauthorize_user' ) );
-
 		// Response is not used here, so just pass an array.
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		do_action( 'googlesitekit_reauthorize_user', array() );

@@ -101,7 +101,7 @@ class URL {
 	/**
 	 * Permutes site URL to cover all different variants of it (not considering the path).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param string $site_url Site URL to get permutations for.
 	 * @return array List of permutations.
@@ -129,7 +129,7 @@ class URL {
 	 * - (if IDN) in Unicode encoding
 	 * - with and without www. subdomain (including IDNs)
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
 	 *
 	 * @param string $hostname Hostname to generate variations of.
 	 * @return string[] Hostname variations.

@@ -49,6 +49,34 @@ import {
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
+/**
+ * Returns report args for the zero data report.
+ *
+ * @since 1.107.0
+ *
+ * @param {Function} select The select function of the registry.
+ * @return {Object} Report args.
+ */
+const getZeroDataReportArgs = ( select ) => {
+	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} );
+
+	const args = {
+		dimensions: [ 'date' ],
+		metrics: [ { name: 'totalUsers' } ],
+		startDate,
+		endDate,
+	};
+
+	const url = select( CORE_SITE ).getCurrentEntityURL();
+	if ( url ) {
+		args.url = url;
+	}
+
+	return args;
+};
+
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
@@ -121,13 +149,40 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
+		// Disable reason: This needs to be run here in order for the report to be resolved.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
 
-		if ( hasZeroData === undefined ) {
+		const args = getZeroDataReportArgs( select );
+
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport || hasZeroData === undefined ) {
 			return undefined;
 		}
+
+		const hasReportError = select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ args ] );
+
+		// If there is an error, return `null` since we don't know if there is data or not.
+		if ( hasReportError ) {
+			return null;
+		}
+
 		if ( hasZeroData === false ) {
 			return true;
+		}
+
+		const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+		if ( isAuthenticated === undefined ) {
+			return undefined;
+		}
+		if ( ! isAuthenticated ) {
+			return false;
 		}
 
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -302,25 +357,12 @@ const baseSelectors = {
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
 	 * @since 1.95.0
+	 * @since 1.107.0 Returns `true` if the report request has an error to be consistent with `hasZeroData` selectors of other modules.
 	 *
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'date' ],
-			metrics: [ { name: 'totalUsers' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
+		const args = getZeroDataReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -337,11 +379,9 @@ const baseSelectors = {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ args ] );
 
-		// If there is an error, return false, to be aligned with the behaviour of the UA isGatheringData selector,
-		// but with a more explicit check, i.e. checking for a report error rather than a non-successful response shape.
-		// TODO: In future we should consider changing this selector so it returns a distinct value for errors, or throws an error.
+		// If there is an error, we assume it's a zero report.
 		if ( hasReportError ) {
-			return false;
+			return true;
 		}
 
 		return isZeroReport( report );

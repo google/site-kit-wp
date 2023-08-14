@@ -90,7 +90,7 @@ export default function AdminBarWidgets() {
 
 				{ analyticsModuleConnected && analyticsModuleActive && (
 					<Fragment>
-						{ ! isGA4DashboardView && (
+						{ false === isGA4DashboardView && (
 							<Fragment>
 								<Cell lgSize={ 3 } mdSize={ 2 }>
 									<AdminBarUniqueVisitorsWidget />

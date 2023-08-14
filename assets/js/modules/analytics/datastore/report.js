@@ -54,6 +54,34 @@ import { createGatheringDataStore } from '../../../googlesitekit/modules/create-
 
 const { createRegistrySelector } = Data;
 
+/**
+ * Returns report args for the zero data report.
+ *
+ * @since 1.107.0
+ *
+ * @param {Function} select The select function of the registry.
+ * @return {Object} Report args.
+ */
+const getZeroDataReportArgs = ( select ) => {
+	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} );
+
+	const args = {
+		dimensions: [ 'ga:date' ],
+		metrics: [ { expression: 'ga:users' } ],
+		startDate,
+		endDate,
+	};
+
+	const url = select( CORE_SITE ).getCurrentEntityURL();
+	if ( url ) {
+		args.url = url;
+	}
+
+	return args;
+};
+
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
@@ -126,21 +154,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
+		const args = getZeroDataReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -153,8 +167,14 @@ const gatheringDataStore = createGatheringDataStore( 'analytics', {
 			return undefined;
 		}
 
-		if ( ! Array.isArray( report ) ) {
-			return true;
+		const hasReportError = select( MODULES_ANALYTICS ).getErrorForSelector(
+			'getReport',
+			[ args ]
+		);
+
+		// If there is an error, return `null` since we don't know if there is data or not.
+		if ( hasReportError ) {
+			return null;
 		}
 
 		if (
@@ -346,21 +366,7 @@ const baseSelectors = {
 			return true;
 		}
 
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
+		const args = getZeroDataReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { set } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { visitAdminPage } from '@wordpress/e2e-test-utils';
@@ -35,7 +40,10 @@ import {
 	step,
 	setSearchConsoleProperty,
 	setupAnalytics,
+	setupAnalytics4,
 } from '../utils';
+import { getAnalytics4MockResponse } from '../../../assets/js/modules/analytics-4/utils/data-mock';
+import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
@@ -94,13 +102,50 @@ describe( 'User Input Settings', () => {
 		);
 	}
 
+	function getMultiDimensionalObjectFromParams( params ) {
+		return Object.entries( params ).reduce( ( acc, [ key, value ] ) => {
+			set( acc, key, value );
+			return acc;
+		}, {} );
+	}
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 
-			if ( url.match( '/google-site-kit/v1/modules' ) ) {
+			const paramsObject = Object.fromEntries(
+				new URL( url ).searchParams.entries()
+			);
+
+			// Provide mock data for Analytics 4 and Search Console requests to ensure they are not in the "gathering data" state.
+			if (
+				url.match(
+					'/google-site-kit/v1/modules/analytics-4/data/report?'
+				)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						getAnalytics4MockResponse(
+							// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
+							getMultiDimensionalObjectFromParams( paramsObject )
+						)
+					),
+				} );
+			} else if (
+				url.match(
+					'/google-site-kit/v1/modules/search-console/data/searchanalytics?'
+				)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						getSearchConsoleMockResponse( paramsObject )
+					),
+				} );
+			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {
 				request.continue();
@@ -127,6 +172,7 @@ describe( 'User Input Settings', () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
 		await setupAnalytics();
+		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 
@@ -135,15 +181,17 @@ describe( 'User Input Settings', () => {
 			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
 		);
 
-		await page.waitForSelector( '.googlesitekit-user-input__notification' );
+		await page.waitForSelector(
+			'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
+		);
 
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
-				'.googlesitekit-user-input__notification'
+				'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
 			);
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+					'.googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
 				),
 				page.waitForNavigation(),
 			] );
@@ -156,6 +204,7 @@ describe( 'User Input Settings', () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
 		await setupAnalytics();
+		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 
