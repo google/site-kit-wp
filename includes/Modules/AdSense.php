@@ -396,7 +396,7 @@ final class AdSense extends Module
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
 				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-					$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
+					$dates = $this->date_range_to_dates( 'last-28-days' );
 					if ( is_wp_error( $dates ) ) {
 						return $dates;
 					}
