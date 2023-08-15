@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\User_Input;
 
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -46,16 +47,30 @@ class REST_User_Input_Controller {
 	protected $survey_queue;
 
 	/**
+	 * Key_Metrics_Setup_Completed instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Key_Metrics_Setup_Completed
+	 */
+	protected $key_metrics_setup_completed;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.90.0
 	 *
-	 * @param User_Input   $user_input   User_Input instance.
-	 * @param Survey_Queue $survey_queue Survey_Queue instance.
+	 * @param User_Input                  $user_input                  User_Input instance.
+	 * @param Survey_Queue                $survey_queue                Survey_Queue instance.
+	 * @param Key_Metrics_Setup_Completed $key_metrics_setup_completed Key_Metrics_Setup_Completed instance.
 	 */
-	public function __construct( User_Input $user_input, Survey_Queue $survey_queue ) {
-		$this->user_input   = $user_input;
-		$this->survey_queue = $survey_queue;
+	public function __construct(
+		User_Input $user_input,
+		Survey_Queue $survey_queue,
+		Key_Metrics_Setup_Completed $key_metrics_setup_completed
+	) {
+		$this->user_input                  = $user_input;
+		$this->survey_queue                = $survey_queue;
+		$this->key_metrics_setup_completed = $key_metrics_setup_completed;
 	}
 
 	/**
@@ -94,10 +109,6 @@ class REST_User_Input_Controller {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_authenticate = function() {
-			return current_user_can( Permissions::AUTHENTICATE );
-		};
-
 		return array(
 			new REST_Route(
 				'core/user/data/user-input-settings',
@@ -105,9 +116,25 @@ class REST_User_Input_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function() {
-							return rest_ensure_response( $this->user_input->get_answers() );
+							$response = rest_ensure_response( $this->user_input->get_answers() );
+
+							// Iterating over each setting in the response data to remove the 'author' key.
+							// We use pass-by-reference (&$setting) to directly modify the original $response data.
+							// This is done to ensure that if the current user doesn't have the `list_users` capability,
+							// they won't be able to see the `{setting}.author` key of each answer object.
+							if ( ! current_user_can( 'list_users' ) ) {
+								foreach ( $response->data as &$setting ) {
+									if ( isset( $setting['author'] ) ) {
+										unset( $setting['author'] );
+									}
+								}
+							}
+
+							return $response;
 						},
-						'permission_callback' => $can_authenticate,
+						'permission_callback' => function() {
+							return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
+						},
 					),
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
@@ -122,11 +149,13 @@ class REST_User_Input_Controller {
 								);
 							}
 
-							$response = rest_ensure_response(
-								$this->user_input->set_answers(
-									$data['settings']
-								)
-							);
+							$answers = $this->user_input->set_answers( $data['settings'] );
+
+							if ( ! empty( $answers['purpose']['values'] ) ) {
+								$this->key_metrics_setup_completed->set( true );
+							}
+
+							$response = rest_ensure_response( $answers );
 
 							if ( $response instanceof WP_REST_Response ) {
 								$this->survey_queue->dequeue(
@@ -136,7 +165,9 @@ class REST_User_Input_Controller {
 
 							return $response;
 						},
-						'permission_callback' => $can_authenticate,
+						'permission_callback' => function() {
+							return current_user_can( Permissions::AUTHENTICATE );
+						},
 						'args'                => array(
 							'data' => array(
 								'type'       => 'object',

@@ -250,6 +250,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 			},
 		],
 		productBasePaths: [ '/product/' ],
+		keyMetricsSetupCompleted: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {

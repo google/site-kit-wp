@@ -24,8 +24,6 @@ import {
 	getContentCellSizeProperties,
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
-	ERROR_OR_WARNING_SIZE,
-	SMALL_IMAGE_SVG_SIZE,
 } from './utils';
 
 describe( 'getContentCellSizeProperties', () => {
@@ -38,17 +36,6 @@ describe( 'getContentCellSizeProperties', () => {
 	it( 'should return the default sizes when no parameters are provided', () => {
 		const sizes = getContentCellSizeProperties( {} );
 		expect( sizes ).toEqual( defaultSizes );
-	} );
-
-	it( 'should return smaller `mdSize` when `inlineLayout` is `true`', () => {
-		const sizes = getContentCellSizeProperties( {
-			inlineLayout: true,
-		} );
-		expect( sizes ).toEqual( {
-			smSize: defaultSizes.smSize,
-			mdSize: 7,
-			lgSize: defaultSizes.lgSize,
-		} );
 	} );
 
 	it( 'should decrease all sizes by 1 if `hasErrorOrWarning` is `true`', () => {
@@ -100,33 +87,6 @@ describe( 'getContentCellSizeProperties', () => {
 			lgSize:
 				defaultSizes.lgSize - imageCellSizes.lgSize ||
 				defaultSizes.smSize,
-		} );
-	} );
-
-	it( 'should decrease all sizes by the appropriate image sizes if `inlineLayout`, `hasErrorOrWarning`, `hasSmallImageSVG`, and `hasWinImageSVG` are `true`', () => {
-		const sizes = getContentCellSizeProperties( {
-			inlineLayout: true,
-			hasErrorOrWarning: true,
-			hasSmallImageSVG: true,
-			hasWinImageSVG: true,
-		} );
-		const imageCellSizes = getImageCellSizeProperties();
-		expect( sizes ).toEqual( {
-			smSize:
-				defaultSizes.smSize -
-				ERROR_OR_WARNING_SIZE -
-				SMALL_IMAGE_SVG_SIZE,
-			mdSize:
-				defaultSizes.mdSize -
-				1 - // inlineLayout
-				ERROR_OR_WARNING_SIZE -
-				SMALL_IMAGE_SVG_SIZE -
-				imageCellSizes.mdSize,
-			lgSize:
-				defaultSizes.lgSize -
-				ERROR_OR_WARNING_SIZE -
-				SMALL_IMAGE_SVG_SIZE -
-				imageCellSizes.lgSize,
 		} );
 	} );
 } );

@@ -93,7 +93,7 @@ export function isValidOrders( orders ) {
 			order.hasOwnProperty( 'fieldName' ) && !! order.fieldName;
 		const isValidSortOrder =
 			order.hasOwnProperty( 'sortOrder' ) &&
-			order.sortOrder.toString().match( /(ASCENDING|DESCENDING)/i );
+			/(ASCENDING|DESCENDING)/i.test( order.sortOrder.toString() );
 		return isValidFieldName && isValidSortOrder;
 	};
 

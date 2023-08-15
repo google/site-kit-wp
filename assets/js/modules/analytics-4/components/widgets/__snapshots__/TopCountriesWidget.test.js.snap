@@ -1,0 +1,95 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TopCountriesWidget renders correctly with the expected metrics 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCountries googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Top countries driving traffic
+          </h3>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__table"
+          >
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <p
+                  class="googlesitekit-km-widget-tile__table-plain-text"
+                >
+                  United States
+                </p>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  1,833.3%
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <p
+                  class="googlesitekit-km-widget-tile__table-plain-text"
+                >
+                  United Kingdom
+                </p>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  466.7%
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <p
+                  class="googlesitekit-km-widget-tile__table-plain-text"
+                >
+                  India
+                </p>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  100%
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
