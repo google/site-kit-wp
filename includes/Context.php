@@ -321,13 +321,14 @@ class Context {
 	 *                     false if AMP not active, or unknown mode
 	 */
 	public function get_amp_mode() {
-		// If the Web Stories plugin is enabled, consider the site to be running
-		// in Secondary AMP mode.
-		if ( defined( 'WEBSTORIES_VERSION' ) ) {
-			return self::AMP_MODE_SECONDARY;
-		}
 
 		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
+			// If the Web Stories plugin is enabled, consider the site to be running
+			// in Secondary AMP mode.
+			if ( defined( 'WEBSTORIES_VERSION' ) ) {
+				return self::AMP_MODE_SECONDARY;
+			}
+
 			return false;
 		}
 
@@ -377,6 +378,12 @@ class Context {
 				return self::AMP_MODE_PRIMARY;
 			}
 
+			return self::AMP_MODE_SECONDARY;
+		}
+
+		// If the Web Stories plugin is enabled, consider the site to be running
+		// in Secondary AMP mode.
+		if ( defined( 'WEBSTORIES_VERSION' ) ) {
 			return self::AMP_MODE_SECONDARY;
 		}
 
