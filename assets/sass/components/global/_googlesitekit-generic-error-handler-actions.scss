@@ -1,5 +1,5 @@
 /**
- * Google Charts error handler styles.
+ * GenericErrorHandlerActions styles.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -17,10 +17,11 @@
  */
 
 .googlesitekit-plugin {
-	.googlesitekit-googlechart-error-handler__error-actions {
+	.googlesitekit-generic-error-handler-actions {
 		align-items: flex-start;
 		display: flex;
 		flex-direction: column;
-		gap: #{$grid-gap-phone};
+		gap: $grid-gap-phone;
+		margin-block-start: $grid-gap-phone;
 	}
 }
