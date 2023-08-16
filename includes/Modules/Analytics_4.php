@@ -47,6 +47,7 @@ use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementsService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
@@ -56,6 +57,7 @@ use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
@@ -295,49 +297,51 @@ final class Analytics_4 extends Module
 		}
 
 		$datapoints = array(
-			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
-			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
-			'GET:container-lookup'       => array(
+			'GET:account-summaries'              => array( 'service' => 'analyticsadmin' ),
+			'GET:accounts'                       => array( 'service' => 'analyticsadmin' ),
+			'GET:container-lookup'               => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'GET:container-destinations' => array(
+			'GET:container-destinations'         => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'GET:conversion-events'      => array(
+			'GET:conversion-events'              => array(
 				'service'   => 'analyticsadmin',
 				'shareable' => $shareable,
 			),
-			'POST:create-account-ticket' => array(
+			'POST:create-account-ticket'         => array(
 				'service'                => 'analyticsprovisioning',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			),
-			'GET:google-tag-settings'    => array(
+			'GET:google-tag-settings'            => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'POST:create-property'       => array(
+			'POST:create-property'               => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.', 'google-site-kit' ),
 			),
-			'POST:create-webdatastream'  => array(
+			'POST:create-webdatastream'          => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream for this site on your behalf.', 'google-site-kit' ),
 			),
-			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
-			'GET:property'               => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
+			'GET:properties'                     => array( 'service' => 'analyticsadmin' ),
+			'GET:property'                       => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams'                 => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams-batch'           => array( 'service' => 'analyticsadmin' ),
+			'GET:enhanced-measurement-settings'  => array( 'service' => 'analyticenhancedmeasurements' ),
+			'POST:enhanced-measurement-settings' => array( 'service' => 'analyticenhancedmeasurements' ),
 		);
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
@@ -656,6 +660,80 @@ final class Analytics_4 extends Module
 				$request->setProperty( $property_id );
 
 				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
+			case 'GET:enhanced-measurement-settings':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['webDataStreamID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'webDataStreamID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$name = self::normalize_property_id(
+					$data['propertyID']
+				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
+
+				$analyticsadmin = $this->get_analyticsenhancedmeasurements_service();
+
+				return $analyticsadmin
+					->properties_enhancedMeasurements // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->getEnhancedMeasurementSettings( $name );
+			case 'POST:enhanced-measurement-settings':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['webDataStreamID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'webDataStreamID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['enhancedMeasurementSettings'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'enhancedMeasurementSettings' ),
+						array( 'status' => 400 )
+					);
+				}
+				// TODO: Additional validation for the shape of enhancedMeasurementSettings.
+
+				$name = self::normalize_property_id(
+					$data['propertyID']
+				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
+
+				$post_body = new GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings( $data['enhancedMeasurementSettings'] );
+
+				$analyticsadmin = $this->get_analyticsenhancedmeasurements_service();
+
+				return $analyticsadmin
+					->properties_enhancedMeasurements // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->updateEnhancedMeasurementSettings(
+						$name,
+						$post_body,
+						array(
+							'updateMask' => 'streamEnabled', // Only allow updating the streamEnabled field for now.
+						)
+					);
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -892,6 +970,17 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Gets the configured Analytics Data service object instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return PropertiesEnhancedMeasurementsService The Analytics Admin API service.
+	 */
+	protected function get_analyticsenhancedmeasurements_service() {
+		return $this->get_service( 'analyticsenhancedmeasurements' );
+	}
+
+	/**
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
@@ -907,10 +996,11 @@ final class Analytics_4 extends Module
 		$google_proxy = $this->authentication->get_google_proxy();
 
 		return array(
-			'analyticsadmin'        => new Google_Service_GoogleAnalyticsAdmin( $client ),
-			'analyticsdata'         => new Google_Service_AnalyticsData( $client ),
-			'analyticsprovisioning' => new AccountProvisioningService( $client, $google_proxy->url() ),
-			'tagmanager'            => new Google_Service_TagManager( $client ),
+			'analyticsadmin'                => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'analyticsdata'                 => new Google_Service_AnalyticsData( $client ),
+			'analyticsprovisioning'         => new AccountProvisioningService( $client, $google_proxy->url() ),
+			'analyticsenhancedmeasurements' => new PropertiesEnhancedMeasurementsService( $client ),
+			'tagmanager'                    => new Google_Service_TagManager( $client ),
 		);
 	}
 
