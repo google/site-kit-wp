@@ -30,7 +30,6 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_POPULAR_CONTENT,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_COUNTRIES,
@@ -71,13 +70,6 @@ export const KEY_METRICS_WIDGETS = {
 		title: __( 'Most popular content', 'google-site-kit' ),
 		description: __(
 			'Pages that brought in the most visitors',
-			'google-site-kit'
-		),
-	},
-	[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-		title: __( 'Top earning content', 'google-site-kit' ),
-		description: __(
-			'Pages that earned the most AdSense revenue',
 			'google-site-kit'
 		),
 	},

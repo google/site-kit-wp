@@ -39,7 +39,10 @@ import { generateDateRangeArgs } from '../../util';
 import { numFmt } from '../../../../util';
 import Link from '../../../../components/Link';
 import useViewOnly from '../../../../hooks/useViewOnly';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../common';
 
 const { useSelect, useInViewSelect } = Data;
@@ -61,6 +64,12 @@ export default function PopularKeywordsWidget( { Widget } ) {
 
 	const report = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportOptions )
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] )
 	);
 
 	const loading = useInViewSelect(
@@ -89,6 +98,10 @@ export default function PopularKeywordsWidget( { Widget } ) {
 						  )
 						: null;
 				} );
+
+				if ( viewOnlyDashboard ) {
+					return <MetricTileTablePlainText content={ fieldValue } />;
+				}
 
 				return (
 					<Link
@@ -128,11 +141,12 @@ export default function PopularKeywordsWidget( { Widget } ) {
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			limit={ 3 }
+			error={ error }
+			moduleSlug="search-console"
 		/>
 	);
 }
 
 PopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };

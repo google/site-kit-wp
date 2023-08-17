@@ -31,6 +31,7 @@ import { Fragment } from '@wordpress/element';
  */
 import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
+import MetricTileError from './MetricTileError';
 import MetricTileLoader from './MetricTileLoader';
 
 export default function MetricTileNumeric( props ) {
@@ -43,9 +44,21 @@ export default function MetricTileNumeric( props ) {
 		subText,
 		previousValue,
 		currentValue,
+		error,
+		moduleSlug,
 	} = props;
 
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
+
+	if ( error ) {
+		return (
+			<MetricTileError
+				moduleSlug={ moduleSlug }
+				error={ error }
+				headerText={ title }
+			/>
+		);
+	}
 
 	return (
 		<Widget noPadding>
@@ -92,4 +105,9 @@ MetricTileNumeric.propTypes = {
 	subtext: PropTypes.string,
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ),
+	moduleSlug: PropTypes.string.isRequired,
 };

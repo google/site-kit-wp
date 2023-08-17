@@ -211,7 +211,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Cleans up when the module is activated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.107.0
 	 */
 	public function on_activation() {
 		$dismissed_items = new Dismissed_Items( $this->user_options );

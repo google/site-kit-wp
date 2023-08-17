@@ -77,7 +77,7 @@ export default function MetricItem( { id, slug, title, description } ) {
 							event.stopPropagation();
 						} }
 						onKeyDown={ () => {} }
-						tabIndex={ 0 }
+						tabIndex={ -1 }
 						role="button"
 					>
 						<Checkbox
@@ -88,6 +88,9 @@ export default function MetricItem( { id, slug, title, description } ) {
 							id={ id }
 							name={ id }
 							value={ slug }
+							onKeyDown={ ( event ) => {
+								event.stopPropagation();
+							} }
 						>
 							{ title }
 						</Checkbox>

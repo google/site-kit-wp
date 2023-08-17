@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as AdBlockingRecoveryApp } from './AdBlockingRecoveryApp';
 export { default as SetupAccountApproved } from './SetupAccountApproved';
 export { default as SetupAccountCreate } from './SetupAccountCreate';
 export { default as SetupAccountDisapproved } from './SetupAccountDisapproved';

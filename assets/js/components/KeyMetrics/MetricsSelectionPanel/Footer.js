@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { isEqual } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -50,27 +51,24 @@ import Link from '../../Link';
 import ErrorNotice from '../../ErrorNotice';
 const { useSelect, useDispatch } = Data;
 
-export default function Footer() {
+export default function Footer( { savedMetrics } ) {
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
 			KEY_METRICS_SELECTED
 		)
 	);
-	const keyMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetrics()
-	);
-
-	const haveSettingsChanged = useMemo( () => {
-		return ! isEqual( selectedMetrics, keyMetrics );
-	}, [ keyMetrics, selectedMetrics ] );
-
 	const keyMetricsSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetricsSettings()
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
 	);
+
+	const haveSettingsChanged = useMemo( () => {
+		return ! isEqual( selectedMetrics, savedMetrics );
+	}, [ savedMetrics, selectedMetrics ] );
+
 	const saveError = useSelect( ( select ) => {
 		if ( haveSettingsChanged && selectedMetrics?.length < 2 ) {
 			return {
@@ -134,7 +132,9 @@ export default function Footer() {
 						isSavingSettings
 					}
 				>
-					{ __( 'Apply changes', 'google-site-kit' ) }
+					{ savedMetrics?.length > 0
+						? __( 'Apply changes', 'google-site-kit' )
+						: __( 'Save Selection', 'google-site-kit' ) }
 				</SpinnerButton>
 				<Link onClick={ onCancelClick } disabled={ isSavingSettings }>
 					{ __( 'Cancel', 'google-site-kit' ) }
@@ -161,3 +161,7 @@ export default function Footer() {
 		</footer>
 	);
 }
+
+Footer.propTypes = {
+	savedMetrics: PropTypes.array,
+};

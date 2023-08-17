@@ -47,8 +47,9 @@ const reportOptions = {
 	limit: 3,
 };
 
-const WidgetWithComponentProps =
-	withWidgetComponentProps( 'test' )( TopCitiesWidget );
+const WidgetWithComponentProps = withWidgetComponentProps(
+	'kmAnalyticsTopCities'
+)( TopCitiesWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -61,21 +62,19 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		const report = getAnalytics4MockResponse( reportOptions );
-		// Calculate sum of metricValues for all rows
+		// Calculate sum of metricValues for all rows to get the total count
+		// visits from all cities in the report.
 		const rowsSum = report.rows.reduce( ( total, row ) => {
 			return total + Number( row.metricValues[ 0 ].value );
 		}, 0 );
 
-		// Generate totalValueForAllCities that is higher than the sum
+		// Generate totalValueForAllCities that is higher than the sum since
+		// the total visits from all cities include those not in the report.
 		const totalValueForAllCities = rowsSum * 2;
 
-		// Adjust totals field in the mock response
-		report.totals = [
-			{
-				dimensionValues: [ { value: 'RESERVED_TOTAL' } ],
-				metricValues: [ { value: totalValueForAllCities.toString() } ],
-			},
-		];
+		// Adjust totals field in the mock response.
+		report.totals[ 0 ].metricValues[ 0 ].value =
+			totalValueForAllCities.toString();
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
 			options: reportOptions,
 		} );
@@ -110,6 +109,40 @@ ZeroData.args = {
 };
 ZeroData.scenario = {
 	label: 'KeyMetrics/TopCitiesWidget/ZeroData',
+};
+
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const errorObject = {
+			code: 400,
+			message: 'Test error message. ',
+			data: {
+				status: 400,
+				reason: 'badRequest',
+			},
+			selectorData: {
+				storeName: 'modules/analytics-4',
+				name: 'getReport',
+				args: [ reportOptions ],
+			},
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+Error.scenario = {
+	label: 'KeyMetrics/TopCitiesWidget/Error',
+	delay: 250,
 };
 
 export default {

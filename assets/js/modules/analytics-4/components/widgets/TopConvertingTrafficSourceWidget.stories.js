@@ -111,6 +111,40 @@ ZeroData.scenario = {
 	label: 'KeyMetrics/TopConvertingTrafficSourceWidget/ZeroData',
 };
 
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const errorObject = {
+			code: 400,
+			message: 'Test error message. ',
+			data: {
+				status: 400,
+				reason: 'badRequest',
+			},
+			selectorData: {
+				storeName: 'modules/analytics-4',
+				name: 'getReport',
+				args: [ reportOptions ],
+			},
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+Error.scenario = {
+	label: 'KeyMetrics/TopConvertingTrafficSource/Error',
+	delay: 250,
+};
+
 export default {
 	title: 'Key Metrics/TopConvertingTrafficSourceWidget',
 	decorators: [

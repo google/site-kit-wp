@@ -202,12 +202,14 @@ class Request extends Report {
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_4_metrics',
 			array(
+				'activeUsers',
 				'averageSessionDuration',
 				'conversions',
 				'engagedSessions',
 				'engagementRate',
 				'screenPageViews',
 				'sessions',
+				'sessionConversionRate',
 				'totalUsers',
 			)
 		);
@@ -261,11 +263,14 @@ class Request extends Report {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
+				'city',
 				'country',
 				'date',
 				'deviceCategory',
+				'newVsReturning',
 				'pagePath',
 				'pageTitle',
+				'sessionDefaultChannelGroup',
 				'sessionDefaultChannelGrouping',
 			)
 		);

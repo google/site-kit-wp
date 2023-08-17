@@ -21,15 +21,15 @@
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
-	provideKeyMetrics,
+	provideModuleRegistrations,
 	provideModules,
+	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { KM_ANALYTICS_LOYAL_VISITORS } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'keyMetricsConnectGA4CTATile'
+	'keyMetricsConnectAdSenseCTATile'
 )( ConnectGA4CTATileWidget );
 
 const Template = () => <WidgetWithComponentProps />;
@@ -49,16 +49,15 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserCapabilities( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: 'analytics',
 						active: false,
 						connected: false,
 					},
 				] );
-				provideKeyMetrics( registry, {
-					widgetSlugs: [ KM_ANALYTICS_LOYAL_VISITORS ],
-				} );
+				provideModuleRegistrations( registry );
 			};
 
 			return (

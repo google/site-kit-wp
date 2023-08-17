@@ -16,6 +16,25 @@
  * limitations under the License.
  */
 
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-km-widget-tile-title__tooltip {
+	border-radius: $br-xs;
+	font-family: $f-primary;
+	font-size: $fs-body-sm;
+	font-weight: $fw-normal;
+	letter-spacing: $ls-xs;
+	line-height: $lh-body-sm;
+	max-width: 160px;
+	padding: 12px;
+
+	> button {
+		background: none;
+		border: none;
+		color: $c-surfaces-inverse-on-surface;
+		padding-right: 0;
+		text-decoration: underline;
+	}
+}
+
 .googlesitekit-plugin {
 
 	.googlesitekit-km-widget-tile {
@@ -148,23 +167,55 @@
 	.googlesitekit-km-widget-tile__loading .googlesitekit-km-widget-tile__loading-body {
 		margin-top: 10px;
 	}
-}
 
-.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-km-widget-tile-title__tooltip {
-	border-radius: $br-xs;
-	font-family: $f-primary;
-	font-size: $fs-body-sm;
-	font-weight: $fw-normal;
-	letter-spacing: $ls-xs;
-	line-height: $lh-body-sm;
-	max-width: 160px;
-	padding: 12px;
+	// Styles for KMW tile error state.
+	.googlesitekit-km-widget-tile--error {
+		.googlesitekit-cta--error {
+			background: $c-white;
+			border: 2px solid $c-utility-on-error-container;
 
-	> button {
-		background: none;
-		border: none;
-		color: $c-surfaces-inverse-on-surface;
-		padding-right: 0;
-		text-decoration: underline;
+			.googlesitekit-cta__header_text {
+				color: $c-neutral-n-500;
+				flex-basis: 50%;
+				font-family: $f-primary;
+				font-size: $fs-label-sm;
+				font-weight: $fw-normal;
+				letter-spacing: $ls-xs;
+				margin: 0 0 10px;
+			}
+
+			.googlesitekit-cta__title {
+				color: $c-neutral-n-900;
+				font-family: $f-primary;
+				font-size: 18px;
+				font-weight: $fw-normal;
+			}
+
+			// Required for correct order of button and text elements.
+			.googlesitekit-report-error-actions {
+				align-items: flex-start;
+				flex-direction: column-reverse;
+				gap: 0;
+				overflow: hidden;
+
+				.googlesitekit-error-retry-text {
+					color: $c-neutral-n-900;
+					margin: 0;
+
+					// Removes the external link icon.
+					.googlesitekit-cta-link--external {
+						background: none;
+						color: $c-teal-t-500;
+						padding-right: 0;
+					}
+				}
+
+				button {
+					font-weight: $fw-medium;
+					margin-top: 10px;
+					padding: 6px 16px;
+				}
+			}
+		}
 	}
 }

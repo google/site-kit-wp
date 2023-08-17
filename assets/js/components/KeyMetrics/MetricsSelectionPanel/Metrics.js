@@ -19,34 +19,45 @@
 /**
  * External dependencies
  */
-import { pickBy } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../googlesitekit/widgets/default-areas';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import MetricItem from './MetricItem';
 const { useSelect } = Data;
 
-export default function Metrics() {
+export default function Metrics( { savedMetrics } ) {
 	const availableMetrics = useSelect( ( select ) => {
-		const { isModuleConnected } = select( CORE_MODULES );
-		const { getWidget } = select( CORE_WIDGETS );
+		const widgets =
+			select( CORE_WIDGETS ).getWidgets(
+				AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY
+			) || [];
 
-		return pickBy( KEY_METRICS_WIDGETS, ( _value, key ) => {
-			const widget = getWidget( key );
+		const metrics = widgets
+			.filter( ( { slug } ) => savedMetrics.includes( slug ) )
+			.map( ( { slug } ) => slug );
 
-			if ( ! widget ) {
-				return false;
-			}
+		const { isKeyMetricAvailable } = select( CORE_USER );
 
-			return widget.modules.every( ( module ) =>
-				isModuleConnected( module )
-			);
-		} );
+		return Object.keys( KEY_METRICS_WIDGETS )
+			.sort(
+				( a, b ) =>
+					metrics.includes( b ) - metrics.includes( a ) ||
+					metrics.indexOf( a ) - metrics.indexOf( b )
+			)
+			.reduce( ( acc, metric ) => {
+				if ( ! isKeyMetricAvailable( metric ) ) {
+					return acc;
+				}
+
+				return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
+			}, {} );
 	} );
 
 	return (
@@ -69,3 +80,7 @@ export default function Metrics() {
 		</div>
 	);
 }
+
+Metrics.propTypes = {
+	savedMetrics: PropTypes.array,
+};

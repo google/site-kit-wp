@@ -34,6 +34,11 @@ import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util
 import { getAnalytics4MockResponse } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../googlesitekit/constants';
 import PopularProductsWidget from './PopularProductsWidget';
 
 const reportOptions = {
@@ -61,9 +66,13 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
 	PopularProductsWidget
 );
 
-const Template = ( { setupRegistry, ...args } ) => (
+const Template = ( { setupRegistry, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
+			<WidgetWithComponentProps { ...args } />
+		</ViewContextProvider>
 	</WithRegistrySetup>
 );
 
@@ -88,6 +97,31 @@ Ready.args = {
 };
 Ready.scenario = {
 	label: 'KeyMetrics/PopularProductsWidget/Ready',
+	delay: 250,
+};
+
+export const ReadyViewOnly = Template.bind( {} );
+ReadyViewOnly.storyName = 'Ready View Only';
+ReadyViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		const report = getAnalytics4MockResponse( reportOptions );
+		report.rows = report.rows.map( ( row ) => ( {
+			...row,
+			dimensionValues: row.dimensionValues.map( ( dimensionValue, i ) =>
+				i === 0
+					? { value: capitalize( faker.lorem.words( 10 ) ) }
+					: dimensionValue
+			),
+		} ) );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
+			options: reportOptions,
+		} );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+ReadyViewOnly.scenario = {
+	label: 'KeyMetrics/PopularProductsWidget/ReadyViewOnly',
 	delay: 250,
 };
 
@@ -116,6 +150,40 @@ ZeroData.args = {
 };
 ZeroData.scenario = {
 	label: 'KeyMetrics/PopularProductsWidget/ZeroData',
+	delay: 250,
+};
+
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const errorObject = {
+			code: 400,
+			message: 'Test error message. ',
+			data: {
+				status: 400,
+				reason: 'badRequest',
+			},
+			selectorData: {
+				storeName: 'modules/analytics-4',
+				name: 'getReport',
+				args: [ reportOptions ],
+			},
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+Error.scenario = {
+	label: 'KeyMetrics/PopularProducts/Error',
 	delay: 250,
 };
 

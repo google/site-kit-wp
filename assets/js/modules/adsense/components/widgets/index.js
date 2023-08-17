@@ -17,3 +17,4 @@
  */
 
 export { default as ConnectAdSenseCTATileWidget } from './ConnectAdSenseCTATileWidget';
+export { default as TopEarningContentWidget } from './TopEarningContentWidget';
