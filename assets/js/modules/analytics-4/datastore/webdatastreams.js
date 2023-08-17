@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { pick, difference, isPlainObject } from 'lodash';
+import { pick, difference } from 'lodash';
 
 /**
  * Internal dependencies
@@ -32,8 +32,7 @@ import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
-import { isValidPropertyID, isValidWebDataStreamID } from '../utils/validation';
+import { isValidPropertyID } from '../utils/validation';
 const { createRegistryControl, createRegistrySelector } = Data;
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
@@ -140,96 +139,11 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 	},
 } );
 
-// TODO: Use createSettingsStore for this, providing the saved/unsaved settings handling etc?
-// Nope, looks like that's too tied into being a "module" settings store.
-const fetchGetEnhancedMeasurementSettingsStoreReducerCallback = createReducer(
-	( state, enhancedMeasurementSettings, { propertyID, webDataStreamID } ) => {
-		state.enhancedMeasurementSettings[ propertyID ] =
-			state.enhancedMeasurementSettings[ propertyID ] || {};
-
-		state.enhancedMeasurementSettings[ propertyID ][ webDataStreamID ] =
-			enhancedMeasurementSettings;
-	}
-);
-
-const fetchGetEnhancedMeasurementSettingsStore = createFetchStore( {
-	baseName: 'getEnhancedMeasurementSettings',
-	controlCallback( { propertyID, webDataStreamID } ) {
-		return API.get(
-			'modules',
-			'analytics-4',
-			'enhanced-measurement-settings',
-			{ propertyID, webDataStreamID },
-			{
-				useCache: false,
-			}
-		);
-	},
-	reducerCallback: fetchGetEnhancedMeasurementSettingsStoreReducerCallback,
-	argsToParams( propertyID, webDataStreamID ) {
-		return { propertyID, webDataStreamID };
-	},
-	validateParams( { propertyID, webDataStreamID } = {} ) {
-		invariant(
-			isValidPropertyID( propertyID ),
-			'A valid GA4 propertyID is required.'
-		);
-		invariant(
-			isValidWebDataStreamID( webDataStreamID ),
-			'A valid GA4 webDataStreamID is required.'
-		);
-	},
-} );
-
-const fetchSaveEnhancedMeasurementSettingsStore = createFetchStore( {
-	baseName: 'saveEnhancedMeasurementSettings',
-	controlCallback: ( {
-		propertyID,
-		webDataStreamID,
-		enhancedMeasurementSettings,
-	} ) =>
-		API.set( 'core', 'analytics-4', 'enhanced-measurement-settings', {
-			propertyID,
-			webDataStreamID,
-			enhancedMeasurementSettings,
-		} ),
-	reducerCallback: fetchGetEnhancedMeasurementSettingsStoreReducerCallback,
-	argsToParams: (
-		propertyID,
-		webDataStreamID,
-		enhancedMeasurementSettings
-	) => ( {
-		propertyID,
-		webDataStreamID,
-		enhancedMeasurementSettings,
-	} ),
-	validateParams: (
-		propertyID,
-		webDataStreamID,
-		enhancedMeasurementSettings
-	) => {
-		invariant(
-			isValidPropertyID( propertyID ),
-			'A valid GA4 propertyID is required.'
-		);
-		invariant(
-			isValidWebDataStreamID( webDataStreamID ),
-			'A valid GA4 webDataStreamID is required.'
-		);
-		invariant(
-			// TODO: Additional validation for the shape of enhancedMeasurementSettings?
-			isPlainObject( enhancedMeasurementSettings ),
-			'Enhanced measurement settings must be an object.'
-		);
-	},
-} );
-
 // Actions
 const WAIT_FOR_WEBDATASTREAMS = 'WAIT_FOR_WEBDATASTREAMS';
 
 const baseInitialState = {
 	webdatastreams: {},
-	enhancedMeasurementSettings: {},
 };
 
 const baseActions = {
@@ -346,19 +260,6 @@ const baseResolvers = {
 					chunk
 				);
 			}
-		}
-	},
-	*getEnhancedMeasurementSettings( propertyID, webDataStreamID ) {
-		const registry = yield Data.commonActions.getRegistry();
-		// Only fetch enhanced measurement settings if there are none in the store for the given data stream.
-		const enhancedMeasurementSettings = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getEnhancedMeasurementSettings( propertyID, webDataStreamID );
-		if ( enhancedMeasurementSettings === undefined ) {
-			yield fetchGetEnhancedMeasurementSettingsStore.actions.fetchGetEnhancedMeasurementSettings(
-				propertyID,
-				webDataStreamID
-			);
 		}
 	},
 };
@@ -638,30 +539,12 @@ const baseSelectors = {
 			return firstlyFoundConfig || null;
 		}
 	),
-
-	/**
-	 * Gets the enhanced measurement settings for a given web data stream.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state           Data store's state.
-	 * @param {string} propertyID      The GA4 property ID to fetch web data streams for.
-	 * @param {string} webDataStreamID The GA4 web data stream ID to fetch enhanced measurement settings for.
-	 * @return {(Object|undefined)} An object with enhanced measurement settings; `undefined` if not loaded.
-	 */
-	getEnhancedMeasurementSettings( state, propertyID, webDataStreamID ) {
-		return state.enhancedMeasurementSettings[ propertyID ]?.[
-			webDataStreamID
-		];
-	},
 };
 
 const store = Data.combineStores(
 	fetchGetWebDataStreamsStore,
 	fetchGetWebDataStreamsBatchStore,
 	fetchCreateWebDataStreamStore,
-	fetchGetEnhancedMeasurementSettingsStore,
-	fetchSaveEnhancedMeasurementSettingsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

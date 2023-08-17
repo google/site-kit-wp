@@ -37,7 +37,7 @@ import {
 	isValidPropertyID,
 	isValidWebDataStreamID,
 } from '../../utils/validation';
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function EnhancedMeasurementToggle( {
 	hasModuleAccess = true,
@@ -70,9 +70,20 @@ export default function EnhancedMeasurementToggle( {
 		return ! loadedEnhancedMeasurementSettings;
 	} );
 
+	const { setEnhancedMeasurementSettings } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
 	const onChange = useCallback( () => {
-		// Update the setting...
-	}, [] );
+		setEnhancedMeasurementSettings( propertyID, webDataStreamID, {
+			...enhancedMeasurementSettings,
+			streamEnabled: ! enhancedMeasurementSettings?.streamEnabled,
+		} );
+	}, [
+		enhancedMeasurementSettings,
+		propertyID,
+		setEnhancedMeasurementSettings,
+		webDataStreamID,
+	] );
 
 	if ( enhancedMeasurementSettings === null ) {
 		return null;
@@ -90,7 +101,7 @@ export default function EnhancedMeasurementToggle( {
 						) }
 						checked={ Boolean(
 							enhancedMeasurementSettings?.streamEnabled
-						) } // This needs to be toggleable, not fixed to the current value.
+						) }
 						onClick={ onChange }
 						hideLabel={ false }
 						disabled={ ! hasModuleAccess }
