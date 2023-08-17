@@ -86,7 +86,7 @@ export default function UseSnippetSwitch( props ) {
 					checked={ useSnippet }
 					disabled={ isDoingSaveUseSnippet }
 					hideLabel={ false }
-				/>
+				/>{ ' ' }
 				<Badge
 					className="googlesitekit-badge--primary"
 					label={ __( 'Recommended', 'google-site-kit' ) }
