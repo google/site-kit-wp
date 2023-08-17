@@ -140,6 +140,8 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 	},
 } );
 
+// TODO: Use createSettingsStore for this, providing the saved/unsaved settings handling etc?
+// Nope, looks like that's too tied into being a "module" settings store.
 const fetchGetEnhancedMeasurementSettingsStoreReducerCallback = createReducer(
 	( state, enhancedMeasurementSettings, { propertyID, webDataStreamID } ) => {
 		state.enhancedMeasurementSettings[ propertyID ] =
@@ -227,6 +229,7 @@ const WAIT_FOR_WEBDATASTREAMS = 'WAIT_FOR_WEBDATASTREAMS';
 
 const baseInitialState = {
 	webdatastreams: {},
+	enhancedMeasurementSettings: {},
 };
 
 const baseActions = {
@@ -343,6 +346,19 @@ const baseResolvers = {
 					chunk
 				);
 			}
+		}
+	},
+	*getEnhancedMeasurementSettings( propertyID, webDataStreamID ) {
+		const registry = yield Data.commonActions.getRegistry();
+		// Only fetch enhanced measurement settings if there are none in the store for the given data stream.
+		const enhancedMeasurementSettings = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+		if ( enhancedMeasurementSettings === undefined ) {
+			yield fetchGetEnhancedMeasurementSettingsStore.actions.fetchGetEnhancedMeasurementSettings(
+				propertyID,
+				webDataStreamID
+			);
 		}
 	},
 };
@@ -622,6 +638,22 @@ const baseSelectors = {
 			return firstlyFoundConfig || null;
 		}
 	),
+
+	/**
+	 * Gets the enhanced measurement settings for a given web data stream.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} propertyID      The GA4 property ID to fetch web data streams for.
+	 * @param {string} webDataStreamID The GA4 web data stream ID to fetch enhanced measurement settings for.
+	 * @return {(Object|undefined)} An object with enhanced measurement settings; `undefined` if not loaded.
+	 */
+	getEnhancedMeasurementSettings( state, propertyID, webDataStreamID ) {
+		return state.enhancedMeasurementSettings[ propertyID ]?.[
+			webDataStreamID
+		];
+	},
 };
 
 const store = Data.combineStores(
