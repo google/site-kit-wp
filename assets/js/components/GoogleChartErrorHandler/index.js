@@ -31,11 +31,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../Link';
 import CTA from '../notifications/CTA';
+import GenericErrorHandlerActions from '../GenericErrorHandlerActions';
 import ViewContextContext from '../Root/ViewContextContext';
 import { trackEvent } from '../../util';
-import ReportErrorButton from '../ReportErrorButton';
 
 class GoogleChartErrorHandler extends Component {
 	constructor( props ) {
@@ -89,22 +88,10 @@ class GoogleChartErrorHandler extends Component {
 									'google-site-kit'
 								) }
 							</p>
-							<div className="googlesitekit-googlechart-error-handler__error-actions">
-								<ReportErrorButton
-									message={ error.message }
-									componentStack={ info.componentStack }
-								/>
-								<Link
-									href="https://wordpress.org/support/plugin/google-site-kit/"
-									arrow
-									external
-								>
-									{ __(
-										'Report this error',
-										'google-site-kit'
-									) }
-								</Link>
-							</div>
+							<GenericErrorHandlerActions
+								message={ error.message }
+								componentStack={ info.componentStack }
+							/>
 						</Fragment>
 					}
 					error
