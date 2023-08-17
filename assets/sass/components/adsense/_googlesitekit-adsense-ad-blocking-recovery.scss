@@ -58,13 +58,13 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		padding: 14px $grid-gap-desktop;
 
 		@media (min-width: $bp-desktop) {
 			align-items: center;
 			border-top: 1px solid $c-mercury;
 			flex-direction: row;
 			margin: 42px 0 0;
-			padding: 28px 24px;
 		}
 	}
 
@@ -82,11 +82,14 @@
 
 	.googlesitekit-ad-blocking-recovery__footer-cancel {
 		border-top: 1px solid $c-mercury;
-		padding: 17px;
+		padding-top: 14px;
 
 		@media (min-width: $bp-desktop) {
 			border: none;
-			padding: 0;
+		}
+
+		button {
+			color: $c-surfaces-on-background-variant;
 		}
 	}
 
