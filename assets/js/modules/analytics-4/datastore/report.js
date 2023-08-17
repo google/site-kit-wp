@@ -52,7 +52,7 @@ const { createRegistrySelector } = Data;
 /**
  * Returns report args for the zero data report.
  *
- * @since n.e.x.t
+ * @since 1.107.0
  *
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
@@ -238,8 +238,8 @@ const baseSelectors = {
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
-	 * @param {string}         options.startDate          Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate            Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.startDate          Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate            Required. End date to query report data for as YYYY-mm-dd.
 	 * @param {Array.<string>} options.metrics            Required. List of metrics to query.
 	 * @param {string}         [options.compareStartDate] Optional. Start date to compare report data for as YYYY-mm-dd.
 	 * @param {string}         [options.compareEndDate]   Optional. End date to compare report data for as YYYY-mm-dd.
@@ -357,7 +357,7 @@ const baseSelectors = {
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
 	 * @since 1.95.0
-	 * @since n.e.x.t Returns `true` if the report request has an error to be consistent with `hasZeroData` selectors of other modules.
+	 * @since 1.107.0 Returns `true` if the report request has an error to be consistent with `hasZeroData` selectors of other modules.
 	 *
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */

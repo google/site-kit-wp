@@ -162,7 +162,7 @@ export default function SetupAccountApproved() {
 				label={ label }
 				checkedMessage={ checkedMessage }
 				uncheckedMessage={ uncheckedMessage }
-				saveOnChange={ true /* Save setting right when toggling. */ }
+				saveOnChange /* Save setting right when toggling. */
 			/>
 
 			<div className="googlesitekit-setup-module__action">

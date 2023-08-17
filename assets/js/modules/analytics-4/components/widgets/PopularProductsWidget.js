@@ -25,7 +25,11 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,13 +43,21 @@ import {
 } from '../../datastore/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
-export default function PopularProductsWidget( props ) {
+function PopularProductsWidget( props ) {
 	const { Widget, WidgetNull } = props;
+
+	const viewOnlyDashboard = useViewOnly();
 
 	const productBasePaths = useSelect( ( select ) =>
 		select( CORE_SITE ).getProductBasePaths()
@@ -58,9 +70,22 @@ export default function PopularProductsWidget( props ) {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const [ showTooltip, setShowTooltip ] = useState( true );
 
 	const openMetricsSelectionPanel = useCallback( () => {
+		// Hide the tooltip so it doesn't remain visible, above the panel we're
+		// opening.
+		setShowTooltip( false );
+
+		// Open the panel.
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+		// Wait for the panel to be open before we re-enable the tooltip.
+		// This prevents it from appearing above the slide-out panel, see:
+		// https://github.com/google/site-kit-wp/issues/7060#issuecomment-1664827831
+		setTimeout( () => {
+			setShowTooltip( true );
+		}, 0 );
 	}, [ setValue ] );
 
 	const reportOptions = {
@@ -108,17 +133,33 @@ export default function PopularProductsWidget( props ) {
 
 	const { rows = [] } = report || {};
 
-	const columns = useSelect( ( select ) => [
+	const columns = [
 		{
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ title, url ] = fieldValue;
-				const serviceURL = select(
-					MODULES_ANALYTICS_4
-				).getServiceReportURL( 'all-pages-and-screens', {
-					filters: { unifiedPagePathScreen: url.value },
-					dates,
+				// Utilizing `useSelect` inside the component rather than
+				// returning its direct value to the `columns` array.
+				// This pattern ensures that the component re-renders correctly based on changes in state,
+				// preventing potential issues with stale or out-of-sync data.
+				// Note: This pattern is replicated in a few other spots within our codebase.
+				const serviceURL = useSelect( ( select ) => {
+					return ! viewOnlyDashboard
+						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+								'all-pages-and-screens',
+								{
+									filters: {
+										unifiedPagePathScreen: url.value,
+									},
+									dates,
+								}
+						  )
+						: null;
 				} );
+
+				if ( viewOnlyDashboard ) {
+					return <MetricTileTablePlainText content={ title.value } />;
+				}
 
 				return (
 					<Link
@@ -138,7 +179,7 @@ export default function PopularProductsWidget( props ) {
 				<strong>{ numFmt( fieldValue ) }</strong>
 			),
 		},
-	] );
+	];
 
 	if ( ! showWidget ) {
 		return <WidgetNull />;
@@ -164,7 +205,7 @@ export default function PopularProductsWidget( props ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			infoTooltip={ infoTooltip }
+			infoTooltip={ showTooltip ? infoTooltip : null }
 			ZeroState={ () =>
 				__(
 					'Analytics doesn’t have data for your site’s products yet',
@@ -181,3 +222,8 @@ PopularProductsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( PopularProductsWidget );

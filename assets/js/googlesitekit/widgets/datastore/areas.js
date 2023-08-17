@@ -80,6 +80,7 @@ export const actions = {
 	 * Creates a widget area with a given name and settings.
 	 *
 	 * @since 1.9.0
+	 * @since 1.107.0 Extended to support an optional CTA component.
 	 *
 	 * @param {string}      slug                Widget Area's slug.
 	 * @param {Object}      settings            Widget Area's settings.
@@ -88,6 +89,7 @@ export const actions = {
 	 * @param {WPComponent} [settings.Icon]     Optional. React component to render icon for this widget area.
 	 * @param {string}      [settings.style]    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
 	 * @param {number}      [settings.priority] Optional. Priority for this widget area. Default: 10.
+	 * @param {WPComponent} [settings.CTA]      React component used as CTA appearing beside the subtitle.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidgetArea(
@@ -98,6 +100,7 @@ export const actions = {
 			title,
 			subtitle,
 			Icon,
+			CTA,
 		} = {}
 	) {
 		invariant( slug, 'slug is required.' );
@@ -110,7 +113,7 @@ export const actions = {
 		return {
 			payload: {
 				slug,
-				settings: { priority, style, title, subtitle, Icon },
+				settings: { priority, style, title, subtitle, Icon, CTA },
 			},
 			type: REGISTER_WIDGET_AREA,
 		};

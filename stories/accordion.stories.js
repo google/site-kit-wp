@@ -28,7 +28,7 @@ import Accordion from '../assets/js/components/Accordion';
 
 storiesOf( 'Global', module ).add( 'Accordion', () => (
 	<div className="js">
-		<Accordion title="First" initialOpen={ true }>
+		<Accordion title="First" initialOpen>
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
 			vestibulum varius felis, in eleifend eros. Duis vel dolor sagittis,
 			tincidunt sapien at, sagittis sem.

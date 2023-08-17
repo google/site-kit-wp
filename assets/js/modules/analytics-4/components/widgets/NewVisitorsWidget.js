@@ -38,10 +38,12 @@ import {
 } from '../../datastore/constants';
 import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util/i18n';
+import whenActive from '../../../../util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 const { useSelect, useInViewSelect } = Data;
 
-export default function NewVisitorsWidget( { Widget } ) {
+function NewVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -73,25 +75,19 @@ export default function NewVisitorsWidget( { Widget } ) {
 			)
 	);
 
-	const { rows = [] } = report || {};
+	const { rows = [], totals = [] } = report || {};
 
 	const makeFind = ( dateRange ) => ( row ) =>
 		get( row, 'dimensionValues.0.value' ) === 'new' &&
 		get( row, 'dimensionValues.1.value' ) === dateRange;
-	const makeFilter = ( dateRange ) => ( row ) =>
-		get( row, 'dimensionValues.1.value' ) === dateRange;
-	const reducer = ( acc, row ) =>
-		acc + ( parseInt( get( row, 'metricValues.0.value' ), 10 ) || 0 );
 
 	const newVisitors =
 		rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value ||
 		0;
-	const total = rows
-		.filter( makeFilter( 'date_range_0' ) )
-		.reduce( reducer, 0 );
-	const prevTotal = rows
-		.filter( makeFilter( 'date_range_1' ) )
-		.reduce( reducer, 0 );
+
+	const total = Number( totals[ 0 ]?.metricValues?.[ 0 ]?.value ) || 0;
+
+	const prevTotal = Number( totals[ 1 ]?.metricValues?.[ 0 ]?.value ) || 0;
 
 	return (
 		<MetricTileNumeric
@@ -115,3 +111,8 @@ export default function NewVisitorsWidget( { Widget } ) {
 NewVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( {
+	moduleName: 'analytics-4',
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( NewVisitorsWidget );

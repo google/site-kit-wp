@@ -21,11 +21,14 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	freezeFetch,
+	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
+import { provideKeyMetricsWidgetRegistrations } from '../../../components/KeyMetrics/test-utils';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -36,6 +39,7 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
+import { CORE_SITE } from '../site/constants';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -49,6 +53,9 @@ describe( 'core/user key metrics', () => {
 		isWidgetHidden: false,
 	};
 
+	const coreUserAuthenticationEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/authentication'
+	);
 	const coreUserInputSettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/user-input-settings'
 	);
@@ -380,6 +387,52 @@ describe( 'core/user key metrics', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
+
+			it( 'should set the keyMetricsSetupCompleted site info setting to true', async () => {
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				// Verify the setting is initially false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
+
+				// Assert that the setting is now true.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( true );
+			} );
+
+			it( 'should not set the keyMetricsSetupCompleted site info setting to true if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( coreKeyMetricsEndpointRegExp, {
+					body: response,
+					status: 500,
+				} );
+
+				// Verify the setting is initially false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
+
+				// Verify the setting is still false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				expect( console ).toHaveErrored();
+			} );
 		} );
 	} );
 
@@ -525,6 +578,124 @@ describe( 'core/user key metrics', () => {
 				).toEqual( coreKeyMetricsExpectedResponse.isWidgetHidden );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
+
+		describe( 'isKeyMetricAvailable', () => {
+			it( 'should return an error if widget slug is not provided', () => {
+				expect( () => {
+					registry.select( CORE_USER ).isKeyMetricAvailable();
+				} ).toThrow( 'Key metric widget slug required.' );
+			} );
+
+			it( 'should return undefined if authentication state is loading', async () => {
+				freezeFetch( coreUserAuthenticationEndpointRegExp );
+
+				const { isKeyMetricAvailable } = registry.select( CORE_USER );
+
+				expect( isKeyMetricAvailable( 'metricA' ) ).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return false if a widget with the provided slug is not registered', () => {
+				provideUserAuthentication( registry );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( false );
+			} );
+
+			it( 'should return false if a module that the widget depends on is not connected', () => {
+				provideUserAuthentication( registry );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				provideKeyMetricsWidgetRegistrations( registry, {
+					metricA: {
+						modules: [ 'analytics-4' ],
+					},
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( false );
+			} );
+
+			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideKeyMetricsWidgetRegistrations( registry, {
+					metricA: {
+						modules: [ 'analytics-4' ],
+					},
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': false,
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( false );
+			} );
+
+			it( 'should return true if modules that the widget depends on are connected and accessible by a view-only user', () => {
+				provideUserAuthentication( registry );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideKeyMetricsWidgetRegistrations( registry, {
+					metricA: {
+						modules: [ 'analytics-4' ],
+					},
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( true );
+
+				provideUserAuthentication( registry, { authenticated: false } );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( true );
 			} );
 		} );
 	} );

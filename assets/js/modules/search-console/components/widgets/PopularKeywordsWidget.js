@@ -39,7 +39,10 @@ import { generateDateRangeArgs } from '../../util';
 import { numFmt } from '../../../../util';
 import Link from '../../../../components/Link';
 import useViewOnly from '../../../../hooks/useViewOnly';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../common';
 
 const { useSelect, useInViewSelect } = Data;
@@ -96,6 +99,10 @@ export default function PopularKeywordsWidget( { Widget } ) {
 						: null;
 				} );
 
+				if ( viewOnlyDashboard ) {
+					return <MetricTileTablePlainText content={ fieldValue } />;
+				}
+
 				return (
 					<Link
 						href={ searchAnalyticsURL }
@@ -142,5 +149,4 @@ export default function PopularKeywordsWidget( { Widget } ) {
 
 PopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
 };

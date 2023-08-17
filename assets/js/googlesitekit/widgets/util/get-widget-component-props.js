@@ -34,6 +34,7 @@ import WidgetRecoverableModules from '../components/WidgetRecoverableModules';
  * Gets the props to pass to a widget's component.
  *
  * @since 1.25.0
+ * @since 1.107.0 Added `widgetSlug` to the returned props.
  *
  * @param {string} widgetSlug The widget's slug.
  * @return {Object} Props to pass to the widget component.
@@ -42,6 +43,7 @@ export const getWidgetComponentProps = memize( ( widgetSlug ) => {
 	// Scope widget-specific components to the widget instance so that the
 	// component does not need to (re-)specify the widget slug.
 	return {
+		widgetSlug,
 		Widget: withWidgetSlug( widgetSlug )( Widget ),
 		WidgetRecoverableModules: withWidgetSlug( widgetSlug )(
 			WidgetRecoverableModules

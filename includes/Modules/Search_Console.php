@@ -204,11 +204,7 @@ final class Search_Console extends Module
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
 				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-					list ( $start_date, $end_date ) = Date::parse_date_range(
-						$data['dateRange'] ?: 'last-28-days',
-						$data['compareDateRanges'] ? 2 : 1,
-						1 // Offset.
-					);
+					list ( $start_date, $end_date ) = Date::parse_date_range( 'last-28-days', 1, 1 );
 				}
 
 				$data_request = array(

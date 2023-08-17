@@ -64,18 +64,16 @@ export function isValidStringsOrObjects(
  * @since 1.13.0
  *
  * @param {Object} dates           The object containing dates to check.
- * @param {string} dates.dateRange The date range to check.
  * @param {string} dates.startDate The start date to check.
  * @param {string} dates.endDate   The end date to check.
  * @return {boolean} TRUE if either date range or start/end dates are valid, otherwise FALSE.
  */
-export function isValidDateRange( { dateRange, startDate, endDate } ) {
+export function isValidDateRange( { startDate, endDate } ) {
 	const validStartDate =
 		startDate && startDate.match( /^\d{4}-\d{2}-\d{2}$/ );
 	const validEndDate = endDate && endDate.match( /^\d{4}-\d{2}-\d{2}$/ );
-	const validDateRange = dateRange && dateRange.match( /^last-\d+-days$/ );
 
-	return ( validStartDate && validEndDate ) || validDateRange;
+	return validStartDate && validEndDate;
 }
 
 /**
@@ -93,7 +91,7 @@ export function isValidOrders( orders ) {
 			order.hasOwnProperty( 'fieldName' ) && !! order.fieldName;
 		const isValidSortOrder =
 			order.hasOwnProperty( 'sortOrder' ) &&
-			order.sortOrder.toString().match( /(ASCENDING|DESCENDING)/i );
+			/(ASCENDING|DESCENDING)/i.test( order.sortOrder.toString() );
 		return isValidFieldName && isValidSortOrder;
 	};
 

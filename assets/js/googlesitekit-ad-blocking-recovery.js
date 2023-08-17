@@ -24,7 +24,7 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from './googlesitekit/constants';
-import { AdBlockingRecoveryApp } from './modules/adsense/components/settings';
+import { AdBlockingRecoveryApp } from './modules/adsense/components/setup';
 import Root from './components/Root';
 
 // Initialize the app once the DOM is ready.

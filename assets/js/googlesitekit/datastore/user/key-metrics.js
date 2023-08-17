@@ -36,6 +36,8 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
+import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
@@ -102,7 +104,7 @@ const baseActions = {
 	 * Saves key metrics settings.
 	 *
 	 * @since 1.103.0
-	 * @since n.e.x.t Accepts an optional `settings` parameter that allows saving additional settings.
+	 * @since 1.107.0 Accepts an optional `settings` parameter that allows saving additional settings.
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
@@ -131,6 +133,13 @@ const baseActions = {
 		if ( error ) {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
 			yield receiveError( error, 'saveKeyMetricsSettings', [] );
+		} else {
+			// Update the `keyMetricsSetupCompleted` value to keep it in sync, as it will have been set
+			// to `true` on the backend when the key metrics settings were successfully saved.
+			// TODO: We should find a better way of keeping this value synced.
+			yield registry
+				.dispatch( CORE_SITE )
+				.setKeyMetricsSetupCompleted( true );
 		}
 
 		return { response, error };
@@ -180,7 +189,9 @@ const baseSelectors = {
 	 * @return {Array<string>|undefined} An array of key metric slugs, or undefined while loading.
 	 */
 	getKeyMetrics: createRegistrySelector( ( select ) => () => {
-		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
+		const { getAnswerBasedMetrics, getUserPickedMetrics } =
+			select( CORE_USER );
+		const userPickedMetrics = getUserPickedMetrics();
 
 		if ( userPickedMetrics === undefined ) {
 			return undefined;
@@ -190,7 +201,28 @@ const baseSelectors = {
 			return userPickedMetrics;
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics();
+		const answerBasedMetrics = getAnswerBasedMetrics();
+
+		if ( answerBasedMetrics === undefined ) {
+			return undefined;
+		}
+
+		if ( answerBasedMetrics.length ) {
+			return answerBasedMetrics;
+		}
+
+		const isKeyMetricsSetupCompleted =
+			select( CORE_SITE ).isKeyMetricsSetupCompleted();
+
+		if ( isKeyMetricsSetupCompleted ) {
+			return [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			];
+		}
+		return [];
 	} ),
 
 	/**
@@ -320,7 +352,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the key metrics settings are being saved or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.107.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the key metrics settings are being saved, otherwise FALSE.
@@ -332,6 +364,56 @@ const baseSelectors = {
 			Boolean
 		);
 	},
+
+	/**
+	 * Gets whether an individual key metric identified by its slug is
+	 * available, i.e. the modules that it depends on are connected and
+	 * a view-only user has access to it.
+	 *
+	 * @since 1.107.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} widgetSlug The key metric widget slug.
+	 * @return {boolean|undefined} True if the key metric is available, false if it is not, or undefined if the authentication state has not loaded.
+	 */
+	isKeyMetricAvailable: createRegistrySelector(
+		( select ) => ( _state, widgetSlug ) => {
+			invariant( widgetSlug, 'Key metric widget slug required.' );
+
+			const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+			if ( isAuthenticated === undefined ) {
+				return undefined;
+			}
+
+			const widget = select( CORE_WIDGETS ).getWidget( widgetSlug );
+
+			if ( ! widget ) {
+				return false;
+			}
+
+			const { getModule } = select( CORE_MODULES );
+			const { canViewSharedModule } = select( CORE_USER );
+
+			return widget.modules.every( ( slug ) => {
+				const module = getModule( slug );
+
+				if ( ! module || ! module.connected ) {
+					return false;
+				}
+
+				if (
+					! isAuthenticated &&
+					module.shareable &&
+					! canViewSharedModule( slug )
+				) {
+					return false;
+				}
+
+				return true;
+			} );
+		}
+	),
 };
 
 const store = Data.combineStores(

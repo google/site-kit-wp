@@ -33,13 +33,14 @@ import {
 	ErrorNotices,
 	UseSnippetSwitch,
 	AutoAdExclusionSwitches,
-	AdBlockingRecoveryToggle,
 } from '../common';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
+import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import { useFeature } from '../../../../hooks/useFeature';
+import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
+
 const { useSelect } = Data;
 
 export default function SettingsForm() {
@@ -154,7 +155,7 @@ export default function SettingsForm() {
 
 			{ adBlockerDetectionEnabled && (
 				<Fragment>
-					<AdBlockingRecoveryCTA />
+					<AdBlockingRecoverySetupCTANotice />
 					<AdBlockingRecoveryToggle />
 				</Fragment>
 			) }

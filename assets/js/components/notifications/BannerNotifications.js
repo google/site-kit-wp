@@ -45,7 +45,7 @@ import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
-import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
+import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 
 const { useSelect } = Data;
@@ -105,7 +105,7 @@ export default function BannerNotifications() {
 			) }
 			{ 'ad_blocking_recovery_setup_success' === notification &&
 				adBlockerDetectionEnabled && (
-					<AdBlockingRecoveryNotification />
+					<AdBlockingRecoverySetupSuccessBannerNotification />
 				) }
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }

@@ -36,7 +36,7 @@ import {
 	SettingsView,
 } from './components/settings';
 import {
-	AdBlockingRecoveryWidget,
+	AdBlockingRecoverySetupCTAWidget,
 	AdBlockerWarningWidget,
 	AdSenseConnectCTAWidget,
 	DashboardTopEarningPagesWidget,
@@ -52,7 +52,11 @@ import {
 import { isFeatureEnabled } from '../../features';
 import { negateDefined } from '../../util/negate';
 import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
-import { ConnectAdSenseCTATileWidget } from './components/widgets';
+import { TopEarningContentWidget } from './components/widgets';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+} from '../../googlesitekit/datastore/user/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -102,7 +106,7 @@ export const registerWidgets = ( widgets ) => {
 		widgets.registerWidget(
 			'adBlockingRecovery',
 			{
-				Component: AdBlockingRecoveryWidget,
+				Component: AdBlockingRecoverySetupCTAWidget,
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 1,
 				wrapWidget: false,
@@ -117,13 +121,17 @@ export const registerWidgets = ( widgets ) => {
 		 * Key metrics widgets.
 		 */
 		widgets.registerWidget(
-			'keyMetricsConnectAdSenseCTATile',
+			KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 			{
-				Component: ConnectAdSenseCTATileWidget,
+				Component: TopEarningContentWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'adsense', 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);

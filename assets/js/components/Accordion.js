@@ -26,6 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useState, useCallback, useEffect } from '@wordpress/element';
+import { ENTER, SPACE } from '@wordpress/keycodes';
 
 export default function Accordion( {
 	title,
@@ -51,9 +52,22 @@ export default function Accordion( {
 		}
 	}, [ disabled, isActive ] );
 
-	const toggleAccordion = useCallback( () => {
-		setActive( ! isActive );
-	}, [ isActive ] );
+	const toggleAccordion = useCallback(
+		( event ) => {
+			if (
+				event.type === 'keydown' &&
+				! [ ENTER, SPACE ].includes( event.keyCode )
+			) {
+				return;
+			}
+
+			// Prevent scroll when spacebar is hit.
+			event.preventDefault();
+
+			setActive( ! isActive );
+		},
+		[ isActive ]
+	);
 
 	return (
 		<div
@@ -66,8 +80,8 @@ export default function Accordion( {
 					'is-active': isActive,
 				} ) }
 				onClick={ toggleAccordion }
-				onKeyDown={ () => {} }
-				tabIndex={ 0 }
+				onKeyDown={ toggleAccordion }
+				tabIndex={ disabled ? -1 : 0 }
 				role="button"
 			>
 				{ title }

@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import { render } from '../../../../../../tests/js/test-utils';
-import { provideKeyMetrics } from '../../../../../../tests/js/utils';
+import {
+	provideKeyMetrics,
+	provideModules,
+} from '../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../utils/data-mock';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
@@ -41,6 +44,13 @@ describe( 'TopCitiesWidget', () => {
 						.dispatch( CORE_USER )
 						.setReferenceDate( '2020-09-08' );
 
+					provideModules( registry, [
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
 					provideKeyMetrics( registry );
 					provideAnalytics4MockReport( registry, {
 						startDate: '2020-08-11',

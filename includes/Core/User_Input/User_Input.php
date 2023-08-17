@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\User_Input;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Surveys\Survey_Queue;
@@ -97,7 +98,8 @@ class User_Input {
 		$this->user_specific_answers = new User_Specific_Answers( $this->user_options );
 		$this->rest_controller       = new REST_User_Input_Controller(
 			$this,
-			$survey_queue ?: new Survey_Queue( $this->user_options )
+			$survey_queue ?: new Survey_Queue( $this->user_options ),
+			new Key_Metrics_Setup_Completed( $options ?: new Options( $context ) )
 		);
 	}
 
