@@ -70,7 +70,7 @@ jobs:
       - name: PHP Lint
         run: composer lint
   php-tests:
-    name: PHP Tests (${{ matrix.wp_multisite && 'Multisite, ' }}PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }})
+    name: PHP Tests (PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }}${{ matrix.wp_multisite && ', Multisite' }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
