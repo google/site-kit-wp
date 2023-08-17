@@ -40,18 +40,11 @@ export default function OptimizeIDFieldInstructions() {
 		<p>
 			{ createInterpolateElement(
 				__(
-					'Please copy and paste your Optimize Container ID to complete your setup.',
+					'Please copy and paste your Optimize Container ID to complete your setup. <a>You can locate this here</a>',
 					'google-site-kit'
 				),
 				{
-					LearnMoreLink: (
-						<Link href={ accountURL } external>
-							{ __(
-								'You can locate this here',
-								'google-site-kit'
-							) }
-						</Link>
-					),
+					a: <Link href={ accountURL } external />,
 				}
 			) }
 		</p>
