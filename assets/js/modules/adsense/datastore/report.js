@@ -125,8 +125,8 @@ const baseSelectors = {
 	 *
 	 * @param {Object}         state                Data store's state.
 	 * @param {Object}         options              Options for generating the report.
-	 * @param {string}         options.startDate    Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate      Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.startDate    Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate      Required. Start date to query report data for as YYYY-mm-dd.
 	 * @param {Array.<string>} options.metrics      Required. List of {@link https://developers.google.com/adsense/management/metrics-dimensions#metrics|metrics} to query.
 	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/adsense/management/metrics-dimensions#dimensions|dimensions} to group results by.
 	 * @param {Array.<Object>} [options.orderby]    Optional. Order definition objects containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default null.
