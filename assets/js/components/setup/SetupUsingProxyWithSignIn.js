@@ -235,7 +235,7 @@ export default function SetupUsingProxyWithSignIn() {
 			'google-site-kit'
 		);
 		description = __(
-			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.',
+			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google services.',
 			'google-site-kit'
 		);
 		showLearnMoreLink = true;
