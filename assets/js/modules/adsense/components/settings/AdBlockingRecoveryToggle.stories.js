@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryToggle Component Stories.
+ * AdBlockingRecoveryToggle component stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -113,7 +113,7 @@ WithExistingAdBlockingRecoveryTagDifferentAccount.args = {
 };
 
 export default {
-	title: 'Modules/AdSense/Components/AdBlockingRecoveryToggle',
+	title: 'Modules/AdSense/Components/Settings/AdBlockingRecoveryToggle',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

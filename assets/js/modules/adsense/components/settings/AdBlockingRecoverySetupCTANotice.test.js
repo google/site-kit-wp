@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryCTA component tests.
+ * AdBlockingRecoverySetupCTANotice component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -40,12 +40,12 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
-import AdBlockingRecoveryCTA from './AdBlockingRecoveryCTA';
+import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'AdBlockingRecoveryCTA', () => {
+describe( 'AdBlockingRecoverySetupCTANotice', () => {
 	mockLocation();
 
 	beforeEach( () => {
@@ -87,27 +87,32 @@ describe( 'AdBlockingRecoveryCTA', () => {
 			adBlockingRecoverySetupStatus,
 			existingAdBlockingRecoveryTag = null
 		) => {
-			const { container } = render( <AdBlockingRecoveryCTA />, {
-				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-						accountStatus,
-						siteStatus,
-						adBlockingRecoverySetupStatus,
-					} );
-					registry
-						.dispatch( MODULES_ADSENSE )
-						.receiveGetExistingAdBlockingRecoveryTag(
-							existingAdBlockingRecoveryTag
-						);
-				},
-			} );
+			const { container } = render(
+				<AdBlockingRecoverySetupCTANotice />,
+				{
+					setupRegistry: ( registry ) => {
+						provideModules( registry, [
+							{
+								slug: 'adsense',
+								active: true,
+								connected: true,
+							},
+						] );
+						registry
+							.dispatch( MODULES_ADSENSE )
+							.receiveGetSettings( {
+								accountStatus,
+								siteStatus,
+								adBlockingRecoverySetupStatus,
+							} );
+						registry
+							.dispatch( MODULES_ADSENSE )
+							.receiveGetExistingAdBlockingRecoveryTag(
+								existingAdBlockingRecoveryTag
+							);
+					},
+				}
+			);
 
 			expect(
 				container.querySelector(
@@ -125,7 +130,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 	);
 
 	it( 'should render the CTA when Ad Blocking Recovery is not set up', () => {
-		const { container } = render( <AdBlockingRecoveryCTA />, {
+		const { container } = render( <AdBlockingRecoverySetupCTANotice />, {
 			setupRegistry: ( registry ) => {
 				provideModules( registry, [
 					{
@@ -165,27 +170,32 @@ describe( 'AdBlockingRecoveryCTA', () => {
 	} );
 
 	it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
-		const { container, registry } = render( <AdBlockingRecoveryCTA />, {
-			setupRegistry: ( testRegistry ) => {
-				provideSiteInfo( testRegistry );
-				provideModules( testRegistry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				testRegistry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					accountStatus: ACCOUNT_STATUS_READY,
-					siteStatus: SITE_STATUS_READY,
-					adBlockingRecoverySetupStatus: '',
-				} );
-				testRegistry
-					.dispatch( MODULES_ADSENSE )
-					.receiveGetExistingAdBlockingRecoveryTag( null );
-			},
-			viewContext: VIEW_CONTEXT_SETTINGS,
-		} );
+		const { container, registry } = render(
+			<AdBlockingRecoverySetupCTANotice />,
+			{
+				setupRegistry: ( testRegistry ) => {
+					provideSiteInfo( testRegistry );
+					provideModules( testRegistry, [
+						{
+							slug: 'adsense',
+							active: true,
+							connected: true,
+						},
+					] );
+					testRegistry
+						.dispatch( MODULES_ADSENSE )
+						.receiveGetSettings( {
+							accountStatus: ACCOUNT_STATUS_READY,
+							siteStatus: SITE_STATUS_READY,
+							adBlockingRecoverySetupStatus: '',
+						} );
+					testRegistry
+						.dispatch( MODULES_ADSENSE )
+						.receiveGetExistingAdBlockingRecoveryTag( null );
+				},
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			}
+		);
 
 		const abrURL = registry
 			.select( CORE_SITE )
@@ -207,7 +217,7 @@ describe( 'AdBlockingRecoveryCTA', () => {
 	} );
 
 	it( 'Should fire track event when learn more is clicked', async () => {
-		const { getByRole } = render( <AdBlockingRecoveryCTA />, {
+		const { getByRole } = render( <AdBlockingRecoverySetupCTANotice />, {
 			setupRegistry: ( registry ) => {
 				provideSiteInfo( registry );
 				provideModules( registry, [
