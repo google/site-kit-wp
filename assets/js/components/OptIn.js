@@ -94,7 +94,7 @@ export default function OptIn( {
 			>
 				{ createInterpolateElement(
 					__(
-						'<span>Help us improve Site Kit by sharing anonymous usage data. </span><span>All collected data is treated in accordance with the <a>Google Privacy Policy.</a></span>',
+						'<span>Help us improve Site Kit by sharing anonymous usage data.</span> <span>All collected data is treated in accordance with the <a>Google Privacy Policy.</a></span>',
 						'google-site-kit'
 					),
 					{

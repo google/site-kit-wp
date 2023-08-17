@@ -108,13 +108,13 @@ export default function SetupAccountCreate() {
 						sprintf(
 							/* translators: %s: user email address */
 							__(
-								'Already use AdSense? Add %s as a user to an existing AdSense account. <SupportLink />',
+								'Already use AdSense? Add %s as a user to an existing AdSense account. <a>Learn more</a>',
 								'google-site-kit'
 							),
 							userEmail
 						),
 						{
-							SupportLink: (
+							a: (
 								<SupportLink
 									path="/adsense/answer/2659101"
 									external
@@ -122,9 +122,7 @@ export default function SetupAccountCreate() {
 										'Learn more about adding a user to an existing AdSense account',
 										'google-site-kit'
 									) }
-								>
-									{ __( 'Learn more', 'google-site-kit' ) }
-								</SupportLink>
+								/>
 							),
 						}
 					) }

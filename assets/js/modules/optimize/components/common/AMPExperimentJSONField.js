@@ -67,17 +67,15 @@ export default function AMPExperimentJSONField() {
 			<p>
 				{ createInterpolateElement(
 					__(
-						'Please input your AMP experiment settings in JSON format below.',
+						'Please input your AMP experiment settings in JSON format below. <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{
-						LearnMoreLink: (
+						a: (
 							<Link
 								href="https://developers.google.com/optimize/devguides/amp-experiments"
 								external
-							>
-								{ __( 'Learn more', 'google-site-kit' ) }
-							</Link>
+							/>
 						),
 					}
 				) }

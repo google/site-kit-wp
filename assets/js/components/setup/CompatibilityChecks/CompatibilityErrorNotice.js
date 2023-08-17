@@ -149,7 +149,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 				<p>
 					{ createInterpolateElement(
 						__(
-							'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard.',
+							'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard. <GetHelpLink />',
 							'google-site-kit'
 						),
 						{ GetHelpLink: <GetHelpLink errorCode={ error } /> }

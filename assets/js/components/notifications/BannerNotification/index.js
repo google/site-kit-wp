@@ -35,9 +35,7 @@ import {
 	useState,
 	Fragment,
 	isValidElement,
-	createInterpolateElement,
 } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
 /*
@@ -382,37 +380,21 @@ function BannerNotification( props ) {
 						</Fragment>
 					) : (
 						<p>
-							{ createInterpolateElement(
-								sprintf(
-									/* translators: Banner notification text. 1: Description in banner. 2: Learn more link. */
-									__( '%1$s %2$s', 'google-site-kit' ),
-									'<description />',
-									'<learnMore />'
-								),
-								{
-									description: (
-										<span
-											dangerouslySetInnerHTML={ sanitizeHTML(
-												description,
-												{
-													ALLOWED_TAGS: [
-														'strong',
-														'em',
-														'br',
-														'a',
-													],
-													ALLOWED_ATTR: [ 'href' ],
-												}
-											) }
-										/>
-									),
-									learnMore: (
-										<Fragment>
-											{ learnMoreAndPageIndex }
-										</Fragment>
-									),
-								}
-							) }
+							<span
+								dangerouslySetInnerHTML={ sanitizeHTML(
+									description,
+									{
+										ALLOWED_TAGS: [
+											'strong',
+											'em',
+											'br',
+											'a',
+										],
+										ALLOWED_ATTR: [ 'href' ],
+									}
+								) }
+							/>
+							{ learnMoreAndPageIndex }
 						</p>
 					) }
 				</div>

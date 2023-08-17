@@ -401,13 +401,9 @@ storiesOf( 'Global', module ).add( 'TourTooltips', () => {
 			content: (
 				<div>
 					{ createInterpolateElement(
-						'This is the fourth step with an external link that should go to Google, <link />',
+						'This is the fourth step with an external link that should go to Google, <a>link.</a>',
 						{
-							link: (
-								<Link href="http://google.com" external>
-									link.
-								</Link>
-							),
+							a: <Link href="http://google.com" external />,
 						}
 					) }
 				</div>

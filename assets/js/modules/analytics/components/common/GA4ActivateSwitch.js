@@ -73,18 +73,11 @@ export default function GA4ActivateSwitch( props ) {
 					<Fragment>
 						{ createInterpolateElement(
 							__(
-								'Activate Google Analytics 4 and place code on your site. <LearnMoreLink />',
+								'Activate Google Analytics 4 and place code on your site. <a>Learn more</a>',
 								'google-site-kit'
 							),
 							{
-								LearnMoreLink: (
-									<Link href={ documentationURL } external>
-										{ __(
-											'Learn more',
-											'google-site-kit'
-										) }
-									</Link>
-								),
+								a: <Link href={ documentationURL } external />,
 							}
 						) }
 					</Fragment>
