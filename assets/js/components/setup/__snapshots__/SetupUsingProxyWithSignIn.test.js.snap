@@ -150,10 +150,11 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
               >
                 <li>
                   <div
+                    aria-label="Google account"
                     class="googlesitekit-user-menu__details"
                   >
                     <img
-                      alt="User Avatar"
+                      alt=""
                       class="googlesitekit-user-menu__details-avatar"
                       src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
                     />
@@ -166,6 +167,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                         Wapuu WordPress PhD
                       </p>
                       <p
+                        aria-label="Email"
                         class="googlesitekit-user-menu__details-info__email"
                       >
                         wapuu.wordpress@gmail.com
@@ -458,10 +460,11 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
               >
                 <li>
                   <div
+                    aria-label="Google account"
                     class="googlesitekit-user-menu__details"
                   >
                     <img
-                      alt="User Avatar"
+                      alt=""
                       class="googlesitekit-user-menu__details-avatar"
                       src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
                     />
@@ -474,6 +477,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                         Wapuu WordPress PhD
                       </p>
                       <p
+                        aria-label="Email"
                         class="googlesitekit-user-menu__details-info__email"
                       >
                         wapuu.wordpress@gmail.com
