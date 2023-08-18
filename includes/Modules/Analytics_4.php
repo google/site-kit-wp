@@ -341,7 +341,11 @@ final class Analytics_4 extends Module
 			'GET:webdatastreams'                 => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'           => array( 'service' => 'analyticsadmin' ),
 			'GET:enhanced-measurement-settings'  => array( 'service' => 'analyticenhancedmeasurements' ),
-			'POST:enhanced-measurement-settings' => array( 'service' => 'analyticenhancedmeasurements' ),
+			'POST:enhanced-measurement-settings' => array(
+				'service'                => 'analyticenhancedmeasurements',
+				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
+			),
 		);
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
