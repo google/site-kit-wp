@@ -114,8 +114,6 @@ jobs:
           GIT_AUTHOR_NAME: google-site-kit-bot
           GIT_COMMITTER_EMAIL: 138160377+google-site-kit-bot@users.noreply.github.com
           GIT_COMMITTER_NAME: google-site-kit-bot
-        with:
-          token: ${{ secrets.GH_BOT_TOKEN }}
 
   remove-storybook:
     name: Remove Storybook
