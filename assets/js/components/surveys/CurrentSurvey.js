@@ -118,7 +118,7 @@ export default function CurrentSurvey() {
 			for ( const condition of conditions ) {
 				const answer = ordinalAnswerMap[ condition.question_ordinal ];
 				const allowedAnswers = condition.answer_ordinal || [];
-				if ( answer && ! allowedAnswers.includes( answer ) ) {
+				if ( ! answer || ! allowedAnswers.includes( answer ) ) {
 					currentQuestionOrdinal++;
 					return false;
 				}
