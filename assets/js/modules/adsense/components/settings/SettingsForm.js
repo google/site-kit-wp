@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -124,20 +124,29 @@ export default function SettingsForm() {
 				<Fragment>
 					<WebStoriesAdUnitSelect />
 					<p>
-						{ __(
-							'This ad unit will be used for your Web Stories.',
-							'google-site-kit'
-						) }{ ' ' }
-						<Link
-							href={ supportURL }
-							external
-							aria-label={ __(
-								'Learn more about Ad Sense Web Stories.',
+						{ createInterpolateElement(
+							__(
+								'This ad unit will be used for your Web Stories. <LearnMoreLink />',
 								'google-site-kit'
-							) }
-						>
-							{ __( 'Learn more', 'google-site-kit' ) }
-						</Link>
+							),
+							{
+								LearnMoreLink: (
+									<Link
+										href={ supportURL }
+										external
+										aria-label={ __(
+											'Learn more about Ad Sense Web Stories.',
+											'google-site-kit'
+										) }
+									>
+										{ __(
+											'Learn more',
+											'google-site-kit'
+										) }
+									</Link>
+								),
+							}
+						) }
 					</p>
 				</Fragment>
 			) }

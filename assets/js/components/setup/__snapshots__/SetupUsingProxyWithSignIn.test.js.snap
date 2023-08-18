@@ -267,8 +267,8 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                         >
                           <span>
                             Help us improve Site Kit by sharing anonymous usage data.
-                             
                           </span>
+                           
                           <span>
                             All collected data is treated in accordance with the 
                             <a
@@ -600,11 +600,8 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                           >
                             <strong>
                               Connect Google Analytics as part of your setup.
-                               
                             </strong>
-                            <span>
-                              Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.
-                            </span>
+                             Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.
                           </label>
                         </div>
                       </div>
@@ -633,8 +630,8 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                         >
                           <span>
                             Help us improve Site Kit by sharing anonymous usage data.
-                             
                           </span>
+                           
                           <span>
                             All collected data is treated in accordance with the 
                             <a
