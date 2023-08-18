@@ -37,6 +37,7 @@ import {
 	isValidPropertyID,
 	isValidWebDataStreamID,
 } from '../../utils/validation';
+import Link from '../../../../components/Link';
 const { useDispatch, useSelect } = Data;
 
 export default function EnhancedMeasurementToggle( {
@@ -109,9 +110,20 @@ export default function EnhancedMeasurementToggle( {
 				) }
 				<p>
 					{ __(
-						'Toggle enhanced measurement on or off for this web data stream.',
+						'Automatically measure interactions and content on your sites in addition to standard page view measurement.',
 						'google-site-kit'
 					) }
+					{ ' ' /* POC code :) */ }
+					<Link
+						href="https://support.google.com/analytics/answer/9216061?hl=en-GB&utm_id=ad"
+						external
+						aria-label={ __(
+							'Learn more about Ad Sense Web Stories.',
+							'google-site-kit'
+						) }
+					>
+						{ __( 'Learn more', 'google-site-kit' ) }
+					</Link>
 				</p>
 			</div>
 		</div>
