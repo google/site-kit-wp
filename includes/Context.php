@@ -315,20 +315,38 @@ class Context {
 	 * Gets the current AMP mode.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Extracted AMP plugin related logic to `get_amp_mode_from_amp_plugin` function.
 	 *
 	 * @return bool|string 'primary' if in standard mode,
-	 *                     'secondary' if in transitional or reader modes
+	 *                     'secondary' if in transitional or reader modes, or the Web Stories plugin is active
 	 *                     false if AMP not active, or unknown mode
 	 */
 	public function get_amp_mode() {
+		$amp_mode = $this->get_amp_mode_from_amp_plugin();
 
-		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
+		if ( false === $amp_mode ) {
 			// If the Web Stories plugin is enabled, consider the site to be running
 			// in Secondary AMP mode.
 			if ( defined( 'WEBSTORIES_VERSION' ) ) {
 				return self::AMP_MODE_SECONDARY;
 			}
+		}
 
+		return $amp_mode;
+	}
+
+	/**
+	 * Gets the current AMP mode from the AMP plugin.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool|string 'primary' if in standard mode,
+	 *                     'secondary' if in transitional or reader modes
+	 *                     false if AMP not active, or unknown mode
+	 */
+	private function get_amp_mode_from_amp_plugin() {
+
+		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
 			return false;
 		}
 
@@ -378,12 +396,6 @@ class Context {
 				return self::AMP_MODE_PRIMARY;
 			}
 
-			return self::AMP_MODE_SECONDARY;
-		}
-
-		// If the Web Stories plugin is enabled, consider the site to be running
-		// in Secondary AMP mode.
-		if ( defined( 'WEBSTORIES_VERSION' ) ) {
 			return self::AMP_MODE_SECONDARY;
 		}
 
