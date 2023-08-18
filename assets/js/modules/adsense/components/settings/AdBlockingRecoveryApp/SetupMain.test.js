@@ -186,6 +186,44 @@ describe( 'AdBlockingRecoveryWidget - SetupMain', () => {
 				dashboardURL
 			);
 		} );
+
+		it( 'should return to AdSense settings page when `Cancel` button is clicked', async () => {
+			const originalReferrer = document.referrer;
+
+			const settingsURL = registry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-settings' );
+
+			// Mock the document.referrer to be the AdSense settings page.
+			Object.defineProperty( document, 'referrer', {
+				writable: true,
+				value: settingsURL,
+			} );
+
+			const adSenseSettingsURL = `${ settingsURL }#/connected-services/adsense`;
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'adBlockingRecovery_adsense-abr',
+				'cancel_setup',
+				'on_place_tag_step'
+			);
+
+			expect( global.location.assign ).toHaveBeenCalled();
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				adSenseSettingsURL
+			);
+
+			// Reset the document.referrer back to its original value.
+			Object.defineProperty( document, 'referrer', {
+				writable: true,
+				value: originalReferrer,
+			} );
+		} );
 	} );
 
 	describe( 'Create Message step', () => {
@@ -280,6 +318,60 @@ describe( 'AdBlockingRecoveryWidget - SetupMain', () => {
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				dashboardURL
 			);
+		} );
+
+		it( 'should return to AdSense settings page when `Cancel` button is clicked', async () => {
+			const originalReferrer = document.referrer;
+
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+				{ body: { success: true }, status: 200 }
+			);
+
+			const settingsURL = registry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-settings' );
+
+			// Mock the document.referrer to be the AdSense settings page.
+			Object.defineProperty( document, 'referrer', {
+				writable: true,
+				value: settingsURL,
+			} );
+
+			const adSenseSettingsURL = `${ settingsURL }#/connected-services/adsense`;
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'adBlockingRecovery_adsense-abr',
+				'cancel_setup',
+				'on_create_message_step'
+			);
+
+			// Rollback Ad Blocking Recovery Settings.
+			expect( JSON.parse( fetchMock.lastOptions().body ) ).toStrictEqual(
+				{
+					data: {
+						adBlockingRecoverySetupStatus: '',
+						useAdBlockingRecoveryErrorSnippet: false,
+						useAdBlockingRecoverySnippet: false,
+					},
+				}
+			);
+
+			expect( global.location.assign ).toHaveBeenCalled();
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				adSenseSettingsURL
+			);
+
+			// Reset the document.referrer back to its original value.
+			Object.defineProperty( document, 'referrer', {
+				writable: true,
+				value: originalReferrer,
+			} );
 		} );
 	} );
 
