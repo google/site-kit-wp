@@ -58,7 +58,7 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 
 		return select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 	} );
-	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
+	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 
 	const { setContainerID, setInternalContainerID } =
 		useDispatch( MODULES_TAGMANAGER );
@@ -83,7 +83,7 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 		[ containerID, setContainerID, setInternalContainerID, viewContext ]
 	);
 
-	const label = ampMode
+	const label = isAMP
 		? __( 'Web Container', 'google-site-kit' )
 		: __( 'Container', 'google-site-kit' );
 

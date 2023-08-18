@@ -286,7 +286,7 @@ describe( 'WebContainerSelect', () => {
 
 	it.each( [ AMP_MODE_PRIMARY, AMP_MODE_SECONDARY ] )(
 		'should be labeled as "Web Container" in a %s AMP context',
-		( mode ) => {
+		( ampMode ) => {
 			const { account, containers } =
 				factories.buildAccountWithContainers();
 			const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
@@ -303,7 +303,7 @@ describe( 'WebContainerSelect', () => {
 			registry
 				.dispatch( MODULES_TAGMANAGER )
 				.finishResolution( 'getContainers', [ accountID ] );
-			provideSiteInfo( registry, { ampMode: mode } );
+			provideSiteInfo( registry, { ampMode } );
 
 			const { container } = render( <WebContainerSelect />, {
 				registry,
