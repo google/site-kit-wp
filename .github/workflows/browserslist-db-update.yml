@@ -9,6 +9,10 @@ on:
 
 env:
   branch-name: update/browserslist-db
+  GIT_AUTHOR_EMAIL: 138160377+google-site-kit-bot@users.noreply.github.com
+  GIT_AUTHOR_NAME: google-site-kit-bot
+  GIT_COMMITTER_EMAIL: 138160377+google-site-kit-bot@users.noreply.github.com
+  GIT_COMMITTER_NAME: google-site-kit-bot
 
 jobs:
   close-existing-pr:
@@ -55,8 +59,8 @@ jobs:
 
       - name: Configure git
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config --global user.email "138160377+google-site-kit-bot@users.noreply.github.com"
+          git config --global user.name "google-site-kit-bot"
 
       - name: Update Browserslist database and create PR if applicable
         uses: c2corg/browserslist-update-action@v1
