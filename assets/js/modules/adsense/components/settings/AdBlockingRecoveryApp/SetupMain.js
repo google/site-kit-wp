@@ -50,12 +50,10 @@ const { useSelect, useDispatch } = Data;
 export default function SetupMain() {
 	const viewContext = useViewContext();
 
-	const settingsURL = useSelect(
-		( select ) =>
-			`${ select( CORE_SITE ).getAdminURL(
-				'googlesitekit-settings'
-			) }#/connected-services/adsense`
+	const settingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
+	const adSenseSettingsURL = `${ settingsURL }#/connected-services/adsense`;
 	const createMessageCTAClicked = useSelect(
 		( select ) =>
 			!! select( CORE_UI ).getValue(
@@ -103,6 +101,11 @@ export default function SetupMain() {
 				'cancel_setup',
 				'on_place_tag_step'
 			);
+
+			if ( document.referrer.includes( settingsURL ) ) {
+				return navigateTo( adSenseSettingsURL );
+			}
+
 			return navigateTo( dashboardURL );
 		}
 
@@ -112,7 +115,7 @@ export default function SetupMain() {
 				'cancel_setup',
 				'on_final_step'
 			);
-			return navigateTo( settingsURL );
+			return navigateTo( adSenseSettingsURL );
 		}
 
 		setAdBlockingRecoverySetupStatus( '' );
@@ -128,10 +131,15 @@ export default function SetupMain() {
 		);
 
 		if ( ! error ) {
-			navigateTo( dashboardURL );
+			if ( document.referrer.includes( settingsURL ) ) {
+				navigateTo( adSenseSettingsURL );
+			} else {
+				navigateTo( dashboardURL );
+			}
 		}
 	}, [
 		activeStep,
+		adSenseSettingsURL,
 		createMessageCTAClicked,
 		dashboardURL,
 		navigateTo,
