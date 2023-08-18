@@ -695,14 +695,7 @@ final class Analytics extends Module
 						$date_ranges[] = array( $compare_start_date, $compare_end_date );
 					}
 				} else {
-					$date_range    = $data['dateRange'] ?: 'last-28-days';
-					$date_ranges[] = Date::parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
-
-					// When using multiple date ranges, it changes the structure of the response,
-					// where each date range becomes an item in a list.
-					if ( ! empty( $data['multiDateRange'] ) ) {
-						$date_ranges[] = Date::parse_date_range( $date_range, 1, 1, true );
-					}
+					$date_ranges[] = Date::parse_date_range( 'last-28-days' );
 				}
 
 				$date_ranges = array_map(

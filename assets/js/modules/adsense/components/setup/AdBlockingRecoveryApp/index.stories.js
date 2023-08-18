@@ -80,7 +80,7 @@ StepTwoAfterCTAClick.scenario = {
 };
 
 export default {
-	title: 'Modules/AdSense/Settings/AdBlockingRecoveryApp',
+	title: ' Modules/AdSense/Components/Setup/AdBlockingRecoveryApp',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

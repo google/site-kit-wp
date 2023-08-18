@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryWidget component tests.
+ * AdBlockingRecoverySetupCTAWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -50,12 +50,12 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '../../util';
-import AdBlockingRecoveryWidget from './AdBlockingRecoveryWidget';
+import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'AdBlockingRecoveryWidget', () => {
+describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 	let registry;
 	const referenceDate = '2023-06-22';
 	const timestampThreeWeeksPrior =
@@ -209,7 +209,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 					] );
 
 				const { container } = render(
-					<AdBlockingRecoveryWidget
+					<AdBlockingRecoverySetupCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
 					/>,
@@ -236,7 +236,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				.receiveGetExistingAdBlockingRecoveryTag( null );
 
 			const { container } = render(
-				<AdBlockingRecoveryWidget
+				<AdBlockingRecoverySetupCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
 				/>,
@@ -267,7 +267,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 				.receiveGetExistingAdBlockingRecoveryTag( null );
 
 			const { container } = render(
-				<AdBlockingRecoveryWidget
+				<AdBlockingRecoverySetupCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
 				/>,
@@ -318,7 +318,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AdBlockingRecoveryWidget
+					<AdBlockingRecoverySetupCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
 					/>
@@ -357,7 +357,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AdBlockingRecoveryWidget
+					<AdBlockingRecoverySetupCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
 					/>
@@ -403,7 +403,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AdBlockingRecoveryWidget
+					<AdBlockingRecoverySetupCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
 					/>
@@ -444,7 +444,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AdBlockingRecoveryWidget
+					<AdBlockingRecoverySetupCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
 					/>
@@ -485,7 +485,7 @@ describe( 'AdBlockingRecoveryWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AdBlockingRecoveryWidget
+					<AdBlockingRecoverySetupCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
 					/>

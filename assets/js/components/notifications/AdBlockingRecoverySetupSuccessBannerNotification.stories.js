@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryNotification component stories.
+ * AdBlockingRecoverySetupSuccessBannerNotification component stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -23,7 +23,7 @@ import {
 	MODULES_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 } from '../../modules/adsense/datastore/constants';
-import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
+import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import {
 	WithTestRegistry,
 	createTestRegistry,
@@ -32,15 +32,16 @@ import {
 } from '../../../../tests/js/utils';
 
 function Template( { ...args } ) {
-	return <AdBlockingRecoveryNotification { ...args } />;
+	return <AdBlockingRecoverySetupSuccessBannerNotification { ...args } />;
 }
 
-export const AdBlockingRecoveryNotificationDefault = Template.bind( {} );
-AdBlockingRecoveryNotificationDefault.storyName = 'Default';
+export const AdBlockingRecoverySetupSuccessBannerNotificationDefault =
+	Template.bind( {} );
+AdBlockingRecoverySetupSuccessBannerNotificationDefault.storyName = 'Default';
 
 export default {
-	title: 'Components/AdBlockingRecoveryNotification',
-	component: AdBlockingRecoveryNotification,
+	title: 'Components/AdBlockingRecoverySetupSuccessBannerNotification',
+	component: AdBlockingRecoverySetupSuccessBannerNotification,
 	decorators: [
 		( Story ) => {
 			const registry = createTestRegistry();

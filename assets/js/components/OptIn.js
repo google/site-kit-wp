@@ -92,29 +92,22 @@ export default function OptIn( {
 				loading={ enabled === undefined }
 				alignLeft={ alignLeftCheckbox }
 			>
-				<span>
-					{ __(
-						'Help us improve Site Kit by sharing anonymous usage data.',
+				{ createInterpolateElement(
+					__(
+						'<span>Help us improve Site Kit by sharing anonymous usage data.</span> <span>All collected data is treated in accordance with the <a>Google Privacy Policy.</a></span>',
 						'google-site-kit'
-					) }{ ' ' }
-				</span>
-				<span>
-					{ createInterpolateElement(
-						__(
-							'All collected data is treated in accordance with the <a>Google Privacy Policy.</a>',
-							'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								key="link"
+								href="https://policies.google.com/privacy"
+								external
+							/>
 						),
-						{
-							a: (
-								<Link
-									key="link"
-									href="https://policies.google.com/privacy"
-									external
-								/>
-							),
-						}
-					) }
-				</span>
+						span: <span />,
+					}
+				) }
 			</Checkbox>
 
 			{ error?.message && (

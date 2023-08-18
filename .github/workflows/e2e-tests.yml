@@ -11,7 +11,7 @@ on:
     # suite on GitHub Actions when all that's changing are tests and not code
     # that would affect E2E behavior.
     paths:
-      - '.github/workflows/e2e-tests-wp-latest.yml'
+      - '.github/workflows/e2e-tests.yml'
       - '.babelrc'
       - 'assets/**'
       - 'includes/**'
@@ -42,7 +42,7 @@ on:
     # suite on GitHub Actions when all that's changing are tests and not code
     # that would affect E2E behavior.
     paths:
-      - '.github/workflows/e2e-tests-wp-latest.yml'
+      - '.github/workflows/e2e-tests.yml'
       - '.babelrc'
       - 'assets/**'
       - 'includes/**'
@@ -69,22 +69,26 @@ on:
       - ready_for_review
 
 concurrency:
-  group: e2e-tests-wp-latest-${{ github.ref }}
+  group: e2e-tests-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  e2e-tests-wp-latest:
-    name: E2E (WordPress latest)
-
+  e2e-tests:
+    name: E2E (WordPress ${{ matrix.wp_version }}${{ matrix.amp_version && ', AMP ' }}${{ matrix.amp_version }})
+    strategy:
+      fail-fast: false
+      matrix:
+        amp_version: ['']
+        wp_version: ['latest', 'nightly']
+        include:
+          - amp_version: '1.5.5'
+            wp_version: '5.2.16'
     env:
-      WP_VERSION: latest
-
+      AMP_VERSION: ${{ matrix.amp_version }}
+      WP_VERSION: ${{ matrix.wp_version }}
     runs-on: ubuntu-latest
-
     timeout-minutes: 30
-
     if: github.event_name == 'push' || github.event.pull_request.draft == false
-
     steps:
       - uses: actions/checkout@v3
 
@@ -110,7 +114,7 @@ jobs:
 
       - name: Get Composer Cache Directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache@v3
         with:

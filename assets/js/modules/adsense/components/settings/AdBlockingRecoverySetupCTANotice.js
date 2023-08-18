@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryCTA component.
+ * AdBlockingRecoverySetupCTANotice component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -44,7 +44,7 @@ import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 
 const { useDispatch, useSelect } = Data;
 
-export default function AdBlockingRecoveryCTA() {
+export default function AdBlockingRecoverySetupCTANotice() {
 	const inView = useInView();
 	const viewContext = useViewContext();
 

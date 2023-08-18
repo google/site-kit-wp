@@ -38,19 +38,25 @@ export default function Details() {
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 
 	return (
-		<div className="googlesitekit-user-menu__details">
+		<div
+			className="googlesitekit-user-menu__details"
+			aria-label={ __( 'Google account', 'google-site-kit' ) }
+		>
 			{ !! userPicture && (
 				<img
 					className="googlesitekit-user-menu__details-avatar"
 					src={ userPicture }
-					alt={ __( 'User Avatar', 'google-site-kit' ) }
+					alt=""
 				/>
 			) }
 			<div className="googlesitekit-user-menu__details-info">
 				<p className="googlesitekit-user-menu__details-info__name">
 					{ userFullName }
 				</p>
-				<p className="googlesitekit-user-menu__details-info__email">
+				<p
+					className="googlesitekit-user-menu__details-info__email"
+					aria-label={ __( 'Email', 'google-site-kit' ) }
+				>
 					{ userEmail }
 				</p>
 			</div>

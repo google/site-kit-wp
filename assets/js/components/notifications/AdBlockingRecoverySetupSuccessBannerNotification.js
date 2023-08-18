@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryNotification component.
+ * AdBlockingRecoverySetupSuccessBannerNotification component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -40,7 +40,7 @@ import BannerNotification from './BannerNotification';
 
 const { useSelect } = Data;
 
-export default function AdBlockingRecoveryNotification() {
+export default function AdBlockingRecoverySetupSuccessBannerNotification() {
 	const viewContext = useViewContext();
 
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
