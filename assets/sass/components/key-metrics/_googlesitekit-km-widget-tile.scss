@@ -42,7 +42,7 @@
 		justify-content: space-between;
 		padding: $grid-gap-phone;
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-nonMobile) {
 			flex-direction: column;
 			padding: 18px 24px;
 		}
@@ -68,7 +68,7 @@
 			align-items: flex-start;
 			display: flex;
 			gap: 8px;
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-nonMobile) {
 				align-items: center;
 			}
 		}
@@ -79,7 +79,7 @@
 			font-family: $f-secondary;
 			font-size: $fs-headline-lg;
 			margin-top: -8px;
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-nonMobile) {
 				margin: 0;
 			}
 		}
@@ -95,7 +95,7 @@
 			font-weight: 500;
 
 			margin-top: -8px;
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-nonMobile) {
 				margin: 5px 0 0;
 			}
 		}
@@ -110,7 +110,7 @@
 		.googlesitekit-km-widget-tile__title {
 			padding-right: 12px;
 
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-nonMobile) {
 				padding-right: 0;
 			}
 		}
