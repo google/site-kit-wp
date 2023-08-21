@@ -203,15 +203,6 @@ describe( 'modules/search-console report', () => {
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
 
-				const error = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.getErrorForSelector( 'isGatheringData' );
-
-				expect( error ).not.toBeUndefined();
-				expect( error.message ).toBe(
-					'Unable to determine gathering data state.'
-				);
-
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBe( true );
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );

@@ -309,7 +309,7 @@ describe( 'createGatheringDataStore', () => {
 				);
 			} );
 
-			it( 'should set gathering data state and dispatch an error when selectDataAvailability returns NULL', async () => {
+			it( 'should set gathering data state to TRUE when selectDataAvailability returns NULL', async () => {
 				selectDataAvailability.mockReturnValue( null );
 
 				registry.registerStore(
@@ -335,15 +335,6 @@ describe( 'createGatheringDataStore', () => {
 
 				expect( registry.select( STORE_NAME ).isGatheringData() ).toBe(
 					true
-				);
-
-				const error = registry
-					.select( STORE_NAME )
-					.getErrorForSelector( 'isGatheringData' );
-
-				expect( error ).not.toBeUndefined();
-				expect( error.message ).toBe(
-					'Unable to determine gathering data state.'
 				);
 			} );
 		} );
