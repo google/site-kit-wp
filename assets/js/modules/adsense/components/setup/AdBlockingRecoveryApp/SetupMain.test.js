@@ -165,7 +165,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 		} );
 
-		it( 'should return to dashboard when `Cancel` button is clicked', async () => {
+		it( 'should return to the dashboard when the `Cancel` button is clicked after accessing from the dashboard', async () => {
 			const dashboardURL = registry
 				.select( CORE_SITE )
 				.getAdminURL( 'googlesitekit-dashboard' );
@@ -187,7 +187,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 		} );
 
-		it( 'should return to AdSense settings page when `Cancel` button is clicked', async () => {
+		it( 'should return to the AdSense settings page when the `Cancel` button is clicked after accessing from AdSense settings', async () => {
 			const originalReferrer = document.referrer;
 
 			const settingsURL = registry
@@ -282,7 +282,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 		} );
 
-		it( 'should return to dashboard when `Cancel` button is clicked', async () => {
+		it( 'should return to the dashboard when the `Cancel` button is clicked after accessing from the dashboard', async () => {
 			const dashboardURL = registry
 				.select( CORE_SITE )
 				.getAdminURL( 'googlesitekit-dashboard' );
@@ -320,7 +320,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 		} );
 
-		it( 'should return to AdSense settings page when `Cancel` button is clicked', async () => {
+		it( 'should return to the AdSense settings page when the `Cancel` button is clicked after accessing from AdSense settings', async () => {
 			const originalReferrer = document.referrer;
 
 			fetchMock.postOnce(
