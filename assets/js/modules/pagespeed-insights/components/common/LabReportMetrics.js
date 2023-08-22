@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -66,11 +67,15 @@ export default function LabReportMetrics( { data, error } ) {
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
-					{ __(
-						'Lab data is a snapshot of how your page performs right now, measured in tests we run in a controlled environment.',
-						'google-site-kit'
-					) }{ ' ' }
-					<MetricsLearnMoreLink />
+					{ createInterpolateElement(
+						__(
+							'Lab data is a snapshot of how your page performs right now, measured in tests we run in a controlled environment. <LearnMoreLink />',
+							'google-site-kit'
+						),
+						{
+							LearnMoreLink: <MetricsLearnMoreLink />,
+						}
+					) }
 				</p>
 			</div>
 			<table className="googlesitekit-table googlesitekit-table--with-list">

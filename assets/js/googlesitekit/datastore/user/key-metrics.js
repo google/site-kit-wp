@@ -133,6 +133,13 @@ const baseActions = {
 		if ( error ) {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
 			yield receiveError( error, 'saveKeyMetricsSettings', [] );
+		} else {
+			// Update the `keyMetricsSetupCompleted` value to keep it in sync, as it will have been set
+			// to `true` on the backend when the key metrics settings were successfully saved.
+			// TODO: We should find a better way of keeping this value synced.
+			yield registry
+				.dispatch( CORE_SITE )
+				.setKeyMetricsSetupCompleted( true );
 		}
 
 		return { response, error };
@@ -182,7 +189,9 @@ const baseSelectors = {
 	 * @return {Array<string>|undefined} An array of key metric slugs, or undefined while loading.
 	 */
 	getKeyMetrics: createRegistrySelector( ( select ) => () => {
-		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
+		const { getAnswerBasedMetrics, getUserPickedMetrics } =
+			select( CORE_USER );
+		const userPickedMetrics = getUserPickedMetrics();
 
 		if ( userPickedMetrics === undefined ) {
 			return undefined;
@@ -192,7 +201,28 @@ const baseSelectors = {
 			return userPickedMetrics;
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics();
+		const answerBasedMetrics = getAnswerBasedMetrics();
+
+		if ( answerBasedMetrics === undefined ) {
+			return undefined;
+		}
+
+		if ( answerBasedMetrics.length ) {
+			return answerBasedMetrics;
+		}
+
+		const isKeyMetricsSetupCompleted =
+			select( CORE_SITE ).isKeyMetricsSetupCompleted();
+
+		if ( isKeyMetricsSetupCompleted ) {
+			return [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			];
+		}
+		return [];
 	} ),
 
 	/**

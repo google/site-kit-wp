@@ -25,6 +25,8 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
@@ -213,6 +215,51 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( isActiveAfter ).toBe( false );
+			} );
+
+			it( 'includes the `moduleReauthURL` when activation requires reauthentication', async () => {
+				const connectURL = 'http://example.com/connect';
+				global._googlesitekitUserData.connectURL = connectURL;
+				provideUserAuthentication( registry );
+				provideModuleRegistrations( registry );
+				provideSiteInfo( registry );
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
+					{ body: { success: true } }
+				);
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
+					{
+						body: {
+							authenticated: true,
+							requiredScopes: [
+								'https://www.googleapis.com/auth/analytics.readonly',
+							],
+							grantedScopes: [],
+							unsatisfiedScopes: [
+								'https://www.googleapis.com/auth/analytics.readonly',
+							],
+							needsReauthentication: true,
+						},
+					}
+				);
+				fetchMock.get(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: withActive( 'analytics' ) }
+				);
+
+				const { response } = await registry
+					.dispatch( CORE_MODULES )
+					.activateModule( 'analytics' );
+
+				expect( response.moduleReauthURL ).toContain( connectURL );
+				expect(
+					response.moduleReauthURL.startsWith( connectURL )
+				).toBe( true );
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {

@@ -58,12 +58,7 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 
 		return select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 	} );
-	const isPrimaryAMP = useSelect( ( select ) =>
-		select( CORE_SITE ).isPrimaryAMP()
-	);
-	const isSecondaryAMP = useSelect( ( select ) =>
-		select( CORE_SITE ).isSecondaryAMP()
-	);
+	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 
 	const { setContainerID, setInternalContainerID } =
 		useDispatch( MODULES_TAGMANAGER );
@@ -88,11 +83,7 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 		[ containerID, setContainerID, setInternalContainerID, viewContext ]
 	);
 
-	if ( isPrimaryAMP ) {
-		return null;
-	}
-
-	const label = isSecondaryAMP
+	const label = isAMP
 		? __( 'Web Container', 'google-site-kit' )
 		: __( 'Container', 'google-site-kit' );
 

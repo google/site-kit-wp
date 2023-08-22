@@ -190,7 +190,7 @@ export default function GoogleTagIDMismatchNotification() {
 				description={ sprintf(
 					/* translators: 1: Currently GA4 property name. 2: Current GA4 property ID. 3: Newly linked GA4 property name. 4: Newly linked GA4 property ID. */
 					__(
-						'The Google Tag on your site is no longer associated with your current Google Analytics 4 property "%1$s (%2$s)". It is now recording metrics to another Google Analytics 4 property "%3$s (%4$s)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you switch Site Kit’s Google Analytics configuration to show data for this property.',
+						'The Google Tag on your site is no longer associated with your current Google Analytics 4 property "%1$s (%2$s)". It is now recording metrics to another Google Analytics 4 property "%3$s (%4$s)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.',
 						'google-site-kit'
 					),
 					currentAnalyticsProperty.displayName,
@@ -204,22 +204,12 @@ export default function GoogleTagIDMismatchNotification() {
 							onClick={ updateToNewAnalyticsConfig }
 							isSaving={ isDoingSubmitChanges }
 						>
-							{ sprintf(
-								/* translators: 1: Newly linked GA4 property name. 2: Newly linked GA4 property ID. */
-								__( 'Use %1$s (%2$s)', 'google-site-kit' ),
-								newAnalyticsProperty.displayName,
-								newAnalyticsProperty._id
-							) }
+							{ __( 'Use new property', 'google-site-kit' ) }
 						</SpinnerButton>
 						<Link onClick={ updateGoogleTagConfig }>
-							{ sprintf(
-								/* translators: 1: Currently GA4 property name. 2: Current GA4 property ID. */
-								__(
-									'Update Google tag to keep using %1$s (%2$s)',
-									'google-site-kit'
-								),
-								currentAnalyticsProperty.displayName,
-								currentAnalyticsProperty._id
+							{ __(
+								'Keep existing property',
+								'google-site-kit'
 							) }
 						</Link>
 					</Fragment>

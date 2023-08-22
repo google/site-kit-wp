@@ -22,16 +22,106 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
+import { ZeroDataMessage } from '../../../analytics/components/common';
+import { numFmt } from '../../../../util';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
+const { useSelect, useInViewSelect } = Data;
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 function TopCountriesWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
+	const topCountriesReportOptions = {
+		...dates,
+		dimensions: [ 'country' ],
+		metrics: [ { name: 'totalUsers' } ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
+		limit: 3,
+	};
+
+	const topCountriesReport = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( topCountriesReportOptions )
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			topCountriesReportOptions,
+		] )
+	);
+
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ topCountriesReportOptions ]
+			)
+	);
+
+	const { rows = [], totals = [] } = topCountriesReport || {};
+
+	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
+
+	const columns = [
+		{
+			field: 'dimensionValues',
+			Component: ( { fieldValue } ) => {
+				const [ title ] = fieldValue;
+
+				return <MetricTileTablePlainText content={ title.value } />;
+			},
+		},
+		{
+			field: 'metricValues.0.value',
+			Component: ( { fieldValue } ) => (
+				<strong>
+					{ numFmt( fieldValue / totalUsers, {
+						style: 'percent',
+						maximumFractionDigits: 1,
+					} ) }
+				</strong>
+			),
+		},
+	];
+
 	return (
-		<Widget>
-			<div>TODO: UI for TopCountriesWidget</div>
-		</Widget>
+		<MetricTileTable
+			Widget={ Widget }
+			title={ __( 'Top countries driving traffic', 'google-site-kit' ) }
+			loading={ loading }
+			rows={ rows }
+			columns={ columns }
+			ZeroState={ ZeroDataMessage }
+			error={ error }
+			moduleSlug="analytics-4"
+		/>
 	);
 }
 

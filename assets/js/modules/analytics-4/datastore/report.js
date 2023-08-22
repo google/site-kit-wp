@@ -238,8 +238,8 @@ const baseSelectors = {
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
-	 * @param {string}         options.startDate          Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate            Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.startDate          Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate            Required. End date to query report data for as YYYY-mm-dd.
 	 * @param {Array.<string>} options.metrics            Required. List of metrics to query.
 	 * @param {string}         [options.compareStartDate] Optional. Start date to compare report data for as YYYY-mm-dd.
 	 * @param {string}         [options.compareEndDate]   Optional. End date to compare report data for as YYYY-mm-dd.

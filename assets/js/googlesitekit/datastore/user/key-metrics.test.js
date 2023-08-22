@@ -39,6 +39,7 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
+import { CORE_SITE } from '../site/constants';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -385,6 +386,52 @@ describe( 'core/user key metrics', () => {
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should set the keyMetricsSetupCompleted site info setting to true', async () => {
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				// Verify the setting is initially false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
+
+				// Assert that the setting is now true.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( true );
+			} );
+
+			it( 'should not set the keyMetricsSetupCompleted site info setting to true if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( coreKeyMetricsEndpointRegExp, {
+					body: response,
+					status: 500,
+				} );
+
+				// Verify the setting is initially false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
+
+				// Verify the setting is still false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

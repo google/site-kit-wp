@@ -27,10 +27,7 @@ import {
 	CONTEXT_AMP,
 	CONTAINER_CREATE,
 } from '../../datastore/constants';
-import {
-	AMP_MODE_PRIMARY,
-	AMP_MODE_SECONDARY,
-} from '../../../../googlesitekit/datastore/site/constants';
+import { AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -248,55 +245,6 @@ describe( 'AMPContainerSelect', () => {
 			queryByRole( 'menu', { hidden: true } )
 		).not.toBeInTheDocument();
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
-	} );
-
-	it( 'should be labeled as "Container" in a primary AMP context', () => {
-		const { account, containers } = factories.buildAccountWithContainers();
-		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetAccounts( [ account ] );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.finishResolution( 'getAccounts', [] );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetContainers( containers, { accountID } );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.finishResolution( 'getContainers', [ accountID ] );
-
-		const { container } = render( <AMPContainerSelect />, { registry } );
-
-		expect(
-			container.querySelector( '.mdc-floating-label' )
-		).toHaveTextContent( /Container/i );
-	} );
-
-	it( 'should be labeled as "AMP Container" in a secondary AMP context', () => {
-		const { account, containers } = factories.buildAccountWithContainers();
-		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetAccounts( [ account ] );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.finishResolution( 'getAccounts', [] );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetContainers( containers, { accountID } );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.finishResolution( 'getContainers', [ accountID ] );
-		provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );
-
-		const { container } = render( <AMPContainerSelect />, { registry } );
-
-		expect(
-			container.querySelector( '.mdc-floating-label' )
-		).toHaveTextContent( /AMP Container/i );
 	} );
 
 	it( 'should render nothing in a non-AMP context', () => {

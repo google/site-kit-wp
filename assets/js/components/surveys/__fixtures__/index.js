@@ -24,3 +24,4 @@ export { default as singleQuestionOpenText } from './signle-question-open-text.j
 export { default as singleQuestionMultiSelect } from './single-question-multi-select.json';
 export { default as singleQuestionSurveySingleSelect } from './single-question-single-select.json';
 export { default as singleQuestionSurveyWithNoFollowUp } from './single-question-with-no-followup.json';
+export { default as multiQuestionFakeConditionsSurvey } from './survey-multi-question-fake-conditions.json';
