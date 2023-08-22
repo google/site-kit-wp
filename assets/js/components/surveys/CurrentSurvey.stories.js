@@ -34,6 +34,7 @@ import CurrentSurvey from './CurrentSurvey';
 import {
 	multiQuestionConditionalSurvey,
 	multiQuestionSurvey,
+	multiQuestionFakeConditionsSurvey,
 	singleQuestionSurvey,
 	singleQuestionSurveyWithNoFollowUp,
 } from './__fixtures__';
@@ -66,6 +67,12 @@ export const SurveyMultipleQuestionsStory = Template.bind( {} );
 SurveyMultipleQuestionsStory.storyName = 'Multiple questions';
 SurveyMultipleQuestionsStory.parameters = {
 	survey: multiQuestionSurvey,
+};
+
+export const SurveyWithFakeConditionsStory = Template.bind( {} );
+SurveyWithFakeConditionsStory.storyName = 'Fake conditions';
+SurveyWithFakeConditionsStory.parameters = {
+	survey: multiQuestionFakeConditionsSurvey,
 };
 
 export const SurveyMultipleQuestionsConditionalStory = Template.bind( {} );
