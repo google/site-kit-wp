@@ -24,14 +24,36 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
 import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
+import {
+	CORE_USER,
+	keyMetricsGA4Widgets,
+} from '../../../../googlesitekit/datastore/user/constants';
+import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
+import Null from '../../../../components/Null';
+const { useSelect } = Data;
 
 // Note: `analytics` is used as the slug here since GA4 "depends" on it.
 const metadata = { moduleSlug: 'analytics' };
 
 export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
-	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );
+	const ga4DependantKeyMetrics = useSelect( ( select ) => {
+		const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+		if ( ! keyMetrics ) {
+			return [];
+		}
+
+		return keyMetrics.filter( ( keyMetric ) =>
+			keyMetricsGA4Widgets.includes( keyMetric )
+		).length;
+	} );
+
+	const Component = ga4DependantKeyMetrics > 3 ? Null : ConnectGA4CTAWidget;
+
+	useWidgetStateEffect( widgetSlug, Component, metadata );
 
 	// Note that we need to render the `Widget` component as a wrapper here so this component will display
 	// correctly when used as a `FallbackComponent` for the `whenActive` HOC. Conversely, when `ConnectModuleCTATile`

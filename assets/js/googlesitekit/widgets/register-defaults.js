@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
-import { CORE_USER } from '../datastore/user/constants';
+import { CORE_USER, keyMetricsGA4Widgets } from '../datastore/user/constants';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
 import {
@@ -35,6 +35,7 @@ import {
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 import { CORE_SITE } from '../datastore/site/constants';
+import { ConnectGA4CTAWidget } from '../../modules/analytics-4/components/widgets';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -242,6 +243,35 @@ export function registerDefaults( widgetsAPI ) {
 				isActive: ( select ) =>
 					select( CORE_USER ).isAuthenticated() &&
 					select( CORE_SITE ).isKeyMetricsSetupCompleted() === false,
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgetsAPI.registerWidget(
+			'keyMetricsConnectGA4All',
+			{
+				Component: ConnectGA4CTAWidget,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+				isActive: ( select ) => {
+					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+					if ( ! Array.isArray( keyMetrics ) ) {
+						return false;
+					}
+					const kmAnalyticsWidgetCount = keyMetrics.filter(
+						( keyMetric ) =>
+							keyMetricsGA4Widgets.includes( keyMetric )
+					).length;
+
+					global.console.log( {
+						kmAnalyticsWidgetCount: kmAnalyticsWidgetCount > 4,
+					} );
+
+					return kmAnalyticsWidgetCount > 3;
+				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
