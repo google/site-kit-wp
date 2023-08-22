@@ -36,6 +36,7 @@ import {
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 import { CORE_SITE } from '../datastore/site/constants';
 import { ConnectGA4CTAWidget } from '../../modules/analytics-4/components/widgets';
+import { CORE_MODULES } from '../modules/datastore/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -257,8 +258,12 @@ export function registerDefaults( widgetsAPI ) {
 				modules: [ 'search-console' ],
 				isActive: ( select ) => {
 					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+					const isGA4Connected =
+						select( CORE_MODULES ).isModuleConnected(
+							'analytics-4'
+						);
 
-					if ( ! Array.isArray( keyMetrics ) ) {
+					if ( isGA4Connected || ! Array.isArray( keyMetrics ) ) {
 						return false;
 					}
 					const kmAnalyticsWidgetCount = keyMetrics.filter(
