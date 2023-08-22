@@ -340,9 +340,9 @@ final class Analytics_4 extends Module
 			'GET:property'                       => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'                 => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'           => array( 'service' => 'analyticsadmin' ),
-			'GET:enhanced-measurement-settings'  => array( 'service' => 'analyticenhancedmeasurements' ),
+			'GET:enhanced-measurement-settings'  => array( 'service' => 'analyticsenhancedmeasurements' ),
 			'POST:enhanced-measurement-settings' => array(
-				'service'                => 'analyticenhancedmeasurements',
+				'service'                => 'analyticsenhancedmeasurements',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
 			),
