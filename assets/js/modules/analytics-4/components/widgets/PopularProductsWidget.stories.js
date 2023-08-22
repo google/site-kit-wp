@@ -48,8 +48,8 @@ const reportOptions = {
 	dimensionFilters: {
 		pagePath: {
 			filterType: 'stringFilter',
-			matchType: 'BEGINS_WITH',
-			value: [ '/product/' ],
+			matchType: 'PARTIAL_REGEXP',
+			value: [ '^/product/' ],
 		},
 	},
 	metrics: [ { name: 'screenPageViews' } ],

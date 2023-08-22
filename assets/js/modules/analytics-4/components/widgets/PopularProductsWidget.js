@@ -94,7 +94,7 @@ function PopularProductsWidget( props ) {
 		dimensionFilters: {
 			pagePath: {
 				filterType: 'stringFilter',
-				matchType: 'BEGINS_WITH',
+				matchType: 'PARTIAL_REGEXP',
 				value: productBasePaths,
 			},
 		},

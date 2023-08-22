@@ -49,7 +49,7 @@ describe( 'core/site site info', () => {
 				label: 'Post',
 			},
 		],
-		productBasePaths: [ '/product/' ],
+		productBasePaths: [ '^/product/' ],
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
