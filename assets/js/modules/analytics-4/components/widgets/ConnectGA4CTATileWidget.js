@@ -31,7 +31,6 @@ import {
 	CORE_USER,
 	keyMetricsGA4Widgets,
 } from '../../../../googlesitekit/datastore/user/constants';
-import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
 import Null from '../../../../components/Null';
 const { useSelect } = Data;
 
@@ -51,7 +50,7 @@ export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
 		).length;
 	} );
 
-	const Component = ga4DependantKeyMetrics > 3 ? Null : ConnectGA4CTAWidget;
+	const Component = ga4DependantKeyMetrics > 3 ? Null : ConnectModuleCTATile;
 
 	useWidgetStateEffect( widgetSlug, Component, metadata );
 
