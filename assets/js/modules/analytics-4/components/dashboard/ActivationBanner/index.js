@@ -49,18 +49,17 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { getItem } from '../../../../../googlesitekit/api/cache';
+import whenActive from '../../../../../util/when-active';
+
 const { useSelect, useDispatch, useRegistry } = Data;
 
-export default function ActivationBanner() {
+function ActivationBanner() {
 	const [ step, setStep ] = useState( null );
 	const [ isDismissed, setIsDismissed ] = useState();
 	const awaitWhileMounted = usePromise();
 
 	const registry = useRegistry();
 
-	const uaConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
-	);
 	const ga4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -180,10 +179,10 @@ export default function ActivationBanner() {
 		if ( isDismissed === undefined ) {
 			return;
 		}
-		if ( step === null && uaConnected && ! ga4Connected ) {
+		if ( step === null && ! ga4Connected ) {
 			setStep( ACTIVATION_STEP_REMINDER );
 		}
-	}, [ ga4Connected, step, uaConnected, isDismissed ] );
+	}, [ ga4Connected, step, isDismissed ] );
 
 	// Show unique errors.
 	const errorNotice =
@@ -225,3 +224,5 @@ export default function ActivationBanner() {
 			return null;
 	}
 }
+
+export default whenActive( { moduleName: 'analytics' } )( ActivationBanner );
