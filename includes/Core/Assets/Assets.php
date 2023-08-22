@@ -1093,7 +1093,11 @@ final class Assets {
 			$permalink_template        = home_url( $permastruct );
 			$product_url_path          = URL::parse( $permalink_template, PHP_URL_PATH );
 			list( $product_base_path ) = explode( '%product%', $product_url_path, 2 );
-			$product_base_paths[]      = $product_base_path;
+			$product_base_path         = str_replace( $wp_rewrite->rewritecode, $wp_rewrite->rewritereplace, $product_base_path );
+			if ( strpos( $product_base_path, '^' ) !== 0 ) {
+				$product_base_path = '^' . $product_base_path;
+			}
+			$product_base_paths[] = $product_base_path;
 		}
 
 		/**
