@@ -93,11 +93,6 @@
 
 	.googlesitekit-stepper__step-title--upcoming {
 		color: $c-surfaces-on-surface-variant;
-		display: block;
-
-		@media (min-width: $bp-tablet) {
-			display: flex;
-		}
 	}
 
 	.googlesitekit-stepper__step-content {
