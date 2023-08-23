@@ -37,7 +37,7 @@ class Key_Metrics {
 	/**
 	 * Key_Metrics_Setup_Completed instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.108.0
 	 * @var Key_Metrics_Setup_Completed
 	 */
 	protected $key_metrics_setup_completed;
@@ -81,7 +81,7 @@ class Key_Metrics {
 	/**
 	 * Adds the status of the Key Metrics widget setup to the inline JS data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.108.0
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.

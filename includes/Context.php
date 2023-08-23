@@ -30,7 +30,7 @@ class Context {
 	 *
 	 * @since 1.0.0 Originally introduced.
 	 * @since 1.36.0 Marked as unused, see description.
-	 * @since n.e.x.t Removed the description and reinstated.
+	 * @since 1.108.0 Removed the description and reinstated.
 	 * @var string
 	 */
 	const AMP_MODE_PRIMARY = 'primary';
@@ -315,7 +315,7 @@ class Context {
 	 * Gets the current AMP mode.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Extracted AMP plugin related logic to `get_amp_mode_from_amp_plugin` function.
+	 * @since 1.108.0 Extracted AMP plugin related logic to `get_amp_mode_from_amp_plugin` function.
 	 *
 	 * @return bool|string 'primary' if in standard mode,
 	 *                     'secondary' if in transitional or reader modes, or the Web Stories plugin is active
@@ -338,7 +338,7 @@ class Context {
 	/**
 	 * Gets the current AMP mode from the AMP plugin.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.108.0
 	 *
 	 * @return bool|string 'primary' if in standard mode,
 	 *                     'secondary' if in transitional or reader modes

@@ -38,7 +38,7 @@ class REST_Key_Metrics_Controller {
 	/**
 	 * Key_Metrics_Setup_Completed instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.108.0
 	 * @var Key_Metrics_Setup_Completed
 	 */
 	protected $key_metrics_setup_completed;
