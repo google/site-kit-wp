@@ -74,6 +74,9 @@ export default function MetricsSelectionPanel() {
 			isOpen={ isOpen }
 			onOpen={ onSideSheetOpen }
 			closeFn={ sideSheetCloseFn }
+			focusTrapOptions={ {
+				initialFocus: '.googlesitekit-accordion__header',
+			} }
 		>
 			<Header />
 			<Metrics savedMetrics={ savedViewableMetrics } />
