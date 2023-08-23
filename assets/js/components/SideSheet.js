@@ -47,6 +47,7 @@ export default function SideSheet( {
 	isOpen,
 	onOpen = () => {},
 	closeFn = () => {},
+	focusTrapOptions = {},
 } ) {
 	const sideSheetRef = useRef();
 
@@ -74,6 +75,7 @@ export default function SideSheet( {
 				active={ !! isOpen }
 				focusTrapOptions={ {
 					fallbackFocus: 'body',
+					...focusTrapOptions,
 				} }
 			>
 				<section
@@ -104,4 +106,5 @@ SideSheet.propTypes = {
 	isOpen: PropTypes.bool,
 	onOpen: PropTypes.func,
 	closeFn: PropTypes.func,
+	focusTrapOptions: PropTypes.object,
 };
