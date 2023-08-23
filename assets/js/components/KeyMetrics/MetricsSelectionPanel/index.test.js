@@ -65,7 +65,10 @@ describe( 'MetricsSelectionPanel', () => {
 	describe( 'Header', () => {
 		it( 'should show the number of selected metrics', () => {
 			provideKeyMetrics( registry, {
-				widgetSlugs: [ 'metric-a', 'metric-b' ],
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_LOYAL_VISITORS,
+				],
 			} );
 
 			provideModules( registry, [
@@ -77,10 +80,10 @@ describe( 'MetricsSelectionPanel', () => {
 			] );
 
 			provideKeyMetricsWidgetRegistrations( registry, {
-				'metric-a': {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				'metric-b': {
+				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
