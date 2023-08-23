@@ -57,11 +57,6 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Configure git
-        run: |
-          git config --global user.email "138160377+google-site-kit-bot@users.noreply.github.com"
-          git config --global user.name "google-site-kit-bot"
-
       - name: Update Browserslist database and create PR if applicable
         uses: c2corg/browserslist-update-action@v1
         with:
