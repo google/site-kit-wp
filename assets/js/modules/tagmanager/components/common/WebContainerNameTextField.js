@@ -48,9 +48,7 @@ export default function WebContainerNameTextField() {
 	const siteName = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteName()
 	);
-	const isSecondaryAMP = useSelect( ( select ) =>
-		select( CORE_SITE ).isSecondaryAMP()
-	);
+	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const referenceSiteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
@@ -76,7 +74,7 @@ export default function WebContainerNameTextField() {
 		return null;
 	}
 
-	const label = isSecondaryAMP
+	const label = isAMP
 		? __( 'Web Container Name', 'google-site-kit' )
 		: __( 'Container Name', 'google-site-kit' );
 

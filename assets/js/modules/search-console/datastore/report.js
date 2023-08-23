@@ -41,14 +41,14 @@ import { createGatheringDataStore } from '../../../googlesitekit/modules/create-
 const { createRegistrySelector } = Data;
 
 /**
- * Returns report args for the zero data report.
+ * Returns report args for a sample report.
  *
  * @since 1.107.0
  *
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
  */
-const getZeroDataReportArgs = ( select ) => {
+const getSampleReportArgs = ( select ) => {
 	const url = select( CORE_SITE ).getCurrentEntityURL();
 	const { compareStartDate: startDate, endDate } = select(
 		CORE_USER
@@ -118,7 +118,7 @@ const gatheringDataStore = createGatheringDataStore( 'search-console', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
-		const reportArgs = getZeroDataReportArgs( select );
+		const reportArgs = getSampleReportArgs( select );
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const report = select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs );
@@ -209,7 +209,7 @@ const baseSelectors = {
 			return true;
 		}
 
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
