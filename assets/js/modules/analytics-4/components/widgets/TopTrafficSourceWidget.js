@@ -152,7 +152,7 @@ function TopTrafficSourceWidget( { Widget } ) {
 	return (
 		<MetricTileText
 			Widget={ Widget }
-			title={ __( 'Top Traffic Source', 'google-site-kit' ) }
+			title={ __( 'Top traffic source', 'google-site-kit' ) }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
 			subText={
