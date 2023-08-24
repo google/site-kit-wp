@@ -28,6 +28,16 @@
 				@include mdc-layout-grid-cell-span_("phone", 4, $gutter);
 			}
 		}
+
+		.googlesitekit-widget-area-header__title {
+
+			align-items: center;
+			display: flex;
+
+			.googlesitekit-new-badge {
+				margin-left: 8px;
+			}
+		}
 	}
 
 	.googlesitekit-km-change-metrics-cta {
