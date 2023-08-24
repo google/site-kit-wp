@@ -27,7 +27,7 @@ abstract class Module_Tag extends Tag {
 	 * @since 1.24.0
 	 * @var string
 	 */
-	protected $slug;
+	protected $module_slug;
 
 	/**
 	 * Constructor.
