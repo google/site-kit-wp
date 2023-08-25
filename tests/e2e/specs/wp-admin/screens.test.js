@@ -56,8 +56,6 @@ describe( 'screens', () => {
 
 	describe( 'googlesitekit-ad-blocking-recovery', () => {
 		it( 'exists with the expected page title', async () => {
-			await enableFeature( 'adBlockerDetection' );
-
 			await setupSiteKit();
 
 			await visitAdminPage(

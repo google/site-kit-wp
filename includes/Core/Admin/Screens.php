@@ -476,16 +476,14 @@ final class Screens {
 			);
 		}
 
-		if ( Feature_Flags::enabled( 'adBlockerDetection' ) ) {
-			$screens[] = new Screen(
-				self::PREFIX . 'ad-blocking-recovery',
-				array(
-					'title'       => __( 'Ad Blocking Recovery', 'google-site-kit' ),
-					'capability'  => Permissions::MANAGE_OPTIONS,
-					'parent_slug' => self::PARENT_SLUG_NULL,
-				)
-			);
-		}
+		$screens[] = new Screen(
+			self::PREFIX . 'ad-blocking-recovery',
+			array(
+				'title'       => __( 'Ad Blocking Recovery', 'google-site-kit' ),
+				'capability'  => Permissions::MANAGE_OPTIONS,
+				'parent_slug' => self::PARENT_SLUG_NULL,
+			)
+		);
 
 		return $screens;
 	}

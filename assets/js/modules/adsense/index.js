@@ -102,19 +102,17 @@ const isAnalytics4Active = ( select ) =>
 	select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 export const registerWidgets = ( widgets ) => {
-	if ( isFeatureEnabled( 'adBlockerDetection' ) ) {
-		widgets.registerWidget(
-			'adBlockingRecovery',
-			{
-				Component: AdBlockingRecoverySetupCTAWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ 'adsense' ],
-			},
-			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
-		);
-	}
+	widgets.registerWidget(
+		'adBlockingRecovery',
+		{
+			Component: AdBlockingRecoverySetupCTAWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'adsense' ],
+		},
+		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+	);
 
 	if ( isFeatureEnabled( 'userInput' ) ) {
 		/*
