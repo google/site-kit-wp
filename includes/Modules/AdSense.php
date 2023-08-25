@@ -827,8 +827,7 @@ final class AdSense extends Module
 			$tag = new AMP_Tag( $settings['clientID'], self::MODULE_SLUG );
 			$tag->set_story_ad_slot_id( $settings['webStoriesAdUnit'] );
 		} else {
-			$tag                          = new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
-			$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $this->ad_blocking_recovery_tag, $settings['useAdBlockingRecoveryErrorSnippet'] );
+			$tag = new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
 		}
 
 		if ( $tag->is_tag_blocked() ) {
@@ -841,19 +840,22 @@ final class AdSense extends Module
 		$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
-		$ad_blocking_recovery_web_tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-		$ad_blocking_recovery_web_tag->use_guard( new WP_Query_404_Guard() );
-		$ad_blocking_recovery_web_tag->use_guard( new Ad_Blocking_Recovery_Tag_Guard( $module_settings ) );
-		$ad_blocking_recovery_web_tag->use_guard( new Tag_Environment_Type_Guard() );
-
 		if ( $tag->can_register() ) {
 			$tag->register();
 		}
 
-		if ( $ad_blocking_recovery_web_tag->can_register() ) {
-			$ad_blocking_recovery_web_tag->register();
-		}
+		if ( ! $this->context->is_amp() ) {
+			$ad_blocking_recovery_web_tag = new Ad_Blocking_Recovery_Web_Tag( $this->ad_blocking_recovery_tag, $settings['useAdBlockingRecoveryErrorSnippet'] );
 
+			$ad_blocking_recovery_web_tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+			$ad_blocking_recovery_web_tag->use_guard( new WP_Query_404_Guard() );
+			$ad_blocking_recovery_web_tag->use_guard( new Ad_Blocking_Recovery_Tag_Guard( $module_settings ) );
+			$ad_blocking_recovery_web_tag->use_guard( new Tag_Environment_Type_Guard() );
+
+			if ( $ad_blocking_recovery_web_tag->can_register() ) {
+				$ad_blocking_recovery_web_tag->register();
+			}
+		}
 	}
 
 	/**
