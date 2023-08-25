@@ -30,7 +30,7 @@
 		width: 100%;
 		z-index: $z-index-sk-side-sheet;
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-nonMobile) {
 			width: 400px;
 		}
 
