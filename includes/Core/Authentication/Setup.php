@@ -66,9 +66,9 @@ class Setup {
 	/**
 	 * Proxy support URL.
 	 *
-	 * @since 1.48.0
+	 * @since n.e.x.t Explicitly declared; previously, it was dynamically declared.
 	 *
-	 * @var Proxy_Support_Link_Url
+	 * @var string
 	 */
 	protected $proxy_support_link_url;
 
