@@ -56,6 +56,14 @@ export default function Metrics( { savedMetrics } ) {
 					return acc;
 				}
 
+				if (
+					typeof KEY_METRICS_WIDGETS[ metric ].displayInList ===
+						'function' &&
+					! KEY_METRICS_WIDGETS[ metric ].displayInList( select )
+				) {
+					return acc;
+				}
+
 				return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
 			}, {} );
 	} );

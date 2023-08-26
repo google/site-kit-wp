@@ -35,7 +35,9 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 export const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
@@ -79,6 +81,10 @@ export const KEY_METRICS_WIDGETS = {
 			'Products that brought in the most visitors',
 			'google-site-kit'
 		),
+		displayInList: ( select ) =>
+			select( CORE_USER ).isKeyMetricActive(
+				KM_ANALYTICS_POPULAR_PRODUCTS
+			) || select( CORE_SITE ).getProductBasePaths()?.length > 0,
 	},
 	[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 		title: __( 'How people find your site', 'google-site-kit' ),

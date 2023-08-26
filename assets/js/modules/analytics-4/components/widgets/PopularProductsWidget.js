@@ -35,7 +35,10 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+} from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -108,7 +111,13 @@ function PopularProductsWidget( props ) {
 		limit: 3,
 	};
 
-	const showWidget = productBasePaths?.length > 0;
+	const isPopularProductsWidgetActive = useSelect( ( select ) =>
+		select( CORE_USER ).isKeyMetricActive( KM_ANALYTICS_POPULAR_PRODUCTS )
+	);
+
+	const siteHasProductBasePaths = productBasePaths?.length > 0;
+
+	const showWidget = isPopularProductsWidgetActive || siteHasProductBasePaths;
 
 	const report = useInViewSelect( ( select ) =>
 		showWidget
@@ -195,6 +204,18 @@ function PopularProductsWidget( props ) {
 		}
 	);
 
+	let zeroStateMessage = __(
+		'Analytics doesn’t have data for your site’s products yet',
+		'google-site-kit'
+	);
+
+	if ( ! siteHasProductBasePaths && isPopularProductsWidgetActive ) {
+		zeroStateMessage = __(
+			'No product post type was detected on your site',
+			'google-site-kit'
+		);
+	}
+
 	return (
 		<MetricTileTable
 			Widget={ Widget }
@@ -206,12 +227,7 @@ function PopularProductsWidget( props ) {
 			rows={ rows }
 			columns={ columns }
 			infoTooltip={ showTooltip ? infoTooltip : null }
-			ZeroState={ () =>
-				__(
-					'Analytics doesn’t have data for your site’s products yet',
-					'google-site-kit'
-				)
-			}
+			ZeroState={ () => zeroStateMessage }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>
