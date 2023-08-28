@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.3
 Requires PHP:      5.6
-Stable tag:        1.107.0
+Stable tag:        1.108.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -109,6 +109,35 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.108.0 =
+
+**Enhanced**
+
+* Update surveys to skip rendering when no answers are found. See [#7450](https://github.com/google/site-kit-wp/issues/7450).
+* Update the date that Universal Analytics support is removed from Site Kit to September 25, 2023. See [#7423](https://github.com/google/site-kit-wp/issues/7423).
+* Improve accuracy of "Most popular products by pageviews" widget. See [#7390](https://github.com/google/site-kit-wp/issues/7390).
+* Fix the conditions for showing the Key Metrics Setup CTA banner, ensuring that it does not display when the user has setup their choice of metrics, or when viewing the shared dashboard. See [#7349](https://github.com/google/site-kit-wp/issues/7349).
+* Add a Key Metric tile that allows users to add more tiles to the Dashboard. See [#7336](https://github.com/google/site-kit-wp/issues/7336).
+* Take user back to AdSense settings if they cancel ABR setup when it is initiated from the Settings. See [#7298](https://github.com/google/site-kit-wp/issues/7298).
+* Improve the text in the buttons of the Analytics and Google Tag mismatch notification. See [#6734](https://github.com/google/site-kit-wp/issues/6734).
+* Combine similar error boundary action components into a single component. See [#6515](https://github.com/google/site-kit-wp/issues/6515).
+* Create the "Top countries driving traffic" Key Metrics widget tile. See [#6253](https://github.com/google/site-kit-wp/issues/6253).
+* Update language from Google "products" to "services" in the Site Kit setup screen. See [#5343](https://github.com/google/site-kit-wp/issues/5343).
+* Ensure the determined AMP mode correctly reflects the AMP plugin configuration (if active) and whether the Web Stories plugin is active. See [#5118](https://github.com/google/site-kit-wp/issues/5118).
+
+**Fixed**
+
+* Fix a bug that caused an unneeded network request when viewing the Analytics activation banner. See [#7438](https://github.com/google/site-kit-wp/issues/7438).
+* Fix issue that caused Key Metrics Widgets in view-only dashboard to appear as unusable links or cause errors. See [#7400](https://github.com/google/site-kit-wp/issues/7400).
+* Fix Key Metrics widgets layout at 600px viewport width. See [#7395](https://github.com/google/site-kit-wp/issues/7395).
+* Update Key Metrics navigation icon to match design. See [#7347](https://github.com/google/site-kit-wp/issues/7347).
+* Update code to stop deprecation warning appearing on sites using PHP 8.1. See [#7147](https://github.com/google/site-kit-wp/issues/7147).
+* Fix console error from appearing when AdSense is shared with certain user roles. See [#7074](https://github.com/google/site-kit-wp/issues/7074).
+* Fix issue that caused the post-switched to Google Analytics 4 banner to appear for users with no access to the connected Analytics property. See [#7044](https://github.com/google/site-kit-wp/issues/7044).
+* Fix the "Set up Google Analytics" CTA on Site Kit's WordPress Dashboard widget, ensuring it correctly navigates to the setup page. See [#6710](https://github.com/google/site-kit-wp/issues/6710).
+* Update Google account menu's accessibility labels to improve VoiceOver navigation. See [#6636](https://github.com/google/site-kit-wp/issues/6636).
+* Fix bug that could cause select component to be hidden underneath the Site Kit header. See [#6576](https://github.com/google/site-kit-wp/issues/6576).
 
 = 1.107.0 =
 
