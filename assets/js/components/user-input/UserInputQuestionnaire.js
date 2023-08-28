@@ -177,7 +177,7 @@ export default function UserInputQuestionnaire() {
 						'google-site-kit'
 					) }
 					description={ __(
-						'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
+						'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track progress towards your specific goals.',
 						'google-site-kit'
 					) }
 					next={ nextCallback }
@@ -248,7 +248,7 @@ export default function UserInputQuestionnaire() {
 						'google-site-kit'
 					) }
 					description={ __(
-						'Based on your answers, Site Kit will tailor the metrics and advice you see on your dashboard to help you make progress in these areas',
+						'Based on your answers, Site Kit will tailor the metrics and recommendations you see on your dashboard to help you make progress in these areas.',
 						'google-site-kit'
 					) }
 					next={ nextCallback }

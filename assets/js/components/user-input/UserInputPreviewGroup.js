@@ -211,7 +211,10 @@ export default function UserInputPreviewGroup( {
 
 							<div className="googlesitekit-user-input__preview-actions">
 								<SpinnerButton
-									disabled={ ! hasSettingChanged }
+									disabled={
+										! hasSettingChanged ||
+										values.length === 0
+									}
 									onClick={
 										hasSettingChanged
 											? submitChanges
