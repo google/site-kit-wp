@@ -212,7 +212,7 @@ export default function UserInputQuestionnaire() {
 						'google-site-kit'
 					) }
 					description={ __(
-						'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation',
+						'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation.',
 						'google-site-kit'
 					) }
 					next={ nextCallback }
