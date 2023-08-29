@@ -407,9 +407,6 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		// Enabling this feature flag is required for a module to be declared shareable.
-		$this->enable_feature( 'dashboardSharing' );
-
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$request->set_body_params(
 			array(
@@ -725,9 +722,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_recoverable_module() {
-		// Enabling this feature flag is required for a module to be declared shareable.
-		$this->enable_feature( 'dashboardSharing' );
-
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -747,9 +741,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_accessible_module() {
-		// Enabling this feature flag is required for a module to be declared shareable.
-		$this->enable_feature( 'dashboardSharing' );
-
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -784,9 +775,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__success() {
-		// Enabling this feature flag is required for a module to be declared shareable.
-		$this->enable_feature( 'dashboardSharing' );
-
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -832,10 +820,8 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__analytics_4_exception() {
-		// Enabling the following feature flags is required for analytics-4
-		// module to be declared shareable.
+		// Enabling this feature flag is required for a module to be declared shareable.
 		$this->enable_feature( 'ga4Reporting' );
-		$this->enable_feature( 'dashboardSharing' );
 
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();

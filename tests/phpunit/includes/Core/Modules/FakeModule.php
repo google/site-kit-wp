@@ -133,7 +133,7 @@ class FakeModule extends Module
 		return array(
 			'GET:test-request'  => array(
 				'service'   => '',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => true,
 			),
 			'POST:test-request' => array( 'service' => '' ),
 		);

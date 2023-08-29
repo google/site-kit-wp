@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Dashboard_Sharing;
 
 use Google\Site_Kit\Core\Admin\Pointer;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class for view-only pointer.
@@ -56,7 +55,6 @@ final class View_Only_Pointer {
 				'target_id'       => 'toplevel_page_googlesitekit-dashboard',
 				'active_callback' => function( $hook_suffix ) {
 					if ( 'index.php' !== $hook_suffix
-						|| ! Feature_Flags::enabled( 'dashboardSharing' )
 						|| current_user_can( Permissions::AUTHENTICATE )
 						|| ! current_user_can( Permissions::VIEW_SPLASH )
 

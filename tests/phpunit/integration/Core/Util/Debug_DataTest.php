@@ -63,8 +63,7 @@ class Debug_DataTest extends TestCase {
 		$this->assertNotHasDashboardSharingModuleFields( 'fake-module', $info );
 	}
 
-	public function test_registered_debug_information__dashboardSharing() {
-		$this->enable_feature( 'dashboardSharing' );
+	public function test_registered_debug_information__dashboard_sharing() {
 		remove_all_filters( 'debug_information' );
 		$debug_data = $this->new_debug_data();
 		$debug_data->register();

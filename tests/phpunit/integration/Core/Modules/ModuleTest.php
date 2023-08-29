@@ -117,8 +117,6 @@ class ModuleTest extends TestCase {
 	}
 
 	public function test_get_data__current_module_owner_without_shared_role() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
@@ -142,8 +140,6 @@ class ModuleTest extends TestCase {
 	}
 
 	public function test_get_data__current_module_owner_with_shared_role() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
@@ -189,8 +185,6 @@ class ModuleTest extends TestCase {
 	}
 
 	public function test_get_data__non_module_owner_without_shared_role() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
@@ -213,8 +207,6 @@ class ModuleTest extends TestCase {
 	}
 
 	public function test_get_data__non_module_owner_with_shared_role() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
