@@ -4,5 +4,6 @@
 	"dashboardSharing",
 	"ga4Reporting",
 	"gm3Components",
-	"userInput"
+	"userInput",
+	"enhancedMeasurement"
 ]
