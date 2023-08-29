@@ -120,28 +120,30 @@ class REST_Key_Metrics_Controller {
 						$data     = $request->get_param( 'data' );
 						$settings = $data['settings'];
 
-						$num_widgets = count( $settings['widgetSlugs'] );
-						if ( ! $num_widgets ) {
-							return new WP_Error(
-								'rest_invalid_param',
-								__( 'Selected metrics cannot be empty.', 'google-site-kit' ),
-								array( 'status' => 400 )
-							);
-						}
-						// Additional check is needed to ensure that we have no more than 4 widget
-						// slugs provided. This is required until we drop support for WP versions below 5.5.0, after
-						// which we can solely rely on `maxItems` in the schema validation (see below).
-						// See https://github.com/WordPress/WordPress/blob/965fcddcf68cf4fd122ae24b992e242dfea1d773/wp-includes/rest-api.php#L1922-L1925.
-						if ( $num_widgets > 4 ) {
-							return new WP_Error(
-								'rest_invalid_param',
-								__( 'No more than 4 key metrics can be selected.', 'google-site-kit' ),
-								array( 'status' => 400 )
-							);
+						if ( isset( $settings['widgetSlugs'] ) ) {
+							$num_widgets = count( $settings['widgetSlugs'] );
+							if ( ! $num_widgets ) {
+								return new WP_Error(
+									'rest_invalid_param',
+									__( 'Selected metrics cannot be empty.', 'google-site-kit' ),
+									array( 'status' => 400 )
+								);
+							}
+							// Additional check is needed to ensure that we have no more than 4 widget
+							// slugs provided. This is required until we drop support for WP versions below 5.5.0, after
+							// which we can solely rely on `maxItems` in the schema validation (see below).
+							// See https://github.com/WordPress/WordPress/blob/965fcddcf68cf4fd122ae24b992e242dfea1d773/wp-includes/rest-api.php#L1922-L1925.
+							if ( $num_widgets > 4 ) {
+								return new WP_Error(
+									'rest_invalid_param',
+									__( 'No more than 4 key metrics can be selected.', 'google-site-kit' ),
+									array( 'status' => 400 )
+								);
+							}
+							$this->key_metrics_setup_completed->set( true );
 						}
 
 						$this->settings->merge( $data['settings'] );
-						$this->key_metrics_setup_completed->set( true );
 
 						return new WP_REST_Response( $this->settings->get() );
 					},
@@ -161,7 +163,7 @@ class REST_Key_Metrics_Controller {
 										),
 										'widgetSlugs'    => array(
 											'type'     => 'array',
-											'required' => true,
+											'required' => false,
 											'maxItems' => 4,
 											'items'    => array(
 												'type' => 'string',
