@@ -29,7 +29,6 @@ import { __ } from '@wordpress/i18n';
 /*
  * Internal dependencies
  */
-import { isFeatureEnabled } from '../features';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 const { hasMultipleAdmins } = global._googlesitekitUserData || {};
@@ -61,7 +60,6 @@ if ( hasMultipleAdmins ) {
 export default {
 	slug: 'dashboardSharingSettings',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_dashboard-sharing`,
-	checkRequirements: () => isFeatureEnabled( 'dashboardSharing' ),
 	steps,
 	callback: ( { type }, { select, dispatch } ) => {
 		if (

@@ -51,7 +51,6 @@ import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
@@ -109,7 +108,7 @@ export default function BannerNotifications() {
 				) }
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
+			<ModuleRecoveryAlert />
 			{ ga4ReportingEnabled &&
 				analyticsModuleConnected &&
 				ga4ModuleConnected && <SwitchedToGA4Banner /> }
