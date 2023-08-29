@@ -199,9 +199,6 @@ HeaderWithDashboardSharingSettings.args = {
 		provideUserAuthentication( registry );
 	},
 };
-HeaderWithDashboardSharingSettings.parameters = {
-	features: [ 'dashboardSharing' ],
-};
 
 export const HeaderViewOnly = Template.bind( {} );
 HeaderViewOnly.storyName = 'Plugin Header in view-only mode';
@@ -269,23 +266,17 @@ HeaderViewOnly.args = {
 		);
 	},
 };
-HeaderViewOnly.parameters = {
-	features: [ 'dashboardSharing' ],
-};
 
 export default {
 	title: 'Components/Header',
 	component: Header,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story ) => {
 			const registry = createTestRegistry();
 			provideSiteInfo( registry );
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ parameters.features || [] }
-				>
+				<WithTestRegistry registry={ registry }>
 					<Story />
 				</WithTestRegistry>
 			);

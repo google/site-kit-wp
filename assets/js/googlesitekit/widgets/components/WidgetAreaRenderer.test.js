@@ -740,7 +740,6 @@ describe( 'WidgetAreaRenderer', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-				features: [ 'dashboardSharing' ],
 			}
 		);
 

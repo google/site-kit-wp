@@ -117,7 +117,6 @@ describe( 'WidgetRenderer', () => {
 					recoverableModules: [ 'search-console' ],
 				} ),
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-				features: [ 'dashboardSharing' ],
 			}
 		);
 
@@ -141,7 +140,6 @@ describe( 'WidgetRenderer', () => {
 					],
 				} ),
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-				features: [ 'dashboardSharing' ],
 			}
 		);
 
@@ -162,7 +160,6 @@ describe( 'WidgetRenderer', () => {
 					recoverableModules: [ 'search-console' ],
 				} ),
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'dashboardSharing' ],
 			}
 		);
 

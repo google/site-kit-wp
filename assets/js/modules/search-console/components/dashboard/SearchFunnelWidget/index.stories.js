@@ -390,9 +390,6 @@ ViewOnlySearchConsoleOnlyReady.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ViewOnlySearchConsoleOnlyReady.parameters = {
-	features: [ 'dashboardSharing' ],
-};
 
 export default {
 	title: 'Modules/SearchConsole/Widgets/SearchFunnelWidget',
@@ -404,7 +401,7 @@ export default {
 				</div>
 			</div>
 		),
-		( Story, { parameters } ) => {
+		( Story ) => {
 			const registry = createTestRegistry();
 			provideSiteInfo( registry );
 			registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-13' );
@@ -426,10 +423,7 @@ export default {
 			] );
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ parameters.features || [] }
-				>
+				<WithTestRegistry registry={ registry }>
 					<Story />
 				</WithTestRegistry>
 			);
