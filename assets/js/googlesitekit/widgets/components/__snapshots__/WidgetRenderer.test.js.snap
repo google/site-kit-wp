@@ -1,5 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`WidgetRenderer should output children directly  1`] = `
+<div>
+  Test
+</div>
+`;
+
 exports[`WidgetRenderer should output children directly 1`] = `
 <div>
   Test

@@ -67,7 +67,7 @@ const setupRegistry = ( {
 };
 
 describe( 'WidgetRenderer', () => {
-	it( 'should output children directly', () => {
+	it( 'should output children directly ', () => {
 		const { container } = render( <WidgetRenderer slug="TestWidget" />, {
 			setupRegistry: setupRegistry(),
 		} );

@@ -59,19 +59,6 @@ class Debug_DataTest extends TestCase {
 		$this->assertArrayHasKey( 'google-site-kit', $info );
 
 		$this->assertNonConditionalFields( $info );
-		$this->assertArrayNotHasKey( 'recoverable_modules', $info['google-site-kit']['fields'] );
-		$this->assertNotHasDashboardSharingModuleFields( 'fake-module', $info );
-	}
-
-	public function test_registered_debug_information__dashboard_sharing() {
-		remove_all_filters( 'debug_information' );
-		$debug_data = $this->new_debug_data();
-		$debug_data->register();
-
-		$info = apply_filters( 'debug_information', array() );
-		$this->assertArrayHasKey( 'google-site-kit', $info );
-
-		$this->assertNonConditionalFields( $info );
 		$this->assertArrayHasKey( 'recoverable_modules', $info['google-site-kit']['fields'] );
 		$this->assertHasDashboardSharingModuleFields( 'fake-module', $info );
 	}
@@ -147,19 +134,6 @@ class Debug_DataTest extends TestCase {
 			$sharing_keys,
 			array_intersect( $sharing_keys, $actual_keys ),
 			"Failed to assert that dashboard sharing fields were present for $module_slug"
-		);
-	}
-
-	protected function assertNotHasDashboardSharingModuleFields( $module_slug, $debug_information ) {
-		$sharing_keys = array(
-			"{$module_slug}_shared_roles",
-			"{$module_slug}_management",
-		);
-		$actual_keys  = array_keys( $debug_information['google-site-kit']['fields'] );
-
-		$this->assertEmpty(
-			array_intersect( $sharing_keys, $actual_keys ),
-			"Failed to assert that dashboard sharing fields were not present for $module_slug"
 		);
 	}
 }

@@ -711,13 +711,13 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slugs' => array( 'search-console' ),
+					'slugs' => array( 'adsense' ),
 				),
 			)
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_shareable', $response->get_data()['error']['search-console']['code'] );
+		$this->assertEquals( 'module_not_shareable', $response->get_data()['error']['adsense']['code'] );
 		$this->assertEquals( 200, $response->get_status() );
 	}
 

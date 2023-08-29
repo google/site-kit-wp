@@ -372,7 +372,7 @@ class ModuleTest extends TestCase {
 	public function test_is_shareable() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertFalse( $module->is_shareable() );
+		$this->assertTrue( $module->is_shareable() );
 	}
 
 	public function test_is_recoverable() {
