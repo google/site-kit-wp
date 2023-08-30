@@ -342,6 +342,13 @@
 		}
 	}
 
+	.googlesitekit-settings-module--active {
+
+		.googlesitekit-overlay {
+			background: rgba($c-surfaces-surface-2, 0.75);
+		}
+	}
+
 	.googlesitekit-settings-module--error {
 		border: 3px solid $c-error;
 	}
