@@ -72,7 +72,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		] )
 	);
 
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
 				'getReport',
