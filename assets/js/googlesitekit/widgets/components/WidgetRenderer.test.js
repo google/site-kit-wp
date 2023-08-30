@@ -76,10 +76,15 @@ describe( 'WidgetRenderer', () => {
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
 
-	it( 'should wrap children when wrapWidget is true', () => {
-		const { container } = render( <WidgetRenderer slug="TestWidget" />, {
-			setupRegistry: setupRegistry( { wrapWidget: true } ),
-		} );
+	it( 'should wrap children when wrapWidget is true', async () => {
+		const { container, waitForRegistry } = render(
+			<WidgetRenderer slug="TestWidget" />,
+			{
+				setupRegistry: setupRegistry( { wrapWidget: true } ),
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( Object.values( container.firstChild.classList ) ).toEqual( [
 			'googlesitekit-widget',
@@ -89,10 +94,15 @@ describe( 'WidgetRenderer', () => {
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
 
-	it( 'should wrap the widget in a hidden container when the widget is preloaded', () => {
-		const { container } = render( <WidgetRenderer slug="TestWidget" />, {
-			setupRegistry: setupRegistry( { preloadWidget: true } ),
-		} );
+	it( 'should wrap the widget in a hidden container when the widget is preloaded', async () => {
+		const { container, waitForRegistry } = render(
+			<WidgetRenderer slug="TestWidget" />,
+			{
+				setupRegistry: setupRegistry( { preloadWidget: true } ),
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( Object.values( container.firstChild.classList ) ).toContain(
 			'googlesitekit-hidden'
@@ -101,10 +111,15 @@ describe( 'WidgetRenderer', () => {
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
 
-	it( 'should output null when no slug is found', () => {
-		const { container } = render( <WidgetRenderer slug="NotFound" />, {
-			setupRegistry: setupRegistry(),
-		} );
+	it( 'should output null when no slug is found', async () => {
+		const { container, waitForRegistry } = render(
+			<WidgetRenderer slug="NotFound" />,
+			{
+				setupRegistry: setupRegistry(),
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( container.firstChild ).toEqual( null );
 	} );
