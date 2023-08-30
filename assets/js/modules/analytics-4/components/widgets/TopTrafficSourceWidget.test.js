@@ -103,7 +103,7 @@ describe( 'TopTrafficSourceWidget', () => {
 	it( 'retries both reports when an error is encountered', async () => {
 		fetchMock.getOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/report'
+				'^/google-site-kit/v1/modules/analytics-4/data/report.*sessionDefaultChannelGroup.*'
 			),
 			{
 				body: {
@@ -116,7 +116,7 @@ describe( 'TopTrafficSourceWidget', () => {
 		);
 		fetchMock.getOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/report'
+				'^/google-site-kit/v1/modules/analytics-4/data/report((?!sessionDefaultChannelGroup).)*'
 			),
 			{
 				body: {
