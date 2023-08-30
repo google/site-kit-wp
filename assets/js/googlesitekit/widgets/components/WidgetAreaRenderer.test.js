@@ -96,6 +96,8 @@ describe( 'WidgetAreaRenderer', () => {
 	beforeEach( async () => {
 		registry = createTestRegistryWithArea( areaName );
 
+		provideModules( registry );
+
 		const connection = { connected: true };
 		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
 	} );
@@ -135,7 +137,7 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveLength( 3 );
 	} );
 
-	it( 'should only render widgets the user has access to in a view-only viewContext', () => {
+	it( 'should only render widgets the user has access to in a view-only viewContext', async () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -170,10 +172,12 @@ describe( 'WidgetAreaRenderer', () => {
 		} );
 
 		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
 			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
 		);
+
+		await waitForRegistry();
 
 		// There should be three widgets registered in the datastore.
 		expect( widgets ).toHaveLength( 3 );
@@ -190,7 +194,7 @@ describe( 'WidgetAreaRenderer', () => {
 		);
 	} );
 
-	it( 'should render all widgets when not in a view-only viewContext', () => {
+	it( 'should render all widgets when not in a view-only viewContext', async () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -214,10 +218,12 @@ describe( 'WidgetAreaRenderer', () => {
 
 		// Add our dashboard sharing capabilities into state.
 		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
 			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
+
+		await waitForRegistry();
 
 		// There should be three widgets registered in the datastore.
 		expect( widgets ).toHaveLength( 3 );
@@ -232,7 +238,7 @@ describe( 'WidgetAreaRenderer', () => {
 		expect( container.firstChild ).toHaveTextContent( 'AdSense is here' );
 	} );
 
-	it( 'should treat widgets that render no content as zero-width (ignoring them)', () => {
+	it( 'should treat widgets that render no content as zero-width (ignoring them)', async () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -251,10 +257,12 @@ describe( 'WidgetAreaRenderer', () => {
 			},
 		] );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect(
 			container.firstChild.querySelectorAll(
@@ -406,13 +414,15 @@ describe( 'WidgetAreaRenderer', () => {
 		],
 	] )(
 		'should resize widgets in a row that spans 9 columns to fill the full 12 columns (%s)',
-		( testName, widgets ) => {
+		async ( testName, widgets ) => {
 			createWidgets( registry, areaName, widgets );
 
-			const { container } = render(
+			const { container, waitForRegistry } = render(
 				<WidgetAreaRenderer slug={ areaName } />,
 				{ registry }
 			);
+
+			await waitForRegistry();
 
 			expect(
 				container.firstChild.querySelectorAll(
@@ -475,13 +485,15 @@ describe( 'WidgetAreaRenderer', () => {
 		],
 	] )(
 		'should not resize widgets in a row that is smaller than 9 columns (%s)',
-		( testName, widgets ) => {
+		async ( testName, widgets ) => {
 			createWidgets( registry, areaName, widgets );
 
-			const { container } = render(
+			const { container, waitForRegistry } = render(
 				<WidgetAreaRenderer slug={ areaName } />,
 				{ registry }
 			);
+
+			await waitForRegistry();
 
 			expect(
 				container.firstChild.querySelectorAll(
@@ -574,13 +586,15 @@ describe( 'WidgetAreaRenderer', () => {
 		],
 	] )(
 		'should not resize widgets that fit into a 12-column grid (%s)',
-		( testName, widgets ) => {
+		async ( testName, widgets ) => {
 			createWidgets( registry, areaName, widgets );
 
-			const { container } = render(
+			const { container, waitForRegistry } = render(
 				<WidgetAreaRenderer slug={ areaName } />,
 				{ registry }
 			);
+
+			await waitForRegistry();
 
 			expect(
 				container.firstChild.querySelectorAll(
@@ -590,7 +604,7 @@ describe( 'WidgetAreaRenderer', () => {
 		}
 	);
 
-	it( 'should output boxes style without extra grid markup', () => {
+	it( 'should output boxes style without extra grid markup', async () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -609,13 +623,15 @@ describe( 'WidgetAreaRenderer', () => {
 			},
 		] );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetAreaRenderer
 				slug={ areaName }
 				style={ WIDGET_AREA_STYLES.BOXES }
 			/>,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect(
 			container.firstChild.querySelectorAll(
@@ -624,11 +640,14 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveLength( 0 );
 	} );
 
-	it( 'should output composite style with extra grid markup', () => {
+	it( 'should output composite style with extra grid markup', async () => {
 		registry = createTestRegistryWithArea(
 			areaName,
 			WIDGET_AREA_STYLES.COMPOSITE
 		);
+
+		provideModules( registry );
+
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetConnection( { connected: true } );
@@ -650,10 +669,12 @@ describe( 'WidgetAreaRenderer', () => {
 			},
 		] );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect(
 			container.firstChild.querySelectorAll(
@@ -662,7 +683,7 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveLength( 1 );
 	} );
 
-	it( 'should render a hidden widget area when it has no active widget', () => {
+	it( 'should render a hidden widget area when it has no active widget', async () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponentEmpty,
@@ -672,10 +693,12 @@ describe( 'WidgetAreaRenderer', () => {
 		] );
 
 		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect( widgets ).toHaveLength( 1 );
 		expect(
@@ -686,7 +709,7 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveClass( 'googlesitekit-hidden' );
 	} );
 
-	it( 'should render the widget area title, subtitle and icon', () => {
+	it( 'should render the widget area title, subtitle and icon', async () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -696,10 +719,12 @@ describe( 'WidgetAreaRenderer', () => {
 		] );
 
 		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect( widgets ).toHaveLength( 1 );
 		expect(
