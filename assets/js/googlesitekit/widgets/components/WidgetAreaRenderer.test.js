@@ -106,7 +106,7 @@ describe( 'WidgetAreaRenderer', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	it( 'should return the same number of elements as widgets from a selector', () => {
+	it( 'should return the same number of elements as widgets from a selector', async () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -126,10 +126,12 @@ describe( 'WidgetAreaRenderer', () => {
 		] );
 
 		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect( widgets ).toHaveLength( 3 );
 		expect(

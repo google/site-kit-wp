@@ -67,10 +67,15 @@ const setupRegistry = ( {
 };
 
 describe( 'WidgetRenderer', () => {
-	it( 'should output children directly ', () => {
-		const { container } = render( <WidgetRenderer slug="TestWidget" />, {
-			setupRegistry: setupRegistry(),
-		} );
+	it( 'should output children directly ', async () => {
+		const { container, waitForRegistry } = render(
+			<WidgetRenderer slug="TestWidget" />,
+			{
+				setupRegistry: setupRegistry(),
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( Object.values( container.firstChild.classList ) ).toEqual( [] );
 		expect( container.firstChild ).toMatchSnapshot();
