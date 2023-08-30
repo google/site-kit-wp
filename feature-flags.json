@@ -2,8 +2,8 @@
 	"adBlockerDetection",
 	"adsenseSetupV2",
 	"dashboardSharing",
+	"enhancedMeasurement",
 	"ga4Reporting",
 	"gm3Components",
-	"userInput",
-	"enhancedMeasurement"
+	"userInput"
 ]
