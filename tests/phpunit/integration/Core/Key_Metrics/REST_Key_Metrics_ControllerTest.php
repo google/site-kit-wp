@@ -127,6 +127,41 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data() );
 	}
 
+	public function test_set_settings__only__isWidgetHidden() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$original_settings = array(
+			'widgetSlugs'    => array( 'widgetA' ),
+			'isWidgetHidden' => false,
+		);
+
+		$changed_settings = array(
+			'isWidgetHidden' => true,
+		);
+
+		$expected_settings = array(
+			'widgetSlugs'    => array( 'widgetA' ),
+			'isWidgetHidden' => true,
+		);
+
+		$this->settings->register();
+		$this->settings->set( $original_settings );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => $changed_settings,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEqualSetsWithIndex( $expected_settings, $response->get_data() );
+	}
+
 	/**
 	 * @dataProvider data_setup_completed
 	 * @param bool $expected
@@ -154,17 +189,23 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 	public function data_setup_completed() {
 		return array(
-			'completed on success' => array(
+			'completed on success'                     => array(
 				true,
 				array(
 					'widgetSlugs'    => array( 'widgetA' ),
 					'isWidgetHidden' => false,
 				),
 			),
-			'incomplete on error'  => array(
+			'incomplete on error'                      => array(
 				false,
 				array(
 					'widgetSlugs'    => array(), // Insufficient number of widget slugs.
+					'isWidgetHidden' => false,
+				),
+			),
+			'incomplete on only isWidgetHidden change' => array(
+				false,
+				array(
 					'isWidgetHidden' => false,
 				),
 			),

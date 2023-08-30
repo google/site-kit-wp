@@ -121,7 +121,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		>
 			<KeyMetricsCTAContent
 				title={ __(
-					'Get metrics and suggestions tailored to your specific goals',
+					'Get metrics and suggestions tailored to your specific site goals',
 					'google-site-kit'
 				) }
 				description={ __(
