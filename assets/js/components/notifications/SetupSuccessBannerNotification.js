@@ -30,7 +30,6 @@ import Data from 'googlesitekit-data';
 import { getQueryParameter } from '../../util';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
-import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
 import { ANCHOR_ID_SPEED } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -262,8 +261,8 @@ function SetupSuccessBannerNotification() {
 				</Fragment>
 			);
 
-		case 'user_input_success':
-			return <UserInputSuccessBannerNotification />;
+		default:
+			return null;
 	}
 }
 

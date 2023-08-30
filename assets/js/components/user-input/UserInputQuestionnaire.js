@@ -110,11 +110,6 @@ export default function UserInputQuestionnaire() {
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
 			const url = new URL( redirectURL || dashboardURL );
-
-			// Here we don't use `addQueryArgs` due to a bug with how it handles hashes
-			// See https://github.com/WordPress/gutenberg/issues/16655
-			url.searchParams.set( 'notification', 'user_input_success' );
-
 			navigateTo( url.toString() );
 		}
 	}, [
