@@ -165,7 +165,6 @@ export default function UserInputQuestionnaire() {
 				steps.indexOf( USER_INPUT_QUESTIONS_PURPOSE ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
-					isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
 					questionNumber={ 1 }
 					title={ __(
 						'What is the main purpose of this site?',
@@ -180,7 +179,6 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
 						slug={ USER_INPUT_QUESTIONS_PURPOSE }
 						max={
 							USER_INPUT_MAX_ANSWERS[
@@ -198,9 +196,6 @@ export default function UserInputQuestionnaire() {
 				steps.indexOf( USER_INPUT_QUESTION_POST_FREQUENCY ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
-					isActive={
-						activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY
-					}
 					questionNumber={ 2 }
 					title={ __(
 						'How often do you create new content for this site?',
@@ -216,9 +211,6 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={
-							activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY
-						}
 						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
 						max={
 							USER_INPUT_MAX_ANSWERS[
@@ -236,7 +228,6 @@ export default function UserInputQuestionnaire() {
 				steps.indexOf( USER_INPUT_QUESTIONS_GOALS ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTIONS_GOALS }
-					isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
 					questionNumber={ 3 }
 					title={ __(
 						'What are your top goals for this site?',
@@ -252,7 +243,6 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
 						slug={ USER_INPUT_QUESTIONS_GOALS }
 						max={
 							USER_INPUT_MAX_ANSWERS[ USER_INPUT_QUESTIONS_GOALS ]
