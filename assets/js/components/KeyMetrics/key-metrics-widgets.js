@@ -87,7 +87,7 @@ export const KEY_METRICS_WIDGETS = {
 			) || select( CORE_SITE ).getProductBasePaths()?.length > 0,
 	},
 	[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-		title: __( 'How people find your site', 'google-site-kit' ),
+		title: __( 'Top performing keywords', 'google-site-kit' ),
 		description: __(
 			'What people searched for before they came to your site',
 			'google-site-kit'

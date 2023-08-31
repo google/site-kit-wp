@@ -97,8 +97,10 @@ describe( 'User Input Settings', () => {
 		);
 
 		await step(
-			'wait for success notification',
-			page.waitForSelector( '#user-input-success' )
+			'wait for a Key Metric tile to successfully appear',
+			page.waitForSelector(
+				'.googlesitekit-widget--kmAnalyticsLoyalVisitors'
+			)
 		);
 	}
 

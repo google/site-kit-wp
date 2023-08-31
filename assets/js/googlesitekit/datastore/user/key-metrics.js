@@ -18,7 +18,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isEmpty, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -133,7 +133,7 @@ const baseActions = {
 		if ( error ) {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
 			yield receiveError( error, 'saveKeyMetricsSettings', [] );
-		} else {
+		} else if ( isEmpty( settings ) || settings.widgetSlugs ) {
 			// Update the `keyMetricsSetupCompleted` value to keep it in sync, as it will have been set
 			// to `true` on the backend when the key metrics settings were successfully saved.
 			// TODO: We should find a better way of keeping this value synced.

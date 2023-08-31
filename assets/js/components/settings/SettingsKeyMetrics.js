@@ -49,7 +49,9 @@ export default function SettingsKeyMetrics() {
 			'isWidgetHidden',
 			! keyMetricsWidgetHidden
 		);
-		await saveKeyMetricsSettings();
+		await saveKeyMetricsSettings( {
+			widgetSlugs: undefined,
+		} );
 	}, [
 		keyMetricsWidgetHidden,
 		saveKeyMetricsSettings,

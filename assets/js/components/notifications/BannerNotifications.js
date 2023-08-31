@@ -99,8 +99,7 @@ export default function BannerNotifications() {
 
 	return (
 		<Fragment>
-			{ ( 'authentication_success' === notification ||
-				'user_input_success' === notification ) && (
+			{ 'authentication_success' === notification && (
 				<SetupSuccessBannerNotification />
 			) }
 			{ 'ad_blocking_recovery_setup_success' === notification &&

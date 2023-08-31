@@ -105,7 +105,7 @@ export function getUserInputAnswers() {
 				'google-site-kit'
 			),
 			encourage_to_post: __(
-				'Encouragement to post more frequently',
+				'Tips for generating and posting engaging content updates',
 				'google-site-kit'
 			),
 			other: __( 'Other', 'google-site-kit' ),

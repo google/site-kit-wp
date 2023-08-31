@@ -57,7 +57,6 @@ import useViewOnly from '../../../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 const { useSelect, useInViewSelect } = Data;
 
-// eslint-disable-next-line complexity
 const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
@@ -129,24 +128,6 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 			? select( MODULES_ANALYTICS_4 ).getConversionEvents()
 			: [];
 	} );
-
-	const ga4ConversionsLoading = useSelect( ( select ) =>
-		isGA4Connected && canViewSharedAnalytics4 && ! showRecoverableAnalytics
-			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getConversionEvents',
-					[]
-			  )
-			: false
-	);
-
-	const ga4ConversionsError = useSelect( ( select ) =>
-		isGA4Connected && ! showRecoverableAnalytics
-			? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-					'getConversionEvents',
-					[]
-			  )
-			: null
-	);
 
 	const searchConsoleReportArgs = {
 		startDate: compareStartDate,
@@ -233,20 +214,6 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 			)
 	);
 
-	const ga4OverviewLoading = useSelect( ( select ) => {
-		if (
-			! isGA4Connected ||
-			! canViewSharedAnalytics4 ||
-			showRecoverableAnalytics
-		) {
-			return false;
-		}
-
-		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getReport',
-			[ ga4OverviewArgs ]
-		);
-	} );
 	const ga4OverviewData = useInViewSelect( ( select ) => {
 		if (
 			! isGA4Connected ||
@@ -258,30 +225,6 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 
 		return select( MODULES_ANALYTICS_4 ).getReport( ga4OverviewArgs );
 	} );
-	const ga4OverviewError = useSelect( ( select ) => {
-		if ( ! isGA4Connected || showRecoverableAnalytics ) {
-			return false;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			ga4OverviewArgs,
-		] );
-	} );
-
-	const ga4StatsLoading = useSelect( ( select ) => {
-		if (
-			! isGA4Connected ||
-			! canViewSharedAnalytics4 ||
-			showRecoverableAnalytics
-		) {
-			return false;
-		}
-
-		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getReport',
-			[ ga4StatsArgs ]
-		);
-	} );
 	const ga4StatsData = useInViewSelect( ( select ) => {
 		if (
 			! isGA4Connected ||
@@ -292,30 +235,6 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		}
 
 		return select( MODULES_ANALYTICS_4 ).getReport( ga4StatsArgs );
-	} );
-	const ga4StatsError = useSelect( ( select ) => {
-		if ( ! isGA4Connected || showRecoverableAnalytics ) {
-			return false;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			ga4StatsArgs,
-		] );
-	} );
-
-	const ga4VisitorsOverviewAndStatsLoading = useSelect( ( select ) => {
-		if (
-			! isGA4Connected ||
-			! canViewSharedAnalytics4 ||
-			showRecoverableAnalytics
-		) {
-			return false;
-		}
-
-		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getReport',
-			[ ga4VisitorsOverviewAndStatsArgs ]
-		);
 	} );
 	const ga4VisitorsOverviewAndStatsData = useInViewSelect( ( select ) => {
 		if (
@@ -330,14 +249,43 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 			ga4VisitorsOverviewAndStatsArgs
 		);
 	} );
-	const ga4VisitorsOverviewAndStatsError = useSelect( ( select ) => {
-		if ( ! isGA4Connected || showRecoverableAnalytics ) {
+
+	const ga4Loading = useSelect( ( select ) => {
+		if (
+			! isGA4Connected ||
+			! canViewSharedAnalytics4 ||
+			showRecoverableAnalytics
+		) {
 			return false;
 		}
 
-		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			ga4VisitorsOverviewAndStatsArgs,
-		] );
+		const { hasFinishedResolution } = select( MODULES_ANALYTICS_4 );
+
+		return ! (
+			hasFinishedResolution( 'getReport', [ ga4OverviewArgs ] ) &&
+			hasFinishedResolution( 'getReport', [ ga4StatsArgs ] ) &&
+			hasFinishedResolution( 'getReport', [
+				ga4VisitorsOverviewAndStatsArgs,
+			] ) &&
+			hasFinishedResolution( 'getConversionEvents', [] )
+		);
+	} );
+
+	const ga4Error = useSelect( ( select ) => {
+		if ( ! isGA4Connected || showRecoverableAnalytics ) {
+			return null;
+		}
+
+		const { getErrorForSelector } = select( MODULES_ANALYTICS_4 );
+
+		return (
+			getErrorForSelector( 'getReport', [ ga4OverviewArgs ] ) ||
+			getErrorForSelector( 'getReport', [ ga4StatsArgs ] ) ||
+			getErrorForSelector( 'getReport', [
+				ga4VisitorsOverviewAndStatsArgs,
+			] ) ||
+			getErrorForSelector( 'getConversionEvents', [] )
+		);
 	} );
 
 	const isGA4GatheringData = useInViewSelect( ( select ) =>
@@ -369,10 +317,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 
 	if (
 		searchConsoleLoading ||
-		ga4OverviewLoading ||
-		ga4StatsLoading ||
-		ga4VisitorsOverviewAndStatsLoading ||
-		ga4ConversionsLoading ||
+		ga4Loading ||
 		isGA4GatheringData === undefined ||
 		isSearchConsoleGatheringData === undefined
 	) {
@@ -394,12 +339,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 				dateRangeLength={ dateRangeLength }
-				error={
-					ga4OverviewError ||
-					ga4StatsError ||
-					ga4VisitorsOverviewAndStatsError ||
-					ga4ConversionsError
-				}
+				error={ ga4Error }
 				WidgetReportError={ WidgetReportError }
 				showRecoverableAnalytics={ showRecoverableAnalytics }
 			/>

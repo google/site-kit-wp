@@ -131,7 +131,7 @@ function PopularProductsWidget( props ) {
 		] )
 	);
 
-	const loading = useInViewSelect( ( select ) =>
+	const loading = useSelect( ( select ) =>
 		showWidget
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
