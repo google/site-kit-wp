@@ -102,7 +102,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 							{ ! isAuthenticated &&
 								isDashboard &&
 								isViewOnly && <ViewOnlyMenu /> }
-							{ isAuthenticated && <UserMenu /> }
+							{ isAuthenticated && ! isViewOnly && <UserMenu /> }
 						</Cell>
 					</Row>
 				</Grid>
