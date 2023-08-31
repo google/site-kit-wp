@@ -31,6 +31,11 @@ import {
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../googlesitekit/constants';
 import PopularContentWidget from './PopularContentWidget';
 
 const reportOptions = {
@@ -65,9 +70,13 @@ const pageTitlesReportOptions = {
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'test' )( PopularContentWidget );
 
-const Template = ( { setupRegistry, ...args } ) => (
+const Template = ( { setupRegistry, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
+			<WidgetWithComponentProps { ...args } />
+		</ViewContextProvider>
 	</WithRegistrySetup>
 );
 
@@ -94,6 +103,30 @@ Ready.args = {
 };
 Ready.scenario = {
 	label: 'KeyMetrics/PopularContentWidget/Ready',
+	delay: 250,
+};
+
+export const ReadyViewOnly = Template.bind( {} );
+ReadyViewOnly.storyName = 'Ready View Only';
+ReadyViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions,
+			{ dimensionCombinationStrategy: STRATEGY_ZIP }
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageTitlesReport, {
+				options: pageTitlesReportOptions,
+			} );
+
+		provideAnalytics4MockReport( registry, reportOptions );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+ReadyViewOnly.scenario = {
+	label: 'KeyMetrics/PopularContentWidget/ReadyViewOnly',
 	delay: 250,
 };
 

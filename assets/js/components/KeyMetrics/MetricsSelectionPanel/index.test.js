@@ -131,7 +131,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).toHaveTextContent( 'How people find your site' );
+			).toHaveTextContent( 'Top performing keywords' );
 		} );
 
 		it( 'should disable unchecked metrics when four metrics are checked', () => {
@@ -270,7 +270,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).toHaveTextContent( 'How people find your site' );
+			).toHaveTextContent( 'Top performing keywords' );
 		} );
 	} );
 
