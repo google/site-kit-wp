@@ -39,6 +39,7 @@ export * from './urls';
 export * from './is-valid-numeric-id';
 export * from './isnumeric';
 
+global._gsktag = trackEvent;
 /**
  * Transforms a period string into a number of seconds.
  *
