@@ -152,11 +152,9 @@ final class Permissions {
 			self::AUTHENTICATE             => 'manage_options',
 
 			// Allow contributors and up to view their own post's insights.
-			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
 			self::VIEW_POSTS_INSIGHTS      => 'edit_posts',
 
 			// Allow editors and up to view the dashboard and module details.
-			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
 			self::VIEW_DASHBOARD           => 'edit_posts',
 			self::VIEW_WP_DASHBOARD_WIDGET => 'edit_posts',
 			self::VIEW_ADMIN_BAR_MENU      => 'edit_posts',
@@ -187,7 +185,6 @@ final class Permissions {
 
 		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
-			// TODO change to map to manage_network when Dashboard Sharing feature flag is removed.
 			self::VIEW_DASHBOARD           => 'manage_network',
 			self::VIEW_WP_DASHBOARD_WIDGET => 'manage_network',
 			self::VIEW_ADMIN_BAR_MENU      => 'manage_network',
