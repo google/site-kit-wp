@@ -161,7 +161,7 @@ export default function UserInputQuestionnaire() {
 		<div>
 			{ settingsProgress }
 
-			{ activeSlugIndex <=
+			{ activeSlugIndex ===
 				steps.indexOf( USER_INPUT_QUESTIONS_PURPOSE ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
@@ -194,7 +194,7 @@ export default function UserInputQuestionnaire() {
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlugIndex <=
+			{ activeSlugIndex ===
 				steps.indexOf( USER_INPUT_QUESTION_POST_FREQUENCY ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
@@ -232,7 +232,7 @@ export default function UserInputQuestionnaire() {
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlugIndex <=
+			{ activeSlugIndex ===
 				steps.indexOf( USER_INPUT_QUESTIONS_GOALS ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTIONS_GOALS }
