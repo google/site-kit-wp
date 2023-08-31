@@ -211,7 +211,7 @@ function PopularProductsWidget( props ) {
 
 	if ( ! siteHasProductBasePaths && isPopularProductsWidgetActive ) {
 		zeroStateMessage = __(
-			'No product post type was detected on your site',
+			'No product posts currently detected on your site. This metric applies only to sites with product posts.',
 			'google-site-kit'
 		);
 	}
