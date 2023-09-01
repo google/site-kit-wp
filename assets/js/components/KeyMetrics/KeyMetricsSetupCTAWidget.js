@@ -57,11 +57,11 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const searchConsoleIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad()
 	);
-	const analyticsIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isGatheringData()
+	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad()
 	);
 
 	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
@@ -106,8 +106,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	if (
 		isDismissed !== false ||
-		analyticsIsGatheringData !== false ||
-		searchConsoleIsGatheringData !== false
+		! analyticsIsDataAvailableOnLoad ||
+		! searchConsoleIsDataAvailableOnLoad
 	) {
 		return <WidgetNull />;
 	}
