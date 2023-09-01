@@ -67,7 +67,6 @@ const { useSelect } = Data;
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const viewOnlyDashboard = useViewOnly();
@@ -152,9 +151,7 @@ export default function DashboardMainApp() {
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ dashboardSharingEnabled && ! viewOnlyDashboard && (
-					<DashboardSharingSettingsButton />
-				) }
+				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
 			{ ga4ReportingEnabled && <DashboardViewIndicator /> }

@@ -166,9 +166,6 @@ SharedDashboardAdminCanView.args = {
 		} );
 	},
 };
-SharedDashboardAdminCanView.parameters = {
-	features: [ 'dashboardSharing' ],
-};
 
 export const SharedDashboardSingleAdminCanView = Template.bind( {} );
 SharedDashboardSingleAdminCanView.storyName =
@@ -196,9 +193,6 @@ SharedDashboardSingleAdminCanView.args = {
 			) ]: true,
 		} );
 	},
-};
-SharedDashboardSingleAdminCanView.parameters = {
-	features: [ 'dashboardSharing' ],
 };
 
 export default {

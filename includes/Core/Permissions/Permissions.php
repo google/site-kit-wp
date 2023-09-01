@@ -19,7 +19,6 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_REST_Response;
 use WP_REST_Server;
 use WP_User;
@@ -148,27 +147,17 @@ final class Permissions {
 		$this->user_options    = $user_options;
 		$this->dismissed_items = $dismissed_items;
 
-		// TODO Remove the temporary assignment of these capabilities when Dashboard Sharing feature flag is removed.
-		$editor_capability        = 'manage_options';
-		$admin_network_capability = 'manage_options';
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$editor_capability        = 'edit_posts';
-			$admin_network_capability = 'manage_network';
-		}
-
 		$this->base_to_core = array(
 			// By default, only allow administrators to authenticate.
 			self::AUTHENTICATE             => 'manage_options',
 
 			// Allow contributors and up to view their own post's insights.
-			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_POSTS_INSIGHTS      => $editor_capability,
+			self::VIEW_POSTS_INSIGHTS      => 'edit_posts',
 
 			// Allow editors and up to view the dashboard and module details.
-			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD           => $editor_capability,
-			self::VIEW_WP_DASHBOARD_WIDGET => $editor_capability,
-			self::VIEW_ADMIN_BAR_MENU      => $editor_capability,
+			self::VIEW_DASHBOARD           => 'edit_posts',
+			self::VIEW_WP_DASHBOARD_WIDGET => 'edit_posts',
+			self::VIEW_ADMIN_BAR_MENU      => 'edit_posts',
 
 			// Allow administrators and up to manage options and set up the plugin.
 			self::MANAGE_OPTIONS           => 'manage_options',
@@ -182,32 +171,23 @@ final class Permissions {
 		);
 
 		$this->meta_to_base = array(
-			self::VIEW_SPLASH                  => self::VIEW_DASHBOARD,
-			self::VIEW_AUTHENTICATED_DASHBOARD => array( self::VIEW_DASHBOARD, self::AUTHENTICATE ),
+			self::VIEW_SPLASH                        => self::VIEW_DASHBOARD,
+			self::VIEW_AUTHENTICATED_DASHBOARD       => array( self::VIEW_DASHBOARD, self::AUTHENTICATE ),
 			// Allow users that can generally view posts insights to view a specific post's insights.
-			self::VIEW_POST_INSIGHTS           => self::VIEW_POSTS_INSIGHTS,
+			self::VIEW_POST_INSIGHTS                 => self::VIEW_POSTS_INSIGHTS,
+			// Allow users that can generally view dashboard to read shared module data.
+			self::READ_SHARED_MODULE_DATA            => self::VIEW_DASHBOARD,
+			// Admins who can manage options for SK can generally manage module sharing options.
+			self::MANAGE_MODULE_SHARING_OPTIONS      => self::MANAGE_OPTIONS,
+			self::DELEGATE_MODULE_SHARING_MANAGEMENT => self::MANAGE_OPTIONS,
+			self::VIEW_SHARED_DASHBOARD              => self::VIEW_DASHBOARD,
 		);
-		// TODO Merge the array below into $this->meta_to_base above when the dashboard sharing feature flag is removed.
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$this->meta_to_base = array_merge(
-				$this->meta_to_base,
-				array(
-					// Allow users that can generally view dashboard to read shared module data.
-					self::READ_SHARED_MODULE_DATA       => self::VIEW_DASHBOARD,
-					// Admins who can manage options for SK can generally manage module sharing options.
-					self::MANAGE_MODULE_SHARING_OPTIONS => self::MANAGE_OPTIONS,
-					self::DELEGATE_MODULE_SHARING_MANAGEMENT => self::MANAGE_OPTIONS,
-					self::VIEW_SHARED_DASHBOARD         => self::VIEW_DASHBOARD,
-				)
-			);
-		}
 
 		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
-			// TODO change to map to manage_network when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD           => $admin_network_capability,
-			self::VIEW_WP_DASHBOARD_WIDGET => $admin_network_capability,
-			self::VIEW_ADMIN_BAR_MENU      => $admin_network_capability,
+			self::VIEW_DASHBOARD           => 'manage_network',
+			self::VIEW_WP_DASHBOARD_WIDGET => 'manage_network',
+			self::VIEW_ADMIN_BAR_MENU      => 'manage_network',
 
 			// Require network admin access to manage options and set up the plugin in network mode.
 			self::MANAGE_OPTIONS           => 'manage_network_options',
@@ -270,10 +250,6 @@ final class Permissions {
 	 * @return array List meta capabilities as keys and current user permission as value.
 	 */
 	public function get_dashboard_sharing_meta_permissions() {
-		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			return array();
-		}
-
 		$dashboard_sharing_meta_capabilities = self::get_dashboard_sharing_meta_capabilities();
 
 		$shareable_modules = array_keys( $this->modules->get_shareable_modules() );
@@ -413,11 +389,6 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_dashboard_sharing_capability( $cap, $user_id, $args ) {
-		// TODO remove this check when Dashboard Sharing feature flag is removed.
-		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			return array( 'do_not_allow' );
-		}
-
 		if ( isset( $args[0] ) ) {
 			$module_slug = $args[0];
 		}
@@ -447,10 +418,6 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_view_splash_capability( $user_id ) {
-		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			return array( self::AUTHENTICATE );
-		}
-
 		if ( $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
 			return array( self::AUTHENTICATE );
 		}
@@ -476,7 +443,7 @@ final class Permissions {
 	private function check_view_dashboard_capability( $user_id ) {
 		$view_authenticated_dashboard = $this->check_view_authenticated_dashboard_capability( $user_id );
 
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) && in_array( 'do_not_allow', $view_authenticated_dashboard, true ) ) {
+		if ( in_array( 'do_not_allow', $view_authenticated_dashboard, true ) ) {
 			return $this->check_view_shared_dashboard_capability( $user_id );
 		}
 
@@ -734,7 +701,7 @@ final class Permissions {
 	 * @return array
 	 */
 	public static function get_capabilities() {
-		$capabilities = array(
+		return array(
 			self::AUTHENTICATE,
 			self::SETUP,
 			self::VIEW_POSTS_INSIGHTS,
@@ -745,13 +712,8 @@ final class Permissions {
 			self::VIEW_AUTHENTICATED_DASHBOARD,
 			self::VIEW_WP_DASHBOARD_WIDGET,
 			self::VIEW_ADMIN_BAR_MENU,
+			self::VIEW_SHARED_DASHBOARD,
 		);
-
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$capabilities[] = self::VIEW_SHARED_DASHBOARD;
-		}
-
-		return $capabilities;
 	}
 
 	/**

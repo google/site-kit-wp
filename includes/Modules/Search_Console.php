@@ -30,7 +30,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Util\Date;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Core\Util\Sort;
@@ -179,7 +178,7 @@ final class Search_Console extends Module
 			'GET:matched-sites'   => array( 'service' => 'searchconsole' ),
 			'GET:searchanalytics' => array(
 				'service'   => 'searchconsole',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => true,
 			),
 			'POST:site'           => array( 'service' => 'searchconsole' ),
 			'GET:sites'           => array( 'service' => 'searchconsole' ),

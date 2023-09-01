@@ -285,7 +285,7 @@ final class AdSense extends Module
 			'GET:notifications'                   => array( 'service' => '' ),
 			'GET:report'                          => array(
 				'service'   => 'adsense',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => true,
 			),
 			'GET:sites'                           => array( 'service' => 'adsense' ),
 			'POST:sync-ad-blocking-recovery-tags' => array( 'service' => 'adsense' ),
