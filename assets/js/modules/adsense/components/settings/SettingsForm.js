@@ -38,14 +38,11 @@ import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
-import { useFeature } from '../../../../hooks/useFeature';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
 const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
-
 	const webStoriesActive = useSelect( ( select ) =>
 		select( CORE_SITE ).isWebStoriesActive()
 	);
@@ -153,12 +150,10 @@ export default function SettingsForm() {
 
 			<AutoAdExclusionSwitches />
 
-			{ adBlockerDetectionEnabled && (
-				<Fragment>
-					<AdBlockingRecoverySetupCTANotice />
-					<AdBlockingRecoveryToggle />
-				</Fragment>
-			) }
+			<Fragment>
+				<AdBlockingRecoverySetupCTANotice />
+				<AdBlockingRecoveryToggle />
+			</Fragment>
 		</div>
 	);
 }
