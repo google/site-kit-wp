@@ -140,8 +140,6 @@ final class Modules {
 	 */
 	private $dashboard_sharing_controller;
 
-
-
 	/**
 	 * Core module class names.
 	 *
