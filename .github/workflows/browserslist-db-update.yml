@@ -60,7 +60,7 @@ jobs:
       - name: Update Browserslist database and create PR if applicable
         uses: c2corg/browserslist-update-action@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_BOT_TOKEN }}
           branch: ${{ env.branch-name }}
           commit_message: 'Update Browserslist database.'
           title: 'Update Browserslist Database'
