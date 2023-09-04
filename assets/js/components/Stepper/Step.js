@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useLayoutEffect, useRef } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,7 +34,7 @@ import { STEP_STATUS } from './constants';
 export default function Step( { children, title, stepStatus } ) {
 	const stepContentRef = useRef();
 
-	useLayoutEffect( () => {
+	useEffect( () => {
 		if ( ! stepContentRef.current ) {
 			return;
 		}
