@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-// import { usePrevious } from '@wordpress/compose';
 import { useLayoutEffect, useRef } from '@wordpress/element';
 
 /**
@@ -33,8 +32,6 @@ import { useLayoutEffect, useRef } from '@wordpress/element';
 import { STEP_STATUS } from './constants';
 
 export default function Step( { children, title, stepStatus } ) {
-	// const previousStepStatus = usePrevious( stepStatus );
-
 	const stepContentRef = useRef();
 
 	useLayoutEffect( () => {
