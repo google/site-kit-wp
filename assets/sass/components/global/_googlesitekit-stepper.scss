@@ -99,7 +99,7 @@
 		height: 0;
 		margin-bottom: 24px;
 		overflow: hidden;
-		transition: height 180ms ease-in-out;
+		transition: height $t-default ease-in-out;
 	}
 
 	.googlesitekit-stepper__step-content--active {
