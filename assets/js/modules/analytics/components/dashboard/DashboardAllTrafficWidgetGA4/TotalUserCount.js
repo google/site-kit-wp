@@ -84,7 +84,7 @@ export default function TotalUserCount( props ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <ReportError moduleSlug="analytics-4" error={ error } />;
 	}
 
 	const { totals } = report || {};

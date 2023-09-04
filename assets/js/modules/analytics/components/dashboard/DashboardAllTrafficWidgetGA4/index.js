@@ -302,7 +302,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 		return (
 			<Widget>
 				<WidgetReportError
-					moduleSlug="analytics"
+					moduleSlug="analytics-4"
 					error={ pieChartError }
 				/>
 			</Widget>

@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserInfo,
+	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import {
 	REPORT_ARGS_DATA_FILTERS_KEY,
@@ -33,6 +34,7 @@ import {
 	REPORT_ARGS_SELECTED_METRIC_KEY,
 } from '../constants';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 
 describe( 'module/analytics-4 service store', () => {
 	const baseURI = 'https://analytics.google.com/analytics/web/';
@@ -44,6 +46,11 @@ describe( 'module/analytics-4 service store', () => {
 		provideUserInfo( registry );
 		provideSiteInfo( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'selectors', () => {
@@ -178,6 +185,78 @@ describe( 'module/analytics-4 service store', () => {
 						] ),
 					} );
 				} );
+			} );
+		} );
+
+		describe( 'getServiceEntityAccessURL', () => {
+			it( 'returns `undefined` when no accountID is set', () => {
+				expect(
+					registry.select( MODULES_ANALYTICS ).getAccountID()
+				).toBeFalsy();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getServiceEntityAccessURL()
+				).toBeUndefined();
+			} );
+
+			it( 'returns `undefined` when no propertyID is set', () => {
+				registry.dispatch( MODULES_ANALYTICS ).setAccountID( '12345' );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
+				).toBeFalsy();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getServiceEntityAccessURL()
+				).toBeUndefined();
+			} );
+
+			it( 'returns `undefined` when no webDataStreamID is set', () => {
+				registry.dispatch( MODULES_ANALYTICS ).setAccountID( '12345' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( '34567' );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
+				).toBeFalsy();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getServiceEntityAccessURL()
+				).toBeUndefined();
+			} );
+
+			it( 'returns a service entity access URL for the current account, property, and webDataStream', () => {
+				const [ accountID, propertyID, webDataStreamID ] = [
+					'12345',
+					'34567',
+					'56789',
+				];
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setWebDataStreamID( webDataStreamID );
+
+				const reportServiceURL = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getServiceEntityAccessURL();
+				const decodedServiceURL = decodeServiceURL( reportServiceURL );
+				const url = new URL( decodedServiceURL );
+
+				expect( decodedServiceURL.startsWith( baseURI ) ).toBe( true );
+				expect( url.hash ).toBe(
+					`#/a${ accountID }p${ propertyID }/admin/streams/table/${ webDataStreamID }`
+				);
 			} );
 		} );
 	} );

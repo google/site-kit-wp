@@ -79,7 +79,7 @@ const AdminBarUniqueVisitorsGA4 = ( { WidgetReportError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics-4" error={ error } />;
 	}
 
 	const totalUsers = analyticsData?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
