@@ -86,7 +86,6 @@ export default function Stepper( { children, activeStep, className } ) {
 					<li
 						className={ classnames(
 							'googlesitekit-stepper__step',
-							// `googlesitekit-stepper__step--${ stepStatus }`,
 							child.props.className
 						) }
 					>

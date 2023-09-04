@@ -22,11 +22,33 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+// import { usePrevious } from '@wordpress/compose';
+import { useLayoutEffect, useRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { STEP_STATUS } from './constants';
 
 export default function Step( { children, title, stepStatus } ) {
+	// const previousStepStatus = usePrevious( stepStatus );
+
+	const stepContentRef = useRef();
+
+	useLayoutEffect( () => {
+		if ( ! stepContentRef.current ) {
+			return;
+		}
+
+		if ( stepStatus === STEP_STATUS.ACTIVE ) {
+			stepContentRef.current.style.height = `${ stepContentRef.current.scrollHeight }px`;
+		} else {
+			stepContentRef.current.style.height = '0px';
+		}
+	}, [ stepStatus ] );
+
 	return (
 		<div>
 			<h2
@@ -35,6 +57,7 @@ export default function Step( { children, title, stepStatus } ) {
 				{ title }
 			</h2>
 			<div
+				ref={ stepContentRef }
 				className={ `googlesitekit-stepper__step-content googlesitekit-stepper__step-content--${ stepStatus }` }
 			>
 				{ children }

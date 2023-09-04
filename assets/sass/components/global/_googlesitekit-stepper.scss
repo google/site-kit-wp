@@ -30,23 +30,6 @@
 		@media (min-width: $bp-tablet) {
 			display: flex;
 		}
-
-		// blah
-		// max-height: 0;
-		// overflow: hidden;
-		// transition: max-height 0.3s ease;
-	}
-
-	.googlesitekit-stepper__step--upcoming {
-
-	}
-
-	.googlesitekit-stepper__step--active {
-		// max-height: 1000px;
-	}
-
-	.googlesitekit-stepper__step--completed {
-
 	}
 
 	.googlesitekit-stepper__step-progress {
@@ -113,33 +96,14 @@
 	}
 
 	.googlesitekit-stepper__step-content {
-		// blah
-		// max-height: 0;
 		height: 0;
 		margin-bottom: 24px;
 		overflow: hidden;
-		transition: height 1s ease-in-out;
-	}
-
-	.googlesitekit-stepper__step-content--completed,
-	.googlesitekit-stepper__step-content--upcoming {
-		// max-height: 0;
-		// height: 0;
-
-		// transform-origin: top;
+		transition: height 180ms ease-in-out;
 	}
 
 	.googlesitekit-stepper__step-content--active {
 		height: auto;
-
-		// transform: scale(1);
-
-		// max-height: 1000px; // Set to a large number to ensure the content can fully expand.
-		// max-height: 100%; // Set to a large number to ensure the content can fully expand.
-		// transform-origin: top;
-		// transition: transform 1s ease-in-out;
-
-		// TODO: Looks highly likely we'll need to use JS to set the height to animate to.
 	}
 
 	.googlesitekit-stepper__step:last-child {
