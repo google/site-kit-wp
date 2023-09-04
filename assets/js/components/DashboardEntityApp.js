@@ -66,7 +66,6 @@ const { useSelect } = Data;
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewableModules = useSelect( ( select ) => {
@@ -214,9 +213,7 @@ function DashboardEntityApp() {
 			<Header subHeader={ <EntityBannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ dashboardSharingEnabled && ! viewOnlyDashboard && (
-					<DashboardSharingSettingsButton />
-				) }
+				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
 			{ ga4ReportingEnabled && <DashboardViewIndicator /> }

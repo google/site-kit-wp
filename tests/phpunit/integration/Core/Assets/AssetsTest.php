@@ -115,7 +115,6 @@ class AssetsTest extends TestCase {
 
 	public function test_register_dashboard_sharing() {
 		// For a user that can view shared dashboard, ensure the hooks are added.
-		$this->enable_feature( 'dashboardSharing' );
 		$contributor = $this->factory()->user->create_and_get( array( 'role' => 'contributor' ) );
 
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );

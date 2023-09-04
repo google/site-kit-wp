@@ -23,6 +23,7 @@ import WidgetContextRenderer from './WidgetContextRenderer';
 import { CORE_WIDGETS } from '../datastore/constants';
 import {
 	createTestRegistry,
+	provideModules,
 	render,
 	waitFor,
 } from '../../../../../tests/js/test-utils';
@@ -40,6 +41,8 @@ describe( 'WidgetContextRenderer', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		provideModules( registry );
 
 		// Register a widget area.
 		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea1', {
@@ -81,10 +84,12 @@ describe( 'WidgetContextRenderer', () => {
 			.dispatch( CORE_WIDGETS )
 			.assignWidget( 'TestWidget2', 'TestArea2' );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetContextRenderer slug="TestContext" />,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		await waitFor( () => {
 			expect(

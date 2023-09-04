@@ -422,10 +422,10 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$shareable = Feature_Flags::enabled( 'dashboardSharing' );
+		$shareable = true;
 		// If ga4Reporting is enabled, the dashboard view controls which
 		// Analytics module is shareable.
-		if ( $shareable && Feature_Flags::enabled( 'ga4Reporting' ) ) {
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			$settings  = $this->get_settings()->get();
 			$shareable = self::DASHBOARD_VIEW === $settings['dashboardView'];
 		}

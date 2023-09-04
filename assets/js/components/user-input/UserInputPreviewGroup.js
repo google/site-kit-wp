@@ -192,7 +192,6 @@ export default function UserInputPreviewGroup( {
 			{ isEditing && (
 				<Fragment>
 					<UserInputSelectOptions
-						isActive
 						slug={ slug }
 						max={ USER_INPUT_MAX_ANSWERS[ slug ] }
 						options={ options }

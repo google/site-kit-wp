@@ -62,15 +62,12 @@ import {
 } from './constants';
 import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
-import { useFeature } from '../../hooks/useFeature';
 import useViewContext from '../../hooks/useViewContext';
 import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
-
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
@@ -423,7 +420,6 @@ export default function SetupUsingProxyWithSignIn() {
 																}
 																{ hasMultipleAdmins &&
 																	isSecondAdmin &&
-																	dashboardSharingEnabled &&
 																	hasViewableModules &&
 																	complete && (
 																		<Link

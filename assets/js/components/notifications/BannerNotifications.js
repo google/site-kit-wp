@@ -51,9 +51,7 @@ import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
 	const viewOnly = useViewOnly();
 
@@ -102,13 +100,12 @@ export default function BannerNotifications() {
 			{ 'authentication_success' === notification && (
 				<SetupSuccessBannerNotification />
 			) }
-			{ 'ad_blocking_recovery_setup_success' === notification &&
-				adBlockerDetectionEnabled && (
-					<AdBlockingRecoverySetupSuccessBannerNotification />
-				) }
+			{ 'ad_blocking_recovery_setup_success' === notification && (
+				<AdBlockingRecoverySetupSuccessBannerNotification />
+			) }
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
+			<ModuleRecoveryAlert />
 			{ ga4ReportingEnabled &&
 				analyticsModuleConnected &&
 				ga4ModuleConnected && <SwitchedToGA4Banner /> }

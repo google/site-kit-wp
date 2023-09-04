@@ -80,11 +80,21 @@ function TopTrafficSourceWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReport( trafficSourceReportOptions )
 	);
 
-	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			trafficSourceReportOptions,
-		] )
-	);
+	const error = useSelect( ( select ) => {
+		const trafficSourceReportErrors = select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ trafficSourceReportOptions ] );
+
+		const totalUsersReportErrors = select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ totalUsersReportOptions ] );
+
+		if ( trafficSourceReportErrors && totalUsersReportErrors ) {
+			return [ trafficSourceReportErrors, totalUsersReportErrors ];
+		}
+
+		return trafficSourceReportErrors || totalUsersReportErrors || undefined;
+	} );
 
 	const loading = useSelect(
 		( select ) =>
