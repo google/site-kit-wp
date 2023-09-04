@@ -96,14 +96,22 @@
 	}
 
 	.googlesitekit-stepper__step-content {
+		// Set height: 0 in order to transition to height: <scroll height>.
 		height: 0;
 		margin-bottom: 24px;
 		overflow: hidden;
 		transition: height $t-default ease-in-out;
+
+		// Set visibility: hidden in order to hide from screen readers and prevent tabbing to hidden content.
+		visibility: hidden;
 	}
 
 	.googlesitekit-stepper__step-content--active {
+		// Set height: auto to initially start with the correct height. Subsequently, scrollHeight will be used via JS to
+		// determine the content height when the step is transitioned to active (scrollHeight will provide the hidden content
+		// height for an element with height: 0 and overflow hidden).
 		height: auto;
+		visibility: visible;
 	}
 
 	.googlesitekit-stepper__step:last-child {
