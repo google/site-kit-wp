@@ -41,7 +41,7 @@ const baseActions = {
 	 *
 	 * @param {string}  key              Name of cache key.
 	 * @param {*}       value            Value to store in the cache.
-	 * @param {Object}  args           	 Optional object containing ttl, timestamp and isError keys.
+	 * @param {Object}  args             Optional object containing ttl, timestamp and isError keys.
 	 * @param {number}  [args.ttl]       Optional. Validity of the cached item in seconds.
 	 * @param {number}  [args.timestamp] Optional. Timestamp when the cached item was created.
 	 * @param {boolean} [args.isError]   Optional. Whether the cached item is an error.
