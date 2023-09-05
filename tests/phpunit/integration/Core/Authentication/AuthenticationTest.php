@@ -341,13 +341,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertEquals( 'new-test-access-token', $oauth_client->get_access_token() );
 	}
 
-	public function test_register_maybe_refresh_token_for_screen__admin_without_shared_modules() {
-		$this->enable_feature( 'dashboardSharing' );
-		$this->test_register_maybe_refresh_token_for_screen__admin();
-	}
-
 	public function test_register_maybe_refresh_token_for_screen__editor_with_shared_modules() {
-		$this->enable_feature( 'dashboardSharing' );
 		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $editor_id );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -367,10 +361,6 @@ class AuthenticationTest extends TestCase {
 
 		$auth = new Authentication( $context, null, $user_options );
 		$auth->register();
-
-		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		$permissions = new Permissions( $context, $auth, new Modules( $context ), $user_options, new Dismissed_Items( $user_options ) );
-		$permissions->register();
 
 		$oauth_client = $auth->get_oauth_client();
 		// Fake a valid authentication token on the OAuth client.

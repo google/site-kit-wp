@@ -104,6 +104,29 @@ export const selectors = {
 				} );
 			}
 	),
+
+	/**
+	 * Gets an entity access URL on the service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string|undefined} The entity access URL to the service.
+	 */
+	getServiceEntityAccessURL: createRegistrySelector( ( select ) => () => {
+		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+		const webDataStreamID =
+			select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+
+		if ( ! accountID || ! propertyID || ! webDataStreamID ) {
+			return undefined;
+		}
+
+		return select( MODULES_ANALYTICS ).getServiceURL( {
+			path: escapeURI`/a${ accountID }p${ propertyID }/admin/streams/table/${ webDataStreamID }`,
+		} );
+	} ),
 };
 
 const store = {

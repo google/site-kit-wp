@@ -261,8 +261,6 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_merge() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		// Check there are no settings to begin with.
 		$this->assertEmpty( $this->settings->get() );
 

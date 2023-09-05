@@ -72,16 +72,7 @@ class View_Only_PointerTest extends TestCase {
 		$this->assertFalse( $view_only_pointer->is_active( 'settings.php' ) );
 	}
 
-	public function test_active_callback__not_dashboardSharing() {
-		$view_only_pointer = $this->get_registered_pointer();
-
-		// Should Return false because dashboardSharing is not enabled.
-		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ) );
-	}
-
 	public function test_active_callback__can_authenticate() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		$this->register_permissions_for_user( $user_id );
@@ -93,8 +84,6 @@ class View_Only_PointerTest extends TestCase {
 	}
 
 	public function test_active_callback__can_not_view_splash() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$user_id = $this->create_editor_user();
 
 		$this->register_permissions_for_user( $user_id );
@@ -106,8 +95,6 @@ class View_Only_PointerTest extends TestCase {
 	}
 
 	public function test_active_callback__splash_not_dismissed() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$user_id = $this->create_editor_user();
 
 		$this->grant_editors_view_only_dashboard_access();
@@ -121,8 +108,6 @@ class View_Only_PointerTest extends TestCase {
 	}
 
 	public function test_active_callback__splash_dismissed() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$user_id = $this->create_editor_user();
 
 		$this->grant_editors_view_only_dashboard_access();
@@ -138,8 +123,6 @@ class View_Only_PointerTest extends TestCase {
 	}
 
 	public function test_active_callback__pointer_dismissed() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$user_id = $this->create_editor_user();
 
 		$this->grant_editors_view_only_dashboard_access();

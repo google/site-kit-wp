@@ -260,9 +260,6 @@ OwnedSettingsChanged.args = {
 	hasAnalyticsAccess: true,
 	hasAnalytics4Access: true,
 };
-OwnedSettingsChanged.parameters = {
-	features: [ 'dashboardSharing' ],
-};
 
 export const WithUATag = Template.bind( null );
 WithUATag.storyName = 'With UA Tag, non-matching property selected';

@@ -81,8 +81,6 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 	}
 
 	public function test_sharing_settings__requires_authenticated_admin() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$admin = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin->ID );
 		$this->controller->register();
@@ -108,8 +106,6 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 	}
 
 	public function test_sharing_settings__create_new_settings() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_1->ID );
 		// Setup the site and admin_1 user to make a successful REST request.
@@ -157,8 +153,6 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 	}
 
 	public function test_sharing_settings__modify_shared_roles_settings() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$module_sharing_settings = $this->modules->get_module_sharing_settings();
 		$module_sharing_settings->set(
 			array(
@@ -228,8 +222,6 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 	}
 
 	public function test_sharing_settings__modify_management_settings() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$module_sharing_settings = $this->modules->get_module_sharing_settings();
 		$module_sharing_settings->set(
 			array(
@@ -312,11 +304,6 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 				'access_token' => 'valid-auth-token',
 			)
 		);
-
-		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		// TODO: Remove this when `dashboardSharing` feature flag is removed.
-		$permissions = new Permissions( $this->context, $authentication, $this->modules, $this->user_options, new Dismissed_Items( $this->user_options ) );
-		$permissions->register();
 	}
 
 }

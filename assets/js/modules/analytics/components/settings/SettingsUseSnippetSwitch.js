@@ -55,7 +55,7 @@ export default function SettingsUseSnippetSwitch() {
 				description={
 					<p>
 						{ __(
-							'The code is controlled by the Tag Manager module.',
+							'The code is controlled by the Tag Manager module',
 							'google-site-kit'
 						) }
 					</p>
@@ -111,14 +111,14 @@ export default function SettingsUseSnippetSwitch() {
 		description = useSnippet ? (
 			<p>
 				{ __(
-					'Site Kit will add the UA code automatically.',
+					'Site Kit will add the UA code automatically',
 					'google-site-kit'
 				) }
 			</p>
 		) : (
 			<p>
 				{ __(
-					'Site Kit will not add the UA code to your site.',
+					'Site Kit will not add the UA code to your site',
 					'google-site-kit'
 				) }
 			</p>

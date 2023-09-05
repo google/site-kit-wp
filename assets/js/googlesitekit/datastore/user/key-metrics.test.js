@@ -433,6 +433,29 @@ describe( 'core/user key metrics', () => {
 
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'should not set the keyMetricsSetupCompleted site info setting to true if only `isWidgetHidden` is changed', async () => {
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				// Verify the setting is initially false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				await registry
+					.dispatch( CORE_USER )
+					.saveKeyMetricsSettings( { isWidgetHidden: true } );
+
+				// Verify the setting is still false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				expect( console ).not.toHaveErrored();
+			} );
 		} );
 	} );
 

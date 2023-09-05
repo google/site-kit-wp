@@ -20,7 +20,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\User_Input\User_Input;
@@ -674,9 +673,7 @@ final class Authentication {
 			return;
 		}
 
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$this->refresh_shared_module_owner_tokens();
-		}
+		$this->refresh_shared_module_owner_tokens();
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) || ! $this->credentials()->has() ) {
 			return;

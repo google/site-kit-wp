@@ -1522,14 +1522,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__shared_metric_validation() {
-		$this->enable_feature( 'dashboardSharing' );
 		$this->enable_feature( 'ga4Reporting' );
-
-		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		// TODO: Remove this when `dashboardSharing` feature flag is removed.
-		$modules     = new Modules( $this->context, null, $this->user_options, $this->authentication );
-		$permissions = new Permissions( $this->context, $this->authentication, $modules, $this->user_options, new Dismissed_Items( $this->user_options ) );
-		$permissions->register();
 
 		$property_id = '123456789';
 
@@ -1563,14 +1556,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__shared_dimension_validation() {
-		$this->enable_feature( 'dashboardSharing' );
-
-		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		// TODO: Remove this when `dashboardSharing` feature flag is removed.
-		$modules     = new Modules( $this->context, null, $this->user_options, $this->authentication );
-		$permissions = new Permissions( $this->context, $this->authentication, $modules, $this->user_options, new Dismissed_Items( $this->user_options ) );
-		$permissions->register();
-
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(

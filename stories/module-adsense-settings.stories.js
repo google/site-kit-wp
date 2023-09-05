@@ -161,7 +161,6 @@ storiesOf( 'AdSense Module/Settings', module )
 				<Settings
 					route="/connected-services/adsense"
 					registry={ registry }
-					features={ [ 'adBlockerDetection' ] }
 				/>
 			);
 		},
@@ -182,7 +181,6 @@ storiesOf( 'AdSense Module/Settings', module )
 				<Settings
 					route="/connected-services/adsense"
 					registry={ registry }
-					features={ [ 'adBlockerDetection' ] }
 				/>
 			);
 		},

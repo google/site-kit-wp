@@ -65,7 +65,7 @@ export default function createTrackEvent(
 			dimension4: pluginVersion || '',
 			dimension5: Array.from( enabledFeatures ).join( ',' ),
 			dimension6: activeModules.join( ',' ),
-			dimension7: isAuthenticated ? 1 : 0,
+			dimension7: isAuthenticated ? '1' : '0',
 		};
 
 		return new Promise( ( resolve ) => {
