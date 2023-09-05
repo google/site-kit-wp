@@ -19,18 +19,37 @@
 /**
  * Internal dependencies
  */
-import {
-	provideGatheringDataState,
-	provideModules,
-	provideUserAuthentication,
-} from '../../../../tests/js/test-utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
+// import {
+// 	provideGatheringDataState,
+// 	provideModules,
+// 	provideUserAuthentication,
+// } from '../../../../tests/js/test-utils';
+// import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+// import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+// import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
+
+// jest.resetModules();
+global._googlesitekitModulesData = {
+	'data_available_search-console': true,
+	'data_available_analytics-4': true,
+};
+
+const WithRegistrySetup =
+	require( '../../../../tests/js/WithRegistrySetup' ).default;
+const {
+	withWidgetComponentProps,
+} = require( '../../googlesitekit/widgets/util' );
+const KeyMetricsSetupCTAWidget =
+	require( './KeyMetricsSetupCTAWidget' ).default;
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsSetupCTA'
 )( KeyMetricsSetupCTAWidget );
+
+const {
+	provideModules,
+	provideUserAuthentication,
+} = require( '../../../../tests/js/test-utils' );
 
 const Template = () => <WidgetWithComponentProps />;
 
@@ -58,10 +77,6 @@ export default {
 					},
 				] );
 				provideUserAuthentication( registry );
-				provideGatheringDataState( registry, {
-					'analytics-4': false,
-					'search-console': false,
-				} );
 			};
 
 			return (
