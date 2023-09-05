@@ -19,38 +19,59 @@
 /**
  * Internal dependencies
  */
-import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import {
-	act,
-	render,
-	createTestRegistry,
-	provideModules,
-	provideSiteInfo,
-	muteFetch,
-	provideGatheringDataState,
-	provideUserAuthentication,
-	getAnalytics4HasZeroDataReportOptions,
-	fireEvent,
-} from '../../../../tests/js/test-utils';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
+	// The following would have been imports but are eventually required within the setup method
+	// below. This allows us to set the global values needed before the modules within the
+	// registry are setup.
+	let KeyMetricsSetupCTAWidget;
+	let getWidgetComponentProps;
+	let act;
+	let render;
+	let createTestRegistry;
+	let provideModules;
+	let provideSiteInfo;
+	let fireEvent;
+
 	let registry;
+	let Widget;
+	let WidgetNull;
 
-	const { Widget, WidgetNull } =
-		getWidgetComponentProps( 'keyMetricsSetupCTA' );
+	async function setupTestWithDataAvailableValues(
+		isSearchConsoleDataAvailable,
+		isAnalytics4DataAvailable
+	) {
+		jest.resetModules();
 
-	beforeEach( async () => {
+		global._googlesitekitModulesData = {
+			'data_available_search-console': isSearchConsoleDataAvailable,
+			'data_available_analytics-4': isAnalytics4DataAvailable,
+		};
+
+		KeyMetricsSetupCTAWidget =
+			require( './KeyMetricsSetupCTAWidget' ).default;
+
+		( {
+			act,
+			render,
+			createTestRegistry,
+			provideModules,
+			provideSiteInfo,
+			fireEvent,
+		} = require( '../../../../tests/js/test-utils' ) );
+
+		( {
+			getWidgetComponentProps,
+		} = require( '../../googlesitekit/widgets/util' ) );
+
+		( { Widget, WidgetNull } =
+			getWidgetComponentProps( 'keyMetricsSetupCTA' ) );
+
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry, { homeURL: 'http://example.com' } );
-
-		await registry
-			.dispatch( CORE_USER )
-			.receiveIsUserInputCompleted( true );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -61,20 +82,14 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			}
 		);
 
-		muteFetch(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
-			)
-		);
-
-		muteFetch(
-			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/data-available'
-			)
-		);
-	} );
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+	}
 
 	it( 'does not render when GA4 is not connected', async () => {
+		setupTestWithDataAvailableValues( true, true );
+
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -82,8 +97,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				connected: false,
 			},
 		] );
-
-		provideGatheringDataState( registry, { 'search-console': false } );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -100,6 +113,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when SC is in the gathering data state', async () => {
+		setupTestWithDataAvailableValues( false, true );
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -116,11 +131,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				connected: true,
 			},
 		] );
-
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': true,
-		} );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -138,6 +148,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when GA4 is in the gathering data state', async () => {
+		setupTestWithDataAvailableValues( true, false );
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -154,23 +166,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				connected: true,
 			},
 		] );
-
-		provideGatheringDataState( registry, {
-			'search-console': false,
-		} );
-
-		// The provideGatheringDataState() helper cannot handle the true case for Analytics 4, due to its dependence on additional state
-		// that may vary between test scenarios. Therefore, we must manually set the state here. First, we set user authentication to false
-		// to ensure "gathering data" can return true for the Analytics 4 module.
-		provideUserAuthentication( registry, { authenticated: false } );
-
-		// Then provide an empty report to ensure "gathering data" is true for Analytics 4.
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				{},
-				{ options: getAnalytics4HasZeroDataReportOptions( registry ) }
-			);
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -188,9 +183,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does render the CTA when SC and GA4 are both connected', async () => {
-		await registry
-			.dispatch( CORE_USER )
-			.receiveIsUserInputCompleted( false );
+		setupTestWithDataAvailableValues( true, true );
 
 		provideModules( registry, [
 			{
@@ -204,11 +197,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				connected: true,
 			},
 		] );
-
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
 
 		const { container, getByRole, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -236,6 +224,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when dismissed', async () => {
+		setupTestWithDataAvailableValues( true, true );
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -252,11 +242,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				connected: true,
 			},
 		] );
-
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
 
 		registry
 			.dispatch( CORE_USER )
@@ -278,6 +263,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when dismissed and the tooltip is visible', async () => {
+		setupTestWithDataAvailableValues( true, true );
+
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
 			{
@@ -302,11 +289,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				connected: true,
 			},
 		] );
-
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
 
 		const { container, waitForRegistry } = render(
 			<div>
