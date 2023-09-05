@@ -43,7 +43,6 @@ export default function UserInputSelectOptions( {
 	options,
 	max,
 	next,
-	isActive,
 	showInstructions,
 	alignLeftOptions,
 } ) {
@@ -60,7 +59,7 @@ export default function UserInputSelectOptions( {
 	const optionsRef = useRef();
 
 	useEffect( () => {
-		if ( ! optionsRef?.current || ! isActive ) {
+		if ( ! optionsRef?.current ) {
 			return;
 		}
 
@@ -85,7 +84,7 @@ export default function UserInputSelectOptions( {
 			);
 			focusOption( el );
 		}
-	}, [ isActive, max ] );
+	}, [ max ] );
 
 	const onClick = useCallback(
 		( event ) => {
@@ -132,7 +131,6 @@ export default function UserInputSelectOptions( {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,
 			checked: values.includes( optionSlug ),
-			tabIndex: ! isActive ? '-1' : undefined,
 			onKeyDown,
 			alignLeft: alignLeftOptions,
 			...onClickProps,
@@ -201,7 +199,6 @@ UserInputSelectOptions.propTypes = {
 	options: PropTypes.shape( {} ).isRequired,
 	max: PropTypes.number,
 	next: PropTypes.func,
-	isActive: PropTypes.bool,
 	showInstructions: PropTypes.bool,
 	alignLeftOptions: PropTypes.bool,
 };

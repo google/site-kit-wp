@@ -90,7 +90,7 @@ export default function UseSnippetSwitch( props ) {
 				<Badge
 					className="googlesitekit-badge--primary"
 					label={ __( 'Recommended', 'google-site-kit' ) }
-				></Badge>
+				/>
 			</div>
 			{ useSnippet && checkedMessage && (
 				<SettingsNotice notice={ checkedMessage } />

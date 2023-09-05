@@ -225,7 +225,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-publisher-win__title' )
 		).toHaveTextContent(
-			'Get metrics and suggestions tailored to your specific goals'
+			'Get metrics and suggestions tailored to your specific site goals'
 		);
 		const button = getByRole( 'button', { name: /get tailored metrics/i } );
 		expect( button ).toBeInTheDocument();
@@ -331,7 +331,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-publisher-win__title' )
 		).toHaveTextContent(
-			'Get metrics and suggestions tailored to your specific goals'
+			'Get metrics and suggestions tailored to your specific site goals'
 		);
 
 		// eslint-disable-next-line require-await

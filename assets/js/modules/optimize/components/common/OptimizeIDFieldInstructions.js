@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -37,13 +38,15 @@ export default function OptimizeIDFieldInstructions() {
 
 	return (
 		<p>
-			{ __(
-				'Please copy and paste your Optimize Container ID to complete your setup.',
-				'google-site-kit'
-			) }{ ' ' }
-			<Link href={ accountURL } external>
-				{ __( 'You can locate this here', 'google-site-kit' ) }
-			</Link>
+			{ createInterpolateElement(
+				__(
+					'Please copy and paste your Optimize Container ID to complete your setup. <a>You can locate this here</a>',
+					'google-site-kit'
+				),
+				{
+					a: <Link href={ accountURL } external />,
+				}
+			) }
 		</p>
 	);
 }

@@ -30,8 +30,8 @@
 		width: 100%;
 		z-index: $z-index-sk-side-sheet;
 
-		@media (min-width: $bp-tablet) {
-			width: 384px;
+		@media (min-width: $bp-nonMobile) {
+			width: 400px;
 		}
 
 		body.admin-bar & {

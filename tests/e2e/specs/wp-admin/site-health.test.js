@@ -24,7 +24,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { enableFeature, setupSiteKit } from '../../utils';
+import { setupSiteKit } from '../../utils';
 
 describe( 'Site Health', () => {
 	it( 'adds debug data to the info tab when Site Kit is active but not setup', async () => {
@@ -36,18 +36,6 @@ describe( 'Site Health', () => {
 	} );
 
 	it( 'adds debug data to the info tab when Site Kit is setup', async () => {
-		await setupSiteKit();
-
-		await visitAdminPage( 'site-health.php', 'tab=debug' );
-
-		await expect( page ).toMatchElement( '.health-check-accordion button', {
-			text: /site kit by google/i,
-		} );
-	} );
-
-	it( 'adds debug data to the info tab when Site Kit is setup with `dashboardSharing`', async () => {
-		await enableFeature( 'dashboardSharing' );
-
 		await setupSiteKit();
 
 		await visitAdminPage( 'site-health.php', 'tab=debug' );

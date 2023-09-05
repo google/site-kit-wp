@@ -1,4 +1,6 @@
 /**
+ * AdBlockingRecoverySetupCTAWidget component.
+ *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,16 +57,16 @@ import useViewContext from '../../../../hooks/useViewContext';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { Cell } from '../../../../material-components';
 import { WEEK_IN_SECONDS, stringToDate, trackEvent } from '../../../../util';
+import whenActive from '../../../../util/when-active';
 import {
 	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import whenActive from '../../../../util/when-active';
 
 const { useSelect, useDispatch } = Data;
 
-function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
+function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	const breakpoint = useBreakpoint();
 	const viewOnlyDashboard = useViewOnly();
 	const inView = useInView();
@@ -279,11 +281,11 @@ function AdBlockingRecoveryWidget( { Widget, WidgetNull } ) {
 	);
 }
 
-AdBlockingRecoveryWidget.propTypes = {
+AdBlockingRecoverySetupCTAWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( { moduleName: 'adsense' } )(
-	AdBlockingRecoveryWidget
+	AdBlockingRecoverySetupCTAWidget
 );

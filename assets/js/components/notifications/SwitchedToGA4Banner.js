@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import GA4SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
@@ -71,6 +72,10 @@ export default function SwitchedToGA4Banner() {
 		return isValidPropertyID( propertyID );
 	} );
 
+	const hasAnalytics4Access = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics-4' )
+	);
+
 	const eventCategory = `${ viewContext }_ga4-display-success-notification`;
 
 	const handleOnView = useCallback( () => {
@@ -97,6 +102,7 @@ export default function SwitchedToGA4Banner() {
 		! isGA4DashboardView ||
 		isTourDismissed === undefined ||
 		isTourDismissed ||
+		! hasAnalytics4Access ||
 		showGA4ReportingTour
 	) {
 		return null;

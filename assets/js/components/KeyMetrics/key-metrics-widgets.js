@@ -35,7 +35,9 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 export const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
@@ -46,7 +48,7 @@ export const KEY_METRICS_WIDGETS = {
 		),
 	},
 	[ KM_ANALYTICS_NEW_VISITORS ]: {
-		title: __( 'Audience growth', 'google-site-kit' ),
+		title: __( 'New visitors', 'google-site-kit' ),
 		description: __(
 			'How many new visitors you got and how the overall audience changed',
 			'google-site-kit'
@@ -67,35 +69,39 @@ export const KEY_METRICS_WIDGETS = {
 		),
 	},
 	[ KM_ANALYTICS_POPULAR_CONTENT ]: {
-		title: __( 'Most popular content', 'google-site-kit' ),
+		title: __( 'Most popular content by pageviews', 'google-site-kit' ),
 		description: __(
 			'Pages that brought in the most visitors',
 			'google-site-kit'
 		),
 	},
 	[ KM_ANALYTICS_POPULAR_PRODUCTS ]: {
-		title: __( 'Most popular products', 'google-site-kit' ),
+		title: __( 'Most popular products by pageviews', 'google-site-kit' ),
 		description: __(
 			'Products that brought in the most visitors',
 			'google-site-kit'
 		),
+		displayInList: ( select ) =>
+			select( CORE_USER ).isKeyMetricActive(
+				KM_ANALYTICS_POPULAR_PRODUCTS
+			) || select( CORE_SITE ).getProductBasePaths()?.length > 0,
 	},
 	[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-		title: __( 'How people find your site', 'google-site-kit' ),
+		title: __( 'Top performing keywords', 'google-site-kit' ),
 		description: __(
 			'What people searched for before they came to your site',
 			'google-site-kit'
 		),
 	},
 	[ KM_ANALYTICS_TOP_CITIES ]: {
-		title: __( 'Top cities by traffic', 'google-site-kit' ),
+		title: __( 'Top cities driving traffic', 'google-site-kit' ),
 		description: __(
 			'Which cities you get the most visitors from',
 			'google-site-kit'
 		),
 	},
 	[ KM_ANALYTICS_TOP_COUNTRIES ]: {
-		title: __( 'Top countries by traffic', 'google-site-kit' ),
+		title: __( 'Top countries driving traffic', 'google-site-kit' ),
 		description: __(
 			'Which countries you get the most visitors from',
 			'google-site-kit'

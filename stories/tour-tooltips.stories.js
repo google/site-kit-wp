@@ -23,6 +23,11 @@ import { storiesOf } from '@storybook/react';
 import fetchMock from 'fetch-mock';
 
 /**
+ * WordPress dependencies
+ */
+import { createInterpolateElement } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -395,11 +400,12 @@ storiesOf( 'Global', module ).add( 'TourTooltips', () => {
 			title: 'Generic step title for the fourth step',
 			content: (
 				<div>
-					This is the fourth step with an external link that should go
-					to Google,{ ' ' }
-					<Link href="http://google.com" external>
-						link.
-					</Link>
+					{ createInterpolateElement(
+						'This is the fourth step with an external link that should go to Google, <a>link</a>.',
+						{
+							a: <Link href="http://google.com" external />,
+						}
+					) }
 				</div>
 			),
 		},

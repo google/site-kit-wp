@@ -89,14 +89,6 @@ PageSpeedInsights.scenario = {
 	label: 'Global/SetupSuccessBannerNotification/PageSpeedInsights',
 };
 
-export const UserInputSuccess = Template.bind( {} );
-UserInputSuccess.storyName = 'User Input Success';
-UserInputSuccess.parameters = {
-	query: {
-		notification: 'user_input_success',
-	},
-};
-
 export default {
 	title: 'Components/SetupSuccessBannerNotification',
 	component: SetupSuccessBannerNotification,

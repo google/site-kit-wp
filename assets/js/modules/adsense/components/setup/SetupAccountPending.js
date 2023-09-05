@@ -50,11 +50,7 @@ export default function SetupAccountPending() {
 
 			<p>
 				{ __(
-					'Site Kit has placed AdSense code on every page across your site.',
-					'google-site-kit'
-				) }{ ' ' }
-				{ __(
-					'After you’ve finished setting up your account, we’ll let you know when your site is ready to show ads. This usually takes less than a day, but it can sometimes take a bit longer.',
+					'Site Kit has placed AdSense code on every page across your site. After you’ve finished setting up your account, we’ll let you know when your site is ready to show ads. This usually takes less than a day, but it can sometimes take a bit longer.',
 					'google-site-kit'
 				) }
 			</p>

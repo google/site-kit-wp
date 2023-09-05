@@ -85,7 +85,7 @@ export default function OptionalCells( {
 				error && (
 					<Cell { ...halfCellProps }>
 						<WidgetReportError
-							moduleSlug="analytics"
+							moduleSlug="analytics-4"
 							error={ error }
 						/>
 					</Cell>

@@ -37,7 +37,7 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
-import { getErrorMessageForAnswer } from './util/validation';
+import { getErrorMessageForAnswer, hasErrorForAnswer } from './util/validation';
 import useViewContext from '../../hooks/useViewContext';
 import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,
@@ -103,6 +103,8 @@ export default function UserInputPreviewGroup( {
 		values,
 		USER_INPUT_MAX_ANSWERS[ slug ]
 	);
+
+	const answerHasError = hasErrorForAnswer( values );
 
 	const submitChanges = useCallback( async () => {
 		const response = await saveUserInputSettings();
@@ -190,7 +192,6 @@ export default function UserInputPreviewGroup( {
 			{ isEditing && (
 				<Fragment>
 					<UserInputSelectOptions
-						isActive
 						slug={ slug }
 						max={ USER_INPUT_MAX_ANSWERS[ slug ] }
 						options={ options }
@@ -211,7 +212,9 @@ export default function UserInputPreviewGroup( {
 
 							<div className="googlesitekit-user-input__preview-actions">
 								<SpinnerButton
-									disabled={ ! hasSettingChanged }
+									disabled={
+										! hasSettingChanged || answerHasError
+									}
 									onClick={
 										hasSettingChanged
 											? submitChanges

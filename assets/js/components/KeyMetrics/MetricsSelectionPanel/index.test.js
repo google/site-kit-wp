@@ -40,7 +40,6 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 
@@ -66,7 +65,10 @@ describe( 'MetricsSelectionPanel', () => {
 	describe( 'Header', () => {
 		it( 'should show the number of selected metrics', () => {
 			provideKeyMetrics( registry, {
-				widgetSlugs: [ 'metric-a', 'metric-b' ],
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_LOYAL_VISITORS,
+				],
 			} );
 
 			provideModules( registry, [
@@ -78,10 +80,10 @@ describe( 'MetricsSelectionPanel', () => {
 			] );
 
 			provideKeyMetricsWidgetRegistrations( registry, {
-				'metric-a': {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				'metric-b': {
+				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -129,7 +131,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).toHaveTextContent( 'How people find your site' );
+			).toHaveTextContent( 'Top performing keywords' );
 		} );
 
 		it( 'should disable unchecked metrics when four metrics are checked', () => {
@@ -268,12 +270,12 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).toHaveTextContent( 'How people find your site' );
+			).toHaveTextContent( 'Top performing keywords' );
 		} );
 	} );
 
 	describe( 'Footer', () => {
-		it( 'should prevent saving when less than two metrics are checked', () => {
+		beforeEach( () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
@@ -284,23 +286,17 @@ describe( 'MetricsSelectionPanel', () => {
 				},
 			] );
 
-			provideKeyMetricsWidgetRegistrations(
-				registry,
-				Object.keys( KEY_METRICS_WIDGETS ).reduce(
-					( acc, widget ) => ( {
-						...acc,
-						[ widget ]: {
-							modules: [
-								'search-console',
-								'analytics-4',
-								'adsense',
-							],
-						},
-					} ),
-					{}
-				)
-			);
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+		} );
 
+		it( 'should prevent saving when less than two metrics are checked', () => {
 			render( <MetricsSelectionPanel />, { registry } );
 
 			expect(
@@ -327,24 +323,10 @@ describe( 'MetricsSelectionPanel', () => {
 
 			it( "should have 'Apply changes' label if there are pre-saved key metrics", () => {
 				provideKeyMetrics( registry, {
-					widgetSlugs: [ 'metric-a', 'metric-b' ],
-				} );
-
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				provideKeyMetricsWidgetRegistrations( registry, {
-					'metric-a': {
-						modules: [ 'search-console' ],
-					},
-					'metric-b': {
-						modules: [ 'analytics-4' ],
-					},
+					widgetSlugs: [
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_LOYAL_VISITORS,
+					],
 				} );
 
 				const { getByRole } = render( <MetricsSelectionPanel />, {

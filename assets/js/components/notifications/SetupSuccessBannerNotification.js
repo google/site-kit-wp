@@ -27,10 +27,9 @@ import { removeQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getQueryParameter } from '../../util';
+import useQueryArg from '../../hooks/useQueryArg';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
-import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
 import { ANCHOR_ID_SPEED } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -46,8 +45,8 @@ import Link from '../Link';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
-	const slug = getQueryParameter( 'slug' );
-	const notification = getQueryParameter( 'notification' );
+	const [ slug ] = useQueryArg( 'slug' );
+	const [ notification ] = useQueryArg( 'notification' );
 
 	const breakpoint = useBreakpoint();
 	const viewContext = useViewContext();
@@ -262,8 +261,8 @@ function SetupSuccessBannerNotification() {
 				</Fragment>
 			);
 
-		case 'user_input_success':
-			return <UserInputSuccessBannerNotification />;
+		default:
+			return null;
 	}
 }
 

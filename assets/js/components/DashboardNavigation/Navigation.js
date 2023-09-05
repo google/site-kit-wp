@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import NavKeyMetricsIcon from '../../../svg/icons/nav-key-metrics-icon.svg';
 import NavTrafficIcon from '../../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../../svg/icons/nav-content-icon.svg';
 import NavSpeedIcon from '../../../svg/icons/nav-speed-icon.svg';
@@ -388,7 +389,7 @@ export default function Navigation() {
 				<Chip
 					id={ ANCHOR_ID_KEY_METRICS }
 					label={ __( 'Key metrics', 'google-site-kit' ) }
-					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
+					leadingIcon={ <NavKeyMetricsIcon width="18" height="16" /> }
 					onClick={ handleSelect }
 					selected={ selectedID === ANCHOR_ID_KEY_METRICS }
 					data-context-id={ ANCHOR_ID_KEY_METRICS }

@@ -89,14 +89,14 @@ export default function SettingsUseSnippetSwitch() {
 		description = useSnippet ? (
 			<p>
 				{ __(
-					'Site Kit will add the GA4 code automatically.',
+					'Site Kit will add the GA4 code automatically',
 					'google-site-kit'
 				) }
 			</p>
 		) : (
 			<p>
 				{ __(
-					'Site Kit will not add the GA4 code to your site.',
+					'Site Kit will not add the GA4 code to your site',
 					'google-site-kit'
 				) }
 			</p>

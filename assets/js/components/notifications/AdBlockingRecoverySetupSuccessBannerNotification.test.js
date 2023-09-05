@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoveryNotification component tests.
+ * AdBlockingRecoverySetupSuccessBannerNotification component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -38,7 +38,7 @@ import {
 	MODULES_ADSENSE,
 } from '../../modules/adsense/datastore/constants';
 import * as tracking from '../../util/tracking';
-import AdBlockingRecoveryNotification from './AdBlockingRecoveryNotification';
+import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -49,7 +49,7 @@ mockUseIntersection.mockImplementation( () => ( {
 	isIntersecting: true,
 } ) );
 
-describe( 'AdBlockingRecoveryNotification', () => {
+describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -76,9 +76,12 @@ describe( 'AdBlockingRecoveryNotification', () => {
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
 			);
 
-		const { container } = render( <AdBlockingRecoveryNotification />, {
-			registry,
-		} );
+		const { container } = render(
+			<AdBlockingRecoverySetupSuccessBannerNotification />,
+			{
+				registry,
+			}
+		);
 
 		expect( container ).toBeEmptyDOMElement();
 
@@ -94,7 +97,7 @@ describe( 'AdBlockingRecoveryNotification', () => {
 			);
 
 		const { container, getByRole } = render(
-			<AdBlockingRecoveryNotification />,
+			<AdBlockingRecoverySetupSuccessBannerNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,

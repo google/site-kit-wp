@@ -28,7 +28,6 @@ import { trackEvent } from './tracking';
 export { trackEvent };
 export * from './sanitize';
 export * from './stringify';
-export * from './standalone';
 export * from './storage';
 export * from './i18n';
 export * from './markdown';

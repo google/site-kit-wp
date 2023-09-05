@@ -50,14 +50,14 @@ import { createGatheringDataStore } from '../../../googlesitekit/modules/create-
 const { createRegistrySelector } = Data;
 
 /**
- * Returns report args for the zero data report.
+ * Returns report args for a sample report.
  *
  * @since 1.107.0
  *
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
  */
-const getZeroDataReportArgs = ( select ) => {
+const getSampleReportArgs = ( select ) => {
 	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} );
@@ -153,7 +153,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
 
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		const hasResolvedReport = select(
 			MODULES_ANALYTICS_4
@@ -238,8 +238,8 @@ const baseSelectors = {
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
-	 * @param {string}         options.startDate          Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate            Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.startDate          Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate            Required. End date to query report data for as YYYY-mm-dd.
 	 * @param {Array.<string>} options.metrics            Required. List of metrics to query.
 	 * @param {string}         [options.compareStartDate] Optional. Start date to compare report data for as YYYY-mm-dd.
 	 * @param {string}         [options.compareEndDate]   Optional. End date to compare report data for as YYYY-mm-dd.
@@ -362,7 +362,7 @@ const baseSelectors = {
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return

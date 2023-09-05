@@ -422,10 +422,10 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$shareable = Feature_Flags::enabled( 'dashboardSharing' );
+		$shareable = true;
 		// If ga4Reporting is enabled, the dashboard view controls which
 		// Analytics module is shareable.
-		if ( $shareable && Feature_Flags::enabled( 'ga4Reporting' ) ) {
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			$settings  = $this->get_settings()->get();
 			$shareable = self::DASHBOARD_VIEW === $settings['dashboardView'];
 		}
@@ -695,14 +695,7 @@ final class Analytics extends Module
 						$date_ranges[] = array( $compare_start_date, $compare_end_date );
 					}
 				} else {
-					$date_range    = $data['dateRange'] ?: 'last-28-days';
-					$date_ranges[] = Date::parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
-
-					// When using multiple date ranges, it changes the structure of the response,
-					// where each date range becomes an item in a list.
-					if ( ! empty( $data['multiDateRange'] ) ) {
-						$date_ranges[] = Date::parse_date_range( $date_range, 1, 1, true );
-					}
+					$date_ranges[] = Date::parse_date_range( 'last-28-days' );
 				}
 
 				$date_ranges = array_map(

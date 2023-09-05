@@ -133,6 +133,14 @@ final class Modules {
 	private $rest_controller;
 
 	/**
+	 * REST_Dashboard_Sharing_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Dashboard_Sharing_Controller
+	 */
+	private $dashboard_sharing_controller;
+
+	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -175,7 +183,8 @@ final class Modules {
 
 		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
-		$this->rest_controller = new REST_Modules_Controller( $this );
+		$this->rest_controller              = new REST_Modules_Controller( $this );
+		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
 	}
 
 	/**
@@ -217,10 +226,7 @@ final class Modules {
 
 		$this->rest_controller->register();
 		$this->sharing_settings->register();
-
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			( new REST_Dashboard_Sharing_Controller( $this ) )->register();
-		}
+		$this->dashboard_sharing_controller->register();
 
 		add_filter(
 			'googlesitekit_assets',
