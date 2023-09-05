@@ -25,7 +25,7 @@ class Google_Proxy_Code_Exception extends Exception {
 	/**
 	 * Temporary code for an undelegated proxy token.
 	 *
-	 * @since 1.109.0 Explicitly declared; previously, it was dynamically declared.
+	 * @since n.e.x.t Explicitly declared; previously, it was dynamically declared.
 	 *
 	 * @var string
 	 */

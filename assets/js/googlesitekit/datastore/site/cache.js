@@ -36,7 +36,7 @@ const baseActions = {
 	/**
 	 * Yields to setItem function which sets cached data using a key.
 	 *
-	 * @since 1.109.0
+	 * @since n.e.x.t
 	 * @see setItem
 	 *
 	 * @param {string}  key              Name of cache key.
