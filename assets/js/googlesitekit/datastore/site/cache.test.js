@@ -1,7 +1,7 @@
 /**
  * `core/site` data store: client side cache tests.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ describe( 'core/site client side cache', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( '*setCacheItem', () => {
+		describe( 'setCacheItem', () => {
 			it( 'require key param', async () => {
 				await expect( async () => {
 					await registry.dispatch( CORE_SITE ).setCacheItem();
