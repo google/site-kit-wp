@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store: enhanced measurements.
+ * `modules/analytics-4` data store: enhanced measurement.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
