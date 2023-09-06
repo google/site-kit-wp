@@ -27,19 +27,34 @@ import PropTypes from 'prop-types';
 import CTA from '../notifications/CTA';
 import ReportErrorActions from '../ReportErrorActions';
 import { __ } from '@wordpress/i18n';
+import { isInsufficientPermissionsError } from '../../util/errors';
 
 export default function MetricTileError( props ) {
 	const { error, headerText, moduleSlug } = props;
+	const errorIsInsufficientPermissions =
+		isInsufficientPermissionsError( error );
 
 	return (
 		<div className="googlesitekit-km-widget-tile--error">
 			<CTA
-				title={ __( 'Data loading failed', 'google-site-kit' ) }
+				title={
+					errorIsInsufficientPermissions
+						? __( 'Insufficient permissions', 'google-site-kit' )
+						: __( 'Data loading failed', 'google-site-kit' )
+				}
 				headerText={ headerText }
 				description=""
 				error
 			>
-				<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
+				<ReportErrorActions
+					moduleSlug={ moduleSlug }
+					error={ error }
+					getHelpText={
+						errorIsInsufficientPermissions
+							? __( 'Trouble getting access?', 'google-site-kit' )
+							: ''
+					}
+				/>
 			</CTA>
 		</div>
 	);
