@@ -14,12 +14,10 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use WP_Dependencies;
 use WP_Post_Type;
-use WP_Post;
 
 /**
  * Class managing assets.
@@ -315,7 +313,7 @@ final class Assets {
 			array_push( $dependencies, 'googlesitekit-components' );
 		}
 
-		if ( 'dashboard-sharing' === $context && Feature_Flags::enabled( 'dashboardSharing' ) ) {
+		if ( 'dashboard-sharing' === $context ) {
 			array_push( $dependencies, 'googlesitekit-dashboard-sharing-data' );
 		}
 
@@ -1093,7 +1091,11 @@ final class Assets {
 			$permalink_template        = home_url( $permastruct );
 			$product_url_path          = URL::parse( $permalink_template, PHP_URL_PATH );
 			list( $product_base_path ) = explode( '%product%', $product_url_path, 2 );
-			$product_base_paths[]      = $product_base_path;
+			$product_base_path         = str_replace( $wp_rewrite->rewritecode, $wp_rewrite->rewritereplace, $product_base_path );
+			if ( strpos( $product_base_path, '^' ) !== 0 ) {
+				$product_base_path = '^' . $product_base_path;
+			}
+			$product_base_paths[] = $product_base_path;
 		}
 
 		/**

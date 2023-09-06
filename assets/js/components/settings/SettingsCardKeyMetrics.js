@@ -79,7 +79,7 @@ export default function SettingsCardKeyMetrics() {
 		: __( 'Personalize your metrics', 'google-site-kit' );
 
 	return (
-		<Layout title={ __( 'Key metrics', 'google-site-kit' ) } header rounded>
+		<Layout title={ __( 'Key Metrics', 'google-site-kit' ) } header rounded>
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
 				<SettingsKeyMetrics />
 

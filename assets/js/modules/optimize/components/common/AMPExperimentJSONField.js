@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -61,16 +65,20 @@ export default function AMPExperimentJSONField() {
 	return (
 		<Fragment>
 			<p>
-				{ __(
-					'Please input your AMP experiment settings in JSON format below.',
-					'google-site-kit'
-				) }{ ' ' }
-				<Link
-					href="https://developers.google.com/optimize/devguides/amp-experiments"
-					external
-				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
+				{ createInterpolateElement(
+					__(
+						'Please input your AMP experiment settings in JSON format below. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								href="https://developers.google.com/optimize/devguides/amp-experiments"
+								external
+							/>
+						),
+					}
+				) }
 			</p>
 			<TextField
 				className={ classnames( 'mdc-text-field', {

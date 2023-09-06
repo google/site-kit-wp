@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -589,8 +588,6 @@ class ModulesTest extends TestCase {
 	public function test_get_shareable_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->enable_feature( 'dashboardSharing' );
-
 		$shareable_modules = array_map( 'get_class', $modules->get_shareable_modules() );
 
 		$this->assertEqualSetsWithIndex(
@@ -639,8 +636,6 @@ class ModulesTest extends TestCase {
 	public function test_get_shared_ownership_modules() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
-		$this->enable_feature( 'dashboardSharing' );
-
 		// Check shared ownership for modules activated by default.
 		$modules = new Modules( $context );
 		$this->assertEqualSetsWithIndex(
@@ -669,7 +664,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_is_module_recoverable() {
-		$this->enable_feature( 'dashboardSharing' );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$modules = new Modules( $context );
 
@@ -717,7 +711,6 @@ class ModulesTest extends TestCase {
 	}
 
 	private function setup_all_admin_module_ownership_change() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -888,7 +881,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_non_all_admin_module_ownership_change() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -928,7 +920,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_non_all_admin_module_ownership_change_shared_roles() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -971,7 +962,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_non_all_admin_module_ownership_change_management() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -1014,8 +1004,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_shareable_modules_owners() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		// Activate modules.
@@ -1061,8 +1049,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_shared_ownership_module_default_settings() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
 		remove_all_filters( 'default_option_' . Module_Sharing_Settings::OPTION );
 
@@ -1084,8 +1070,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_delete_dashboard_sharing_settings() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$modules          = new Modules( $context );
 		$sharing_settings = $modules->get_module_sharing_settings();
@@ -1164,8 +1148,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_is_module_shareable() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		// Deactivate all non-default modules.

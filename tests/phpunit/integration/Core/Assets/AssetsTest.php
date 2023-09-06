@@ -115,7 +115,6 @@ class AssetsTest extends TestCase {
 
 	public function test_register_dashboard_sharing() {
 		// For a user that can view shared dashboard, ensure the hooks are added.
-		$this->enable_feature( 'dashboardSharing' );
 		$contributor = $this->factory()->user->create_and_get( array( 'role' => 'contributor' ) );
 
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -255,10 +254,14 @@ class AssetsTest extends TestCase {
 	/**
 	 * @dataProvider data_product_base_paths
 	 */
-	public function test_base_data__product_base_paths( $post_type_args, $expected ) {
+	public function test_base_data__product_base_paths( $args, $expected ) {
 		$this->enable_feature( 'userInput' );
 		$this->set_permalink_structure( '/%postname%/' );
-		register_post_type( 'product', $post_type_args );
+		register_post_type( 'product', $args['post_type_args'] );
+
+		if ( ! empty( $args['product_permastruct'] ) ) {
+			add_permastruct( 'product', $args['product_permastruct'] );
+		}
 
 		$data = $this->get_inline_base_data();
 
@@ -267,19 +270,35 @@ class AssetsTest extends TestCase {
 
 	public function data_product_base_paths() {
 		return array(
-			'public post type'    => array(
+			'public post type'           => array(
 				array(
-					'public'  => true,
-					'rewrite' => true,
+					'post_type_args' =>
+						array(
+							'public'  => true,
+							'rewrite' => true,
+						),
 				),
-				array( '/product/' ),
+				array( '^/product/' ),
 			),
-			'custom rewrite rule' => array(
+			'custom rewrite rule'        => array(
 				array(
-					'public'  => true,
-					'rewrite' => array( 'slug' => 'fancy-products' ),
+					'post_type_args' => array(
+						'public'  => true,
+						'rewrite' => array( 'slug' => 'fancy-products' ),
+					),
 				),
-				array( '/fancy-products/' ),
+				array( '^/fancy-products/' ),
+			),
+			'custom product permastruct' => array(
+				array(
+					'post_type_args'      =>
+						array(
+							'public'  => true,
+							'rewrite' => true,
+						),
+					'product_permastruct' => '/product/%year%/%monthnum%/%category%/',
+				),
+				array( '^/product/([0-9]{4})/([0-9]{1,2})/%category%/' ),
 			),
 		);
 	}

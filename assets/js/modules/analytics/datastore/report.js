@@ -55,14 +55,14 @@ import { createGatheringDataStore } from '../../../googlesitekit/modules/create-
 const { createRegistrySelector } = Data;
 
 /**
- * Returns report args for the zero data report.
+ * Returns report args for a sample report.
  *
  * @since 1.107.0
  *
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
  */
-const getZeroDataReportArgs = ( select ) => {
+const getSampleReportArgs = ( select ) => {
 	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} );
@@ -154,7 +154,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -233,21 +233,18 @@ const baseSelectors = {
 	 *
 	 * @since 1.13.0
 	 *
-	 * @param {Object}         state                       Data store's state.
-	 * @param {Object}         options                     Options for generating the report.
-	 * @param {string}         options.startDate           Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate             Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.dateRange           Required, alternative to startDate and endDate. A date range string such as 'last-28-days'.
-	 * @param {Array.<string>} options.metrics             Required. List of metrics to query.
-	 * @param {boolean}        [options.compareDateRanges] Optional. Only relevant with dateRange. Default false.
-	 * @param {boolean}        [options.multiDateRange]    Optional. Only relevant with dateRange. Default false.
-	 * @param {string}         [options.compareStartDate]  Optional. Start date to compare report data for as YYYY-mm-dd.
-	 * @param {string}         [options.compareEndDate]    Optional. End date to compare report data for as YYYY-mm-dd.
-	 * @param {Array.<string>} [options.dimensions]        Optional. List of dimensions to group results by. Default an empty array.
-	 * @param {Object}         [options.dimensionFilters]  Optional. Map of dimension filters for filtering options on a dimension. Default an empty object.
-	 * @param {Array.<Object>} [options.orderby]           Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
-	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
-	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         state                      Data store's state.
+	 * @param {Object}         options                    Options for generating the report.
+	 * @param {string}         options.startDate          Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate            Required. End date to query report data for as YYYY-mm-dd.
+	 * @param {Array.<string>} options.metrics            Required. List of metrics to query.
+	 * @param {string}         [options.compareStartDate] Optional. Start date to compare report data for as YYYY-mm-dd.
+	 * @param {string}         [options.compareEndDate]   Optional. End date to compare report data for as YYYY-mm-dd.
+	 * @param {Array.<string>} [options.dimensions]       Optional. List of dimensions to group results by. Default an empty array.
+	 * @param {Object}         [options.dimensionFilters] Optional. Map of dimension filters for filtering options on a dimension. Default an empty object.
+	 * @param {Array.<Object>} [options.orderby]          Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
+	 * @param {string}         [options.url]              Optional. URL to get a report for only this URL. Default an empty string.
+	 * @param {number}         [options.limit]            Optional. Maximum number of entries to return. Default 1000.
 	 * @return {(Array.<Object>|undefined)} An Analytics report; `undefined` if not loaded.
 	 */
 	getReport( state, options ) {
@@ -366,7 +363,7 @@ const baseSelectors = {
 			return true;
 		}
 
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return

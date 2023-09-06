@@ -110,11 +110,6 @@ export default function UserInputQuestionnaire() {
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
 			const url = new URL( redirectURL || dashboardURL );
-
-			// Here we don't use `addQueryArgs` due to a bug with how it handles hashes
-			// See https://github.com/WordPress/gutenberg/issues/16655
-			url.searchParams.set( 'notification', 'user_input_success' );
-
 			navigateTo( url.toString() );
 		}
 	}, [
@@ -166,18 +161,17 @@ export default function UserInputQuestionnaire() {
 		<div>
 			{ settingsProgress }
 
-			{ activeSlugIndex <=
+			{ activeSlugIndex ===
 				steps.indexOf( USER_INPUT_QUESTIONS_PURPOSE ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
-					isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
 					questionNumber={ 1 }
 					title={ __(
 						'What is the main purpose of this site?',
 						'google-site-kit'
 					) }
 					description={ __(
-						'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
+						'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track progress towards your specific goals.',
 						'google-site-kit'
 					) }
 					next={ nextCallback }
@@ -185,7 +179,6 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
 						slug={ USER_INPUT_QUESTIONS_PURPOSE }
 						max={
 							USER_INPUT_MAX_ANSWERS[
@@ -199,20 +192,17 @@ export default function UserInputQuestionnaire() {
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlugIndex <=
+			{ activeSlugIndex ===
 				steps.indexOf( USER_INPUT_QUESTION_POST_FREQUENCY ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
-					isActive={
-						activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY
-					}
 					questionNumber={ 2 }
 					title={ __(
 						'How often do you create new content for this site?',
 						'google-site-kit'
 					) }
 					description={ __(
-						'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation',
+						'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation.',
 						'google-site-kit'
 					) }
 					next={ nextCallback }
@@ -221,9 +211,6 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={
-							activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY
-						}
 						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
 						max={
 							USER_INPUT_MAX_ANSWERS[
@@ -237,18 +224,17 @@ export default function UserInputQuestionnaire() {
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlugIndex <=
+			{ activeSlugIndex ===
 				steps.indexOf( USER_INPUT_QUESTIONS_GOALS ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTIONS_GOALS }
-					isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
 					questionNumber={ 3 }
 					title={ __(
 						'What are your top goals for this site?',
 						'google-site-kit'
 					) }
 					description={ __(
-						'Based on your answers, Site Kit will tailor the metrics and advice you see on your dashboard to help you make progress in these areas',
+						'Based on your answers, Site Kit will tailor the metrics and recommendations you see on your dashboard to help you make progress in these areas.',
 						'google-site-kit'
 					) }
 					next={ nextCallback }
@@ -257,7 +243,6 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
 						slug={ USER_INPUT_QUESTIONS_GOALS }
 						max={
 							USER_INPUT_MAX_ANSWERS[ USER_INPUT_QUESTIONS_GOALS ]

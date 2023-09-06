@@ -82,11 +82,14 @@ describe( 'modules/search-console report', () => {
 					body: fixtures.report,
 				} );
 
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+
 				const initialReport = registry
 					.select( MODULES_SEARCH_CONSOLE )
-					.getReport( {
-						dateRange: 'last-90-days',
-					} );
+					.getReport( options );
 
 				expect( initialReport ).toEqual( undefined );
 				await subscribeUntil(
@@ -94,13 +97,12 @@ describe( 'modules/search-console report', () => {
 					() =>
 						registry
 							.select( MODULES_SEARCH_CONSOLE )
-							.getReport( { dateRange: 'last-90-days' } ) !==
-						undefined
+							.getReport( options ) !== undefined
 				);
 
 				const report = registry
 					.select( MODULES_SEARCH_CONSOLE )
-					.getReport( { dateRange: 'last-90-days' } );
+					.getReport( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
@@ -108,7 +110,8 @@ describe( 'modules/search-console report', () => {
 
 			it( 'does not make a network request if report for given options is already present', async () => {
 				const options = {
-					dateRange: 'last-90-days',
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
 				};
 
 				// Load data into this store so there are matches for the data we're about to select,
@@ -144,7 +147,8 @@ describe( 'modules/search-console report', () => {
 				} );
 
 				const options = {
-					dateRange: 'last-90-days',
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
 				};
 
 				registry.select( MODULES_SEARCH_CONSOLE ).getReport( options );
@@ -198,15 +202,6 @@ describe( 'modules/search-console report', () => {
 
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
-
-				const error = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.getErrorForSelector( 'isGatheringData' );
-
-				expect( error ).not.toBeUndefined();
-				expect( error.message ).toBe(
-					'Unable to determine gathering data state.'
-				);
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBe( true );

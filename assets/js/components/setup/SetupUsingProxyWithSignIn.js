@@ -62,15 +62,12 @@ import {
 } from './constants';
 import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
-import { useFeature } from '../../hooks/useFeature';
 import useViewContext from '../../hooks/useViewContext';
 import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
-
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
@@ -235,7 +232,7 @@ export default function SetupUsingProxyWithSignIn() {
 			'google-site-kit'
 		);
 		description = __(
-			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.',
+			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google services.',
 			'google-site-kit'
 		);
 		showLearnMoreLink = true;
@@ -423,7 +420,6 @@ export default function SetupUsingProxyWithSignIn() {
 																}
 																{ hasMultipleAdmins &&
 																	isSecondAdmin &&
-																	dashboardSharingEnabled &&
 																	hasViewableModules &&
 																	complete && (
 																		<Link

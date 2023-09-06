@@ -111,7 +111,7 @@ export const actions = {
 	/**
 	 * Sets the `keyMetricsSetupCompleted` boolean value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.108.0
 	 *
 	 * @param {boolean} keyMetricsSetupCompleted Whether key metrics setup is completed.
 	 * @return {Object} Redux-style action.
@@ -811,7 +811,7 @@ export const selectors = {
 	 * Checks if the Key Metrics widget has been setup either if at least one user
 	 * has answered the User Input questionnaire or picked their own metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.108.0
 	 *
 	 * @return {(boolean)} `true` if the Key Metrics widget has been setup, otherwise `false`.
 	 */

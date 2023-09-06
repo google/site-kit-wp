@@ -39,12 +39,11 @@ import {
 	getSnippetLabel,
 	getAutoAdsDisabledMessage,
 } from './utils';
-import AdBlockingRecoveryCTA from '../common/AdBlockingRecoveryCTA';
+import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
-	const adBlockerDetectionEnabled = useFeature( 'adBlockerDetection' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
@@ -186,65 +185,58 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			{ adBlockerDetectionEnabled &&
-				adBlockingRecoverySetupStatus?.length > 0 && (
-					<div className="googlesitekit-settings-module__meta-items">
-						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+			{ adBlockingRecoverySetupStatus?.length > 0 && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Ad blocking recovery', 'google-site-kit' ) }
+						</h5>
+						{ ! useAdBlockingRecoverySnippet && (
+							<p className="googlesitekit-settings-module__meta-item-data">
 								{ __(
-									'Ad blocking recovery',
+									'Ad blocking recovery message is not placed',
 									'google-site-kit'
 								) }
-							</h5>
-							{ ! useAdBlockingRecoverySnippet && (
+							</p>
+						) }
+						{ useAdBlockingRecoverySnippet && (
+							<Fragment>
 								<p className="googlesitekit-settings-module__meta-item-data">
-									{ __(
-										'Ad blocking recovery message is not placed',
-										'google-site-kit'
+									{ useAdBlockingRecoveryErrorSnippet
+										? __(
+												'Ad blocking recovery message enabled with error protection code',
+												'google-site-kit'
+										  )
+										: __(
+												'Ad blocking recovery message enabled without error protection code',
+												'google-site-kit'
+										  ) }
+								</p>
+								<p className="googlesitekit-settings-module__meta-item-data">
+									{ createInterpolateElement(
+										__(
+											'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
+											'google-site-kit'
+										),
+										{
+											a: (
+												<Link
+													href={ privacyMessagingURL }
+													external
+												/>
+											),
+										}
 									) }
 								</p>
-							) }
-							{ useAdBlockingRecoverySnippet && (
-								<Fragment>
-									<p className="googlesitekit-settings-module__meta-item-data">
-										{ useAdBlockingRecoveryErrorSnippet
-											? __(
-													'Ad blocking recovery message enabled with error protection code',
-													'google-site-kit'
-											  )
-											: __(
-													'Ad blocking recovery message enabled without error protection code',
-													'google-site-kit'
-											  ) }
-									</p>
-									<p className="googlesitekit-settings-module__meta-item-data">
-										{ createInterpolateElement(
-											__(
-												'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
-												'google-site-kit'
-											),
-											{
-												a: (
-													<Link
-														href={
-															privacyMessagingURL
-														}
-														external
-													/>
-												),
-											}
-										) }
-									</p>
-								</Fragment>
-							) }
-						</div>
+							</Fragment>
+						) }
 					</div>
-				) }
+				</div>
+			) }
 
-			{ adBlockerDetectionEnabled &&
-				! adBlockingRecoverySetupStatus?.length && (
-					<AdBlockingRecoveryCTA />
-				) }
+			{ ! adBlockingRecoverySetupStatus?.length && (
+				<AdBlockingRecoverySetupCTANotice />
+			) }
 		</div>
 	);
 }

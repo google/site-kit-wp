@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -100,24 +104,28 @@ export default function SetupAccountCreate() {
 						parseAccountID( existingTag )
 					) }
 				{ ! existingTag &&
-					sprintf(
-						/* translators: %s: user email address */
-						__(
-							'Already use AdSense? Add %s as a user to an existing AdSense account.',
-							'google-site-kit'
+					createInterpolateElement(
+						sprintf(
+							/* translators: %s: user email address */
+							__(
+								'Already use AdSense? Add %s as a user to an existing AdSense account. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							userEmail
 						),
-						userEmail
-					) }{ ' ' }
-				<SupportLink
-					path="/adsense/answer/2659101"
-					external
-					aria-label={ __(
-						'Learn more about adding a user to an existing AdSense account',
-						'google-site-kit'
+						{
+							a: (
+								<SupportLink
+									path="/adsense/answer/2659101"
+									external
+									aria-label={ __(
+										'Learn more about adding a user to an existing AdSense account',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
 					) }
-				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</SupportLink>
 			</p>
 		</Fragment>
 	);

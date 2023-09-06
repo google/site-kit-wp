@@ -67,7 +67,7 @@ function LoyalVisitorsWidget( { Widget } ) {
 		] )
 	);
 
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',

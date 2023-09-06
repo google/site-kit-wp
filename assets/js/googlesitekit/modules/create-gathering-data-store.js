@@ -27,9 +27,6 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../data/create-fetch-store';
-import { actions as errorStoreActions } from '../data/create-error-store';
-
-const { receiveError } = errorStoreActions;
 
 const { createRegistryControl } = Data;
 
@@ -183,14 +180,6 @@ export const createGatheringDataStore = (
 				.selectDataAvailability();
 
 			yield actions.receiveIsGatheringData( ! dataAvailability );
-
-			if ( dataAvailability === null ) {
-				yield receiveError(
-					{ message: 'Unable to determine gathering data state.' },
-					'isGatheringData',
-					[]
-				);
-			}
 
 			if ( dataAvailability ) {
 				yield fetchSaveDataAvailableStateStore.actions.fetchSaveDataAvailableState();

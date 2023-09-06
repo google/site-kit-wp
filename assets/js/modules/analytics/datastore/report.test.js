@@ -82,7 +82,8 @@ describe( 'modules/analytics report', () => {
 
 		describe( 'getReport', () => {
 			const options = {
-				dateRange: 'last-90-days',
+				startDate: '2000-01-01',
+				endDate: '2000-01-05',
 				metrics: {
 					expression: 'testExpression',
 					alias: 'testAlias',
@@ -159,7 +160,8 @@ describe( 'modules/analytics report', () => {
 
 			it( 'sets adsenseLinked to false if a 400 error is returned for AdSense metrics due to them being restricted', async () => {
 				const adsenseOptions = {
-					dateRange: 'last-28-days',
+					startDate: '2000-01-01',
+					endDate: '2000-01-05',
 					metrics: 'ga:adsenseRevenue',
 				};
 				const restrictedMetricsError = {
@@ -195,7 +197,8 @@ describe( 'modules/analytics report', () => {
 
 			it( 'does not modify adsenseLinked if a 400 error is returned for non-AdSense metrics', async () => {
 				const nonAdsenseOptions = {
-					dateRange: 'last-28-days',
+					startDate: '2000-01-01',
+					endDate: '2000-01-05',
 					metrics: 'ga:nonadsenseMetric',
 				};
 				const restrictedMetricsError = {
@@ -231,7 +234,8 @@ describe( 'modules/analytics report', () => {
 
 			it( 'sets adsenseLinked to true if a successful response is returned for AdSense metrics', async () => {
 				const adsenseOptions = {
-					dateRange: 'last-28-days',
+					startDate: '2000-01-01',
+					endDate: '2000-01-05',
 					metrics: 'ga:adsenseRevenue',
 				};
 				const restrictedMetricsSuccess = [
@@ -269,7 +273,8 @@ describe( 'modules/analytics report', () => {
 
 			it( 'sets adsenseLinked to true if a 400 error is returned for AdSense metrics due to non-AdSense restricted metrics', async () => {
 				const adsenseAndNonAdSenseOptions = {
-					dateRange: 'last-28-days',
+					startDate: '2000-01-01',
+					endDate: '2000-01-05',
 					metrics: [ 'ga:nonadsenseMetric', 'ga:adsenseRevenue' ],
 				};
 				const restrictedMetricsError = {
@@ -384,15 +389,6 @@ describe( 'modules/analytics report', () => {
 
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
-
-				const error = registry
-					.select( MODULES_ANALYTICS )
-					.getErrorForSelector( 'isGatheringData' );
-
-				expect( error ).not.toBeUndefined();
-				expect( error.message ).toBe(
-					'Unable to determine gathering data state.'
-				);
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBe( true );

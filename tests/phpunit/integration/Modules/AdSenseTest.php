@@ -566,25 +566,6 @@ class AdSenseTest extends TestCase {
 				'adsense_use_snippet',
 				'adsense_web_stories_adunit_id',
 				'adsense_setup_completed_timestamp',
-			),
-			array_keys( $adsense->get_debug_fields() )
-		);
-	}
-
-	public function test_get_debug_fields__adBlockerDetection() {
-		$this->enable_feature( 'adBlockerDetection' );
-
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertEqualSets(
-			array(
-				'adsense_account_id',
-				'adsense_client_id',
-				'adsense_account_status',
-				'adsense_site_status',
-				'adsense_use_snippet',
-				'adsense_web_stories_adunit_id',
-				'adsense_setup_completed_timestamp',
 				'adsense_abr_use_snippet',
 				'adsense_abr_use_error_protection_snippet',
 				'adsense_abr_setup_status',
