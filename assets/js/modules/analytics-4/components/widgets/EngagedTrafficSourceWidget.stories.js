@@ -157,8 +157,8 @@ InsufficientPermissions.args = {
 		] );
 	},
 };
-Error.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSource/Error',
+InsufficientPermissions.scenario = {
+	label: 'KeyMetrics/EngagedTrafficSource/InsufficientPermissions',
 	delay: 250,
 };
 
