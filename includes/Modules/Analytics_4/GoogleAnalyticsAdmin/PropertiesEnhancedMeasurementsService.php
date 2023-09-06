@@ -23,9 +23,9 @@ use Google\Site_Kit_Dependencies\Google_Client;
 class PropertiesEnhancedMeasurementsService extends GoogleAnalyticsAdmin {
 
 	/**
-	 * PropertiesEnhancedMeasurementsResource instance.
+	 * PropertiesEnhancedMeasurementResource instance.
 	 *
-	 * @var PropertiesEnhancedMeasurementsResource
+	 * @var PropertiesEnhancedMeasurementResource
 	 */
 	public $properties_enhancedMeasurements; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 
@@ -42,7 +42,7 @@ class PropertiesEnhancedMeasurementsService extends GoogleAnalyticsAdmin {
 		$this->version = 'v1alpha';
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName
-		$this->properties_enhancedMeasurements = new PropertiesEnhancedMeasurementsResource(
+		$this->properties_enhancedMeasurements = new PropertiesEnhancedMeasurementResource(
 			$this,
 			$this->serviceName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 			'enhancedMeasurements',
