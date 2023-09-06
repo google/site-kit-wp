@@ -34,18 +34,18 @@ import { isValidPropertyID, isValidWebDataStreamID } from '../utils/validation';
 
 const fetchStoreReducerCallback = createReducer(
 	( state, enhancedMeasurementSettings, { propertyID, webDataStreamID } ) => {
-		if ( ! state.enhancedMeasurements[ propertyID ] ) {
-			state.enhancedMeasurements[ propertyID ] = {};
+		if ( ! state.enhancedMeasurement[ propertyID ] ) {
+			state.enhancedMeasurement[ propertyID ] = {};
 		}
 
-		if ( ! state.enhancedMeasurements[ propertyID ][ webDataStreamID ] ) {
-			state.enhancedMeasurements[ propertyID ][ webDataStreamID ] = {};
+		if ( ! state.enhancedMeasurement[ propertyID ][ webDataStreamID ] ) {
+			state.enhancedMeasurement[ propertyID ][ webDataStreamID ] = {};
 		}
 
-		state.enhancedMeasurements[ propertyID ][ webDataStreamID ].settings =
+		state.enhancedMeasurement[ propertyID ][ webDataStreamID ].settings =
 			enhancedMeasurementSettings;
 
-		state.enhancedMeasurements[ propertyID ][
+		state.enhancedMeasurement[ propertyID ][
 			webDataStreamID
 		].savedSettings = enhancedMeasurementSettings;
 	}
@@ -127,7 +127,7 @@ const fetchSaveEnhancedMeasurementSettingsStore = createFetchStore( {
 const SET_ENHANCED_MEASUREMENT_SETTINGS = 'SET_ENHANCED_MEASUREMENT_SETTINGS';
 
 const baseInitialState = {
-	enhancedMeasurements: {},
+	enhancedMeasurement: {},
 };
 
 const baseActions = {
@@ -160,7 +160,7 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case SET_ENHANCED_MEASUREMENT_SETTINGS: {
 			const { propertyID, webDataStreamID, settings } = payload;
 
-			state.enhancedMeasurements[ propertyID ][
+			state.enhancedMeasurement[ propertyID ][
 				webDataStreamID
 			].settings = settings;
 
@@ -201,7 +201,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} An object with enhanced measurement settings; `undefined` if not loaded.
 	 */
 	getEnhancedMeasurementSettings( state, propertyID, webDataStreamID ) {
-		return state.enhancedMeasurements[ propertyID ]?.[ webDataStreamID ]
+		return state.enhancedMeasurement[ propertyID ]?.[ webDataStreamID ]
 			?.settings;
 	},
 };
