@@ -1,6 +1,6 @@
 <?php
 /**
- * Class PropertiesEnhancedMeasurementsResource
+ * Class PropertiesEnhancedMeasurementResource
  *
  * @package   Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin
  * @copyright 2023 Google LLC
@@ -16,7 +16,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Resource;
 /**
  * The "enhancedMeasurementSettings" collection of methods.
  */
-class PropertiesEnhancedMeasurementsResource extends Resource {
+class PropertiesEnhancedMeasurementResource extends Resource {
 
 	/**
 	 * Returns the singleton enhanced measurement settings for this web stream. Note
