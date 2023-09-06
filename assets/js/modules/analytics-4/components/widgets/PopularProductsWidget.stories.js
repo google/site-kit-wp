@@ -27,6 +27,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import {
 	provideKeyMetrics,
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
@@ -40,6 +41,8 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../googlesitekit/constants';
 import PopularProductsWidget from './PopularProductsWidget';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -187,6 +190,41 @@ Error.scenario = {
 	delay: 250,
 };
 
+export const InsufficientPermissions = Template.bind( {} );
+InsufficientPermissions.storyName = 'Insufficient Permissions';
+InsufficientPermissions.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const errorObject = {
+			code: 403,
+			message: 'Test error message. ',
+			data: {
+				status: 403,
+				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			},
+			selectorData: {
+				storeName: 'modules/analytics-4',
+				name: 'getReport',
+				args: [ reportOptions ],
+			},
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+
+InsufficientPermissions.scenario = {
+	label: 'KeyMetrics/PopularProducts/InsufficientPermissions',
+	delay: 250,
+};
+
 export default {
 	title: 'Key Metrics/PopularProductsWidget',
 	decorators: [
@@ -201,6 +239,25 @@ export default {
 						connected: true,
 					},
 				] );
+
+				provideModuleRegistrations( registry );
+
+				const [ accountID, propertyID, webDataStreamID ] = [
+					'12345',
+					'34567',
+					'56789',
+				];
+
+				// Set accountID, propertyID and webDataStreamID values.
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setWebDataStreamID( webDataStreamID );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
