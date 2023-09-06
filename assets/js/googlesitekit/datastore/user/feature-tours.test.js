@@ -24,14 +24,13 @@ import {
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import * as CacheModule from '../../../googlesitekit/api/cache';
+import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_USER } from './constants';
 import {
 	initialState,
 	FEATURE_TOUR_COOLDOWN_SECONDS,
 	FEATURE_TOUR_LAST_DISMISSED_AT,
 } from './feature-tours';
-const { setItem } = CacheModule;
 
 describe( 'core/user feature-tours', () => {
 	let registry;
@@ -64,8 +63,11 @@ describe( 'core/user feature-tours', () => {
 	};
 
 	beforeEach( () => {
-		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
 		registry = createTestRegistry();
+		setItemSpy = jest.spyOn(
+			registry.dispatch( CORE_SITE ),
+			'setCacheItem'
+		);
 		store = registry.stores[ CORE_USER ].store;
 		registry.dispatch( CORE_USER ).receiveInitialSiteKitVersion( '1.0.0' );
 	} );
@@ -551,7 +553,9 @@ describe( 'core/user feature-tours', () => {
 
 			it( 'uses a resolver to set lastDismissedAt in the store if there is a value in the cache', async () => {
 				const timestamp = Date.now();
-				await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp );
+				await registry
+					.dispatch( CORE_SITE )
+					.setCacheItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp );
 
 				registry.select( CORE_USER ).getLastDismissedAt();
 				await untilResolved( registry, CORE_USER ).getLastDismissedAt();
@@ -564,9 +568,11 @@ describe( 'core/user feature-tours', () => {
 			it( 'returns false for an expired lastDismissedAt value in the cache', async () => {
 				const timestamp = Date.now();
 				// Set an item that is guaranteed to be expired when called with `getItem`
-				await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
-					ttl: -1,
-				} );
+				await registry
+					.dispatch( CORE_SITE )
+					.setCacheItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
+						ttl: -1,
+					} );
 
 				registry.select( CORE_USER ).getLastDismissedAt();
 				await untilResolved( registry, CORE_USER ).getLastDismissedAt();
