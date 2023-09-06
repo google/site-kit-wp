@@ -47,7 +47,7 @@ use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementsService;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
@@ -340,11 +340,11 @@ final class Analytics_4 extends Module
 			'GET:property'                       => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'                 => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'           => array( 'service' => 'analyticsadmin' ),
-			'GET:enhanced-measurement-settings'  => array( 'service' => 'analyticsenhancedmeasurements' ),
+			'GET:enhanced-measurement-settings'  => array( 'service' => 'analyticsenhancedmeasurement' ),
 			'POST:enhanced-measurement-settings' => array(
-				'service'                => 'analyticsenhancedmeasurements',
+				'service'                => 'analyticsenhancedmeasurement',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
 			),
 		);
 
@@ -719,7 +719,33 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
-				// TODO: Additional validation for the shape of enhancedMeasurementSettings.
+
+				$enhanced_measurement_settings = $data['enhancedMeasurementSettings'];
+
+				$fields = array(
+					'name',
+					'streamEnabled',
+					'scrollsEnabled',
+					'outboundClicksEnabled',
+					'siteSearchEnabled',
+					'videoEngagementEnabled',
+					'fileDownloadsEnabled',
+					'pageChangesEnabled',
+					'formInteractionsEnabled',
+					'searchQueryParameter',
+					'uriQueryParameter',
+				);
+
+				$invalid_keys = array_diff( array_keys( $enhanced_measurement_settings ), $fields );
+
+				if ( ! empty( $invalid_keys ) ) {
+					return new WP_Error(
+						'invalid_property_name',
+						/* translators: %s: Invalid property names */
+						sprintf( __( 'Invalid properties in enhancedMeasurementSettings: %s.', 'google-site-kit' ), implode( ', ', $invalid_keys ) ),
+						array( 'status' => 400 )
+					);
+				}
 
 				$name = self::normalize_property_id(
 					$data['propertyID']
@@ -978,10 +1004,10 @@ final class Analytics_4 extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return PropertiesEnhancedMeasurementsService The Analytics Admin API service.
+	 * @return PropertiesEnhancedMeasurementService The Analytics Admin API service.
 	 */
 	protected function get_analyticsenhancedmeasurements_service() {
-		return $this->get_service( 'analyticsenhancedmeasurements' );
+		return $this->get_service( 'analyticsenhancedmeasurement' );
 	}
 
 	/**
@@ -1003,7 +1029,7 @@ final class Analytics_4 extends Module
 			'analyticsadmin'                => new Google_Service_GoogleAnalyticsAdmin( $client ),
 			'analyticsdata'                 => new Google_Service_AnalyticsData( $client ),
 			'analyticsprovisioning'         => new AccountProvisioningService( $client, $google_proxy->url() ),
-			'analyticsenhancedmeasurements' => new PropertiesEnhancedMeasurementsService( $client ),
+			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
 			'tagmanager'                    => new Google_Service_TagManager( $client ),
 		);
 	}
