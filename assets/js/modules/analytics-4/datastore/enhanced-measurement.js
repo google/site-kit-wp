@@ -32,6 +32,20 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { isValidPropertyID, isValidWebDataStreamID } from '../utils/validation';
 
+const enhancedMeasurementSettingsFields = [
+	'name',
+	'streamEnabled',
+	'scrollsEnabled',
+	'outboundClicksEnabled',
+	'siteSearchEnabled',
+	'videoEngagementEnabled',
+	'fileDownloadsEnabled',
+	'pageChangesEnabled',
+	'formInteractionsEnabled',
+	'searchQueryParameter',
+	'uriQueryParameter',
+];
+
 const fetchStoreReducerCallback = createReducer(
 	( state, enhancedMeasurementSettings, { propertyID, webDataStreamID } ) => {
 		if ( ! state.enhancedMeasurement[ propertyID ] ) {
@@ -116,9 +130,11 @@ const fetchSaveEnhancedMeasurementSettingsStore = createFetchStore( {
 			'A valid GA4 webDataStreamID is required.'
 		);
 		invariant(
-			// TODO: Additional validation for the shape of enhancedMeasurementSettings?
-			isPlainObject( enhancedMeasurementSettings ),
-			'Enhanced measurement settings must be an object.'
+			isPlainObject( enhancedMeasurementSettings ) &&
+				Object.keys( enhancedMeasurementSettings ).every( ( key ) =>
+					enhancedMeasurementSettingsFields.includes( key )
+				),
+			'Enhanced measurement settings must be an object and contain only valid keys.'
 		);
 	},
 } );
