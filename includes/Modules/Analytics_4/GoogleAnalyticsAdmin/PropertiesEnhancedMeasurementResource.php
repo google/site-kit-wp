@@ -1,6 +1,6 @@
 <?php
 /**
- * Class PropertiesEnhancedMeasurementSettings
+ * Class PropertiesEnhancedMeasurementsResource
  *
  * @package   Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin
  * @copyright 2023 Google LLC
@@ -17,10 +17,13 @@ use Google\Site_Kit_Dependencies\Google\Service\Resource;
  * The "enhancedMeasurementSettings" collection of methods.
  */
 class PropertiesEnhancedMeasurementsResource extends Resource {
+
 	/**
 	 * Returns the singleton enhanced measurement settings for this web stream. Note
 	 * that the stream must enable enhanced measurement for these settings to take
 	 * effect. (webDataStreams.getEnhancedMeasurementSettings)
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string $name Required. The name of the settings to lookup. Format: properties/{property_id}/webDataStreams/{stream_id}/enhancedMeasurementSettings
 	 *                               Example: "properties/1000/webDataStreams/2000/enhancedMeasurementSettings".
@@ -32,6 +35,7 @@ class PropertiesEnhancedMeasurementsResource extends Resource {
 		$params = array_merge( $params, $opt_params );
 		return $this->call( 'getEnhancedMeasurementSettings', array( $params ), GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings::class );
 	}
+
 	/**
 	 * Updates the singleton enhanced measurement settings for this web stream. Note
 	 * that the stream must enable enhanced measurement for these settings to take
