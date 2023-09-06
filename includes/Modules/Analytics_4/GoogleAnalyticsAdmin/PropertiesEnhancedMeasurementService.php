@@ -1,6 +1,6 @@
 <?php
 /**
- * Class PropertiesEnhancedMeasurementsService
+ * Class PropertiesEnhancedMeasurementService
  *
  * @package   Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin
  * @copyright 2023 Google LLC
@@ -20,7 +20,7 @@ use Google\Site_Kit_Dependencies\Google_Client;
  * @access private
  * @ignore
  */
-class PropertiesEnhancedMeasurementsService extends GoogleAnalyticsAdmin {
+class PropertiesEnhancedMeasurementService extends GoogleAnalyticsAdmin {
 
 	/**
 	 * PropertiesEnhancedMeasurementResource instance.
