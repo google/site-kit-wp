@@ -31,7 +31,7 @@ import { isInsufficientPermissionsError } from '../../util/errors';
 
 export default function MetricTileError( props ) {
 	const { error, headerText, moduleSlug } = props;
-	const errorIsInsufficientPermissions =
+	const hasInsufficientPermissionsError =
 		isInsufficientPermissionsError( error );
 
 	return (
