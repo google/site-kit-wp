@@ -29,9 +29,10 @@ import { isPlainObject, isNull } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_USER } from './constants';
 import featureTours from '../../../feature-tours';
-import { setItem, getItem } from '../../../googlesitekit/api/cache';
+import { getItem } from '../../../googlesitekit/api/cache';
 import { createValidatedAction } from '../../data/utils';
 
 const { createRegistrySelector, createRegistryControl } = Data;
@@ -51,8 +52,6 @@ const CHECK_ON_DEMAND_TOUR_REQUIREMENTS = 'CHECK_ON_DEMAND_TOUR_REQUIREMENTS';
 const RECEIVE_LAST_DISMISSED_AT = 'RECEIVE_LAST_DISMISSED_AT';
 
 // Controls.
-const CACHE_LAST_DISMISSED_AT = 'CACHE_LAST_DISMISSED_AT';
-
 const fetchGetDismissedToursStore = createFetchStore( {
 	baseName: 'getDismissedTours',
 	controlCallback: () =>
@@ -164,10 +163,14 @@ const baseActions = {
 			invariant( timestamp, 'A timestamp is required.' );
 		},
 		function* ( timestamp ) {
-			yield {
-				type: CACHE_LAST_DISMISSED_AT,
-				payload: { timestamp },
-			};
+			const registry = yield getRegistry();
+
+			yield registry
+				.dispatch( CORE_SITE )
+				.setCacheItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
+					ttl: FEATURE_TOUR_COOLDOWN_SECONDS,
+				} );
+
 			yield {
 				type: RECEIVE_LAST_DISMISSED_AT,
 				payload: { timestamp },
@@ -293,13 +296,6 @@ const baseControls = {
 				return true;
 			}
 	),
-	[ CACHE_LAST_DISMISSED_AT ]: async ( { payload } ) => {
-		const { timestamp } = payload;
-
-		await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
-			ttl: FEATURE_TOUR_COOLDOWN_SECONDS,
-		} );
-	},
 };
 
 const baseReducer = ( state, { type, payload } ) => {
