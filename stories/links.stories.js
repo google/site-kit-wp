@@ -24,8 +24,8 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Link from '../assets/js/components/Link';
 import PencilIcon from '../assets/svg/icons/pencil-alt.svg';
+import Link from '../assets/js/components/Link';
 
 storiesOf( 'Global', module ).add(
 	'Links',
