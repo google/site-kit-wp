@@ -67,7 +67,7 @@ export default function Footer( { savedMetrics } ) {
 	);
 
 	const haveSettingsChanged = useMemo( () => {
-		// arrays need to be sorted to match in isEqual, otherwise check will fail
+		// Arrays need to be sorted to match in `isEqual`.
 		return ! isEqual(
 			safelySort( selectedMetrics ),
 			safelySort( savedMetrics )

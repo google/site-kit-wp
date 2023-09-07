@@ -355,14 +355,15 @@ describe( 'MetricsSelectionPanel', () => {
 					}
 				);
 
-				// Button should be unchanged with pre-saved metrics
+				// Button should be unchanged with pre-saved metrics.
 				expect(
 					getByRole( 'button', {
 						name: /Save selection/i,
 					} )
 				).toBeInTheDocument();
 
-				// uncheck one of the selected metrics to trigger the button label change
+				// Uncheck one of the selected metrics to trigger
+				// the button label change.
 				const checkbox = await findByLabelText( 'Loyal visitors' );
 				fireEvent.click( checkbox );
 
