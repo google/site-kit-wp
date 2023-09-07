@@ -25,6 +25,7 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import Link from '../assets/js/components/Link';
+import PencilIcon from '../assets/svg/icons/pencil-alt.svg';
 
 storiesOf( 'Global', module ).add(
 	'Links',
@@ -43,7 +44,74 @@ storiesOf( 'Global', module ).add(
 					</Link>
 				</p>
 				<p>
-					<Link>Default Link Button</Link>
+					<Link href="http://google.com" secondary>
+						Secondary Link
+					</Link>
+				</p>
+				<p>
+					<Link
+						href="http://google.com"
+						className="googlesitekit-cta-link--hover"
+						secondary
+					>
+						VRT: Secondary Link Hovered
+					</Link>
+				</p>
+				<p>
+					<Link onClick={ () => {} }>Default Link Button</Link>
+				</p>
+				<p>
+					<Link
+						onClick={ () => {} }
+						className="googlesitekit-cta-link--hover"
+					>
+						Default Link Button Hovered
+					</Link>
+				</p>
+				<p>
+					<Link onClick={ () => {} }>
+						<PencilIcon width={ 18 } height={ 18 } />
+						Default Link Button With Icon
+					</Link>
+				</p>
+				<p>
+					<Link
+						onClick={ () => {} }
+						className="googlesitekit-cta-link--hover"
+					>
+						<PencilIcon width={ 18 } height={ 18 } />
+						VRT: Default Link Button With Icon Hovered
+					</Link>
+				</p>
+				<p>
+					<Link onClick={ () => {} } secondary>
+						Secondary Link Button
+					</Link>
+				</p>
+				<p>
+					<Link
+						onClick={ () => {} }
+						className="googlesitekit-cta-link--hover"
+						secondary
+					>
+						VRT: Secondary Link Button Hovered
+					</Link>
+				</p>
+				<p>
+					<Link onClick={ () => {} } secondary>
+						<PencilIcon width={ 18 } height={ 18 } />
+						Secondary Link Button With Icon
+					</Link>
+				</p>
+				<p>
+					<Link
+						onClick={ () => {} }
+						className="googlesitekit-cta-link--hover"
+						secondary
+					>
+						<PencilIcon width={ 18 } height={ 18 } />
+						VRT: Secondary Link Button With Icon Hovered
+					</Link>
 				</p>
 				<p>
 					<Link href="http://google.com" small>
