@@ -38,7 +38,7 @@ export default function MetricTileError( props ) {
 		<div className="googlesitekit-km-widget-tile--error">
 			<CTA
 				title={
-					errorIsInsufficientPermissions
+					hasInsufficientPermissionsError
 						? __( 'Insufficient permissions', 'google-site-kit' )
 						: __( 'Data loading failed', 'google-site-kit' )
 				}
