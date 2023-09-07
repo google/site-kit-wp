@@ -49,6 +49,7 @@ import {
 } from '../constants';
 import Link from '../../Link';
 import ErrorNotice from '../../ErrorNotice';
+import { safelySort } from './utils';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { savedMetrics } ) {
@@ -66,7 +67,11 @@ export default function Footer( { savedMetrics } ) {
 	);
 
 	const haveSettingsChanged = useMemo( () => {
-		return ! isEqual( selectedMetrics, savedMetrics );
+		// Arrays need to be sorted to match in `isEqual`.
+		return ! isEqual(
+			safelySort( selectedMetrics ),
+			safelySort( savedMetrics )
+		);
 	}, [ savedMetrics, selectedMetrics ] );
 
 	const saveError = useSelect( ( select ) => {
@@ -126,15 +131,14 @@ export default function Footer( { savedMetrics } ) {
 					onClick={ onSaveClick }
 					isSaving={ isSavingSettings }
 					disabled={
-						! haveSettingsChanged ||
 						selectedMetrics?.length < 2 ||
 						selectedMetrics?.length > 4 ||
 						isSavingSettings
 					}
 				>
-					{ savedMetrics?.length > 0
+					{ savedMetrics?.length > 0 && haveSettingsChanged
 						? __( 'Apply changes', 'google-site-kit' )
-						: __( 'Save Selection', 'google-site-kit' ) }
+						: __( 'Save selection', 'google-site-kit' ) }
 				</SpinnerButton>
 				<Link onClick={ onCancelClick } disabled={ isSavingSettings }>
 					{ __( 'Cancel', 'google-site-kit' ) }

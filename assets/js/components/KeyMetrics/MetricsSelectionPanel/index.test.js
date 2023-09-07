@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import MetricsSelectionPanel from '.';
-import { render } from '../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -307,7 +307,7 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		describe( 'CTA', () => {
-			it( "should have 'Save Selection' label if there are no pre-saved key metrics", () => {
+			it( "should have 'Save selection' label if there are no pre-saved key metrics", () => {
 				provideKeyMetrics( registry );
 
 				const { getByRole } = render( <MetricsSelectionPanel />, {
@@ -316,12 +316,12 @@ describe( 'MetricsSelectionPanel', () => {
 
 				expect(
 					getByRole( 'button', {
-						name: /Save Selection/i,
+						name: /Save selection/i,
 					} )
 				).toBeInTheDocument();
 			} );
 
-			it( "should have 'Apply changes' label if there are pre-saved key metrics", () => {
+			it( "should have 'Save selection' label if there are pre-saved key metrics", () => {
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -332,6 +332,40 @@ describe( 'MetricsSelectionPanel', () => {
 				const { getByRole } = render( <MetricsSelectionPanel />, {
 					registry,
 				} );
+
+				expect(
+					getByRole( 'button', {
+						name: /Save selection/i,
+					} )
+				).toBeInTheDocument();
+			} );
+
+			it( "should have 'Apply changes' label if pre-saved key metrics are changed", async () => {
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_LOYAL_VISITORS,
+					],
+				} );
+
+				const { getByRole, findByLabelText } = render(
+					<MetricsSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				// Button should be unchanged with pre-saved metrics.
+				expect(
+					getByRole( 'button', {
+						name: /Save selection/i,
+					} )
+				).toBeInTheDocument();
+
+				// Uncheck one of the selected metrics to trigger
+				// the button label change.
+				const checkbox = await findByLabelText( 'Loyal visitors' );
+				fireEvent.click( checkbox );
 
 				expect(
 					getByRole( 'button', {
