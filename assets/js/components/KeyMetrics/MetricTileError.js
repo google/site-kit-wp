@@ -31,14 +31,14 @@ import { isInsufficientPermissionsError } from '../../util/errors';
 
 export default function MetricTileError( props ) {
 	const { error, headerText, moduleSlug } = props;
-	const errorIsInsufficientPermissions =
+	const hasInsufficientPermissionsError =
 		isInsufficientPermissionsError( error );
 
 	return (
 		<div className="googlesitekit-km-widget-tile--error">
 			<CTA
 				title={
-					errorIsInsufficientPermissions
+					hasInsufficientPermissionsError
 						? __( 'Insufficient permissions', 'google-site-kit' )
 						: __( 'Data loading failed', 'google-site-kit' )
 				}
@@ -50,7 +50,7 @@ export default function MetricTileError( props ) {
 					moduleSlug={ moduleSlug }
 					error={ error }
 					getHelpText={
-						errorIsInsufficientPermissions
+						hasInsufficientPermissionsError
 							? __( 'Trouble getting access?', 'google-site-kit' )
 							: ''
 					}
