@@ -26,9 +26,33 @@
 	text-align: left;
 	text-decoration: none;
 
+	svg {
+		fill: $c-link;
+	}
+
 	&:hover {
 		color: $c-link;
 		text-decoration: underline;
+
+		svg {
+			fill: $c-link;
+		}
+	}
+
+	&.googlesitekit-cta-link--secondary {
+		color: $c-content-secondary;
+
+		svg {
+			fill: $c-content-secondary;
+		}
+
+		&:hover {
+			color: $c-content-secondary;
+
+			svg {
+				fill: $c-content-secondary;
+			}
+		}
 	}
 
 	&.googlesitekit-cta-link--caps {
@@ -127,8 +151,18 @@ button {
 	&.googlesitekit-cta-link {
 		color: $c-content-primary;
 
+		/* stylelint-disable-next-line no-descending-specificity */
+		svg {
+			fill: $c-content-primary;
+		}
+
 		&:hover {
 			color: $c-content-primary-hover;
+
+			/* stylelint-disable-next-line no-descending-specificity */
+			svg {
+				fill: $c-content-primary-hover;
+			}
 		}
 
 		&.googlesitekit-cta-link--arrow {
