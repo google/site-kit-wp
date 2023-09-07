@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isEqual, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -340,6 +340,42 @@ const baseSelectors = {
 	getEnhancedMeasurementSettings( state, propertyID, webDataStreamID ) {
 		return state.enhancedMeasurement[ propertyID ]?.[ webDataStreamID ]
 			?.settings;
+	},
+
+	/**
+	 * Checks if the `streamEnabled` setting is enabled for a given web data stream.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} propertyID      The GA4 property ID to check.
+	 * @param {string} webDataStreamID The GA4 web data stream ID to check.
+	 * @return {boolean}               True if `streamEnabled` is on, otherwise false; false if not loaded.
+	 */
+	isEnhancedMeasurementStreamEnabled( state, propertyID, webDataStreamID ) {
+		return !! state.enhancedMeasurement[ propertyID ]?.[ webDataStreamID ]
+			?.settings?.streamEnabled;
+	},
+
+	/**
+	 * Checks if the settings have changed compared to the saved settings for a given web data stream.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} propertyID      The GA4 property ID to check.
+	 * @param {string} webDataStreamID The GA4 web data stream ID to check.
+	 * @return {boolean}               True if settings have changed, otherwise false.
+	 */
+	haveEnhancedMeasurementSettingsChanged(
+		state,
+		propertyID,
+		webDataStreamID
+	) {
+		const { settings, savedSettings } =
+			state.enhancedMeasurement[ propertyID ]?.[ webDataStreamID ] || {};
+
+		return ! isEqual( settings, savedSettings );
 	},
 };
 
