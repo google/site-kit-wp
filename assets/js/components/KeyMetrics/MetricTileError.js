@@ -50,7 +50,7 @@ export default function MetricTileError( props ) {
 					moduleSlug={ moduleSlug }
 					error={ error }
 					getHelpText={
-						errorIsInsufficientPermissions
+						hasInsufficientPermissionsError
 							? __( 'Trouble getting access?', 'google-site-kit' )
 							: ''
 					}
