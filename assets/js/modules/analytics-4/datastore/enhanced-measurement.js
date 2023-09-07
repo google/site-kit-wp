@@ -30,6 +30,7 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID, isValidWebDataStreamID } from '../utils/validation';
 
 const enhancedMeasurementSettingsFields = [
@@ -94,8 +95,8 @@ const fetchGetEnhancedMeasurementSettingsStore = createFetchStore( {
 	},
 } );
 
-const fetchSaveEnhancedMeasurementSettingsStore = createFetchStore( {
-	baseName: 'saveEnhancedMeasurementSettings',
+const fetchUpdateEnhancedMeasurementSettingsStore = createFetchStore( {
+	baseName: 'updateEnhancedMeasurementSettings',
 	controlCallback: ( {
 		propertyID,
 		webDataStreamID,
@@ -141,6 +142,10 @@ const fetchSaveEnhancedMeasurementSettingsStore = createFetchStore( {
 
 // Actions
 const SET_ENHANCED_MEASUREMENT_SETTINGS = 'SET_ENHANCED_MEASUREMENT_SETTINGS';
+const RESET_ENHANCED_MEASUREMENT_SETTINGS =
+	'RESET_ENHANCED_MEASUREMENT_SETTINGS';
+// const UPDATE_ENHANCED_MEASUREMENT_SETTINGS =
+// 	'UPDATE_ENHANCED_MEASUREMENT_SETTINGS';
 
 const baseInitialState = {
 	enhancedMeasurement: {},
@@ -167,6 +172,101 @@ const baseActions = {
 			},
 		};
 	},
+
+	setEnhancedMeasurementStreamEnabled: createValidatedAction(
+		( propertyID, webDataStreamID, enabled ) => {
+			invariant( propertyID, 'propertyID is required.' );
+			invariant( webDataStreamID, 'webDataStreamID is required.' );
+			invariant( enabled !== undefined, 'enabled is required.' );
+			invariant(
+				typeof enabled === 'boolean',
+				'enabled must be a boolean.'
+			);
+		},
+		function* ( propertyID, webDataStreamID, enabled ) {
+			const registry = yield Data.commonActions.getRegistry();
+
+			const currentSettings = yield Data.commonActions.await(
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID
+					)
+			);
+
+			if ( ! currentSettings ) {
+				return null;
+			}
+
+			const newSettings = {
+				...currentSettings,
+				streamEnabled: enabled,
+			};
+
+			return yield Data.commonActions.await(
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID,
+						newSettings
+					)
+			);
+		}
+	),
+
+	/**
+	 * Resets enhanced measurement settings to their saved values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetEnhancedMeasurementSettings() {
+		return {
+			type: RESET_ENHANCED_MEASUREMENT_SETTINGS,
+			payload: {},
+		};
+	},
+
+	/**
+	 * Updates enhanced measurement settings in the server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} propertyID      The GA4 property ID to set enhanced measurement settings for.
+	 * @param {string} webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
+	 * @return {Object} Redux-style action.
+	 */
+	updateEnhancedMeasurementSettings: createValidatedAction(
+		( propertyID, webDataStreamID ) => {
+			invariant( propertyID, 'propertyID is required.' );
+			invariant( webDataStreamID, 'webDataStreamID is required.' );
+		},
+		function* ( propertyID, webDataStreamID ) {
+			const registry = yield Data.commonActions.getRegistry();
+
+			const currentSettings = yield Data.commonActions.await(
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID
+					)
+			);
+
+			if ( ! currentSettings ) {
+				return null;
+			}
+
+			return yield fetchUpdateEnhancedMeasurementSettingsStore.actions.fetchUpdateEnhancedMeasurementSettings(
+				propertyID,
+				webDataStreamID,
+				currentSettings
+			);
+		}
+	),
 };
 
 const baseControls = {};
@@ -180,10 +280,31 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 				webDataStreamID
 			].settings = settings;
 
-			break;
+			return state;
+		}
+		case RESET_ENHANCED_MEASUREMENT_SETTINGS: {
+			for ( const propertyID in state.enhancedMeasurement ) {
+				for ( const webDataStreamID in state.enhancedMeasurement[
+					propertyID
+				] ) {
+					const currentStream =
+						state.enhancedMeasurement[ propertyID ][
+							webDataStreamID
+						];
+					if ( currentStream.savedSettings ) {
+						currentStream.settings = currentStream.savedSettings;
+					} else {
+						delete state.enhancedMeasurement[ propertyID ][
+							webDataStreamID
+						];
+					}
+				}
+			}
+
+			return state;
 		}
 		default: {
-			break;
+			return state;
 		}
 	}
 } );
@@ -224,7 +345,7 @@ const baseSelectors = {
 
 const store = Data.combineStores(
 	fetchGetEnhancedMeasurementSettingsStore,
-	fetchSaveEnhancedMeasurementSettingsStore,
+	fetchUpdateEnhancedMeasurementSettingsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
