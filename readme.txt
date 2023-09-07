@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.3
 Requires PHP:      5.6
-Stable tag:        1.108.0
+Stable tag:        1.109.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -109,6 +109,36 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.109.0 =
+
+**Enhanced**
+
+* Improve Key metrics selection panel initial focus behavior by selecting the first item. See [#7485](https://github.com/google/site-kit-wp/issues/7485).
+* Update copy text in Key Metrics tailored metrics screen. See [#7484](https://github.com/google/site-kit-wp/issues/7484).
+* Update Key Metrics heading in settings. See [#7480](https://github.com/google/site-kit-wp/issues/7480).
+* Update text used in metrics slide-out panels to match widget names. See [#7451](https://github.com/google/site-kit-wp/issues/7451).
+* Remove old User Input banner notification. See [#7429](https://github.com/google/site-kit-wp/issues/7429).
+* Enhance relevancy of "Most popular products" Key Metric widget availability. See [#7420](https://github.com/google/site-kit-wp/issues/7420).
+* Display a "New" badge on the Key Metrics widget. See [#7376](https://github.com/google/site-kit-wp/issues/7376).
+* Change gray color used in settings screen when locking modules during editing. See [#7302](https://github.com/google/site-kit-wp/issues/7302).
+* Improve copy consistency on the Analytics Settings view. See [#6923](https://github.com/google/site-kit-wp/issues/6923).
+* Improve styling of error messages in the Site Kit Admin Bar. See [#6369](https://github.com/google/site-kit-wp/issues/6369).
+
+**Changed**
+
+* Remove `adBlockerDetection` feature flag and unused code. Props smamun19. See [#6969](https://github.com/google/site-kit-wp/issues/6969).
+
+**Fixed**
+
+* Ensure that Google Analytics 4 widgets display a "Request access" button when they are showing an "Insufficient permissions" error. See [#7492](https://github.com/google/site-kit-wp/issues/7492).
+* Fix bug that caused some Key Metric tiles to briefly show zero data while loading. See [#7482](https://github.com/google/site-kit-wp/issues/7482).
+* Fix Key Metrics Selection Panel layout at 600px viewport. See [#7474](https://github.com/google/site-kit-wp/issues/7474).
+* Ensure user cannot edit/save Key Metrics answers with the last question blank. See [#7473](https://github.com/google/site-kit-wp/issues/7473).
+* Fix the "Retry" functionality of the "Top traffic source" Key Metrics widget tile, to ensure the correct data is shown upon retrying an error. See [#7453](https://github.com/google/site-kit-wp/issues/7453).
+* Fix hover state and keyboard navigation for User Input radio buttons. See [#7452](https://github.com/google/site-kit-wp/issues/7452).
+* Fix bug that caused the "Display key metrics in dashboard" toggle not to work when no user-defined metrics were saved. See [#7441](https://github.com/google/site-kit-wp/issues/7441).
+* Hide inaccessible links in Key Metrics tiles when using the view-only dashboard. See [#7436](https://github.com/google/site-kit-wp/issues/7436).
 
 = 1.108.0 =
 
