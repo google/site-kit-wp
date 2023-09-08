@@ -127,11 +127,7 @@ export default function ReportErrorActions( {
 										href={ errorTroubleshootingLinkURL }
 										external
 									>
-										{ getHelpText ||
-											__(
-												'Get help',
-												'google-site-kit'
-											) }
+										{ __( 'Get help', 'google-site-kit' ) }
 									</Link>
 								),
 							}
@@ -139,9 +135,27 @@ export default function ReportErrorActions( {
 					</span>
 				</Fragment>
 			) : (
-				<Link href={ errorTroubleshootingLinkURL } external>
-					{ getHelpText || __( 'Get help', 'google-site-kit' ) }
-				</Link>
+				<div>
+					{ getHelpText ? (
+						createInterpolateElement(
+							`${ getHelpText } <HelpLink />`,
+							{
+								HelpLink: (
+									<Link
+										href={ errorTroubleshootingLinkURL }
+										external
+									>
+										{ __( 'Get help', 'google-site-kit' ) }
+									</Link>
+								),
+							}
+						)
+					) : (
+						<Link href={ errorTroubleshootingLinkURL } external>
+							{ __( 'Get help', 'google-site-kit' ) }
+						</Link>
+					) }
+				</div>
 			) }
 		</div>
 	);
