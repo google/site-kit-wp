@@ -27,7 +27,7 @@
 	text-decoration: none;
 
 	svg {
-		fill: $c-link;
+		fill: currentColor;
 	}
 
 	&:hover {
@@ -35,7 +35,7 @@
 		text-decoration: underline;
 
 		svg {
-			fill: $c-link;
+			fill: currentColor;
 		}
 	}
 
@@ -43,14 +43,14 @@
 		color: $c-content-secondary;
 
 		svg {
-			fill: $c-content-secondary;
+			fill: currentColor;
 		}
 
 		&:hover {
 			color: $c-content-secondary;
 
 			svg {
-				fill: $c-content-secondary;
+				fill: currentColor;
 			}
 		}
 	}
@@ -151,17 +151,25 @@ button {
 	&.googlesitekit-cta-link {
 		color: $c-content-primary;
 
+		/**
+		 * Disable stylelint forcing this block before .googlesitekit-cta-link
+		 * hover and googlesitekit-cta-link--secondary and googlesitekit-cta-link--secondary:hover
+		 */
 		/* stylelint-disable-next-line no-descending-specificity */
 		svg {
-			fill: $c-content-primary;
+			fill: currentColor;
 		}
 
 		&:hover {
 			color: $c-content-primary-hover;
 
+			/**
+			* Disable stylelint forcing this block before
+			* .googlesitekit-cta-link.googlesitekit-cta-link--secondary:hover
+			*/
 			/* stylelint-disable-next-line no-descending-specificity */
 			svg {
-				fill: $c-content-primary-hover;
+				fill: currentColor;
 			}
 		}
 
