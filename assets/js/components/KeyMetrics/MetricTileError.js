@@ -22,11 +22,15 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import CTA from '../notifications/CTA';
 import ReportErrorActions from '../ReportErrorActions';
-import { __ } from '@wordpress/i18n';
 import { isInsufficientPermissionsError } from '../../util/errors';
 
 export default function MetricTileError( props ) {
