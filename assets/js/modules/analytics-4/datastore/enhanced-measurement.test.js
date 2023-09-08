@@ -1,0 +1,217 @@
+/**
+ * `modules/analytics-4` data store: enhanced-measurement tests.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import {
+	createTestRegistry,
+	// subscribeUntil,
+	unsubscribeFromAll,
+	untilResolved,
+} from '../../../../../tests/js/utils';
+import { MODULES_ANALYTICS_4 } from './constants';
+
+describe( 'modules/analytics-4 enhanced-measurement', () => {
+	let registry;
+
+	const enhancedMeasurementSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+	);
+
+	const propertyID = '12345';
+	const webDataStreamID = '67890';
+	const enhancedMeasurementSettingsMock = {
+		fileDownloadsEnabled: null,
+		name: 'properties/12345/dataStreams/67890/enhancedMeasurementSettings',
+		outboundClicksEnabled: null,
+		pageChangesEnabled: null,
+		pageLoadsEnabled: null,
+		pageViewsEnabled: null,
+		scrollsEnabled: null,
+		searchQueryParameter: 'q,s,search,query,keyword',
+		siteSearchEnabled: null,
+		streamEnabled: true,
+		uriQueryParameter: null,
+		videoEngagementEnabled: null,
+	};
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getEnhancedMeasurementSettings', () => {
+			it( 'should use a resolver to make a network request if data is not available', async () => {
+				fetchMock.get( enhancedMeasurementSettingsEndpoint, {
+					body: enhancedMeasurementSettingsMock,
+					status: 200,
+				} );
+
+				const initialSettings = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( initialSettings ).toBeUndefined();
+
+				const finalSettings = await registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( finalSettings ).toEqual(
+					enhancedMeasurementSettingsMock
+				);
+			} );
+
+			it( 'should not make a network request if properties for this account are already present', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettingsMock,
+						{ propertyID, webDataStreamID }
+					);
+
+				const settings = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID
+					);
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+
+				expect( fetchMock ).not.toHaveFetched(
+					enhancedMeasurementSettingsEndpoint
+				);
+				expect( settings ).toEqual( enhancedMeasurementSettingsMock );
+			} );
+		} );
+
+		describe( 'isEnhancedMeasurementStreamEnabled', () => {
+			it( 'should return the correct `streamEnabled` state', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettingsMock,
+						{ propertyID, webDataStreamID }
+					);
+
+				const streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamEnabled ).toEqual( true );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						{
+							...enhancedMeasurementSettingsMock,
+							streamEnabled: false,
+						},
+						{ propertyID, webDataStreamID }
+					);
+
+				const streamDisabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamDisabled ).toEqual( false );
+			} );
+
+			it( 'should return `false` if the settings are not available', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						{},
+						{ propertyID, webDataStreamID }
+					);
+
+				const streamNotLoaded = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamNotLoaded ).toEqual( false );
+			} );
+		} );
+
+		describe( 'haveEnhancedMeasurementSettingsChanged', () => {
+			it( 'should compare settings and savedSettings and return the correct value', () => {
+				const savedSettings = {
+					...enhancedMeasurementSettingsMock,
+					streamEnabled: false,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettingsMock,
+						{ propertyID, webDataStreamID }
+					);
+
+				const hasChanged = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveEnhancedMeasurementSettingsChanged(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( hasChanged ).toEqual( false );
+
+				// Change the settings.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID,
+						savedSettings
+					);
+
+				const hasChangedAfterSet = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveEnhancedMeasurementSettingsChanged(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( hasChangedAfterSet ).toEqual( true );
+			} );
+		} );
+	} );
+} );
