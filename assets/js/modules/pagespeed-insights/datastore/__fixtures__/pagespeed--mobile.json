@@ -25,7 +25,7 @@
         ],
         "category": "SLOW"
       },
-      "EXPERIMENTAL_INTERACTION_TO_NEXT_PAINT": {
+      "INTERACTION_TO_NEXT_PAINT": {
         "percentile": 295,
         "distributions": [
           {
