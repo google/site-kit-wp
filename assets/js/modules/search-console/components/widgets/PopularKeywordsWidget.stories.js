@@ -34,8 +34,6 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../googlesitekit/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -191,22 +189,9 @@ export default {
 
 				provideModuleRegistrations( registry );
 
-				const [ accountID, propertyID, webDataStreamID ] = [
-					'12345',
-					'34567',
-					'56789',
-				];
-
-				// Set accountID, propertyID and webDataStreamID values.
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setAccountID( accountID );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setPropertyID( propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setWebDataStreamID( webDataStreamID );
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.setPropertyID( 'https://example.com' );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
