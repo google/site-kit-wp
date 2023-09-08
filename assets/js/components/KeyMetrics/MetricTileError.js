@@ -31,8 +31,9 @@ import { isInsufficientPermissionsError } from '../../util/errors';
 
 export default function MetricTileError( props ) {
 	const { error, headerText, moduleSlug } = props;
-	const hasInsufficientPermissionsError =
-		isInsufficientPermissionsError( error );
+	const hasInsufficientPermissionsError = Array.isArray( error )
+		? error.some( ( err ) => isInsufficientPermissionsError( err ) )
+		: isInsufficientPermissionsError( error );
 
 	return (
 		<div className="googlesitekit-km-widget-tile--error">
