@@ -29,7 +29,7 @@ import {
 	Fragment,
 	useCallback,
 } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -138,7 +138,11 @@ export default function ReportErrorActions( {
 				<div>
 					{ getHelpText ? (
 						createInterpolateElement(
-							`${ getHelpText } <HelpLink />`,
+							sprintf(
+								/* translators: %s: get help text. */
+								__( '%s <HelpLink />', 'google-site-kit' ),
+								getHelpText
+							),
 							{
 								HelpLink: (
 									<Link
