@@ -41,8 +41,6 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 		name: 'properties/12345/dataStreams/67890/enhancedMeasurementSettings',
 		outboundClicksEnabled: null,
 		pageChangesEnabled: null,
-		pageLoadsEnabled: null,
-		pageViewsEnabled: null,
 		scrollsEnabled: null,
 		searchQueryParameter: 'q,s,search,query,keyword',
 		siteSearchEnabled: null,
@@ -57,6 +55,78 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+	} );
+
+	describe( 'actions', () => {
+		describe( 'setEnhancedMeasurementSettings', () => {
+			it( 'should require a valid propertyID', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementSettings(
+							null,
+							webDataStreamID,
+							enhancedMeasurementSettingsMock
+						)
+				).toThrow( 'A valid GA4 propertyID is required.' );
+			} );
+
+			it( 'should require a valid webDataStreamID', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementSettings(
+							propertyID,
+							null,
+							enhancedMeasurementSettingsMock
+						)
+				).toThrow( 'A valid GA4 webDataStreamID is required.' );
+			} );
+
+			it( 'should require a valid enhanced measurement settings object', () => {
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementSettings(
+							propertyID,
+							webDataStreamID,
+							null
+						);
+				} ).toThrow(
+					'Enhanced measurement settings must be an object and contain only valid keys.'
+				);
+
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementSettings(
+							propertyID,
+							webDataStreamID,
+							{ invalidKey: 'value' }
+						);
+				} ).toThrow(
+					'Enhanced measurement settings must be an object and contain only valid keys.'
+				);
+			} );
+
+			it( 'receives and sets enhanced measurement settings', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID,
+						enhancedMeasurementSettingsMock
+					);
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getEnhancedMeasurementSettings(
+							propertyID,
+							webDataStreamID
+						)
+				).toEqual( enhancedMeasurementSettingsMock );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
