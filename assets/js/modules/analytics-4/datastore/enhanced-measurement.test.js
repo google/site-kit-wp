@@ -221,6 +221,54 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				).toEqual( expectedSettings );
 			} );
 		} );
+
+		describe( 'updateEnhancedMeasurementSettings', () => {
+			it( 'should require a valid propertyID', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.updateEnhancedMeasurementSettings(
+							null,
+							webDataStreamID
+						)
+				).toThrow( 'A valid GA4 propertyID is required.' );
+			} );
+
+			it( 'should require a valid webDataStreamID', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.updateEnhancedMeasurementSettings( propertyID, null )
+				).toThrow( 'A valid GA4 webDataStreamID is required.' );
+			} );
+
+			it( 'should fetch and update settings if current settings exist', async () => {
+				fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
+					status: 200,
+					body: enhancedMeasurementSettingsMock,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettingsMock,
+						{ propertyID, webDataStreamID }
+					);
+
+				const { response } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( response ).toEqual( enhancedMeasurementSettingsMock );
+
+				expect( fetchMock ).toHaveFetched(
+					enhancedMeasurementSettingsEndpoint
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
