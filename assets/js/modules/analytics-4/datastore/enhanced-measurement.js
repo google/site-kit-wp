@@ -117,11 +117,11 @@ const fetchUpdateEnhancedMeasurementSettingsStore = createFetchStore( {
 		webDataStreamID,
 		enhancedMeasurementSettings,
 	} ),
-	validateParams: (
+	validateParams: ( {
 		propertyID,
 		webDataStreamID,
-		enhancedMeasurementSettings
-	) => {
+		enhancedMeasurementSettings,
+	} ) => {
 		invariant(
 			isValidPropertyID( propertyID ),
 			'A valid GA4 propertyID is required.'
