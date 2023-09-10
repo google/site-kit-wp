@@ -127,6 +127,100 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				).toEqual( enhancedMeasurementSettingsMock );
 			} );
 		} );
+
+		describe( 'setEnhancedMeasurementStreamEnabled', () => {
+			it( 'should require a valid propertyID', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementStreamEnabled(
+							null,
+							webDataStreamID,
+							true
+						)
+				).toThrow( 'A valid GA4 propertyID is required.' );
+			} );
+
+			it( 'should require a valid webDataStreamID', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementStreamEnabled(
+							propertyID,
+							null,
+							true
+						)
+				).toThrow( 'A valid GA4 webDataStreamID is required.' );
+			} );
+
+			it( 'should require enabled to be defined', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementStreamEnabled(
+							propertyID,
+							webDataStreamID,
+							undefined
+						)
+				).toThrow( 'enabled is required.' );
+			} );
+
+			it( 'should require enabled to be a boolean', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementStreamEnabled(
+							propertyID,
+							webDataStreamID,
+							'string_value'
+						)
+				).toThrow( 'enabled must be a boolean.' );
+			} );
+
+			it( 'sets stream enabled state and returns new settings', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID,
+						enhancedMeasurementSettingsMock
+					);
+
+				// Initially the `streamEnabled` setting is `true`
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getEnhancedMeasurementSettings(
+							propertyID,
+							webDataStreamID
+						)
+				).toEqual( enhancedMeasurementSettingsMock );
+
+				// Set the `streamEnabled` setting to `false`
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setEnhancedMeasurementStreamEnabled(
+						propertyID,
+						webDataStreamID,
+						false
+					);
+
+				// Modify the initial settings mock to match the expected new settings
+				const expectedSettings = {
+					...enhancedMeasurementSettingsMock,
+					streamEnabled: false,
+				};
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getEnhancedMeasurementSettings(
+							propertyID,
+							webDataStreamID
+						)
+				).toEqual( expectedSettings );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
