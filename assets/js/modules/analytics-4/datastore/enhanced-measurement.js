@@ -102,7 +102,7 @@ const fetchUpdateEnhancedMeasurementSettingsStore = createFetchStore( {
 		webDataStreamID,
 		enhancedMeasurementSettings,
 	} ) =>
-		API.set( 'core', 'analytics-4', 'enhanced-measurement-settings', {
+		API.set( 'modules', 'analytics-4', 'enhanced-measurement-settings', {
 			propertyID,
 			webDataStreamID,
 			enhancedMeasurementSettings,
