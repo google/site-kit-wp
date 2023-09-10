@@ -144,8 +144,6 @@ const fetchUpdateEnhancedMeasurementSettingsStore = createFetchStore( {
 const SET_ENHANCED_MEASUREMENT_SETTINGS = 'SET_ENHANCED_MEASUREMENT_SETTINGS';
 const RESET_ENHANCED_MEASUREMENT_SETTINGS =
 	'RESET_ENHANCED_MEASUREMENT_SETTINGS';
-// const UPDATE_ENHANCED_MEASUREMENT_SETTINGS =
-// 	'UPDATE_ENHANCED_MEASUREMENT_SETTINGS';
 
 const baseInitialState = {
 	enhancedMeasurement: {},
@@ -163,6 +161,22 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setEnhancedMeasurementSettings( propertyID, webDataStreamID, settings ) {
+		invariant(
+			isValidPropertyID( propertyID ),
+			'A valid GA4 propertyID is required.'
+		);
+		invariant(
+			isValidWebDataStreamID( webDataStreamID ),
+			'A valid GA4 webDataStreamID is required.'
+		);
+		invariant(
+			isPlainObject( settings ) &&
+				Object.keys( settings ).every( ( key ) =>
+					enhancedMeasurementSettingsFields.includes( key )
+				),
+			'Enhanced measurement settings must be an object and contain only valid keys.'
+		);
+
 		return {
 			type: SET_ENHANCED_MEASUREMENT_SETTINGS,
 			payload: {
@@ -175,8 +189,14 @@ const baseActions = {
 
 	setEnhancedMeasurementStreamEnabled: createValidatedAction(
 		( propertyID, webDataStreamID, enabled ) => {
-			invariant( propertyID, 'propertyID is required.' );
-			invariant( webDataStreamID, 'webDataStreamID is required.' );
+			invariant(
+				isValidPropertyID( propertyID ),
+				'A valid GA4 propertyID is required.'
+			);
+			invariant(
+				isValidWebDataStreamID( webDataStreamID ),
+				'A valid GA4 webDataStreamID is required.'
+			);
 			invariant( enabled !== undefined, 'enabled is required.' );
 			invariant(
 				typeof enabled === 'boolean',
@@ -241,8 +261,14 @@ const baseActions = {
 	 */
 	updateEnhancedMeasurementSettings: createValidatedAction(
 		( propertyID, webDataStreamID ) => {
-			invariant( propertyID, 'propertyID is required.' );
-			invariant( webDataStreamID, 'webDataStreamID is required.' );
+			invariant(
+				isValidPropertyID( propertyID ),
+				'A valid GA4 propertyID is required.'
+			);
+			invariant(
+				isValidWebDataStreamID( webDataStreamID ),
+				'A valid GA4 webDataStreamID is required.'
+			);
 		},
 		function* ( propertyID, webDataStreamID ) {
 			const registry = yield Data.commonActions.getRegistry();
@@ -275,6 +301,16 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_ENHANCED_MEASUREMENT_SETTINGS: {
 			const { propertyID, webDataStreamID, settings } = payload;
+
+			if ( ! state.enhancedMeasurement[ propertyID ] ) {
+				state.enhancedMeasurement[ propertyID ] = {};
+			}
+
+			if (
+				! state.enhancedMeasurement[ propertyID ][ webDataStreamID ]
+			) {
+				state.enhancedMeasurement[ propertyID ][ webDataStreamID ] = {};
+			}
 
 			state.enhancedMeasurement[ propertyID ][
 				webDataStreamID
