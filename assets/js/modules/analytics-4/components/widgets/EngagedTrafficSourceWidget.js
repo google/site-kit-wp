@@ -125,13 +125,10 @@ function EngagedTrafficSourceWidget( props ) {
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
 			subText={ sprintf(
-				/* translators: 1. Percentage of total engaged sessions. 2: Number of engaged sessions. */
-				__(
-					'%1$s of engaged sessions (%2$s sessions)',
-					'google-site-kit'
-				),
+				/* translators: 1. Percentage of total engaged sessions. 2: Total number of engaged sessions. */
+				__( '%1$s of %2$s engaged sessions', 'google-site-kit' ),
 				numFmt( currentEngagedSessionsRate, format ),
-				numFmt( currentEngagedSessions, { style: 'decimal' } )
+				numFmt( currentTotalEngagedSessions, { style: 'decimal' } )
 			) }
 			previousValue={ previousEngagedSessionsRate }
 			currentValue={ currentEngagedSessionsRate }
