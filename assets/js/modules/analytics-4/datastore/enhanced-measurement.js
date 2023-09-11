@@ -187,6 +187,16 @@ const baseActions = {
 		};
 	},
 
+	/**
+	 * Sets the `streamEnabled` setting for a given web data stream.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}  propertyID      The GA4 property ID to set enhanced measurement settings for.
+	 * @param {string}  webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
+	 * @param {boolean} enabled         Whether the `streamEnabled` setting should be enabled or not.
+	 * @return {Object} Redux-style action.
+	 */
 	setEnhancedMeasurementStreamEnabled: createValidatedAction(
 		( propertyID, webDataStreamID, enabled ) => {
 			invariant(
