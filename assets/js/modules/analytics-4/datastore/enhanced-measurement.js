@@ -326,8 +326,9 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 				webDataStreamID
 			].settings = settings;
 
-			return state;
+			break;
 		}
+
 		case RESET_ENHANCED_MEASUREMENT_SETTINGS: {
 			for ( const propertyID in state.enhancedMeasurement ) {
 				for ( const webDataStreamID in state.enhancedMeasurement[
@@ -348,10 +349,11 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 				}
 			}
 
-			return state;
+			break;
 		}
+
 		default: {
-			return state;
+			break;
 		}
 	}
 } );
