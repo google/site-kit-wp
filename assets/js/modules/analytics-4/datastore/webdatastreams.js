@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { pick, difference } from 'lodash';
+import { pick, difference, cloneDeep } from 'lodash';
 
 /**
  * Internal dependencies
@@ -444,8 +444,7 @@ const baseSelectors = {
 				? measurements
 				: [ measurements ];
 
-			const summaries =
-				select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+			let summaries = select( MODULES_ANALYTICS_4 ).getAccountSummaries();
 			if ( ! Array.isArray( summaries ) ) {
 				return undefined;
 			}
@@ -454,22 +453,34 @@ const baseSelectors = {
 			// so we can check it first because its more likely that the current
 			// account will contain a measurement ID that we are looking for.
 			const currentAccountID = select( MODULES_ANALYTICS ).getAccountID();
-			summaries.sort( ( { _id: accountID } ) =>
+			// Clone summaries to avoid mutating the original array.
+			summaries = cloneDeep( summaries ).sort( ( { _id: accountID } ) =>
 				accountID === currentAccountID ? -1 : 0
 			);
 
-			const info = {};
-			const propertyIDs = [];
+			// Use an immutable approach to update 'propertyIDs' and 'info'.
+			// This ensures that we do not produce any side effects by modifying the state directly.
+			const { propertyIDs, info } = summaries.reduce(
+				( acc, { _id: accountID, propertySummaries } ) => {
+					// Create new array with appended property IDs.
+					const newPropertyIDs = [
+						...acc.propertyIDs,
+						...propertySummaries.map( ( { _id } ) => _id ),
+					];
 
-			summaries.forEach( ( { _id: accountID, propertySummaries } ) => {
-				propertySummaries.forEach( ( { _id: propertyID } ) => {
-					propertyIDs.push( propertyID );
-					info[ propertyID ] = {
-						accountID,
-						propertyID,
+					// Create a new info object.
+					const newInfo = { ...acc.info };
+					propertySummaries.forEach( ( { _id: propertyID } ) => {
+						newInfo[ propertyID ] = { accountID, propertyID };
+					} );
+
+					return {
+						propertyIDs: newPropertyIDs,
+						info: newInfo,
 					};
-				} );
-			} );
+				},
+				{ propertyIDs: [], info: {} }
+			);
 
 			if ( propertyIDs.length === 0 ) {
 				return null;
