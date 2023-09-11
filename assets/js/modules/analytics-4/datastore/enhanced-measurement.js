@@ -323,12 +323,13 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 				for ( const webDataStreamID in state.enhancedMeasurement[
 					propertyID
 				] ) {
-					const currentStream =
+					const currentWebDataStream =
 						state.enhancedMeasurement[ propertyID ][
 							webDataStreamID
 						];
-					if ( currentStream.savedSettings ) {
-						currentStream.settings = currentStream.savedSettings;
+					if ( currentWebDataStream.savedSettings ) {
+						currentWebDataStream.settings =
+							currentWebDataStream.savedSettings;
 					} else {
 						delete state.enhancedMeasurement[ propertyID ][
 							webDataStreamID
