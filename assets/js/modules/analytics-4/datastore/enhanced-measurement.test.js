@@ -21,7 +21,7 @@
  */
 import {
 	createTestRegistry,
-	// subscribeUntil,
+	muteFetch,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -49,8 +49,11 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 		videoEngagementEnabled: null,
 	};
 
+	let store;
+
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
 	} );
 
 	afterEach( () => {
@@ -186,7 +189,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						enhancedMeasurementSettingsMock
 					);
 
-				// Initially the `streamEnabled` setting is `true`
+				// Initially the `streamEnabled` setting is `true`.
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
@@ -196,7 +199,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						)
 				).toEqual( enhancedMeasurementSettingsMock );
 
-				// Set the `streamEnabled` setting to `false`
+				// Set the `streamEnabled` setting to `false`.
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setEnhancedMeasurementStreamEnabled(
@@ -205,7 +208,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						false
 					);
 
-				// Modify the initial settings mock to match the expected new settings
+				// Modify the initial settings mock to match the expected new settings.
 				const expectedSettings = {
 					...enhancedMeasurementSettingsMock,
 					streamEnabled: false,
@@ -267,6 +270,66 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( fetchMock ).toHaveFetched(
 					enhancedMeasurementSettingsEndpoint
 				);
+			} );
+		} );
+
+		describe( 'resetEnhancedMeasurementSettings', () => {
+			it( 'should reset the enhanced measurement settings to the saved settings', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettingsMock,
+						{ propertyID, webDataStreamID }
+					);
+
+				const newSettings = {
+					...enhancedMeasurementSettingsMock,
+					streamEnabled: false,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID,
+						newSettings
+					);
+
+				// Verify that the settings have been updated.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getEnhancedMeasurementSettings(
+							propertyID,
+							webDataStreamID
+						)
+				).toEqual( newSettings );
+
+				// Perform the reset action.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.resetEnhancedMeasurementSettings();
+
+				// Verify that settings have been reset to the initial mock settings.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getEnhancedMeasurementSettings(
+							propertyID,
+							webDataStreamID
+						)
+				).toEqual( enhancedMeasurementSettingsMock );
+			} );
+
+			it( 'should delete settings if no saved settings exist', () => {
+				muteFetch( enhancedMeasurementSettingsEndpoint );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.resetEnhancedMeasurementSettings();
+
+				// Validate that the settings are now deleted.
+				expect( store.getState().enhancedMeasurement ).toEqual( {} );
 			} );
 		} );
 	} );
