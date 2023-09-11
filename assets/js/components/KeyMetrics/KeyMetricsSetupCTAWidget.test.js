@@ -22,6 +22,7 @@
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	act,
@@ -30,9 +31,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	muteFetch,
-	provideGatheringDataState,
-	provideUserAuthentication,
-	getAnalytics4HasZeroDataReportOptions,
 	fireEvent,
 } from '../../../../tests/js/test-utils';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
@@ -83,7 +81,9 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		provideGatheringDataState( registry, { 'search-console': false } );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -117,10 +117,9 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': true,
-		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -155,22 +154,9 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		provideGatheringDataState( registry, {
-			'search-console': false,
-		} );
-
-		// The provideGatheringDataState() helper cannot handle the true case for Analytics 4, due to its dependence on additional state
-		// that may vary between test scenarios. Therefore, we must manually set the state here. First, we set user authentication to false
-		// to ensure "gathering data" can return true for the Analytics 4 module.
-		provideUserAuthentication( registry, { authenticated: false } );
-
-		// Then provide an empty report to ensure "gathering data" is true for Analytics 4.
 		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				{},
-				{ options: getAnalytics4HasZeroDataReportOptions( registry ) }
-			);
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -205,10 +191,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, getByRole, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -253,10 +241,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
 
 		registry
 			.dispatch( CORE_USER )
@@ -303,10 +293,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, waitForRegistry } = render(
 			<div>
