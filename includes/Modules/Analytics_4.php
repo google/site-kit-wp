@@ -1029,7 +1029,7 @@ final class Analytics_4 extends Module
 			'analyticsadmin'                => new Google_Service_GoogleAnalyticsAdmin( $client ),
 			'analyticsdata'                 => new Google_Service_AnalyticsData( $client ),
 			'analyticsprovisioning'         => new AccountProvisioningService( $client, $google_proxy->url() ),
-			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
+			'analyticsenhancedmeasurement'  => new PropertiesEnhancedMeasurementService( $client ),
 			'tagmanager'                    => new Google_Service_TagManager( $client ),
 		);
 	}
