@@ -721,6 +721,7 @@ class Analytics_4Test extends TestCase {
 				'webdatastreams',
 				'webdatastreams-batch',
 				'create-account-ticket',
+				'enhanced-measurement-settings',
 			),
 			$this->analytics->get_datapoints()
 		);
