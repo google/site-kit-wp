@@ -33,7 +33,6 @@ import {
 	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '../../analytics-4/datastore/constants';
-import { GA4_AUTO_SWITCH_DATE } from '../../analytics-4/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
@@ -47,14 +46,11 @@ import {
 	isValidProfileName,
 	isValidAdsConversionID,
 } from '../util';
-import { stringToDate } from '../../../util';
 import {
 	MODULES_ANALYTICS,
 	PROPERTY_CREATE,
 	PROFILE_CREATE,
 	FORM_SETUP,
-	DASHBOARD_VIEW_GA4,
-	DASHBOARD_VIEW_UA,
 	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
@@ -133,18 +129,6 @@ export async function submitChanges( registry ) {
 		}
 	}
 
-	// If `ga4Reporting` is enabled, the dashboard view is set to UA
-	// and UA is not enabled, we need to set the dashboard view to GA4.
-	let dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
-	if (
-		ga4ReportingEnabled &&
-		dashboardView === DASHBOARD_VIEW_UA &&
-		! isUAEnabled
-	) {
-		dispatch( MODULES_ANALYTICS ).setDashboardView( DASHBOARD_VIEW_GA4 );
-		dashboardView = DASHBOARD_VIEW_GA4;
-	}
-
 	const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 	const ga4StreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 
@@ -174,23 +158,17 @@ export async function submitChanges( registry ) {
 		return { error };
 	}
 
-	if ( dashboardView === DASHBOARD_VIEW_GA4 ) {
-		if ( ! select( CORE_USER ).isTourDismissed( ga4Reporting.slug ) ) {
-			dispatch( CORE_USER ).dismissTour( ga4Reporting.slug );
-		}
+	if ( ! select( CORE_USER ).isTourDismissed( ga4Reporting.slug ) ) {
+		dispatch( CORE_USER ).dismissTour( ga4Reporting.slug );
+	}
 
-		await registry
-			.__experimentalResolveSelect( CORE_USER )
-			.getDismissedItems();
-		if (
-			! select( CORE_USER ).isItemDismissed(
-				GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-			)
-		) {
-			dispatch( CORE_USER ).dismissItem(
-				GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-			);
-		}
+	await registry.__experimentalResolveSelect( CORE_USER ).getDismissedItems();
+	if (
+		! select( CORE_USER ).isItemDismissed(
+			GA4_DASHBOARD_VIEW_NOTIFICATION_ID
+		)
+	) {
+		dispatch( CORE_USER ).dismissItem( GA4_DASHBOARD_VIEW_NOTIFICATION_ID );
 	}
 
 	return {};
@@ -341,73 +319,5 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 		return false;
 	}
 
-	const referenceDate = select( CORE_USER ).getReferenceDate();
-
-	if (
-		stringToDate( referenceDate ) >= stringToDate( GA4_AUTO_SWITCH_DATE )
-	) {
-		return true;
-	}
-
-	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
-
-	if ( dashboardView === undefined ) {
-		return undefined;
-	}
-
-	return dashboardView === DASHBOARD_VIEW_GA4;
+	return true;
 } );
-
-/**
- * Determines whether the user should be prompted to switch to GA4 Dashboard View.
- *
- * @since 1.98.0
- *
- * @return {boolean} True if the user should be prompted to switch to the GA4 Dashboard View, false otherwise, or undefined if not loaded.
- */
-export const shouldPromptGA4DashboardView = createRegistrySelector(
-	( select ) => () => {
-		const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
-
-		if ( ! ga4ReportingEnabled ) {
-			return false;
-		}
-
-		const ga4ModuleConnected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-
-		if ( ga4ModuleConnected === undefined ) {
-			return undefined;
-		}
-
-		if ( ! ga4ModuleConnected ) {
-			return false;
-		}
-
-		const ga4DashboardView =
-			select( MODULES_ANALYTICS ).isGA4DashboardView();
-
-		if ( ga4DashboardView === undefined ) {
-			return undefined;
-		}
-
-		// Don't prompt if the user is already on the GA4 Dashboard.
-		if ( ga4DashboardView ) {
-			return false;
-		}
-
-		const ga4GatheringData =
-			select( MODULES_ANALYTICS_4 ).isGatheringData();
-
-		if ( ga4GatheringData === undefined ) {
-			return undefined;
-		}
-
-		// Don't prompt if GA4 is still gathering data.
-		if ( ga4GatheringData ) {
-			return false;
-		}
-
-		return true;
-	}
-);
