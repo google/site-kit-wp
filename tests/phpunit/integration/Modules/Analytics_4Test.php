@@ -1667,6 +1667,97 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1beta/properties/$property_id/conversionEvents", $request_url['path'] );
 	}
 
+	public function test_get_enhanced_mesurement_settings__required_params() {
+		$scopes   = $this->analytics->get_scopes();
+		$scopes[] = Analytics::EDIT_SCOPE;
+		$this->authentication->get_oauth_client()->set_granted_scopes( $scopes );
+
+		$data = $this->analytics->get_data(
+			'enhanced-measurement-settings',
+			array()
+		);
+
+		// Verify if the propertyID is required.
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+
+		$data = $this->analytics->get_data(
+			'enhanced-measurement-settings',
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+
+		// Verify if the webDataStreamID is required.
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: webDataStreamID.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+	}
+
+	public function test_get_enhanced_mesurement_settings() {
+		$property_id = '123456789';
+		$web_data_stream_id = '654321';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+				'webDataStreamID' => $web_data_stream_id,
+			)
+		);
+
+		$scopes   = $this->analytics->get_scopes();
+		$scopes[] = Analytics::EDIT_SCOPE;
+		$this->authentication->get_oauth_client()->set_granted_scopes( $scopes );
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id, )
+		);
+		$this->analytics->register();
+
+		// Fetch enhanced measurement settings.
+		$data = $this->analytics->get_data(
+			'enhanced-measurement-settings',
+			array(
+				'propertyID' => $property_id,
+				'webDataStreamID' => $web_data_stream_id,
+			)
+		);
+
+		$this->assertNotWPError( $data );
+
+		$data_array = (array) $data;
+
+		// Assert that the keys exist.
+		$keys = array(
+			'fileDownloadsEnabled',
+			'name',
+			'outboundClicksEnabled',
+			'pageChangesEnabled',
+			'pageLoadsEnabled',
+			'pageViewsEnabled',
+			'scrollsEnabled',
+			'searchQueryParameter',
+			'siteSearchEnabled',
+			'streamEnabled',
+			'uriQueryParameter',
+			'videoEngagementEnabled',
+		);
+
+		foreach ( $keys as $key ) {
+			$this->assertArrayHasKey( $key, $data_array );
+		}
+
+		// Verify the request URL and params were correctly generated.
+		$this->assertCount( 1, $this->request_handler_calls );
+
+		$request_url = $this->request_handler_calls[0]['url'];
+
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
+		$this->assertEquals( "/v1alpha/properties/$property_id/dataStreams/$web_data_stream_id/enhancedMeasurementSettings", $request_url['path'] );
+	}
+
 	/**
 	 * Returns a date string for the given number of days ago.
 	 *
