@@ -38,6 +38,7 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
@@ -1668,9 +1669,13 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_enhanced_mesurement_settings__required_params() {
-		$scopes   = $this->analytics->get_scopes();
-		$scopes[] = Analytics::EDIT_SCOPE;
-		$this->authentication->get_oauth_client()->set_granted_scopes( $scopes );
+		// Grant READONLY_SCOPE so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::READONLY_SCOPE
+			)
+		);
 
 		$data = $this->analytics->get_data(
 			'enhanced-measurement-settings',
@@ -1706,13 +1711,17 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$scopes   = $this->analytics->get_scopes();
-		$scopes[] = Analytics::EDIT_SCOPE;
-		$this->authentication->get_oauth_client()->set_granted_scopes( $scopes );
+		// Grant READONLY_SCOPE so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::READONLY_SCOPE
+			)
+		);
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id, )
+			$this->create_fake_http_handler( $property_id )
 		);
 		$this->analytics->register();
 
@@ -1747,6 +1756,170 @@ class Analytics_4Test extends TestCase {
 
 		foreach ( $keys as $key ) {
 			$this->assertArrayHasKey( $key, $data_array );
+		}
+
+		// Verify the request URL and params were correctly generated.
+		$this->assertCount( 1, $this->request_handler_calls );
+
+		$request_url = $this->request_handler_calls[0]['url'];
+
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
+		$this->assertEquals( "/v1alpha/properties/$property_id/dataStreams/$web_data_stream_id/enhancedMeasurementSettings", $request_url['path'] );
+	}
+
+	public function test_set_enhanced_mesurement_settings__required_params() {
+		$property_id = '123456789';
+		$web_data_stream_id = '654321';
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		// Call set_data without EDIT_SCOPE.
+		$data = $this->analytics->set_data(
+			'enhanced-measurement-settings',
+			array(
+				'propertyID'                  => $property_id,
+				'webDataStreamID'             => $web_data_stream_id,
+				'enhancedMeasurementSettings' => array(
+					'streamEnabled' => true,
+				),
+			)
+		);
+
+		// Verify if the EDIT_SCOPE is required.
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', $data );
+		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
+		$this->assertEquals(
+			array(
+				'scopes' => array(
+					'https://www.googleapis.com/auth/analytics.edit',
+				),
+				'status' => 403,
+			),
+			$data->get_error_data( 'missing_required_scopes' )
+		);
+
+		// Grant EDIT_SCOPE so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		// Call set_data with no parameters.
+		$data = $this->analytics->set_data(
+			'enhanced-measurement-settings',
+			array()
+		);
+
+		// Verify if the propertyID is required.
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+
+		// Call set_data with only the propertyID parameter.
+		$data = $this->analytics->set_data(
+			'enhanced-measurement-settings',
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+
+		// Verify if the webDataStreamID is required.
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: webDataStreamID.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+
+		// Call set_data with only propertyID and webDataStreamID parameters.
+		$data = $this->analytics->set_data(
+			'enhanced-measurement-settings',
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '654321',
+			)
+		);
+
+		// Verify if the enhancedMeasurementSettings object is required.
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: enhancedMeasurementSettings.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+
+		// Call set_data with invalid enhancedMeasurementSettings fields.
+		$data = $this->analytics->set_data(
+			'enhanced-measurement-settings',
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '654321',
+				'enhancedMeasurementSettings' => array(
+					'invalidField' => 'invalidValue',
+				),
+			)
+		);
+
+		// Verify if the enhancedMeasurementSettings object is required.
+		$this->assertWPErrorWithMessage( 'Invalid properties in enhancedMeasurementSettings: invalidField.', $data );
+		$this->assertEquals( 'invalid_property_name', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ) );
+	}
+
+	public function test_set_enhanced_mesurement_settings() {
+		$property_id = '123456789';
+		$web_data_stream_id = '654321';
+
+		// $scopes   = $this->analytics->get_scopes();
+		// $scopes[] = Analytics::EDIT_SCOPE;
+		// $this->authentication->get_oauth_client()->set_granted_scopes( $scopes );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		$response = $this->analytics->set_data(
+			'enhanced-measurement-settings',
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '654321',
+				'enhancedMeasurementSettings' => array(
+					'streamEnabled' => true,
+				),
+			)
+		);
+
+		// Assert request was made with expected arguments.
+		$this->assertNotWPError( $response );
+
+		$response_array = (array) $response;
+
+		// Assert that the keys exist.
+		$keys = array(
+			'fileDownloadsEnabled',
+			'name',
+			'outboundClicksEnabled',
+			'pageChangesEnabled',
+			'pageLoadsEnabled',
+			'pageViewsEnabled',
+			'scrollsEnabled',
+			'searchQueryParameter',
+			'siteSearchEnabled',
+			'streamEnabled',
+			'uriQueryParameter',
+			'videoEngagementEnabled',
+		);
+
+		foreach ( $keys as $key ) {
+			$this->assertArrayHasKey( $key, $response_array );
 		}
 
 		// Verify the request URL and params were correctly generated.
