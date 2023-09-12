@@ -1701,12 +1701,12 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_enhanced_mesurement_settings() {
-		$property_id = '123456789';
+		$property_id        = '123456789';
 		$web_data_stream_id = '654321';
 
 		$this->analytics->get_settings()->merge(
 			array(
-				'propertyID' => $property_id,
+				'propertyID'      => $property_id,
 				'webDataStreamID' => $web_data_stream_id,
 			)
 		);
@@ -1729,7 +1729,7 @@ class Analytics_4Test extends TestCase {
 		$data = $this->analytics->get_data(
 			'enhanced-measurement-settings',
 			array(
-				'propertyID' => $property_id,
+				'propertyID'      => $property_id,
 				'webDataStreamID' => $web_data_stream_id,
 			)
 		);
@@ -1768,7 +1768,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_set_enhanced_mesurement_settings__required_params() {
-		$property_id = '123456789';
+		$property_id        = '123456789';
 		$web_data_stream_id = '654321';
 
 		FakeHttp::fake_google_http_handler(
@@ -1852,8 +1852,8 @@ class Analytics_4Test extends TestCase {
 		$data = $this->analytics->set_data(
 			'enhanced-measurement-settings',
 			array(
-				'propertyID'      => '123456789',
-				'webDataStreamID' => '654321',
+				'propertyID'                  => '123456789',
+				'webDataStreamID'             => '654321',
 				'enhancedMeasurementSettings' => array(
 					'invalidField' => 'invalidValue',
 				),
@@ -1867,12 +1867,9 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_set_enhanced_mesurement_settings() {
-		$property_id = '123456789';
+		$property_id        = '123456789';
 		$web_data_stream_id = '654321';
 
-		// $scopes   = $this->analytics->get_scopes();
-		// $scopes[] = Analytics::EDIT_SCOPE;
-		// $this->authentication->get_oauth_client()->set_granted_scopes( $scopes );
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
 			$this->create_fake_http_handler( $property_id )
@@ -1889,8 +1886,8 @@ class Analytics_4Test extends TestCase {
 		$response = $this->analytics->set_data(
 			'enhanced-measurement-settings',
 			array(
-				'propertyID'      => '123456789',
-				'webDataStreamID' => '654321',
+				'propertyID'                  => '123456789',
+				'webDataStreamID'             => '654321',
 				'enhancedMeasurementSettings' => array(
 					'streamEnabled' => true,
 				),
