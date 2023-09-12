@@ -42,8 +42,6 @@ const enhancedMeasurementSettingsFields = [
 	'videoEngagementEnabled',
 	'fileDownloadsEnabled',
 	'pageChangesEnabled',
-	'pageLoadsEnabled',
-	'pageViewsEnabled',
 	'formInteractionsEnabled',
 	'searchQueryParameter',
 	'uriQueryParameter',
