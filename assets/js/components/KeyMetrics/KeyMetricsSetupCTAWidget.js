@@ -57,12 +57,18 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad()
-	);
-	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad()
-	);
+
+	// We call isGatheringData() since this selector makes report requests. If they return
+	// data, then the data-available transient is set which is loaded as a global on the
+	// next page load.
+	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) => {
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
+		return select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad();
+	} );
+	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
+		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
+	} );
 
 	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	const { isTooltipVisible } = useTooltipState(
