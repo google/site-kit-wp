@@ -42,11 +42,39 @@ describe( 'Footer', () => {
 		},
 		{
 			id: 'users',
-			color: '#1b9688',
+			color: '#5c9271',
 			label: 'Users',
-			service: 'analytics',
+			service: 'analytics-4',
 		},
 	];
+
+	beforeEach( () => {
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/settings'
+			),
+			{ body: {}, status: 200 }
+		);
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/settings'
+			),
+			{ body: {}, status: 200 }
+		);
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+			{
+				body: [
+					{
+						slug: 'analytics-4',
+						name: 'Analytics-4',
+						active: true,
+						connected: true,
+					},
+				],
+			}
+		);
+	} );
 
 	it( 'should not make a search console settings requests when the view context is "view only"', () => {
 		const { container } = render(
@@ -81,13 +109,6 @@ describe( 'Footer', () => {
 	} );
 
 	it( 'should make a search console settings request normally when the view context is NOT "view only"', async () => {
-		fetchMock.getOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/settings'
-			),
-			{ body: {}, status: 200 }
-		);
-
 		const { registry, container } = render(
 			<Footer metrics={ metrics } selectedStats={ 0 } />,
 			{
@@ -107,13 +128,6 @@ describe( 'Footer', () => {
 	} );
 
 	it( 'should make a analytics settings request normally when the view context is NOT "view only"', async () => {
-		fetchMock.getOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics/data/settings'
-			),
-			{ body: {}, status: 200 }
-		);
-
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 1 } />,
 			{

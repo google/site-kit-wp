@@ -29,6 +29,25 @@ import Footer from './Footer';
 describe( 'Footer', () => {
 	beforeEach( () => {
 		jest.useFakeTimers();
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/settings'
+			),
+			{ body: {}, status: 200 }
+		);
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+			{
+				body: [
+					{
+						slug: 'analytics-4',
+						name: 'Analytics-4',
+						active: true,
+						connected: true,
+					},
+				],
+			}
+		);
 	} );
 
 	it( 'should not make a analytics settings requests when the view context is "view only"', () => {
@@ -48,13 +67,6 @@ describe( 'Footer', () => {
 	} );
 
 	it( 'should make a analytics settings request normally when the view context is NOT "view only"', () => {
-		fetchMock.getOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics/data/settings'
-			),
-			{ body: {}, status: 200 }
-		);
-
 		const { container } = render( <Footer />, {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
