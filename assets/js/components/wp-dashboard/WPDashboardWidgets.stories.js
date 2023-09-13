@@ -76,9 +76,6 @@ ReadyGA4.args = {
 		} );
 	},
 };
-ReadyGA4.parameters = {
-	features: [ 'ga4Reporting' ],
-};
 
 export const ReadyWithActivateModuleCTA = Template.bind( {} );
 ReadyWithActivateModuleCTA.storyName = 'Ready with Activate Module CTA';
@@ -164,9 +161,6 @@ GatheringDataGA4.args = {
 		} );
 	},
 };
-GatheringDataGA4.parameters = {
-	features: [ 'ga4Reporting' ],
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -184,9 +178,6 @@ ZeroDataGA4.args = {
 			dashboardView: DASHBOARD_VIEW_GA4,
 		} );
 	},
-};
-ZeroDataGA4.parameters = {
-	features: [ 'ga4Reporting' ],
 };
 
 export default {

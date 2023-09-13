@@ -31,7 +31,6 @@ import {
 	provideSiteInfo,
 	WithTestRegistry,
 } from '../../../../tests/js/utils';
-import { enabledFeatures } from '../../features';
 
 function Template( { ...args } ) {
 	return <SwitchGA4DashboardViewNotification { ...args } />;
@@ -45,7 +44,6 @@ export default {
 	component: SwitchGA4DashboardViewNotification,
 	decorators: [
 		( Story ) => {
-			enabledFeatures.add( 'ga4Reporting' );
 			const registry = createTestRegistry();
 			provideSiteInfo( registry );
 			provideModules( registry, [

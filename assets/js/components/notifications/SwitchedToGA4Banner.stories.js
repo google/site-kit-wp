@@ -30,7 +30,6 @@ import {
 	provideSiteInfo,
 	WithTestRegistry,
 } from '../../../../tests/js/utils';
-import { enabledFeatures } from '../../features';
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 
 function Template( { ...args } ) {
@@ -64,8 +63,6 @@ export default {
 	component: SwitchedToGA4Banner,
 	decorators: [
 		( Story, { args } ) => {
-			enabledFeatures.add( 'ga4Reporting' );
-
 			const registry = createTestRegistry();
 			provideSiteInfo( registry );
 			provideModules( registry, [

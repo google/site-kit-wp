@@ -120,9 +120,6 @@ AnalyticsActiveWithGA4Enabled.args = {
 		} );
 	},
 };
-AnalyticsActiveWithGA4Enabled.parameters = {
-	features: [ 'ga4Reporting' ],
-};
 
 export const Analytics4WidgetsLoading = Template.bind( {} );
 Analytics4WidgetsLoading.storyName = 'GA4 Widgets Loading';
@@ -149,9 +146,6 @@ Analytics4WidgetsLoading.args = {
 			dashboardView: DASHBOARD_VIEW_GA4,
 		} );
 	},
-};
-Analytics4WidgetsLoading.parameters = {
-	features: [ 'ga4Reporting' ],
 };
 
 export const GatheringData = Template.bind( {} );

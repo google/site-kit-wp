@@ -98,9 +98,7 @@ WithDashboardView.args = {
 			.setDashboardView( DASHBOARD_VIEW_GA4 );
 	},
 };
-WithDashboardView.parameters = {
-	features: [ 'ga4Reporting' ],
-};
+WithDashboardView.parameters = {};
 WithDashboardView.scenario = {
 	label: 'Modules/Analytics/Settings/SettingsView/WithDashboardView',
 	delay: 250,
@@ -122,9 +120,7 @@ PostGA4AutoSwitch.args = {
 		registry.dispatch( CORE_USER ).setReferenceDate( GA4_AUTO_SWITCH_DATE );
 	},
 };
-PostGA4AutoSwitch.parameters = {
-	features: [ 'ga4Reporting' ],
-};
+PostGA4AutoSwitch.parameters = {};
 PostGA4AutoSwitch.scenario = {
 	label: 'Modules/Analytics/Settings/SettingsView/PostGA4AutoSwitch',
 };

@@ -86,5 +86,4 @@ export default {
 			);
 		},
 	],
-	parameters: { features: [ 'ga4Reporting' ] },
 };

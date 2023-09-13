@@ -183,5 +183,5 @@ export default {
 			);
 		},
 	],
-	parameters: { padding: 0, features: [ 'ga4Reporting' ] },
+	parameters: { padding: 0 },
 };
