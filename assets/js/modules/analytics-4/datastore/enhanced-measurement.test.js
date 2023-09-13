@@ -400,7 +400,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						{ propertyID, webDataStreamID }
 					);
 
-				const streamEnabled = registry
+				let streamEnabled = registry
 					.select( MODULES_ANALYTICS_4 )
 					.isEnhancedMeasurementStreamEnabled(
 						propertyID,
@@ -419,14 +419,14 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						{ propertyID, webDataStreamID }
 					);
 
-				const streamDisabled = registry
+				streamEnabled = registry
 					.select( MODULES_ANALYTICS_4 )
 					.isEnhancedMeasurementStreamEnabled(
 						propertyID,
 						webDataStreamID
 					);
 
-				expect( streamDisabled ).toEqual( false );
+				expect( streamEnabled ).toEqual( false );
 			} );
 
 			it( 'should return `false` if the settings are not available', () => {
