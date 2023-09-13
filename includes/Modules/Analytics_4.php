@@ -57,7 +57,7 @@ use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
@@ -751,7 +751,7 @@ final class Analytics_4 extends Module
 					$data['propertyID']
 				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
 
-				$post_body = new GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings( $data['enhancedMeasurementSettings'] );
+				$post_body = new EnhancedMeasurementSettingsModel( $data['enhancedMeasurementSettings'] );
 
 				$analyticsadmin = $this->get_analyticsenhancedmeasurements_service();
 
