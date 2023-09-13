@@ -36,24 +36,26 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 
 	const propertyID = '12345';
 	const webDataStreamID = '67890';
-	const enhancedMeasurementSettingsMock = {
-		fileDownloadsEnabled: null,
-		name: 'properties/12345/dataStreams/67890/enhancedMeasurementSettings',
-		outboundClicksEnabled: null,
-		pageChangesEnabled: null,
-		scrollsEnabled: null,
-		searchQueryParameter: 'q,s,search,query,keyword',
-		siteSearchEnabled: null,
-		streamEnabled: true,
-		uriQueryParameter: null,
-		videoEngagementEnabled: null,
-	};
+	let enhancedMeasurementSettingsMock;
 
 	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
+
+		enhancedMeasurementSettingsMock = {
+			fileDownloadsEnabled: null,
+			name: 'properties/12345/dataStreams/67890/enhancedMeasurementSettings',
+			outboundClicksEnabled: null,
+			pageChangesEnabled: null,
+			scrollsEnabled: null,
+			searchQueryParameter: 'q,s,search,query,keyword',
+			siteSearchEnabled: null,
+			streamEnabled: true,
+			uriQueryParameter: null,
+			videoEngagementEnabled: null,
+		};
 	} );
 
 	afterEach( () => {
