@@ -89,7 +89,7 @@ export default function UserInputPreviewGroup( {
 
 	const toggleEditMode = useCallback( () => {
 		if ( ! isEditing ) {
-			trackEvent( viewContext, 'question_edit', slug );
+			trackEvent( `${ viewContext }_kmw`, 'question_edit', slug );
 		} else {
 			onCollapse();
 		}
