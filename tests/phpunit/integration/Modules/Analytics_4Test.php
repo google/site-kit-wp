@@ -28,6 +28,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -1720,7 +1721,7 @@ class Analytics_4Test extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
+			$this->create_enhanced_measurement_fake_http_handler( $property_id, $web_data_stream_id )
 		);
 		$this->analytics->register();
 
@@ -1755,6 +1756,9 @@ class Analytics_4Test extends TestCase {
 			$this->assertArrayHasKey( $key, $data_array );
 		}
 
+		// Verify the enhanced measurement settings are returned by checking a field value.
+		$this->assertEquals( true, $data['streamEnabled'] );
+
 		// Verify the request URL and params were correctly generated.
 		$this->assertCount( 1, $this->request_handler_calls );
 
@@ -1770,7 +1774,7 @@ class Analytics_4Test extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
+			$this->create_enhanced_measurement_fake_http_handler( $property_id, $web_data_stream_id )
 		);
 		$this->analytics->register();
 
@@ -1869,7 +1873,7 @@ class Analytics_4Test extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
+			$this->create_enhanced_measurement_fake_http_handler( $property_id, $web_data_stream_id )
 		);
 		$this->analytics->register();
 
@@ -2032,6 +2036,54 @@ class Analytics_4Test extends TestCase {
 			}
 		};
 	}
+
+
+	/**
+	 * Creates a fake HTTP handler with call tracking for enhanced measurement settings.
+	 *
+	 * @param string $property_id The GA4 property ID to use.
+	 * @param string $web_data_stream_id The GA4 web data stream ID to use.
+	 * @return Closure The fake HTTP client.
+	 */
+	public function create_enhanced_measurement_fake_http_handler( $property_id, $web_data_stream_id ) {
+		$this->request_handler_calls = array();
+
+		return function ( Request $request ) use ( $property_id, $web_data_stream_id ) {
+			$url    = parse_url( $request->getUri() );
+			$params = json_decode( (string) $request->getBody(), true );
+
+			$this->request_handler_calls[] = array(
+				'url'    => $url,
+				'params' => $params,
+			);
+
+			if (
+				! in_array(
+					$url['host'],
+					array( 'analyticsdata.googleapis.com', 'analyticsadmin.googleapis.com' ),
+					true
+				)
+			) {
+				return new Response( 200 );
+			}
+
+			switch ( $url['path'] ) {
+				case "/v1alpha/properties/$property_id/dataStreams/$web_data_stream_id/enhancedMeasurementSettings":
+					$enhanced_measurement_settings = new EnhancedMeasurementSettingsModel();
+					$enhanced_measurement_settings->setStreamEnabled( true );
+
+					return new Response(
+						200,
+						array(),
+						json_encode( $enhanced_measurement_settings )
+					);
+
+				default:
+					return new Response( 200 );
+			}
+		};
+	}
+
 
 	/**
 	 * Metrics and dimensions are only validated when using shared credentials. This helper method sets up the shared credentials scenario.
