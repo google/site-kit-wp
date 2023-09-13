@@ -73,8 +73,28 @@ export default function UserInputQuestionnaire() {
 	);
 
 	useEffect( () => {
-		if ( activeSlug === 'preview' ) {
-			trackEvent( viewContext, 'summary_view' );
+		switch ( activeSlug ) {
+			case USER_INPUT_QUESTIONS_PURPOSE:
+				trackEvent(
+					`${ viewContext }_kmw`,
+					'site_purpose_question_view'
+				);
+				break;
+			case USER_INPUT_QUESTION_POST_FREQUENCY:
+				trackEvent(
+					`${ viewContext }_kmw`,
+					'content_frequency_question_view'
+				);
+				break;
+			case USER_INPUT_QUESTIONS_GOALS:
+				trackEvent(
+					`${ viewContext }_kmw`,
+					'site_goals_question_view'
+				);
+				break;
+			case 'preview':
+				trackEvent( `${ viewContext }_kmw`, 'summary_view' );
+				break;
 		}
 	}, [ activeSlug, viewContext ] );
 
@@ -87,12 +107,20 @@ export default function UserInputQuestionnaire() {
 	const isSettings = single === 'settings';
 
 	const next = useCallback( () => {
-		trackEvent( viewContext, 'question_advance', steps[ activeSlugIndex ] );
+		trackEvent(
+			`${ viewContext }_kmw`,
+			'question_advance',
+			steps[ activeSlugIndex ]
+		);
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
 
 	const back = useCallback( () => {
-		trackEvent( viewContext, 'question_return', steps[ activeSlugIndex ] );
+		trackEvent(
+			`${ viewContext }_kmw`,
+			'question_return',
+			steps[ activeSlugIndex ]
+		);
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
 	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
 
@@ -105,7 +133,7 @@ export default function UserInputQuestionnaire() {
 			eventLabel = steps[ activeSlugIndex ];
 		}
 
-		trackEvent( viewContext, eventAction, eventLabel );
+		trackEvent( `${ viewContext }_kmw`, eventAction, eventLabel );
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
