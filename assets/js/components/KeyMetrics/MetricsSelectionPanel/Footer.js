@@ -190,6 +190,7 @@ export default function Footer( { savedMetrics } ) {
 						br: <br />,
 						link: (
 							<Link
+								secondary
 								onClick={ onSettingsClick }
 								disabled={ isSavingSettings }
 							/>
