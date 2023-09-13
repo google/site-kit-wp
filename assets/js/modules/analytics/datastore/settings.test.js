@@ -36,7 +36,6 @@ import {
 	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
 import { GA4_AUTO_SWITCH_DATE } from '../../analytics-4/constants';
-import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -51,13 +50,9 @@ import { INVARIANT_INVALID_WEBDATASTREAM_ID } from '../../analytics-4/datastore/
 import * as ga4fixtures from '../../analytics-4/datastore/__fixtures__';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,
-	INVARIANT_INVALID_PROFILE_NAME,
-	INVARIANT_INVALID_PROFILE_SELECTION,
-	INVARIANT_INVALID_PROPERTY_SELECTION,
 	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
 import { getDateString, stringToDate } from '../../../util';
-import { enabledFeatures, isFeatureEnabled } from '../../../features';
 import ga4Reporting from '../../../feature-tours/ga4-reporting';
 
 describe( 'modules/analytics settings', () => {
@@ -80,7 +75,7 @@ describe( 'modules/analytics settings', () => {
 		trackingDisabled: [],
 		anonymizeIP: true,
 		canUseSnippet: true,
-		dashboardView: DASHBOARD_VIEW_UA,
+		dashboardView: DASHBOARD_VIEW_GA4,
 	};
 	const tagWithPermission = {
 		accountID: '12345',
@@ -142,235 +137,6 @@ describe( 'modules/analytics settings', () => {
 					.receiveGetDismissedItems( [
 						GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 					] );
-			} );
-
-			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					...validSettings,
-					accountID: '12345',
-					propertyID: PROPERTY_CREATE,
-				} );
-				const createdProperty = {
-					...fixtures.propertiesProfiles.properties[ 0 ],
-					id: 'UA-12345-1',
-					// eslint-disable-next-line sitekit/acronym-case
-					internalWebPropertyId: '123456789',
-				};
-
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-property'
-					),
-					{ body: createdProperty, status: 200 }
-				);
-				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
-					const { data } = JSON.parse( opts.body );
-					// Return the same settings passed to the API.
-					return { body: data, status: 200 };
-				} );
-
-				const result = await registry
-					.dispatch( MODULES_ANALYTICS )
-					.submitChanges();
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-property'
-					),
-					{ body: { data: { accountID: '12345' } } }
-				);
-
-				expect( result.error ).toBeFalsy();
-				expect(
-					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe( createdProperty.id );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.getInternalWebPropertyID()
-					// eslint-disable-next-line sitekit/acronym-case
-				).toBe( createdProperty.internalWebPropertyId );
-			} );
-
-			it( 'handles an error if set while creating a property', async () => {
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					...validSettings,
-					accountID: '12345',
-					propertyID: PROPERTY_CREATE,
-				} );
-
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-property'
-					),
-					{ body: error, status: 500 }
-				);
-
-				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
-
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-property'
-					),
-					{ body: { data: { accountID: '12345' } } }
-				);
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe( PROPERTY_CREATE );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.getErrorForAction( 'submitChanges' )
-				).toEqual( error );
-				expect( console ).toHaveErrored();
-			} );
-
-			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
-				const profileName = fixtures.createProfile.name;
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					...validSettings,
-					accountID: '12345',
-					propertyID: 'UA-12345-1',
-					profileID: PROFILE_CREATE,
-				} );
-				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
-					profileName,
-				} );
-				const createdProfile = {
-					...fixtures.propertiesProfiles.profiles[ 0 ],
-					id: '987654321',
-				};
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-profile'
-					),
-					{ body: createdProfile, status: 200 }
-				);
-				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
-					const { data } = JSON.parse( opts.body );
-					// Return the same settings passed to the API.
-					return { body: data, status: 200 };
-				} );
-
-				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
-
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-profile'
-					),
-					{
-						body: {
-							data: {
-								accountID: '12345',
-								propertyID: 'UA-12345-1',
-								profileName,
-							},
-						},
-					}
-				);
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( createdProfile.id );
-			} );
-
-			it( 'handles an error if set while creating a profile', async () => {
-				const profileName = fixtures.createProfile.name;
-
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					...validSettings,
-					accountID: '12345',
-					propertyID: 'UA-12345-1',
-					profileID: PROFILE_CREATE,
-				} );
-
-				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
-					profileName,
-				} );
-
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-profile'
-					),
-					{ body: error, status: 500 }
-				);
-
-				const result = await registry
-					.dispatch( MODULES_ANALYTICS )
-					.submitChanges();
-
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-profile'
-					),
-					{
-						body: {
-							data: {
-								accountID: '12345',
-								propertyID: 'UA-12345-1',
-								profileName,
-							},
-						},
-					}
-				);
-				expect( result.error ).toEqual( error );
-				expect(
-					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( PROFILE_CREATE );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.getErrorForAction( 'submitChanges' )
-				).toEqual( error );
-				expect( console ).toHaveErrored();
-			} );
-
-			it( 'dispatches both createProperty and createProfile when selected', async () => {
-				const profileName = fixtures.createProfile.name;
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					...validSettings,
-					accountID: '12345',
-					propertyID: PROPERTY_CREATE,
-					profileID: PROFILE_CREATE,
-				} );
-				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
-					profileName,
-				} );
-				const createdProperty = {
-					...fixtures.propertiesProfiles.properties[ 0 ],
-					id: 'UA-12345-1',
-				};
-				const createdProfile = {
-					...fixtures.propertiesProfiles.profiles[ 0 ],
-					id: '987654321',
-				};
-
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-property'
-					),
-					{ body: createdProperty, status: 200 }
-				);
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/create-profile'
-					),
-					{ body: createdProfile, status: 200 }
-				);
-				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
-					const { data } = JSON.parse( opts.body );
-					// Return the same settings passed to the API.
-					return { body: data, status: 200 };
-				} );
-
-				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe( createdProperty.id );
-				expect(
-					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( createdProfile.id );
 			} );
 
 			it( 'dispatches saveSettings', async () => {
@@ -437,9 +203,7 @@ describe( 'modules/analytics settings', () => {
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
 
-			it( 'does not dispatch createProperty when the `ga4Reporting` feature flag is enabled', async () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not dispatch createProperty', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					propertyID: PROPERTY_CREATE,
@@ -465,9 +229,7 @@ describe( 'modules/analytics settings', () => {
 				expect( result.error ).toBeFalsy();
 			} );
 
-			it( 'does not dispatch createProfile when the `ga4Reporting` feature flag is enabled', async () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not dispatch createProfile', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					profileID: PROFILE_CREATE,
@@ -489,9 +251,7 @@ describe( 'modules/analytics settings', () => {
 				);
 			} );
 
-			it( 'does not dispatch both createProperty and createProfile when selected and when the `ga4Reporting` feature flag is enabled', async () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not dispatch both createProperty and createProfile when selected', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					propertyID: PROPERTY_CREATE,
@@ -526,46 +286,13 @@ describe( 'modules/analytics settings', () => {
 					'^/google-site-kit/v1/core/user/data/dismiss-tour'
 				);
 
-				it( 'should not dismiss the ga4Reporting feature tour if it is wrong dashboard', async () => {
-					registry
-						.dispatch( CORE_USER )
-						.receiveGetDismissedTours( [] );
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setSettings( validSettings );
-
-					fetchMock.postOnce( gaSettingsEndpoint, {
-						body: validSettings,
-					} );
-
-					expect(
-						registry.select( MODULES_ANALYTICS ).getDashboardView()
-					).toBe( DASHBOARD_VIEW_UA );
-					expect(
-						registry
-							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
-					).toBe( false );
-
-					await registry
-						.dispatch( MODULES_ANALYTICS )
-						.submitChanges();
-
-					expect(
-						registry
-							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
-					).toBe( false );
-				} );
-
 				it( 'should not dismiss the ga4Reporting feature tour if it is already dismissed', async () => {
 					registry
 						.dispatch( CORE_USER )
 						.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-						...validSettings,
-						dashboardView: DASHBOARD_VIEW_GA4,
-					} );
+					registry
+						.dispatch( MODULES_ANALYTICS )
+						.setSettings( validSettings );
 
 					fetchMock.postOnce( gaSettingsEndpoint, {
 						body: validSettings,
@@ -633,45 +360,6 @@ describe( 'modules/analytics settings', () => {
 				const fetchDismissItemRegExp = new RegExp(
 					'^/google-site-kit/v1/core/user/data/dismiss-item'
 				);
-
-				it( 'should not dismiss the switch to GA4 dashboard view notification when setting the dashboard view to UA', async () => {
-					registry
-						.dispatch( CORE_USER )
-						.receiveGetDismissedItems( [] );
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setSettings( validSettings );
-
-					fetchMock.postOnce( gaSettingsEndpoint, {
-						body: validSettings,
-					} );
-
-					expect(
-						registry.select( MODULES_ANALYTICS ).getDashboardView()
-					).toBe( DASHBOARD_VIEW_UA );
-					expect(
-						registry
-							.select( CORE_USER )
-							.isItemDismissed(
-								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-							)
-					).toBe( false );
-
-					await registry
-						.dispatch( MODULES_ANALYTICS )
-						.submitChanges();
-
-					// Wait for resolvers to run.
-					await waitForDefaultTimeouts();
-
-					expect(
-						registry
-							.select( CORE_USER )
-							.isItemDismissed(
-								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-							)
-					).toBe( false );
-				} );
 
 				it( 'should not dismiss the switch to GA4 dashboard view notification if it is already dismissed', async () => {
 					registry
@@ -905,6 +593,10 @@ describe( 'modules/analytics settings', () => {
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'sets internal state while submitting changes', async () => {
+				const fetchDismissTourRegExp = new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismiss-tour'
+				);
+
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetSettings( validSettings );
@@ -920,6 +612,10 @@ describe( 'modules/analytics settings', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS ).isDoingSubmitChanges()
 				).toBe( false );
+
+				fetchMock.postOnce( fetchDismissTourRegExp, {
+					body: [ ga4Reporting.slug ],
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
@@ -962,51 +658,7 @@ describe( 'modules/analytics settings', () => {
 				).toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 			} );
 
-			it( 'requires a valid propertyID', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setSettings( validSettings );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetExistingTag( tagWithPermission.propertyID );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
-				).toBe( true );
-
-				registry.dispatch( MODULES_ANALYTICS ).setPropertyID( '0' );
-
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
-			} );
-
-			it( 'requires a valid profileID', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setSettings( validSettings );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetExistingTag( tagWithPermission.propertyID );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
-				).toBe( true );
-
-				registry.dispatch( MODULES_ANALYTICS ).setProfileID( '0' );
-
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
-			} );
-
-			it( 'does not require a valid propertyID when the `ga4Reporting` feature flag is enabled', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not require a valid propertyID', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					propertyID: null,
@@ -1021,9 +673,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'does not require a valid profileID when the `ga4Reporting` feature flag is enabled', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not require a valid profileID', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					profileID: null,
@@ -1038,9 +688,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'does not require a valid internalWebPropertyID when the `ga4Reporting` feature flag is enabled', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not require a valid internalWebPropertyID', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					internalWebPropertyID: null,
@@ -1144,47 +792,7 @@ describe( 'modules/analytics settings', () => {
 				).toBeTruthy();
 			} );
 
-			it( 'should not support creating a new profile when the profile name is empty', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetExistingTag( null );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setSettings( validSettings );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setProfileID( PROFILE_CREATE );
-				registry
-					.dispatch( CORE_FORMS )
-					.setValues( FORM_SETUP, { profileName: '' } );
-
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INVALID_PROFILE_NAME );
-			} );
-
-			it( 'should not support creating a new profile when the profile name is not set at all', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetExistingTag( null );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setSettings( validSettings );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setProfileID( PROFILE_CREATE );
-
-				expect( () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INVALID_PROFILE_NAME );
-			} );
-
-			it( 'does not require a valid profile name when the `ga4Reporting` feature flag is enabled', () => {
-				enabledFeatures.add( 'ga4Reporting' );
+			it( 'does not require a valid profile name', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
@@ -1396,17 +1004,7 @@ describe( 'modules/analytics settings', () => {
 				registry = createTestRegistry();
 			} );
 
-			it( 'should return false when the `ga4Reporting` feature flag is not enabled', () => {
-				// Delete the `ga4Reporting` feature flag if it exists.
-				enabledFeatures.delete( 'ga4Reporting' );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
-				).toBe( false );
-			} );
-
 			it( 'should return false when the analytics-4 module is not connected', () => {
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -1427,7 +1025,6 @@ describe( 'modules/analytics settings', () => {
 				freezeFetch(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
 				);
-				enabledFeatures.add( 'ga4Reporting' );
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					dashboardView: DASHBOARD_VIEW_UA,
 				} );
@@ -1446,7 +1043,6 @@ describe( 'modules/analytics settings', () => {
 						'^/google-site-kit/v1/modules/analytics/data/settings'
 					)
 				);
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -1464,7 +1060,6 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'should return false when the dashboard view is not `google-analytics-4`', () => {
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -1482,7 +1077,6 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'should return true when the dashboard view is `google-analytics-4`', () => {
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -1505,7 +1099,6 @@ describe( 'modules/analytics settings', () => {
 			] )(
 				'should return true %s, regardless of the dashboard view setting',
 				( _, referenceDate ) => {
-					enabledFeatures.add( 'ga4Reporting' );
 					provideModules( registry, [
 						{
 							slug: 'analytics-4',
@@ -1532,19 +1125,7 @@ describe( 'modules/analytics settings', () => {
 		} );
 
 		describe( 'shouldPromptGA4DashboardView', () => {
-			it( 'should return false when the `ga4Reporting` feature flag is not enabled', () => {
-				// Verify the `ga4Reporting` feature flag is not enabled.
-				expect( isFeatureEnabled( 'ga4Reporting' ) ).toBe( false );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.shouldPromptGA4DashboardView()
-				).toBe( false );
-			} );
-
 			it( 'should return false when the analytics-4 module is not connected', () => {
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -1566,7 +1147,6 @@ describe( 'modules/analytics settings', () => {
 						'^/google-site-kit/v1/modules/analytics/data/settings'
 					)
 				);
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -1590,7 +1170,6 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'should return false when `isGA4DashboardView` is true', () => {
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -1610,7 +1189,6 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'should return false when analytics-4 is gathering data', () => {
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -1637,7 +1215,6 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'should return true when analytics-4 is not gathering data', () => {
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',

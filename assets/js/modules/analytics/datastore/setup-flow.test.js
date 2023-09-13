@@ -24,11 +24,8 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import {
 	MODULES_ANALYTICS,
-	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
-	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 	FORM_SETUP,
-	SETUP_FLOW_MODE_GA4_LEGACY,
 } from './constants';
 import {
 	createTestRegistry,
@@ -41,7 +38,6 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { parseLiveContainerVersionIDs } from '../../tagmanager/datastore/__factories__/utils';
 import * as gtmFixtures from '../../tagmanager/datastore/__fixtures__';
-import { enabledFeatures } from '../../../features';
 
 const accountID = 'pub-12345678';
 
@@ -157,7 +153,7 @@ describe( 'modules/analytics setup-flow', () => {
 				).getSettings();
 			} );
 
-			it( 'should return "ua" if there is no account selected', () => {
+			it( 'should return "ga4" if there is no account selected', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS )
@@ -168,10 +164,10 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_UA );
+				).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 
-			it( 'should return undefined if selected account returns undefined from GA4 getProperties selector', () => {
+			it( 'should return "ga4" if selected account returns undefined from GA4 getProperties selector', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setAccountID( accountID );
@@ -182,10 +178,10 @@ describe( 'modules/analytics setup-flow', () => {
 				).toBeUndefined();
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBeUndefined();
+				).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 
-			it( 'should return "ua" if selected account returns an empty array from GA4 getProperties selector', () => {
+			it( 'should return "ga4" if selected account returns an empty array from GA4 getProperties selector', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setAccountID( accountID );
@@ -237,35 +233,33 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_UA );
+				).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 
-			it( 'should return undefined if selected account returns undefined from UA getProperties selector', () => {
+			it( 'should return "ga4" if selected account returns undefined from UA getProperties selector', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setAccountID( accountID );
 
 				populateAnalytics4Datastore( registry );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBeUndefined();
-			} );
-
-			it( 'should return "ga4" if the `ga4Reporting` feature flag is enabled', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setAccountID( accountID );
-				populateAnalytics4Datastore( registry );
-
-				enabledFeatures.add( 'ga4Reporting' );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 
-			it( 'should return "ga4-legacy" if selected account returns an empty array from UA getProperties selector', () => {
+			it( 'should return "ga4" for setup flow mode', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
+				populateAnalytics4Datastore( registry );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBe( SETUP_FLOW_MODE_GA4 );
+			} );
+
+			it( 'should return "ga4" if selected account returns an empty array from UA getProperties selector', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setAccountID( accountID );
@@ -277,10 +271,10 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_GA4_LEGACY );
+				).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 
-			it( 'should return "ga4-transitional" if both GA4 and UA properties are found for an account', () => {
+			it( 'should return "ga4" if both GA4 and UA properties are found for an account', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setAccountID( accountID );
@@ -289,7 +283,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );
+				).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 		} );
 

@@ -120,22 +120,19 @@ describe( 'PropertySelect', () => {
 		} );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		// Note: we do length + 1 here because there should also be an item for
-		// "Set up a new property".
 		expect( listItems ).toHaveLength(
-			fixtures.accountsPropertiesProfiles.properties.length + 1
+			fixtures.accountsPropertiesProfiles.properties.length
 		);
 		expect(
 			listItems.some(
 				( { dataset } ) => dataset.value === PROPERTY_CREATE
 			)
-		).toBe( true );
+		).toBe( false );
 	} );
 
-	it( 'should not render an option to "Set up a new property" if the GA4 Reporting feature flag is enabled.', () => {
+	it( 'should not render an option to "Set up a new property".', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
 			setupRegistry,
-			features: [ 'ga4Reporting' ],
 		} );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -216,16 +213,13 @@ describe( 'PropertySelect', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
-		const { getAllByRole } = render( <PropertySelect />, {
+	it( 'should render a select box with no option if no properties are available.', () => {
+		const { queryByRole } = render( <PropertySelect />, {
 			setupRegistry: setupEmptyRegistry,
 		} );
 
-		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ 0 ].textContent ).toMatch(
-			/set up a new property/i
-		);
+		const listItem = queryByRole( 'menuitem', { hidden: true } );
+		expect( listItem ).toBeNull();
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', () => {

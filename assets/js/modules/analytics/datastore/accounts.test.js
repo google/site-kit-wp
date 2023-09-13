@@ -24,8 +24,6 @@ import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
 	ACCOUNT_CREATE,
-	PROPERTY_CREATE,
-	PROFILE_CREATE,
 	PROPERTY_TYPE_UA,
 	PROPERTY_TYPE_GA4,
 } from './constants';
@@ -408,23 +406,15 @@ describe( 'modules/analytics accounts', () => {
 				).toBe( accountID );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe(
-					// eslint-disable-next-line sitekit/acronym-case
-					fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId
-				);
+				).toBe( '' );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS )
 						.getInternalWebPropertyID()
-				).toBe(
-					/* eslint-disable sitekit/acronym-case */
-					fixtures.propertiesProfiles.profiles[ 0 ]
-						.internalWebPropertyId
-					/* eslint-enable sitekit/acronym-case */
-				);
+				).toBe( '' );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( fixtures.propertiesProfiles.profiles[ 0 ].id );
+				).toBe( '' );
 			} );
 
 			it( 'should correctly select PROPERTY_CREATE and PROFILE_CREATE when account has no properties', async () => {
@@ -459,7 +449,7 @@ describe( 'modules/analytics accounts', () => {
 				).toBe( accountID );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe( PROPERTY_CREATE );
+				).toBe( '' );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS )
@@ -467,7 +457,7 @@ describe( 'modules/analytics accounts', () => {
 				).toBe( '' );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( PROFILE_CREATE );
+				).toBe( '' );
 			} );
 
 			describe( 'analytics-4', () => {
@@ -536,7 +526,7 @@ describe( 'modules/analytics accounts', () => {
 						.selectAccount( accountID );
 					expect(
 						registry.select( MODULES_ANALYTICS ).getPropertyID()
-					).toBe( fixtures.propertiesProfiles.properties[ 0 ].id );
+					).toBe( '' );
 				} );
 
 				it( 'should set primary property type to UA when there is a matching UA property', async () => {
@@ -859,15 +849,15 @@ describe( 'modules/analytics accounts', () => {
 				).toBe( matchedProperty.accountId ); // eslint-disable-line sitekit/acronym-case
 				expect(
 					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe( matchedProperty.id );
+				).toBeUndefined();
 				expect(
 					registry
 						.select( MODULES_ANALYTICS )
 						.getInternalWebPropertyID()
-				).toBe( matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+				).toBeUndefined(); // eslint-disable-line sitekit/acronym-case
 				expect(
 					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( matchedProperty.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+				).toBeUndefined(); // eslint-disable-line sitekit/acronym-case
 			} );
 		} );
 		describe( 'getAccounts - analytics-4', () => {

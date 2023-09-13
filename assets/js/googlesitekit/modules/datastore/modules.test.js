@@ -33,7 +33,6 @@ import {
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
-import { enabledFeatures } from '../../../features';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -2011,7 +2010,6 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'should return analytics-4 instead of analytics in the GA4 dashboard view', async () => {
-				enabledFeatures.add( 'ga4Reporting' );
 				provideModuleRegistrations( registry );
 
 				fetchMock.getOnce(

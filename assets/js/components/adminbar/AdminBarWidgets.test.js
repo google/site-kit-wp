@@ -126,7 +126,6 @@ describe( 'AdminBarWidgets', () => {
 
 			const { waitForRegistry } = render( <AdminBarWidgets />, {
 				registry,
-				features: [ 'ga4Reporting' ],
 			} );
 
 			await waitForRegistry();

@@ -27,7 +27,7 @@ import apiFetchMock from '@wordpress/api-fetch';
 import ProfileSelect from './ProfileSelect';
 import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
+import { render, act } from '../../../../../../tests/js/test-utils';
 
 // Mock apiFetch so we know if it's called.
 jest.mock( '@wordpress/api-fetch' );
@@ -108,39 +108,6 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	);
 };
 
-const setupEmptyRegistry = ( { dispatch } ) => {
-	const accountID =
-		fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-	const propertyID =
-		fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
-
-	dispatch( MODULES_ANALYTICS ).setSettings( {} );
-	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
-	dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetAccounts(
-		fixtures.accountsPropertiesProfiles.accounts
-	);
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetProperties(
-		fixtures.accountsPropertiesProfiles.properties,
-		{ accountID }
-	);
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [
-		accountID,
-	] );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [], {
-		accountID,
-		propertyID,
-	} );
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [
-		accountID,
-		propertyID,
-	] );
-};
-
 describe( 'ProfileSelect', () => {
 	afterEach( () => apiFetchMock.mockClear() );
 	afterAll( () => jest.restoreAllMocks() );
@@ -149,22 +116,21 @@ describe( 'ProfileSelect', () => {
 		const { getAllByRole } = render( <ProfileSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		// Note: we do length + 1 here because there should also be an item for
-		// "Set up a new property".
 		expect( listItems ).toHaveLength(
-			fixtures.propertiesProfiles.profiles.length + 1
+			fixtures.propertiesProfiles.profiles.length
 		);
+		// UA is not sending data since July 2023, ga4 is default flow
+		// there should not be an option to create new view for UA
 		expect(
 			listItems.some(
 				( { dataset } ) => dataset.value === PROFILE_CREATE
 			)
-		).toBe( true );
+		).toBe( false );
 	} );
 
-	it( 'should not render an option to "Set up a new profile" if the GA4 Reporting feature flag is enabled.', () => {
+	it( 'should not render an option to "Set up a new profile".', () => {
 		const { getAllByRole } = render( <ProfileSelect />, {
 			setupRegistry,
-			features: [ 'ga4Reporting' ],
 		} );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -199,7 +165,7 @@ describe( 'ProfileSelect', () => {
 			);
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems ).toHaveLength( existingTagProfiles.length + 1 );
+		expect( listItems ).toHaveLength( existingTagProfiles.length );
 
 		const selectedText = container.querySelector(
 			'.mdc-select__selected-text'
@@ -320,35 +286,5 @@ describe( 'ProfileSelect', () => {
 				'.googlesitekit-analytics__select-profile'
 			)
 		).toBeInTheDocument();
-	} );
-
-	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
-		const { getAllByRole } = render( <ProfileSelect />, {
-			setupRegistry: setupEmptyRegistry,
-		} );
-
-		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ 0 ].textContent ).toMatch( /set up a new view/i );
-	} );
-
-	it( 'should update profileID in the store when a new item is selected', () => {
-		const { getByText, container, registry } = render( <ProfileSelect />, {
-			setupRegistry,
-		} );
-		const originalProfileID = registry
-			.select( MODULES_ANALYTICS )
-			.getProfileID();
-
-		// Click the label to expose the elements in the menu.
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getByText( /set up a new view/i ) );
-
-		const newProfileID = registry
-			.select( MODULES_ANALYTICS )
-			.getProfileID();
-		expect( originalProfileID ).not.toEqual( newProfileID );
-		expect( newProfileID ).toEqual( PROFILE_CREATE );
 	} );
 } );

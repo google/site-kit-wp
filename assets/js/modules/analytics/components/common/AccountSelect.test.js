@@ -154,6 +154,12 @@ describe( 'AccountSelect', () => {
 			),
 			{ body: [] }
 		);
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			{
+				authenticated: true,
+			}
+		);
 
 		const { accounts, properties, profiles } =
 			fixtures.accountsPropertiesProfiles;
@@ -195,8 +201,8 @@ describe( 'AccountSelect', () => {
 		const newProfileID = registry
 			.select( MODULES_ANALYTICS )
 			.getProfileID();
-		expect( newPropertyID ).not.toBeFalsy();
-		expect( newWebPropertyID ).not.toBeFalsy();
-		expect( newProfileID ).not.toBeFalsy();
+		expect( newPropertyID ).toBe( '' );
+		expect( newWebPropertyID ).toBe( '' );
+		expect( newProfileID ).toBe( '' );
 	} );
 } );
