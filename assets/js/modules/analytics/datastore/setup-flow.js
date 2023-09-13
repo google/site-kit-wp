@@ -22,26 +22,21 @@
 import Data from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS,
-	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
-	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
-	ACCOUNT_CREATE,
 	FORM_SETUP,
-	SETUP_FLOW_MODE_GA4_LEGACY,
 } from './constants';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import { isFeatureEnabled } from '../../../features';
 
 const { createRegistrySelector } = Data;
 
 const baseSelectors = {
 	/**
-	 * Gets the setup flow mode based on different conditions.
+	 * Gets the setup flow mode.
 	 *
 	 * @since 1.37.0
+	 * @since n.e.x.t Return only ga4 mode since removal of ga4reporting feature flag.
 	 *
 	 * @return {string} Setup flow mode.
 	 */
@@ -56,45 +51,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( isFeatureEnabled( 'ga4Reporting' ) ) {
-			return SETUP_FLOW_MODE_GA4;
-		}
-
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-
-		// If no accountID exists then no account is selected. This means we should
-		// use the UA setup flow.
-		if ( ! accountID || accountID === ACCOUNT_CREATE ) {
-			return SETUP_FLOW_MODE_UA;
-		}
-
-		const ga4Properties =
-			select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-
-		if ( ga4Properties === undefined ) {
-			return undefined;
-		}
-
-		// If there are no GA4 properties available for this account, don't use
-		// GA4 and use the UA version.
-		if ( ga4Properties.length === 0 ) {
-			return SETUP_FLOW_MODE_UA;
-		}
-
-		const uaProperties =
-			select( MODULES_ANALYTICS ).getProperties( accountID );
-
-		if ( uaProperties === undefined ) {
-			return undefined;
-		}
-
-		// If no UA properties exist and there are GA4 properties, use GA4-only.
-		if ( uaProperties.length === 0 ) {
-			return SETUP_FLOW_MODE_GA4_LEGACY;
-		}
-
-		// There are UA and GA4 properties, so use the transitional mode.
-		return SETUP_FLOW_MODE_GA4_TRANSITIONAL;
+		return SETUP_FLOW_MODE_GA4;
 	} ),
 
 	/**
