@@ -41,10 +41,10 @@ class PropertiesEnhancedMeasurementResource extends Resource {
 	 * that the stream must enable enhanced measurement for these settings to take
 	 * effect. (webDataStreams.updateEnhancedMeasurementSettings)
 	 *
-	 * @param string                                                 $name Output only. Resource name of this Data Stream. Format: properties/{property_id}/webDataStreams/{stream_id}/enhancedMeasurementSettings
-	 *                                                               Example: "properties/1000/webDataStreams/2000/enhancedMeasurementSettings".
+	 * @param string                           $name Output only. Resource name of this Data Stream. Format: properties/{property_id}/webDataStreams/{stream_id}/enhancedMeasurementSettings
+	 *                                         Example: "properties/1000/webDataStreams/2000/enhancedMeasurementSettings".
 	 * @param EnhancedMeasurementSettingsModel $post_body The body of the request.
-	 * @param array                                                  $opt_params Optional parameters.
+	 * @param array                            $opt_params Optional parameters.
 	 *
 	 * @opt_param string updateMask Required. The list of fields to be updated.
 	 * Field names must be in snake case (e.g., "field_to_update"). Omitted fields
