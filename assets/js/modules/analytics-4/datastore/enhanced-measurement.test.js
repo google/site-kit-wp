@@ -96,7 +96,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 							null
 						);
 				} ).toThrow(
-					'Enhanced measurement settings must be an object and contain only valid keys.'
+					'Enhanced measurement settings must be an object.'
 				);
 
 				expect( () => {
@@ -108,7 +108,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 							{ invalidKey: 'value' }
 						);
 				} ).toThrow(
-					'Enhanced measurement settings must be an object and contain only valid keys.'
+					'Enhanced measurement settings must contain only valid keys. Invalid key: "invalidKey"'
 				);
 			} );
 
