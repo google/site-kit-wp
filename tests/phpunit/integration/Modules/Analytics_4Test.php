@@ -1918,6 +1918,9 @@ class Analytics_4Test extends TestCase {
 			$this->assertArrayHasKey( $key, $response_array );
 		}
 
+		// Verify the enhanced measurement settings are returned by checking a field value.
+		$this->assertEquals( true, $response_array['streamEnabled'] );
+
 		// Verify the request URL and params were correctly generated.
 		$this->assertCount( 1, $this->request_handler_calls );
 
