@@ -120,7 +120,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 					.setEnhancedMeasurementSettings(
 						propertyID,
 						webDataStreamID,
-						enhancedMeasurementSettingsMock
+						{ ...enhancedMeasurementSettingsMock }
 					);
 				expect(
 					registry
