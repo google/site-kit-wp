@@ -45,7 +45,6 @@ import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/S
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4SettingsNotice from './GA4SettingsNotice';
-import { useFeature } from '../../../../hooks/useFeature';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -54,8 +53,6 @@ const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
-
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewContext = useViewContext();
 
@@ -126,9 +123,7 @@ export default function GA4SettingsControls( props ) {
 				isDisabled={ isDisabled }
 			/>
 			<div className="googlesitekit-setup-module__inputs">
-				{ ga4ReportingEnabled && (
-					<AccountSelect hasModuleAccess={ hasModuleAccess } />
-				) }
+				<AccountSelect hasModuleAccess={ hasModuleAccess } />
 				<PropertySelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }

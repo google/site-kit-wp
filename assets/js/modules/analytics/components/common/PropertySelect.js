@@ -31,12 +31,9 @@ import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( { hasModuleAccess } ) {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -110,18 +107,7 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		);
 	}
 
-	const displayProperties =
-		ga4ReportingEnabled ||
-		properties.some( ( property ) => property.id === PROPERTY_CREATE )
-			? properties
-			: [
-					...properties,
-					{
-						id: PROPERTY_CREATE,
-						name: __( 'Set up a new property', 'google-site-kit' ),
-					},
-			  ];
-
+	const displayProperties = properties;
 	return (
 		<Select
 			className="googlesitekit-analytics__select-property"

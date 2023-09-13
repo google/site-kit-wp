@@ -40,13 +40,11 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { GA4_AUTO_SWITCH_DATE } from '../../../analytics-4/constants';
-import { useFeature } from '../../../../hooks/useFeature';
 import { isValidProfileID, isValidPropertyID } from '../../util';
 import { stringToDate } from '../../../../util';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -77,8 +75,7 @@ export default function SettingsView() {
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
-			{ ga4ReportingEnabled &&
-				isUAConnected &&
+			{ isUAConnected &&
 				stringToDate( referenceDate ) <
 					stringToDate( GA4_AUTO_SWITCH_DATE ) && (
 					<div className="googlesitekit-settings-module__meta-items">
@@ -107,19 +104,10 @@ export default function SettingsView() {
 					</div>
 				) }
 
-			{ ga4ReportingEnabled && (
-				<Fragment>
-					<GA4SettingsView />
-					{ isUAConnected && <UASettingsView /> }
-				</Fragment>
-			) }
-
-			{ ! ga4ReportingEnabled && (
-				<Fragment>
-					<UASettingsView />
-					<GA4SettingsView />
-				</Fragment>
-			) }
+			<Fragment>
+				<GA4SettingsView />
+				{ isUAConnected && <UASettingsView /> }
+			</Fragment>
 
 			<OptionalSettingsView />
 		</div>

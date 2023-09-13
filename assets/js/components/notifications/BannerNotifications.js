@@ -25,7 +25,6 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
@@ -51,8 +50,6 @@ import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-
 	const viewOnly = useViewOnly();
 
 	const isAuthenticated = useSelect( ( select ) =>
@@ -106,9 +103,9 @@ export default function BannerNotifications() {
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
 			<ModuleRecoveryAlert />
-			{ ga4ReportingEnabled &&
-				analyticsModuleConnected &&
-				ga4ModuleConnected && <SwitchedToGA4Banner /> }
+			{ analyticsModuleConnected && ga4ModuleConnected && (
+				<SwitchedToGA4Banner />
+			) }
 			<ActivationBanner />
 			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
 				<Fragment>
@@ -119,7 +116,7 @@ export default function BannerNotifications() {
 			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
 			{ adSenseModuleActive && <AdSenseAlerts /> }
-			{ ga4ReportingEnabled && analyticsModuleConnected && (
+			{ analyticsModuleConnected && (
 				<SwitchGA4DashboardViewNotification />
 			) }
 		</Fragment>

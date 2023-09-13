@@ -67,7 +67,6 @@ const { useSelect } = Data;
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const viewOnlyDashboard = useViewOnly();
 
@@ -154,7 +153,7 @@ export default function DashboardMainApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			{ ga4ReportingEnabled && <DashboardViewIndicator /> }
+			<DashboardViewIndicator />
 			{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally

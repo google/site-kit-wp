@@ -34,11 +34,9 @@ import {
 } from '../../../analytics-4/datastore/constants';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function GA4SettingsView() {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
@@ -65,16 +63,14 @@ export default function GA4SettingsView() {
 	return (
 		<Fragment>
 			<div className="googlesitekit-settings-module__meta-items">
-				{ ga4ReportingEnabled && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Account', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ accountID } />
-						</p>
-					</div>
-				) }
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Account', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ accountID } />
+					</p>
+				</div>
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __(

@@ -60,7 +60,6 @@ import {
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import { isFeatureEnabled } from '../../../features';
 import ga4Reporting from '../../../feature-tours/ga4-reporting';
 
 const { createRegistrySelector } = Data;
@@ -90,11 +89,9 @@ async function submitGA4Changes( { select, dispatch } ) {
 export async function submitChanges( registry ) {
 	const { select, dispatch } = registry;
 
-	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
-
 	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
 
-	if ( ! ga4ReportingEnabled || isUAEnabled ) {
+	if ( isUAEnabled ) {
 		let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
 		if ( propertyID === PROPERTY_CREATE ) {
 			const accountID = select( MODULES_ANALYTICS ).getAccountID();
@@ -133,14 +130,10 @@ export async function submitChanges( registry ) {
 		}
 	}
 
-	// If `ga4Reporting` is enabled, the dashboard view is set to UA
-	// and UA is not enabled, we need to set the dashboard view to GA4.
+	// The dashboard view is set to UA, and UA is not enabled,
+	// we need to set the dashboard view to GA4.
 	let dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
-	if (
-		ga4ReportingEnabled &&
-		dashboardView === DASHBOARD_VIEW_UA &&
-		! isUAEnabled
-	) {
+	if ( dashboardView === DASHBOARD_VIEW_UA && ! isUAEnabled ) {
 		dispatch( MODULES_ANALYTICS ).setDashboardView( DASHBOARD_VIEW_GA4 );
 		dashboardView = DASHBOARD_VIEW_GA4;
 	}
@@ -233,9 +226,9 @@ export function validateCanSubmitChanges( select ) {
 	);
 
 	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
-	// Do not require selecting a property or profile if `ga4Reporting` is enabled.
-	// Only validate UA settings if `ga4Reporting` is not enabled OR `enableUA` is enabled.
-	if ( ! isFeatureEnabled( 'ga4Reporting' ) || isUAEnabled ) {
+	// Do not require selecting a property or profile.
+	// Only validate UA settings if `enableUA` is enabled.
+	if ( isUAEnabled ) {
 		invariant(
 			isValidPropertySelection( getPropertyID() ),
 			INVARIANT_INVALID_PROPERTY_SELECTION
@@ -324,12 +317,6 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
  * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
  */
 export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
-	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
-
-	if ( ! ga4ReportingEnabled ) {
-		return false;
-	}
-
 	const ga4ModuleConnected =
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
@@ -367,12 +354,6 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
  */
 export const shouldPromptGA4DashboardView = createRegistrySelector(
 	( select ) => () => {
-		const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
-
-		if ( ! ga4ReportingEnabled ) {
-			return false;
-		}
-
 		const ga4ModuleConnected =
 			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 

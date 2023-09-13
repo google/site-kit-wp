@@ -44,25 +44,19 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
-import { getAccountDefaults as getAccountDefaultsUA } from '../../../util/account';
 import { getAccountDefaults as getAccountDefaultsGA4 } from '../../../../analytics-4/utils/account';
 import { Cell } from '../../../../../material-components';
 import Link from '../../../../../components/Link';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
-import GA4PropertyNotice from '../GA4PropertyNotice';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
 import PropertyField from './PropertyField';
-import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
 import useViewContext from '../../../../../hooks/useViewContext';
-import { useFeature } from '../../../../../hooks/useFeature';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccounts()
@@ -70,20 +64,11 @@ export default function AccountCreate() {
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
-	const uaAccountTicketTermsOfServiceURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountTicketTermsOfServiceURL()
-	);
 	const ga4AccountTicketTermsOfServiceURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountTicketTermsOfServiceURL()
 	);
-	const canSubmitAccountCreateUA = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).canSubmitAccountCreate()
-	);
 	const canSubmitAccountCreateGA4 = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).canSubmitAccountCreate()
-	);
-	const isDoingCreateAccountUA = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isDoingCreateAccount()
 	);
 	const isDoingCreateAccountGA4 = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isDoingCreateAccount()
@@ -116,43 +101,28 @@ export default function AccountCreate() {
 	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { createAccount } = useDispatch(
-		ga4ReportingEnabled ? MODULES_ANALYTICS_4 : MODULES_ANALYTICS
-	);
+	const { createAccount } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
-	const getAccountDefaults = ga4ReportingEnabled
-		? getAccountDefaultsGA4
-		: getAccountDefaultsUA;
+	const getAccountDefaults = getAccountDefaultsGA4;
 
-	const hasRequiredScope = ga4ReportingEnabled
-		? hasEditScope
-		: hasProvisioningScope;
+	const hasRequiredScope = hasEditScope;
 
-	const isDoingCreateAccount = ga4ReportingEnabled
-		? isDoingCreateAccountGA4
-		: isDoingCreateAccountUA;
+	const isDoingCreateAccount = isDoingCreateAccountGA4;
 
-	const canSubmitAccountCreate = ga4ReportingEnabled
-		? canSubmitAccountCreateGA4
-		: canSubmitAccountCreateUA;
+	const canSubmitAccountCreate = canSubmitAccountCreateGA4;
 
-	const accountTicketTermsOfServiceURL = ga4ReportingEnabled
-		? ga4AccountTicketTermsOfServiceURL
-		: uaAccountTicketTermsOfServiceURL;
+	const accountTicketTermsOfServiceURL = ga4AccountTicketTermsOfServiceURL;
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
 			( async () => {
-				await API.invalidateCache(
-					'modules',
-					ga4ReportingEnabled ? 'analytics-4' : 'analytics'
-				);
+				await API.invalidateCache( 'modules', 'analytics-4' );
 				navigateTo( accountTicketTermsOfServiceURL );
 			} )();
 		}
-	}, [ accountTicketTermsOfServiceURL, ga4ReportingEnabled, navigateTo ] );
+	}, [ accountTicketTermsOfServiceURL, navigateTo ] );
 
 	// Set form defaults on initial render.
 	useEffect( () => {
@@ -289,8 +259,7 @@ export default function AccountCreate() {
 					<PropertyField />
 				</Cell>
 				<Cell size={ 6 }>
-					{ ga4ReportingEnabled && <WebDataStreamField /> }
-					{ ! ga4ReportingEnabled && <ProfileField /> }
+					<WebDataStreamField />
 				</Cell>
 			</div>
 
@@ -318,15 +287,6 @@ export default function AccountCreate() {
 					</span>
 				) }
 			</p>
-
-			{ ! ga4ReportingEnabled && (
-				<GA4PropertyNotice
-					notice={ __(
-						'This will create both a Google Analytics 4 and Universal Analytics property.',
-						'google-site-kit'
-					) }
-				/>
-			) }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

@@ -31,11 +31,9 @@ import { MODULES_ANALYTICS } from '../../datastore/constants';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function UASettingsView() {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -63,26 +61,11 @@ export default function UASettingsView() {
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
 
-	let propetyMeta;
-	if ( ga4ReportingEnabled ) {
-		propetyMeta = __( 'Universal Analytics Property', 'google-site-kit' );
-	} else {
-		propetyMeta = __( 'Property', 'google-site-kit' );
-	}
+	const propetyMeta = __( 'Universal Analytics Property', 'google-site-kit' );
 
 	return (
 		<Fragment>
 			<div className="googlesitekit-settings-module__meta-items">
-				{ ! ga4ReportingEnabled && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Account', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ accountID } />
-						</p>
-					</div>
-				) }
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ propetyMeta }
