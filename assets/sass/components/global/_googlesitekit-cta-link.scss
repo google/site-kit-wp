@@ -146,16 +146,22 @@
 	}
 }
 
+/**
+ * CTA button styles for buttons with link styling.
+ *
+ * These are specific overrides for buttons that have the
+ * `.googlesitekit-cta-link` class, and thus are placed after other
+ * button styles.
+ *
+ * Because of this we override the `no-descending-specificity` Stylelint
+ * rule which wants these styles higher up in the file, which would be
+ * confusing (and possibly not override existing styles properly).
+ */
+/* stylelint-disable no-descending-specificity */
 button {
-
 	&.googlesitekit-cta-link {
 		color: $c-content-primary;
 
-		/**
-		 * Disable stylelint forcing this block before .googlesitekit-cta-link
-		 * hover and googlesitekit-cta-link--secondary and googlesitekit-cta-link--secondary:hover
-		 */
-		/* stylelint-disable-next-line no-descending-specificity */
 		svg {
 			fill: currentColor;
 		}
@@ -163,11 +169,6 @@ button {
 		&:hover {
 			color: $c-content-primary-hover;
 
-			/**
-			* Disable stylelint forcing this block before
-			* .googlesitekit-cta-link.googlesitekit-cta-link--secondary:hover
-			*/
-			/* stylelint-disable-next-line no-descending-specificity */
 			svg {
 				fill: currentColor;
 			}
@@ -175,12 +176,13 @@ button {
 
 		&.googlesitekit-cta-link--arrow {
 			/**
-			 * This is the cta-link-arrow icon (solid circle
-			 * with a arrow right in the middle), with the
-			 * background color #3c7251 ($c-content-primary)
-			 * and the arrow color #FFF ($c-white).
-			 */
+			* This is the cta-link-arrow icon (solid circle
+			* with a arrow right in the middle), with the
+			* background color #3c7251 ($c-content-primary)
+			* and the arrow color #FFF ($c-white).
+			*/
 			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Ccircle%20fill%3D%22%233c7251%22%20cx%3D%226.5%22%20cy%3D%226.5%22%20r%3D%226.5%22%2F%3E%3Cpath%20d%3D%22M3.461%206.96h5.15L6.36%209.21a.464.464%200%200%200%20.325.79.459.459%200%200%200%20.325-.135l3.037-3.038a.459.459%200%200%200%200-.65L7.015%203.135a.46.46%200%200%200-.65.65L8.61%206.039H3.461a.462.462%200%200%200-.461.46c0%20.254.207.462.461.462z%22%20fill%3D%22%23FFF%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 		}
 	}
 }
+/* stylelint-enable no-descending-specificity */
