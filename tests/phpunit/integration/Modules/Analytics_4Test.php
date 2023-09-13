@@ -1667,7 +1667,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1beta/properties/$property_id/conversionEvents", $request_url['path'] );
 	}
 
-	public function test_get_enhanced_mesurement_settings__required_params() {
+	public function test_get_enhanced_measurement_settings__required_params() {
 		// Grant READONLY_SCOPE so request doesn't fail.
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
@@ -1681,7 +1681,7 @@ class Analytics_4Test extends TestCase {
 			array()
 		);
 
-		// Verify if the propertyID is required.
+		// Verify that the propertyID is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
 		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
@@ -1693,13 +1693,13 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		// Verify if the webDataStreamID is required.
+		// Verify that the webDataStreamID is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: webDataStreamID.', $data );
 		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
 	}
 
-	public function test_get_enhanced_mesurement_settings() {
+	public function test_get_enhanced_measurement_settings() {
 		$property_id        = '123456789';
 		$web_data_stream_id = '654321';
 
@@ -1764,7 +1764,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1alpha/properties/$property_id/dataStreams/$web_data_stream_id/enhancedMeasurementSettings", $request_url['path'] );
 	}
 
-	public function test_set_enhanced_mesurement_settings__required_params() {
+	public function test_set_enhanced_measurement_settings__required_params() {
 		$property_id        = '123456789';
 		$web_data_stream_id = '654321';
 
@@ -1786,7 +1786,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		// Verify if the EDIT_SCOPE is required.
+		// Verify that the EDIT_SCOPE is required.
 		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
 		$this->assertEquals(
@@ -1813,7 +1813,7 @@ class Analytics_4Test extends TestCase {
 			array()
 		);
 
-		// Verify if the propertyID is required.
+		// Verify that the propertyID is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
 		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
@@ -1826,7 +1826,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		// Verify if the webDataStreamID is required.
+		// Verify that the webDataStreamID is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: webDataStreamID.', $data );
 		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
@@ -1840,7 +1840,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		// Verify if the enhancedMeasurementSettings object is required.
+		// Verify that the enhancedMeasurementSettings object is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: enhancedMeasurementSettings.', $data );
 		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
@@ -1857,13 +1857,13 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		// Verify if the enhancedMeasurementSettings object is required.
+		// Verify that the enhancedMeasurementSettings object is required.
 		$this->assertWPErrorWithMessage( 'Invalid properties in enhancedMeasurementSettings: invalidField.', $data );
 		$this->assertEquals( 'invalid_property_name', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ) );
 	}
 
-	public function test_set_enhanced_mesurement_settings() {
+	public function test_set_enhanced_measurement_settings() {
 		$property_id        = '123456789';
 		$web_data_stream_id = '654321';
 
