@@ -151,7 +151,7 @@ final class Analytics extends Module
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				if ( Feature_Flags::enabled( 'ga4Reporting' ) && ! $this->authentication->is_authenticated() ) {
+				if ( ! $this->authentication->is_authenticated() ) {
 					$settings              = $this->get_settings()->get();
 					$data['dashboardView'] = $settings['dashboardView'];
 				}
@@ -277,18 +277,16 @@ final class Analytics extends Module
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			$fields = array_merge(
-				array(
-					'analytics_dashboard_view' => array(
-						'label' => __( 'Analytics dashboard view', 'google-site-kit' ),
-						'value' => 'google-analytics-4' === $settings['dashboardView'] ? __( 'Google Analytics 4 view', 'google-site-kit' ) : __( 'Universal Analytics view', 'google-site-kit' ),
-						'debug' => $settings['dashboardView'],
-					),
+		$fields = array_merge(
+			array(
+				'analytics_dashboard_view' => array(
+					'label' => __( 'Analytics dashboard view', 'google-site-kit' ),
+					'value' => 'google-analytics-4' === $settings['dashboardView'] ? __( 'Google Analytics 4 view', 'google-site-kit' ) : __( 'Universal Analytics view', 'google-site-kit' ),
+					'debug' => $settings['dashboardView'],
 				),
-				$fields
-			);
-		}
+			),
+			$fields
+		);
 
 		return $fields;
 	}
@@ -358,41 +356,11 @@ final class Analytics extends Module
 
 		$new_settings = array();
 
-		if ( ! Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			// UA-SPECIFIC Provisioning callback only.
-			$web_property_id = htmlspecialchars( $input->filter( INPUT_GET, 'webPropertyId' ) );
-			$profile_id      = htmlspecialchars( $input->filter( INPUT_GET, 'profileId' ) );
-
-			if ( ! $web_property_id || ! $profile_id ) {
-				// If ga4Reporting is not enabled and UA property or profile IDs are missing, something went wrong.
-				wp_safe_redirect(
-					$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
-				);
-				exit;
-			}
-
-			// Retrieve the internal web property id.
-			try {
-				$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $web_property_id );
-			} catch ( Exception $e ) {
-				wp_safe_redirect(
-					$this->context->admin_url( 'dashboard', array( 'error_code' => 'property_not_found' ) )
-				);
-				exit;
-			}
-
-			$new_settings['internalWebPropertyID'] = $web_property->getInternalWebPropertyId();
-			$new_settings['propertyID']            = $web_property_id;
-			$new_settings['profileID']             = $profile_id;
-		}
-
 		// At this point, account creation was successful.
 		$new_settings['accountID'] = $account_id;
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			// For GA4-SPECIFIC provisioning callback, switch to GA4 dashboard view.
-			$new_settings['dashboardView'] = Analytics_4::DASHBOARD_VIEW;
-		}
+		// For GA4-SPECIFIC provisioning callback, switch to GA4 dashboard view.
+		$new_settings['dashboardView'] = Analytics_4::DASHBOARD_VIEW;
 
 		$this->get_settings()->merge( $new_settings );
 
@@ -422,13 +390,8 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$shareable = true;
-		// If ga4Reporting is enabled, the dashboard view controls which
-		// Analytics module is shareable.
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			$settings  = $this->get_settings()->get();
-			$shareable = self::DASHBOARD_VIEW === $settings['dashboardView'];
-		}
+		$settings  = $this->get_settings()->get();
+		$shareable = self::DASHBOARD_VIEW === $settings['dashboardView'];
 
 		$datapoints = array(
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
@@ -459,11 +422,9 @@ final class Analytics extends Module
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			unset( $datapoints['POST:create-account-ticket'] );
-			unset( $datapoints['POST:create-profile'] );
-			unset( $datapoints['POST:create-property'] );
-		}
+		unset( $datapoints['POST:create-account-ticket'] );
+		unset( $datapoints['POST:create-profile'] );
+		unset( $datapoints['POST:create-property'] );
 
 		return $datapoints;
 	}

@@ -121,13 +121,11 @@ final class Analytics_4 extends Module
 			2
 		);
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			// Replicate Analytics settings for Analytics-4 if not set.
-			add_filter(
-				'option_' . Module_Sharing_Settings::OPTION,
-				$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
-			);
-		}
+		// Replicate Analytics settings for Analytics-4 if not set.
+		add_filter(
+			'option_' . Module_Sharing_Settings::OPTION,
+			$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
+		);
 
 		add_filter(
 			'googlesitekit_auth_scopes',
@@ -285,14 +283,10 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		// GA4 is only shareable if ga4Reporting is also enabled.
-		$shareable = Feature_Flags::enabled( 'ga4Reporting' );
-		if ( $shareable ) {
-			// The dashboard view setting is stored in the UA/original Analytics
-			// module, so fetch its settings to get the current dashboard view.
-			$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
-			$shareable          = self::DASHBOARD_VIEW === $analytics_settings['dashboardView'];
-		}
+		// The dashboard view setting is stored in the UA/original Analytics
+		// module, so fetch its settings to get the current dashboard view.
+		$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
+		$shareable          = self::DASHBOARD_VIEW === $analytics_settings['dashboardView'];
 
 		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
@@ -340,12 +334,10 @@ final class Analytics_4 extends Module
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
 		);
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			$datapoints['GET:report'] = array(
-				'service'   => 'analyticsdata',
-				'shareable' => $shareable,
-			);
-		}
+		$datapoints['GET:report'] = array(
+			'service'   => 'analyticsdata',
+			'shareable' => $shareable,
+		);
 
 		return $datapoints;
 	}
@@ -1288,7 +1280,7 @@ final class Analytics_4 extends Module
 			return $allowed;
 		}
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) && $this->get_settings()->get()['useSnippet'] ) {
+		if ( $this->get_settings()->get()['useSnippet'] ) {
 			return true;
 		}
 
