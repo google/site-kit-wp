@@ -820,9 +820,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__analytics_4_exception() {
-		// Enabling this feature flag is required for a module to be declared shareable.
-		$this->enable_feature( 'ga4Reporting' );
-
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();

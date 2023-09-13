@@ -304,26 +304,6 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'create-account-ticket',
-				'goals',
-				'accounts-properties-profiles',
-				'properties-profiles',
-				'profiles',
-				'report',
-				'create-property',
-				'create-profile',
-			),
-			$analytics->get_datapoints()
-		);
-	}
-
-	public function test_get_datapoints__ga4Reporting() {
-		$this->enable_feature( 'ga4Reporting' );
-
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertEqualSets(
-			array(
 				// create-account-ticket, 'create-property' and 'create-profile' not available.
 				'goals',
 				'accounts-properties-profiles',
@@ -391,22 +371,6 @@ class AnalyticsTest extends TestCase {
 		}
 		unset( $_GET['error'] );
 
-		// Results in an error when a parameter (here profileId) is missing.
-		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
-		$_GET['accountId']     = '12345678';
-		$_GET['webPropertyId'] = 'UA-12345678-1';
-		try {
-			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to module page with "callback_missing_parameter" error' );
-		} catch ( RedirectException $redirect ) {
-			$this->assertEquals(
-				add_query_arg( 'error_code', 'callback_missing_parameter', $dashboard_url ),
-				$redirect->get_location()
-			);
-			// Ensure transient was deleted by the method despite error.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
-		}
-
 		// Set up mock for Analytics web properties API request handler for success case below.
 		$webproperties_mock = $this->getMockBuilder( Google_Service_Analytics_Resource_ManagementWebproperties::class )
 			->disableOriginalConstructor()
@@ -425,19 +389,7 @@ class AnalyticsTest extends TestCase {
 
 		// Results in an dashboard redirect on success, with new data being stored.
 		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
-		$_GET['accountId']     = '12345678';
-		$_GET['webPropertyId'] = 'UA-12345678-1';
-		$_GET['profileId']     = '987654';
-		$expected_internal_id  = '13579';
-		$expected_webproperty  = new Google_Service_Analytics_Webproperty();
-		$expected_webproperty->setAccountId( $_GET['accountId'] );
-		$expected_webproperty->setId( $_GET['webPropertyId'] );
-		$expected_webproperty->setDefaultProfileId( $_GET['profileId'] );
-		$expected_webproperty->setInternalWebPropertyId( $expected_internal_id );
-		$webproperties_mock->expects( $this->once() )
-			->method( 'get' )
-			->with( $_GET['accountId'], $_GET['webPropertyId'] )
-			->willReturn( $expected_webproperty );
+		$_GET['accountId'] = '12345678';
 		try {
 			$method->invokeArgs( $analytics, array() );
 			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
@@ -454,14 +406,14 @@ class AnalyticsTest extends TestCase {
 				),
 				$redirect->get_location()
 			);
+
 			// Ensure transient was deleted by the method.
 			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
 			// Ensure settings were set correctly.
 			$settings = $analytics->get_settings()->get();
+
 			$this->assertEquals( $_GET['accountId'], $settings['accountID'] );
-			$this->assertEquals( $_GET['webPropertyId'], $settings['propertyID'] );
-			$this->assertEquals( $expected_internal_id, $settings['internalWebPropertyID'] );
-			$this->assertEquals( $_GET['profileId'], $settings['profileID'] );
+			$this->assertEquals( 'google-analytics-4', $settings['dashboardView'] );
 			$this->assertEquals( $admin_id, $settings['ownerID'] );
 		}
 	}
@@ -829,22 +781,6 @@ class AnalyticsTest extends TestCase {
 	}
 
 	public function test_get_debug_fields() {
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertEqualSets(
-			array(
-				'analytics_account_id',
-				'analytics_property_id',
-				'analytics_profile_id',
-				'analytics_use_snippet',
-			),
-			array_keys( $analytics->get_debug_fields() )
-		);
-	}
-
-	public function test_get_debug_fields__ga4Reporting() {
-		$this->enable_feature( 'ga4Reporting' );
-
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(

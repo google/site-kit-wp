@@ -113,8 +113,6 @@ class Analytics_4Test extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->enable_feature( 'ga4Reporting' );
-
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options        = new Options( $this->context );
 		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
@@ -1522,8 +1520,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__shared_metric_validation() {
-		$this->enable_feature( 'ga4Reporting' );
-
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
