@@ -47,6 +47,19 @@ const enhancedMeasurementSettingsFields = [
 	'uriQueryParameter',
 ];
 
+function validateEnhancedMeasurementSettings( enhancedMeasurementSettings ) {
+	invariant(
+		isPlainObject( enhancedMeasurementSettings ),
+		'Enhanced measurement settings must be an object.'
+	);
+	Object.keys( enhancedMeasurementSettings ).forEach( ( key ) => {
+		invariant(
+			enhancedMeasurementSettingsFields.includes( key ),
+			`Enhanced measurement settings must contain only valid keys. Invalid key: "${ key }"`
+		);
+	} );
+}
+
 const fetchStoreReducerCallback = createReducer(
 	( state, enhancedMeasurementSettings, { propertyID, webDataStreamID } ) => {
 		if ( ! state.enhancedMeasurement[ propertyID ] ) {
@@ -130,13 +143,7 @@ const fetchUpdateEnhancedMeasurementSettingsStore = createFetchStore( {
 			isValidWebDataStreamID( webDataStreamID ),
 			'A valid GA4 webDataStreamID is required.'
 		);
-		invariant(
-			isPlainObject( enhancedMeasurementSettings ) &&
-				Object.keys( enhancedMeasurementSettings ).every( ( key ) =>
-					enhancedMeasurementSettingsFields.includes( key )
-				),
-			'Enhanced measurement settings must be an object and contain only valid keys.'
-		);
+		validateEnhancedMeasurementSettings( enhancedMeasurementSettings );
 	},
 } );
 
@@ -169,13 +176,7 @@ const baseActions = {
 			isValidWebDataStreamID( webDataStreamID ),
 			'A valid GA4 webDataStreamID is required.'
 		);
-		invariant(
-			isPlainObject( settings ) &&
-				Object.keys( settings ).every( ( key ) =>
-					enhancedMeasurementSettingsFields.includes( key )
-				),
-			'Enhanced measurement settings must be an object and contain only valid keys.'
-		);
+		validateEnhancedMeasurementSettings( settings );
 
 		return {
 			type: SET_ENHANCED_MEASUREMENT_SETTINGS,
