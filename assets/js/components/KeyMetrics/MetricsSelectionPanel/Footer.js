@@ -171,7 +171,8 @@ export default function Footer( { savedMetrics } ) {
 					disabled={
 						selectedMetrics?.length < 2 ||
 						selectedMetrics?.length > 4 ||
-						isSavingSettings
+						isSavingSettings ||
+						! isOpen
 					}
 				>
 					{ finalButtonText || currentButtonText }
