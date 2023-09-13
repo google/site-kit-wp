@@ -2021,6 +2021,16 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
+					{
+						body: {},
+						status: 200,
+					}
+				);
+
 				const initialRecoverableModules = registry
 					.select( CORE_MODULES )
 					.getRecoverableModules();
