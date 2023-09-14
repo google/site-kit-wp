@@ -35,11 +35,9 @@ import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
-	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 	MODULES_ANALYTICS,
 	FORM_SETUP,
 	EDIT_SCOPE,
-	SETUP_FLOW_MODE_GA4_LEGACY,
 	DASHBOARD_VIEW_GA4,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -47,8 +45,6 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
-import SetupFormGA4Legacy from './SetupFormGA4Legacy';
-import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect, useDispatch } = Data;
@@ -147,12 +143,6 @@ export default function SetupForm( { finishSetup } ) {
 			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
-			{ setupFlowMode === SETUP_FLOW_MODE_GA4_LEGACY && (
-				<SetupFormGA4Legacy />
-			) }
-			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && (
-				<SetupFormGA4Transitional />
-			) }
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitGA4Changes }>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
