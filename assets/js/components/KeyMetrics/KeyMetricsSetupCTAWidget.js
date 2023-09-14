@@ -58,9 +58,10 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
 
-	// We call isGatheringData() since this selector makes report requests. If they return
-	// data, then the data-available transient is set which is loaded as a global on the
-	// next page load.
+	// We should call isGatheringData() within this component for completeness as we do not want to rely
+	// on it being called in other components. This selector makes report requests which, if they return
+	// data, then the `data-available` transients are set. These transients are prefetched as a global on
+	// the next page load.
 	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) => {
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
 		return select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad();

@@ -31,6 +31,9 @@ import {
 	provideModules,
 	provideSiteInfo,
 	muteFetch,
+	provideGatheringDataState,
+	provideUserAuthentication,
+	getAnalytics4HasZeroDataReportOptions,
 	fireEvent,
 } from '../../../../tests/js/test-utils';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
@@ -81,6 +84,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
+		provideGatheringDataState( registry, { 'search-console': false } );
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsDataAvailableOnLoad( true );
@@ -117,6 +121,10 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
+		provideGatheringDataState( registry, {
+			'search-console': true,
+			'analytics-4': false,
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsDataAvailableOnLoad( true );
@@ -154,6 +162,22 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
+		provideGatheringDataState( registry, {
+			'search-console': false,
+		} );
+
+		// The provideGatheringDataState() helper cannot handle the true case for Analytics 4, due to its dependence on additional state
+		// that may vary between test scenarios. Therefore, we must manually set the state here. First, we set user authentication to false
+		// to ensure "gathering data" can return true for the Analytics 4 module.
+		provideUserAuthentication( registry, { authenticated: false } );
+
+		// Then provide an empty report to ensure "gathering data" is true for Analytics 4.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{},
+				{ options: getAnalytics4HasZeroDataReportOptions( registry ) }
+			);
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsDataAvailableOnLoad( true );
