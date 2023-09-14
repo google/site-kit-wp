@@ -102,6 +102,7 @@ export default function Footer( { savedMetrics } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const [ finalButtonText, setFinalButtonText ] = useState( null );
+	const [ wasSaved, setWasSaved ] = useState( false );
 
 	const currentButtonText =
 		savedMetrics?.length > 0 && haveSettingsChanged
@@ -117,6 +118,7 @@ export default function Footer( { savedMetrics } ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 			// lock the button label while panel is closing
 			setFinalButtonText( currentButtonText );
+			setWasSaved( true );
 		}
 	}, [
 		saveKeyMetricsSettings,
@@ -149,6 +151,7 @@ export default function Footer( { savedMetrics } ) {
 			if ( prevIsOpen !== isOpen ) {
 				if ( isOpen ) {
 					setFinalButtonText( null );
+					setWasSaved( false );
 				}
 			}
 		}
@@ -172,7 +175,7 @@ export default function Footer( { savedMetrics } ) {
 						selectedMetrics?.length < 2 ||
 						selectedMetrics?.length > 4 ||
 						isSavingSettings ||
-						! isOpen
+						( ! isOpen && wasSaved )
 					}
 				>
 					{ finalButtonText || currentButtonText }
