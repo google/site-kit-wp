@@ -28,6 +28,8 @@ import PropTypes from 'prop-types';
 import {
 	createInterpolateElement,
 	useCallback,
+	useEffect,
+	useState,
 	useMemo,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -99,6 +101,13 @@ export default function Footer( { savedMetrics } ) {
 	const { setValue } = useDispatch( CORE_UI );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
+	const [ finalButtonText, setFinalButtonText ] = useState( null );
+
+	const currentButtonText =
+		savedMetrics?.length > 0 && haveSettingsChanged
+			? __( 'Apply changes', 'google-site-kit' )
+			: __( 'Save selection', 'google-site-kit' );
+
 	const onSaveClick = useCallback( async () => {
 		const { error } = await saveKeyMetricsSettings( {
 			widgetSlugs: selectedMetrics,
@@ -106,8 +115,15 @@ export default function Footer( { savedMetrics } ) {
 
 		if ( ! error ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+			// lock the button label while panel is closing
+			setFinalButtonText( currentButtonText );
 		}
-	}, [ saveKeyMetricsSettings, selectedMetrics, setValue ] );
+	}, [
+		saveKeyMetricsSettings,
+		selectedMetrics,
+		setValue,
+		currentButtonText,
+	] );
 
 	const onCancelClick = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
@@ -117,6 +133,28 @@ export default function Footer( { savedMetrics } ) {
 		() => navigateTo( `${ settingsURL }#/admin-settings` ),
 		[ navigateTo, settingsURL ]
 	);
+
+	const isOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
+	);
+
+	const [ prevIsOpen, setPrevIsOpen ] = useState( null );
+
+	useEffect( () => {
+		if ( prevIsOpen !== null ) {
+			// if current isOpen is true, and different from prevIsOpen
+			// meaning it transitioned from false to true and it is not
+			// in closing transition, we should reset the button label
+			// locked when save button was clicked
+			if ( prevIsOpen !== isOpen ) {
+				if ( isOpen ) {
+					setFinalButtonText( null );
+				}
+			}
+		}
+
+		setPrevIsOpen( isOpen );
+	}, [ isOpen, prevIsOpen ] );
 
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
@@ -136,9 +174,7 @@ export default function Footer( { savedMetrics } ) {
 						isSavingSettings
 					}
 				>
-					{ savedMetrics?.length > 0 && haveSettingsChanged
-						? __( 'Apply changes', 'google-site-kit' )
-						: __( 'Save selection', 'google-site-kit' ) }
+					{ finalButtonText || currentButtonText }
 				</SpinnerButton>
 				<Link onClick={ onCancelClick } disabled={ isSavingSettings }>
 					{ __( 'Cancel', 'google-site-kit' ) }
@@ -154,6 +190,7 @@ export default function Footer( { savedMetrics } ) {
 						br: <br />,
 						link: (
 							<Link
+								secondary
 								onClick={ onSettingsClick }
 								disabled={ isSavingSettings }
 							/>

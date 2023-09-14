@@ -26,9 +26,33 @@
 	text-align: left;
 	text-decoration: none;
 
+	svg {
+		fill: currentColor;
+	}
+
 	&:hover {
 		color: $c-link;
 		text-decoration: underline;
+
+		svg {
+			fill: currentColor;
+		}
+	}
+
+	&.googlesitekit-cta-link--secondary {
+		color: $c-content-secondary;
+
+		svg {
+			fill: currentColor;
+		}
+
+		&:hover {
+			color: $c-content-secondary;
+
+			svg {
+				fill: currentColor;
+			}
+		}
 	}
 
 	&.googlesitekit-cta-link--caps {
@@ -122,13 +146,32 @@
 	}
 }
 
+/**
+ * CTA button styles for buttons with link styling.
+ *
+ * These are specific overrides for buttons that have the
+ * `.googlesitekit-cta-link` class, and thus are placed after other
+ * button styles.
+ *
+ * Because of this we override the `no-descending-specificity` Stylelint
+ * rule which wants these styles higher up in the file, which would be
+ * confusing (and possibly not override existing styles properly).
+ */
+/* stylelint-disable no-descending-specificity */
 button {
-
 	&.googlesitekit-cta-link {
 		color: $c-content-primary;
 
+		svg {
+			fill: currentColor;
+		}
+
 		&:hover {
 			color: $c-content-primary-hover;
+
+			svg {
+				fill: currentColor;
+			}
 		}
 
 		&.googlesitekit-cta-link--arrow {
@@ -142,3 +185,4 @@ button {
 		}
 	}
 }
+/* stylelint-enable no-descending-specificity */
