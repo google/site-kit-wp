@@ -17,14 +17,12 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\FakeHttp;
-use Google\Site_Kit\Tests\Modules\AnalyticsDashboardView;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
 class REST_Modules_ControllerTest extends TestCase {
 
-	use AnalyticsDashboardView;
 	use RestTestTrait;
 
 	/**

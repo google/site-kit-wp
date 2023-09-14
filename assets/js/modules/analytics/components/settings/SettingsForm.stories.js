@@ -256,30 +256,6 @@ OwnedSettingsChanged.args = {
 	hasAnalytics4Access: true,
 };
 
-export const WithUATag = Template.bind( null );
-WithUATag.storyName = 'With UA Tag, non-matching property selected';
-WithUATag.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
-				properties[ 1 ].id,
-				// eslint-disable-next-line sitekit/acronym-case
-				properties[ 1 ].internalWebPropertyId
-			);
-
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( properties[ 0 ].id );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
 export const WithGA4Tag = Template.bind( null );
 WithGA4Tag.storyName = 'With GA4 Tag, non-matching property selected';
 WithGA4Tag.decorators = [

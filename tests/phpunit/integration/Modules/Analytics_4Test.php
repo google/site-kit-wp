@@ -53,7 +53,6 @@ use WP_User;
  */
 class Analytics_4Test extends TestCase {
 
-	use AnalyticsDashboardView;
 	use Module_With_Data_Available_State_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Scopes_ContractTests;

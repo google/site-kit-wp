@@ -88,8 +88,6 @@ final class Analytics_4 extends Module
 	 */
 	const MODULE_SLUG = 'analytics-4';
 
-	const DASHBOARD_VIEW = 'google-analytics-4';
-
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
@@ -287,12 +285,6 @@ final class Analytics_4 extends Module
 	protected function get_datapoint_definitions() {
 		// GA4 is only shareable if ga4Reporting is also enabled.
 		$shareable = Feature_Flags::enabled( 'ga4Reporting' );
-		if ( $shareable ) {
-			// The dashboard view setting is stored in the UA/original Analytics
-			// module, so fetch its settings to get the current dashboard view.
-			$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
-			$shareable          = self::DASHBOARD_VIEW === $analytics_settings['dashboardView'];
-		}
 
 		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
