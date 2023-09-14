@@ -128,8 +128,8 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			'Test Property Name'
 		);
 		await expect( page ).toFill(
-			'#googlesitekit_analytics_account_create_profile',
-			'Test View Name'
+			'#googlesitekit_analytics_account_create_dataStream',
+			'Test Web Data Stream Name'
 		);
 
 		await expect( page ).toClick(
@@ -142,13 +142,6 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await expect( page ).toMatchElement( 'p', {
 			text: /need to give Site Kit permission to create an Analytics account/i,
 		} );
-
-		await expect( page ).toMatchElement(
-			'.googlesitekit-settings-notice__text',
-			{
-				text: /create both a Google Analytics 4 and Universal Analytics/i,
-			}
-		);
 
 		await Promise.all( [
 			expect( page ).toClick( '.mdc-button', {
@@ -163,14 +156,14 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		let reqBody;
 		await page.waitForRequest(
 			( req ) =>
-				req.url().match( 'analytics/data/create-account-ticket' ) &&
+				req.url().match( 'analytics-4/data/create-account-ticket' ) &&
 				( reqBody = req.postData() )
 		);
 		expect( JSON.parse( reqBody ) ).toMatchObject( {
 			data: {
 				accountName: 'Test Account Name',
 				propertyName: 'Test Property Name',
-				profileName: 'Test View Name',
+				dataStreamName: 'Test Web Data Stream Name',
 				timezone: 'Etc/GMT',
 			},
 		} );

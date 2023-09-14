@@ -313,14 +313,14 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await proceedToSetUpAnalytics();
 
 			await expect( page ).toMatchElement(
-				'.googlesitekit-analytics__select-account .mdc-select__selected-text',
+				'.googlesitekit-analytics-4__select-property .mdc-select__selected-text',
 				{ text: '' }
 			);
 			await expect( page ).not.toMatchElement(
-				'.googlesitekit-analytics__select-property'
+				'.googlesitekit-analytics-4__select-property'
 			);
 			await expect( page ).not.toMatchElement(
-				'.googlesitekit-analytics__select-profile'
+				'.googlesitekit-analytics-4__select-webdatastream'
 			);
 
 			await expect( page ).toMatchElement( 'button[disabled]', {

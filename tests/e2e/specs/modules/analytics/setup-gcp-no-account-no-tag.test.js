@@ -181,15 +181,15 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
+			'.googlesitekit-analytics-4__select-account .mdc-select__selected-text',
 			{ text: '' }
 		);
 		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-property .mdc-select__selected-text',
+			'.googlesitekit-analytics-4__select-property .mdc-select__selected-text',
 			{ text: '' }
 		);
 		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-profile .mdc-select__selected-text',
+			'.googlesitekit-analytics-4__select-webdatastream .mdc-select__selected-text',
 			{ text: '' }
 		);
 

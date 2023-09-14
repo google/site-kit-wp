@@ -147,8 +147,8 @@ describe( 'setting up the Analytics module with an existing account and existing
 
 	it( 'informs about an existing tag that matches the current selected property', async () => {
 		const existingTag = {
-			accountID: '100', // Test Account A
-			propertyID: 'UA-100-1', // Test Property X
+			accountID: '300', // Test Account A
+			propertyID: '400', // Test Property X
 		};
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
@@ -164,16 +164,16 @@ describe( 'setting up the Analytics module with an existing account and existing
 		);
 
 		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
+			'.googlesitekit-analytics-4__select-account .mdc-select__selected-text',
 			{ text: /test account a/i }
 		);
 		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-property .mdc-select__selected-text',
-			{ text: /test property x/i }
+			'.googlesitekit-analytics-4__select-property .mdc-select__selected-text',
+			{ text: /example.com/i }
 		);
 		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-profile .mdc-select__selected-text',
-			{ text: /test profile x/i }
+			'.googlesitekit-analytics-4__select-webdatastream .mdc-select__selected-text',
+			{ text: /g-500/i }
 		);
 
 		await expect( page ).toClick( 'button', {
@@ -187,23 +187,6 @@ describe( 'setting up the Analytics module with an existing account and existing
 			'.googlesitekit-publisher-win__title',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
-	} );
-
-	it( 'allows Analytics to be set up with an existing tag that does not match a property of the user', async () => {
-		const existingTag = {
-			accountID: '999',
-			propertyID: 'UA-999-9',
-		};
-
-		await setAnalyticsExistingPropertyID( existingTag.propertyID );
-		await proceedToSetUpAnalytics();
-
-		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /configure analytics/i,
 			}
 		);
 	} );

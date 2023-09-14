@@ -223,14 +223,6 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
-		// Select "Set up a new property" option.
-		await expect( page ).toClick(
-			'.googlesitekit-analytics__select-property'
-		);
-		await expect( page ).toClick( '.mdc-menu-surface--open li', {
-			text: /set up a new property/i,
-		} );
-
 		// Select "Set up a new property" option (GA4)
 		await expect( page ).toClick(
 			'.googlesitekit-analytics-4__select-property'
@@ -255,12 +247,6 @@ describe( 'Analytics write scope requests', () => {
 
 		expect( console ).toHaveErrored(); // Permission scope error.
 		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics/data/create-property' )
-		);
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics/data/create-profile' )
-		);
-		await page.waitForRequest( ( req ) =>
 			req.url().match( 'analytics-4/data/create-property' )
 		);
 
@@ -280,7 +266,7 @@ describe( 'Analytics write scope requests', () => {
 		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
 
-	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
+	it( 'prompts for additional permissions during a new Analytics web data stream creation if the user has not granted the Analytics edit scope', async () => {
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
 
 		// Go to the analytics setup page.
@@ -300,26 +286,26 @@ describe( 'Analytics write scope requests', () => {
 
 		// Select "Test Account A" account.
 		await expect( page ).toClick(
-			'.googlesitekit-analytics__select-account'
+			'.googlesitekit-analytics-4__select-account'
 		);
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
 			text: /test account a/i,
 		} );
 
-		// Select "Test Property X" property.
+		// Select "example.com" property.
 		await expect( page ).toClick(
-			'.googlesitekit-analytics__select-property'
+			'.googlesitekit-analytics-4__select-property'
 		);
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
-			text: /test property x/i,
+			text: /example.com/i,
 		} );
 
-		// Select "Set up a new view" option.
+		// Select "Set up a new web data stream" option.
 		await expect( page ).toClick(
-			'.googlesitekit-analytics__select-profile'
+			'.googlesitekit-analytics-4__select-webdatastream'
 		);
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
-			text: /set up a new view/i,
+			text: /set up a new web data stream/i,
 		} );
 
 		await expect( page ).toClick( '.mdc-button--raised', {
@@ -343,7 +329,7 @@ describe( 'Analytics write scope requests', () => {
 
 		// When returning, their original action is automatically invoked, without requiring them to click the button again.
 		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics/data/create-profile' )
+			req.url().match( 'analytics-4/data/create-webdatastream' )
 		);
 
 		// They should end up on the dashboard.
