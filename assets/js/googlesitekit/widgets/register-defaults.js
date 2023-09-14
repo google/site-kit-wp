@@ -102,6 +102,9 @@ export function registerDefaults( widgetsAPI ) {
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
 			CTA: ChangeMetricsLink,
+			filterActiveWidgets( select, areaWidgets ) {
+				return areaWidgets.length === 1 ? [] : areaWidgets;
+			},
 		},
 		CONTEXT_MAIN_DASHBOARD_KEY_METRICS
 	);
