@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -36,7 +37,14 @@ import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import Accordion from '../../Accordion';
 const { useSelect, useDispatch } = Data;
 
-export default function MetricItem( { id, slug, title, description } ) {
+export default function MetricItem( {
+	id,
+	slug,
+	title,
+	description,
+	isModuleConnected,
+	moduleName,
+} ) {
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -99,6 +107,19 @@ export default function MetricItem( { id, slug, title, description } ) {
 				disabled={ isMetricDisabled }
 			>
 				{ description }
+
+				{ ! isModuleConnected && (
+					<div className="googlesitekit-km-selection-panel-metrics__metric-item-error">
+						{ sprintf(
+							/* translators: %s: module name. */
+							__(
+								'%s is disconnected, no data to show',
+								'google-site-kit'
+							),
+							moduleName
+						) }
+					</div>
+				) }
 			</Accordion>
 		</div>
 	);
@@ -109,4 +130,6 @@ MetricItem.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
+	isModuleConnected: PropTypes.bool,
+	moduleName: PropTypes.string,
 };
