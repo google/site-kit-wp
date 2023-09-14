@@ -849,7 +849,6 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'analytics_dashboard_view',
 				'analytics_account_id',
 				'analytics_property_id',
 				'analytics_profile_id',

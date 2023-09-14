@@ -825,9 +825,6 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		// Make sure Analytics 4 is the dashboard view.
-		$this->set_dashboard_view_ga4();
-
 		// Make analytics-4 a recoverable module
 		$analytics_4 = $this->modules->get_module( 'analytics-4' );
 		$analytics_4->get_settings()->merge(

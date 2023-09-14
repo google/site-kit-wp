@@ -1534,7 +1534,6 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_metrics( 'sessions', 'totalUsers' );
 
 		$this->enable_shared_credentials();
-		$this->set_dashboard_view_ga4();
 		$this->assertTrue( $this->analytics->is_shareable() );
 
 		$data = $this->analytics->get_data(
@@ -1567,7 +1566,6 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_dimensions( 'date', 'pageTitle' );
 
 		$this->enable_shared_credentials();
-		$this->set_dashboard_view_ga4();
 		$this->assertTrue( $this->analytics->is_shareable() );
 
 		$data = $this->analytics->get_data(
