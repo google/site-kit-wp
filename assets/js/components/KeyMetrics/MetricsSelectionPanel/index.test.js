@@ -99,7 +99,7 @@ describe( 'MetricsSelectionPanel', () => {
 	} );
 
 	describe( 'Metrics', () => {
-		it( 'should only list metrics dependent on connected modules', () => {
+		it( 'should list metrics regardless of modules being connected or not', () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
@@ -125,7 +125,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).not.toHaveTextContent( 'Loyal visitors' );
+			).toHaveTextContent( 'Loyal visitors' );
 
 			expect(
 				document.querySelector(
