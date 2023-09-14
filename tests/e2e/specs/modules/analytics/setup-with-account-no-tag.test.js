@@ -164,11 +164,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					body: JSON.stringify( fixtures.properties[ 1 ] ),
 					status: 200,
 				} );
-			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [] ),
-				} );
 			} else {
 				request.continue();
 			}
@@ -205,10 +200,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /test account a/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test property x/i,
+				text: /example.com/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test profile x/i,
+				text: /g-500/i,
 			} );
 
 			// Select Test Account B
@@ -392,10 +387,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /test account a/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test property x/i,
+				text: /example.com/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test profile x/i,
+				text: /g-500/i,
 			} );
 
 			await expect( page ).toClick(
