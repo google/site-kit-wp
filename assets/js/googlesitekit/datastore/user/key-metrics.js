@@ -398,9 +398,9 @@ const baseSelectors = {
 			return widget.modules.every( ( slug ) => {
 				const module = getModule( slug );
 
-				if ( ! module || ! module.connected ) {
+				/*if ( ! module || ! module.connected ) {
 					return false;
-				}
+				}*/
 
 				if (
 					! isAuthenticated &&
