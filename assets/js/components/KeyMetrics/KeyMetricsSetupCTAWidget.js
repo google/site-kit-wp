@@ -57,12 +57,19 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const searchConsoleIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
-	);
-	const analyticsIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isGatheringData()
-	);
+
+	// We should call isGatheringData() within this component for completeness as we do not want to rely
+	// on it being called in other components. This selector makes report requests which, if they return
+	// data, then the `data-available` transients are set. These transients are prefetched as a global on
+	// the next page load.
+	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) => {
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
+		return select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad();
+	} );
+	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
+		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
+	} );
 
 	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	const { isTooltipVisible } = useTooltipState(
@@ -106,8 +113,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	if (
 		isDismissed !== false ||
-		analyticsIsGatheringData !== false ||
-		searchConsoleIsGatheringData !== false
+		! analyticsIsDataAvailableOnLoad ||
+		! searchConsoleIsDataAvailableOnLoad
 	) {
 		return <WidgetNull />;
 	}
