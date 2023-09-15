@@ -1393,7 +1393,18 @@ const baseSelectors = {
 			return undefined;
 		}
 
+		const isGA4DashboardView =
+			select( MODULES_ANALYTICS ).isGA4DashboardView();
+
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
+			if ( slug === 'analytics' && isGA4DashboardView ) {
+				return acc;
+			}
+
+			if ( slug === 'analytics-4' && ! isGA4DashboardView ) {
+				return acc;
+			}
+
 			if ( modules[ slug ].shareable ) {
 				return { [ slug ]: modules[ slug ], ...acc };
 			}
