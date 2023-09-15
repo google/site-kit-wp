@@ -286,7 +286,7 @@ describe( 'Analytics write scope requests', () => {
 
 		// Select "Test Account A" account.
 		await expect( page ).toClick(
-			'.googlesitekit-analytics-4__select-account'
+			'.googlesitekit-analytics__select-account'
 		);
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
 			text: /test account a/i,

@@ -64,6 +64,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 				} );
 			} else if (
 				url.match( 'analytics/data/report?' ) ||
+				url.match( 'analytics-4/data/report?' ) ||
 				url.match( 'analytics-4/data/properties' ) ||
 				url.match( 'user/data/survey-timeouts' ) ||
 				url.match( 'search-console/data/searchanalytics' )
@@ -181,7 +182,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics-4__select-account .mdc-select__selected-text',
+			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
 			{ text: '' }
 		);
 		await expect( page ).toMatchElement(

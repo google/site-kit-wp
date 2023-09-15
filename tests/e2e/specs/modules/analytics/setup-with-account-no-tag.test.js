@@ -103,7 +103,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				request
 					.url()
 					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
+						'/wp-json/google-site-kit/v1/modules/analytics-4/data/report?'
 					)
 			) {
 				request.respond( {
@@ -164,6 +164,25 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					body: JSON.stringify( fixtures.properties[ 1 ] ),
 					status: 200,
 				} );
+			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( fixtures.properties[ 0 ] ),
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/webdatastreams-batch' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( fixtures.webDataStreamsBatch ),
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/webdatastreams' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( fixtures.webDataStreams[ 0 ] ),
+				} );
 			} else {
 				request.continue();
 			}
@@ -200,10 +219,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /test account a/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /example.com/i,
+				text: /test ga4 property/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /g-500/i,
+				text: /test ga4 webdatastream/i,
 			} );
 
 			// Select Test Account B
@@ -233,51 +252,13 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /test property y/i,
+						text: /test ga4 property/i,
 					}
 				);
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /test profile y/i,
-					}
-				);
-			} );
-
-			// Select Property Z
-			await step( 'select property Z', async () => {
-				await expect( page ).toClick( '.mdc-select', {
-					text: /test property y/i,
-				} );
-				await Promise.all( [
-					expect( page ).toClick(
-						'.mdc-menu-surface--open .mdc-list-item',
-						{
-							text: /test property z/i,
-						}
-					),
-					page.waitForResponse( ( res ) =>
-						res.url().match( 'modules/analytics/data' )
-					),
-				] );
-
-				// Selects reload with properties and profiles for Test Profile Z
-				await expect( page ).toMatchElement(
-					'.mdc-select__selected-text',
-					{
-						text: /test account b/i,
-					}
-				);
-				await expect( page ).toMatchElement(
-					'.mdc-select__selected-text',
-					{
-						text: /test property z/i,
-					}
-				);
-				await expect( page ).toMatchElement(
-					'.mdc-select__selected-text',
-					{
-						text: /test profile z/i,
+						text: /another datastream/i,
 					}
 				);
 			} );
