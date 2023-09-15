@@ -239,6 +239,14 @@ const baseSelectors = {
 		// shareable and the user has the "read shared module data"
 		// capability for.
 		return Object.values( modules ).reduce( ( slugs, module ) => {
+			if ( module.slug === 'analytics' && isGA4DashboardView ) {
+				return slugs;
+			}
+
+			if ( module.slug === 'analytics-4' && ! isGA4DashboardView ) {
+				return slugs;
+			}
+
 			const hasCapability = select( CORE_USER ).hasCapability(
 				PERMISSION_READ_SHARED_MODULE_DATA,
 				module.slug
@@ -303,9 +311,17 @@ const baseSelectors = {
 				return false;
 			}
 
+			const isGA4DashboardView =
+				select( MODULES_ANALYTICS ).isGA4DashboardView();
+
+			let capabilityModuleSlug = module.slug;
+			if ( capabilityModuleSlug === 'analytics' && isGA4DashboardView ) {
+				capabilityModuleSlug = 'analytics-4';
+			}
+
 			return select( CORE_USER ).hasCapability(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				module.slug
+				capabilityModuleSlug
 			);
 		}
 	),
