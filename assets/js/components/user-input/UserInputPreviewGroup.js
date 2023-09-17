@@ -159,6 +159,7 @@ export default function UserInputPreviewGroup( {
 			<div className="googlesitekit-user-input__preview-group-title">
 				<p>{ title }</p>
 				<Link
+					secondary
 					onClick={ handleOnEditClick }
 					disabled={
 						isScreenLoading ||
