@@ -72,31 +72,28 @@ export default function UserInputQuestionnaire() {
 		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
 	);
 
+	const gaEventCategory = `${ viewContext }_kmw`;
+
 	useEffect( () => {
-		switch ( activeSlug ) {
-			case USER_INPUT_QUESTIONS_PURPOSE:
-				trackEvent(
-					`${ viewContext }_kmw`,
-					'site_purpose_question_view'
-				);
-				break;
-			case USER_INPUT_QUESTION_POST_FREQUENCY:
-				trackEvent(
-					`${ viewContext }_kmw`,
-					'content_frequency_question_view'
-				);
-				break;
-			case USER_INPUT_QUESTIONS_GOALS:
-				trackEvent(
-					`${ viewContext }_kmw`,
-					'site_goals_question_view'
-				);
-				break;
-			case 'preview':
-				trackEvent( `${ viewContext }_kmw`, 'summary_view' );
-				break;
+		// Set the event name to track based on the active slug.
+		let eventActionName;
+		if ( activeSlug === USER_INPUT_QUESTIONS_PURPOSE ) {
+			eventActionName = 'site_purpose_question_view';
 		}
-	}, [ activeSlug, viewContext ] );
+		if ( activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY ) {
+			eventActionName = 'content_frequency_question_view';
+		}
+		if ( activeSlug === USER_INPUT_QUESTIONS_GOALS ) {
+			eventActionName = 'site_goals_question_view';
+		}
+		if ( activeSlug === 'preview' ) {
+			eventActionName = 'summary_view';
+		}
+
+		if ( eventActionName ) {
+			trackEvent( gaEventCategory, eventActionName );
+		}
+	}, [ activeSlug, gaEventCategory, viewContext ] );
 
 	const {
 		USER_INPUT_ANSWERS_PURPOSE,
@@ -108,21 +105,21 @@ export default function UserInputQuestionnaire() {
 
 	const next = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_kmw`,
+			gaEventCategory,
 			'question_advance',
 			steps[ activeSlugIndex ]
 		);
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
-	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
+	}, [ activeSlugIndex, gaEventCategory, setActiveSlug ] );
 
 	const back = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_kmw`,
+			gaEventCategory,
 			'question_return',
 			steps[ activeSlugIndex ]
 		);
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
-	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
+	}, [ activeSlugIndex, gaEventCategory, setActiveSlug ] );
 
 	const submitChanges = useCallback( async () => {
 		let eventAction = 'summary_submit';
@@ -133,7 +130,7 @@ export default function UserInputQuestionnaire() {
 			eventLabel = steps[ activeSlugIndex ];
 		}
 
-		trackEvent( `${ viewContext }_kmw`, eventAction, eventLabel );
+		trackEvent( gaEventCategory, eventAction, eventLabel );
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
@@ -141,13 +138,13 @@ export default function UserInputQuestionnaire() {
 			navigateTo( url.toString() );
 		}
 	}, [
-		dashboardURL,
 		isSettings,
-		navigateTo,
-		redirectURL,
-		activeSlugIndex,
+		gaEventCategory,
 		saveUserInputSettings,
-		viewContext,
+		activeSlugIndex,
+		redirectURL,
+		dashboardURL,
+		navigateTo,
 	] );
 
 	useEffect( () => {
