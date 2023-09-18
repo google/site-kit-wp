@@ -669,31 +669,6 @@ describe( 'core/widgets Widget areas', () => {
 				).toBe( false );
 			} );
 
-			it( 'returns true when `filterActiveWidgets` keeps widgets', () => {
-				registry
-					.dispatch( CORE_WIDGETS )
-					.registerWidgetArea( 'FilteredTestArea', {
-						title: 'Filtered Test Area',
-						subtitle: 'Cool stuff for yoursite.com',
-						style: 'composite',
-						filterActiveWidgets( select, areaWidgets ) {
-							return areaWidgets.length === 1 ? [] : areaWidgets;
-						},
-					} );
-				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidget( 'TestWidget1', 'FilteredTestArea' );
-				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidget( 'TestWidget2', 'FilteredTestArea' );
-
-				expect(
-					registry
-						.select( CORE_WIDGETS )
-						.isWidgetAreaActive( 'FilteredTestArea' )
-				).toBe( true );
-			} );
-
 			it( 'returns false when `filterActiveWidgets` removes all widgets', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
@@ -718,6 +693,55 @@ describe( 'core/widgets Widget areas', () => {
 						.select( CORE_WIDGETS )
 						.isWidgetAreaActive( 'FilteredTestArea' )
 				).toBe( false );
+			} );
+
+			it( 'returns false when only one widget remains after `filterActiveWidgets`', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'SingleWidgetTestArea', {
+						title: 'Single Widget Test Area',
+						subtitle: 'Cool stuff for yoursite.com',
+						style: 'composite',
+						filterActiveWidgets( select, areaWidgets ) {
+							return areaWidgets.length === 1 ? [] : areaWidgets;
+						},
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget1', 'SingleWidgetTestArea' );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'SingleWidgetTestArea', {
+							modules: [ 'test-module-1' ],
+						} )
+				).toBe( false );
+			} );
+
+			it( 'returns true when `filterActiveWidgets` keeps widgets', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'FilteredTestArea', {
+						title: 'Filtered Test Area',
+						subtitle: 'Cool stuff for yoursite.com',
+						style: 'composite',
+						filterActiveWidgets( select, areaWidgets ) {
+							return areaWidgets.length === 1 ? [] : areaWidgets;
+						},
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget1', 'FilteredTestArea' );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget2', 'FilteredTestArea' );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'FilteredTestArea' )
+				).toBe( true );
 			} );
 
 			it( 'returns true when `filterActiveWidgets` does not alter widgets', () => {
