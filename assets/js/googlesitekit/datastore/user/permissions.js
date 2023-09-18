@@ -239,11 +239,10 @@ const baseSelectors = {
 		// shareable and the user has the "read shared module data"
 		// capability for.
 		return Object.values( modules ).reduce( ( slugs, module ) => {
-			if ( module.slug === 'analytics' && isGA4DashboardView ) {
-				return slugs;
-			}
-
-			if ( module.slug === 'analytics-4' && ! isGA4DashboardView ) {
+			if (
+				( module.slug === 'analytics' && isGA4DashboardView ) ||
+				( module.slug === 'analytics-4' && ! isGA4DashboardView )
+			) {
 				return slugs;
 			}
 

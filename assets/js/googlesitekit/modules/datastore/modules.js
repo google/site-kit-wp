@@ -1397,11 +1397,10 @@ const baseSelectors = {
 			select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
-			if ( slug === 'analytics' && isGA4DashboardView ) {
-				return acc;
-			}
-
-			if ( slug === 'analytics-4' && ! isGA4DashboardView ) {
+			if (
+				( slug === 'analytics' && isGA4DashboardView ) ||
+				( slug === 'analytics-4' && ! isGA4DashboardView )
+			) {
 				return acc;
 			}
 
