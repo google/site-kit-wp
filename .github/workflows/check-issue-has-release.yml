@@ -5,7 +5,6 @@ on:
     branches:
       - develop
       - main
-      - 'feature/**'
     types:
       - opened
       - closed
@@ -36,7 +35,7 @@ jobs:
           npm ci
       - name: Check issue for release tag
         run: |
-          ./bin/check-issue-has-release.sh
+          ./bin/check-issue-has-release.js
         env:
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
           ZENHUB_GQL_API_TOKEN: ${{ secrets.ZENHUB_GQL_API_TOKEN }}
