@@ -31,13 +31,15 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - uses: actions/cache@v3
+        id: cache-graphql
         with:
           path: |
             **/node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('.github/workflows/check-issue-has-release.yml') }}-${{ hashFiles('bin/check-issue-has-release.js') }}-${{ hashFiles('.nvmrc') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - name: Install GraphQL package
+      - name: Install GraphQL package if not cached
+        if: steps.cache-graphql.outputs.cache-hit != 'true'
         run: |
           npm install graphql-request@6.1.0 graphql@16.7.1
       - name: Check issue for release tag
