@@ -26,7 +26,7 @@ const checkIssueHasRelease = async () => {
     const response = await client.request(query, {
       // eslint-disable-next-line sitekit/acronym-case
       repositoryGhId: parseInt(process.env.GITHUB_REPOSITORY_ID, 10),
-      issueNumber: process.env.PULL_REQUEST_NUMBER
+      issueNumber: parseInt(process.env.PULL_REQUEST_NUMBER, 10)
     }, {
       authorization: `Bearer ${process.env.ZENHUB_GQL_API_TOKEN}`
     });
