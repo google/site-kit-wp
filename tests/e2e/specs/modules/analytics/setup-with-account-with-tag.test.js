@@ -103,9 +103,16 @@ describe( 'setting up the Analytics module with an existing account and existing
 					body: JSON.stringify( containerMock ),
 					status: 200,
 				} );
+			} else if (
+				request.url().match( 'analytics-4/data/account-summaries' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( fixtures.accountSummaries ),
+				} );
 			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
 				request.respond( {
-					body: JSON.stringify( fixtures.properties[ 1 ] ),
+					body: JSON.stringify( fixtures.properties[ 0 ] ),
 					status: 200,
 				} );
 			} else if (
@@ -117,7 +124,16 @@ describe( 'setting up the Analytics module with an existing account and existing
 			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( fixtures.properties[ 1 ] ),
+					body: JSON.stringify( fixtures.properties ),
+				} );
+			} else if (
+				request
+					.url()
+					.match( 'analytics-4/data/webdatastreams?propertyId=' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( fixtures.webDataStreams[ 0 ] ),
 				} );
 			}
 
@@ -155,10 +171,11 @@ describe( 'setting up the Analytics module with an existing account and existing
 	it( 'informs about an existing tag that matches the current selected property', async () => {
 		const existingTag = {
 			accountID: '100', // Test Account A
-			propertyID: '300',
+			propertyID: 'G-500',
 		};
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
+		// await jestPuppeteer.debug();
 
 		await expect( page ).toMatchElement(
 			'.googlesitekit-setup-module--analytics p',
@@ -176,11 +193,11 @@ describe( 'setting up the Analytics module with an existing account and existing
 		);
 		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics-4__select-property .mdc-select__selected-text',
-			{ text: /example.com/i }
+			{ text: /test ga4 property/i }
 		);
 		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics-4__select-webdatastream .mdc-select__selected-text',
-			{ text: /g-500/i }
+			{ text: /test ga4 webdatastream/i }
 		);
 
 		await expect( page ).toClick( 'button', {

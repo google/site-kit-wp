@@ -24,5 +24,18 @@
 			"defaultUri": "http://example.org"
 		},
 		"displayName": "Another datastream"
+	},
+	{
+		"_id": "1000",
+		"_propertyID": "1000",
+		"name": "properties/1000/dataStreams/2000",
+		"type": "WEB_DATA_STREAM",
+		"createTime": "2014-10-02T15:01:23Z",
+		"updateTime": "2014-10-02T15:01:23Z",
+		"webStreamData": {
+			"measurementId": "G-1A2BCD345E",
+			"defaultUri": "http://example.com"
+		},
+		"displayName": "Test GA4 WebDataStream"
 	}
 ]

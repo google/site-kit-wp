@@ -18,5 +18,31 @@
       }
     ],
     "_id": "987654321"
+  },
+  {
+    "account": "accounts/100",
+    "displayName": "Example Com",
+    "name": "accountSummaries/987654321",
+    "propertySummaries": [
+      {
+        "displayName": "Example Property",
+        "property": "properties/1000",
+        "_id": "1000"
+      }
+    ],
+    "_id": "100"
+  },
+  {
+    "account": "accounts/101",
+    "displayName": "Example Com",
+    "name": "accountSummaries/987654321",
+    "propertySummaries": [
+      {
+        "displayName": "Example Property",
+        "property": "properties/2000",
+        "_id": "2000"
+      }
+    ],
+    "_id": "101"
   }
 ]
