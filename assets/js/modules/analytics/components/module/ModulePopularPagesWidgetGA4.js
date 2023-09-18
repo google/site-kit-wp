@@ -26,7 +26,6 @@ import { cloneDeep } from 'lodash';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { numFmt, trackEvent } from '../../../../util';
+import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
@@ -45,9 +44,6 @@ import { ZeroDataMessage } from '../common';
 import Header from './ModulePopularPagesWidget/Header';
 import Footer from './ModulePopularPagesWidget/Footer';
 import useViewOnly from '../../../../hooks/useViewOnly';
-import useViewContext from '../../../../hooks/useViewContext';
-import NewBadge from '../../../../components/NewBadge';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 const { useSelect, useInViewSelect } = Data;
 
@@ -65,7 +61,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 	);
 
 	const viewOnlyDashboard = useViewOnly();
-	const viewContext = useViewContext();
 
 	const args = {
 		...dates,
@@ -119,27 +114,11 @@ function ModulePopularPagesWidgetGA4( props ) {
 		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );
 
-	const sessionsLearnMoreURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/9191807',
-		} )
-	);
-
-	const engagementRateLearnMoreURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/12195621',
-		} )
-	);
-
 	const isGA4ReportingTourActive = useSelect(
 		( select ) => select( CORE_USER ).getCurrentTour() === ga4ReportingTour
 	);
 
 	const loading = ! loaded || isGatheringData === undefined;
-
-	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
-		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
-	}, [ viewContext ] );
 
 	// Bypass loading state if showing GA4 tour.
 	if ( loading && ! isGA4ReportingTourActive ) {
@@ -206,16 +185,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
-			badge: (
-				<NewBadge
-					tooltipTitle={ __(
-						'Visitor interactions with your site within a given time frame (30 min by default).',
-						'google-site-kit'
-					) }
-					learnMoreLink={ sessionsLearnMoreURL }
-					onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
-				/>
-			),
 		},
 		{
 			title: __( 'Engagement Rate', 'google-site-kit' ),
@@ -225,16 +194,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 			className: 'googlesitekit-table__head-item--engagement-rate',
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, '%' ) }</span>
-			),
-			badge: (
-				<NewBadge
-					tooltipTitle={ __(
-						'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
-						'google-site-kit'
-					) }
-					learnMoreLink={ engagementRateLearnMoreURL }
-					onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
-				/>
 			),
 		},
 		{
