@@ -1,0 +1,168 @@
+{
+    "kind": "analyticsData#runReport",
+    "rowCount": 3,
+    "dimensionHeaders": [
+        {
+            "name": "pagePath"
+        }
+    ],
+    "metricHeaders": [
+        {
+            "name": "screenPageViews",
+            "type": "TYPE_INTEGER"
+        },
+        {
+            "name": "sessions",
+            "type": "TYPE_INTEGER"
+        },
+        {
+            "name": "engagementRate",
+            "type": "TYPE_FLOAT"
+        },
+        {
+            "name": "averageSessionDuration",
+            "type": "TYPE_SECONDS"
+        }
+    ],
+    "rows": [
+        {
+            "dimensionValues": [
+                {
+                    "value": "\/en\/lorem-ispum\/"
+                }
+            ],
+            "metricValues": [
+                {
+                    "value": "1889"
+                },
+                {
+                    "value": "1845"
+                },
+                {
+                    "value": "0.98265582655826555"
+                },
+                {
+                    "value": "23.768003521409216"
+                }
+            ]
+        },
+        {
+            "dimensionValues": [
+                {
+                    "value": "\/en\/another-lorem-ipsum\/"
+                }
+            ],
+            "metricValues": [
+                {
+                    "value": "279"
+                },
+                {
+                    "value": "269"
+                },
+                {
+                    "value": "0.97026022304832715"
+                },
+                {
+                    "value": "55.934479684014867"
+                }
+            ]
+        },
+        {
+            "dimensionValues": [
+                {
+                    "value": "\/third lorem ipsum\/"
+                }
+            ],
+            "metricValues": [
+                {
+                    "value": "156"
+                },
+                {
+                    "value": "150"
+                },
+                {
+                    "value": "0.99333333333333329"
+                },
+                {
+                    "value": "40.8195939"
+                }
+            ]
+        }
+    ],
+    "totals": [
+        {
+            "dimensionValues": [
+                {
+                    "value": "RESERVED_TOTAL"
+                }
+            ],
+            "metricValues": [
+                {
+                    "value": "6357"
+                },
+                {
+                    "value": "5992"
+                },
+                {
+                    "value": "0.98564753004005345"
+                },
+                {
+                    "value": "41.557191137683581"
+                }
+            ]
+        }
+    ],
+    "maximums": [
+        {
+            "dimensionValues": [
+                {
+                    "value": "RESERVED_MAX"
+                }
+            ],
+            "metricValues": [
+                {
+                    "value": "1889"
+                },
+                {
+                    "value": "1845"
+                },
+                {
+                    "value": "1"
+                },
+                {
+                    "value": "885.702938"
+                }
+            ]
+        }
+    ],
+    "minimums": [
+        {
+            "dimensionValues": [
+                {
+                    "value": "RESERVED_MIN"
+                }
+            ],
+            "metricValues": [
+                {
+                    "value": "0"
+                },
+                {
+                    "value": "1"
+                },
+                {
+                    "value": "0"
+                },
+                {
+                    "value": "0"
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "currencyCode": "USD",
+        "dataLossFromOtherRow": null,
+        "emptyReason": null,
+        "subjectToThresholding": null,
+        "timeZone": "America\/Los_Angeles"
+    }
+}
