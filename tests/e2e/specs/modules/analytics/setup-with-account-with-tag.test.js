@@ -34,8 +34,39 @@ describe( 'setting up the Analytics module with an existing account and existing
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			const measurementID = 'G-2B7M8YQ1K6';
-			const containerMock = fixtures.container[ measurementID ];
+			const measurementID = 'G-500';
+			// TODO: Move this to fixtures?
+			const containerMock = {
+				path: 'accounts/6065484567/containers/98369876',
+				// eslint-disable-next-line sitekit/acronym-case
+				accountId: '6065484567',
+				// eslint-disable-next-line sitekit/acronym-case
+				containerId: '98369876',
+				name: 'example.com',
+				// eslint-disable-next-line sitekit/acronym-case
+				publicId: 'G-2B7M8YQ1K6',
+				usageContext: [ 'web' ],
+				fingerprint: '1670406303456',
+				// eslint-disable-next-line sitekit/acronym-case
+				tagManagerUrl:
+					'https://tagmanager.google.com/#/container/accounts/6065484567/containers/98369876/workspaces?apiLink=container',
+				features: {
+					supportUserPermissions: false,
+					supportEnvironments: false,
+					supportWorkspaces: false,
+					supportGtagConfigs: true,
+					supportBuiltInVariables: true,
+					supportClients: false,
+					supportFolders: false,
+					supportTags: false,
+					supportTemplates: false,
+					supportTriggers: false,
+					supportVariables: false,
+					supportVersions: false,
+					supportZones: false,
+				},
+				tagIds: [ measurementID, 'GT-12345' ],
+			};
 
 			if (
 				request
@@ -62,7 +93,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [] ),
+					body: JSON.stringify( {} ),
 				} );
 			} else if (
 				request.url().match( 'analytics-4/data/conversion-events' )
