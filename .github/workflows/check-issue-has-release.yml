@@ -30,7 +30,8 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
-      - uses: actions/cache@v3
+      - name: Cache GraphQL package
+        uses: actions/cache@v3
         id: cache-graphql
         with:
           path: |
