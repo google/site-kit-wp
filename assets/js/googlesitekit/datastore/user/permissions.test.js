@@ -387,7 +387,7 @@ describe( 'core/user authentication', () => {
 				] );
 			} );
 
-			it( 'should not include "analytics" module if the dashboardView is GA4', () => {
+			it( 'should not include `analytics` module if the dashboardView is GA4', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 
 				registry
@@ -418,7 +418,7 @@ describe( 'core/user authentication', () => {
 				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 
-			it( 'should not include "analytics-4" module if the dashboardView is UA', () => {
+			it( 'should not include `analytics-4` module if the dashboardView is UA', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 
 				registry
@@ -566,13 +566,13 @@ describe( 'core/user authentication', () => {
 				expect( canViewSharedModule ).toBe( true );
 			} );
 
-			it( 'should change module slug to "analytics-4" when the `module.slug` is "analytics" and the dashboard view is GA4', () => {
+			it( 'should treat `analytics` as `analytics-4` when the dashboard view is GA4', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 
 				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
 					...capabilitiesWithPermission.permissions,
-					// Set `analytics` permission to `false` to ensure that the module slug is changed to "analytics-4".
-					// The selector will return `true` as the module slug is changed to "analytics-4".
+					// Set the `analytics` permission to `false` to help verify that the `analytics` module
+					// is indeed treated as `analytics-4` when the dashboard view is GA4.
 					'googlesitekit_read_shared_module_data::["analytics"]': false,
 				} );
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
@@ -596,7 +596,6 @@ describe( 'core/user authentication', () => {
 
 				expect( canViewSharedAnalytics ).toBe( false );
 
-				// Set the dashboard view to GA4 to change the module slug to "analytics-4".
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					dashboardView: DASHBOARD_VIEW_GA4,
 				} );
