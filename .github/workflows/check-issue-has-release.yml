@@ -1,41 +1,41 @@
 name: Check for Release
 
 on:
-  pull_request:
-    branches:
-      - develop
-      - main
-    types:
-      - opened
-      - closed
-      - reopened
-      - synchronize
-  pull_request_review:
-    types: [submitted]
+    pull_request:
+        branches:
+            - develop
+            - main
+        types:
+            - opened
+            - closed
+            - reopened
+            - synchronize
+    pull_request_review:
+        types: [submitted]
 
 concurrency:
-  group: check-issue-has-release-${{ github.ref }}
-  cancel-in-progress: true
+    group: check-issue-has-release-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  check-issue-has-release:
-    name: Issue must have a ZenHub release
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork ) && github.event.review.state == 'approved'
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      - name: Install GraphQL package
-        run: |
-          npm install graphql-request@6.1.0
-      - name: Check issue for release tag
-        run: |
-          ./bin/check-issue-has-release.js
-        env:
-          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
-          ZENHUB_GQL_API_TOKEN: ${{ secrets.ZENHUB_GQL_API_TOKEN }}
+    check-issue-has-release:
+        name: Issue must have a ZenHub release
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork ) && github.event.review.state == 'approved'
+        steps:
+            - uses: actions/checkout@v3
+            - name: Setup Node.js (.nvmrc)
+              uses: actions/setup-node@v3
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'npm'
+            - name: Install GraphQL package
+              run: |
+                  npm install graphql-request@6.1.0 graphql@16.7.1
+            - name: Check issue for release tag
+              run: |
+                  ./bin/check-issue-has-release.js
+              env:
+                  PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
+                  ZENHUB_GQL_API_TOKEN: ${{ secrets.ZENHUB_GQL_API_TOKEN }}
