@@ -32,7 +32,6 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import {
 	EDIT_SCOPE,
 	FORM_SETUP,
-	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 	MODULES_ANALYTICS,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_LEGACY,
@@ -331,10 +330,6 @@ describe( 'SetupForm', () => {
 			.dispatch( CORE_USER )
 			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ] );
-
 		const updateAnalyticsSettingsRegexp = new RegExp(
 			'/analytics/data/settings'
 		);
@@ -421,10 +416,6 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ] );
 
 		const createPropertyRegexp = new RegExp(
 			'/analytics-4/data/create-property'
@@ -556,10 +547,6 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ] );
 
 		const createPropertyRegexp = new RegExp(
 			'/analytics-4/data/create-property'

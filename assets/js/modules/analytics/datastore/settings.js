@@ -51,7 +51,6 @@ import {
 	PROPERTY_CREATE,
 	PROFILE_CREATE,
 	FORM_SETUP,
-	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -160,15 +159,6 @@ export async function submitChanges( registry ) {
 
 	if ( ! select( CORE_USER ).isTourDismissed( ga4Reporting.slug ) ) {
 		dispatch( CORE_USER ).dismissTour( ga4Reporting.slug );
-	}
-
-	await registry.__experimentalResolveSelect( CORE_USER ).getDismissedItems();
-	if (
-		! select( CORE_USER ).isItemDismissed(
-			GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-		)
-	) {
-		dispatch( CORE_USER ).dismissItem( GA4_DASHBOARD_VIEW_NOTIFICATION_ID );
 	}
 
 	return {};

@@ -31,7 +31,6 @@ import {
 	ACCOUNT_CREATE,
 	PROPERTY_CREATE,
 	PROFILE_CREATE,
-	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
 import * as fixtures from './__fixtures__';
 import {
@@ -130,11 +129,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
-					] );
 			} );
 
 			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
@@ -735,11 +729,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
-					] );
 				expect(
 					registry.select( MODULES_ANALYTICS ).haveSettingsChanged()
 				).toBe( false );

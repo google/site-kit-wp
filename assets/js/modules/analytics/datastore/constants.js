@@ -51,5 +51,3 @@ export const SETUP_FLOW_MODE_GA4_TRANSITIONAL = 'ga4-transitional';
 
 export const PROPERTY_TYPE_UA = 'ua';
 export const PROPERTY_TYPE_GA4 = 'ga4';
-
-export const GA4_DASHBOARD_VIEW_NOTIFICATION_ID = 'switch-ga4-dashboard-view';
