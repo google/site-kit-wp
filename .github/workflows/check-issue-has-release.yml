@@ -31,9 +31,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
-      - name: npm install
+      - name: Install GraphQL package
         run: |
-          npm ci
+          npm install graphql-request@6.1.0
       - name: Check issue for release tag
         run: |
           ./bin/check-issue-has-release.sh
