@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -62,8 +63,21 @@ export default function EnhancedMeasurementSwitch( {
 	}, [ isEnhancedMeasurementEnabled, onClick, setValues ] );
 
 	return (
-		<div className="googlesitekit-analytics-enable-enhanced-measurement">
-			{ loading && <ProgressBar small height={ 60 } /> }
+		<div
+			className={ classnames(
+				'googlesitekit-analytics-enable-enhanced-measurement',
+				{
+					'googlesitekit-analytics-enable-enhanced-measurement--loading':
+						loading,
+				}
+			) }
+		>
+			{ loading && (
+				<ProgressBar
+					small
+					className="googlesitekit-analytics-enable-enhanced-measurement__progress"
+				/>
+			) }
 			{ ! loading && (
 				<Switch
 					label={ __(
