@@ -29,8 +29,7 @@ import { expandNumFmtOptions } from '../../util';
 import { Fragment } from 'react';
 import MetricTileError from './MetricTileError';
 import MetricTileLoader from './MetricTileLoader';
-import { Tooltip } from 'googlesitekit-components';
-import InfoIcon from '../../../svg/icons/info-green.svg';
+import MetricTileHeader from './MetricTileHeader';
 
 export default function MetricTileText( {
 	Widget,
@@ -60,25 +59,7 @@ export default function MetricTileText( {
 	return (
 		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text">
-				<div className="googlesitekit-km-widget-tile__title-container">
-					<h3 className="googlesitekit-km-widget-tile__title">
-						{ title }
-					</h3>
-					{ infoTooltip && (
-						<Tooltip
-							tooltipClassName="googlesitekit-km-widget-tile-title__tooltip"
-							title={ infoTooltip }
-							placement="top"
-							enterTouchDelay={ 0 }
-							leaveTouchDelay={ 5000 }
-							interactive
-						>
-							<span>
-								<InfoIcon width="16" height="16" />
-							</span>
-						</Tooltip>
-					) }
-				</div>
+				<MetricTileHeader infoTooltip={ infoTooltip } />
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <MetricTileLoader /> }
 					{ ! loading && (
@@ -119,4 +100,5 @@ MetricTileText.propTypes = {
 		PropTypes.object,
 	] ),
 	moduleSlug: PropTypes.string.isRequired,
+	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 };
