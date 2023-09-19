@@ -23,6 +23,11 @@ import invariant from 'invariant';
 import { isEqual, isPlainObject } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -400,12 +405,21 @@ const baseSelectors = {
 	 * @param {Object} state           Data store's state.
 	 * @param {string} propertyID      The GA4 property ID to check.
 	 * @param {string} webDataStreamID The GA4 web data stream ID to check.
-	 * @return {boolean}               True if `streamEnabled` is on, otherwise false; false if not loaded.
+	 * @return {boolean}               True if `streamEnabled` is on, otherwise false; `undefined` if not loaded.
 	 */
-	isEnhancedMeasurementStreamEnabled( state, propertyID, webDataStreamID ) {
-		return !! state.enhancedMeasurement[ propertyID ]?.[ webDataStreamID ]
-			?.settings?.streamEnabled;
-	},
+	isEnhancedMeasurementStreamEnabled: createRegistrySelector(
+		( select ) => ( state, propertyID, webDataStreamID ) => {
+			const settings = select(
+				MODULES_ANALYTICS_4
+			).getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+
+			if ( settings === undefined ) {
+				return undefined;
+			}
+
+			return !! settings.streamEnabled;
+		}
+	),
 
 	/**
 	 * Checks if the settings have changed compared to the saved settings for a given web data stream.
