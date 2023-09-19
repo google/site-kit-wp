@@ -65,7 +65,7 @@ export default function MetricTileNumeric( props ) {
 	return (
 		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
-				<MetricTileHeader infoTooltip={ infoTooltip } />
+				<MetricTileHeader title={ title } infoTooltip={ infoTooltip } />
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <MetricTileLoader /> }
 					{ ! loading && (
