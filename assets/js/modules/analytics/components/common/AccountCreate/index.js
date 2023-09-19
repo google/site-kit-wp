@@ -64,13 +64,13 @@ export default function AccountCreate() {
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
-	const ga4AccountTicketTermsOfServiceURL = useSelect( ( select ) =>
+	const accountTicketTermsOfServiceURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountTicketTermsOfServiceURL()
 	);
-	const canSubmitAccountCreateGA4 = useSelect( ( select ) =>
+	const canSubmitAccountCreate = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).canSubmitAccountCreate()
 	);
-	const isDoingCreateAccountGA4 = useSelect( ( select ) =>
+	const isDoingCreateAccount = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isDoingCreateAccount()
 	);
 	const hasProvisioningScope = useSelect( ( select ) =>
@@ -107,12 +107,6 @@ export default function AccountCreate() {
 	const getAccountDefaults = getAccountDefaultsGA4;
 
 	const hasRequiredScope = hasEditScope;
-
-	const isDoingCreateAccount = isDoingCreateAccountGA4;
-
-	const canSubmitAccountCreate = canSubmitAccountCreateGA4;
-
-	const accountTicketTermsOfServiceURL = ga4AccountTicketTermsOfServiceURL;
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {

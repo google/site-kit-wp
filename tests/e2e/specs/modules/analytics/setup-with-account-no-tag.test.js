@@ -100,11 +100,8 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			) {
 				request.respond( { status: 200, body: JSON.stringify( [] ) } );
 			} else if (
-				request
-					.url()
-					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics-4/data/report?'
-					)
+				request.url().match( 'analytics/data/report?' ) ||
+				request.url().match( 'analytics-4/data/report?' )
 			) {
 				request.respond( {
 					status: 200,
@@ -173,7 +170,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( fixtures.accountSummaries ),
+					body: JSON.stringify( fixtures.accountSummariesE2E ),
 				} );
 			} else {
 				request.continue();

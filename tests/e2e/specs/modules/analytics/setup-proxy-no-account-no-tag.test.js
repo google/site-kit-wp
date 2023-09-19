@@ -165,7 +165,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		);
 		expect( JSON.parse( reqBody ) ).toMatchObject( {
 			data: {
-				accountName: 'Test Account Name',
+				displayName: 'Test Account Name',
 				propertyName: 'Test Property Name',
 				dataStreamName: 'Test Web Data Stream Name',
 				timezone: 'Etc/GMT',

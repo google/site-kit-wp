@@ -90,12 +90,12 @@ describe( 'Analytics write scope requests', () => {
 			) {
 				if ( interceptCreatePropertyRequest ) {
 					request.respond( {
-						body: JSON.stringify( fixtures.createProperty ),
 						status: 200,
+						body: JSON.stringify( fixtures.createProperty ),
 					} );
+					interceptCreatePropertyRequest = false;
 				} else {
 					request.continue();
-					interceptCreatePropertyRequest = true;
 				}
 			} else if (
 				request.url().match( 'analytics-4/data/account-summaries' )
@@ -109,19 +109,19 @@ describe( 'Analytics write scope requests', () => {
 			) {
 				if ( interceptCreateWebDataStreamRequest ) {
 					request.respond( {
-						body: JSON.stringify( fixtures.createWebDataStream ),
 						status: 200,
+						body: JSON.stringify( fixtures.createWebDataStream ),
 					} );
+					interceptCreateWebDataStreamRequest = false;
 				} else {
 					request.continue();
-					interceptCreateWebDataStreamRequest = true;
 				}
 			} else if (
 				request.url().match( 'analytics-4/data/google-tag-settings' )
 			) {
 				request.respond( {
-					body: JSON.stringify( fixtures.googleTagSettings ),
 					status: 200,
+					body: JSON.stringify( fixtures.googleTagSettings ),
 				} );
 			} else if (
 				request.url().match( '//analytics.google.com/analytics/web/' )
@@ -197,6 +197,8 @@ describe( 'Analytics write scope requests', () => {
 
 	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
+		interceptCreatePropertyRequest = false;
+		interceptCreateWebDataStreamRequest = true;
 
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
 
@@ -248,11 +250,13 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
 			timeout: 3000,
 		} );
+		expect( console ).toHaveErrored(); // Permission scope error.
 
+		interceptCreatePropertyRequest = true;
 		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
 			text: /proceed/i,
 		} );
-		expect( console ).toHaveErrored(); // Permission scope error.
+
 		// They should end up on the dashboard.
 		await Promise.all( [
 			page.waitForNavigation(),
@@ -270,7 +274,8 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics web data stream creation if the user has not granted the Analytics edit scope', async () => {
-		scope = 'https://www.googleapis.com/auth/analytics.edit';
+		interceptCreatePropertyRequest = true;
+		interceptCreateWebDataStreamRequest = false;
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
 
 		// Go to the analytics setup page.
@@ -326,6 +331,7 @@ describe( 'Analytics write scope requests', () => {
 		} );
 		expect( console ).toHaveErrored(); // Permission scope error.
 
+		interceptCreateWebDataStreamRequest = true;
 		// Click on proceed button and wait for oauth request.
 		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
 			text: /proceed/i,
