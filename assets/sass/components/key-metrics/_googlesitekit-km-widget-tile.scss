@@ -49,18 +49,18 @@
 
 		.googlesitekit-km-widget-tile__title-container {
 			display: flex;
+			flex-basis: 50%;
+			flex-grow: 1;
 		}
 
 		.googlesitekit-km-widget-tile__title {
 			color: $c-neutral-n-500;
-			flex-basis: 50%;
-			flex-grow: 1;
 			font-family: $f-primary;
 			font-size: $fs-label-sm;
 			font-weight: $fw-normal;
 			letter-spacing: $ls-xs;
 			line-height: 16px;
-			margin: 0 0 4px;
+			margin: 0 8px 4px 0;
 		}
 
 		.googlesitekit-km-widget-tile__body {
@@ -106,17 +106,6 @@
 
 		.googlesitekit-km-widget-tile__subtext {
 			margin: 2px 0 4px;
-		}
-	}
-
-	.googlesitekit-km-widget-tile--numeric,
-	.googlesitekit-km-widget-tile--text {
-		.googlesitekit-km-widget-tile__title {
-			padding-right: 12px;
-
-			@media (min-width: $bp-nonMobile) {
-				padding-right: 0;
-			}
 		}
 	}
 
