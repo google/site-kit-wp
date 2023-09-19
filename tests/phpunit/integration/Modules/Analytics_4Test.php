@@ -125,6 +125,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register() {
+		// Test diff.
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
 		$this->analytics->register();
