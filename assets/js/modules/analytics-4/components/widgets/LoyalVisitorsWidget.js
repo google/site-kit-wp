@@ -118,6 +118,10 @@ function LoyalVisitorsWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Portion of your site’s visitors that returned at least once in this timeframe',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

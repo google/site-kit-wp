@@ -129,6 +129,10 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

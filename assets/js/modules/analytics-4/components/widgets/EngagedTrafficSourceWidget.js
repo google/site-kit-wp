@@ -120,6 +120,10 @@ function EngagedTrafficSourceWidget( props ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site',
+				'google-site-kit'
+			) }
 		/>
 	);
 }
