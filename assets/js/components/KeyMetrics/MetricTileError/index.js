@@ -19,46 +19,26 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { castArray } from 'lodash';
 
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import CTA from '../notifications/CTA';
-import ReportErrorActions from '../ReportErrorActions';
-import Link from '../Link';
-import { isInsufficientPermissionsError } from '../../util/errors';
+import CTA from '../../notifications/CTA';
+import ReportErrorActions from '../../ReportErrorActions';
+import GetHelpLink from './GetHelpLink';
+import { isInsufficientPermissionsError } from '../../../util/errors';
 
 export default function MetricTileError( props ) {
 	const { error, headerText, moduleSlug } = props;
 	const hasInsufficientPermissionsError = castArray( error ).some(
 		isInsufficientPermissionsError
 	);
-
-	const GetHelpLink = hasInsufficientPermissionsError
-		? ( { linkURL } ) =>
-				createInterpolateElement(
-					/* translators: %s: get help text. */
-					__(
-						'Trouble getting access? <HelpLink />',
-						'google-site-kit'
-					),
-					{
-						HelpLink: (
-							<Link href={ linkURL } external>
-								{ __( 'Get help', 'google-site-kit' ) }
-							</Link>
-						),
-					}
-				)
-		: undefined;
 
 	return (
 		<div className="googlesitekit-km-widget-tile--error">
@@ -75,18 +55,13 @@ export default function MetricTileError( props ) {
 				<ReportErrorActions
 					moduleSlug={ moduleSlug }
 					error={ error }
-					GetHelpLink={ GetHelpLink }
+					GetHelpLink={
+						hasInsufficientPermissionsError
+							? GetHelpLink
+							: undefined
+					}
 				/>
 			</CTA>
 		</div>
 	);
 }
-
-MetricTileError.propTypes = {
-	error: PropTypes.oneOfType( [
-		PropTypes.arrayOf( PropTypes.object ),
-		PropTypes.object,
-	] ).isRequired,
-	headerText: PropTypes.string,
-	moduleSlug: PropTypes.string.isRequired,
-};
