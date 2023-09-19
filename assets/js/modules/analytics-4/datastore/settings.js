@@ -97,12 +97,6 @@ export async function submitChanges( { select, dispatch } ) {
 			// eslint-disable-next-line sitekit/acronym-case
 			webdatastream.webStreamData.measurementId
 		);
-
-		// if ( isFeatureEnabled( 'enhancedMeasurement' ) ) {
-		// 	await select(
-		// 		MODULES_ANALYTICS_4
-		// 	).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
-		// }
 	}
 
 	if (
