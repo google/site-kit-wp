@@ -29,7 +29,7 @@ import {
 	Fragment,
 	useCallback,
 } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -50,7 +50,7 @@ const { useSelect, useDispatch } = Data;
 export default function ReportErrorActions( {
 	moduleSlug,
 	error,
-	getHelpText,
+	GetHelpLink,
 } ) {
 	const isViewOnly = useViewOnly();
 	const storeName = useSelect( ( select ) =>
@@ -136,24 +136,8 @@ export default function ReportErrorActions( {
 				</Fragment>
 			) : (
 				<div>
-					{ getHelpText ? (
-						createInterpolateElement(
-							sprintf(
-								/* translators: %s: get help text. */
-								__( '%s <HelpLink />', 'google-site-kit' ),
-								getHelpText
-							),
-							{
-								HelpLink: (
-									<Link
-										href={ errorTroubleshootingLinkURL }
-										external
-									>
-										{ __( 'Get help', 'google-site-kit' ) }
-									</Link>
-								),
-							}
-						)
+					{ typeof GetHelpLink === 'function' ? (
+						<GetHelpLink linkURL={ errorTroubleshootingLinkURL } />
 					) : (
 						<Link href={ errorTroubleshootingLinkURL } external>
 							{ __( 'Get help', 'google-site-kit' ) }
@@ -171,5 +155,5 @@ ReportErrorActions.propTypes = {
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
 	] ).isRequired,
-	getHelpText: PropTypes.string,
+	GetHelpLink: PropTypes.elementType,
 };
