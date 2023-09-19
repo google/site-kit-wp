@@ -153,6 +153,17 @@
 		}
 	}
 
+	.googlesitekit-km-widget-tile--numeric,
+	.googlesitekit-km-widget-tile--text {
+		.googlesitekit-km-widget-tile__title-container {
+			flex-direction: column;
+
+			@media (min-width: $bp-nonMobile) {
+				flex-direction: row;
+			}
+		}
+	}
+
 	.googlesitekit-km-widget-tile__loading .googlesitekit-km-widget-tile__loading-body {
 		margin-top: 10px;
 	}
