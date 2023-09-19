@@ -37,6 +37,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID, isValidWebDataStreamID } from '../utils/validation';
+import { isFeatureEnabled } from '../../../features';
 
 const enhancedMeasurementSettingsFields = [
 	'name',
@@ -441,6 +442,47 @@ const baseSelectors = {
 
 		return ! isEqual( settings, savedSettings );
 	},
+
+	/**
+	 * This is a utility selector that checks if either the GA4 module settings, or the
+	 * current web data stream's enhanced measurement settings have changed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} True if settings have changed, otherwise false.
+	 */
+	haveAnyGA4SettingsChanged: createRegistrySelector( ( select ) => () => {
+		const {
+			getPropertyID,
+			getWebDataStreamID,
+			haveEnhancedMeasurementSettingsChanged,
+			haveSettingsChanged,
+		} = select( MODULES_ANALYTICS_4 );
+
+		if ( haveSettingsChanged() ) {
+			return true;
+		}
+
+		if ( ! isFeatureEnabled( 'enhancedMeasurement' ) ) {
+			return false;
+		}
+
+		const propertyID = getPropertyID();
+		const webDataStreamID = getWebDataStreamID();
+
+		if (
+			isValidPropertyID( propertyID ) &&
+			isValidWebDataStreamID( webDataStreamID ) &&
+			haveEnhancedMeasurementSettingsChanged(
+				propertyID,
+				webDataStreamID
+			)
+		) {
+			return true;
+		}
+
+		return false;
+	} ),
 };
 
 const store = Data.combineStores(
