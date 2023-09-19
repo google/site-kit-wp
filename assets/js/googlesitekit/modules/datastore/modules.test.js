@@ -2214,7 +2214,7 @@ describe( 'core/modules modules', () => {
 				).toEqual( Object.values( shareableModules ).length );
 			} );
 
-			it( 'should not include "analytics" module if the dashboard view is GA4', () => {
+			it( 'should not include `analytics` module if the dashboard view is GA4', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 
 				provideModuleRegistrations( registry );
@@ -2236,7 +2236,7 @@ describe( 'core/modules modules', () => {
 				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 
-			it( 'should not include "analytics-4" module if the dashboard view is UA', () => {
+			it( 'should not include `analytics-4` module if the dashboard view is UA', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 
 				provideModuleRegistrations( registry );
