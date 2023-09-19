@@ -28,6 +28,7 @@ import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import fetchMock from 'fetch-mock';
+import { enabledFeatures } from '../../../features';
 
 describe( 'core/user authentication', () => {
 	const capabilities = {
@@ -283,6 +284,23 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'getViewableModules', () => {
+			const connectedModules = [
+				{
+					slug: 'analytics',
+					name: 'Analytics',
+					active: true,
+					connected: true,
+					shareable: true,
+				},
+				{
+					slug: 'analytics-4',
+					name: 'Analytics-4',
+					active: true,
+					connected: true,
+					shareable: true,
+				},
+			];
+
 			it( 'should return undefined if modules are not loaded', async () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
@@ -361,8 +379,34 @@ describe( 'core/user authentication', () => {
 					'search-console',
 					'analytics',
 					'pagespeed-insights',
+				] );
+			} );
+
+			it( 'should not include `analytics` module if the dashboardView is GA4', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities(
+						capabilitiesWithPermission.permissions
+					);
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [ ...FIXTURES, ...connectedModules ] );
+
+				const viewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( viewableModules ).toEqual( [
+					'search-console',
+					'pagespeed-insights',
 					'analytics-4',
 				] );
+
+				expect( viewableModules ).not.toContain( 'analytics' );
+
+				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 		} );
 

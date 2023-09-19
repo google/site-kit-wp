@@ -28,6 +28,8 @@ import PropTypes from 'prop-types';
 import {
 	createInterpolateElement,
 	useCallback,
+	useEffect,
+	useState,
 	useMemo,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -50,9 +52,12 @@ import {
 import Link from '../../Link';
 import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';
+import useViewContext from '../../../hooks/useViewContext';
+import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { savedMetrics } ) {
+	const viewContext = useViewContext();
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -65,6 +70,7 @@ export default function Footer( { savedMetrics } ) {
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
 	);
+	const trackingCategory = `${ viewContext }_kmw-sidebar`;
 
 	const haveSettingsChanged = useMemo( () => {
 		// Arrays need to be sorted to match in `isEqual`.
@@ -99,6 +105,14 @@ export default function Footer( { savedMetrics } ) {
 	const { setValue } = useDispatch( CORE_UI );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
+	const [ finalButtonText, setFinalButtonText ] = useState( null );
+	const [ wasSaved, setWasSaved ] = useState( false );
+
+	const currentButtonText =
+		savedMetrics?.length > 0 && haveSettingsChanged
+			? __( 'Apply changes', 'google-site-kit' )
+			: __( 'Save selection', 'google-site-kit' );
+
 	const onSaveClick = useCallback( async () => {
 		const { error } = await saveKeyMetricsSettings( {
 			widgetSlugs: selectedMetrics,
@@ -106,17 +120,51 @@ export default function Footer( { savedMetrics } ) {
 
 		if ( ! error ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+			trackEvent( trackingCategory, 'metrics_sidebar_save' );
+			// lock the button label while panel is closing
+			setFinalButtonText( currentButtonText );
+			setWasSaved( true );
 		}
-	}, [ saveKeyMetricsSettings, selectedMetrics, setValue ] );
+	}, [
+		saveKeyMetricsSettings,
+		selectedMetrics,
+		setValue,
+		currentButtonText,
+		trackingCategory,
+	] );
 
 	const onCancelClick = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
+		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
+	}, [ setValue, trackingCategory ] );
 
 	const onSettingsClick = useCallback(
 		() => navigateTo( `${ settingsURL }#/admin-settings` ),
 		[ navigateTo, settingsURL ]
 	);
+
+	const isOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
+	);
+
+	const [ prevIsOpen, setPrevIsOpen ] = useState( null );
+
+	useEffect( () => {
+		if ( prevIsOpen !== null ) {
+			// if current isOpen is true, and different from prevIsOpen
+			// meaning it transitioned from false to true and it is not
+			// in closing transition, we should reset the button label
+			// locked when save button was clicked
+			if ( prevIsOpen !== isOpen ) {
+				if ( isOpen ) {
+					setFinalButtonText( null );
+					setWasSaved( false );
+				}
+			}
+		}
+
+		setPrevIsOpen( isOpen );
+	}, [ isOpen, prevIsOpen ] );
 
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
@@ -133,12 +181,11 @@ export default function Footer( { savedMetrics } ) {
 					disabled={
 						selectedMetrics?.length < 2 ||
 						selectedMetrics?.length > 4 ||
-						isSavingSettings
+						isSavingSettings ||
+						( ! isOpen && wasSaved )
 					}
 				>
-					{ savedMetrics?.length > 0 && haveSettingsChanged
-						? __( 'Apply changes', 'google-site-kit' )
-						: __( 'Save selection', 'google-site-kit' ) }
+					{ finalButtonText || currentButtonText }
 				</SpinnerButton>
 				<Link onClick={ onCancelClick } disabled={ isSavingSettings }>
 					{ __( 'Cancel', 'google-site-kit' ) }
@@ -154,6 +201,7 @@ export default function Footer( { savedMetrics } ) {
 						br: <br />,
 						link: (
 							<Link
+								secondary
 								onClick={ onSettingsClick }
 								disabled={ isSavingSettings }
 							/>
