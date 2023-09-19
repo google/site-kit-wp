@@ -204,7 +204,6 @@ export default {
 					'56789',
 				];
 
-				// Set accountID, propertyID and webDataStreamID values.
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setAccountID( accountID );
