@@ -438,10 +438,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ [ 'ga4Reporting' ] }
-				>
+				<WithTestRegistry registry={ registry }>
 					<Setup />
 				</WithTestRegistry>
 			);

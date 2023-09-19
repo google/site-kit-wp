@@ -311,11 +311,6 @@ class ModulesTest extends TestCase {
 		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
 		$this->assertFalse( $modules->is_module_connected( 'analytics-4' ) );
 
-		// Ensure the method returns false when the `ga4Reporting` feature flag is disabled
-		// and analytics is not connected.
-		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
-		$this->assertFalse( $modules->is_module_connected( 'analytics' ) );
-
 		// Ensure the method returns false when Analytics-4 is not connected.
 		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
 		$this->assertFalse( $modules->is_module_connected( 'analytics' ) );

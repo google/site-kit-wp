@@ -160,4 +160,28 @@ describe( 'Link', () => {
 			expect( container.firstChild.tagName ).toEqual( 'BUTTON' );
 		} );
 	} );
+
+	describe( 'secondary prop', () => {
+		it( 'does not have secondary class when secondary prop is not passed', () => {
+			const { container } = render(
+				<Link onClick={ () => {} }>text content</Link>
+			);
+
+			expect( container.firstChild ).not.toHaveClass(
+				'googlesitekit-cta-link--secondary'
+			);
+		} );
+
+		it( 'have secondary class when secondary prop is passed', () => {
+			const { container } = render(
+				<Link onClick={ () => {} } secondary>
+					text content
+				</Link>
+			);
+
+			expect( container.firstChild ).toHaveClass(
+				'googlesitekit-cta-link--secondary'
+			);
+		} );
+	} );
 } );

@@ -390,8 +390,7 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$settings  = $this->get_settings()->get();
-		$shareable = self::DASHBOARD_VIEW === $settings['dashboardView'];
+		$shareable = true;
 
 		$datapoints = array(
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
