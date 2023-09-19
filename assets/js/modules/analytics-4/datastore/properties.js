@@ -30,6 +30,7 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -42,6 +43,7 @@ import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { createRegistrySelector } from '@wordpress/data';
 const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -753,6 +755,44 @@ const baseSelectors = {
 	isWebDataStreamAvailable( state ) {
 		return state.isWebDataStreamAvailable;
 	},
+
+	/**
+	 * Checks if properties are currently being loaded.
+	 *
+	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
+	 * components, initially the `PropertySelect` and `SettingsEnhancedMeasurementSwitch` components.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}  state                Data store's state.
+	 * @param {Object}  args                 Arguments object.
+	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 */
+	isLoadingProperties: createRegistrySelector(
+		( select ) =>
+			( state, { hasModuleAccess } ) => {
+				const accountID = select( MODULES_ANALYTICS ).getAccountID();
+
+				const isResolvingProperties =
+					hasModuleAccess === false || ! accountID
+						? false
+						: select( MODULES_ANALYTICS_4 ).isResolving(
+								'getProperties',
+								[ accountID ]
+						  );
+
+				return (
+					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
+					! select( MODULES_ANALYTICS ).hasFinishedResolution(
+						'getAccounts'
+					) ||
+					isResolvingProperties ||
+					select(
+						MODULES_ANALYTICS
+					).hasFinishedSelectingAccount() === false
+				);
+			}
+	),
 };
 
 const store = Data.combineStores(

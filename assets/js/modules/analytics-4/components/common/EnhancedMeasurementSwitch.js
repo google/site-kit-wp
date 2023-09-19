@@ -42,6 +42,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function EnhancedMeasurementSwitch( {
 	onClick,
+	disabled = false,
 	loading = false,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
@@ -70,6 +71,7 @@ export default function EnhancedMeasurementSwitch( {
 						'google-site-kit'
 					) }
 					checked={ isEnhancedMeasurementEnabled }
+					disabled={ disabled }
 					onClick={ handleClick }
 					hideLabel={ false }
 				/>
@@ -96,5 +98,6 @@ export default function EnhancedMeasurementSwitch( {
 
 EnhancedMeasurementSwitch.propTypes = {
 	onClick: PropTypes.func,
+	disabled: PropTypes.bool,
 	loading: PropTypes.bool,
 };

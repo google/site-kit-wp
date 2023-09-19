@@ -200,7 +200,9 @@ export default function GA4SettingsControls( props ) {
 			) }
 
 			{ enhancedMeasurementEnabled && (
-				<SettingsEnhancedMeasurementSwitch />
+				<SettingsEnhancedMeasurementSwitch
+					hasAnalytics4Access={ hasAnalytics4Access }
+				/>
 			) }
 		</div>
 	);

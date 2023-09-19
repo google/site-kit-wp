@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
@@ -42,7 +47,9 @@ import {
 } from '../../utils/validation';
 const { useSelect, useDispatch } = Data;
 
-export default function SettingsEnhancedMeasurementSwitch() {
+export default function SettingsEnhancedMeasurementSwitch( {
+	hasAnalytics4Access,
+} ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			ENHANCED_MEASUREMENT_FORM,
@@ -58,13 +65,32 @@ export default function SettingsEnhancedMeasurementSwitch() {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
+	const isLoadingProperties = useSelect( ( select ) => {
+		// TODO: Return false if there's no property ID? Maybe in isLoadingProperties()?
+		// Probably not an issue as UA will be removed by the time this is used.
+		return select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
+			hasModuleAccess: hasAnalytics4Access,
+		} );
+	} );
+
+	const isLoadingWebDataStreams = useSelect( ( select ) => {
+		// TODO: Return false if there's no property ID? Maybe in isLoadingWebDataStreams()?
+		// Probably not an issue as UA will be removed by the time this is used.
+		return select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
+			hasModuleAccess: hasAnalytics4Access,
+		} );
+	} );
+
 	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
 		if (
 			! isValidPropertyID( propertyID ) ||
-			! isValidWebDataStreamID( webDataStreamID )
+			! isValidWebDataStreamID( webDataStreamID ) ||
+			isLoadingProperties ||
+			isLoadingWebDataStreams
 		) {
-			return false;
+			return null;
 		}
+
 		return select( MODULES_ANALYTICS_4 ).isEnhancedMeasurementStreamEnabled(
 			propertyID,
 			webDataStreamID
@@ -72,6 +98,22 @@ export default function SettingsEnhancedMeasurementSwitch() {
 	} );
 
 	const isLoading = useSelect( ( select ) => {
+		if (
+			! isValidPropertySelection( propertyID ) ||
+			! isValidWebDataStreamSelection( webDataStreamID ) ||
+			isLoadingProperties ||
+			isLoadingWebDataStreams
+		) {
+			return true;
+		}
+
+		if (
+			propertyID === PROPERTY_CREATE ||
+			webDataStreamID === WEBDATASTREAM_CREATE
+		) {
+			return false;
+		}
+
 		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 			'getEnhancedMeasurementSettings',
 			[ propertyID, webDataStreamID ]
@@ -115,8 +157,16 @@ export default function SettingsEnhancedMeasurementSwitch() {
 
 	return (
 		<EnhancedMeasurementSwitch
+			disabled={ ! hasAnalytics4Access }
 			loading={ isLoading }
 			onClick={ () => {
+				if (
+					! isValidPropertyID( propertyID ) ||
+					! isValidWebDataStreamID( webDataStreamID )
+				) {
+					return;
+				}
+
 				// Here we update the enhanced measurement `streamEnabled` setting to ensure `validateCanSubmitChanges()` can detect
 				// that the setting has changed via its call to `haveEnhancedMeasurementSettingsChanged()`.
 				setEnhancedMeasurementStreamEnabled(
@@ -128,3 +178,7 @@ export default function SettingsEnhancedMeasurementSwitch() {
 		/>
 	);
 }
+
+SettingsEnhancedMeasurementSwitch.propTypes = {
+	hasAnalytics4Access: PropTypes.bool,
+};

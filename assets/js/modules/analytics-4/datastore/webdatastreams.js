@@ -539,6 +539,65 @@ const baseSelectors = {
 			return firstlyFoundConfig || null;
 		}
 	),
+
+	/**
+	 * Checks if web data streams are currently being loaded.
+	 *
+	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
+	 * components, initially the `WebDataStreamSelect` and `SettingsEnhancedMeasurementSwitch` components.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}  state                Data store's state.
+	 * @param {Object}  args                 Arguments object.
+	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 */
+	isLoadingWebDataStreams: createRegistrySelector(
+		( select ) =>
+			( state, { hasModuleAccess } ) => {
+				const accountID = select( MODULES_ANALYTICS ).getAccountID();
+
+				const propertyID =
+					select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+				const loadedAccounts =
+					select( MODULES_ANALYTICS ).hasFinishedResolution(
+						'getAccounts'
+					);
+
+				const loadedProperties =
+					hasModuleAccess !== false
+						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+								'getProperties',
+								[ accountID ]
+						  )
+						: true;
+
+				const loadedWebDataStreams =
+					isValidPropertyID( propertyID ) && hasModuleAccess !== false
+						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+								'getWebDataStreams',
+								[ propertyID ]
+						  )
+						: true;
+
+				const finishedSelectingAccount =
+					select(
+						MODULES_ANALYTICS
+					).hasFinishedSelectingAccount() !== false;
+
+				const isMatchingAccountProperty =
+					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty();
+
+				return (
+					isMatchingAccountProperty ||
+					! loadedAccounts ||
+					! loadedProperties ||
+					! loadedWebDataStreams ||
+					! finishedSelectingAccount
+				);
+			}
+	),
 };
 
 const store = Data.combineStores(
