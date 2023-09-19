@@ -41,7 +41,7 @@ import {
 	PropertySelect,
 	WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
-import SettingsEnhancedMeasurementSwitch from '../../../analytics-4/components/setup/SettingsEnhancedMeasurementSwitch';
+import SettingsEnhancedMeasurementSwitch from '../../../analytics-4/components/settings/SettingsEnhancedMeasurementSwitch';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
