@@ -108,7 +108,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( fixtures.reportMetrics ),
+					body: JSON.stringify( {} ),
 				} );
 			} else if (
 				request
