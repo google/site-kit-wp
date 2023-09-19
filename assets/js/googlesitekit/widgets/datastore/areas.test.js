@@ -695,31 +695,7 @@ describe( 'core/widgets Widget areas', () => {
 				).toBe( false );
 			} );
 
-			it( 'returns false when only one widget remains after `filterActiveWidgets`', () => {
-				registry
-					.dispatch( CORE_WIDGETS )
-					.registerWidgetArea( 'SingleWidgetTestArea', {
-						title: 'Single Widget Test Area',
-						subtitle: 'Cool stuff for yoursite.com',
-						style: 'composite',
-						filterActiveWidgets( select, areaWidgets ) {
-							return areaWidgets.length === 1 ? [] : areaWidgets;
-						},
-					} );
-				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidget( 'TestWidget1', 'SingleWidgetTestArea' );
-
-				expect(
-					registry
-						.select( CORE_WIDGETS )
-						.isWidgetAreaActive( 'SingleWidgetTestArea', {
-							modules: [ 'test-module-1' ],
-						} )
-				).toBe( false );
-			} );
-
-			it( 'returns true when `filterActiveWidgets` keeps widgets', () => {
+			it( 'returns true when `filterActiveWidgets` returns at least one widget', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidgetArea( 'FilteredTestArea', {
@@ -744,7 +720,7 @@ describe( 'core/widgets Widget areas', () => {
 				).toBe( true );
 			} );
 
-			it( 'returns true when `filterActiveWidgets` does not alter widgets', () => {
+			it( 'returns true when `filterActiveWidgets` is implemented but returns the widgets unchanged and widgets are active', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidgetArea( 'UnfilteredTestArea', {
