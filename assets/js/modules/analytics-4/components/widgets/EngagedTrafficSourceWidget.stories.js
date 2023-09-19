@@ -38,8 +38,8 @@ const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
 	dimensions: [ 'sessionDefaultChannelGroup' ],
-	metrics: [ { name: 'engagementRate' } ],
-	orderBy: 'engagementRate',
+	metrics: [ { name: 'engagedSessions' } ],
+	orderBy: 'engagedSessions',
 	limit: 1,
 };
 
