@@ -24,6 +24,6 @@
       "supportVersions": false,
       "supportZones": false
     },
-    "tagIds": [ "measurementID", "GT-12345" ]
+    "tagIds": [ "G-500", "GT-12345" ]
   }
 }
