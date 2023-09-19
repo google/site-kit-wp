@@ -103,6 +103,9 @@ export function registerDefaults( widgetsAPI ) {
 			priority: 1,
 			CTA: ChangeMetricsLink,
 			filterActiveWidgets( select, areaWidgets ) {
+				// Prevent showing only one widget in this area when
+				// only Search Console is shared.s
+				// See: https://github.com/google/site-kit-wp/issues/7435
 				return areaWidgets.length === 1 ? [] : areaWidgets;
 			},
 		},
