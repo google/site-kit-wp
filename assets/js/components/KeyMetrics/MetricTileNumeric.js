@@ -33,6 +33,8 @@ import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
 import MetricTileError from './MetricTileError';
 import MetricTileLoader from './MetricTileLoader';
+import { Tooltip } from 'googlesitekit-components';
+import InfoIcon from '../../../svg/icons/info-green.svg';
 
 export default function MetricTileNumeric( props ) {
 	const {
@@ -46,6 +48,7 @@ export default function MetricTileNumeric( props ) {
 		currentValue,
 		error,
 		moduleSlug,
+		infoTooltip,
 	} = props;
 
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
@@ -63,9 +66,25 @@ export default function MetricTileNumeric( props ) {
 	return (
 		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
-				<h3 className="googlesitekit-km-widget-tile__title">
-					{ title }
-				</h3>
+				<div className="googlesitekit-km-widget-tile__title-container">
+					<h3 className="googlesitekit-km-widget-tile__title">
+						{ title }
+					</h3>
+					{ infoTooltip && (
+						<Tooltip
+							tooltipClassName="googlesitekit-km-widget-tile-title__tooltip"
+							title={ infoTooltip }
+							placement="top"
+							enterTouchDelay={ 0 }
+							leaveTouchDelay={ 5000 }
+							interactive
+						>
+							<span>
+								<InfoIcon width="16" height="16" />
+							</span>
+						</Tooltip>
+					) }
+				</div>
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <MetricTileLoader /> }
 					{ ! loading && (

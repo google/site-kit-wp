@@ -47,6 +47,10 @@
 			padding: 18px 24px;
 		}
 
+		.googlesitekit-km-widget-tile__title-container {
+			display: flex;
+		}
+
 		.googlesitekit-km-widget-tile__title {
 			color: $c-neutral-n-500;
 			flex-basis: 50%;
@@ -157,10 +161,6 @@
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
 			margin: 0;
-		}
-
-		.googlesitekit-km-widget-tile__title-container {
-			display: flex;
 		}
 	}
 
