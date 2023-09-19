@@ -105,7 +105,7 @@ function LoyalVisitorsWidget( { Widget } ) {
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'Loyal visitors', 'google-site-kit' ) }
+			title={ __( 'Returning visitors', 'google-site-kit' ) }
 			metricValue={ currentPercentage }
 			metricValueFormat={ format }
 			subText={ sprintf(
