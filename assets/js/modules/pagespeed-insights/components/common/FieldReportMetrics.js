@@ -43,7 +43,7 @@ export default function FieldReportMetrics( { data, error } ) {
 		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
 		CUMULATIVE_LAYOUT_SHIFT_SCORE: cumulativeLayoutShift,
 		FIRST_INPUT_DELAY_MS: firstInputDelay,
-		EXPERIMENTAL_INTERACTION_TO_NEXT_PAINT: interactionToNextPaint,
+		INTERACTION_TO_NEXT_PAINT: interactionToNextPaint,
 	} = data?.loadingExperience?.metrics || {};
 
 	if ( error ) {
@@ -166,7 +166,6 @@ export default function FieldReportMetrics( { data, error } ) {
 							firstInputDelay.percentile
 						) }
 						category={ firstInputDelay.category }
-						isLast={ ! interactionToNextPaint }
 					/>
 					<ReportMetric
 						title={ _x(
@@ -186,9 +185,7 @@ export default function FieldReportMetrics( { data, error } ) {
 						category={
 							interactionToNextPaint?.category || CATEGORY_AVERAGE
 						}
-						experimental
-						isLast={ !! interactionToNextPaint }
-						isHidden={ ! interactionToNextPaint }
+						isLast
 					/>
 				</tbody>
 			</table>

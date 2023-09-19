@@ -55,7 +55,7 @@ module.exports = async ( { config } ) => {
 				{
 					loader: 'postcss-loader',
 					options: {
-						config: {
+						postcssOptions: {
 							path: './',
 						},
 					},

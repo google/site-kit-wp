@@ -283,6 +283,39 @@ describe( 'core/widgets Widget areas', () => {
 					[ slug ]: { ...differentSettings, slug },
 				} );
 			} );
+
+			it( 'should register a widget area with a `filterActiveWidgets` function', () => {
+				const slug = 'filtered-widgets';
+				const filterActiveWidgetsMock = jest.fn();
+				const settings = {
+					priority: 10,
+					title: 'Filtered Widgets',
+					subtitle: 'Filtered widgets only!',
+					Icon: SiteKitLogo,
+					style: 'boxes',
+					filterActiveWidgets: filterActiveWidgetsMock,
+				};
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( slug, settings );
+				const state = store.getState();
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaRegistered( slug )
+				).toBe( true );
+
+				// Ensure the original settings are registered.
+				expect( state.areas ).toMatchObject( {
+					[ slug ]: { ...settings, slug },
+				} );
+
+				// Validate that filterActiveWidgets is correctly registered
+				expect( state.areas[ slug ].filterActiveWidgets ).toBe(
+					filterActiveWidgetsMock
+				);
+			} );
 		} );
 	} );
 
@@ -634,6 +667,82 @@ describe( 'core/widgets Widget areas', () => {
 							modules: [ 'test-module-4' ],
 						} )
 				).toBe( false );
+			} );
+
+			it( 'returns false when `filterActiveWidgets` removes all widgets', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'FilteredTestArea', {
+						title: 'Filtered Test Area',
+						subtitle: 'Cool stuff for yoursite.com',
+						style: 'composite',
+						// eslint-disable-next-line no-unused-vars
+						filterActiveWidgets( select, areaWidgets ) {
+							return [];
+						},
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget1', 'FilteredTestArea' );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget2', 'FilteredTestArea' );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'FilteredTestArea' )
+				).toBe( false );
+			} );
+
+			it( 'returns true when `filterActiveWidgets` returns at least one widget', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'FilteredTestArea', {
+						title: 'Filtered Test Area',
+						subtitle: 'Cool stuff for yoursite.com',
+						style: 'composite',
+						filterActiveWidgets( select, areaWidgets ) {
+							return areaWidgets.length === 1 ? [] : areaWidgets;
+						},
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget1', 'FilteredTestArea' );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget2', 'FilteredTestArea' );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'FilteredTestArea' )
+				).toBe( true );
+			} );
+
+			it( 'returns true when `filterActiveWidgets` is implemented but returns the widgets unchanged and widgets are active', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'UnfilteredTestArea', {
+						title: 'Unfiltered Test Area',
+						subtitle: 'More cool stuff for yoursite.com',
+						style: 'composite',
+						filterActiveWidgets( select, areaWidgets ) {
+							return areaWidgets;
+						},
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget1', 'UnfilteredTestArea' );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget2', 'UnfilteredTestArea' );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'UnfilteredTestArea' )
+				).toBe( true );
 			} );
 		} );
 

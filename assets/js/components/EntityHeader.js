@@ -129,7 +129,12 @@ const EntityHeader = () => {
 				className="googlesitekit-entity-header__details"
 			>
 				<p>{ currentEntityTitle }</p>
-				<Link href={ entityURL } aria-label={ entityURL } external>
+				<Link
+					secondary
+					href={ entityURL }
+					aria-label={ entityURL }
+					external
+				>
 					{ url }
 				</Link>
 			</div>

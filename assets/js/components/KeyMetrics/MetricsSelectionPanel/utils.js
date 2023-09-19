@@ -1,7 +1,7 @@
 /**
- * Side Effect to initialize `google` global.
+ * Metric Selection Panel utils.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
-if ( ! Object.prototype.hasOwnProperty.call( global, 'google' ) ) {
-	global.google = {};
-}
+/**
+ * Sorts an array without causing the mutation if the given parameter is an array.
+ * If the parameter is not an array, it returns the parameter as is.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array|*} arr Param to be sorted.
+ * @return {Array|*} 	Safely sorted array without mutation.
+ */
+export const safelySort = ( arr ) => {
+	return Array.isArray( arr ) ? [ ...arr ].sort() : arr;
+};

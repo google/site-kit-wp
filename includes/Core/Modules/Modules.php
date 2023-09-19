@@ -135,7 +135,7 @@ final class Modules {
 	/**
 	 * REST_Dashboard_Sharing_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.109.0
 	 * @var REST_Dashboard_Sharing_Controller
 	 */
 	private $dashboard_sharing_controller;
