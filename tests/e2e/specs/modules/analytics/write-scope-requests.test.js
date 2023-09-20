@@ -71,7 +71,9 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 					body: JSON.stringify( {
 						// eslint-disable-next-line sitekit/acronym-case
-						accountTicketId: 'abc123',
+						accountTicketId: `${ Math.ceil(
+							100000 * Math.random()
+						) }`,
 					} ),
 				} );
 			} else if (
@@ -149,6 +151,7 @@ describe( 'Analytics write scope requests', () => {
 	it( 'prompts for additional permissions during a new Analytics account creation if the user has not granted the Analytics provisioning scope', async () => {
 		interceptCreatePropertyRequest = true;
 		interceptCreateWebDataStreamRequest = true;
+
 		await activatePlugin(
 			'e2e-tests-module-setup-analytics-api-mock-no-account'
 		);
@@ -186,13 +189,13 @@ describe( 'Analytics write scope requests', () => {
 		);
 
 		// They should be redirected to the Analytics TOS.
-		// await page.waitForRequest( ( req ) =>
-		// 	req
-		// 		.url()
-		// 		.match(
-		// 			encodeURIComponent( 'analytics.google.com/analytics/web' )
-		// 		)
-		// );
+		await page.waitForRequest( ( req ) =>
+			req
+				.url()
+				.match(
+					encodeURIComponent( 'analytics.google.com/analytics/web' )
+				)
+		);
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
