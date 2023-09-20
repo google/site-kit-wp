@@ -68,9 +68,7 @@ function AdSenseAlerts() {
 						key={ id }
 						id={ id }
 						description={ description }
-						WinImageSVG={ () => (
-							<NotificationAlertSVG height="136" />
-						) }
+						WinImageSVG={ NotificationAlertSVG }
 						format={ format || 'small' }
 						ctaLink={ ctaURL }
 						ctaLabel={ ctaLabel }
