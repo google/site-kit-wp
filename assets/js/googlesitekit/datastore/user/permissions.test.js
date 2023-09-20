@@ -408,6 +408,38 @@ describe( 'core/user authentication', () => {
 
 				enabledFeatures.delete( 'ga4Reporting' );
 			} );
+
+			it( 'should not include `analytics-4` module if the dashboardView is UA', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities(
+						capabilitiesWithPermission.permissions
+					);
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					...FIXTURES,
+					// Omit GA4 from the connected modules, only connecting Analytics
+					// (UA).
+					//
+					// This is the only way to force the Dashboard View to be UA.
+					connectedModules[ 0 ],
+				] );
+
+				const viewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( viewableModules ).toEqual( [
+					'search-console',
+					'pagespeed-insights',
+					'analytics',
+				] );
+
+				expect( viewableModules ).not.toContain( 'analytics-4' );
+
+				enabledFeatures.delete( 'ga4Reporting' );
+			} );
 		} );
 
 		describe( 'canViewSharedModule', () => {
@@ -524,6 +556,40 @@ describe( 'core/user authentication', () => {
 					.canViewSharedModule( 'search-console' );
 
 				expect( canViewSharedModule ).toBe( true );
+			} );
+
+			it( 'should treat `analytics` as `analytics-4` when the dashboard view is GA4', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					...capabilitiesWithPermission.permissions,
+					// Set the `analytics` permission to `false` to help verify that the
+					// `analytics` module is treated as `analytics-4` when the dashboard
+					// view is GA4.
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+				} );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						shareable: true,
+					},
+					{
+						slug: 'analytics-4',
+						name: 'Analytics-4',
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+				] );
+
+				const canViewSharedAnalytics = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'analytics' );
+
+				expect( canViewSharedAnalytics ).toBe( true );
+
+				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 		} );
 	} );
