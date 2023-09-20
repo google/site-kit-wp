@@ -11,11 +11,21 @@ exports[`TopTrafficSourceWidget renders correctly with the expected metrics 1`] 
       <div
         class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text"
       >
-        <h3
-          class="googlesitekit-km-widget-tile__title"
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
         >
-          Top traffic source
-        </h3>
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Top traffic source
+          </h3>
+          <span
+            class=""
+            title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
+          >
+            <svg />
+          </span>
+        </div>
         <div
           class="googlesitekit-km-widget-tile__body"
         >
@@ -111,11 +121,21 @@ exports[`TopTrafficSourceWidget retries both reports when an error is encountere
       <div
         class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text"
       >
-        <h3
-          class="googlesitekit-km-widget-tile__title"
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
         >
-          Top traffic source
-        </h3>
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Top traffic source
+          </h3>
+          <span
+            class=""
+            title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
+          >
+            <svg />
+          </span>
+        </div>
         <div
           class="googlesitekit-km-widget-tile__body"
         >

@@ -33,6 +33,7 @@ import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
 import MetricTileError from './MetricTileError';
 import MetricTileLoader from './MetricTileLoader';
+import MetricTileHeader from './MetricTileHeader';
 
 export default function MetricTileNumeric( props ) {
 	const {
@@ -46,6 +47,7 @@ export default function MetricTileNumeric( props ) {
 		currentValue,
 		error,
 		moduleSlug,
+		infoTooltip,
 	} = props;
 
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
@@ -63,9 +65,7 @@ export default function MetricTileNumeric( props ) {
 	return (
 		<Widget noPadding>
 			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
-				<h3 className="googlesitekit-km-widget-tile__title">
-					{ title }
-				</h3>
+				<MetricTileHeader title={ title } infoTooltip={ infoTooltip } />
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <MetricTileLoader /> }
 					{ ! loading && (
@@ -110,4 +110,5 @@ MetricTileNumeric.propTypes = {
 		PropTypes.object,
 	] ),
 	moduleSlug: PropTypes.string.isRequired,
+	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 };
