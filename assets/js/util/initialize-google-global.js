@@ -17,5 +17,5 @@
  */
 
 if ( ! Object.prototype.hasOwnProperty.call( global, 'google' ) ) {
-	global.google = undefined;
+	global.google = {};
 }

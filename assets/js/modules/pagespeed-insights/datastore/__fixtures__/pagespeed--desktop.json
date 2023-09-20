@@ -25,7 +25,7 @@
         ],
         "category": "AVERAGE"
       },
-      "EXPERIMENTAL_INTERACTION_TO_NEXT_PAINT": {
+      "INTERACTION_TO_NEXT_PAINT": {
         "percentile": 51,
         "distributions": [
           {
