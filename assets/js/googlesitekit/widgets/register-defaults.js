@@ -27,7 +27,10 @@ import { __ } from '@wordpress/i18n';
  */
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
-import { CORE_USER } from '../datastore/user/constants';
+import {
+	CORE_USER,
+	allKeyMetricsTileWidgets,
+} from '../datastore/user/constants';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
 import {
@@ -108,7 +111,7 @@ export function registerDefaults( widgetsAPI ) {
 				// See: https://github.com/google/site-kit-wp/issues/7435
 				if (
 					areaWidgets.length === 1 &&
-					areaWidgets[ 0 ].slug !== 'keyMetricsSetupCTA'
+					allKeyMetricsTileWidgets.includes( areaWidgets[ 0 ].slug )
 				) {
 					return [];
 				}
