@@ -69,11 +69,15 @@ export default function Metrics( { savedMetrics } ) {
 
 				const widget = select( CORE_WIDGETS ).getWidget( metric );
 
+				KEY_METRICS_WIDGETS[ metric ].disconnectedModules = [];
+
 				widget.modules.forEach( ( slug ) => {
 					const module = getModule( slug );
-					KEY_METRICS_WIDGETS[ metric ].isModuleConnected =
-						module?.connected;
-					KEY_METRICS_WIDGETS[ metric ].moduleName = module?.name;
+					if ( ! module?.connected ) {
+						KEY_METRICS_WIDGETS[ metric ].disconnectedModules.push(
+							module?.name
+						);
+					}
 				} );
 
 				return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
@@ -83,7 +87,7 @@ export default function Metrics( { savedMetrics } ) {
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
 			{ Object.keys( availableMetrics ).map( ( slug ) => {
-				const { title, description, isModuleConnected, moduleName } =
+				const { title, description, disconnectedModules } =
 					availableMetrics[ slug ];
 
 				const id = `key-metric-selection-checkbox-${ slug }`;
@@ -95,8 +99,7 @@ export default function Metrics( { savedMetrics } ) {
 						slug={ slug }
 						title={ title }
 						description={ description }
-						isModuleConnected={ !! isModuleConnected }
-						moduleName={ moduleName }
+						disconnectedModules={ disconnectedModules }
 					/>
 				);
 			} ) }
