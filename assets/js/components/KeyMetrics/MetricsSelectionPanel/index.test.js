@@ -226,6 +226,11 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should not list metrics dependent on modules that a view-only user does not have access to', () => {
+			const settingsRegexp = new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/settings'
+			);
+			fetchMock.get( settingsRegexp, { body: {}, status: 200 } );
+
 			provideUserAuthentication( registry, { authenticated: false } );
 
 			provideKeyMetrics( registry );

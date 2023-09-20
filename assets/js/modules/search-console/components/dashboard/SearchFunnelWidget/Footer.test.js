@@ -91,6 +91,7 @@ describe( 'Footer', () => {
 		);
 		expect( container ).not.toHaveTextContent( 'Search Console' );
 		expect( container.firstChild ).toBeNull();
+		waitForDefaultTimeouts();
 	} );
 
 	it( 'should not make a analytics settings requests when the view context is "view only"', () => {

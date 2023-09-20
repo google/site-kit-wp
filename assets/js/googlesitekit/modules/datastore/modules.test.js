@@ -30,6 +30,7 @@ import {
 	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
@@ -45,6 +46,7 @@ import {
 	DASHBOARD_VIEW_UA,
 	MODULES_ANALYTICS,
 } from '../../../modules/analytics/datastore/constants';
+import fetchMock from 'fetch-mock';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -2189,7 +2191,12 @@ describe( 'core/modules modules', () => {
 				expect( shareableModules ).toEqual( {} );
 			} );
 
-			it( 'should not care if a module is internal when showing shared modules', () => {
+			it( 'should not care if a module is internal when showing shared modules', async () => {
+				const settingsRegexp = new RegExp(
+					'^/google-site-kit/v1/modules/analytics/data/settings'
+				);
+				fetchMock.get( settingsRegexp, { body: {}, status: 200 } );
+
 				provideModuleRegistrations( registry );
 				registry
 					.dispatch( CORE_MODULES )
@@ -2210,6 +2217,7 @@ describe( 'core/modules modules', () => {
 						( module ) => module.shareable
 					).length
 				).toEqual( Object.values( shareableModules ).length );
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'should not include `analytics` module if the dashboard view is GA4', () => {

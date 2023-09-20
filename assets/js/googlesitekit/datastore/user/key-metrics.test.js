@@ -655,7 +655,12 @@ describe( 'core/user key metrics', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', () => {
+			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', async () => {
+				const settingsRegexp = new RegExp(
+					'^/google-site-kit/v1/modules/analytics/data/settings'
+				);
+				fetchMock.get( settingsRegexp, { body: {}, status: 200 } );
+
 				provideUserAuthentication( registry, {
 					authenticated: false,
 				} );
@@ -683,9 +688,15 @@ describe( 'core/user key metrics', () => {
 						.select( CORE_USER )
 						.isKeyMetricAvailable( 'metricA' )
 				).toBe( false );
+				await waitForDefaultTimeouts();
 			} );
 
-			it( 'should return true if modules that the widget depends on are connected and accessible by a view-only user', () => {
+			it( 'should return true if modules that the widget depends on are connected and accessible by a view-only user', async () => {
+				const settingsRegexp = new RegExp(
+					'^/google-site-kit/v1/modules/analytics/data/settings'
+				);
+				fetchMock.get( settingsRegexp, { body: {}, status: 200 } );
+
 				provideUserAuthentication( registry );
 
 				provideModules( registry, [
@@ -719,6 +730,7 @@ describe( 'core/user key metrics', () => {
 						.select( CORE_USER )
 						.isKeyMetricAvailable( 'metricA' )
 				).toBe( true );
+				await waitForDefaultTimeouts();
 			} );
 		} );
 	} );
