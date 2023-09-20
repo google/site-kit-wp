@@ -16,4 +16,5 @@
  * limitations under the License.
  */
 
+export { default as SetupEnhancedMeasurementSwitch } from './SetupEnhancedMeasurementSwitch';
 export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
