@@ -134,6 +134,50 @@ describe( 'MetricsSelectionPanel', () => {
 			).toHaveTextContent( 'Top performing keywords' );
 		} );
 
+		it( 'should list module disconnect notice required modules are disconnected', () => {
+			provideKeyMetrics( registry );
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: false,
+					connected: false,
+				},
+				{
+					slug: 'search-console',
+					active: false,
+					connected: false,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+
+			render( <MetricsSelectionPanel />, { registry } );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-metrics'
+				)
+			).toHaveTextContent(
+				'Analytics 4 is disconnected, no data to show'
+			);
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-metrics'
+				)
+			).toHaveTextContent(
+				'Search Console is disconnected, no data to show'
+			);
+		} );
+
 		it( 'should disable unchecked metrics when four metrics are checked', () => {
 			const metrics = [
 				KM_ANALYTICS_LOYAL_VISITORS,
