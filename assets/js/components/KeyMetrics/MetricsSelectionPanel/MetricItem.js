@@ -42,8 +42,7 @@ export default function MetricItem( {
 	slug,
 	title,
 	description,
-	isModuleConnected,
-	moduleName,
+	disconnectedModules,
 } ) {
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -108,15 +107,18 @@ export default function MetricItem( {
 			>
 				{ description }
 
-				{ ! isModuleConnected && (
+				{ disconnectedModules.length > 0 && (
 					<div className="googlesitekit-km-selection-panel-metrics__metric-item-error">
 						{ sprintf(
 							/* translators: %s: module name. */
 							__(
-								'%s is disconnected, no data to show',
+								'%1$s %2$s disconnected, no data to show',
 								'google-site-kit'
 							),
-							moduleName
+							disconnectedModules.join( ' and ' ),
+							disconnectedModules.length > 1
+								? __( 'are', 'google-site-kit' )
+								: __( 'is', 'google-site-kit' )
 						) }
 					</div>
 				) }
@@ -130,6 +132,5 @@ MetricItem.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
-	isModuleConnected: PropTypes.bool,
-	moduleName: PropTypes.string,
+	disconnectedModules: PropTypes.array,
 };
