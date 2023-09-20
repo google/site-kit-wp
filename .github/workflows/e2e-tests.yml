@@ -130,6 +130,9 @@ jobs:
 
       - name: Run the tests
         run: npm run test:e2e
+        env:
+          # Temporary debugging
+          DEBUG_PHP: 1
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
