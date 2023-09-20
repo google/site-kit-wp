@@ -272,6 +272,123 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 		).toBe( false );
 	} );
 
+	describe.each( [
+		[ 'propertyID', PROPERTY_CREATE ],
+		[ 'webDataStreamID', WEBDATASTREAM_CREATE ],
+	] )( 'when the %s is changed to %s', ( settingID, settingCreate ) => {
+		it( 'should revert the switch from off to on', async () => {
+			const { getByLabelText, waitForRegistry } = render(
+				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				{
+					registry,
+				}
+			);
+
+			const switchControl = getByLabelText(
+				'Enable enhanced measurement'
+			);
+
+			switchControl.click();
+
+			await act( waitForRegistry );
+
+			expect( switchControl ).not.toBeChecked();
+
+			act( () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					[ settingID ]: settingCreate,
+				} );
+			} );
+
+			expect( switchControl ).toBeChecked();
+		} );
+
+		it( 'should not toggle the switch from on to off', () => {
+			const { getByLabelText } = render(
+				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				{
+					registry,
+				}
+			);
+
+			const switchControl = getByLabelText(
+				'Enable enhanced measurement'
+			);
+
+			expect( switchControl ).toBeChecked();
+
+			act( () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					[ settingID ]: settingCreate,
+				} );
+			} );
+
+			expect( switchControl ).toBeChecked();
+		} );
+	} );
+
+	it( "should set the switch according to the web data stream's streamEnabled value when changing propertyID", async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: PROPERTY_CREATE,
+		} );
+
+		const { getByLabelText, waitForRegistry } = render(
+			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			{
+				registry,
+			}
+		);
+
+		const switchControl = getByLabelText( 'Enable enhanced measurement' );
+
+		switchControl.click();
+
+		await act( waitForRegistry );
+
+		expect( switchControl ).not.toBeChecked();
+
+		act( () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				propertyID,
+			} );
+		} );
+
+		await act( waitForRegistry );
+
+		expect( switchControl ).toBeChecked();
+	} );
+
+	it( "should set the switch according to the web data stream's streamEnabled value when changing webDataStreamID", async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			webDataStreamID: WEBDATASTREAM_CREATE,
+		} );
+
+		const { getByLabelText, waitForRegistry } = render(
+			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			{
+				registry,
+			}
+		);
+
+		const switchControl = getByLabelText( 'Enable enhanced measurement' );
+
+		switchControl.click();
+
+		await act( waitForRegistry );
+
+		expect( switchControl ).not.toBeChecked();
+
+		act( () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				webDataStreamID,
+			} );
+		} );
+
+		await act( waitForRegistry );
+
+		expect( switchControl ).toBeChecked();
+	} );
+
 	describe( 'synchronization of enhanced measurement settings retrieval with loading states', () => {
 		beforeEach( () => {
 			setupRegistry();
