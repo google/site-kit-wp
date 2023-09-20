@@ -41,6 +41,19 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	const propertyID = properties[ 0 ]._id;
 	const webDataStreamID = webDataStreams[ 0 ]._id;
 
+	const enhancedMeasurementSettingsMock = {
+		fileDownloadsEnabled: null,
+		name: `properties/${ propertyID }/dataStreams/${ webDataStreamID }/enhancedMeasurementSettings`,
+		outboundClicksEnabled: null,
+		pageChangesEnabled: null,
+		scrollsEnabled: null,
+		searchQueryParameter: 'q,s,search,query,keyword',
+		siteSearchEnabled: null,
+		streamEnabled: true,
+		uriQueryParameter: null,
+		videoEngagementEnabled: null,
+	};
+
 	let registry;
 
 	function setupRegistry() {
@@ -83,7 +96,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetEnhancedMeasurementSettings(
-				{ streamEnabled: true },
+				enhancedMeasurementSettingsMock,
 				{ propertyID, webDataStreamID }
 			);
 		registry
@@ -396,19 +409,6 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			const enhancedMeasurementSettingsEndpoint = new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
 			);
-
-			const enhancedMeasurementSettingsMock = {
-				fileDownloadsEnabled: null,
-				name: `properties/${ propertyID }/dataStreams/${ webDataStreamID }/enhancedMeasurementSettings`,
-				outboundClicksEnabled: null,
-				pageChangesEnabled: null,
-				scrollsEnabled: null,
-				searchQueryParameter: 'q,s,search,query,keyword',
-				siteSearchEnabled: null,
-				streamEnabled: true,
-				uriQueryParameter: null,
-				videoEngagementEnabled: null,
-			};
 
 			fetchMock.getOnce( enhancedMeasurementSettingsEndpoint, {
 				status: 200,
