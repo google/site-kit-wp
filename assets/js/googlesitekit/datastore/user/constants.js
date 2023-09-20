@@ -71,3 +71,8 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 ];
+
+export const allKeyMetricsTileWidgets = [
+	...keyMetricsGA4Widgets,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+];
