@@ -9,7 +9,6 @@
 	"files.exclude": {
 		"dist/": true,
 		"node_modules/": true,
-		"tests/backstop/**": true,
 		"third-party/": true,
 		"vendor/": true
 	},
@@ -29,8 +28,5 @@
 	},
 	"phpcs.enable": true,
 	"phpcs.executablePath": "vendor/bin/phpcs",
-	"stylelint.validate": [
-		"css",
-		"scss"
-	]
+	"stylelint.validate": [ "css", "scss" ]
 }
