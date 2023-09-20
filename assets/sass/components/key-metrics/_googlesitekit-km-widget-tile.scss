@@ -201,19 +201,20 @@
 				.googlesitekit-error-retry-text {
 					color: $c-neutral-n-900;
 					margin: 0;
-
-					// Removes the external link icon.
-					.googlesitekit-cta-link--external {
-						background: none;
-						color: $c-teal-t-500;
-						padding-right: 0;
-					}
 				}
 
-				button {
+				button,
+				a.mdc-button {
 					font-weight: $fw-medium;
 					margin-top: 10px;
 					padding: 6px 16px;
+				}
+
+				// Removes the external link icon.
+				.googlesitekit-cta-link--external {
+					background: none;
+					color: $c-teal-t-500;
+					padding-right: 0;
 				}
 			}
 		}

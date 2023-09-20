@@ -19,37 +19,49 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { castArray } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import CTA from '../notifications/CTA';
-import ReportErrorActions from '../ReportErrorActions';
-import { __ } from '@wordpress/i18n';
+import CTA from '../../notifications/CTA';
+import ReportErrorActions from '../../ReportErrorActions';
+import GetHelpLink from './GetHelpLink';
+import { isInsufficientPermissionsError } from '../../../util/errors';
 
 export default function MetricTileError( props ) {
 	const { error, headerText, moduleSlug } = props;
+	const hasInsufficientPermissionsError = castArray( error ).some(
+		isInsufficientPermissionsError
+	);
 
 	return (
 		<div className="googlesitekit-km-widget-tile--error">
 			<CTA
-				title={ __( 'Data loading failed', 'google-site-kit' ) }
+				title={
+					hasInsufficientPermissionsError
+						? __( 'Insufficient permissions', 'google-site-kit' )
+						: __( 'Data loading failed', 'google-site-kit' )
+				}
 				headerText={ headerText }
 				description=""
 				error
 			>
-				<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
+				<ReportErrorActions
+					moduleSlug={ moduleSlug }
+					error={ error }
+					GetHelpLink={
+						hasInsufficientPermissionsError
+							? GetHelpLink
+							: undefined
+					}
+				/>
 			</CTA>
 		</div>
 	);
 }
-
-MetricTileError.propTypes = {
-	error: PropTypes.oneOfType( [
-		PropTypes.arrayOf( PropTypes.object ),
-		PropTypes.object,
-	] ).isRequired,
-	headerText: PropTypes.string,
-	moduleSlug: PropTypes.string.isRequired,
-};

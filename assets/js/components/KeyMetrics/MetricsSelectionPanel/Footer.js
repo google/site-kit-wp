@@ -52,9 +52,12 @@ import {
 import Link from '../../Link';
 import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';
+import useViewContext from '../../../hooks/useViewContext';
+import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { savedMetrics } ) {
+	const viewContext = useViewContext();
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -67,6 +70,7 @@ export default function Footer( { savedMetrics } ) {
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
 	);
+	const trackingCategory = `${ viewContext }_kmw-sidebar`;
 
 	const haveSettingsChanged = useMemo( () => {
 		// Arrays need to be sorted to match in `isEqual`.
@@ -102,6 +106,7 @@ export default function Footer( { savedMetrics } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const [ finalButtonText, setFinalButtonText ] = useState( null );
+	const [ wasSaved, setWasSaved ] = useState( false );
 
 	const currentButtonText =
 		savedMetrics?.length > 0 && haveSettingsChanged
@@ -115,19 +120,23 @@ export default function Footer( { savedMetrics } ) {
 
 		if ( ! error ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+			trackEvent( trackingCategory, 'metrics_sidebar_save' );
 			// lock the button label while panel is closing
 			setFinalButtonText( currentButtonText );
+			setWasSaved( true );
 		}
 	}, [
 		saveKeyMetricsSettings,
 		selectedMetrics,
 		setValue,
 		currentButtonText,
+		trackingCategory,
 	] );
 
 	const onCancelClick = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
+		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
+	}, [ setValue, trackingCategory ] );
 
 	const onSettingsClick = useCallback(
 		() => navigateTo( `${ settingsURL }#/admin-settings` ),
@@ -149,6 +158,7 @@ export default function Footer( { savedMetrics } ) {
 			if ( prevIsOpen !== isOpen ) {
 				if ( isOpen ) {
 					setFinalButtonText( null );
+					setWasSaved( false );
 				}
 			}
 		}
@@ -171,7 +181,8 @@ export default function Footer( { savedMetrics } ) {
 					disabled={
 						selectedMetrics?.length < 2 ||
 						selectedMetrics?.length > 4 ||
-						isSavingSettings
+						isSavingSettings ||
+						( ! isOpen && wasSaved )
 					}
 				>
 					{ finalButtonText || currentButtonText }

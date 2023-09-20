@@ -67,6 +67,14 @@ export default function ErrorNotifications() {
 	const showUnsatisfiedScopesAlertGTE =
 		ga4ModuleConnected && ! hasTagManagerReadScope;
 
+	let title = __( 'Error connecting Site Kit', 'google-site-kit' );
+	let ctaLabel = __( 'Redo the plugin setup', 'google-site-kit' );
+
+	if ( setupErrorCode === 'access_denied' ) {
+		title = __( 'Permissions Error', 'google-site-kit' );
+		ctaLabel = __( 'Redo setup', 'google-site-kit' );
+	}
+
 	return (
 		<Fragment>
 			<InternalServerError />
@@ -75,17 +83,11 @@ export default function ErrorNotifications() {
 				<BannerNotification
 					id="setup_error"
 					type="win-error"
-					title={ __(
-						'Error connecting Site Kit',
-						'google-site-kit'
-					) }
+					title={ title }
 					description={ setupErrorMessage }
 					isDismissible={ false }
 					ctaLink={ setupErrorRedoURL }
-					ctaLabel={ __(
-						'Redo the plugin setup',
-						'google-site-kit'
-					) }
+					ctaLabel={ ctaLabel }
 					learnMoreLabel={ __( 'Get help', 'google-site-kit' ) }
 					learnMoreURL={ errorTroubleshootingLinkURL }
 				/>
