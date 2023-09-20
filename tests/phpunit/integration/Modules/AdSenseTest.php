@@ -38,7 +38,7 @@ use ReflectionMethod;
 use WP_REST_Request;
 
 /**
- * @group Modules+
+ * @group Modules
  * @group AdSense
  */
 class AdSenseTest extends TestCase {
