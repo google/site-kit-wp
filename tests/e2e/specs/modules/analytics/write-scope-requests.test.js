@@ -124,7 +124,10 @@ describe( 'Analytics write scope requests', () => {
 					body: JSON.stringify( fixtures.googleTagSettings ),
 				} );
 			} else if (
-				request.url().match( '//analytics.google.com/analytics/web/' )
+				request
+					.url()
+					.match( '//analytics.google.com/analytics/web/' ) ||
+				request.url().match( '//accounts.google.com/accountchooser/' )
 			) {
 				request.respond( { status: 200 } );
 			} else {
@@ -189,7 +192,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForRequest( ( req ) =>
 			req
 				.url()
-				.includes(
+				.match(
 					encodeURIComponent( 'analytics.google.com/analytics/web' )
 				)
 		);
