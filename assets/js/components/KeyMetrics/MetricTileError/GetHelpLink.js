@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
@@ -40,3 +45,7 @@ export default function GetHelpLink( { linkURL } ) {
 		}
 	);
 }
+
+GetHelpLink.propTypes = {
+	linkURL: PropTypes.string.isRequired,
+};
