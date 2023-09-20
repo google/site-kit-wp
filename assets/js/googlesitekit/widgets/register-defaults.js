@@ -103,10 +103,17 @@ export function registerDefaults( widgetsAPI ) {
 			priority: 1,
 			CTA: ChangeMetricsLink,
 			filterActiveWidgets( select, areaWidgets ) {
-				// Prevent showing only one widget in this area when
+				// Prevent showing only one widget tile in this area when
 				// only Search Console is shared.
 				// See: https://github.com/google/site-kit-wp/issues/7435
-				return areaWidgets.length === 1 ? [] : areaWidgets;
+				if (
+					areaWidgets.length === 1 &&
+					areaWidgets[ 0 ].slug !== 'keyMetricsSetupCTA'
+				) {
+					return [];
+				}
+
+				return areaWidgets;
 			},
 		},
 		CONTEXT_MAIN_DASHBOARD_KEY_METRICS
