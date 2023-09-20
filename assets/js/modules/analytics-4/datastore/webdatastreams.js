@@ -444,8 +444,7 @@ const baseSelectors = {
 				? measurements
 				: [ measurements ];
 
-			const summaries =
-				select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+			let summaries = select( MODULES_ANALYTICS_4 ).getAccountSummaries();
 			if ( ! Array.isArray( summaries ) ) {
 				return undefined;
 			}
@@ -454,7 +453,8 @@ const baseSelectors = {
 			// so we can check it first because its more likely that the current
 			// account will contain a measurement ID that we are looking for.
 			const currentAccountID = select( MODULES_ANALYTICS ).getAccountID();
-			summaries.sort( ( { _id: accountID } ) =>
+			// Clone summaries to avoid mutating the original array.
+			summaries = [ ...summaries ].sort( ( { _id: accountID } ) =>
 				accountID === currentAccountID ? -1 : 0
 			);
 

@@ -20,12 +20,13 @@
  * Internal dependencies
  */
 import {
-	provideGatheringDataState,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -58,10 +59,12 @@ export default {
 					},
 				] );
 				provideUserAuthentication( registry );
-				provideGatheringDataState( registry, {
-					'analytics-4': false,
-					'search-console': false,
-				} );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveIsDataAvailableOnLoad( true );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsDataAvailableOnLoad( true );
 			};
 
 			return (
