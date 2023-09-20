@@ -66,16 +66,12 @@ export default function SettingsEnhancedMeasurementSwitch( {
 	);
 
 	const isLoadingProperties = useSelect( ( select ) => {
-		// TODO: Return false if there's no property ID? Maybe in isLoadingProperties()?
-		// Probably not an issue as UA will be removed by the time this is used.
 		return select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
 			hasModuleAccess: hasAnalytics4Access,
 		} );
 	} );
 
 	const isLoadingWebDataStreams = useSelect( ( select ) => {
-		// TODO: Return false if there's no property ID? Maybe in isLoadingWebDataStreams()?
-		// Probably not an issue as UA will be removed by the time this is used.
 		return select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
 			hasModuleAccess: hasAnalytics4Access,
 		} );

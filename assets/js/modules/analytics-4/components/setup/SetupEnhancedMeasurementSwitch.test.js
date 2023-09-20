@@ -75,7 +75,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 
 	describe.each( [
 		[
-			'account ID is changed',
+			'accountID is changed',
 			() => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					accountID: '1001',
@@ -83,7 +83,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 			},
 		],
 		[
-			'property ID is changed',
+			'propertyID is changed',
 			() => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: '2001',
@@ -91,7 +91,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 			},
 		],
 		[
-			'web data stream ID is changed',
+			'webDataStreamID is changed',
 			() => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					webDataStreamID: '3001',
