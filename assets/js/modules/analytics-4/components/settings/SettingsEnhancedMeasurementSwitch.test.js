@@ -147,11 +147,11 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	describe.each( [
 		[ 'propertyID', PROPERTY_CREATE ],
 		[ 'webDataStreamID', WEBDATASTREAM_CREATE ],
-	] )( 'when %s is %s', ( _, settingID, settingCreate ) => {
+	] )( 'when %s is %s', ( _, settingName, settingCreate ) => {
 		it( 'should render correctly, with the switch defaulting to the on position', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setSettings( { [ settingID ]: settingCreate } );
+				.setSettings( { [ settingName ]: settingCreate } );
 
 			const { container, getByLabelText } = render(
 				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
@@ -288,7 +288,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	describe.each( [
 		[ 'propertyID', PROPERTY_CREATE ],
 		[ 'webDataStreamID', WEBDATASTREAM_CREATE ],
-	] )( 'when the %s is changed to %s', ( settingID, settingCreate ) => {
+	] )( 'when the %s is changed to %s', ( settingName, settingCreate ) => {
 		it( 'should revert the switch from off to on', async () => {
 			const { getByLabelText, waitForRegistry } = render(
 				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
@@ -309,7 +309,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 			act( () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					[ settingID ]: settingCreate,
+					[ settingName ]: settingCreate,
 				} );
 			} );
 
@@ -332,7 +332,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 			act( () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					[ settingID ]: settingCreate,
+					[ settingName ]: settingCreate,
 				} );
 			} );
 

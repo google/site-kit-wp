@@ -71,9 +71,9 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 		[ 'webDataStreamID', WEBDATASTREAM_CREATE ],
 	] )(
 		'should not default the switch to the on position when the %s is initially %s and `isEnhancedMeasurementEnabled` is already `false`',
-		( settingID, settingCreate ) => {
+		( settingName, settingCreate ) => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-				[ settingID ]: settingCreate,
+				[ settingName ]: settingCreate,
 			} );
 
 			registry
