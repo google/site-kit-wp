@@ -996,7 +996,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the configured Analytics Data service object instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @return PropertiesEnhancedMeasurementService The Analytics Admin API service.
 	 */

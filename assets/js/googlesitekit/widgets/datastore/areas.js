@@ -81,7 +81,7 @@ export const actions = {
 	 *
 	 * @since 1.9.0
 	 * @since 1.107.0 Extended to support an optional CTA component.
-	 * @since n.e.x.t Extended to support an optional filterActiveWidgets function.
+	 * @since 1.110.0 Extended to support an optional filterActiveWidgets function.
 	 *
 	 * @param {string}      slug                           Widget Area's slug.
 	 * @param {Object}      settings                       Widget Area's settings.
@@ -185,7 +185,7 @@ export const selectors = {
 	 *
 	 * @since 1.47.0
 	 * @since 1.77.0 Add options.modules parameter.
-	 * @since n.e.x.t Introduced filterActiveWidgets support to allow custom filtering of active widgets.
+	 * @since 1.110.0 Introduced filterActiveWidgets support to allow custom filtering of active widgets.
 	 *
 	 * @param {Object}         state             Data store's state.
 	 * @param {string}         slug              Widget area's slug.
