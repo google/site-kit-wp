@@ -1397,7 +1397,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return true while matching properties', () => {
+			it( 'should return true while matching the account properties', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreamsBatch(
