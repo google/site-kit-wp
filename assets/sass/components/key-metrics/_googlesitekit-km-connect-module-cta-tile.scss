@@ -40,14 +40,14 @@
 
 		/* stylelint-disable-next-line scss/at-rule-no-unknown */
 		@container cta-tile (inline-size > 600px) {
-			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(3) {
+			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(4) {
 				display: flex;
 			}
 		}
 
 		/* stylelint-disable-next-line scss/at-rule-no-unknown */
 		@container cta-tile (inline-size > 900px) {
-			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(4) {
+			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(3) {
 				display: flex;
 			}
 		}
