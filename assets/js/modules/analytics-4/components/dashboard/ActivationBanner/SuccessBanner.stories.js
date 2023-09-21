@@ -28,10 +28,6 @@ const Template = () => <SuccessBanner />;
 export const Default = Template.bind( {} );
 Default.storyName = 'SuccessBanner';
 
-export const WithGA4ReportingEnabled = Template.bind( {} );
-WithGA4ReportingEnabled.storyName = 'SuccessBanner with GA4 Reporting';
-WithGA4ReportingEnabled.parameters = {};
-
 export default {
 	title: 'Modules/Analytics4/SuccessBanner',
 	decorators: [

@@ -42,6 +42,8 @@ import {
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
+import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 describe( 'MetricsSelectionPanel', () => {
 	let registry;
@@ -226,11 +228,6 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should not list metrics dependent on modules that a view-only user does not have access to', () => {
-			const settingsRegexp = new RegExp(
-				'^/google-site-kit/v1/modules/analytics/data/settings'
-			);
-			fetchMock.get( settingsRegexp, { body: {}, status: 200 } );
-
 			provideUserAuthentication( registry, { authenticated: false } );
 
 			provideKeyMetrics( registry );
@@ -257,6 +254,10 @@ describe( 'MetricsSelectionPanel', () => {
 				'googlesitekit_read_shared_module_data::["analytics-4"]': false,
 				'googlesitekit_read_shared_module_data::["search-console"]': true,
 			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( analytics4Fixtures.defaultSettings );
 
 			render( <MetricsSelectionPanel />, {
 				registry,

@@ -47,6 +47,7 @@ import {
 	MODULES_ANALYTICS,
 } from '../../../modules/analytics/datastore/constants';
 import fetchMock from 'fetch-mock';
+import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -2192,11 +2193,6 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'should not care if a module is internal when showing shared modules', async () => {
-				const settingsRegexp = new RegExp(
-					'^/google-site-kit/v1/modules/analytics/data/settings'
-				);
-				fetchMock.get( settingsRegexp, { body: {}, status: 200 } );
-
 				provideModuleRegistrations( registry );
 				registry
 					.dispatch( CORE_MODULES )
@@ -2205,6 +2201,10 @@ describe( 'core/modules modules', () => {
 				const shareableModules = registry
 					.select( CORE_MODULES )
 					.getShareableModules();
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( analytics4fixtures.defaultSettings );
 
 				expect(
 					Object.values( shareableModules ).every(

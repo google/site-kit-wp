@@ -145,7 +145,7 @@ describe( 'modules/analytics setup-flow', () => {
 				).toBeUndefined();
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBeUndefined();
+				).toBe( 'ga4' );
 
 				await untilResolved(
 					registry,

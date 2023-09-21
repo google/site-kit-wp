@@ -28,7 +28,7 @@
 	{
 		"_id": "1000",
 		"_propertyID": "1000",
-		"name": "properties/1000/dataStreams/2000",
+		"name": "properties/1000/dataStreams/1000",
 		"type": "WEB_DATA_STREAM",
 		"createTime": "2014-10-02T15:01:23Z",
 		"updateTime": "2014-10-02T15:01:23Z",

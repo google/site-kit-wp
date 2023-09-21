@@ -20,11 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	MODULES_ANALYTICS,
-	SETUP_FLOW_MODE_GA4,
-	FORM_SETUP,
-} from './constants';
+import { SETUP_FLOW_MODE_GA4, FORM_SETUP } from './constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
@@ -40,19 +36,9 @@ const baseSelectors = {
 	 *
 	 * @return {string} Setup flow mode.
 	 */
-	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
-		// Ensure the Analytics settings have loaded. If we check
-		// `select( MODULES_ANALYTICS ).getAccountID();` directly, it
-		// could return `undefined` because the settings are loading OR
-		// because accountID is not set. Ensuring the settings are loaded
-		// means an `undefined` accountID is legitimate.
-		// See: https://github.com/google/site-kit-wp/pull/3260#discussion_r623924928
-		if ( select( MODULES_ANALYTICS ).getSettings() === undefined ) {
-			return undefined;
-		}
-
+	getSetupFlowMode: () => {
 		return SETUP_FLOW_MODE_GA4;
-	} ),
+	},
 
 	/**
 	 * Determines whether GA4 controls should be displayed or not.

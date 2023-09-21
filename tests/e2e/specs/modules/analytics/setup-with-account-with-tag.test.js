@@ -129,7 +129,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			} else if (
 				request
 					.url()
-					.match( 'analytics-4/data/webdatastreams?propertyId=' )
+					.match( 'analytics-4/data/webdatastreams?propertyID=' )
 			) {
 				request.respond( {
 					status: 200,

@@ -40,6 +40,8 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
+import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -692,11 +694,6 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it( 'should return true if modules that the widget depends on are connected and accessible by a view-only user', async () => {
-				const settingsRegexp = new RegExp(
-					'^/google-site-kit/v1/modules/analytics/data/settings'
-				);
-				fetchMock.get( settingsRegexp, { body: {}, status: 200 } );
-
 				provideUserAuthentication( registry );
 
 				provideModules( registry, [
@@ -716,6 +713,10 @@ describe( 'core/user key metrics', () => {
 				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
 					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( analytics4Fixtures.defaultSettings );
 
 				expect(
 					registry

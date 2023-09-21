@@ -114,17 +114,6 @@ function filter_webdatastream_by_property_ids( $items, $property_ids ) {
 	);
 }
 
-function filter_webdatastream_by_property_id( $items, $propery_id ) {
-	return array_values(
-		array_filter(
-			$items,
-			function ( $item ) use ( $propery_id ) {
-				return $item['_propertyID'] === $propery_id;
-			}
-		)
-	);
-}
-
 add_action(
 	'rest_api_init',
 	function () {
@@ -377,7 +366,7 @@ add_action(
 			array(
 				'methods'             => 'GET',
 				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_webdatastreams ) {
-					$webdatastreams = filter_webdatastream_by_property_id( $ga4_webdatastreams, $request->get_param( 'propertyID' ) );
+					$webdatastreams = filter_webdatastream_by_property_ids( $ga4_webdatastreams, array( $request->get_param( 'propertyID' ) ) );
 
 					return $webdatastreams;
 				},

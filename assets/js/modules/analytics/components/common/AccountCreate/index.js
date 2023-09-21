@@ -44,7 +44,7 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
-import { getAccountDefaults as getAccountDefaultsGA4 } from '../../../../analytics-4/utils/account';
+import { getAccountDefaults as getAccountDefaults } from '../../../../analytics-4/utils/account';
 import { Cell } from '../../../../../material-components';
 import Link from '../../../../../components/Link';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
@@ -103,8 +103,6 @@ export default function AccountCreate() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { createAccount } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
-
-	const getAccountDefaults = getAccountDefaultsGA4;
 
 	const hasRequiredScope = hasEditScope;
 

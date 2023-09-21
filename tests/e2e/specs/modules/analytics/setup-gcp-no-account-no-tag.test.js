@@ -72,10 +72,12 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					status: 200,
 					body: '[]',
 				} );
-			} else if (
-				url.match( 'analytics/data/report?' ) ||
-				url.match( 'analytics-4/data/report?' )
-			) {
+			} else if ( url.match( 'analytics/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: '[]',
+				} );
+			} else if ( url.match( 'analytics-4/data/report?' ) ) {
 				request.respond( {
 					status: 200,
 					body: '{}',
@@ -193,18 +195,16 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			{ text: '' }
 		);
 
-		await expect( page ).toClick( '.mdc-select', {
-			text: '',
-		} );
+		await expect( page ).toClick(
+			'.googlesitekit-analytics__select-account'
+		);
 
-		await Promise.all( [
-			expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', {
+		await expect( page ).toClick(
+			'.mdc-menu-surface--open .mdc-list-item',
+			{
 				text: /test account a/i,
-			} ),
-			page.waitForResponse( ( res ) =>
-				res.url().match( 'modules/analytics-4/data' )
-			),
-		] );
+			}
+		);
 
 		await pageWait( 1000 );
 		await expect( page ).toClick( 'button', {
