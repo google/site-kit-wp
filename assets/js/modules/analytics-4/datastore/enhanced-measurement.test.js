@@ -407,7 +407,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						webDataStreamID
 					);
 
-				expect( streamEnabled ).toEqual( true );
+				expect( streamEnabled ).toBe( true );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -426,7 +426,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						webDataStreamID
 					);
 
-				expect( streamEnabled ).toEqual( false );
+				expect( streamEnabled ).toBe( false );
 			} );
 
 			it( 'should return `undefined` if the settings are not loaded', async () => {
@@ -465,7 +465,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						webDataStreamID
 					);
 
-				expect( streamEnabled ).toEqual( false );
+				expect( streamEnabled ).toBe( false );
 			} );
 		} );
 
@@ -490,7 +490,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						webDataStreamID
 					);
 
-				expect( hasChanged ).toEqual( false );
+				expect( hasChanged ).toBe( false );
 
 				// Change the settings.
 				registry
@@ -508,7 +508,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						webDataStreamID
 					);
 
-				expect( hasChangedAfterSet ).toEqual( true );
+				expect( hasChangedAfterSet ).toBe( true );
 			} );
 		} );
 	} );
