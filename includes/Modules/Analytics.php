@@ -98,8 +98,6 @@ final class Analytics extends Module
 	 */
 	const MODULE_SLUG = 'analytics';
 
-	const DASHBOARD_VIEW = 'universal-analytics';
-
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
@@ -152,8 +150,7 @@ final class Analytics extends Module
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
 				if ( Feature_Flags::enabled( 'ga4Reporting' ) && ! $this->authentication->is_authenticated() ) {
-					$settings              = $this->get_settings()->get();
-					$data['dashboardView'] = $settings['dashboardView'];
+					$settings = $this->get_settings()->get();
 				}
 
 				return $data;
@@ -277,19 +274,6 @@ final class Analytics extends Module
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			$fields = array_merge(
-				array(
-					'analytics_dashboard_view' => array(
-						'label' => __( 'Analytics dashboard view', 'google-site-kit' ),
-						'value' => 'google-analytics-4' === $settings['dashboardView'] ? __( 'Google Analytics 4 view', 'google-site-kit' ) : __( 'Universal Analytics view', 'google-site-kit' ),
-						'debug' => $settings['dashboardView'],
-					),
-				),
-				$fields
-			);
-		}
-
 		return $fields;
 	}
 
@@ -388,11 +372,6 @@ final class Analytics extends Module
 
 		// At this point, account creation was successful.
 		$new_settings['accountID'] = $account_id;
-
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			// For GA4-SPECIFIC provisioning callback, switch to GA4 dashboard view.
-			$new_settings['dashboardView'] = Analytics_4::DASHBOARD_VIEW;
-		}
 
 		$this->get_settings()->merge( $new_settings );
 

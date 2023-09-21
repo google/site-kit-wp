@@ -58,10 +58,6 @@ const isAnalytics4Active = ( select ) =>
 	select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 export const registerWidgets = ( widgets ) => {
-	const isPreloaded = ( select ) => {
-		return select( MODULES_ANALYTICS ).shouldPromptGA4DashboardView();
-	};
-
 	widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{
@@ -104,7 +100,6 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'search-console' ],
 			isActive: isAnalytics4Active,
-			isPreloaded,
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,

@@ -54,7 +54,6 @@ use WP_User;
  */
 class Analytics_4Test extends TestCase {
 
-	use AnalyticsDashboardView;
 	use Module_With_Data_Available_State_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Scopes_ContractTests;
@@ -1537,7 +1536,6 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_metrics( 'sessions', 'totalUsers' );
 
 		$this->enable_shared_credentials();
-		$this->set_dashboard_view_ga4();
 		$this->assertTrue( $this->analytics->is_shareable() );
 
 		$data = $this->analytics->get_data(
@@ -1570,7 +1568,6 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_dimensions( 'date', 'pageTitle' );
 
 		$this->enable_shared_credentials();
-		$this->set_dashboard_view_ga4();
 		$this->assertTrue( $this->analytics->is_shareable() );
 
 		$data = $this->analytics->get_data(
