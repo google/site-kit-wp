@@ -26,8 +26,11 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import * as fixtures from '../../../analytics/datastore/__fixtures__';
 import * as ga4Fixtures from '../../datastore/__fixtures__';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
@@ -147,12 +150,14 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	describe.each( [
 		[ 'propertyID', PROPERTY_CREATE ],
 		[ 'webDataStreamID', WEBDATASTREAM_CREATE ],
-	] )( 'when %s is %s', ( _, settingName, settingCreate ) => {
-		it( 'should render correctly, with the switch defaulting to the on position', () => {
+	] )( 'when %s is %s', ( settingName, settingCreate ) => {
+		beforeEach( () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setSettings( { [ settingName ]: settingCreate } );
+		} );
 
+		it( 'should render correctly, with the switch defaulting to the on position', () => {
 			const { container, getByLabelText } = render(
 				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
 				{
@@ -167,6 +172,27 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 			expect( switchControl ).toBeChecked();
+		} );
+
+		it( 'should not default the switch to the on position when `isEnhancedMeasurementEnabled` is already `false`', () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ENHANCED_MEASUREMENT_FORM, {
+					[ ENHANCED_MEASUREMENT_ENABLED ]: false,
+				} );
+
+			const { getByLabelText } = render(
+				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				{
+					registry,
+				}
+			);
+
+			const switchControl = getByLabelText(
+				'Enable enhanced measurement'
+			);
+
+			expect( switchControl ).not.toBeChecked();
 		} );
 	} );
 

@@ -25,7 +25,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
           <input
             class="mdc-switch__native-control"
             disabled=""
-            id="googlesitekit-switch-5"
+            id="googlesitekit-switch-7"
             readonly=""
             role="switch"
             type="checkbox"
@@ -35,7 +35,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
     </div>
     <label
       class=""
-      for="googlesitekit-switch-5"
+      for="googlesitekit-switch-7"
     >
       Enable enhanced measurement
     </label>
@@ -379,7 +379,7 @@ exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream
         >
           <input
             class="mdc-switch__native-control"
-            id="googlesitekit-switch-3"
+            id="googlesitekit-switch-4"
             readonly=""
             role="switch"
             type="checkbox"
@@ -389,7 +389,7 @@ exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream
     </div>
     <label
       class=""
-      for="googlesitekit-switch-3"
+      for="googlesitekit-switch-4"
     >
       Enable enhanced measurement
     </label>
