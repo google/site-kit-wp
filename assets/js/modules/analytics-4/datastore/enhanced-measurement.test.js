@@ -429,7 +429,28 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( streamEnabled ).toEqual( false );
 			} );
 
-			it( 'should return `false` if the settings are not available', () => {
+			it( 'should return `undefined` if the settings are not loaded', async () => {
+				fetchMock.get( enhancedMeasurementSettingsEndpoint, {
+					body: enhancedMeasurementSettingsMock,
+					status: 200,
+				} );
+
+				const streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamEnabled ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+			} );
+
+			it( 'should return `false` if the settings are loaded but the `streamEnabled` property is not present', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetEnhancedMeasurementSettings(
@@ -437,14 +458,14 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 						{ propertyID, webDataStreamID }
 					);
 
-				const streamNotLoaded = registry
+				const streamEnabled = registry
 					.select( MODULES_ANALYTICS_4 )
 					.isEnhancedMeasurementStreamEnabled(
 						propertyID,
 						webDataStreamID
 					);
 
-				expect( streamNotLoaded ).toEqual( false );
+				expect( streamEnabled ).toEqual( false );
 			} );
 		} );
 
