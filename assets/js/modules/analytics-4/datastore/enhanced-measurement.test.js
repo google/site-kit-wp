@@ -529,7 +529,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 					);
 			} );
 
-			it( 'should return true if neither the GA4 module settings or the enhanced measurement settings have changed', () => {
+			it( 'should return `false` if neither the GA4 module settings or the enhanced measurement settings have changed', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
@@ -537,7 +537,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return true if the GA4 module settings have changed', () => {
+			it( 'should return `true` if the GA4 module settings have changed', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setSettings( { propertyID: '54321' } );
@@ -549,7 +549,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				).toBe( true );
 			} );
 
-			it( 'should return true if the enhanced measurement settings have changed', () => {
+			it( 'should return `true` if the enhanced measurement settings have changed', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setEnhancedMeasurementSettings(

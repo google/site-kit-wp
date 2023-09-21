@@ -458,7 +458,6 @@ const baseSelectors = {
 			haveEnhancedMeasurementSettingsChanged,
 			haveSettingsChanged,
 		} = select( MODULES_ANALYTICS_4 );
-
 		if ( haveSettingsChanged() ) {
 			return true;
 		}
