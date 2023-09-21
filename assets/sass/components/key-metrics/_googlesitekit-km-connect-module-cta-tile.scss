@@ -19,8 +19,38 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-widget--connectModuleCTATile {
+
+		container: cta-tile / inline-size;
 		display: flex;
-		flex-direction: column;
+
+		.googlesitekit-km-connect-module-cta-tile__ghost-card {
+			display: none;
+			height: 90px;
+			margin-right: $grid-gap-desktop / 2;
+			max-height: 90px;
+		}
+
+		/* stylelint-disable-next-line scss/at-rule-no-unknown */
+		@container cta-tile (inline-size > 400px) {
+			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(2) {
+				display: flex;
+				margin-left: $grid-gap-desktop / 2;
+			}
+		}
+
+		/* stylelint-disable-next-line scss/at-rule-no-unknown */
+		@container cta-tile (inline-size > 600px) {
+			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(3) {
+				display: flex;
+			}
+		}
+
+		/* stylelint-disable-next-line scss/at-rule-no-unknown */
+		@container cta-tile (inline-size > 900px) {
+			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(4) {
+				display: flex;
+			}
+		}
 	}
 
 	.googlesitekit-km-connect-module-cta-tile {
