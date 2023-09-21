@@ -16,7 +16,7 @@ use Google\Site_Kit_Dependencies\Google_Client;
 /**
  * Class for managing GA4 datastream enhanced measurement settings.
  *
- * @since n.e.x.t
+ * @since 1.110.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class PropertiesEnhancedMeasurementService extends GoogleAnalyticsAdmin {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param Google_Client $client The client used to deliver requests.
 	 * @param string        $rootUrl The root URL used for requests to the service.
