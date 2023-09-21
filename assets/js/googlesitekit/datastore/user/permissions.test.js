@@ -29,11 +29,6 @@ import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import fetchMock from 'fetch-mock';
 import { enabledFeatures } from '../../../features';
-import {
-	DASHBOARD_VIEW_GA4,
-	DASHBOARD_VIEW_UA,
-	MODULES_ANALYTICS,
-} from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/user authentication', () => {
 	const capabilities = {
@@ -399,10 +394,6 @@ describe( 'core/user authentication', () => {
 					.dispatch( CORE_MODULES )
 					.receiveGetModules( [ ...FIXTURES, ...connectedModules ] );
 
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					dashboardView: DASHBOARD_VIEW_GA4,
-				} );
-
 				const viewableModules = registry
 					.select( CORE_USER )
 					.getViewableModules();
@@ -426,13 +417,14 @@ describe( 'core/user authentication', () => {
 					.receiveGetCapabilities(
 						capabilitiesWithPermission.permissions
 					);
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( [ ...FIXTURES, ...connectedModules ] );
-
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					dashboardView: DASHBOARD_VIEW_UA,
-				} );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					...FIXTURES,
+					// Omit GA4 from the connected modules, only connecting Analytics
+					// (UA).
+					//
+					// This is the only way to force the Dashboard View to be UA.
+					connectedModules[ 0 ],
+				] );
 
 				const viewableModules = registry
 					.select( CORE_USER )
@@ -571,8 +563,9 @@ describe( 'core/user authentication', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
 					...capabilitiesWithPermission.permissions,
-					// Set the `analytics` permission to `false` to help verify that the `analytics` module
-					// is indeed treated as `analytics-4` when the dashboard view is GA4.
+					// Set the `analytics` permission to `false` to help verify that the
+					// `analytics` module is treated as `analytics-4` when the dashboard
+					// view is GA4.
 					'googlesitekit_read_shared_module_data::["analytics"]': false,
 				} );
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
@@ -594,17 +587,7 @@ describe( 'core/user authentication', () => {
 					.select( CORE_USER )
 					.canViewSharedModule( 'analytics' );
 
-				expect( canViewSharedAnalytics ).toBe( false );
-
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					dashboardView: DASHBOARD_VIEW_GA4,
-				} );
-
-				const canViewSharedAnalytics4 = registry
-					.select( CORE_USER )
-					.canViewSharedModule( 'analytics' );
-
-				expect( canViewSharedAnalytics4 ).toBe( true );
+				expect( canViewSharedAnalytics ).toBe( true );
 
 				enabledFeatures.delete( 'ga4Reporting' );
 			} );

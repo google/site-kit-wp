@@ -33,9 +33,7 @@ import {
 	WebDataStreamSelect as GA4WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
 import { AccountSelect } from '../common';
-import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
-import EnableUniversalAnalytics from '../common/EnableUniversalAnalytics';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
@@ -78,10 +76,6 @@ export default function SetupFormGA4() {
 			</div>
 
 			{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
-
-			<EnableUniversalAnalytics>
-				<SetupUseSnippetSwitchUA />
-			</EnableUniversalAnalytics>
 		</Fragment>
 	);
 }

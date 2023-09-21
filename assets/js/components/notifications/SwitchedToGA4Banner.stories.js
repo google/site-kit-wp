@@ -18,10 +18,7 @@
  * Internal dependencies
  */
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import {
-	DASHBOARD_VIEW_GA4,
-	MODULES_ANALYTICS,
-} from '../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
@@ -85,7 +82,6 @@ export default {
 			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 				propertyID: 'UA-99999-9',
-				dashboardView: DASHBOARD_VIEW_GA4,
 				ownerID: 1,
 			} );
 			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
