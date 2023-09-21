@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -48,9 +48,26 @@ export default function SetupEnhancedMeasurementSwitch() {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
+	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			ENHANCED_MEASUREMENT_FORM,
+			ENHANCED_MEASUREMENT_ENABLED
+		)
+	);
+
 	const { setValues } = useDispatch( CORE_FORMS );
 
+	// If `isEnhancedMeasurementEnabled` is already defined in the first render, it means we're rendering this component
+	// after the user has actively selected the setting, in which case we don't want to override the setting to `true` in
+	// the `useEffect()` unless the account, property, or web data stream selection is subsequently changed.
+	const skipEffect = useRef( isEnhancedMeasurementEnabled !== undefined );
+
 	useEffect( () => {
+		if ( skipEffect.current ) {
+			skipEffect.current = false;
+			return;
+		}
+
 		setValues( ENHANCED_MEASUREMENT_FORM, {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
 		} );

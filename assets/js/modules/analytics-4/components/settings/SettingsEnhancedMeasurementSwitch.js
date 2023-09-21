@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -120,7 +120,23 @@ export default function SettingsEnhancedMeasurementSwitch( {
 	const { setEnhancedMeasurementStreamEnabled } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
+	// If `isEnhancedMeasurementEnabled` is already defined in the first render, and either `PROPERTY_CREATE` or
+	// `WEBDATASTREAM_CREATE` is selected, it means we're rendering this component after the user has actively
+	// selected the enhanced measurement setting for the creation flow, in which case we don't want to override
+	// the setting to `true` in the `useEffect()` unless the property or web data stream selection is subsequently
+	// changed.
+	const skipEffect = useRef(
+		( propertyID === PROPERTY_CREATE ||
+			webDataStreamID === WEBDATASTREAM_CREATE ) &&
+			isEnhancedMeasurementEnabled !== undefined
+	);
+
 	useEffect( () => {
+		if ( skipEffect.current ) {
+			skipEffect.current = false;
+			return;
+		}
+
 		if (
 			isEnhancedMeasurementStreamEnabled === undefined ||
 			! isValidPropertySelection( propertyID ) ||
