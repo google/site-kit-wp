@@ -41,6 +41,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
+import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { INVARIANT_INVALID_WEBDATASTREAM_ID } from '../../analytics-4/datastore/settings';
 import * as ga4fixtures from '../../analytics-4/datastore/__fixtures__';
 import {
@@ -757,6 +758,115 @@ describe( 'modules/analytics settings', () => {
 		} );
 
 		describe( 'canSubmitChanges', () => {
+			describe( 'required changes', () => {
+				const propertyID = '1000';
+				const webDataStreamID = '2000';
+
+				beforeEach( () => {
+					enabledFeatures.add( 'enhancedMeasurement' );
+
+					// Recreate the registry to ensure a clean settings state.
+					registry = createTestRegistry();
+
+					provideModules( registry, [
+						{
+							slug: 'analytics',
+							active: true,
+							connected: true,
+						},
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: false,
+						},
+					] );
+
+					registry
+						.dispatch( MODULES_ANALYTICS )
+						.receiveGetSettings( validSettings );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {
+							propertyID,
+							webDataStreamID,
+						} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetEnhancedMeasurementSettings(
+							{ streamEnabled: true },
+							{ propertyID, webDataStreamID }
+						);
+				} );
+
+				it( 'requires a change to analytics or analytics-4 settings to have been made', () => {
+					expect(
+						registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+					).toBe( false );
+
+					expect( () =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.__dangerousCanSubmitChanges()
+					).toThrow( INVARIANT_SETTINGS_NOT_CHANGED );
+				} );
+
+				it( 'accepts a change to analytics settings as a valid change', () => {
+					registry
+						.dispatch( MODULES_ANALYTICS )
+						.setSettings( { accountID: '1000' } );
+
+					expect(
+						registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+					).toBe( true );
+
+					expect( () =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.__dangerousCanSubmitChanges()
+					).not.toThrow();
+				} );
+
+				it( 'accepts a change to analytics-4 settings as a valid change', () => {
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						propertyID: '1001',
+					} );
+
+					expect(
+						registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+					).toBe( true );
+
+					expect( () =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.__dangerousCanSubmitChanges()
+					).not.toThrow();
+				} );
+
+				it( 'accepts a change to enhanced measurement settings as a valid change', () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementSettings(
+							propertyID,
+							webDataStreamID,
+							{
+								streamEnabled: false,
+							}
+						);
+
+					expect(
+						registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+					).toBe( true );
+
+					expect( () =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.__dangerousCanSubmitChanges()
+					).not.toThrow();
+				} );
+			} );
+
 			it( 'requires a valid accountID', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
