@@ -44,22 +44,23 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	const propertyID = properties[ 0 ]._id;
 	const webDataStreamID = webDataStreams[ 0 ]._id;
 
-	const enhancedMeasurementSettingsMock = {
-		fileDownloadsEnabled: null,
-		name: `properties/${ propertyID }/dataStreams/${ webDataStreamID }/enhancedMeasurementSettings`,
-		outboundClicksEnabled: null,
-		pageChangesEnabled: null,
-		scrollsEnabled: null,
-		searchQueryParameter: 'q,s,search,query,keyword',
-		siteSearchEnabled: null,
-		streamEnabled: true,
-		uriQueryParameter: null,
-		videoEngagementEnabled: null,
-	};
-
+	let enhancedMeasurementSettingsMock;
 	let registry;
 
 	function setupRegistry() {
+		enhancedMeasurementSettingsMock = {
+			fileDownloadsEnabled: null,
+			name: `properties/${ propertyID }/dataStreams/${ webDataStreamID }/enhancedMeasurementSettings`,
+			outboundClicksEnabled: null,
+			pageChangesEnabled: null,
+			scrollsEnabled: null,
+			searchQueryParameter: 'q,s,search,query,keyword',
+			siteSearchEnabled: null,
+			streamEnabled: true,
+			uriQueryParameter: null,
+			videoEngagementEnabled: null,
+		};
+
 		registry = createTestRegistry();
 
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
