@@ -22,10 +22,7 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	DASHBOARD_VIEW_GA4,
-	MODULES_ANALYTICS,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { GA4_AUTO_SWITCH_DATE } from '../../..//analytics-4/constants';
 import {
@@ -81,29 +78,6 @@ WithGA4Snippet.args = {
 			useSnippet: true,
 		} );
 	},
-};
-
-export const WithDashboardView = Template.bind( null );
-WithDashboardView.storyName = 'Settings with Dashboard View';
-WithDashboardView.args = {
-	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS ).selectProperty(
-			properties[ 0 ].id,
-			// eslint-disable-next-line sitekit/acronym-case
-			properties[ 0 ].internalWebPropertyId
-		);
-
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.setDashboardView( DASHBOARD_VIEW_GA4 );
-	},
-};
-WithDashboardView.parameters = {
-	features: [ 'ga4Reporting' ],
-};
-WithDashboardView.scenario = {
-	label: 'Modules/Analytics/Settings/SettingsView/WithDashboardView',
-	delay: 250,
 };
 
 export const PostGA4AutoSwitch = Template.bind( null );

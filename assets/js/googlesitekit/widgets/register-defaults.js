@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,15 +32,14 @@ import {
 	keyMetricsGA4Widgets,
 } from '../datastore/user/constants';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
-import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
+import { CORE_SITE } from '../datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
 import {
 	KeyMetricsSetupCTAWidget,
 	ChangeMetricsLink,
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
-import Badge from '../../components/Badge';
 import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
@@ -92,15 +90,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 		{
-			title: (
-				<Fragment>
-					{ __( 'Key metrics', 'google-site-kit' ) }
-					<Badge
-						className="googlesitekit-new-badge"
-						label={ __( 'New', 'google-site-kit' ) }
-					/>
-				</Fragment>
-			),
+			title: __( 'Key metrics', 'google-site-kit' ),
 			subtitle: __(
 				'Track progress towards your goals with tailored metrics',
 				'google-site-kit'

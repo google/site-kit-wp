@@ -25,20 +25,9 @@ import {
 	getCanUseSnippet,
 	isGA4DashboardView,
 	rollbackChanges,
-	shouldPromptGA4DashboardView,
 	submitChanges,
 	validateCanSubmitChanges,
 } from './settings';
-
-let initialSettings;
-if (
-	'undefined' !==
-	typeof global._googlesitekitDashboardSharingData?.dashboardView
-) {
-	initialSettings = {
-		dashboardView: global._googlesitekitDashboardSharingData?.dashboardView,
-	};
-}
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	ownedSettingsSlugs: [
@@ -59,9 +48,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'propertyID',
 		'trackingDisabled',
 		'useSnippet',
-		'dashboardView',
 	],
-	initialSettings,
 	submitChanges,
 	rollbackChanges,
 	validateCanSubmitChanges,
@@ -69,7 +56,5 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 
 baseModuleStore.selectors.getCanUseSnippet = getCanUseSnippet;
 baseModuleStore.selectors.isGA4DashboardView = isGA4DashboardView;
-baseModuleStore.selectors.shouldPromptGA4DashboardView =
-	shouldPromptGA4DashboardView;
 
 export default baseModuleStore;
