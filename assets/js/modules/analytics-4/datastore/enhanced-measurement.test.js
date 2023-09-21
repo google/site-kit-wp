@@ -26,6 +26,7 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 enhanced-measurement', () => {
 	let registry;
@@ -509,6 +510,62 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 					);
 
 				expect( hasChangedAfterSet ).toBe( true );
+			} );
+		} );
+
+		describe( 'haveAnyGA4SettingsChanged', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'enhancedMeasurement' );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { propertyID, webDataStreamID } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettingsMock,
+						{ propertyID, webDataStreamID }
+					);
+			} );
+
+			it( 'should return true if neither the GA4 module settings or the enhanced measurement settings have changed', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.haveAnyGA4SettingsChanged()
+				).toBe( false );
+			} );
+
+			it( 'should return true if the GA4 module settings have changed', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( { propertyID: '54321' } );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.haveAnyGA4SettingsChanged()
+				).toBe( true );
+			} );
+
+			it( 'should return true if the enhanced measurement settings have changed', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID,
+						{
+							...enhancedMeasurementSettingsMock,
+							streamEnabled: false,
+						}
+					);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.haveAnyGA4SettingsChanged()
+				).toBe( true );
 			} );
 		} );
 	} );
