@@ -50,6 +50,9 @@ export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
 		).length;
 	} );
 
+	// Only render the CTA if there are 3 or fewer GA4-dependent key metrics tiles.
+	// Otherwise, render `Null` to hide the CTA.
+	// If there are four GA4-dependent key metrics tiles, the `ConnectGA4CTAWidget` will be rendered instead.
 	const ConnectModuleCTAComponent =
 		ga4DependantKeyMetrics > 3 ? Null : ConnectModuleCTATile;
 
