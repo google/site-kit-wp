@@ -487,10 +487,10 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 			await act( waitForRegistry );
 
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( fetchMock ).toHaveFetched(
 				enhancedMeasurementSettingsEndpoint
 			);
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
 } );

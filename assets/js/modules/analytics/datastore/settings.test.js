@@ -24,7 +24,11 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
+	MODULES_ANALYTICS_4,
+} from '../../analytics-4/datastore/constants';
 import {
 	MODULES_ANALYTICS,
 	FORM_SETUP,
@@ -716,6 +720,169 @@ describe( 'modules/analytics settings', () => {
 							.getErrorForAction( 'submitChanges' )
 					).toEqual( error );
 					expect( console ).toHaveErrored();
+				} );
+
+				describe( 'when enhanced measurement is enabled', () => {
+					const propertyID = '1000';
+					const webDataStreamID = '2000';
+
+					const enhancedMeasurementSettingsEndpoint = new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+					);
+
+					const enabledSettingsMock = {
+						fileDownloadsEnabled: null,
+						name: 'properties/1000/dataStreams/2000/enhancedMeasurementSettings',
+						outboundClicksEnabled: null,
+						pageChangesEnabled: null,
+						scrollsEnabled: null,
+						searchQueryParameter: 'q,s,search,query,keyword',
+						siteSearchEnabled: null,
+						streamEnabled: true,
+						uriQueryParameter: null,
+						videoEngagementEnabled: null,
+					};
+
+					const disabledSettingsMock = {
+						...enabledSettingsMock,
+						streamEnabled: false,
+					};
+
+					beforeEach( () => {
+						enabledFeatures.add( 'enhancedMeasurement' );
+
+						const ga4Settings = {
+							...ga4fixtures.defaultSettings,
+							propertyID,
+							webDataStreamID,
+						};
+
+						fetchMock.postOnce( gaSettingsEndpoint, {
+							body: validSettings,
+						} );
+						fetchMock.postOnce( ga4SettingsEndpoint, {
+							body: ga4Settings,
+						} );
+
+						registry
+							.dispatch( MODULES_ANALYTICS_4 )
+							.setSettings( ga4Settings );
+
+						registry
+							.dispatch( MODULES_ANALYTICS_4 )
+							.receiveGetEnhancedMeasurementSettings(
+								disabledSettingsMock,
+								{ propertyID, webDataStreamID }
+							);
+
+						registry
+							.dispatch( CORE_FORMS )
+							.setValues( ENHANCED_MEASUREMENT_FORM, {
+								[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+							} );
+
+						fetchMock.postOnce(
+							enhancedMeasurementSettingsEndpoint,
+							{
+								status: 200,
+								body: enabledSettingsMock,
+							}
+						);
+					} );
+
+					it( 'should save the enhanced measurement settings if the setting has been changed', async () => {
+						await registry
+							.dispatch( MODULES_ANALYTICS )
+							.submitChanges();
+
+						expect( fetchMock ).toHaveFetched(
+							enhancedMeasurementSettingsEndpoint,
+							{
+								body: {
+									data: {
+										propertyID,
+										webDataStreamID,
+										enhancedMeasurementSettings:
+											enabledSettingsMock,
+									},
+								},
+							}
+						);
+						expect(
+							registry
+								.select( MODULES_ANALYTICS_4 )
+								.haveEnhancedMeasurementSettingsChanged(
+									propertyID,
+									webDataStreamID
+								)
+						).toBe( false );
+					} );
+
+					it( 'should not save the enhanced measurement settings if the form value is not defined', async () => {
+						registry
+							.dispatch( CORE_FORMS )
+							.setValues( ENHANCED_MEASUREMENT_FORM, {
+								[ ENHANCED_MEASUREMENT_ENABLED ]: undefined,
+							} );
+
+						await registry
+							.dispatch( MODULES_ANALYTICS )
+							.submitChanges();
+
+						expect( fetchMock ).not.toHaveFetched(
+							enhancedMeasurementSettingsEndpoint
+						);
+					} );
+
+					it( 'should not save the enhanced measurement settings if the setting has not been changed', async () => {
+						registry
+							.dispatch( MODULES_ANALYTICS_4 )
+							.receiveGetEnhancedMeasurementSettings(
+								enabledSettingsMock,
+								{ propertyID, webDataStreamID }
+							);
+
+						await registry
+							.dispatch( MODULES_ANALYTICS )
+							.submitChanges();
+
+						expect( fetchMock ).not.toHaveFetched(
+							enhancedMeasurementSettingsEndpoint
+						);
+					} );
+
+					it( 'should handle and return an error when saving enhanced measurement settings', async () => {
+						const errorObject = {
+							code: 'internal_error',
+							message: 'Something wrong happened.',
+							data: { status: 500 },
+						};
+
+						fetchMock.reset();
+						fetchMock.postOnce(
+							enhancedMeasurementSettingsEndpoint,
+							{
+								status: 500,
+								body: errorObject,
+							}
+						);
+
+						const { error: responseError } = await registry
+							.dispatch( MODULES_ANALYTICS_4 )
+							.submitChanges();
+
+						expect( fetchMock ).toHaveFetchedTimes( 1 );
+						expect( responseError ).toEqual( errorObject );
+						expect(
+							registry
+								.select( MODULES_ANALYTICS_4 )
+								.haveEnhancedMeasurementSettingsChanged(
+									propertyID,
+									webDataStreamID
+								)
+						).toBe( true );
+						expect( console ).toHaveErrored();
+					} );
 				} );
 			} );
 		} );
