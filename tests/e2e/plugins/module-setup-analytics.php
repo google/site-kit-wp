@@ -275,6 +275,27 @@ add_action(
 			true
 		);
 
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/analytics-4/data/property',
+			array(
+				'methods'             => 'GET',
+				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_properties ) {
+					$property_id = $request->get_param( 'propertyID' );
+
+					foreach ( $ga4_properties as $property ) {
+						if ( $property['_id'] === $property_id ) {
+							return $property;
+						}
+					}
+
+					return new \WP_Error( 'e2e:property_not_found' );
+				},
+				'permission_callback' => '__return_true',
+			),
+			true
+		);
+
 		// Called when switching properties for Analytics 4 to get the measurement ids.
 		register_rest_route(
 			REST_Routes::REST_ROOT,
