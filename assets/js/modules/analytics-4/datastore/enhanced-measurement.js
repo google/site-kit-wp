@@ -160,7 +160,7 @@ const baseActions = {
 	/**
 	 * Sets enhanced measurement settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {string} propertyID      The GA4 property ID to set enhanced measurement settings for.
 	 * @param {string} webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
@@ -191,7 +191,7 @@ const baseActions = {
 	/**
 	 * Sets the `streamEnabled` setting for a given web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {string}  propertyID      The GA4 property ID to set enhanced measurement settings for.
 	 * @param {string}  webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
@@ -250,7 +250,7 @@ const baseActions = {
 	/**
 	 * Resets enhanced measurement settings to their saved values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -264,7 +264,7 @@ const baseActions = {
 	/**
 	 * Updates enhanced measurement settings in the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {string} propertyID      The GA4 property ID to set enhanced measurement settings for.
 	 * @param {string} webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
@@ -380,7 +380,7 @@ const baseSelectors = {
 	/**
 	 * Gets the enhanced measurement settings for a given web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} propertyID      The GA4 property ID to fetch web data streams for.
@@ -395,7 +395,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the `streamEnabled` setting is enabled for a given web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} propertyID      The GA4 property ID to check.
@@ -410,7 +410,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the settings have changed compared to the saved settings for a given web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} propertyID      The GA4 property ID to check.
