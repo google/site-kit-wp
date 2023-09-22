@@ -109,28 +109,33 @@ export async function submitChanges( { select, dispatch } ) {
 			ENHANCED_MEASUREMENT_ENABLED
 		);
 
-		await dispatch(
-			MODULES_ANALYTICS_4
-		).setEnhancedMeasurementStreamEnabled(
-			propertyID,
-			webDataStreamID,
-			isEnhancedMeasurementEnabled
-		);
-
-		if (
-			select(
+		if ( isEnhancedMeasurementEnabled !== undefined ) {
+			await dispatch(
 				MODULES_ANALYTICS_4
-			).haveEnhancedMeasurementSettingsChanged(
+			).setEnhancedMeasurementStreamEnabled(
 				propertyID,
-				webDataStreamID
-			)
-		) {
-			const { error } = await dispatch(
-				MODULES_ANALYTICS_4
-			).updateEnhancedMeasurementSettings( propertyID, webDataStreamID );
+				webDataStreamID,
+				isEnhancedMeasurementEnabled
+			);
 
-			if ( error ) {
-				return { error };
+			if (
+				select(
+					MODULES_ANALYTICS_4
+				).haveEnhancedMeasurementSettingsChanged(
+					propertyID,
+					webDataStreamID
+				)
+			) {
+				const { error } = await dispatch(
+					MODULES_ANALYTICS_4
+				).updateEnhancedMeasurementSettings(
+					propertyID,
+					webDataStreamID
+				);
+
+				if ( error ) {
+					return { error };
+				}
 			}
 		}
 	}
