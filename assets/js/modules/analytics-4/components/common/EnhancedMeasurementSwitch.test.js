@@ -54,7 +54,7 @@ describe( 'EnhancedMeasurementSwitch', () => {
 
 		expect(
 			getByLabelText( 'Enable enhanced measurement' )
-		).toHaveAttribute( 'disabled' );
+		).toBeDisabled();
 	} );
 
 	it( 'should toggle the switch on click', () => {
