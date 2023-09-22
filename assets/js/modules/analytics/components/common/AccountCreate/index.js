@@ -31,7 +31,6 @@ import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
-	PROVISIONING_SCOPE,
 	EDIT_SCOPE,
 } from '../../../datastore/constants';
 import {
@@ -72,9 +71,6 @@ export default function AccountCreate() {
 	);
 	const isDoingCreateAccount = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isDoingCreateAccount()
-	);
-	const hasProvisioningScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( PROVISIONING_SCOPE )
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -130,20 +126,12 @@ export default function AccountCreate() {
 				} )
 			);
 		}
-	}, [
-		hasAccountCreateForm,
-		siteName,
-		siteURL,
-		timezone,
-		setValues,
-		getAccountDefaults,
-	] );
+	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
 
-		if ( ! hasProvisioningScope || ! hasEditScope ) {
-			scopes.push( PROVISIONING_SCOPE );
+		if ( ! hasEditScope ) {
 			scopes.push( EDIT_SCOPE );
 		}
 		// The GTM scope should be granted for GTE support, but
@@ -189,7 +177,6 @@ export default function AccountCreate() {
 	}, [
 		createAccount,
 		setIsNavigating,
-		hasProvisioningScope,
 		hasEditScope,
 		hasGTMScope,
 		setPermissionScopeError,

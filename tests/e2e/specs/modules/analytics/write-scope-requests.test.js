@@ -136,8 +136,7 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	beforeEach( async () => {
-		scope =
-			'https://www.googleapis.com/auth/analytics.provision https://www.googleapis.com/auth/analytics.edit';
+		scope = 'https://www.googleapis.com/auth/analytics.edit';
 
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setupSiteKit();
@@ -148,7 +147,7 @@ describe( 'Analytics write scope requests', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'prompts for additional permissions during a new Analytics account creation if the user has not granted the Analytics provisioning scope', async () => {
+	it( 'prompts for additional permissions during a new Analytics account creation if the user has not granted the Analytics edit scope', async () => {
 		interceptCreatePropertyRequest = true;
 		interceptCreateWebDataStreamRequest = true;
 
