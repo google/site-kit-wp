@@ -265,6 +265,12 @@ export function registerDefaults( widgetsAPI ) {
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
 
+		/**
+		 * This widget is only shown if the GA4 module is not connected,
+		 * AND if the user has four KMW tiles dependent on GA4.
+		 * If the user has selected less than four KMW tiles dependent on GA4,
+		 * we show the `ConnectGA4CTATileWidget` instead.
+		 */
 		widgetsAPI.registerWidget(
 			'keyMetricsConnectGA4All',
 			{
