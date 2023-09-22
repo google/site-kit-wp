@@ -20,8 +20,8 @@ const ACCOUNT_ID_A = '100';
 const ACCOUNT_ID_B = '101';
 
 const GA4_PROPERTY_ID_X = '1000';
-const GA4_PROPERTY_ID_Y = '2000';
-const GA4_PROPERTY_ID_Z = '3000';
+const GA4_PROPERTY_ID_Y = '1001';
+const GA4_PROPERTY_ID_Z = '1002';
 
 const GA4_WEBDATASTREAM_ID_X = '400';
 const GA4_WEBDATASTREAM_ID_Y = '401';
@@ -289,7 +289,7 @@ add_action(
 						}
 					}
 
-					return new \WP_Error( 'e2e:property_not_found' );
+					return new \WP_Error( 'e2e:property_not_found', 'E2E: No property found' );
 				},
 				'permission_callback' => '__return_true',
 			),

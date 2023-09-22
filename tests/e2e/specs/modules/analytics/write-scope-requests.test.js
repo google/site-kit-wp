@@ -101,7 +101,10 @@ describe( 'Analytics write scope requests', () => {
 				if ( interceptCreatePropertyRequest ) {
 					request.respond( {
 						status: 200,
-						body: JSON.stringify( fixtures.createProperty ),
+						body: JSON.stringify( {
+							...fixtures.createProperty,
+							_id: '1001', // Ensure match with ID in tests/e2e/plugins/module-setup-analytics.php
+						} ),
 					} );
 					interceptCreatePropertyRequest = false;
 				} else {
