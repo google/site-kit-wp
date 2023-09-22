@@ -41,12 +41,7 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
-import {
-	DASHBOARD_VIEW_GA4,
-	DASHBOARD_VIEW_UA,
-	MODULES_ANALYTICS,
-} from '../../../modules/analytics/datastore/constants';
-import fetchMock from 'fetch-mock';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/modules modules', () => {
@@ -96,13 +91,13 @@ describe( 'core/modules modules', () => {
 
 	const externalModules = [
 		{
-			slug: 'analytics',
-			name: 'Analytics',
+			slug: 'analytics-4',
+			name: 'Analytics-4',
 			active: true,
 			connected: true,
 			shareable: true,
 			recoverable: true,
-			internal: false,
+			internal: true,
 		},
 		{
 			slug: 'search-console',
@@ -2032,9 +2027,7 @@ describe( 'core/modules modules', () => {
 						'^/google-site-kit/v1/modules/analytics/data/settings'
 					),
 					{
-						body: {
-							dashboardView: DASHBOARD_VIEW_GA4,
-						},
+						body: {},
 						status: 200,
 					}
 				);
@@ -2054,7 +2047,7 @@ describe( 'core/modules modules', () => {
 					.getRecoverableModules();
 
 				const externalModulesWithoutAnalytics = externalModules.filter(
-					( module ) => module.slug !== 'analytics'
+					( module ) => module.slug !== 'analytics-4'
 				);
 
 				expect( recoverableModules ).toMatchObject(
@@ -2226,10 +2219,6 @@ describe( 'core/modules modules', () => {
 					.dispatch( CORE_MODULES )
 					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
 
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					dashboardView: DASHBOARD_VIEW_GA4,
-				} );
-
 				const shareableModules = registry
 					.select( CORE_MODULES )
 					.getShareableModules();
@@ -2240,13 +2229,12 @@ describe( 'core/modules modules', () => {
 
 			it( 'should not include `analytics-4` module if the dashboard view is UA', () => {
 				provideModuleRegistrations( registry );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
-
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					dashboardView: DASHBOARD_VIEW_UA,
-				} );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					...FIXTURES,
+					...allModules.filter( ( module ) => {
+						return module.slug !== 'analytics-4';
+					} ),
+				] );
 
 				const shareableModules = registry
 					.select( CORE_MODULES )
