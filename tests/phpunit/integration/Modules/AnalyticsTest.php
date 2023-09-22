@@ -413,7 +413,6 @@ class AnalyticsTest extends TestCase {
 			$settings = $analytics->get_settings()->get();
 
 			$this->assertEquals( $_GET['accountId'], $settings['accountID'] );
-			$this->assertEquals( 'google-analytics-4', $settings['dashboardView'] );
 			$this->assertEquals( $admin_id, $settings['ownerID'] );
 		}
 	}

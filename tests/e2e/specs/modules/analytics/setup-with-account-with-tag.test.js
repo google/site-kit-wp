@@ -103,13 +103,6 @@ describe( 'setting up the Analytics module with an existing account and existing
 					body: JSON.stringify( containerMock ),
 					status: 200,
 				} );
-			} else if (
-				request.url().match( 'analytics-4/data/account-summaries' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( fixtures.accountSummariesE2E ),
-				} );
 			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
 				request.respond( {
 					body: JSON.stringify( fixtures.properties[ 0 ] ),
@@ -125,15 +118,6 @@ describe( 'setting up the Analytics module with an existing account and existing
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( fixtures.properties ),
-				} );
-			} else if (
-				request
-					.url()
-					.match( 'analytics-4/data/webdatastreams?propertyID=' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( fixtures.webDataStreams[ 0 ] ),
 				} );
 			}
 

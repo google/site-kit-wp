@@ -17,7 +17,6 @@
  */
 
 export { default as accountSummaries } from './account-summaries.json';
-export { default as accountSummariesE2E } from './account-summaries-e2e.json';
 export { default as container } from './container.json';
 export { default as containerE2E } from './container-e2e.json';
 export { default as containerDestinations } from './container-destinations.json';

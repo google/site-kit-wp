@@ -165,13 +165,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					body: JSON.stringify( fixtures.properties[ 0 ] ),
 					status: 200,
 				} );
-			} else if (
-				request.url().match( 'analytics-4/data/account-summaries' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( fixtures.accountSummariesE2E ),
-				} );
 			} else {
 				request.continue();
 			}
@@ -231,28 +224,37 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					),
 				] );
 
-				// Selects reload with options to create property and web data stream for Test Account B
+				// Selects reload with properties and web data streams for Test Account B
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
 						text: /test account b/i,
 					}
 				);
-
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /set up a new property/i,
+						text: /example.net/i,
 					}
 				);
+				await expect( page ).toMatchElement(
+					'.mdc-select__selected-text',
+					{
+						text: /another webdatastream/i,
+					}
+				);
+			} );
+
+			// Select Property Z
+			await step( 'select property Z', async () => {
 				await expect( page ).toClick( '.mdc-select', {
-					text: /set up a new property/i,
+					text: /example.net/i,
 				} );
 				await Promise.all( [
 					expect( page ).toClick(
 						'.mdc-menu-surface--open .mdc-list-item',
 						{
-							text: /example.net/i,
+							text: /example.org/i,
 						}
 					),
 					page.waitForResponse( ( res ) =>
@@ -260,11 +262,23 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					),
 				] );
 
-				// web data stream should be pre-selected on property change
+				// Selects reload with properties and web data streams for Test Profile Z
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /another webdatastream/i,
+						text: /test account b/i,
+					}
+				);
+				await expect( page ).toMatchElement(
+					'.mdc-select__selected-text',
+					{
+						text: /example.org/i,
+					}
+				);
+				await expect( page ).toMatchElement(
+					'.mdc-select__selected-text',
+					{
+						text: /third webdatastream/i,
 					}
 				);
 			} );
