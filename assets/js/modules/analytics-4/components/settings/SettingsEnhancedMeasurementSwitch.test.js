@@ -430,12 +430,12 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	} );
 
 	describe( 'synchronization of enhanced measurement settings retrieval with loading states', () => {
+		const enhancedMeasurementSettingsEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+		);
+
 		beforeEach( () => {
 			setupRegistry();
-
-			const enhancedMeasurementSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
-			);
 
 			fetchMock.getOnce( enhancedMeasurementSettingsEndpoint, {
 				status: 200,
@@ -487,6 +487,9 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 			await act( waitForRegistry );
 
+			expect( fetchMock ).toHaveFetched(
+				enhancedMeasurementSettingsEndpoint
+			);
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
