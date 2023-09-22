@@ -191,23 +191,26 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
+		global.console.debug( 'Wait for permission message' );
+
 		// The user sees a notice above the button that explains they will need to grant additional permissions.
 		await expect( page ).toMatchElement( 'p', {
 			text: /You will need to give Site Kit permission to create an Analytics account/i,
 		} );
 
+		global.console.debug( 'Wait for create account click' );
 		// Upon clicking the button, they're redirected to OAuth (should be mocked).
-		await Promise.all( [
-			expect( page ).toClick( '.mdc-button', {
-				text: /create account/i,
-			} ),
-		] );
+		await expect( page ).toClick( '.mdc-button', {
+			text: /create account/i,
+		} );
 
+		global.console.debug( 'Wait for create account ticket response' );
 		// When returning, their original action is automatically invoked, without requiring them to click the button again.
 		await page.waitForResponse( ( res ) =>
 			res.url().match( 'analytics-4/data/create-account-ticket' )
 		);
 
+		global.console.debug( 'Wait for TOS navigation' );
 		// They should be redirected to the Analytics TOS.
 		await page.waitForRequest( ( req ) =>
 			req
