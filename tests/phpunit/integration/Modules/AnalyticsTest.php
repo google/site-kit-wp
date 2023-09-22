@@ -785,7 +785,20 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'analytics_dashboard_view',
+				'analytics_account_id',
+				'analytics_property_id',
+				'analytics_profile_id',
+				'analytics_use_snippet',
+			),
+			array_keys( $analytics->get_debug_fields() )
+		);
+	}
+
+	public function test_get_debug_fields__ga4Reporting() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
 				'analytics_account_id',
 				'analytics_property_id',
 				'analytics_profile_id',

@@ -90,8 +90,6 @@ final class Analytics_4 extends Module
 	 */
 	const MODULE_SLUG = 'analytics-4';
 
-	const DASHBOARD_VIEW = 'google-analytics-4';
-
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
@@ -991,7 +989,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the configured Analytics Data service object instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @return PropertiesEnhancedMeasurementService The Analytics Admin API service.
 	 */

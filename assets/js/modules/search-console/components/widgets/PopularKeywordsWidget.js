@@ -143,6 +143,10 @@ export default function PopularKeywordsWidget( { Widget } ) {
 			limit={ 3 }
 			error={ error }
 			moduleSlug="search-console"
+			infoTooltip={ __(
+				'The top search queries for your site by highest clickthrough rate',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

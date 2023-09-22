@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	provideModules,
@@ -30,15 +30,13 @@ import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 
 function Template() {
 	return <ModuleSetup moduleSlug="analytics" />;
 }
 
-const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+const { accounts } = fixtures.accountsPropertiesProfiles;
 const accountID = accounts[ 0 ].id;
-const propertyID = properties[ 0 ].id;
 
 export const WithoutEnableUAToggle = Template.bind( null );
 WithoutEnableUAToggle.storyName = 'Without Enable UA Toggle';
@@ -68,49 +66,6 @@ WithEnableUAToggle.decorators = [
 ];
 WithEnableUAToggle.scenario = {
 	label: 'Modules/Analytics/Setup/SetupFormGA4/WithEnableUAToggle',
-	delay: 250,
-};
-
-export const WithUAMatchingTag = Template.bind( null );
-WithUAMatchingTag.storyName = 'With UA Enabled, matching UA property selected';
-WithUAMatchingTag.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, {
-					accountID,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( propertyID );
-
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID,
-					propertyID,
-				} );
-			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
-				properties[ 0 ].id,
-				// eslint-disable-next-line sitekit/acronym-case
-				properties[ 0 ].internalWebPropertyId
-			);
-			registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
-				enableUA: true,
-			} );
-			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-WithUAMatchingTag.scenario = {
-	label: 'Modules/Analytics/Setup/SetupFormGA4/WithUAMatchingTag',
 	delay: 250,
 };
 

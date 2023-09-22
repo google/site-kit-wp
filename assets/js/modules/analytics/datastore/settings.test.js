@@ -31,18 +31,12 @@ import {
 	ACCOUNT_CREATE,
 	PROPERTY_CREATE,
 	PROFILE_CREATE,
-	DASHBOARD_VIEW_UA,
-	DASHBOARD_VIEW_GA4,
-	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
-import { GA4_AUTO_SWITCH_DATE } from '../../analytics-4/constants';
 import {
 	createTestRegistry,
-	freezeFetch,
 	provideModules,
 	subscribeUntil,
 	unsubscribeFromAll,
-	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -52,7 +46,6 @@ import {
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
-import { getDateString, stringToDate } from '../../../util';
 import ga4Reporting from '../../../feature-tours/ga4-reporting';
 
 describe( 'modules/analytics settings', () => {
@@ -75,7 +68,6 @@ describe( 'modules/analytics settings', () => {
 		trackingDisabled: [],
 		anonymizeIP: true,
 		canUseSnippet: true,
-		dashboardView: DASHBOARD_VIEW_GA4,
 	};
 	const tagWithPermission = {
 		accountID: '12345',
@@ -132,11 +124,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
-					] );
 			} );
 
 			it( 'dispatches saveSettings', async () => {
@@ -290,17 +277,14 @@ describe( 'modules/analytics settings', () => {
 					registry
 						.dispatch( CORE_USER )
 						.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setSettings( validSettings );
+					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+						...validSettings,
+					} );
 
 					fetchMock.postOnce( gaSettingsEndpoint, {
 						body: validSettings,
 					} );
 
-					expect(
-						registry.select( MODULES_ANALYTICS ).getDashboardView()
-					).toBe( DASHBOARD_VIEW_GA4 );
 					expect(
 						registry
 							.select( CORE_USER )
@@ -328,7 +312,6 @@ describe( 'modules/analytics settings', () => {
 						.receiveGetDismissedTours( [] );
 					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 						...validSettings,
-						dashboardView: DASHBOARD_VIEW_GA4,
 					} );
 
 					fetchMock.postOnce( gaSettingsEndpoint, {
@@ -352,99 +335,6 @@ describe( 'modules/analytics settings', () => {
 						registry
 							.select( CORE_USER )
 							.isTourDismissed( ga4Reporting.slug )
-					).toBe( true );
-				} );
-			} );
-
-			describe( 'dismiss the switch to GA4 dashboard view notification', () => {
-				const fetchDismissItemRegExp = new RegExp(
-					'^/google-site-kit/v1/core/user/data/dismiss-item'
-				);
-
-				it( 'should not dismiss the switch to GA4 dashboard view notification if it is already dismissed', async () => {
-					registry
-						.dispatch( CORE_USER )
-						.receiveGetDismissedItems( [
-							GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
-						] );
-					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-						...validSettings,
-						dashboardView: DASHBOARD_VIEW_GA4,
-					} );
-
-					fetchMock.postOnce( gaSettingsEndpoint, {
-						body: validSettings,
-					} );
-
-					expect(
-						registry.select( MODULES_ANALYTICS ).getDashboardView()
-					).toBe( DASHBOARD_VIEW_GA4 );
-					expect(
-						registry
-							.select( CORE_USER )
-							.isItemDismissed(
-								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-							)
-					).toBe( true );
-
-					await registry
-						.dispatch( MODULES_ANALYTICS )
-						.submitChanges();
-
-					// Wait for resolvers to run.
-					await waitForDefaultTimeouts();
-
-					expect(
-						registry
-							.select( CORE_USER )
-							.isItemDismissed(
-								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-							)
-					).toBe( true );
-
-					expect( fetchMock ).not.toHaveFetched(
-						fetchDismissItemRegExp
-					);
-				} );
-
-				it( 'should dismiss the switch to GA4 dashboard view notification if it has not been dismissed yet when setting the dashboard view to GA4', async () => {
-					registry
-						.dispatch( CORE_USER )
-						.receiveGetDismissedItems( [] );
-					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-						...validSettings,
-						dashboardView: DASHBOARD_VIEW_GA4,
-					} );
-
-					fetchMock.postOnce( gaSettingsEndpoint, {
-						body: validSettings,
-					} );
-					fetchMock.post( fetchDismissItemRegExp, {
-						body: [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ],
-					} );
-
-					expect(
-						registry
-							.select( CORE_USER )
-							.isItemDismissed(
-								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-							)
-					).toBe( false );
-
-					await registry
-						.dispatch( MODULES_ANALYTICS )
-						.submitChanges();
-
-					// Wait for resolvers to run.
-					await waitForDefaultTimeouts();
-
-					expect( fetchMock ).toHaveFetched( fetchDismissItemRegExp );
-					expect(
-						registry
-							.select( CORE_USER )
-							.isItemDismissed(
-								GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-							)
 					).toBe( true );
 				} );
 			} );
@@ -602,9 +492,7 @@ describe( 'modules/analytics settings', () => {
 					.receiveGetSettings( validSettings );
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
-					] );
+					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
 				expect(
 					registry.select( MODULES_ANALYTICS ).haveSettingsChanged()
 				).toBe( false );
@@ -991,253 +879,6 @@ describe( 'modules/analytics settings', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
 				).toBe( false );
-			} );
-		} );
-
-		describe( 'isGA4DashboardView', () => {
-			const date = stringToDate( GA4_AUTO_SWITCH_DATE );
-			date.setDate( date.getDate() + 1 );
-			const dayAfterGA4AutoSwitchDate = getDateString( date );
-
-			// This is necessary to reset the top-level `provideModules` mock.
-			beforeEach( () => {
-				registry = createTestRegistry();
-			} );
-
-			it( 'should return false when the analytics-4 module is not connected', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: false,
-						connected: false,
-					},
-				] );
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: DASHBOARD_VIEW_UA,
-				} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
-				).toBe( false );
-			} );
-
-			it( 'should return undefined when analytics-4 module is not loaded', async () => {
-				freezeFetch(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
-				);
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: DASHBOARD_VIEW_UA,
-				} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
-				).toBeUndefined();
-
-				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
-			} );
-
-			it( 'should return undefined when analytics dashboard view is not loaded', async () => {
-				freezeFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
-					)
-				);
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
-				).toBeUndefined();
-
-				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
-			} );
-
-			it( 'should return false when the dashboard view is not `google-analytics-4`', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: DASHBOARD_VIEW_UA,
-				} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
-				).toBe( false );
-			} );
-
-			it( 'should return true when the dashboard view is `google-analytics-4`', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: DASHBOARD_VIEW_GA4,
-				} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
-				).toBe( true );
-			} );
-
-			it.each( [
-				[ 'on the GA4 auto-switch date', GA4_AUTO_SWITCH_DATE ],
-				[ 'after the GA4 auto-switch date', dayAfterGA4AutoSwitchDate ],
-			] )(
-				'should return true %s, regardless of the dashboard view setting',
-				( _, referenceDate ) => {
-					provideModules( registry, [
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: true,
-						},
-					] );
-					// Set the dashboard view to UA, to verify that the auto-switch date overrides it.
-					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-						dashboardView: DASHBOARD_VIEW_UA,
-					} );
-
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( referenceDate );
-
-					expect(
-						registry
-							.select( MODULES_ANALYTICS )
-							.isGA4DashboardView()
-					).toBe( true );
-				}
-			);
-		} );
-
-		describe( 'shouldPromptGA4DashboardView', () => {
-			it( 'should return false when the analytics-4 module is not connected', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: false,
-						connected: false,
-					},
-				] );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.shouldPromptGA4DashboardView()
-				).toBe( false );
-			} );
-
-			it( 'should return undefined when `isGA4DashboardView` is not loaded', async () => {
-				freezeFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
-					)
-				);
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
-				).toBeUndefined();
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.shouldPromptGA4DashboardView()
-				).toBeUndefined();
-
-				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
-			} );
-
-			it( 'should return false when `isGA4DashboardView` is true', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: DASHBOARD_VIEW_GA4,
-				} );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.shouldPromptGA4DashboardView()
-				).toBe( false );
-			} );
-
-			it( 'should return false when analytics-4 is gathering data', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: DASHBOARD_VIEW_UA,
-				} );
-
-				// Directly set the `isGatheringData` selector to return true.
-				// This is fine as we have dedicated tests for that selector.
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsGatheringData( true );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.shouldPromptGA4DashboardView()
-				).toBe( false );
-			} );
-
-			it( 'should return true when analytics-4 is not gathering data', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: DASHBOARD_VIEW_UA,
-				} );
-
-				// Directly set the `isGatheringData` selector to return false.
-				// This is fine as we have dedicated tests for that selector.
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsGatheringData( false );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.shouldPromptGA4DashboardView()
-				).toBe( true );
 			} );
 		} );
 	} );

@@ -49,7 +49,6 @@ import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
-import DashboardViewIndicator from './DashboardViewIndicator';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
 	ANCHOR_ID_CONTENT,
@@ -153,7 +152,6 @@ export default function DashboardMainApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			<DashboardViewIndicator />
 			{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally

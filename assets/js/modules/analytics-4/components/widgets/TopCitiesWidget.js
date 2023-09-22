@@ -121,6 +121,10 @@ function TopCitiesWidget( { Widget } ) {
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'The cities where most of your visitors came from',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

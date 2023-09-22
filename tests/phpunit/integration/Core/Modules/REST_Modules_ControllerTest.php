@@ -17,14 +17,12 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\FakeHttp;
-use Google\Site_Kit\Tests\Modules\AnalyticsDashboardView;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
 class REST_Modules_ControllerTest extends TestCase {
 
-	use AnalyticsDashboardView;
 	use RestTestTrait;
 
 	/**
@@ -823,9 +821,6 @@ class REST_Modules_ControllerTest extends TestCase {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
-
-		// Make sure Analytics 4 is the dashboard view.
-		$this->set_dashboard_view_ga4();
 
 		// Make analytics-4 a recoverable module
 		$analytics_4 = $this->modules->get_module( 'analytics-4' );

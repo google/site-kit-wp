@@ -116,7 +116,7 @@ export const createGatheringDataStore = (
 		 * This action was added to easily manipulate the state for
 		 * JS tests and Storybook / VRT scenarios.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.110.0
 		 * @private
 		 *
 		 * @param {boolean} dataAvailableOnLoad Gathering data.

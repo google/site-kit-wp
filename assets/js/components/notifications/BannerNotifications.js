@@ -41,7 +41,6 @@ import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
@@ -116,9 +115,6 @@ export default function BannerNotifications() {
 			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
 			{ adSenseModuleActive && <AdSenseAlerts /> }
-			{ analyticsModuleConnected && (
-				<SwitchGA4DashboardViewNotification />
-			) }
 		</Fragment>
 	);
 }

@@ -20,32 +20,20 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import {
-	AdsConversionIDTextField,
-	AnonymizeIPSwitch,
-	EnableUniversalAnalytics,
-	TrackingExclusionSwitches,
-} from '../common';
+import { AdsConversionIDTextField, TrackingExclusionSwitches } from '../common';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import { GA4_AUTO_SWITCH_DATE } from '../../../analytics-4/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID, isValidPropertyID } from '../../util';
-import { stringToDate } from '../../../../util';
-import GA4DashboardViewToggle from './GA4DashboardViewToggle';
-import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 const { useSelect } = Data;
 
 export default function SettingsForm( {
@@ -59,17 +47,8 @@ export default function SettingsForm( {
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 	const isUAConnected = isValidPropertyID( propertyID );
-	const isUAEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
-	);
-	const referenceDate = useSelect( ( select ) =>
-		select( CORE_USER ).getReferenceDate()
-	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
-	);
-	const useAnalyticsSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
 	const isTagManagerAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
@@ -99,40 +78,12 @@ export default function SettingsForm( {
 
 	return (
 		<Fragment>
-			{ stringToDate( referenceDate ) <
-				stringToDate( GA4_AUTO_SWITCH_DATE ) && (
-				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
-					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Dashboard View', 'google-site-kit' ) }
-					</h4>
-					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
-						{ isGA4Connected && (
-							<GA4DashboardViewToggle
-								isUAConnected={ isUAConnected }
-								isUAEnabled={ isUAEnabled }
-							/>
-						) }
-						{ ! isGA4Connected &&
-							__( 'Universal Analytics', 'google-site-kit' ) }
-					</div>
-				</div>
-			) }
-
 			<SettingsUACutoffWarning />
 
 			<GA4SettingsControls
 				hasAnalyticsAccess={ hasAnalyticsAccess }
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
-
-			<EnableUniversalAnalytics
-				hasModuleAccess={ hasAnalyticsAccess }
-				showErrors
-				showTitle
-			>
-				{ isUAConnected && <SettingsUseSnippetSwitch /> }
-				{ useAnalyticsSnippet && <AnonymizeIPSwitch /> }
-			</EnableUniversalAnalytics>
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
