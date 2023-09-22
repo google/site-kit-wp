@@ -30,6 +30,7 @@
 			max-height: 90px;
 		}
 
+		// Show the 1st green ghost card when the container width exceeds 400px.
 		/* stylelint-disable-next-line scss/at-rule-no-unknown */
 		@container cta-tile (inline-size > 400px) {
 			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(2) {
@@ -38,6 +39,8 @@
 			}
 		}
 
+		// Show the red ghost card when the container width exceeds 600px.
+		// If only two cards are shown, the red card will be the 2nd card.
 		/* stylelint-disable-next-line scss/at-rule-no-unknown */
 		@container cta-tile (inline-size > 600px) {
 			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(4) {
@@ -45,6 +48,7 @@
 			}
 		}
 
+		// Show the 2nd green ghost card when the container width exceeds 900px.
 		/* stylelint-disable-next-line scss/at-rule-no-unknown */
 		@container cta-tile (inline-size > 900px) {
 			.googlesitekit-km-connect-module-cta-tile__ghost-card:nth-child(3) {
