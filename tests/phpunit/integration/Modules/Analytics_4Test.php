@@ -2026,7 +2026,7 @@ class Analytics_4Test extends TestCase {
 		$data = $this->analytics->set_data(
 			'create-custom-dimension',
 			array(
-				'propertyID'                  => $property_id,
+				'propertyID'      => $property_id,
 				'customDimension' => array(
 					'invalidField' => 'invalidValue',
 				),
