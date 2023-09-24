@@ -727,6 +727,31 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_datapoints__news_key_metrics() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		$this->assertEqualSets(
+			array(
+				'account-summaries',
+				'accounts',
+				'container-lookup',
+				'container-destinations',
+				'google-tag-settings',
+				'conversion-events',
+				'create-property',
+				'create-webdatastream',
+				'properties',
+				'property',
+				'report',
+				'webdatastreams',
+				'webdatastreams-batch',
+				'create-account-ticket',
+				'enhanced-measurement-settings',
+				'create-custom-dimension',
+			),
+			$this->analytics->get_datapoints()
+		);
+	}
+
 	/**
 	 * @dataProvider data_google_tag_ids
 	 *
@@ -1925,6 +1950,155 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
 		$this->assertEquals( "/v1alpha/properties/$property_id/dataStreams/$web_data_stream_id/enhancedMeasurementSettings", $request_url['path'] );
+	}
+
+	public function test_create_custom_dimension__required_params() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		$property_id = '123456789';
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		// Call set_data without EDIT_SCOPE.
+		$data = $this->analytics->set_data(
+			'create-custom-dimension',
+			array(
+				'propertyID'      => $property_id,
+				'customDimension' => array(
+					'description'                => 'Test Custom Dimension Description',
+					'disallowAdsPersonalization' => false,
+					'displayName'                => 'Test Custom Dimension',
+					'parameterName'              => 'googlesitekit_post_author',
+					'scope'                      => 'EVENT',
+				),
+			)
+		);
+
+		// Verify that the EDIT_SCOPE is required.
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', $data );
+		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
+		$this->assertEquals(
+			array(
+				'scopes' => array(
+					'https://www.googleapis.com/auth/analytics.edit',
+				),
+				'status' => 403,
+			),
+			$data->get_error_data( 'missing_required_scopes' )
+		);
+
+		// Grant EDIT_SCOPE so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		// Call set_data with no parameters.
+		$data = $this->analytics->set_data(
+			'create-custom-dimension',
+			array()
+		);
+
+		// Verify that the propertyID is required.
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+
+		// Call set_data with only the propertyID parameter.
+		$data = $this->analytics->set_data(
+			'create-custom-dimension',
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Verify that the customDimension object is required.
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: customDimension.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+
+		// Call set_data with invalid customDimension fields.
+		$data = $this->analytics->set_data(
+			'create-custom-dimension',
+			array(
+				'propertyID'                  => $property_id,
+				'customDimension' => array(
+					'invalidField' => 'invalidValue',
+				),
+			)
+		);
+
+		// Verify that the customDimension object is required.
+		$this->assertWPErrorWithMessage( 'Invalid properties in customDimension: invalidField.', $data );
+		$this->assertEquals( 'invalid_property_name', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ) );
+	}
+
+	public function test_create_custom_dimension() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		$property_id = '123456789';
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		$response = $this->analytics->set_data(
+			'create-custom-dimension',
+			array(
+				'propertyID'      => $property_id,
+				'customDimension' => array(
+					'description'                => 'Test Custom Dimension Description',
+					'disallowAdsPersonalization' => false,
+					'displayName'                => 'Test Custom Dimension',
+					'parameterName'              => 'googlesitekit_post_author',
+					'scope'                      => 'EVENT',
+				),
+			)
+		);
+
+		$this->assertNotWPError( $response );
+
+		$response_array = (array) $response;
+
+		// Assert that the keys exist.
+		$keys = array(
+			'parameterName',
+			'displayName',
+			'description',
+			'scope',
+			'disallowAdsPersonalization',
+		);
+
+		foreach ( $keys as $key ) {
+			$this->assertArrayHasKey( $key, $response_array );
+		}
+
+		// Verify the custom dimension is returned by checking all field values.
+		foreach ( $response_array as $key => $value ) {
+			$this->assertEquals( $value, $response_array[ $key ] );
+		}
+
+		// Verify the request URL and params were correctly generated.
+		$this->assertCount( 1, $this->request_handler_calls );
+
+		$request_url = $this->request_handler_calls[0]['url'];
+
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
+		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
 	}
 
 	/**
