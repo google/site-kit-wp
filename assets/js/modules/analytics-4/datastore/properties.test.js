@@ -35,12 +35,14 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
+import * as uaFixtures from '../../analytics/datastore/__fixtures__';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -1345,6 +1347,158 @@ describe( 'modules/analytics-4 properties', () => {
 					.isWebDataStreamAvailable();
 
 				expect( updatedIsWebDataStreamAvailable ).toBe( false );
+			} );
+		} );
+
+		describe( 'isLoadingProperties', () => {
+			const { accounts } = uaFixtures.accountsPropertiesProfiles;
+			const { properties } = fixtures;
+			const accountID = accounts[ 0 ].id;
+			const propertyID = properties[ 0 ]._id;
+			const hasModuleAccess = true;
+
+			beforeEach( () => {
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
+				provideModules( registry );
+
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+					accountID,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetAccounts( accounts );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.finishResolution( 'getAccounts', [] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( properties, { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getProperties', [ accountID ] );
+			} );
+
+			it( 'should return false if the required state is already loaded', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( false );
+			} );
+
+			it( 'should return true while matching the account properties', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: properties.map( ( { _id } ) => _id ),
+						}
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.matchAndSelectProperty( accountID );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( true );
+			} );
+
+			it( 'should return true if accounts are not yet loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.startResolution( 'getAccounts', [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( true );
+			} );
+
+			describe( 'while loading properties', () => {
+				beforeEach( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.startResolution( 'getProperties', [ accountID ] );
+				} );
+
+				it( 'should return false when hasModuleAccess is false', () => {
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isLoadingProperties( {
+								hasModuleAccess: false,
+							} )
+					).toBe( false );
+				} );
+
+				it( 'should return true when hasModuleAccess is not false', () => {
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isLoadingProperties( {
+								hasModuleAccess,
+							} )
+					).toBe( true );
+				} );
+			} );
+
+			it( 'should return true while selecting an account', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProperties( [], { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.finishResolution( 'getProperties', [ accountID ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: properties.map( ( { _id } ) => _id ),
+						}
+					);
+
+				// Verify that the selector returns false after the prelude.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.selectAccount( accountID );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( true );
 			} );
 		} );
 	} );

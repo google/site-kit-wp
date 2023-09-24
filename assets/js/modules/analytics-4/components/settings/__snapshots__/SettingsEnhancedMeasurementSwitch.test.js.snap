@@ -1,0 +1,410 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch disabled when hasAnalytics4Access is false 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <div
+      aria-checked="true"
+      class="mdc-switch mdc-switch--checked mdc-switch--disabled"
+      role="switch"
+      tabindex="0"
+    >
+      <div
+        class="mdc-switch__track"
+      >
+         
+      </div>
+      <div
+        class="mdc-switch__thumb-underlay"
+      >
+        <div
+          class="mdc-switch__thumb"
+        >
+          <input
+            class="mdc-switch__native-control"
+            disabled=""
+            id="googlesitekit-switch-7"
+            readonly=""
+            role="switch"
+            type="checkbox"
+          />
+        </div>
+      </div>
+    </div>
+    <label
+      class=""
+      for="googlesitekit-switch-7"
+    >
+      Enable enhanced measurement
+    </label>
+    <p>
+      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch in the loading state when enhanced measurement settings is loading 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
+  >
+    <div
+      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      role="progressbar"
+    >
+      <div
+        class="mdc-linear-progress__buffering-dots"
+      />
+      <div
+        class="mdc-linear-progress__buffer"
+      />
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+    </div>
+    <p>
+      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch in the loading state when properties are loading 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
+  >
+    <div
+      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      role="progressbar"
+    >
+      <div
+        class="mdc-linear-progress__buffering-dots"
+      />
+      <div
+        class="mdc-linear-progress__buffer"
+      />
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+    </div>
+    <p>
+      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch in the loading state when web data streams are loading 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
+  >
+    <div
+      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      role="progressbar"
+    >
+      <div
+        class="mdc-linear-progress__buffering-dots"
+      />
+      <div
+        class="mdc-linear-progress__buffer"
+      />
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+    </div>
+    <p>
+      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`SettingsEnhancedMeasurementSwitch when enhanced measurement is disabled for the web data stream should render correctly, with the switch defaulting to the disabled position 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <div
+      aria-checked="false"
+      class="mdc-switch"
+      role="switch"
+      tabindex="0"
+    >
+      <div
+        class="mdc-switch__track"
+      >
+         
+      </div>
+      <div
+        class="mdc-switch__thumb-underlay"
+      >
+        <div
+          class="mdc-switch__thumb"
+        >
+          <input
+            class="mdc-switch__native-control"
+            id="googlesitekit-switch-1"
+            readonly=""
+            role="switch"
+            type="checkbox"
+          />
+        </div>
+      </div>
+    </div>
+    <label
+      class=""
+      for="googlesitekit-switch-1"
+    >
+      Enable enhanced measurement
+    </label>
+    <p>
+      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`SettingsEnhancedMeasurementSwitch when enhanced measurement is enabled for the web data stream should render correctly, with the switch defaulting to the enabled position 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <div
+      aria-checked="true"
+      class="mdc-switch mdc-switch--checked"
+      role="switch"
+      tabindex="0"
+    >
+      <div
+        class="mdc-switch__track"
+      >
+         
+      </div>
+      <div
+        class="mdc-switch__thumb-underlay"
+      >
+        <div
+          class="mdc-switch__thumb"
+        >
+          <input
+            class="mdc-switch__native-control"
+            id="googlesitekit-switch-0"
+            readonly=""
+            role="switch"
+            type="checkbox"
+          />
+        </div>
+      </div>
+    </div>
+    <label
+      class=""
+      for="googlesitekit-switch-0"
+    >
+      Enable enhanced measurement
+    </label>
+    <p>
+      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`SettingsEnhancedMeasurementSwitch when propertyID is property_create should render correctly, with the switch defaulting to the on position 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <div
+      aria-checked="true"
+      class="mdc-switch mdc-switch--checked"
+      role="switch"
+      tabindex="0"
+    >
+      <div
+        class="mdc-switch__track"
+      >
+         
+      </div>
+      <div
+        class="mdc-switch__thumb-underlay"
+      >
+        <div
+          class="mdc-switch__thumb"
+        >
+          <input
+            class="mdc-switch__native-control"
+            id="googlesitekit-switch-2"
+            readonly=""
+            role="switch"
+            type="checkbox"
+          />
+        </div>
+      </div>
+    </div>
+    <label
+      class=""
+      for="googlesitekit-switch-2"
+    >
+      Enable enhanced measurement
+    </label>
+    <p>
+      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream_create should render correctly, with the switch defaulting to the on position 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <div
+      aria-checked="true"
+      class="mdc-switch mdc-switch--checked"
+      role="switch"
+      tabindex="0"
+    >
+      <div
+        class="mdc-switch__track"
+      >
+         
+      </div>
+      <div
+        class="mdc-switch__thumb-underlay"
+      >
+        <div
+          class="mdc-switch__thumb"
+        >
+          <input
+            class="mdc-switch__native-control"
+            id="googlesitekit-switch-4"
+            readonly=""
+            role="switch"
+            type="checkbox"
+          />
+        </div>
+      </div>
+    </div>
+    <label
+      class=""
+      for="googlesitekit-switch-4"
+    >
+      Enable enhanced measurement
+    </label>
+    <p>
+      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
