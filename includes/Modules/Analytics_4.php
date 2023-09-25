@@ -784,7 +784,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				$custom_dimention_data = $data['customDimension'];
+				$custom_dimension_data = $data['customDimension'];
 
 				$fields = array(
 					'parameterName',
@@ -794,7 +794,7 @@ final class Analytics_4 extends Module
 					'disallowAdsPersonalization',
 				);
 
-				$invalid_keys = array_diff( array_keys( $custom_dimention_data ), $fields );
+				$invalid_keys = array_diff( array_keys( $custom_dimension_data ), $fields );
 
 				if ( ! empty( $invalid_keys ) ) {
 					return new WP_Error(
@@ -805,17 +805,24 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				// If the scope is not set or is not `EVENT`, set it to `EVENT`.
-				if ( empty( $custom_dimention_data['scope'] ) || 'EVENT' !== $custom_dimention_data['scope'] ) {
-					$custom_dimention_data['scope'] = 'EVENT';
+				// Validate against the `DimensionScope` enum.
+				$valid_scopes = array( 'EVENT', 'USER', 'ITEM' );
+
+				if ( ! isset( $custom_dimension_data['scope'] ) || ! in_array( $custom_dimension_data['scope'], $valid_scopes, true ) ) {
+					return new WP_Error(
+						'invalid_scope',
+						/* translators: %s: Invalid scope */
+						sprintf( __( 'Invalid scope: %s.', 'google-site-kit' ), $custom_dimension_data['scope'] ),
+						array( 'status' => 400 )
+					);
 				}
 
 				$custom_dimension = new GoogleAnalyticsAdminV1betaCustomDimension();
-				$custom_dimension->setParameterName( $custom_dimention_data['parameterName'] );
-				$custom_dimension->setDisplayName( $custom_dimention_data['displayName'] );
-				$custom_dimension->setDescription( $custom_dimention_data['description'] );
-				$custom_dimension->setScope( $custom_dimention_data['scope'] );
-				$custom_dimension->setDisallowAdsPersonalization( $custom_dimention_data['disallowAdsPersonalization'] );
+				$custom_dimension->setParameterName( $custom_dimension_data['parameterName'] );
+				$custom_dimension->setDisplayName( $custom_dimension_data['displayName'] );
+				$custom_dimension->setDescription( $custom_dimension_data['description'] );
+				$custom_dimension->setScope( $custom_dimension_data['scope'] );
+				$custom_dimension->setDisallowAdsPersonalization( $custom_dimension_data['disallowAdsPersonalization'] );
 
 				/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
