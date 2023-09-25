@@ -2038,6 +2038,26 @@ class Analytics_4Test extends TestCase {
 		$this->assertWPErrorWithMessage( 'Invalid properties in customDimension: invalidField.', $data );
 		$this->assertEquals( 'invalid_property_name', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ) );
+
+		// Call set_data with invalid scope.
+		$data = $this->analytics->set_data(
+			'create-custom-dimension',
+			array(
+				'propertyID'      => $property_id,
+				'customDimension' => array(
+					'description'                => 'Test Custom Dimension Description',
+					'disallowAdsPersonalization' => false,
+					'displayName'                => 'Test Custom Dimension',
+					'parameterName'              => 'googlesitekit_post_author',
+					'scope'                      => 'invalidValue',
+				),
+			)
+		);
+
+		// Verify that scope has a valid value.
+		$this->assertWPErrorWithMessage( 'Invalid scope: invalidValue.', $data );
+		$this->assertEquals( 'invalid_scope', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_scope' ) );
 	}
 
 	public function test_create_custom_dimension() {
