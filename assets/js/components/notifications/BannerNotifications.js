@@ -45,7 +45,6 @@ import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
-import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 
 const { useSelect } = Data;
 
@@ -115,7 +114,6 @@ export default function BannerNotifications() {
 					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }
-			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 		</Fragment>
