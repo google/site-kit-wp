@@ -805,10 +805,14 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				// Validate against the `DimensionScope` enum.
+				// Define the valid `DimensionScope` enum values.
 				$valid_scopes = array( 'EVENT', 'USER', 'ITEM' );
 
-				if ( ! isset( $custom_dimension_data['scope'] ) || ! in_array( $custom_dimension_data['scope'], $valid_scopes, true ) ) {
+				// If the scope field is not set, default to `EVENT`.
+				// Otherwise, validate against the enum values.
+				if ( ! isset( $custom_dimension_data['scope'] ) ) {
+					$custom_dimension_data['scope'] = 'EVENT';
+				} elseif ( ! in_array( $custom_dimension_data['scope'], $valid_scopes, true ) ) {
 					return new WP_Error(
 						'invalid_scope',
 						/* translators: %s: Invalid scope */
