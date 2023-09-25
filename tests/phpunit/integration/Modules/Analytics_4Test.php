@@ -2033,7 +2033,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		// Verify that the customDimension object is required.
+		// Verify that the keys are valid for the customDimension object.
 		$this->assertWPErrorWithMessage( 'Invalid properties in customDimension: invalidField.', $data );
 		$this->assertEquals( 'invalid_property_name', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ) );
