@@ -824,7 +824,6 @@ final class Analytics_4 extends Module
 				$custom_dimension->setScope( $custom_dimension_data['scope'] );
 				$custom_dimension->setDisallowAdsPersonalization( $custom_dimension_data['disallowAdsPersonalization'] );
 
-				/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
 
 				return $analyticsadmin
@@ -843,7 +842,6 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
 
 				return $analyticsadmin
@@ -870,7 +868,6 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
 				$batch_request  = $analyticsadmin->createBatch();
 
@@ -1336,7 +1333,6 @@ final class Analytics_4 extends Module
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 		$analyticsadmin = $this->get_service( 'analyticsadmin' );
 		$settings       = $this->settings->get();
 
