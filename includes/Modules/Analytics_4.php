@@ -805,7 +805,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				// If the scope is not set or is not EVENT, set it to EVENT.
+				// If the scope is not set or is not `EVENT`, set it to `EVENT`.
 				if ( empty( $custom_dimention_data['scope'] ) || 'EVENT' !== $custom_dimention_data['scope'] ) {
 					$custom_dimention_data['scope'] = 'EVENT';
 				}
