@@ -40,6 +40,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
@@ -2056,17 +2057,19 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
+		$custom_dimension = array(
+			'description'                => 'Test Custom Dimension Description',
+			'disallowAdsPersonalization' => false,
+			'displayName'                => 'Test Custom Dimension',
+			'parameterName'              => 'googlesitekit_post_author',
+			'scope'                      => 'EVENT',
+		);
+
 		$response = $this->analytics->set_data(
 			'create-custom-dimension',
 			array(
 				'propertyID'      => $property_id,
-				'customDimension' => array(
-					'description'                => 'Test Custom Dimension Description',
-					'disallowAdsPersonalization' => false,
-					'displayName'                => 'Test Custom Dimension',
-					'parameterName'              => 'googlesitekit_post_author',
-					'scope'                      => 'EVENT',
-				),
+				'customDimension' => $custom_dimension,
 			)
 		);
 
@@ -2075,20 +2078,14 @@ class Analytics_4Test extends TestCase {
 		$response_array = (array) $response;
 
 		// Assert that the keys exist.
-		$keys = array(
-			'parameterName',
-			'displayName',
-			'description',
-			'scope',
-			'disallowAdsPersonalization',
-		);
+		$keys = array_keys( $custom_dimension );
 
 		foreach ( $keys as $key ) {
 			$this->assertArrayHasKey( $key, $response_array );
 		}
 
-		// Verify the custom dimension is returned by checking all field values.
-		foreach ( $response_array as $key => $value ) {
+		// Validate the response against the expected mock value.
+		foreach ( $custom_dimension as $key => $value ) {
 			$this->assertEquals( $value, $response_array[ $key ] );
 		}
 
@@ -2203,6 +2200,20 @@ class Analytics_4Test extends TestCase {
 						200,
 						array(),
 						json_encode( $conversion_events )
+					);
+
+				case "/v1beta/properties/$property_id/customDimensions":
+					$custom_dimension = new GoogleAnalyticsAdminV1betaCustomDimension();
+					$custom_dimension->setParameterName( 'googlesitekit_post_author' );
+					$custom_dimension->setDisplayName( 'Test Custom Dimension' );
+					$custom_dimension->setDescription( 'Test Custom Dimension Description' );
+					$custom_dimension->setScope( 'EVENT' );
+					$custom_dimension->setDisallowAdsPersonalization( false );
+
+					return new Response(
+						200,
+						array(),
+						json_encode( $custom_dimension )
 					);
 
 				default:
