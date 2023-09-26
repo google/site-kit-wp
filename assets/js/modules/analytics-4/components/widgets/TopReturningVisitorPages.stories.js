@@ -195,7 +195,7 @@ Error.args = {
 	},
 };
 Error.scenario = {
-	label: 'KeyMetrics/PopularContent/Error',
+	label: 'KeyMetrics/TopReturningVisitorPages/Error',
 	delay: 250,
 };
 
@@ -230,7 +230,7 @@ InsufficientPermissions.args = {
 };
 
 InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PopularContent/InsufficientPermissions',
+	label: 'KeyMetrics/TopReturningVisitorPages/InsufficientPermissions',
 	delay: 250,
 };
 
