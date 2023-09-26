@@ -1479,7 +1479,7 @@ describe( 'modules/analytics-4 properties', () => {
 						}
 					);
 
-				// Verify that the selector returns false after the prelude.
+				// Verify that the selector returns false before selecting an account.
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
