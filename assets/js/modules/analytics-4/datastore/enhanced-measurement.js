@@ -445,7 +445,7 @@ const baseSelectors = {
 
 	/**
 	 * This is a utility selector that checks if either the GA4 module settings, or the
-	 * current web data stream's enhanced measurement settings have changed.
+	 * current web data stream's enhanced measurement settings, have changed.
 	 *
 	 * @since n.e.x.t
 	 *
