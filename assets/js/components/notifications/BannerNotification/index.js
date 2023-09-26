@@ -50,7 +50,6 @@ import {
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
 } from './utils';
-import { stringToDate } from '../../../util/date-range/string-to-date';
 import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import BannerDescription from './BannerDescription';
@@ -212,7 +211,12 @@ export default function BannerNotification( props ) {
 		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
 		if ( dismissed ) {
-			const expiration = stringToDate( dismissed );
+			// TODO: Document in the PR an remove this comment.
+			// This is a fix, it was incorrectly changed in https://github.com/google/site-kit-wp/pull/5880.
+			// `dismissed` is a UTC date string so should not run into timezone issues creating a new Date object from it.
+			// Besides which, the value was set from the current session so it should be pretty safe anyway.
+			const expiration = new Date( dismissed );
+
 			expiration.setSeconds(
 				expiration.getSeconds() + parseInt( dismissExpires, 10 )
 			);
