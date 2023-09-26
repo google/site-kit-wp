@@ -51,7 +51,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 		} );
 	} );
 
-	it( 'should render correctly, with the switch defaulting to the on position', () => {
+	it( 'should render with the switch defaulting to the on position', () => {
 		const { container, getByLabelText } = render(
 			<SetupEnhancedMeasurementSwitch />,
 			{
