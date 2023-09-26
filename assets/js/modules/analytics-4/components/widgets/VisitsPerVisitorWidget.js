@@ -53,7 +53,6 @@ function VisitsPerVisitorWidget( { Widget } ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'newVsReturning' ],
 		metrics: [ { name: 'sessionsPerUser' }, { name: 'activeUsers' } ],
 	};
 
@@ -78,29 +77,31 @@ function VisitsPerVisitorWidget( { Widget } ) {
 	const { rows = [], totals = [] } = report || {};
 
 	const makeFind = ( dateRange ) => ( row ) =>
-		get( row, 'dimensionValues.0.value' ) === 'new' &&
-		get( row, 'dimensionValues.1.value' ) === dateRange;
+		get( row, 'dimensionValues.0.value' ) === dateRange;
 
-	const newVisitors =
+	const currentVisitsPerVisitor =
 		rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value ||
 		0;
 
-	const total = Number( totals[ 0 ]?.metricValues?.[ 1 ]?.value ) || 0;
+	const previousVisitsPerVisitor =
+		rows.find( makeFind( 'date_range_1' ) )?.metricValues?.[ 0 ]?.value ||
+		0;
 
-	const prevTotal = Number( totals[ 1 ]?.metricValues?.[ 1 ]?.value ) || 0;
+	const currentTotalVisitors =
+		Number( totals[ 0 ]?.metricValues?.[ 1 ]?.value ) || 0;
 
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
 			title={ __( 'Visits per visitor', 'google-site-kit' ) }
-			metricValue={ newVisitors }
+			metricValue={ currentVisitsPerVisitor }
 			subText={ sprintf(
 				/* translators: %d: Number of total readers visiting the site. */
-				__( '%s total readers', 'google-site-kit' ),
-				numFmt( total, { style: 'comma' } )
+				__( '%s total visitors', 'google-site-kit' ),
+				numFmt( currentTotalVisitors, { style: 'decimal' } )
 			) }
-			previousValue={ prevTotal }
-			currentValue={ total }
+			previousValue={ Number( previousVisitsPerVisitor ) }
+			currentValue={ Number( currentVisitsPerVisitor ) }
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
