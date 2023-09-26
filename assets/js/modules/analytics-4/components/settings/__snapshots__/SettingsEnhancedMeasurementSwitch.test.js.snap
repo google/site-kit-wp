@@ -193,7 +193,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
 </div>
 `;
 
-exports[`SettingsEnhancedMeasurementSwitch when enhanced measurement is disabled for the web data stream should render correctly, with the switch defaulting to the disabled position 1`] = `
+exports[`SettingsEnhancedMeasurementSwitch should render with the switch defaulting to the off position when enhanced measurement is disabled for the web data stream 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
@@ -247,7 +247,7 @@ exports[`SettingsEnhancedMeasurementSwitch when enhanced measurement is disabled
 </div>
 `;
 
-exports[`SettingsEnhancedMeasurementSwitch when enhanced measurement is enabled for the web data stream should render correctly, with the switch defaulting to the enabled position 1`] = `
+exports[`SettingsEnhancedMeasurementSwitch should render with the switch defaulting to the on position when enhanced measurement is enabled for the web data stream 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"

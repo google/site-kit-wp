@@ -111,42 +111,51 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			] );
 	} );
 
-	describe.each( [
-		[ 'enabled', true ],
-		[ 'disabled', false ],
-	] )(
-		'when enhanced measurement is %s for the web data stream',
-		( position, streamEnabled ) => {
-			it( `should render correctly, with the switch defaulting to the ${ position } position`, async () => {
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setEnhancedMeasurementStreamEnabled(
-						propertyID,
-						webDataStreamID,
-						streamEnabled
-					);
+	it( 'should render with the switch defaulting to the on position when enhanced measurement is enabled for the web data stream', async () => {
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setEnhancedMeasurementStreamEnabled(
+				propertyID,
+				webDataStreamID,
+				true
+			);
 
-				const { container, getByLabelText } = render(
-					<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
-					{
-						registry,
-					}
-				);
+		const { container, getByLabelText } = render(
+			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			{
+				registry,
+			}
+		);
 
-				expect( container ).toMatchSnapshot();
+		expect( container ).toMatchSnapshot();
 
-				const switchControl = getByLabelText(
-					'Enable enhanced measurement'
-				);
+		const switchControl = getByLabelText( 'Enable enhanced measurement' );
 
-				if ( streamEnabled ) {
-					expect( switchControl ).toBeChecked();
-				} else {
-					expect( switchControl ).not.toBeChecked();
-				}
-			} );
-		}
-	);
+		expect( switchControl ).toBeChecked();
+	} );
+
+	it( 'should render with the switch defaulting to the off position when enhanced measurement is disabled for the web data stream', async () => {
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setEnhancedMeasurementStreamEnabled(
+				propertyID,
+				webDataStreamID,
+				false
+			);
+
+		const { container, getByLabelText } = render(
+			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).toMatchSnapshot();
+
+		const switchControl = getByLabelText( 'Enable enhanced measurement' );
+
+		expect( switchControl ).not.toBeChecked();
+	} );
 
 	describe.each( [
 		[ 'propertyID', PROPERTY_CREATE ],
