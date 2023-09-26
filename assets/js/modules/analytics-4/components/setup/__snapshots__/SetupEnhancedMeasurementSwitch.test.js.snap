@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SetupEnhancedMeasurementSwitch should render correctly, with the switch defaulting to the on position 1`] = `
+exports[`SetupEnhancedMeasurementSwitch should render with the switch defaulting to the on position 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
