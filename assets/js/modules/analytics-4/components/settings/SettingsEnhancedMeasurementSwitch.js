@@ -78,11 +78,13 @@ export default function SettingsEnhancedMeasurementSwitch( {
 	} );
 
 	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
+		if ( isLoadingProperties || isLoadingWebDataStreams ) {
+			return undefined;
+		}
+
 		if (
 			! isValidPropertyID( propertyID ) ||
-			! isValidWebDataStreamID( webDataStreamID ) ||
-			isLoadingProperties ||
-			isLoadingWebDataStreams
+			! isValidWebDataStreamID( webDataStreamID )
 		) {
 			return null;
 		}
