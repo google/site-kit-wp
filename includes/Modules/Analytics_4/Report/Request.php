@@ -204,6 +204,7 @@ class Request extends Report {
 			array(
 				'activeUsers',
 				'averageSessionDuration',
+				'bounceRate',
 				'conversions',
 				'engagedSessions',
 				'engagementRate',
