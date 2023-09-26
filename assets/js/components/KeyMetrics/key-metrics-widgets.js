@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
@@ -38,8 +39,9 @@ import {
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { isFeatureEnabled } from '../../features';
 
-export const KEY_METRICS_WIDGETS = {
+const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
 		title: __( 'Loyal visitors', 'google-site-kit' ),
 		description: __(
@@ -115,3 +117,15 @@ export const KEY_METRICS_WIDGETS = {
 		),
 	},
 };
+
+if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ] = {
+		title: __( 'Least engaging pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
+			'google-site-kit'
+		),
+	};
+}
+
+export { KEY_METRICS_WIDGETS };
