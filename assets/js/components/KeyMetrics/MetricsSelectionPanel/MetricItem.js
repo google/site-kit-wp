@@ -110,15 +110,14 @@ export default function MetricItem( {
 				{ disconnectedModules.length > 0 && (
 					<div className="googlesitekit-km-selection-panel-metrics__metric-item-error">
 						{ sprintf(
-							/* translators: %s: module name. */
-							__(
-								'%1$s %2$s disconnected, no data to show',
+							/* translators: %s: module names. */
+							_n(
+								'%s is disconnected, no data to show',
+								'%s are disconnected, no data to show',
+								disconnectedModules.length,
 								'google-site-kit'
 							),
-							disconnectedModules.join( ' and ' ),
-							disconnectedModules.length > 1
-								? __( 'are', 'google-site-kit' )
-								: __( 'is', 'google-site-kit' )
+							disconnectedModules.join( __( ' and ' ) )
 						) }
 					</div>
 				) }
