@@ -87,9 +87,11 @@ export default function UserInputPreviewGroup( {
 	const isEditing = currentlyEditingSlug === slug;
 	const isScreenLoading = isSavingSettings || isNavigating;
 
+	const gaEventCategory = `${ viewContext }_kmw`;
+
 	const toggleEditMode = useCallback( () => {
 		if ( ! isEditing ) {
-			trackEvent( `${ viewContext }_kmw`, 'question_edit', slug );
+			trackEvent( gaEventCategory, 'question_edit', slug );
 		} else {
 			onCollapse();
 		}
@@ -97,7 +99,7 @@ export default function UserInputPreviewGroup( {
 		setValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: isEditing ? undefined : slug,
 		} );
-	}, [ isEditing, onCollapse, setValues, slug, viewContext ] );
+	}, [ gaEventCategory, isEditing, onCollapse, setValues, slug ] );
 
 	const error = getErrorMessageForAnswer(
 		values,
@@ -110,9 +112,10 @@ export default function UserInputPreviewGroup( {
 		const response = await saveUserInputSettings();
 
 		if ( ! response.error ) {
+			trackEvent( gaEventCategory, 'question_update', slug );
 			toggleEditMode();
 		}
-	}, [ saveUserInputSettings, toggleEditMode ] );
+	}, [ gaEventCategory, saveUserInputSettings, slug, toggleEditMode ] );
 
 	const handleOnEditClick = useCallback( async () => {
 		if ( showIndividualCTAs ) {

@@ -41,11 +41,6 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
-import {
-	DASHBOARD_VIEW_GA4,
-	DASHBOARD_VIEW_UA,
-	MODULES_ANALYTICS,
-} from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -2031,9 +2026,7 @@ describe( 'core/modules modules', () => {
 						'^/google-site-kit/v1/modules/analytics/data/settings'
 					),
 					{
-						body: {
-							dashboardView: DASHBOARD_VIEW_GA4,
-						},
+						body: {},
 						status: 200,
 					}
 				);
@@ -2222,10 +2215,6 @@ describe( 'core/modules modules', () => {
 					.dispatch( CORE_MODULES )
 					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
 
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					dashboardView: DASHBOARD_VIEW_GA4,
-				} );
-
 				const shareableModules = registry
 					.select( CORE_MODULES )
 					.getShareableModules();
@@ -2240,13 +2229,12 @@ describe( 'core/modules modules', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 
 				provideModuleRegistrations( registry );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
-
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					dashboardView: DASHBOARD_VIEW_UA,
-				} );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					...FIXTURES,
+					...allModules.filter( ( module ) => {
+						return module.slug !== 'analytics-4';
+					} ),
+				] );
 
 				const shareableModules = registry
 					.select( CORE_MODULES )
