@@ -135,7 +135,6 @@ Ready.args = {
 			],
 			metricFilters: {
 				screenPageViews: {
-					filterType: 'numericFilter',
 					operation: 'GREATER_THAN_OR_EQUAL',
 					value: { int64Value: medianPageViews },
 				},
@@ -200,7 +199,6 @@ ReadyViewOnly.args = {
 			],
 			metricFilters: {
 				screenPageViews: {
-					filterType: 'numericFilter',
 					operation: 'GREATER_THAN_OR_EQUAL',
 					value: { int64Value: medianPageViews },
 				},
@@ -231,12 +229,51 @@ export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( { dispatch } ) => {
-		const report = getAnalytics4MockResponse( pageViewsReportOptions );
+		const pageViewsReport = getAnalytics4MockResponse(
+			pageViewsReportOptions
+		);
+
+		const zeroPageViewsReport =
+			replaceValuesInAnalytics4ReportWithZeroData( pageViewsReport );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( pageViewsReport, {
+			options: pageViewsReportOptions,
+		} );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroPageViewsReport, {
+			options: pageViewsReportOptions,
+		} );
+
+		const reportOptions = {
+			startDate: '2020-08-11',
+			endDate: '2020-09-07',
+			dimensions: [ 'pagePath' ],
+			metrics: [ 'bounceRate', 'screenPageViews' ],
+			orderby: [
+				{
+					metric: { metricName: 'bounceRate' },
+					desc: true,
+				},
+				{
+					metric: { metricName: 'screenPageViews' },
+					desc: true,
+				},
+			],
+			metricFilters: {
+				screenPageViews: {
+					operation: 'GREATER_THAN_OR_EQUAL',
+					value: { int64Value: 0 },
+				},
+			},
+			limit: 3,
+		};
+		const report = getAnalytics4MockResponse( reportOptions );
+
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
-			options: pageViewsReportOptions,
+			options: reportOptions,
 		} );
 	},
 };
