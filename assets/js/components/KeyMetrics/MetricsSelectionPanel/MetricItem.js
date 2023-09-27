@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -117,7 +117,9 @@ export default function MetricItem( {
 								disconnectedModules.length,
 								'google-site-kit'
 							),
-							disconnectedModules.join( __( ' and ' ) )
+							disconnectedModules.join(
+								__( ' and ', 'google-site-kit' )
+							)
 						) }
 					</div>
 				) }
