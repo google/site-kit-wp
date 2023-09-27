@@ -28,7 +28,6 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { isValidPropertyID } from '../utils/validation';
 
 const customDimensionFields = [
@@ -46,9 +45,6 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 			propertyID,
 			customDimension,
 		} ),
-	reducerCallback: createReducer( ( state, customDimension ) => {
-		state.customDimensions.push( customDimension );
-	} ),
 	argsToParams: ( propertyID, customDimension ) => ( {
 		propertyID,
 		customDimension,
@@ -71,9 +67,7 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 	},
 } );
 
-const baseInitialState = {
-	customDimensions: [],
-};
+const baseInitialState = {};
 
 const baseActions = {};
 
