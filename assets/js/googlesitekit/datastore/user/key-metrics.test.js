@@ -631,6 +631,30 @@ describe( 'core/user key metrics', () => {
 				).toBe( false );
 			} );
 
+			it( 'should return true if a module that the widget depends on is not connected', () => {
+				provideUserAuthentication( registry );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				provideKeyMetricsWidgetRegistrations( registry, {
+					metricA: {
+						modules: [ 'analytics-4' ],
+					},
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( true );
+			} );
+
 			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', () => {
 				provideUserAuthentication( registry, {
 					authenticated: false,
