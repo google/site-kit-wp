@@ -17,6 +17,8 @@ use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics_4\Report;
 use Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter\In_List_Filter;
 use Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter\String_Filter;
+use Google\Site_Kit\Modules\Analytics_4\Report\Metric_Filter\Numeric_Filter;
+use Google\Site_Kit\Modules\Analytics_4\Report\Metric_Filter\Between_Filter;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpression as Google_Service_AnalyticsData_FilterExpression;
@@ -70,6 +72,11 @@ class Request extends Report {
 
 		$dimension_filters = $this->parse_dimension_filters( $data );
 		$request->setDimensionFilter( $dimension_filters );
+
+		$metric_filters = $this->parse_metric_filters( $data );
+		if ( ! empty( $metric_filters ) ) {
+			$request->setMetricFilter( $metric_filters );
+		}
 
 		$date_ranges = $this->parse_dateranges( $data );
 		$request->setDateRanges( $date_ranges );
@@ -381,4 +388,123 @@ class Request extends Report {
 		return $filter_expression;
 	}
 
+	/**
+	 * Parses metric filters and returns a filter expression that should be added to the report request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression to use with the report request.
+	 */
+	protected function parse_metric_filters( Data_Request $data ) {
+		$expressions = array();
+
+		if ( is_array( $data['metricFilters'] ) ) {
+			foreach ( $data['metricFilters'] as $key => $value ) {
+				$expressions[] = $this->parse_metric_filter( $key, $value );
+			}
+		}
+
+		if ( ! empty( $expressions ) ) {
+			$filter_expression_list = new Google_Service_AnalyticsData_FilterExpressionList();
+			$filter_expression_list->setExpressions( array_filter( $expressions ) );
+
+			$metric_filters = new Google_Service_AnalyticsData_FilterExpression();
+			$metric_filters->setAndGroup( $filter_expression_list );
+
+			return $metric_filters;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Parses and returns a single metric filter.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $metric_name The metric name.
+	 * @param mixed  $metric_value The metric filter settings.
+	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression instance.
+	 */
+	protected function parse_metric_filter( $metric_name, $metric_value ) {
+		// Use the numeric filter type by default.
+		$filter_type = 'numericFilter';
+		if ( isset( $metric_value['filterType'] ) ) {
+			// If there is the filterType property, use the explicit filter type then.
+			$filter_type = $metric_value['filterType'];
+		}
+
+		if ( 'numericFilter' === $filter_type ) {
+			if ( ! isset( $metric_value['operation'] ) && ! isset( $metric_value['value'] ) ) {
+				return null;
+			}
+			if ( ! isset( $metric_value['value']['int64Value'] ) ) {
+				return null;
+			}
+
+			$filter = new Numeric_Filter();
+
+		} elseif ( 'betweenFilter' === $filter_type ) {
+			if ( ! isset( $metric_value['from_value'] ) && ! isset( $metric_value['to_value'] ) ) {
+				return null;
+			}
+			if (
+				! isset( $metric_value['from_value']['int64Value'] ) ||
+				! isset( $metric_value['to_value']['int64Value'] )
+			) {
+				return null;
+			}
+
+			$filter = new Between_Filter();
+
+		} else {
+			return null;
+		}
+
+		$filter_expression = $this->get_metric_filter_expression(
+			$filter,
+			$metric_name,
+			$metric_value
+		);
+
+		return $filter_expression;
+	}
+
+	/**
+	 * Returns correct filter expression instance based on the metric filter instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Numeric_Filter|Between_Filter $filter The metric filter instance.
+	 * @param string                        $metric_name The metric name.
+	 * @param mixed                         $metric_value The metric filter settings.
+	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression instance.
+	 */
+	protected function get_metric_filter_expression( $filter, $metric_name, $metric_value ) {
+		if ( $filter instanceof Numeric_Filter ) {
+			$value = $metric_value['value']['int64Value'];
+
+			$filter_expression = $filter->parse_filter_expression(
+				$metric_name,
+				$metric_value['operation'],
+				$value
+			);
+
+		} elseif ( $filter instanceof Between_Filter ) {
+			$from_value = $metric_value['from_value']['int64Value'];
+			$to_value   = $metric_value['to_value']['int64Value'];
+
+			$filter_expression = $filter->parse_filter_expression(
+				$metric_name,
+				$from_value,
+				$to_value
+			);
+
+		} else {
+			return null;
+		}
+
+		return $filter_expression;
+	}
 }
