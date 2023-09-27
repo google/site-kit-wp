@@ -43,6 +43,7 @@ import {
 	isValidDimensionFilters,
 	isValidDimensions,
 	isValidMetrics,
+	isValidMetricFilters,
 	isValidOrders,
 	isZeroReport,
 } from '../utils';
@@ -109,8 +110,13 @@ const fetchGetReportStore = createFetchStore( {
 			'Either date range or start/end dates must be provided for Analytics 4 report.'
 		);
 
-		const { metrics, dimensions, dimensionFilters, orderby } =
-			normalizeReportOptions( options );
+		const {
+			metrics,
+			dimensions,
+			dimensionFilters,
+			metricFilters,
+			orderby,
+		} = normalizeReportOptions( options );
 
 		invariant(
 			metrics.length,
@@ -132,6 +138,13 @@ const fetchGetReportStore = createFetchStore( {
 			invariant(
 				isValidDimensionFilters( dimensionFilters ),
 				'dimensionFilters for an Analytics 4 report must be a map of dimension names as keys and dimension values as values.'
+			);
+		}
+
+		if ( metricFilters ) {
+			invariant(
+				isValidMetricFilters( metricFilters ),
+				'metricFilters for an Analytics 4 report must be a map of metric names as keys and filter value(s) as numeric fields, depending on the filterType.'
 			);
 		}
 
@@ -235,6 +248,7 @@ const baseSelectors = {
 	 * Gets an Analytics report for the given options.
 	 *
 	 * @since 1.94.0
+	 * @since n.e.x.t Add metricFilters to the options list, to reflect added support for the metric filters.
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
@@ -245,6 +259,7 @@ const baseSelectors = {
 	 * @param {string}         [options.compareEndDate]   Optional. End date to compare report data for as YYYY-mm-dd.
 	 * @param {Array.<string>} [options.dimensions]       Optional. List of dimensions to group results by. Default an empty array.
 	 * @param {Object}         [options.dimensionFilters] Optional. Map of dimension filters for filtering options on a dimension. Default an empty object.
+	 * @param {Object}         [options.metricFilters]    Optional. Map of metric filters for filtering options on a metric. Default an empty object.
 	 * @param {Array.<Object>} [options.orderby]          Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
 	 * @param {string}         [options.url]              Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]            Optional. Maximum number of entries to return. Default 1000.
