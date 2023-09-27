@@ -55,7 +55,7 @@ function PagesPerVisitWidget( { Widget } ) {
 		...dates,
 		metrics: [
 			{ name: 'screenPageViewsPerSession' },
-			{ name: 'screenPageViews' },
+			{ name: 'sessions' },
 		],
 	};
 
@@ -92,26 +92,36 @@ function PagesPerVisitWidget( { Widget } ) {
 			rows.find( makeFind( 'date_range_1' ) )?.metricValues?.[ 0 ]?.value
 		) || 0;
 
-	const currentTotalPageViews =
+	const currentTotalSessions =
 		Number(
 			rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 1 ]?.value
 		) || 0;
+
+	const format = {
+		style: 'decimal',
+		maximumFractionDigits: 2,
+	};
 
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
 			title={ __( 'Pages per visit', 'google-site-kit' ) }
 			metricValue={ currentPagesPerVisit }
+			metricValueFormat={ format }
 			subText={ sprintf(
 				/* translators: %s: Number of total page views. */
 				__( '%s total visits', 'google-site-kit' ),
-				numFmt( currentTotalPageViews, { style: 'decimal' } )
+				numFmt( currentTotalSessions, { style: 'decimal' } )
 			) }
 			previousValue={ previousPagesPerVisit }
 			currentValue={ currentPagesPerVisit }
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Number of pages on average visitors viewed per session',
+				'google-site-kit'
+			) }
 		/>
 	);
 }
