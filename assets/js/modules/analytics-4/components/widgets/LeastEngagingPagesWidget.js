@@ -113,11 +113,7 @@ function LeastEngagingPagesWidget( props ) {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ pageViewsReportOptions ] );
 
-		if (
-			loadedPageViewsReport &&
-			! pageViewsReportError &&
-			pageViewsReport?.rows
-		) {
+		if ( loadedPageViewsReport && ! pageViewsReportError ) {
 			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 		}
 	} );
