@@ -134,14 +134,14 @@ describe( 'MetricsSelectionPanel', () => {
 			).toHaveTextContent( 'Top performing keywords' );
 		} );
 
-		it( 'should list module disconnect notice required modules are disconnected', () => {
+		it( 'should render a single module disconnect notice when required module for a widget is disconnected', () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
 				{
 					slug: 'analytics-4',
-					active: false,
-					connected: false,
+					active: true,
+					connected: true,
 				},
 				{
 					slug: 'search-console',
@@ -166,15 +166,43 @@ describe( 'MetricsSelectionPanel', () => {
 					'.googlesitekit-km-selection-panel-metrics'
 				)
 			).toHaveTextContent(
-				'Analytics 4 is disconnected, no data to show'
+				'Search Console is disconnected, no data to show'
 			);
+		} );
+
+		it( 'should render a multiple module disconnect notice when required module for a widget is disconnected', () => {
+			provideKeyMetrics( registry );
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: false,
+					connected: false,
+				},
+				{
+					slug: 'search-console',
+					active: false,
+					connected: false,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+					modules: [ 'analytics-4', 'search-console' ],
+				},
+			} );
+
+			render( <MetricsSelectionPanel />, { registry } );
 
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
 			).toHaveTextContent(
-				'Search Console is disconnected, no data to show'
+				'Analytics 4 and Search Console are disconnected, no data to show'
 			);
 		} );
 
