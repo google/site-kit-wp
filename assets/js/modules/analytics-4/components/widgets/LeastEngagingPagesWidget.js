@@ -97,7 +97,6 @@ function LeastEngagingPagesWidget( props ) {
 		],
 		metricFilters: {
 			screenPageViews: {
-				filterType: 'numericFilter',
 				operation: 'GREATER_THAN_OR_EQUAL',
 				value: { int64Value: medianPageViews },
 			},
