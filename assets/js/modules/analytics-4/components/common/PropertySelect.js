@@ -78,21 +78,9 @@ export default function PropertySelect( props ) {
 			return false;
 		}
 
-		const isResolvingProperties =
-			hasModuleAccess === false || ! accountID
-				? false
-				: select( MODULES_ANALYTICS_4 ).isResolving( 'getProperties', [
-						accountID,
-				  ] );
-
-		return (
-			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-			! select( MODULES_ANALYTICS ).hasFinishedResolution(
-				'getAccounts'
-			) ||
-			isResolvingProperties ||
-			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
-		);
+		return select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
+			hasModuleAccess,
+		} );
 	} );
 
 	const viewContext = useViewContext();

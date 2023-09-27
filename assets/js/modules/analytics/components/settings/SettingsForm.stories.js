@@ -365,6 +365,22 @@ WithExistingGTMPropertyMatching.scenario = {
 	delay: 250,
 };
 
+export const WithEnhancedMeasurementToggle = Template.bind( null );
+WithEnhancedMeasurementToggle.storyName = 'With Enhanced Measurement Toggle';
+WithEnhancedMeasurementToggle.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+WithEnhancedMeasurementToggle.parameters = {
+	// TODO: Ensure this usage of the `ga4Reporting` feature flag is removed in conjunction with #6856.
+	features: [ 'ga4Reporting', 'enhancedMeasurement' ],
+};
+
+WithEnhancedMeasurementToggle.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithEnhancedMeasurementToggle',
+	delay: 250,
+};
+
 export const PostGA4AutoSwitch = Template.bind( null );
 PostGA4AutoSwitch.storyName = 'Post GA4 auto-switch';
 PostGA4AutoSwitch.args = {
@@ -398,6 +414,11 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = async ( registry ) => {
+				global._googlesitekitDashboardSharingData = {
+					settings: {},
+					roles: [],
+				};
+
 				provideModules( registry, [
 					{
 						slug: 'analytics',
