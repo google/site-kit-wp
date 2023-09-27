@@ -206,7 +206,9 @@ export const registerWidgets = ( widgets ) => {
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
+	}
 
+	if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 		widgets.registerWidget(
 			KM_ANALYTICS_VISITS_PER_VISITOR,
 			{
