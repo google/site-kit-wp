@@ -35,9 +35,11 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
+
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
 
@@ -123,6 +125,13 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 		title: __( 'Pages per visit', 'google-site-kit' ),
 		description: __(
 			'Number of pages on average visitors viewed per session',
+			'google-site-kit'
+		),
+	};
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ] = {
+		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
+		description: __(
+			'Pages that attracted the most returning visitors',
 			'google-site-kit'
 		),
 	};

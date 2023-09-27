@@ -30,6 +30,7 @@ import {
 	TopTrafficSourceWidget,
 	TopConvertingTrafficSourceWidget,
 	PagesPerVisitWidget,
+	TopReturningVisitorPages,
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
@@ -45,6 +46,7 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_COUNTRIES,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../googlesitekit/datastore/user/constants';
 import { isFeatureEnabled } from '../../features';
@@ -210,7 +212,7 @@ export const registerWidgets = ( widgets ) => {
 
 	if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 		/*
-		 * Key metrics widgets.
+		 * News Key metrics widgets.
 		 */
 		widgets.registerWidget(
 			KM_ANALYTICS_PAGES_PER_VISIT,
@@ -223,6 +225,23 @@ export const registerWidgets = ( widgets ) => {
 				isActive: ( select ) =>
 					select( CORE_USER ).isKeyMetricActive(
 						KM_ANALYTICS_PAGES_PER_VISIT
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+			{
+				Component: TopReturningVisitorPages,
+
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES
 					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]

@@ -127,7 +127,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		isNavigatingToGA4URL,
 	] );
 
-	if ( ga4DependantKeyMetrics.length < 3 ) {
+	if ( ga4DependantKeyMetrics.length < 4 ) {
 		return <WidgetNull />;
 	}
 
