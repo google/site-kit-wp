@@ -44,10 +44,7 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 	controlCallback: ( { propertyID, customDimension } ) =>
 		API.set( 'modules', 'analytics-4', 'create-custom-dimension', {
 			propertyID,
-			customDimension: {
-				...customDimension,
-				scope: 'EVENT',
-			},
+			customDimension,
 		} ),
 	reducerCallback: createReducer( ( state, customDimension ) => {
 		state.customDimensions.push( customDimension );
