@@ -28,10 +28,7 @@ import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PagesPerVisitWidget from './PagesPerVisitWidget';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
+import { getAnalytics4MockResponse } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import {
 	CORE_USER,
@@ -69,7 +66,19 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		provideAnalytics4MockReport( registry, reportOptions );
+		const report = getAnalytics4MockResponse( reportOptions );
+		// Add 1 to the "screenPageViewsPerSession" value which is a TYPE_FLOAT
+		// which is set to always be between 0 and 1. Realistically, this value should be
+		// greater than 1, since a user views at least one page per session.
+		report.rows.forEach( ( row, index, rows ) => {
+			rows[ index ].metricValues[ 0 ].value = (
+				Number( row.metricValues[ 0 ].value ) + 1
+			).toString();
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
+			options: reportOptions,
+		} );
 	},
 };
 Ready.scenario = {
