@@ -41,7 +41,6 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
-import { DASHBOARD_VIEW_GA4 } from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -2027,9 +2026,7 @@ describe( 'core/modules modules', () => {
 						'^/google-site-kit/v1/modules/analytics/data/settings'
 					),
 					{
-						body: {
-							dashboardView: DASHBOARD_VIEW_GA4,
-						},
+						body: {},
 						status: 200,
 					}
 				);
@@ -2208,6 +2205,45 @@ describe( 'core/modules modules', () => {
 						( module ) => module.shareable
 					).length
 				).toEqual( Object.values( shareableModules ).length );
+			} );
+
+			it( 'should not include `analytics` module if the dashboard view is GA4', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				provideModuleRegistrations( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect( shareableModules ).not.toHaveProperty( 'analytics' );
+				expect( shareableModules ).toHaveProperty( 'analytics-4' );
+
+				enabledFeatures.delete( 'ga4Reporting' );
+			} );
+
+			it( 'should not include `analytics-4` module if the dashboard view is UA', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				provideModuleRegistrations( registry );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					...FIXTURES,
+					...allModules.filter( ( module ) => {
+						return module.slug !== 'analytics-4';
+					} ),
+				] );
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect( shareableModules ).not.toHaveProperty( 'analytics-4' );
+				expect( shareableModules ).toHaveProperty( 'analytics' );
+
+				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 		} );
 	} );

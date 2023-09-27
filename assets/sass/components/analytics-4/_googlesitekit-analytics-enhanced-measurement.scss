@@ -1,5 +1,5 @@
 /**
- * EnableUniversalAnalytics styles.
+ * Enhanced Measurement styles.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -18,11 +18,11 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-analytics-enable {
+	.googlesitekit-analytics-enable-enhanced-measurement--loading {
+		padding-top: 10px;
+	}
 
-		p {
-			font-size: $fs-body-sm;
-			letter-spacing: $ls-xs;
-		}
+	.googlesitekit-analytics-enable-enhanced-measurement__progress {
+		margin: 0 0 21px;
 	}
 }

@@ -21,6 +21,8 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useEffect, useRef, useState } from '@wordpress/element';
+import { useIntersection } from 'react-use';
 
 /**
  * Internal dependencies
@@ -28,18 +30,40 @@ import classnames from 'classnames';
 import { Cell, Grid, Row } from '../../material-components';
 import GhostCardsSVG from './GhostCards';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 
 export default function KeyMetricsCTAContent( {
 	className,
 	title,
 	description,
 	actions,
+	ga4Connected,
 } ) {
+	const trackingRef = useRef();
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+	useEffect( () => {
+		if ( inView && ! hasBeenInView && ga4Connected ) {
+			trackEvent(
+				`${ viewContext }_kmw-cta-notification`,
+				'view_notification'
+			);
+
+			setHasBeenInView( true );
+		}
+	}, [ inView, viewContext, ga4Connected, hasBeenInView ] );
 
 	return (
 		<section
+			ref={ trackingRef }
 			className={ classnames(
 				'googlesitekit-setup__wrapper',
 				'googlesitekit-setup__wrapper--key-metrics-setup-cta',

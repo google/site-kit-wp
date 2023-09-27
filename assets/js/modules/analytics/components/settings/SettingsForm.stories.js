@@ -21,13 +21,8 @@
  */
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	DASHBOARD_VIEW_GA4,
-	FORM_SETUP,
-	MODULES_ANALYTICS,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { GA4_AUTO_SWITCH_DATE } from '../../..//analytics-4/constants';
 import { createBuildAndReceivers } from '../../../../modules/tagmanager/datastore/__factories__/utils';
@@ -261,30 +256,6 @@ OwnedSettingsChanged.args = {
 	hasAnalytics4Access: true,
 };
 
-export const WithUATag = Template.bind( null );
-WithUATag.storyName = 'With UA Tag, non-matching property selected';
-WithUATag.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
-				properties[ 1 ].id,
-				// eslint-disable-next-line sitekit/acronym-case
-				properties[ 1 ].internalWebPropertyId
-			);
-
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( properties[ 0 ].id );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
 export const WithGA4Tag = Template.bind( null );
 WithGA4Tag.storyName = 'With GA4 Tag, non-matching property selected';
 WithGA4Tag.decorators = [
@@ -394,91 +365,19 @@ WithExistingGTMPropertyMatching.scenario = {
 	delay: 250,
 };
 
-export const WithDashboardViewToggle = Template.bind( null );
-WithDashboardViewToggle.storyName = 'With Dashboard View Toggle';
-WithDashboardViewToggle.args = {
+export const WithEnhancedMeasurementToggle = Template.bind( null );
+WithEnhancedMeasurementToggle.storyName = 'With Enhanced Measurement Toggle';
+WithEnhancedMeasurementToggle.args = {
 	hasAnalyticsAccess: true,
 	hasAnalytics4Access: true,
 };
-WithDashboardViewToggle.parameters = {
-	features: [ 'ga4Reporting' ],
-};
-WithDashboardViewToggle.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.setDashboardView( DASHBOARD_VIEW_GA4 );
-
-			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
-				properties[ 0 ].id,
-				// eslint-disable-next-line sitekit/acronym-case
-				properties[ 0 ].internalWebPropertyId
-			);
-
-			registry
-				.dispatch( CORE_FORMS )
-				.setValues( FORM_SETUP, { enableUA: true } );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-WithDashboardViewToggle.scenario = {
-	label: 'Modules/Analytics/Settings/SettingsEdit/WithDashboardViewToggle',
-	delay: 250,
+WithEnhancedMeasurementToggle.parameters = {
+	// TODO: Ensure this usage of the `ga4Reporting` feature flag is removed in conjunction with #6856.
+	features: [ 'ga4Reporting', 'enhancedMeasurement' ],
 };
 
-export const WithDashboardViewLabel = Template.bind( null );
-WithDashboardViewLabel.storyName = 'With Dashboard View Label';
-WithDashboardViewLabel.args = {
-	hasAnalyticsAccess: true,
-	hasAnalytics4Access: true,
-};
-WithDashboardViewLabel.parameters = {
-	features: [ 'ga4Reporting' ],
-};
-WithDashboardViewLabel.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			// Ensure the analytics-4 module is not connected so that the Dashboard View label is shown rather than the toggle.
-			provideModules( registry, [
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: false,
-				},
-			] );
-
-			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
-				properties[ 0 ].id,
-				// eslint-disable-next-line sitekit/acronym-case
-				properties[ 0 ].internalWebPropertyId
-			);
-
-			registry
-				.dispatch( CORE_FORMS )
-				.setValues( FORM_SETUP, { enableUA: true } );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-WithDashboardViewLabel.scenario = {
-	label: 'Modules/Analytics/Settings/SettingsEdit/WithDashboardViewLabel',
+WithEnhancedMeasurementToggle.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithEnhancedMeasurementToggle',
 	delay: 250,
 };
 
@@ -515,6 +414,11 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = async ( registry ) => {
+				global._googlesitekitDashboardSharingData = {
+					settings: {},
+					roles: [],
+				};
+
 				provideModules( registry, [
 					{
 						slug: 'analytics',

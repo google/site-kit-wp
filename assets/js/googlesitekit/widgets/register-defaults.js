@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,7 +26,10 @@ import { __ } from '@wordpress/i18n';
  */
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
-import { CORE_USER } from '../datastore/user/constants';
+import {
+	CORE_USER,
+	allKeyMetricsTileWidgets,
+} from '../datastore/user/constants';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
 import {
@@ -35,7 +37,6 @@ import {
 	ChangeMetricsLink,
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
-import Badge from '../../components/Badge';
 import { CORE_SITE } from '../datastore/site/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
@@ -86,15 +87,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 		{
-			title: (
-				<Fragment>
-					{ __( 'Key metrics', 'google-site-kit' ) }
-					<Badge
-						className="googlesitekit-new-badge"
-						label={ __( 'New', 'google-site-kit' ) }
-					/>
-				</Fragment>
-			),
+			title: __( 'Key metrics', 'google-site-kit' ),
 			subtitle: __(
 				'Track progress towards your goals with tailored metrics',
 				'google-site-kit'
@@ -102,6 +95,19 @@ export function registerDefaults( widgetsAPI ) {
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
 			CTA: ChangeMetricsLink,
+			filterActiveWidgets( select, areaWidgets ) {
+				// Prevent showing only one widget tile in this area when
+				// only Search Console is shared.
+				// See: https://github.com/google/site-kit-wp/issues/7435
+				if (
+					areaWidgets.length === 1 &&
+					allKeyMetricsTileWidgets.includes( areaWidgets[ 0 ].slug )
+				) {
+					return [];
+				}
+
+				return areaWidgets;
+			},
 		},
 		CONTEXT_MAIN_DASHBOARD_KEY_METRICS
 	);

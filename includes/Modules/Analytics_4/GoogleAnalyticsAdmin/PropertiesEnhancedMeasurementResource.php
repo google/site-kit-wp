@@ -23,7 +23,7 @@ class PropertiesEnhancedMeasurementResource extends Resource {
 	 * that the stream must enable enhanced measurement for these settings to take
 	 * effect. (webDataStreams.getEnhancedMeasurementSettings)
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param string $name Required. The name of the settings to lookup. Format: properties/{property_id}/webDataStreams/{stream_id}/enhancedMeasurementSettings
 	 *                               Example: "properties/1000/webDataStreams/2000/enhancedMeasurementSettings".

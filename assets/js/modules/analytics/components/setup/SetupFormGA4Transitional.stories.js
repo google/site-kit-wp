@@ -56,32 +56,6 @@ WithoutExistingTag.scenario = {
 	delay: 250,
 };
 
-export const WithUAExistingTag = Template.bind( null );
-WithUAExistingTag.storyName = 'With UA Tag, non-matching property selected';
-WithUAExistingTag.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
-				properties[ 1 ].id,
-				// eslint-disable-next-line sitekit/acronym-case
-				properties[ 1 ].internalWebPropertyId
-			);
-
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( properties[ 0 ].id );
-
-			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
 export const WithGA4ExistingTag = Template.bind( null );
 WithGA4ExistingTag.storyName = 'With GA4 Tag, non-matching property selected';
 WithGA4ExistingTag.decorators = [

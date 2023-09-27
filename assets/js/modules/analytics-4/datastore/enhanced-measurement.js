@@ -23,6 +23,11 @@ import invariant from 'invariant';
 import { isEqual, isPlainObject } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -32,6 +37,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID, isValidWebDataStreamID } from '../utils/validation';
+import { isFeatureEnabled } from '../../../features';
 
 const enhancedMeasurementSettingsFields = [
 	'name',
@@ -160,7 +166,7 @@ const baseActions = {
 	/**
 	 * Sets enhanced measurement settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {string} propertyID      The GA4 property ID to set enhanced measurement settings for.
 	 * @param {string} webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
@@ -191,7 +197,7 @@ const baseActions = {
 	/**
 	 * Sets the `streamEnabled` setting for a given web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {string}  propertyID      The GA4 property ID to set enhanced measurement settings for.
 	 * @param {string}  webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
@@ -250,7 +256,7 @@ const baseActions = {
 	/**
 	 * Resets enhanced measurement settings to their saved values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -264,7 +270,7 @@ const baseActions = {
 	/**
 	 * Updates enhanced measurement settings in the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {string} propertyID      The GA4 property ID to set enhanced measurement settings for.
 	 * @param {string} webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
@@ -380,7 +386,7 @@ const baseSelectors = {
 	/**
 	 * Gets the enhanced measurement settings for a given web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} propertyID      The GA4 property ID to fetch web data streams for.
@@ -395,22 +401,31 @@ const baseSelectors = {
 	/**
 	 * Checks if the `streamEnabled` setting is enabled for a given web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} propertyID      The GA4 property ID to check.
 	 * @param {string} webDataStreamID The GA4 web data stream ID to check.
-	 * @return {boolean}               True if `streamEnabled` is on, otherwise false; false if not loaded.
+	 * @return {boolean}               True if `streamEnabled` is on, otherwise false; `undefined` if not loaded.
 	 */
-	isEnhancedMeasurementStreamEnabled( state, propertyID, webDataStreamID ) {
-		return !! state.enhancedMeasurement[ propertyID ]?.[ webDataStreamID ]
-			?.settings?.streamEnabled;
-	},
+	isEnhancedMeasurementStreamEnabled: createRegistrySelector(
+		( select ) => ( state, propertyID, webDataStreamID ) => {
+			const settings = select(
+				MODULES_ANALYTICS_4
+			).getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+
+			if ( settings === undefined ) {
+				return undefined;
+			}
+
+			return !! settings.streamEnabled;
+		}
+	),
 
 	/**
 	 * Checks if the settings have changed compared to the saved settings for a given web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.110.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} propertyID      The GA4 property ID to check.
@@ -427,6 +442,47 @@ const baseSelectors = {
 
 		return ! isEqual( settings, savedSettings );
 	},
+
+	/**
+	 * This is a utility selector that checks if either the GA4 module settings, or the
+	 * current web data stream's enhanced measurement settings, have changed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} True if settings have changed, otherwise false.
+	 */
+	haveAnyGA4SettingsChanged: createRegistrySelector( ( select ) => () => {
+		const {
+			getPropertyID,
+			getWebDataStreamID,
+			haveEnhancedMeasurementSettingsChanged,
+			haveSettingsChanged,
+		} = select( MODULES_ANALYTICS_4 );
+
+		if ( haveSettingsChanged() ) {
+			return true;
+		}
+
+		if ( ! isFeatureEnabled( 'enhancedMeasurement' ) ) {
+			return false;
+		}
+
+		const propertyID = getPropertyID();
+		const webDataStreamID = getWebDataStreamID();
+
+		if (
+			isValidPropertyID( propertyID ) &&
+			isValidWebDataStreamID( webDataStreamID ) &&
+			haveEnhancedMeasurementSettingsChanged(
+				propertyID,
+				webDataStreamID
+			)
+		) {
+			return true;
+		}
+
+		return false;
+	} ),
 };
 
 const store = Data.combineStores(
