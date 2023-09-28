@@ -450,7 +450,7 @@ class REST_Modules_Controller {
 									return array();
 								}
 
-								$view_only_settings    = array_intersect_key( $settings, array_flip( $view_only_keys ) );
+								$view_only_settings = array_intersect_key( $settings, array_flip( $view_only_keys ) );
 
 								return new WP_REST_Response( $view_only_settings );
 							}
