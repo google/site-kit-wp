@@ -124,7 +124,7 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_PAGES_PER_VISIT ] = {
 		title: __( 'Pages per visit', 'google-site-kit' ),
 		description: __(
-			'Number of pages on average visitors viewed per session',
+			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
 	};

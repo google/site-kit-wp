@@ -119,7 +119,7 @@ function PagesPerVisitWidget( { Widget } ) {
 			error={ error }
 			moduleSlug="analytics-4"
 			infoTooltip={ __(
-				'Number of pages on average visitors viewed per session',
+				'Number of pages visitors viewed per session on average',
 				'google-site-kit'
 			) }
 		/>
