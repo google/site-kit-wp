@@ -234,7 +234,6 @@ export const registerWidgets = ( widgets ) => {
 			KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 			{
 				Component: TopReturningVisitorPages,
-
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 1,
 				wrapWidget: false,
