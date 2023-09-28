@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Trait;
 
 class FakeModuleSettings_WithViewOnlyKeys extends Module_Settings implements Setting_With_ViewOnly_Keys_Interface {
-	use Setting_With_ViewOnly_Keys_Trait;
 
 	const OPTION = 'fake_module_settings_with_view_only';
 

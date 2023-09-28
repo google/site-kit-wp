@@ -199,10 +199,6 @@ class REST_Modules_Controller {
 			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
-		$can_view_settings = function() {
-			return current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) || current_user_can( Permissions::VIEW_DASHBOARD ) || current_user_can( Permissions::VIEW_SPLASH );
-		};
-
 		$can_view_insights = function() {
 			// This accounts for routes that need to be called before user has completed setup flow.
 			if ( current_user_can( Permissions::SETUP ) ) {
@@ -441,18 +437,27 @@ class REST_Modules_Controller {
 								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
 
-							$settings = $module->get_settings();
-							if ( $settings instanceof Setting_With_ViewOnly_Keys_Interface && ! $can_manage_options() ) {
-								return new WP_REST_Response( $settings->get_view_only_settings() );
-							}
-
 							if ( $can_manage_options() ) {
 								return new WP_REST_Response( $module->get_settings()->get() );
 							}
 
-							return array();
+							$settings = $module->get_settings();
+							if ( $settings instanceof Setting_With_ViewOnly_Keys_Interface ) {
+								$view_only_keys = $settings->get_view_only_keys();
+								$settings       = $settings->get();
+
+								if ( empty( $view_only_keys ) || empty( $settings ) ) {
+									return array();
+								}
+
+								$view_only_settings    = array_intersect_key( $settings, array_flip( $view_only_keys ) );
+
+								return new WP_REST_Response( $view_only_settings );
+							}
+
+							return new WP_Error( 'no_view_only_settings', __( 'No view-only settings available.', 'google-site-kit' ) );
 						},
-						'permission_callback' => $can_view_settings,
+						'permission_callback' => $can_list_data,
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,

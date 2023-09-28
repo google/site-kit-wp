@@ -120,22 +120,32 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->set_available_modules( array( $fake_module ) );
 	}
 
-	private function share_fake_module_with_user_role( $shared_with_role ) {
-		$user = self::factory()->user->create_and_get( array( 'role' => $shared_with_role ) );
-		wp_set_current_user( $user->ID );
-
-		$authentication  = new Authentication( $this->context, null, $this->user_options );
-		$dismissed_items = new Dismissed_Items( $this->user_options );
-
+	private function share_modules_with_user_role( $shared_with_role, $shared_modules = array( 'fake-module' ) ) {
 		$sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
-		$permissions      = new Permissions( $this->context, $authentication, $this->modules, $this->user_options, $dismissed_items );
-		$permissions->register();
 
-		$sharing_settings->set(
-			array(
-				'fake-module' => array( 'sharedRoles' => array( $shared_with_role ) ),
+		$shared_modules = array_combine(
+			$shared_modules,
+			array_fill(
+				0,
+				count( $shared_modules ),
+				array( 'sharedRoles' => array( $shared_with_role ) )
 			)
 		);
+
+		$sharing_settings->set( $shared_modules );
+	}
+
+	private function set_current_active_user_role( $role ) {
+		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
+
+		wp_set_current_user( $user->ID );
+	}
+
+	private function request_get_module_setings( $module = 'fake-module' ) {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/' . $module . '/data/settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		return $response;
 	}
 
 	public function test_register() {
@@ -580,8 +590,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/non-existent-module/data/settings' );
-		$response = rest_get_server()->dispatch( $request );
+		$response = $this->request_get_module_setings( 'non-existent-module' );
 
 		$this->assertEquals( 404, $response->get_status() );
 	}
@@ -592,8 +601,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 		$this->setup_fake_module();
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
-		$response = rest_get_server()->dispatch( $request );
+		$response = $this->request_get_module_setings();
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -611,13 +619,13 @@ class REST_Modules_ControllerTest extends TestCase {
 
 		$shared_with_roles = array( 'editor', 'author', 'contributor' );
 		foreach ( $shared_with_roles as $shared_with_role ) {
-			$this->share_fake_module_with_user_role( $shared_with_role );
+			$this->set_current_active_user_role( $shared_with_role );
+			$this->share_modules_with_user_role( $shared_with_role );
 
-			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
-			$response = rest_get_server()->dispatch( $request );
+			$response = $this->request_get_module_setings();
 
-			$this->assertEquals( '200', $response->get_status() );
-			$this->assertEmpty( $response->get_data() );
+			$this->assertEquals( '500', $response->get_status() );
+			$this->assertEquals( 'no_view_only_settings', $response->get_data()['code'] );
 		}
 	}
 
@@ -627,8 +635,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 		$this->setup_fake_module_with_view_only_settings();
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
-		$response = rest_get_server()->dispatch( $request );
+		$response = $this->request_get_module_setings();
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -639,7 +646,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 	}
 
-	public function test_settings_rest_endpoint__unathorised_role_with_view_only_settings() {
+	public function test_settings_rest_endpoint__non_admins_require_view_only_access() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -647,11 +654,9 @@ class REST_Modules_ControllerTest extends TestCase {
 
 		$roles = array( 'editor', 'author', 'contributor' );
 		foreach ( $roles as $role ) {
-			$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
-			wp_set_current_user( $user->ID );
+			$this->set_current_active_user_role( $role );
 
-			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
-			$response = rest_get_server()->dispatch( $request );
+			$response = $this->request_get_module_setings();
 
 			$this->assertEquals( '403', $response->get_status() );
 		}
@@ -665,10 +670,10 @@ class REST_Modules_ControllerTest extends TestCase {
 
 		$shared_with_roles = array( 'editor', 'author', 'contributor' );
 		foreach ( $shared_with_roles as $shared_with_role ) {
-			$this->share_fake_module_with_user_role( $shared_with_role );
+			$this->set_current_active_user_role( $shared_with_role );
+			$this->share_modules_with_user_role( $shared_with_role );
 
-			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
-			$response = rest_get_server()->dispatch( $request );
+			$response = $this->request_get_module_setings();
 
 			$this->assertEquals( '200', $response->get_status() );
 			$this->assertEqualSetsWithIndex(
