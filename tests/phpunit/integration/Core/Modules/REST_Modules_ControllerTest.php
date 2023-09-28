@@ -11,8 +11,12 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -104,6 +108,34 @@ class REST_Modules_ControllerTest extends TestCase {
 		$fake_module_settings->register();
 
 		$this->set_available_modules( array( $fake_module ) );
+	}
+
+	private function setup_fake_module_with_view_only_settings( $force_active = true ) {
+		$fake_module = new FakeModule_WithViewOnlySettings( $this->context );
+		$fake_module->set_force_active( $force_active );
+
+		$fake_module_settings = new FakeModuleSettings_WithViewOnlyKeys( $this->options );
+		$fake_module_settings->register();
+
+		$this->set_available_modules( array( $fake_module ) );
+	}
+
+	private function share_fake_module_with_user_role( $shared_with_role ) {
+		$user = self::factory()->user->create_and_get( array( 'role' => $shared_with_role ) );
+		wp_set_current_user( $user->ID );
+
+		$authentication  = new Authentication( $this->context, null, $this->user_options );
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+
+		$sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$permissions      = new Permissions( $this->context, $authentication, $this->modules, $this->user_options, $dismissed_items );
+		$permissions->register();
+
+		$sharing_settings->set(
+			array(
+				'fake-module' => array( 'sharedRoles' => array( $shared_with_role ) ),
+			)
+		);
 	}
 
 	public function test_register() {
@@ -552,6 +584,100 @@ class REST_Modules_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_settings_rest_endpoint__admins_with_no_view_only_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'defaultKey' => 'default-value',
+			),
+			$response->get_data()
+		);
+	}
+
+	public function test_settings_rest_endpoint__shared_roles_with_no_view_only_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		$shared_with_roles = array( 'editor', 'author', 'contributor' );
+		foreach ( $shared_with_roles as $shared_with_role ) {
+			$this->share_fake_module_with_user_role( $shared_with_role );
+
+			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
+			$response = rest_get_server()->dispatch( $request );
+
+			$this->assertEquals( '200', $response->get_status() );
+			$this->assertEmpty( $response->get_data() );
+		}
+	}
+
+	public function test_settings_rest_endpoint__admins_with_view_only_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module_with_view_only_settings();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'defaultKey'  => 'default-value',
+				'viewOnlyKey' => 'default-value',
+			),
+			$response->get_data()
+		);
+	}
+
+	public function test_settings_rest_endpoint__unathorised_role_with_view_only_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module_with_view_only_settings();
+
+		$roles = array( 'editor', 'author', 'contributor' );
+		foreach ( $roles as $role ) {
+			$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
+			wp_set_current_user( $user->ID );
+
+			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
+			$response = rest_get_server()->dispatch( $request );
+
+			$this->assertEquals( '403', $response->get_status() );
+		}
+	}
+
+	public function test_settings_rest_endpoint__shared_role_with_view_only_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module_with_view_only_settings();
+
+		$shared_with_roles = array( 'editor', 'author', 'contributor' );
+		foreach ( $shared_with_roles as $shared_with_role ) {
+			$this->share_fake_module_with_user_role( $shared_with_role );
+
+			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
+			$response = rest_get_server()->dispatch( $request );
+
+			$this->assertEquals( '200', $response->get_status() );
+			$this->assertEqualSetsWithIndex(
+				array(
+					'viewOnlyKey' => 'default-value',
+				),
+				$response->get_data()
+			);
+		}
 	}
 
 	public function test_data_available_rest_endpoint__valid_method__non_implementing_module() {
