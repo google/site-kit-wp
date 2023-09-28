@@ -369,9 +369,8 @@ final class AdSense extends Module
 
 					$notifications = array_map(
 						function ( Google_Service_Adsense_Alert $alert ) {
-							$alert_name_segments = explode( '/', $alert->getName() );
 							return array(
-								'id'            => 'adsense::' . end( $alert_name_segments ),
+								'id'            => 'adsense::' . $alert->getName(),
 								'description'   => $alert->getMessage(),
 								'isDismissible' => true,
 								'severity'      => 'win-info',
