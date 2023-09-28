@@ -104,25 +104,25 @@ function LeastEngagingPagesWidget( props ) {
 		limit: 3,
 	};
 
+	const loadedPageViewsReport = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+			pageViewsReportOptions,
+		] )
+	);
+
+	const pageViewsReportError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			pageViewsReportOptions,
+		] )
+	);
+
 	const report = useSelect( ( select ) => {
-		const loadedPageViewsReport = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getReport', [ pageViewsReportOptions ] );
-
-		const pageViewsReportError = select(
-			MODULES_ANALYTICS_4
-		).getErrorForSelector( 'getReport', [ pageViewsReportOptions ] );
-
 		if ( loadedPageViewsReport && ! pageViewsReportError ) {
 			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 		}
 	} );
 
 	const error = useSelect( ( select ) => {
-		const pageViewsReportError = select(
-			MODULES_ANALYTICS_4
-		).getErrorForSelector( 'getReport', [ pageViewsReportOptions ] );
-
 		const reportError = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 			'getReport',
 			[ reportOptions ]
@@ -152,10 +152,7 @@ function LeastEngagingPagesWidget( props ) {
 			) ||
 			titles === undefined ||
 			report === null ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ pageViewsReportOptions ]
-			)
+			! loadedPageViewsReport
 	);
 
 	const format = {
