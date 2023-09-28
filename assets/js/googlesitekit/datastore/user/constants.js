@@ -56,6 +56,8 @@ export const KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE =
 	'kmAnalyticsTopConvertingTrafficSource';
 export const KM_ANALYTICS_TOP_COUNTRIES = 'kmAnalyticsTopCountries';
 export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE = 'kmAnalyticsTopTrafficSource';
+export const KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES =
+	'kmAnalyticsTopReturningVisitorPages';
 export const KM_SEARCH_CONSOLE_POPULAR_KEYWORDS =
 	'kmSearchConsolePopularKeywords';
 export const KM_ANALYTICS_VISITS_PER_VISITOR = 'kmAnalyticsVisitsPerVisitor';
@@ -71,6 +73,7 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 ];
 
