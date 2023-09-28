@@ -367,23 +367,23 @@ final class AdSense extends Module
 						return array();
 					}
 
-					/**
-					 * First Alert
-					 *
-					 * @var Google_Service_Adsense_Alert $alert
-					 */
-					$alert = array_shift( $alerts );
-					return array(
-						array(
-							'id'            => 'adsense-notification',
-							'description'   => $alert->getMessage(),
-							'isDismissible' => true,
-							'severity'      => 'win-info',
-							'ctaURL'        => $this->get_account_url(),
-							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
-							'ctaTarget'     => '_blank',
-						),
+					$notifications = array_map(
+						function ( Google_Service_Adsense_Alert $alert ) {
+							$alert_name_segments = explode( '/', $alert->getName() );
+							return array(
+								'id'            => 'adsense::' . end( $alert_name_segments ),
+								'description'   => $alert->getMessage(),
+								'isDismissible' => true,
+								'severity'      => 'win-info',
+								'ctaURL'        => $this->get_account_url(),
+								'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
+								'ctaTarget'     => '_blank',
+							);
+						},
+						$alerts
 					);
+
+					return array_values( $notifications );
 				};
 			case 'GET:report':
 				$start_date = $data['startDate'];
