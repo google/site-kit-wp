@@ -37,6 +37,7 @@ import {
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
 
@@ -115,6 +116,13 @@ const KEY_METRICS_WIDGETS = {
 		title: __( 'Top converting traffic source', 'google-site-kit' ),
 		description: __(
 			'Channel which brought in the most visits that resulted in conversions',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_VISITS_PER_VISITOR ]: {
+		title: __( 'Visits per visitor', 'google-site-kit' ),
+		description: __(
+			'Average number of sessions per site visitor',
 			'google-site-kit'
 		),
 	},

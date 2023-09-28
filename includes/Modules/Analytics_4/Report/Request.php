@@ -211,6 +211,7 @@ class Request extends Report {
 				'screenPageViewsPerSession',
 				'sessions',
 				'sessionConversionRate',
+				'sessionsPerUser',
 				'totalUsers',
 			)
 		);

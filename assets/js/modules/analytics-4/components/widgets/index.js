@@ -29,3 +29,4 @@ export { default as TopTrafficSourceWidget } from './TopTrafficSourceWidget';
 export { default as TopConvertingTrafficSourceWidget } from './TopConvertingTrafficSourceWidget';
 export { default as PagesPerVisitWidget } from './PagesPerVisitWidget';
 export { default as TopReturningVisitorPages } from './TopReturningVisitorPages';
+export { default as VisitsPerVisitorWidget } from './VisitsPerVisitorWidget';
