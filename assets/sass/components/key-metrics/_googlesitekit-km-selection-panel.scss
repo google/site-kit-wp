@@ -90,6 +90,11 @@
 				color: $c-interactive-on-disable-container;
 			}
 		}
+
+		.googlesitekit-km-selection-panel-metrics__metric-item-error {
+			color: $c-red-600;
+			padding-top: 10px;
+		}
 	}
 
 	.googlesitekit-km-selection-panel-footer {

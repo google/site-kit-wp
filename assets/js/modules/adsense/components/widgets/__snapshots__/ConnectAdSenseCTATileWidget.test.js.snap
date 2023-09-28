@@ -30,6 +30,42 @@ exports[`ConnectAdSenseCTATileWidget should render the Connect AdSense CTA tile 
             </a>
           </div>
         </div>
+        <div
+          class="googlesitekit-km-connect-module-cta-tile__ghost-card"
+        >
+          <div
+            class="googlesitekit-preview-block"
+            style="width: 100%; height: 90px;"
+          >
+            <div
+              class="googlesitekit-preview-block__wrapper"
+            />
+          </div>
+        </div>
+        <div
+          class="googlesitekit-km-connect-module-cta-tile__ghost-card"
+        >
+          <div
+            class="googlesitekit-preview-block"
+            style="width: 100%; height: 90px;"
+          >
+            <div
+              class="googlesitekit-preview-block__wrapper"
+            />
+          </div>
+        </div>
+        <div
+          class="googlesitekit-km-connect-module-cta-tile__ghost-card"
+        >
+          <div
+            class="googlesitekit-preview-block"
+            style="width: 100%; height: 90px;"
+          >
+            <div
+              class="googlesitekit-preview-block__wrapper"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>

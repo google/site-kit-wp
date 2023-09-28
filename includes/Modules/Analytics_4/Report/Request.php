@@ -216,6 +216,7 @@ class Request extends Report {
 				'engagedSessions',
 				'engagementRate',
 				'screenPageViews',
+				'screenPageViewsPerSession',
 				'sessions',
 				'sessionConversionRate',
 				'totalUsers',

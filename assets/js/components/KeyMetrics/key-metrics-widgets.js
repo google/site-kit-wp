@@ -35,6 +35,8 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
@@ -123,6 +125,20 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 		title: __( 'Least engaging pages', 'google-site-kit' ),
 		description: __(
 			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
+			'google-site-kit'
+		),
+	};
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_PAGES_PER_VISIT ] = {
+		title: __( 'Pages per visit', 'google-site-kit' ),
+		description: __(
+			'Number of pages visitors viewed per session on average',
+			'google-site-kit'
+		),
+	};
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ] = {
+		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
+		description: __(
+			'Pages that attracted the most returning visitors',
 			'google-site-kit'
 		),
 	};
