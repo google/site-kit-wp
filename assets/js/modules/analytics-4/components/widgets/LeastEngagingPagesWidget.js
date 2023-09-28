@@ -1,5 +1,5 @@
 /**
- * PopularContentWidget component.
+ * LeastEngagingPagesWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -77,7 +77,7 @@ function LeastEngagingPagesWidget( props ) {
 	const medianIndex = parseInt( pageViewsReport?.rowCount / 2, 10 );
 	const medianPageViews =
 		parseInt(
-			pageViewsReport?.rows?.[ medianIndex ]?.metricValues[ 0 ].value,
+			pageViewsReport?.rows?.[ medianIndex ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
 

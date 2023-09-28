@@ -880,6 +880,14 @@ class Analytics_4Test extends TestCase {
 					'sessionDefaultChannelGrouping' => 'Organic Search',
 					'pageTitle'                     => array( 'Title Foo', 'Title Bar' ),
 				),
+				'metricFilters'    => array(
+					'total' => array(
+						'operation' => 'GREATER_THAN_OR_EQUAL',
+						'value'     => array(
+							'int64Value' => 4,
+						),
+					),
+				),
 				'orderby'          => array(
 					array(
 						'metric' => array(
@@ -1032,6 +1040,27 @@ class Analytics_4Test extends TestCase {
 				),
 			),
 			$request_params['dimensionFilter']
+		);
+
+		$this->assertEquals(
+			array(
+				'andGroup' => array(
+					'expressions' => array(
+						array(
+							'filter' => array(
+								'fieldName'     => 'total',
+								'numericFilter' => array(
+									'operation' => 'GREATER_THAN_OR_EQUAL',
+									'value'     => array(
+										'int64Value' => 4,
+									),
+								),
+							),
+						),
+					),
+				),
+			),
+			$request_params['metricFilter']
 		);
 
 		$this->assertEquals(

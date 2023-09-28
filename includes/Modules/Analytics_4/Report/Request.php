@@ -17,8 +17,8 @@ use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics_4\Report;
 use Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter\In_List_Filter;
 use Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter\String_Filter;
-use Google\Site_Kit\Modules\Analytics_4\Report\Metric_Filter\Numeric_Filter;
-use Google\Site_Kit\Modules\Analytics_4\Report\Metric_Filter\Between_Filter;
+use Google\Site_Kit\Modules\Analytics_4\Report\Filters\Numeric_Filter;
+use Google\Site_Kit\Modules\Analytics_4\Report\Filters\Between_Filter;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpression as Google_Service_AnalyticsData_FilterExpression;
@@ -366,7 +366,7 @@ class Request extends Report {
 		// Use the string filter type by default.
 		$filter_type = 'stringFilter';
 		if ( isset( $dimension_value['filterType'] ) ) {
-			// If there is the filterType property, use the explicit filter type then.
+			// If the filterType property is provided, use the explicit filter type then.
 			$filter_type = $dimension_value['filterType'];
 		} elseif ( wp_is_numeric_array( $dimension_value ) ) {
 			// Otherwise, if the dimension has a numeric array of values, we should fall
@@ -431,12 +431,12 @@ class Request extends Report {
 		// Use the numeric filter type by default.
 		$filter_type = 'numericFilter';
 		if ( isset( $metric_value['filterType'] ) ) {
-			// If there is the filterType property, use the explicit filter type then.
+			// If the filterType property is provided, use the explicit filter type then.
 			$filter_type = $metric_value['filterType'];
 		}
 
 		if ( 'numericFilter' === $filter_type ) {
-			if ( ! isset( $metric_value['operation'] ) && ! isset( $metric_value['value'] ) ) {
+			if ( ! isset( $metric_value['operation'] ) || ! isset( $metric_value['value'] ) ) {
 				return null;
 			}
 			if ( ! isset( $metric_value['value']['int64Value'] ) ) {
@@ -446,7 +446,7 @@ class Request extends Report {
 			$filter = new Numeric_Filter();
 
 		} elseif ( 'betweenFilter' === $filter_type ) {
-			if ( ! isset( $metric_value['from_value'] ) && ! isset( $metric_value['to_value'] ) ) {
+			if ( ! isset( $metric_value['from_value'] ) || ! isset( $metric_value['to_value'] ) ) {
 				return null;
 			}
 			if (

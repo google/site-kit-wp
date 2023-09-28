@@ -114,7 +114,8 @@ Ready.args = {
 		const medianIndex = parseInt( pageViewsReport?.rowCount / 2, 10 );
 		const medianPageViews =
 			parseInt(
-				pageViewsReport?.rows?.[ medianIndex ]?.metricValues[ 0 ].value,
+				pageViewsReport?.rows?.[ medianIndex ]?.metricValues?.[ 0 ]
+					?.value,
 				10
 			) || 0;
 
@@ -178,7 +179,8 @@ ReadyViewOnly.args = {
 		const medianIndex = parseInt( pageViewsReport?.rowCount / 2, 10 );
 		const medianPageViews =
 			parseInt(
-				pageViewsReport?.rows?.[ medianIndex ]?.metricValues[ 0 ].value,
+				pageViewsReport?.rows?.[ medianIndex ]?.metricValues?.[ 0 ]
+					?.value,
 				10
 			) || 0;
 
