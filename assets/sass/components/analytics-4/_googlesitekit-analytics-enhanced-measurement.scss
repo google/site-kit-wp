@@ -25,4 +25,10 @@
 	.googlesitekit-analytics-enable-enhanced-measurement__progress {
 		margin: 0 0 21px;
 	}
+
+	#googlesitekit-enhanced-measurement-activation-banner {
+		svg {
+			max-height: 175px;
+		}
+	}
 }
