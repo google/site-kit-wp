@@ -34,12 +34,14 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { isFeatureEnabled } from '../../features';
 
-export const KEY_METRICS_WIDGETS = {
+const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
 		title: __( 'Loyal visitors', 'google-site-kit' ),
 		description: __(
@@ -115,3 +117,15 @@ export const KEY_METRICS_WIDGETS = {
 		),
 	},
 };
+
+if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ] = {
+		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
+		description: __(
+			'Pages that attracted the most returning visitors',
+			'google-site-kit'
+		),
+	};
+}
+
+export { KEY_METRICS_WIDGETS };
