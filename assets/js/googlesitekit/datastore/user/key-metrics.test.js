@@ -631,7 +631,7 @@ describe( 'core/user key metrics', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return false if a module that the widget depends on is not connected', () => {
+			it( 'should return true if a module that the widget depends on is not connected', () => {
 				provideUserAuthentication( registry );
 
 				provideModules( registry, [
@@ -652,7 +652,7 @@ describe( 'core/user key metrics', () => {
 					registry
 						.select( CORE_USER )
 						.isKeyMetricAvailable( 'metricA' )
-				).toBe( false );
+				).toBe( true );
 			} );
 
 			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', () => {
