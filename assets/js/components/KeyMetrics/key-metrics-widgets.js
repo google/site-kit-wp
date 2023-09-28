@@ -34,10 +34,12 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
+
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
 
@@ -119,6 +121,13 @@ const KEY_METRICS_WIDGETS = {
 };
 
 if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_PAGES_PER_VISIT ] = {
+		title: __( 'Pages per visit', 'google-site-kit' ),
+		description: __(
+			'Number of pages visitors viewed per session on average',
+			'google-site-kit'
+		),
+	};
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ] = {
 		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
 		description: __(

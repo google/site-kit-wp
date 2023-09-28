@@ -29,6 +29,7 @@ import {
 	TopCountriesWidget,
 	TopTrafficSourceWidget,
 	TopConvertingTrafficSourceWidget,
+	PagesPerVisitWidget,
 	TopReturningVisitorPages,
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
@@ -39,6 +40,7 @@ import {
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CITIES,
@@ -210,8 +212,24 @@ export const registerWidgets = ( widgets ) => {
 
 	if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 		/*
-		 * Key metrics widgets.
+		 * News Key metrics widgets.
 		 */
+		widgets.registerWidget(
+			KM_ANALYTICS_PAGES_PER_VISIT,
+			{
+				Component: PagesPerVisitWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_PAGES_PER_VISIT
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
 		widgets.registerWidget(
 			KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 			{
