@@ -41,6 +41,7 @@ const ANALYTICS_4_METRIC_TYPES = {
 	newUsers: 'TYPE_INTEGER',
 	activeUsers: 'TYPE_INTEGER',
 	sessions: 'TYPE_INTEGER',
+	bounceRate: 'TYPE_FLOAT',
 	conversions: 'TYPE_INTEGER',
 	screenPageViews: 'TYPE_INTEGER',
 	screenPageViewsPerSession: 'TYPE_FLOAT',

@@ -47,6 +47,8 @@ export const KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT =
 	'kmAnalyticsAdSenseTopEarningContent';
 export const KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE =
 	'kmAnalyticsEngagedTrafficSource';
+export const KM_ANALYTICS_LEAST_ENGAGING_PAGES =
+	'kmAnalyticsLeastEngagingPages';
 export const KM_ANALYTICS_LOYAL_VISITORS = 'kmAnalyticsLoyalVisitors';
 export const KM_ANALYTICS_NEW_VISITORS = 'kmAnalyticsNewVisitors';
 export const KM_ANALYTICS_POPULAR_CONTENT = 'kmAnalyticsPopularContent';
@@ -66,6 +68,7 @@ export const KM_ANALYTICS_VISITS_PER_VISITOR = 'kmAnalyticsVisitsPerVisitor';
 export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
