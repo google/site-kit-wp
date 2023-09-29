@@ -51,12 +51,12 @@ export default {
 					{
 						slug: 'analytics-4',
 						active: true,
-						connected: true,
+						connected: false,
 					},
 					{
 						slug: 'adsense',
 						active: true,
-						connected: true,
+						connected: false,
 					},
 				] );
 
