@@ -475,8 +475,6 @@ class AnalyticsTest extends TestCase {
 	 * @param bool $is_content_creator
 	 */
 	public function test_tracking_disabled( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
-		global $wp_version;
-
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
