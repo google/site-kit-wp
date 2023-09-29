@@ -117,9 +117,13 @@ function LeastEngagingPagesWidget( props ) {
 	);
 
 	const report = useSelect( ( select ) => {
-		if ( loadedPageViewsReport && ! pageViewsReportError ) {
-			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+		if ( ! loadedPageViewsReport ) {
+			return undefined;
 		}
+		if ( pageViewsReportError ) {
+			return null;
+		}
+		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 	} );
 
 	const error = useSelect( ( select ) => {
@@ -151,7 +155,6 @@ function LeastEngagingPagesWidget( props ) {
 				[ reportOptions ]
 			) ||
 			titles === undefined ||
-			report === null ||
 			! loadedPageViewsReport
 	);
 

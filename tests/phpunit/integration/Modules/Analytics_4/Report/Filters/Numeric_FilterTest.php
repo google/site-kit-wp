@@ -17,7 +17,7 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Modules
  * @group Analytics_4
  * @group Report
- * @group Dimension_Filter
+ * @group Filters
  */
 class Numeric_FilterTest extends TestCase {
 
