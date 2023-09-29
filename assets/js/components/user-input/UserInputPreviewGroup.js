@@ -82,13 +82,14 @@ export default function UserInputPreviewGroup( {
 	const { saveUserInputSettings, resetUserInputSettings } =
 		useDispatch( CORE_USER );
 
-	const isOpen = currentlyEditingSlug === slug;
+	const isEditing = currentlyEditingSlug === slug;
+
 	const isScreenLoading = isSavingSettings || isNavigating;
 
 	const gaEventCategory = `${ viewContext }_kmw`;
 
 	const toggleEditMode = useCallback( () => {
-		if ( isOpen ) {
+		if ( isEditing ) {
 			setValues( {
 				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
 			} );
@@ -98,9 +99,9 @@ export default function UserInputPreviewGroup( {
 				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: slug,
 			} );
 		}
-	}, [ gaEventCategory, isOpen, setValues, slug ] );
+	}, [ gaEventCategory, isEditing, setValues, slug ] );
 
-	const error = getErrorMessageForAnswer(
+	const errorMessage = getErrorMessageForAnswer(
 		values,
 		USER_INPUT_MAX_ANSWERS[ slug ]
 	);
@@ -118,12 +119,15 @@ export default function UserInputPreviewGroup( {
 
 	const handleOnEditClick = useCallback( async () => {
 		if ( settingsView ) {
-			if ( isScreenLoading || ( !! currentlyEditingSlug && ! isOpen ) ) {
+			if (
+				isScreenLoading ||
+				( !! currentlyEditingSlug && ! isEditing )
+			) {
 				return;
 			}
 
 			// Do not preserve changes if preview group is collapsed with individual CTAs.
-			if ( isOpen ) {
+			if ( isEditing ) {
 				await resetUserInputSettings();
 			}
 		}
@@ -133,7 +137,7 @@ export default function UserInputPreviewGroup( {
 		settingsView,
 		isScreenLoading,
 		currentlyEditingSlug,
-		isOpen,
+		isEditing,
 		resetUserInputSettings,
 		toggleEditMode,
 	] );
@@ -150,7 +154,7 @@ export default function UserInputPreviewGroup( {
 	return (
 		<div
 			className={ classnames( 'googlesitekit-user-input__preview-group', {
-				'googlesitekit-user-input__preview-group--editing': isOpen,
+				'googlesitekit-user-input__preview-group--editing': isEditing,
 				'googlesitekit-user-input__preview-group--individual-cta':
 					settingsView,
 			} ) }
@@ -162,7 +166,7 @@ export default function UserInputPreviewGroup( {
 					onClick={ handleOnEditClick }
 					disabled={
 						isScreenLoading ||
-						( !! currentlyEditingSlug && ! isOpen )
+						( !! currentlyEditingSlug && ! isEditing )
 					}
 				>
 					{ __( 'Edit', 'google-site-kit' ) }
@@ -171,13 +175,15 @@ export default function UserInputPreviewGroup( {
 				</Link>
 			</div>
 
-			{ ! isOpen && (
+			{ ! isEditing && (
 				<div className="googlesitekit-user-input__preview-answers">
-					{ error && (
-						<p className="googlesitekit-error-text">{ error }</p>
+					{ errorMessage && (
+						<p className="googlesitekit-error-text">
+							{ errorMessage }
+						</p>
 					) }
 
-					{ ! error &&
+					{ ! errorMessage &&
 						values.map( ( value ) => (
 							<div
 								key={ value }
@@ -189,7 +195,7 @@ export default function UserInputPreviewGroup( {
 				</div>
 			) }
 
-			{ isOpen && (
+			{ isEditing && (
 				<Fragment>
 					<UserInputSelectOptions
 						slug={ slug }
@@ -197,8 +203,10 @@ export default function UserInputPreviewGroup( {
 						options={ options }
 						alignLeftOptions
 					/>
-					{ error && (
-						<p className="googlesitekit-error-text">{ error }</p>
+					{ errorMessage && (
+						<p className="googlesitekit-error-text">
+							{ errorMessage }
+						</p>
 					) }
 					{ settingsView && (
 						<Fragment>
