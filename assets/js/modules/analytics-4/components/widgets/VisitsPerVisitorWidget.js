@@ -96,8 +96,8 @@ function VisitsPerVisitorWidget( { Widget } ) {
 			title={ __( 'Visits per visitor', 'google-site-kit' ) }
 			metricValue={ currentVisitsPerVisitor }
 			subText={ sprintf(
-				/* translators: %d: Number of total readers visiting the site. */
-				__( '%s total visitors', 'google-site-kit' ),
+				/* translators: %d: Number of total visits to the site. */
+				__( '%s total visits', 'google-site-kit' ),
 				numFmt( currentTotalVisitors, { style: 'decimal' } )
 			) }
 			previousValue={ Number( previousVisitsPerVisitor ) }
