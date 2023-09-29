@@ -481,10 +481,12 @@ class AnalyticsTest extends TestCase {
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
 		wp_styles(); // Prevent potential ->queue of non-object error.
-		remove_all_actions( 'wp_enqueue_scripts' );
 
-		// Remove irrelevant script from throwing errors in CI from readfile().
 		if ( $wp_version < 8 ) {
+			remove_all_actions( 'wp_enqueue_scripts' );
+
+			// Remove irrelevant script from throwing errors in CI from
+			// `readfile()`.
 			remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 		}
 
