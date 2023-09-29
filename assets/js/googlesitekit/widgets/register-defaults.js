@@ -29,15 +29,18 @@ import * as WIDGET_AREAS from './default-areas';
 import {
 	CORE_USER,
 	allKeyMetricsTileWidgets,
+	keyMetricsGA4Widgets,
 } from '../datastore/user/constants';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
+import { CORE_MODULES } from '../modules/datastore/constants';
+import { CORE_SITE } from '../datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
 import {
 	KeyMetricsSetupCTAWidget,
 	ChangeMetricsLink,
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
-import { CORE_SITE } from '../datastore/site/constants';
+import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -258,6 +261,41 @@ export function registerDefaults( widgetsAPI ) {
 				isActive: ( select ) =>
 					select( CORE_USER ).isAuthenticated() &&
 					select( CORE_SITE ).isKeyMetricsSetupCompleted() === false,
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		/**
+		 * This widget is only shown if the GA4 module is not connected,
+		 * AND if the user has four KMW tiles dependent on GA4.
+		 * If the user has selected less than four KMW tiles dependent on GA4,
+		 * we show the `ConnectGA4CTATileWidget` instead.
+		 */
+		widgetsAPI.registerWidget(
+			'keyMetricsConnectGA4All',
+			{
+				Component: ConnectGA4CTAWidget,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+				isActive: ( select ) => {
+					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+					const isGA4Connected =
+						select( CORE_MODULES ).isModuleConnected(
+							'analytics-4'
+						);
+
+					if ( isGA4Connected || ! Array.isArray( keyMetrics ) ) {
+						return false;
+					}
+					const kmAnalyticsWidgetCount = keyMetrics.filter(
+						( keyMetric ) =>
+							keyMetricsGA4Widgets.includes( keyMetric )
+					).length;
+
+					return kmAnalyticsWidgetCount > 3;
+				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);

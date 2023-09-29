@@ -70,13 +70,13 @@ export default function Metrics( { savedMetrics } ) {
 				const widget = select( CORE_WIDGETS ).getWidget( metric );
 
 				KEY_METRICS_WIDGETS[ metric ].disconnectedModules =
-					widget.modules.reduce( ( i, slug ) => {
+					widget.modules.reduce( ( modulesAcc, slug ) => {
 						const module = getModule( slug );
 						if ( module?.connected || ! module?.name ) {
-							return i;
+							return modulesAcc;
 						}
 
-						return [ ...i, module.name ];
+						return [ ...modulesAcc, module.name ];
 					}, [] );
 
 				return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
