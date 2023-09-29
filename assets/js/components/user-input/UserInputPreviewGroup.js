@@ -55,10 +55,8 @@ export default function UserInputPreviewGroup( {
 	slug,
 	title,
 	values,
-	options,
-	errorMessage,
-	onCollapse,
-	showIndividualCTAs = false,
+	options = {},
+	settingsView = false,
 } ) {
 	const viewContext = useViewContext();
 	const isNavigating = useSelect( ( select ) =>
@@ -84,22 +82,23 @@ export default function UserInputPreviewGroup( {
 	const { saveUserInputSettings, resetUserInputSettings } =
 		useDispatch( CORE_USER );
 
-	const isEditing = currentlyEditingSlug === slug;
+	const isOpen = currentlyEditingSlug === slug;
 	const isScreenLoading = isSavingSettings || isNavigating;
 
 	const gaEventCategory = `${ viewContext }_kmw`;
 
 	const toggleEditMode = useCallback( () => {
-		if ( ! isEditing ) {
-			trackEvent( gaEventCategory, 'question_edit', slug );
+		if ( isOpen ) {
+			setValues( {
+				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
+			} );
 		} else {
-			onCollapse();
+			trackEvent( gaEventCategory, 'question_edit', slug );
+			setValues( {
+				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: slug,
+			} );
 		}
-
-		setValues( {
-			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: isEditing ? undefined : slug,
-		} );
-	}, [ gaEventCategory, isEditing, onCollapse, setValues, slug ] );
+	}, [ gaEventCategory, isOpen, setValues, slug ] );
 
 	const error = getErrorMessageForAnswer(
 		values,
@@ -118,26 +117,23 @@ export default function UserInputPreviewGroup( {
 	}, [ gaEventCategory, saveUserInputSettings, slug, toggleEditMode ] );
 
 	const handleOnEditClick = useCallback( async () => {
-		if ( showIndividualCTAs ) {
-			if (
-				isScreenLoading ||
-				( !! currentlyEditingSlug && ! isEditing )
-			) {
+		if ( settingsView ) {
+			if ( isScreenLoading || ( !! currentlyEditingSlug && ! isOpen ) ) {
 				return;
 			}
 
 			// Do not preserve changes if preview group is collapsed with individual CTAs.
-			if ( isEditing ) {
+			if ( isOpen ) {
 				await resetUserInputSettings();
 			}
 		}
 
 		toggleEditMode();
 	}, [
-		showIndividualCTAs,
+		settingsView,
 		isScreenLoading,
 		currentlyEditingSlug,
-		isEditing,
+		isOpen,
 		resetUserInputSettings,
 		toggleEditMode,
 	] );
@@ -154,9 +150,9 @@ export default function UserInputPreviewGroup( {
 	return (
 		<div
 			className={ classnames( 'googlesitekit-user-input__preview-group', {
-				'googlesitekit-user-input__preview-group--editing': isEditing,
+				'googlesitekit-user-input__preview-group--editing': isOpen,
 				'googlesitekit-user-input__preview-group--individual-cta':
-					showIndividualCTAs,
+					settingsView,
 			} ) }
 		>
 			<div className="googlesitekit-user-input__preview-group-title">
@@ -166,7 +162,7 @@ export default function UserInputPreviewGroup( {
 					onClick={ handleOnEditClick }
 					disabled={
 						isScreenLoading ||
-						( !! currentlyEditingSlug && ! isEditing )
+						( !! currentlyEditingSlug && ! isOpen )
 					}
 				>
 					{ __( 'Edit', 'google-site-kit' ) }
@@ -175,7 +171,7 @@ export default function UserInputPreviewGroup( {
 				</Link>
 			</div>
 
-			{ ! isEditing && (
+			{ ! isOpen && (
 				<div className="googlesitekit-user-input__preview-answers">
 					{ error && (
 						<p className="googlesitekit-error-text">{ error }</p>
@@ -193,7 +189,7 @@ export default function UserInputPreviewGroup( {
 				</div>
 			) }
 
-			{ isEditing && (
+			{ isOpen && (
 				<Fragment>
 					<UserInputSelectOptions
 						slug={ slug }
@@ -201,12 +197,10 @@ export default function UserInputPreviewGroup( {
 						options={ options }
 						alignLeftOptions
 					/>
-					{ errorMessage && (
-						<p className="googlesitekit-error-text">
-							{ errorMessage }
-						</p>
+					{ error && (
+						<p className="googlesitekit-error-text">{ error }</p>
 					) }
-					{ showIndividualCTAs && (
+					{ settingsView && (
 						<Fragment>
 							<UserInputQuestionAuthor slug={ slug } />
 
@@ -251,11 +245,5 @@ UserInputPreviewGroup.propTypes = {
 	title: PropTypes.string.isRequired,
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	options: PropTypes.shape( {} ),
-	errorMessage: PropTypes.string,
-	onCollapse: PropTypes.func,
-	showIndividualCTAs: PropTypes.bool,
-};
-
-UserInputPreviewGroup.defaultProps = {
-	options: {},
+	settingsView: PropTypes.bool,
 };
