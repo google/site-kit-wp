@@ -480,6 +480,8 @@ class AnalyticsTest extends TestCase {
 		wp_scripts()->done       = array();
 		wp_styles(); // Prevent potential ->queue of non-object error.
 
+		remove_all_actions( 'wp_enqueue_scripts' );
+
 		// Set the current user (can be 0 for no user)
 		$role = $is_content_creator ? 'administrator' : 'subscriber';
 		$user = $logged_in ?
