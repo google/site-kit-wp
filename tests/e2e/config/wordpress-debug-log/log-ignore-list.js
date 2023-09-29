@@ -19,7 +19,7 @@ export const logIgnoreList = {
 		'PHP Notice:  Trying to access array offset on value of type null in /var/www/html/wp-includes/rest-api/class-wp-rest-request.php on line 337',
 		'PHP Notice:  Trying to access array offset on value of type bool in /var/www/html/wp-includes/theme.php on line 2360',
 	],
-	'8.0.0': [
+	nightly: [
 		// Can be removed once WordPress AMP Plugin removes the deprecated function
 		// call.
 		//
