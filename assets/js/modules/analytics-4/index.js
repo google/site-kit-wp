@@ -31,6 +31,7 @@ import {
 	TopTrafficSourceWidget,
 	TopConvertingTrafficSourceWidget,
 	PagesPerVisitWidget,
+	VisitLengthWidget,
 	TopReturningVisitorPages,
 	VisitsPerVisitorWidget,
 } from './components/widgets';
@@ -51,6 +52,7 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../googlesitekit/datastore/user/constants';
 import { isFeatureEnabled } from '../../features';
@@ -247,6 +249,22 @@ export const registerWidgets = ( widgets ) => {
 				isActive: ( select ) =>
 					select( CORE_USER ).isKeyMetricActive(
 						KM_ANALYTICS_PAGES_PER_VISIT
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_VISIT_LENGTH,
+			{
+				Component: VisitLengthWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_VISIT_LENGTH
 					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]

@@ -39,6 +39,7 @@ import {
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -140,6 +141,13 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 		title: __( 'Pages per visit', 'google-site-kit' ),
 		description: __(
 			'Number of pages visitors viewed per session on average',
+			'google-site-kit'
+		),
+	};
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_VISIT_LENGTH ] = {
+		title: __( 'Visit length', 'google-site-kit' ),
+		description: __(
+			'Average duration (in seconds) of engaged visits',
 			'google-site-kit'
 		),
 	};
