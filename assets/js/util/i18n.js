@@ -123,7 +123,7 @@ const parseDuration = ( durationInSeconds ) => {
  * @return {Object} Formatting functions.
  */
 export const createDurationFormat = ( durationInSeconds, options = {} ) => {
-	const [ hours, minutes, seconds ] = parseDuration( durationInSeconds );
+	const { hours, minutes, seconds } = parseDuration( durationInSeconds );
 
 	return {
 		hours,
