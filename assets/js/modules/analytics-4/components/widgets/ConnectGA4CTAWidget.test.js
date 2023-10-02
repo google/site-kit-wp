@@ -27,7 +27,9 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+	CORE_USER,
 } from '../../../../googlesitekit/datastore/user/constants';
+import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
 import {
 	render,
 	createTestRegistry,
@@ -79,6 +81,11 @@ describe( 'ConnectGA4CTAWidget', () => {
 		} );
 
 		provideKeyMetricsWidgetRegistrations( registry, keyMetricWidgets );
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
+			] );
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -113,6 +120,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 				{}
 			)
 		);
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { container, getByRole, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
