@@ -35,6 +35,8 @@ import {
 	EDIT_SCOPE,
 } from '../../../datastore/constants';
 import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../analytics-4/datastore/constants';
@@ -58,10 +60,12 @@ import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useFeature } from '../../../../../hooks/useFeature';
+import EnhancedMeasurementSwitch from '../../../../analytics-4/components/common/EnhancedMeasurementSwitch';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
@@ -167,6 +171,9 @@ export default function AccountCreate() {
 					timezone,
 				} )
 			);
+			setValues( ENHANCED_MEASUREMENT_FORM, {
+				[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+			} );
 		}
 	}, [
 		hasAccountCreateForm,
@@ -298,6 +305,8 @@ export default function AccountCreate() {
 				<CountrySelect />
 
 				<TimezoneSelect />
+
+				{ enhancedMeasurementEnabled && <EnhancedMeasurementSwitch /> }
 			</div>
 
 			<p>
