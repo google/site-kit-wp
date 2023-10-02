@@ -45,6 +45,7 @@ export default function SuccessBanner() {
 	return (
 		<BannerNotification
 			id="googlesitekit-enhanced-measurement-activation-banner"
+			className="googlesitekit-enhanced-measurement-success-banner"
 			title={ __(
 				'You successfully enabled enhanced measurement for your site',
 				'google-site-kit'

@@ -152,6 +152,16 @@ export default function SetupBanner( {
 		autoSubmit,
 	] );
 
+	const description = hasEditScope
+		? __(
+				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.',
+				'google-site-kit'
+		  )
+		: __(
+				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required — you’ll be redirected to give permission for Site Kit to enable it on your behalf.',
+				'google-site-kit'
+		  );
+
 	return (
 		<BannerNotification
 			id="googlesitekit-enhanced-measurement-activation-banner"
@@ -160,10 +170,7 @@ export default function SetupBanner( {
 				'Understand how visitors interact with your content',
 				'google-site-kit'
 			) }
-			description={ __(
-				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.',
-				'google-site-kit'
-			) }
+			description={ description }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			learnMoreURL={ documentationURL }
 			ctaComponent={
@@ -173,6 +180,14 @@ export default function SetupBanner( {
 				>
 					{ __( 'Enable now', 'google-site-kit' ) }
 				</SpinnerButton>
+			}
+			footer={
+				<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
+					{ __(
+						'You can always add/edit this in the Site Kit Settings',
+						'google-site-kit'
+					) }
+				</p>
 			}
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			WinImageSVG={ () => <SuccessGreenSVG /> }
