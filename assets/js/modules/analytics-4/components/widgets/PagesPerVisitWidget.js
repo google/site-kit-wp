@@ -55,7 +55,7 @@ function PagesPerVisitWidget( { Widget } ) {
 		...dates,
 		metrics: [
 			{ name: 'screenPageViewsPerSession' },
-			{ name: 'sessions' },
+			{ name: 'screenPageViews' },
 		],
 	};
 
@@ -92,7 +92,7 @@ function PagesPerVisitWidget( { Widget } ) {
 			rows.find( makeFind( 'date_range_1' ) )?.metricValues?.[ 0 ]?.value
 		) || 0;
 
-	const currentTotalSessions =
+	const currentTotalPageViews =
 		Number(
 			rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 1 ]?.value
 		) || 0;
@@ -110,8 +110,8 @@ function PagesPerVisitWidget( { Widget } ) {
 			metricValueFormat={ format }
 			subText={ sprintf(
 				/* translators: %s: Number of total page views. */
-				__( '%s total visits', 'google-site-kit' ),
-				numFmt( currentTotalSessions, { style: 'decimal' } )
+				__( '%s page views', 'google-site-kit' ),
+				numFmt( currentTotalPageViews, { style: 'decimal' } )
 			) }
 			previousValue={ previousPagesPerVisit }
 			currentValue={ currentPagesPerVisit }
