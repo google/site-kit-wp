@@ -506,6 +506,20 @@ final class Analytics_4 extends Module
 			)
 		);
 
+		if ( Feature_Flags::enabled( 'enhancedMeasurement' ) && $account_ticket->get_enhanced_measurement_stream_enabled() ) {
+			$this->set_data(
+				'enhanced-measurement-settings',
+				array(
+					'propertyID'                  => $property->_id,
+					'webDataStreamID'             => $web_datastream->_id,
+					'enhancedMeasurementSettings' => array(
+						// We can hardcode this to `true` here due to the conditional invocation.
+						'streamEnabled' => true,
+					),
+				)
+			);
+		}
+
 		$this->sync_google_tag_settings();
 	}
 
@@ -988,6 +1002,7 @@ final class Analytics_4 extends Module
 				$account_ticket->set_property_name( $data['propertyName'] );
 				$account_ticket->set_data_stream_name( $data['dataStreamName'] );
 				$account_ticket->set_timezone( $data['timezone'] );
+				$account_ticket->set_enhanced_measurement_stream_enabled( ! empty( $data['enhancedMeasurementStreamEnabled'] ) );
 				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
 				set_transient(
 					Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
