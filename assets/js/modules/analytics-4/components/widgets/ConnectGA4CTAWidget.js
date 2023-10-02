@@ -134,8 +134,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	if (
-		isDismissed === undefined ||
-		isDismissed ||
+		isDismissed !== false ||
 		ga4DependantKeyMetrics.length < 4
 	) {
 		return <WidgetNull />;
