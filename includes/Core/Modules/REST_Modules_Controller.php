@@ -437,25 +437,22 @@ class REST_Modules_Controller {
 								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
 
+							$settings = $module->get_settings();
+
 							if ( $can_manage_options() ) {
-								return new WP_REST_Response( $module->get_settings()->get() );
+								return new WP_REST_Response( $settings->get() );
 							}
 
-							$settings = $module->get_settings();
 							if ( $settings instanceof Setting_With_ViewOnly_Keys_Interface ) {
-								$view_only_keys = $settings->get_view_only_keys();
-								$settings       = $settings->get();
-
-								if ( empty( $view_only_keys ) || empty( $settings ) ) {
-									return array();
-								}
-
-								$view_only_settings = array_intersect_key( $settings, array_flip( $view_only_keys ) );
+								$view_only_settings = array_intersect_key(
+									$settings->get(),
+									array_flip( $settings->get_view_only_keys() )
+								);
 
 								return new WP_REST_Response( $view_only_settings );
 							}
 
-							return new WP_Error( 'no_view_only_settings', __( 'No view-only settings available.', 'google-site-kit' ) );
+							return new WP_Error( 'no_view_only_settings' );
 						},
 						'permission_callback' => $can_list_data,
 					),
