@@ -270,7 +270,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug'   => 'optimize',
+					'slug'   => 'analytics-4',
 					'active' => true,
 				),
 			)
@@ -327,9 +327,9 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$this->modules->activate_module( 'analytics' );
-		$this->modules->activate_module( 'optimize' );
+		$this->modules->activate_module( 'analytics-4' );
 
-		$this->assertTrue( $this->modules->is_module_active( 'optimize' ) );
+		$this->assertTrue( $this->modules->is_module_active( 'analytics-4' ) );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
 		$request->set_body_params(
@@ -342,7 +342,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		rest_get_server()->dispatch( $request );
 
-		$this->assertFalse( $this->modules->is_module_active( 'optimize' ) );
+		$this->assertFalse( $this->modules->is_module_active( 'analytics-4' ) );
 	}
 
 	public function test_info_rest_endpoint__no_post_method() {
@@ -459,28 +459,6 @@ class REST_Modules_ControllerTest extends TestCase {
 
 		$this->assertEquals( true, $response->get_data()['access'] );
 		$this->assertEquals( 200, $response->get_status() );
-	}
-
-	public function test_check_access_rest_endpoint__unshareable_module_does_not_have_service_entity() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$optimize = $this->modules->get_module( 'optimize' );
-		$optimize->get_settings()->merge( array( 'optimizeID' => 'GTM-XXXXX' ) );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slug' => 'optimize',
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'invalid_module', $response->get_data()['code'] );
-		$this->assertEquals( 500, $response->get_status() );
 	}
 
 	public function test_check_access_rest_endpoint__success() {
