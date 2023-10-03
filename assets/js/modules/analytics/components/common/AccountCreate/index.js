@@ -300,7 +300,9 @@ export default function AccountCreate() {
 				<CountrySelect />
 
 				<TimezoneSelect />
+			</div>
 
+			<div className="googlesitekit-setup-module__inputs">
 				{ enhancedMeasurementEnabled && (
 					<EnhancedMeasurementSwitch
 						formName={ FORM_ACCOUNT_CREATE }
