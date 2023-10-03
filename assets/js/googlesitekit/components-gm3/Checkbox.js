@@ -162,5 +162,5 @@ Checkbox.defaultProps = {
 	onKeyDown: null,
 	loading: false,
 	alignLeft: false,
-	label: false,
+	label: '',
 };
