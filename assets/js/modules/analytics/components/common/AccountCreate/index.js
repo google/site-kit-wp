@@ -302,13 +302,13 @@ export default function AccountCreate() {
 				<TimezoneSelect />
 			</div>
 
-			<div className="googlesitekit-setup-module__inputs">
-				{ enhancedMeasurementEnabled && (
+			{ enhancedMeasurementEnabled && (
+				<div className="googlesitekit-setup-module__inputs">
 					<EnhancedMeasurementSwitch
 						formName={ FORM_ACCOUNT_CREATE }
 					/>
-				) }
-			</div>
+				</div>
+			) }
 
 			<p>
 				{ hasRequiredScope && (
