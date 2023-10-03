@@ -371,6 +371,10 @@ describe( 'core/site site info', () => {
 			[ 'getUpdateCoreURL', 'updateCoreURL' ],
 			[ 'getTimezone', 'timezone' ],
 			[ 'getPostTypes', 'postTypes' ],
+			[
+				'getKeyMetricsSetupCompletedByUserID',
+				'keyMetricsSetupCompletedByUserID',
+			],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],
