@@ -32,6 +32,7 @@ import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
+	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from './constants';
@@ -294,17 +295,6 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 
 				it( 'should save the enhanced measurement settings and dismiss the activation banner if the setting has been changed', async () => {
-					const dismissItemEndpoint = new RegExp(
-						'^/google-site-kit/v1/core/user/data/dismiss-item'
-					);
-
-					fetchMock.postOnce( dismissItemEndpoint, {
-						body: JSON.stringify( [
-							ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-						] ),
-						status: 200,
-					} );
-
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
@@ -322,6 +312,39 @@ describe( 'modules/analytics-4 settings', () => {
 							},
 						}
 					);
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.haveEnhancedMeasurementSettingsChanged(
+								propertyID,
+								webDataStreamID
+							)
+					).toBe( false );
+				} );
+
+				it( 'should dismiss the activation banner when the required form setting is set', async () => {
+					registry
+						.dispatch( CORE_FORMS )
+						.setValues( ENHANCED_MEASUREMENT_FORM, {
+							[ ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER ]: true,
+						} );
+
+					const dismissItemEndpoint = new RegExp(
+						'^/google-site-kit/v1/core/user/data/dismiss-item'
+					);
+
+					fetchMock.postOnce( dismissItemEndpoint, {
+						body: JSON.stringify( [
+							ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+						] ),
+						status: 200,
+					} );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.submitChanges();
+
 					expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 						body: {
 							data: {
@@ -331,14 +354,6 @@ describe( 'modules/analytics-4 settings', () => {
 						},
 					} );
 					expect( fetchMock ).toHaveFetchedTimes( 2 );
-					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.haveEnhancedMeasurementSettingsChanged(
-								propertyID,
-								webDataStreamID
-							)
-					).toBe( false );
 				} );
 
 				it( 'should not save the enhanced measurement settings if the form value is not defined', async () => {

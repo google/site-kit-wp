@@ -46,6 +46,7 @@ import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../co
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
+	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
@@ -139,9 +140,18 @@ export async function submitChanges( { select, dispatch } ) {
 					return { error };
 				}
 
-				await dispatch( CORE_USER ).dismissItem(
-					ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+				const shouldDismissActivationBanner = select(
+					CORE_FORMS
+				).getValue(
+					ENHANCED_MEASUREMENT_FORM,
+					ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
 				);
+
+				if ( shouldDismissActivationBanner ) {
+					await dispatch( CORE_USER ).dismissItem(
+						ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+					);
+				}
 			}
 		}
 	}

@@ -37,8 +37,10 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
+	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 } from '../../datastore/constants';
 import SupportLink from '../../../../components/SupportLink';
+import { useMount } from 'react-use';
 const { useSelect, useDispatch } = Data;
 
 export default function EnhancedMeasurementSwitch( {
@@ -61,6 +63,14 @@ export default function EnhancedMeasurementSwitch( {
 		} );
 		onClick?.();
 	}, [ isEnhancedMeasurementEnabled, onClick, setValues ] );
+
+	useMount( () => {
+		// Ensure the Enhanced Measurement activation banner won't be shown if we've updated the setting
+		// via the switch.
+		setValues( ENHANCED_MEASUREMENT_FORM, {
+			[ ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER ]: true,
+		} );
+	} );
 
 	return (
 		<div
