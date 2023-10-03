@@ -51,7 +51,6 @@ const { useSelect, useDispatch } = Data;
 
 function EnhancedMeasurementActivationBanner() {
 	const [ step, setStep ] = useState( ACTIVATION_STEP_SETUP );
-	// Note: We use state here so we can trigger a re-render when setting it, in order to show the banner.
 	const [
 		isEnhancedMeasurementInitiallyDisabled,
 		setIsEnhancedMeasurementInitiallyDisabled,
