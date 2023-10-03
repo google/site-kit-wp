@@ -1,5 +1,5 @@
 /**
- * SetupBanner Component Stories.
+ * EnhancedMeasurementActivationBanner > SetupBanner Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *

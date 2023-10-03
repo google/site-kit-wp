@@ -1,5 +1,5 @@
 /**
- * SuccessBanner Component Stories.
+ * EnhancedMeasurementActivationBanner > SuccessBanner Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
