@@ -1,5 +1,5 @@
 /**
- * PagesPerVisitWidget Component Stories.
+ * VisitLengthWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -26,7 +26,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import PagesPerVisitWidget from './PagesPerVisitWidget';
+import VisitLengthWidget from './VisitLengthWidget';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { getAnalytics4MockResponse } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
@@ -44,17 +44,17 @@ const reportOptions = {
 	endDate: '2020-09-07',
 	metrics: [
 		{
-			name: 'screenPageViewsPerSession',
+			name: 'averageSessionDuration',
 		},
 		{
-			name: 'screenPageViews',
+			name: 'sessions',
 		},
 	],
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_PAGES_PER_VISIT
-)( PagesPerVisitWidget );
+)( VisitLengthWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -82,7 +82,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/PagesPerVisit/Ready',
+	label: 'KeyMetrics/VisitLength/Ready',
 	delay: 250,
 };
 
@@ -110,7 +110,7 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'KeyMetrics/PagesPerVisit/ZeroData',
+	label: 'KeyMetrics/VisitLength/ZeroData',
 	delay: 250,
 };
 
@@ -144,7 +144,7 @@ Error.args = {
 	},
 };
 Error.scenario = {
-	label: 'KeyMetrics/PagesPerVisit/Error',
+	label: 'KeyMetrics/VisitLength/Error',
 	delay: 250,
 };
 
@@ -179,12 +179,12 @@ InsufficientPermissions.args = {
 };
 
 InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PagesPerVisit/InsufficientPermissions',
+	label: 'KeyMetrics/VisitLength/InsufficientPermissions',
 	delay: 250,
 };
 
 export default {
-	title: 'Key Metrics/PagesPerVisit',
+	title: 'Key Metrics/VisitLength',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

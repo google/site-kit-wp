@@ -1,5 +1,5 @@
 /**
- * PagesPerVisitWidget component.
+ * VisitLengthWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -43,7 +43,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 const { useSelect, useInViewSelect } = Data;
 
-function PagesPerVisitWidget( { Widget } ) {
+function VisitLengthWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -53,10 +53,7 @@ function PagesPerVisitWidget( { Widget } ) {
 
 	const reportOptions = {
 		...dates,
-		metrics: [
-			{ name: 'screenPageViewsPerSession' },
-			{ name: 'screenPageViews' },
-		],
+		metrics: [ { name: 'averageSessionDuration' }, { name: 'sessions' } ],
 	};
 
 	const report = useInViewSelect( ( select ) =>
@@ -82,55 +79,50 @@ function PagesPerVisitWidget( { Widget } ) {
 	const makeFind = ( dateRange ) => ( row ) =>
 		get( row, 'dimensionValues.0.value' ) === dateRange;
 
-	const currentPagesPerVisit =
+	const currentVisitLength =
 		Number(
 			rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value
 		) || 0;
 
-	const previousPagesPerVisit =
+	const previousVisitLength =
 		Number(
 			rows.find( makeFind( 'date_range_1' ) )?.metricValues?.[ 0 ]?.value
 		) || 0;
 
-	const currentTotalPageViews =
+	const currentTotalSessions =
 		Number(
 			rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 1 ]?.value
 		) || 0;
 
-	const format = {
-		style: 'decimal',
-		maximumFractionDigits: 2,
-	};
-
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'Pages per visit', 'google-site-kit' ) }
-			metricValue={ currentPagesPerVisit }
-			metricValueFormat={ format }
+			title={ __( 'Visit length', 'google-site-kit' ) }
+			metricValue={ currentVisitLength }
+			metricValueFormat={ { style: 'durationISO' } }
 			subText={ sprintf(
 				/* translators: %s: Number of total page views. */
-				__( '%s page views', 'google-site-kit' ),
-				numFmt( currentTotalPageViews, { style: 'decimal' } )
+				__( '%s total visits', 'google-site-kit' ),
+				numFmt( currentTotalSessions, { style: 'decimal' } )
 			) }
-			previousValue={ previousPagesPerVisit }
-			currentValue={ currentPagesPerVisit }
+			previousValue={ previousVisitLength }
+			currentValue={ currentVisitLength }
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
 			infoTooltip={ __(
-				'Number of pages visitors viewed per session on average',
+				'Average duration (in seconds) of engaged visits',
 				'google-site-kit'
 			) }
 		/>
 	);
 }
 
-PagesPerVisitWidget.propTypes = {
+VisitLengthWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( {
 	moduleName: 'analytics-4',
 	FallbackComponent: ConnectGA4CTATileWidget,
-} )( PagesPerVisitWidget );
+} )( VisitLengthWidget );

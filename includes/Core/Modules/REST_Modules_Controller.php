@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
 use WP_REST_Server;
@@ -424,7 +425,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function( WP_REST_Request $request ) use ( $can_manage_options ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -435,9 +436,25 @@ class REST_Modules_Controller {
 							if ( ! $module instanceof Module_With_Settings ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
-							return new WP_REST_Response( $module->get_settings()->get() );
+
+							$settings = $module->get_settings();
+
+							if ( $can_manage_options() ) {
+								return new WP_REST_Response( $settings->get() );
+							}
+
+							if ( $settings instanceof Setting_With_ViewOnly_Keys_Interface ) {
+								$view_only_settings = array_intersect_key(
+									$settings->get(),
+									array_flip( $settings->get_view_only_keys() )
+								);
+
+								return new WP_REST_Response( $view_only_settings );
+							}
+
+							return new WP_Error( 'no_view_only_settings' );
 						},
-						'permission_callback' => $can_manage_options,
+						'permission_callback' => $can_list_data,
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
