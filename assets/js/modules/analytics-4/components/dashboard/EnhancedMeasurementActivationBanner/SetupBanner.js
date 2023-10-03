@@ -192,7 +192,10 @@ export default function SetupBanner( {
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			WinImageSVG={ () => <SuccessGreenSVG /> }
 			format="small"
-			dismissExpires={ 1 } // Set dismissExpires to one second to enable "immediate" BannerNotification dismissal expiry, as the overall banner's dismissal is handled separately via dismissItem() / isItemDismissed().
+			// Set dismissExpires to one second to enable "immediate" BannerNotification
+			// dismissal expiry, as the overall banner's dismissal is handled separately
+			// via dismissItem() / isItemDismissed().
+			dismissExpires={ 1 }
 			onDismiss={ onDismiss }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
