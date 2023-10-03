@@ -227,6 +227,27 @@ add_action(
 			);
 
 			add_filter(
+				'pre_get_blogs_of_user',
+				function( $blogs, $user_id ) {
+					return array(
+						1 => array(
+							'userblog_id' => '1',
+							'blogname'    => 'Mocked Blog Name',
+							'domain'      => 'mockedblog.domain',
+							'path'        => '/',
+							'site_id'     => '1',
+							'siteurl'     => home_url(),
+							'archived'    => '0',
+							'spam'        => '0',
+							'deleted'     => '0',
+						),
+					);
+				},
+				999,
+				3
+			);
+
+			add_filter(
 				'map_meta_cap',
 				function( $caps, $cap, $user_id, $args ) {
 					// Allways grant needed capability, otherwise sitekit capabilities checks will fail.
