@@ -29,6 +29,14 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { MODULES_ANALYTICS_4 } from './constants';
+// import {
+// 	CORE_USER,
+// 	PERMISSION_MANAGE_OPTIONS,
+// } from '../../../googlesitekit/datastore/user/constants';
+
+const { createRegistrySelector } = Data;
 
 const customDimensionFields = [
 	'parameterName',
@@ -67,17 +75,169 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 	},
 } );
 
+const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
+	baseName: 'syncAvailableCustomDimensions',
+	controlCallback: ( { propertyID } ) => {
+		return API.set( 'modules', 'analytics-4', 'sync-custom-dimensions', {
+			propertyID,
+		} );
+	},
+	// reducerCallback: ( state, availableCustomDimensions ) => {
+	// 	return {
+	// 		...state,
+	// 		availableCustomDimensions,
+	// 	};
+	// },
+	argsToParams: ( propertyID ) => ( {
+		propertyID,
+	} ),
+	validateParams: ( { propertyID } ) => {
+		invariant(
+			isValidPropertyID( propertyID ),
+			'A valid GA4 propertyID is required.'
+		);
+	},
+} );
+
 const baseInitialState = {};
 
-const baseActions = {};
+const baseActions = {
+	syncAvailableCustomDimensions: createValidatedAction(
+		( propertyID ) => {
+			invariant(
+				isValidPropertyID( propertyID ),
+				'A valid GA4 propertyID is required.'
+			);
+		},
+		function* ( propertyID ) {
+			const registry = yield Data.commonActions.getRegistry();
+			// const registry = yield Data.commonActions.getRegistry();
+			// const existingCustomDimensions = registry
+			// 	.select( MODULES_ANALYTICS_4 )
+			// 	.getExistingCustomDimensions( propertyID );
+			// if ( existingCustomDimensions ) {
+			// 	return;
+			// }
+			const { response } =
+				yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
+					propertyID
+				);
 
-const baseSelectors = {};
+			// Reload the module's settings from the server.
+			yield Data.commonActions.await(
+				registry.dispatch( MODULES_ANALYTICS_4 ).fetchGetSettings()
+			);
 
-const store = Data.combineStores( fetchCreateCustomDimensionStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	selectors: baseSelectors,
-} );
+			return { response };
+		}
+	),
+};
+
+// const availableCustomDimensions = yield Data.commonActions.await(
+// 	registry
+// 		.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+// 		.getAvailableCustomDimensions()
+// );
+
+// const updatedCustomDimensions = yield Data.commonActions.await(
+// 	registry
+// 		.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+// 		.getAvailableCustomDimensions()
+// );
+
+// const availableCustomDimensions = registry
+// 	.select( MODULES_ANALYTICS_4 )
+// 	.getAvailableCustomDimensions();
+
+const baseResolvers = {
+	*getAvailableCustomDimensions() {
+		const registry = yield Data.commonActions.getRegistry();
+		// Get the value of the availableCustomDimensions module setting.
+		const availableCustomDimensions = yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getAvailableCustomDimensions()
+		);
+
+		global.console.log( { availableCustomDimensions } );
+
+		if ( availableCustomDimensions === null ) {
+			const propertyID = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPropertyID();
+			yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
+				propertyID
+			);
+		}
+
+		// If value is null, check for user authentication and capability.
+		// if ( availableCustomDimensions === null ) {
+		// 	const isAuthenticated = registry
+		// 		.select( CORE_USER )
+		// 		.isAuthenticated();
+		// 	const canManageOptions = yield Data.commonActions.await(
+		// 		registry
+		// 			.__experimentalResolveSelect( CORE_USER )
+		// 			.hasCapability( PERMISSION_MANAGE_OPTIONS )
+		// 	);
+		// 	// If conditions are met, dispatch the action to update the setting and wait for it.
+		// 	if ( isAuthenticated && canManageOptions ) {
+		// 		const propertyID = registry
+		// 			.select( MODULES_ANALYTICS_4 )
+		// 			.getPropertyID();
+		// 		yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
+		// 			propertyID
+		// 		);
+
+		// 		// After dispatching, get the updated value.
+		// 		// const updatedCustomDimensions = registry
+		// 		// 	.select( MODULES_ANALYTICS_4 )
+		// 		// 	.getAvailableCustomDimensions();
+
+		// 		// return updatedCustomDimensions;
+		// 	}
+		// }
+
+		// Default: return the module setting value.
+		// return availableCustomDimensions;
+	},
+};
+
+const baseSelectors = {
+	hasCustomDimensions: createRegistrySelector(
+		( select ) => ( state, customDimensions ) => {
+			// Ensure customDimensions is always an array, even if a string is passed.
+			const dimensionsToCheck = Array.isArray( customDimensions )
+				? customDimensions
+				: [ customDimensions ];
+
+			// Retrieve the available custom dimensions using the getAvailableCustomDimensions selector.
+			const availableCustomDimensions =
+				select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
+
+			// If there are no available custom dimensions, return false.
+			if ( ! availableCustomDimensions ) {
+				return false;
+			}
+
+			// Check if all requested custom dimensions are available.
+			return dimensionsToCheck.every( ( dimension ) =>
+				availableCustomDimensions.includes( dimension )
+			);
+		}
+	),
+};
+
+const store = Data.combineStores(
+	fetchCreateCustomDimensionStore,
+	fetchSyncAvailableCustomDimensionsStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;
