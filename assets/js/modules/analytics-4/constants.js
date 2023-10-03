@@ -25,6 +25,11 @@ export const ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY =
 
 export const GA4_ACTIVATION_BANNER_STATE_KEY = 'ga4-activation-banner-state';
 
+export const ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY =
+	'enhanced-measurement-activation-banner-tooltip-state';
+export const ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY =
+	'enhanced-measurement-activation-banner-dismissed-item';
+
 export const REPORT_ARGS_SELECTED_METRIC_KEY = '_r.explorerCard..selmet';
 export const REPORT_ARGS_SELECTED_DIMENSION_KEY = '_r.explorerCard..seldim';
 export const REPORT_ARGS_DATA_FILTERS_KEY = '_r..dataFilters';
