@@ -574,14 +574,14 @@ class Analytics_4Test extends TestCase {
 		$enhanced_measurement_settings_requests = array_filter(
 			$this->request_handler_calls,
 			function ( $call ) {
-				return str_contains( $call['url']['path'], 'enhancedMeasurementSettings' );
+				return false !== strpos( $call['url']['path'], 'enhancedMeasurementSettings' );
 			}
 		);
 
 		// Ensure the enhanced measurement settings request was made.
 		$this->assertCount( 1, $enhanced_measurement_settings_requests );
 		list( $request ) = array_values( $enhanced_measurement_settings_requests );
-		$this->assertArraySubset(
+		$this->assertArrayIntersection(
 			array( 'streamEnabled' => true ),
 			$request['params']
 		);
