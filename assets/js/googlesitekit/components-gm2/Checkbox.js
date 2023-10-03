@@ -45,6 +45,7 @@ export default function Checkbox( props ) {
 		onKeyDown,
 		loading,
 		alignLeft,
+		label,
 	} = props;
 
 	return (
@@ -89,7 +90,16 @@ export default function Checkbox( props ) {
 				) }
 			</div>
 
-			<label htmlFor={ id }>{ children }</label>
+			{ label && (
+				<div className="mdc-checkbox__content">
+					<label htmlFor={ id }>{ label }</label>
+					<div className="mdc-checkbox__description">
+						{ children }
+					</div>
+				</div>
+			) }
+
+			{ ! label && <label htmlFor={ id }>{ children }</label> }
 		</div>
 	);
 }
@@ -106,6 +116,7 @@ Checkbox.propTypes = {
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	loading: PropTypes.bool,
 	alignLeft: PropTypes.bool,
+	label: PropTypes.string,
 };
 
 Checkbox.defaultProps = {
@@ -115,4 +126,5 @@ Checkbox.defaultProps = {
 	onKeyDown: null,
 	loading: false,
 	alignLeft: false,
+	label: false,
 };
