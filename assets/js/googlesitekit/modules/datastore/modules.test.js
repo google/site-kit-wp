@@ -159,8 +159,8 @@ describe( 'core/modules modules', () => {
 	describe( 'actions', () => {
 		describe( 'activateModule', () => {
 			it( 'dispatches a request to activate this module', async () => {
-				// In our fixtures, optimize is off by default.
-				const slug = 'optimize';
+				// In our fixtures, tag manager is off by default.
+				const slug = 'tagmanager';
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES }
@@ -207,7 +207,7 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				// Optimize should stay inactive.
+				// Tag Manager should stay inactive.
 				const isActiveAfter = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
@@ -262,8 +262,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
-				// In our fixtures, optimize is off by default.
-				const slug = 'optimize';
+				// In our fixtures, tag manager is off by default.
+				const slug = 'tagmanager';
 				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
 
 				const isActiveBefore = registry
@@ -303,7 +303,7 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				// Optimize should be active.
+				// Tag manager should be active.
 				const isActiveAfter = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
@@ -1371,7 +1371,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
-				const slug = 'optimize';
+				const slug = 'tagmanager';
 				const namesLoaded = registry
 					.select( CORE_MODULES )
 					[ selector ]( slug );
@@ -1387,7 +1387,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
-				const slug = 'optimize';
+				const slug = 'tagmanager';
 				registry.select( CORE_MODULES )[ selector ]( slug );
 
 				// Wait for loading to complete.
@@ -1521,8 +1521,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns false if a module is not active', async () => {
-				// Optimize in our fixtures is not active.
-				const slug = 'optimize';
+				// Tag manager in our fixtures is not active.
+				const slug = 'tagmanager';
 				const isActive = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
@@ -1585,7 +1585,7 @@ describe( 'core/modules modules', () => {
 				],
 				[
 					'false if a module is not active',
-					'optimize',
+					'tagmanager',
 					false,
 					{ active: false },
 				],

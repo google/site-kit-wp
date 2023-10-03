@@ -214,7 +214,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				// Modify the initial settings mock to match the expected new settings.
 				const expectedSettings = {
 					...enhancedMeasurementSettingsMock,
-					streamEnabled: false,
+					streamEnabled: null,
 				};
 
 				expect(
