@@ -44,6 +44,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
+import { getTimeInSeconds } from '../../../../../util';
 import { SpinnerButton } from 'googlesitekit-components';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
@@ -192,10 +193,9 @@ export default function SetupBanner( {
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			WinImageSVG={ () => <SuccessGreenSVG /> }
 			format="small"
-			// Set dismissExpires to one second to enable "immediate" BannerNotification
-			// dismissal expiry, as the overall banner's dismissal is handled separately
-			// via dismissItem() / isItemDismissed().
-			dismissExpires={ 1 }
+			// Although the banner does handle its own dismiss state via a dismissable item, we still need to
+			// provide a value here to ensure BannerNotification's own dismiss state is expired.
+			dismissExpires={ getTimeInSeconds( 'month' ) }
 			onDismiss={ onDismiss }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
