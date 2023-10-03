@@ -19,4 +19,11 @@ export const logIgnoreList = {
 		'PHP Notice:  Trying to access array offset on value of type null in /var/www/html/wp-includes/rest-api/class-wp-rest-request.php on line 337',
 		'PHP Notice:  Trying to access array offset on value of type bool in /var/www/html/wp-includes/theme.php on line 2360',
 	],
+	nightly: [
+		// Can be removed once WordPress AMP Plugin removes the deprecated function
+		// call.
+		//
+		// See: https://github.com/ampproject/amp-wp/issues/7619
+		'PHP Deprecated:  Function _admin_bar_bump_cb is deprecated since version 6.4.0! Use wp_enqueue_admin_bar_bump_styles instead. in /var/www/html/wp-includes/functions.php on line 6032',
+	],
 };

@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../googlesitekit/widgets/default-areas';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import MetricItem from './MetricItem';
 const { useSelect } = Data;
@@ -44,6 +45,8 @@ export default function Metrics( { savedMetrics } ) {
 			.map( ( { slug } ) => slug );
 
 		const { isKeyMetricAvailable } = select( CORE_USER );
+
+		const { getModule } = select( CORE_MODULES );
 
 		return Object.keys( KEY_METRICS_WIDGETS )
 			.sort(
@@ -64,6 +67,18 @@ export default function Metrics( { savedMetrics } ) {
 					return acc;
 				}
 
+				const widget = select( CORE_WIDGETS ).getWidget( metric );
+
+				KEY_METRICS_WIDGETS[ metric ].disconnectedModules =
+					widget.modules.reduce( ( modulesAcc, slug ) => {
+						const module = getModule( slug );
+						if ( module?.connected || ! module?.name ) {
+							return modulesAcc;
+						}
+
+						return [ ...modulesAcc, module.name ];
+					}, [] );
+
 				return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
 			}, {} );
 	} );
@@ -71,7 +86,8 @@ export default function Metrics( { savedMetrics } ) {
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
 			{ Object.keys( availableMetrics ).map( ( slug ) => {
-				const { title, description } = availableMetrics[ slug ];
+				const { title, description, disconnectedModules } =
+					availableMetrics[ slug ];
 
 				const id = `key-metric-selection-checkbox-${ slug }`;
 
@@ -82,6 +98,7 @@ export default function Metrics( { savedMetrics } ) {
 						slug={ slug }
 						title={ title }
 						description={ description }
+						disconnectedModules={ disconnectedModules }
 					/>
 				);
 			} ) }

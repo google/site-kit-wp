@@ -196,7 +196,7 @@ function PopularProductsWidget( props ) {
 
 	const infoTooltip = createInterpolateElement(
 		__(
-			'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
+			'Products on your site which visitors viewed the most. Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
 			'google-site-kit'
 		),
 		{

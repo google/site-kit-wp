@@ -59,6 +59,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
@@ -347,6 +348,14 @@ final class Analytics_4 extends Module
 			);
 		}
 
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$datapoints['POST:create-custom-dimension'] = array(
+				'service'                => 'analyticsdata',
+				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
+			);
+		}
+
 		return $datapoints;
 	}
 
@@ -496,6 +505,20 @@ final class Analytics_4 extends Module
 				'measurementID'   => $measurement_id,
 			)
 		);
+
+		if ( Feature_Flags::enabled( 'enhancedMeasurement' ) && $account_ticket->get_enhanced_measurement_stream_enabled() ) {
+			$this->set_data(
+				'enhanced-measurement-settings',
+				array(
+					'propertyID'                  => $property->_id,
+					'webDataStreamID'             => $web_datastream->_id,
+					'enhancedMeasurementSettings' => array(
+						// We can hardcode this to `true` here due to the conditional invocation.
+						'streamEnabled' => true,
+					),
+				)
+			);
+		}
 
 		$this->sync_google_tag_settings();
 	}
@@ -756,6 +779,77 @@ final class Analytics_4 extends Module
 							'updateMask' => 'streamEnabled', // Only allow updating the streamEnabled field for now.
 						)
 					);
+			case 'POST:create-custom-dimension':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['customDimension'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'customDimension' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$custom_dimension_data = $data['customDimension'];
+
+				$fields = array(
+					'parameterName',
+					'displayName',
+					'description',
+					'scope',
+					'disallowAdsPersonalization',
+				);
+
+				$invalid_keys = array_diff( array_keys( $custom_dimension_data ), $fields );
+
+				if ( ! empty( $invalid_keys ) ) {
+					return new WP_Error(
+						'invalid_property_name',
+						/* translators: %s: Invalid property names */
+						sprintf( __( 'Invalid properties in customDimension: %s.', 'google-site-kit' ), implode( ', ', $invalid_keys ) ),
+						array( 'status' => 400 )
+					);
+				}
+
+				// Define the valid `DimensionScope` enum values.
+				$valid_scopes = array( 'EVENT', 'USER', 'ITEM' );
+
+				// If the scope field is not set, default to `EVENT`.
+				// Otherwise, validate against the enum values.
+				if ( ! isset( $custom_dimension_data['scope'] ) ) {
+					$custom_dimension_data['scope'] = 'EVENT';
+				} elseif ( ! in_array( $custom_dimension_data['scope'], $valid_scopes, true ) ) {
+					return new WP_Error(
+						'invalid_scope',
+						/* translators: %s: Invalid scope */
+						sprintf( __( 'Invalid scope: %s.', 'google-site-kit' ), $custom_dimension_data['scope'] ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$custom_dimension = new GoogleAnalyticsAdminV1betaCustomDimension();
+				$custom_dimension->setParameterName( $custom_dimension_data['parameterName'] );
+				$custom_dimension->setDisplayName( $custom_dimension_data['displayName'] );
+				$custom_dimension->setDescription( $custom_dimension_data['description'] );
+				$custom_dimension->setScope( $custom_dimension_data['scope'] );
+				$custom_dimension->setDisallowAdsPersonalization( $custom_dimension_data['disallowAdsPersonalization'] );
+
+				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+
+				return $analyticsadmin
+					->properties_customDimensions // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->create(
+						self::normalize_property_id( $data['propertyID'] ),
+						$custom_dimension
+					);
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -766,7 +860,6 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
 
 				return $analyticsadmin
@@ -793,7 +886,6 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
 				$batch_request  = $analyticsadmin->createBatch();
 
@@ -910,6 +1002,7 @@ final class Analytics_4 extends Module
 				$account_ticket->set_property_name( $data['propertyName'] );
 				$account_ticket->set_data_stream_name( $data['dataStreamName'] );
 				$account_ticket->set_timezone( $data['timezone'] );
+				$account_ticket->set_enhanced_measurement_stream_enabled( ! empty( $data['enhancedMeasurementStreamEnabled'] ) );
 				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
 				set_transient(
 					Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
@@ -1259,7 +1352,6 @@ final class Analytics_4 extends Module
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 		$analyticsadmin = $this->get_service( 'analyticsadmin' );
 		$settings       = $this->settings->get();
 

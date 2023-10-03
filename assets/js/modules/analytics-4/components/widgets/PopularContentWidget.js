@@ -162,6 +162,10 @@ function PopularContentWidget( props ) {
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Pages your visitors read the most',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

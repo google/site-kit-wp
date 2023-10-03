@@ -127,7 +127,13 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		isNavigatingToGA4URL,
 	] );
 
-	if ( ga4DependantKeyMetrics.length < 3 ) {
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
+		)
+	);
+
+	if ( isDismissed !== false || ga4DependantKeyMetrics.length < 4 ) {
 		return <WidgetNull />;
 	}
 

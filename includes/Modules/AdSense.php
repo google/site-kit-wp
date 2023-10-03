@@ -326,12 +326,8 @@ final class AdSense extends Module
 				return $service->accounts_adclients_adunits->listAccountsAdclientsAdunits( self::normalize_client_id( $data['accountID'], $data['clientID'] ) );
 			case 'GET:alerts':
 				if ( ! isset( $data['accountID'] ) ) {
-					$option            = $this->get_settings()->get();
-					$data['accountID'] = $option['accountID'];
-					if ( empty( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-					}
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_alerts->listAccountsAlerts( self::normalize_account_id( $data['accountID'] ) );
@@ -348,7 +344,14 @@ final class AdSense extends Module
 				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
 			case 'GET:notifications':
 				return function() {
-					$alerts = $this->get_data( 'alerts' );
+					$settings = $this->get_settings()->get();
+
+					if ( empty( $settings['accountID'] ) ) {
+						return array();
+					}
+
+					$alerts = $this->get_data( 'alerts', array( 'accountID' => $settings['accountID'] ) );
+
 					if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
 						return array();
 					}
@@ -364,24 +367,22 @@ final class AdSense extends Module
 						return array();
 					}
 
-					/**
-					 * First Alert
-					 *
-					 * @var Google_Service_Adsense_Alert $alert
-					 */
-					$alert = array_shift( $alerts );
-					return array(
-						array(
-							'id'            => 'adsense-notification',
-							'description'   => $alert->getMessage(),
-							'isDismissible' => true,
-							'format'        => 'large',
-							'severity'      => 'win-info',
-							'ctaURL'        => $this->get_account_url(),
-							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
-							'ctaTarget'     => '_blank',
-						),
+					$notifications = array_map(
+						function ( Google_Service_Adsense_Alert $alert ) {
+							return array(
+								'id'            => 'adsense::' . $alert->getName(),
+								'description'   => $alert->getMessage(),
+								'isDismissible' => true,
+								'severity'      => 'win-info',
+								'ctaURL'        => $this->get_account_url(),
+								'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
+								'ctaTarget'     => '_blank',
+							);
+						},
+						$alerts
 					);
+
+					return array_values( $notifications );
 				};
 			case 'GET:report':
 				$start_date = $data['startDate'];

@@ -178,6 +178,10 @@ function TopTrafficSourceWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
+				'google-site-kit'
+			) }
 		/>
 	);
 }
