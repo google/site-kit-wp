@@ -35,8 +35,6 @@ import {
 	EDIT_SCOPE,
 } from '../../../datastore/constants';
 import {
-	ENHANCED_MEASUREMENT_ENABLED,
-	ENHANCED_MEASUREMENT_FORM,
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../analytics-4/datastore/constants';
@@ -171,9 +169,6 @@ export default function AccountCreate() {
 					timezone,
 				} )
 			);
-			setValues( ENHANCED_MEASUREMENT_FORM, {
-				[ ENHANCED_MEASUREMENT_ENABLED ]: true,
-			} );
 		}
 	}, [
 		hasAccountCreateForm,
@@ -306,7 +301,11 @@ export default function AccountCreate() {
 
 				<TimezoneSelect />
 
-				{ enhancedMeasurementEnabled && <EnhancedMeasurementSwitch /> }
+				{ enhancedMeasurementEnabled && (
+					<EnhancedMeasurementSwitch
+						formName={ FORM_ACCOUNT_CREATE }
+					/>
+				) }
 			</div>
 
 			<p>

@@ -28,11 +28,7 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import {
-	ENHANCED_MEASUREMENT_ENABLED,
-	ENHANCED_MEASUREMENT_FORM,
-	MODULES_ANALYTICS_4,
-} from './constants';
+import { ENHANCED_MEASUREMENT_ENABLED, MODULES_ANALYTICS_4 } from './constants';
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
@@ -110,7 +106,7 @@ const baseActions = {
 			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
 			regionCode: getValue( FORM_ACCOUNT_CREATE, 'countryCode' ),
 			enhancedMeasurementStreamEnabled: getValue(
-				ENHANCED_MEASUREMENT_FORM,
+				FORM_ACCOUNT_CREATE,
 				ENHANCED_MEASUREMENT_ENABLED
 			),
 		};
