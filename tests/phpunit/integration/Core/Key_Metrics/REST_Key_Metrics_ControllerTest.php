@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Key_Metrics;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
 use Google\Site_Kit\Core\Key_Metrics\REST_Key_Metrics_Controller;
@@ -31,6 +32,13 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 	 * @var Key_Metrics_Settings
 	 */
 	private $settings;
+
+	/**
+	 * Key_Metrics instance.
+	 *
+	 * @var Key_Metrics
+	 */
+	private $key_metrics;
 
 	/**
 	 * REST_Key_Metrics_Controller instance.
@@ -56,6 +64,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$options      = new Options( $context );
 		$user_options = new User_Options( $context, $user_id );
 
+		$this->key_metrics                 = new Key_Metrics( $context, $user_options, $options );
 		$this->settings                    = new Key_Metrics_Settings( $user_options );
 		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options );
 		$this->controller                  = new REST_Key_Metrics_Controller( $this->settings, $this->key_metrics_setup_completed );
@@ -171,6 +180,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$this->settings->register();
 		$this->controller->register();
 		$this->register_rest_routes();
+
 		$this->assertFalse( $this->key_metrics_setup_completed->get() );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
@@ -185,6 +195,56 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( $expected, $this->key_metrics_setup_completed->get() );
+	}
+
+	public function test_setup_completed_by_user_id() {
+		$this->key_metrics->register();
+		$this->settings->register();
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$initial_user = get_current_user_id();
+		$data         = apply_filters( 'googlesitekit_inline_base_data', array() );
+		$request_body = array(
+			'data' => array(
+				'settings' => array(
+					'widgetSlugs'    => array( 'widgetA', 'widgetB' ),
+					'isWidgetHidden' => false,
+				),
+			),
+		);
+
+		$this->assertArrayHasKey( 'keyMetricsSetupCompleted', $data );
+		$this->assertArrayHasKey( 'keyMetricsSetupCompletedByUserID', $data );
+
+		$this->assertFalse( $data['keyMetricsSetupCompleted'] );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params( $request_body );
+		rest_get_server()->dispatch( $request );
+
+		// Get updated data after setup complete has been saved.
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertTrue( $data['keyMetricsSetupCompleted'] );
+		// keyMetricsSetupCompletedByUserID should match the current user who did the first setup
+		$this->assertEquals( $initial_user, $data['keyMetricsSetupCompletedByUserID'] );
+
+		// If another user changes the metric view for themselves, the user ID of user
+		// who did initial setup should remain unchanged
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params( $request_body );
+		rest_get_server()->dispatch( $request );
+
+		// Get latest data
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		// keyMetricsSetupCompletedByUserID should be the user who initially saved the settings
+		// not the user who later changed the metrics for their view
+		$this->assertEquals( $initial_user, $data['keyMetricsSetupCompletedByUserID'] );
 	}
 
 	public function data_setup_completed() {

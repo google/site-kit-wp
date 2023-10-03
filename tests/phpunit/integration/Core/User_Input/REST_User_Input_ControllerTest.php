@@ -193,6 +193,6 @@ class REST_User_Input_ControllerTest extends TestCase {
 		);
 
 		// Verify KM setup is marked as completed.
-		$this->assertTrue( $this->key_metrics_setup_completed->get() );
+		$this->assertEquals( get_current_user_id(), $this->key_metrics_setup_completed->get() );
 	}
 }

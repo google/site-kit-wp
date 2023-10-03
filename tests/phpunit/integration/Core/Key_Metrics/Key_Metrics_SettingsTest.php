@@ -11,11 +11,21 @@
 namespace Google\Site_Kit\Tests\Core\Key_Metrics;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
 
 class Key_Metrics_SettingsTest extends TestCase {
+
+	/**
+	 * Key_Metrics instance.
+	 *
+	 * @var Key_Metrics
+	 */
+	private $key_metrics;
 
 	/**
 	 * Key_Metrics_Settings instance.
@@ -24,10 +34,18 @@ class Key_Metrics_SettingsTest extends TestCase {
 	 */
 	private $key_metrics_settings;
 
+	/**
+	 * Key_Metrics_Setup_Completed instance.
+	 *
+	 * @var Key_Metrics_Setup_Completed
+	 */
+	private $key_metrics_setup_completed;
+
 	public function set_up() {
 		parent::set_up();
 		$user_id      = $this->factory()->user->create();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
 		$user_options = new User_Options( $context, $user_id );
 		$meta_key     = $user_options->get_meta_key( Key_Metrics_Settings::OPTION );
 
@@ -35,7 +53,11 @@ class Key_Metrics_SettingsTest extends TestCase {
 		// Needed to unregister the instance registered during plugin bootstrap.
 		remove_all_filters( "sanitize_user_meta_{$meta_key}" );
 
-		$this->key_metrics_settings = new Key_Metrics_Settings( $user_options );
+		$this->key_metrics                 = new Key_Metrics( $context, $user_options, $options );
+		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options );
+		$this->key_metrics_settings        = new Key_Metrics_Settings( $user_options );
+
+		$this->key_metrics->register();
 		$this->key_metrics_settings->register();
 	}
 
@@ -176,4 +198,17 @@ class Key_Metrics_SettingsTest extends TestCase {
 		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
 	}
 
+	public function test_key_metrics_setup_completed_by_user_id() {
+		// Set ID of user who did initial setup
+		$user_id = 100;
+		$this->key_metrics_setup_completed->set( $user_id );
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertArrayHasKey( 'keyMetricsSetupCompleted', $data );
+		$this->assertArrayHasKey( 'keyMetricsSetupCompletedByUserID', $data );
+		$this->assertTrue( $data['keyMetricsSetupCompleted'] );
+		// Confirm that key_metrics_setup_completed saved user ID, of user who did the inital setup
+		$this->assertEquals( $user_id, $data['keyMetricsSetupCompletedByUserID'] );
+	}
 }
