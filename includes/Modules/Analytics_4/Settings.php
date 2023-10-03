@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 
 /**
@@ -92,20 +93,26 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array
 	 */
 	protected function get_default() {
-		return array(
-			'ownerID'                 => 0,
+		$options = array(
+			'ownerID'                   => 0,
 			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
 			/* 'accountID'       		=> '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			/* 'adsConversionID' 		=> '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			'propertyID'              => '',
-			'webDataStreamID'         => '',
-			'measurementID'           => '',
-			'useSnippet'              => true,
-			'googleTagID'             => '',
-			'googleTagAccountID'      => '',
-			'googleTagContainerID'    => '',
-			'googleTagLastSyncedAtMs' => 0,
+			'propertyID'                => '',
+			'webDataStreamID'           => '',
+			'measurementID'             => '',
+			'useSnippet'                => true,
+			'googleTagID'               => '',
+			'googleTagAccountID'        => '',
+			'googleTagContainerID'      => '',
+			'googleTagLastSyncedAtMs'   => 0,
 		);
+
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$options['availableCustomDimensions'] = null;
+		}
+
+		return $options;
 	}
 
 	/**
@@ -134,6 +141,21 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 						if ( ! is_numeric( $option[ $numeric_property ] ) || ! $option[ $numeric_property ] > 0 ) {
 							$option[ $numeric_property ] = '';
 						}
+					}
+				}
+
+				if ( Feature_Flags::enabled( 'newsKeyMetrics' ) && isset( $option['availableCustomDimensions'] ) ) {
+					if ( is_array( $option['availableCustomDimensions'] ) ) {
+						$valid_dimensions = array_filter(
+							$option['availableCustomDimensions'],
+							function( $dimension ) {
+								return is_string( $dimension ) && strpos( $dimension, 'googlesitekit_' ) === 0;
+							}
+						);
+
+						$option['availableCustomDimensions'] = $valid_dimensions;
+					} else {
+						$option['availableCustomDimensions'] = null;
 					}
 				}
 			}
