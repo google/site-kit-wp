@@ -42,6 +42,7 @@ import {
 } from './settings';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
+import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
 
 describe( 'modules/analytics-4 settings', () => {
 	let registry;
@@ -292,7 +293,18 @@ describe( 'modules/analytics-4 settings', () => {
 					} );
 				} );
 
-				it( 'should save the enhanced measurement settings if the setting has been changed', async () => {
+				it( 'should save the enhanced measurement settings and dismiss the activation banner if the setting has been changed', async () => {
+					const dismissItemEndpoint = new RegExp(
+						'^/google-site-kit/v1/core/user/data/dismiss-item'
+					);
+
+					fetchMock.postOnce( dismissItemEndpoint, {
+						body: JSON.stringify( [
+							ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+						] ),
+						status: 200,
+					} );
+
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
@@ -310,7 +322,15 @@ describe( 'modules/analytics-4 settings', () => {
 							},
 						}
 					);
-					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+						body: {
+							data: {
+								slug: ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+								expiration: 0,
+							},
+						},
+					} );
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
 					expect(
 						registry
 							.select( MODULES_ANALYTICS_4 )
