@@ -23,6 +23,7 @@ import {
 	EngagedTrafficSourceWidget,
 	LeastEngagingPagesWidget,
 	LoyalVisitorsWidget,
+	MostEngagingPagesWidget,
 	NewVisitorsWidget,
 	PopularContentWidget,
 	PopularProductsWidget,
@@ -42,6 +43,7 @@ import {
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_POPULAR_CONTENT,
@@ -279,6 +281,22 @@ export const registerWidgets = ( widgets ) => {
 				isActive: ( select ) =>
 					select( CORE_USER ).isKeyMetricActive(
 						KM_ANALYTICS_VISITS_PER_VISITOR
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			{
+				Component: MostEngagingPagesWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_MOST_ENGAGING_PAGES
 					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]

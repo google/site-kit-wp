@@ -64,6 +64,7 @@ export const KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES =
 export const KM_SEARCH_CONSOLE_POPULAR_KEYWORDS =
 	'kmSearchConsolePopularKeywords';
 export const KM_ANALYTICS_VISITS_PER_VISITOR = 'kmAnalyticsVisitsPerVisitor';
+export const KM_ANALYTICS_MOST_ENGAGING_PAGES = 'kmAnalyticsMostEngagingPages';
 
 export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
@@ -80,6 +81,7 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 ];
 
 export const allKeyMetricsTileWidgets = [

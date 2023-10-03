@@ -21,6 +21,7 @@ export { default as ConnectGA4CTAWidget } from './ConnectGA4CTAWidget';
 export { default as EngagedTrafficSourceWidget } from './EngagedTrafficSourceWidget';
 export { default as LeastEngagingPagesWidget } from './LeastEngagingPagesWidget';
 export { default as LoyalVisitorsWidget } from './LoyalVisitorsWidget';
+export { default as MostEngagingPagesWidget } from './MostEngagingPagesWidget';
 export { default as NewVisitorsWidget } from './NewVisitorsWidget';
 export { default as PopularContentWidget } from './PopularContentWidget';
 export { default as PopularProductsWidget } from './PopularProductsWidget';
