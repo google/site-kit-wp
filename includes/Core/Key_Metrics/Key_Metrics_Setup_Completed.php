@@ -30,10 +30,11 @@ class Key_Metrics_Setup_Completed extends Setting {
 	 * Gets the expected value type.
 	 *
 	 * @since 1.108.0
+	 * @since n.e.x.t Type changed to integer.
 	 *
 	 * @return string The type name.
 	 */
 	protected function get_type() {
-		return 'boolean';
+		return 'integer';
 	}
 }
