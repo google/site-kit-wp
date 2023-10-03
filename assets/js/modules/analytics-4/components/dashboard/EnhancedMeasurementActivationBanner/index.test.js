@@ -45,7 +45,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 	beforeEach( () => {
 		enhancedMeasurementSettingsMock = {
 			fileDownloadsEnabled: null,
-			name: `properties/${ propertyID }/dataStreams/${ webDataStreamID }/enhancedMeasurementSettings`,
+			name: 'properties/1000/dataStreams/2000/enhancedMeasurementSettings',
 			outboundClicksEnabled: null,
 			pageChangesEnabled: null,
 			scrollsEnabled: null,
