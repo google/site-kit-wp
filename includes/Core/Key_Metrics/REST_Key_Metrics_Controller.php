@@ -140,7 +140,13 @@ class REST_Key_Metrics_Controller {
 									array( 'status' => 400 )
 								);
 							}
-							$this->key_metrics_setup_completed->set( true );
+
+							$key_metrics_setup_already_done_by_user = $this->key_metrics_setup_completed->get();
+							if ( empty( $key_metrics_setup_already_done_by_user ) ) {
+								$current_user_id = get_current_user_id();
+
+								$this->key_metrics_setup_completed->set( $current_user_id );
+							}
 						}
 
 						$this->settings->merge( $data['settings'] );

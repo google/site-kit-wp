@@ -152,7 +152,13 @@ class REST_User_Input_Controller {
 							$answers = $this->user_input->set_answers( $data['settings'] );
 
 							if ( ! empty( $answers['purpose']['values'] ) ) {
-								$this->key_metrics_setup_completed->set( true );
+								$key_metrics_setup_already_done_by_user = $this->key_metrics_setup_completed->get();
+
+								if ( empty( $key_metrics_setup_already_done_by_user ) ) {
+									$current_user_id = get_current_user_id();
+
+									$this->key_metrics_setup_completed->set( $current_user_id );
+								}
 							}
 
 							$response = rest_ensure_response( $answers );
