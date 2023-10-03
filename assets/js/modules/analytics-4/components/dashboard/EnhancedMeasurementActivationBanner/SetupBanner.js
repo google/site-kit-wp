@@ -1,5 +1,5 @@
 /**
- * SetupBanner component.
+ * EnhancedMeasurementActivationBanner > SetupBanner component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *

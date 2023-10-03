@@ -1,5 +1,5 @@
 /**
- * SuccessBanner component.
+ * EnhancedMeasurementActivationBanner > SuccessBanner component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
