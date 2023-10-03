@@ -45,22 +45,20 @@ export default function EnhancedMeasurementSwitch( {
 	onClick,
 	disabled = false,
 	loading = false,
+	formName = ENHANCED_MEASUREMENT_FORM,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ENHANCED_MEASUREMENT_FORM,
-			ENHANCED_MEASUREMENT_ENABLED
-		)
+		select( CORE_FORMS ).getValue( formName, ENHANCED_MEASUREMENT_ENABLED )
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const handleClick = useCallback( () => {
-		setValues( ENHANCED_MEASUREMENT_FORM, {
+		setValues( formName, {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: ! isEnhancedMeasurementEnabled,
 		} );
 		onClick?.();
-	}, [ isEnhancedMeasurementEnabled, onClick, setValues ] );
+	}, [ formName, isEnhancedMeasurementEnabled, onClick, setValues ] );
 
 	return (
 		<div
