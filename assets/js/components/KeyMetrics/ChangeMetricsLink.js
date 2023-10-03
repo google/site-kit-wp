@@ -19,13 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
@@ -33,6 +34,7 @@ import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import sharedKeyMetrics from '../../feature-tours/shared-key-metrics';
 const { useSelect, useDispatch } = Data;
 
 export default function ChangeMetricsLink() {
@@ -48,7 +50,46 @@ export default function ChangeMetricsLink() {
 		trackEvent( `${ viewContext }_kmw`, 'change_metrics' );
 	}, [ setValue, viewContext ] );
 
-	if ( ! Array.isArray( keyMetrics ) || ! keyMetrics?.length > 0 ) {
+	const renderChangeMetricLink =
+		Array.isArray( keyMetrics ) || keyMetrics?.length > 0;
+
+	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
+		select( CORE_SITE ).isKeyMetricsSetupCompleted()
+	);
+
+	const keyMetricsSetupCompletedByUserID = useSelect( ( select ) =>
+		select( CORE_SITE ).getKeyMetricsSetupCompletedByUserID()
+	);
+
+	const currentUserID = useSelect( ( select ) =>
+		select( CORE_USER ).getID()
+	);
+
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+
+	useEffect( () => {
+		const isUserEligibleForTour =
+			Number.isInteger( keyMetricsSetupCompletedByUserID ) &&
+			Number.isInteger( currentUserID ) &&
+			keyMetricsSetupCompletedByUserID > 0 &&
+			currentUserID !== keyMetricsSetupCompletedByUserID;
+
+		if (
+			renderChangeMetricLink &&
+			isKeyMetricsSetupCompleted &&
+			isUserEligibleForTour
+		) {
+			triggerOnDemandTour( sharedKeyMetrics );
+		}
+	}, [
+		renderChangeMetricLink,
+		isKeyMetricsSetupCompleted,
+		keyMetricsSetupCompletedByUserID,
+		currentUserID,
+		triggerOnDemandTour,
+	] );
+
+	if ( ! renderChangeMetricLink ) {
 		return null;
 	}
 
