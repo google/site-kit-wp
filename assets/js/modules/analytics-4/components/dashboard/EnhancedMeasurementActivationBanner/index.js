@@ -152,19 +152,20 @@ function EnhancedMeasurementActivationBanner() {
 		return null;
 	}
 
-	switch ( step ) {
-		case ACTIVATION_STEP_SETUP:
-			return (
-				<SetupBanner
-					onSubmitSuccess={ handleSubmit }
-					onDismiss={ handleDismiss }
-				/>
-			);
-		case ACTIVATION_STEP_SUCCESS:
-			return <SuccessBanner />;
-		default:
-			return null;
+	if ( step === ACTIVATION_STEP_SETUP ) {
+		return (
+			<SetupBanner
+				onSubmitSuccess={ handleSubmit }
+				onDismiss={ handleDismiss }
+			/>
+		);
 	}
+
+	if ( step === ACTIVATION_STEP_SUCCESS ) {
+		return <SuccessBanner />;
+	}
+
+	return null;
 }
 
 export default whenActive( { moduleName: 'analytics-4' } )(
