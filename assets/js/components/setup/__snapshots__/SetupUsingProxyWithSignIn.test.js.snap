@@ -262,6 +262,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                             style="display: inline-block; float: none; visibility: visible; margin: 0px;"
                           />
                         </div>
+                        
                         <label
                           for="googlesitekit-opt-in"
                         >
@@ -595,6 +596,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                               />
                             </div>
                           </div>
+                          
                           <label
                             for="googlesitekit-analytics-setup-opt-in"
                           >
@@ -625,6 +627,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             style="display: inline-block; float: none; visibility: visible; margin: 0px;"
                           />
                         </div>
+                        
                         <label
                           for="googlesitekit-opt-in"
                         >

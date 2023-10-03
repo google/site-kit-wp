@@ -12,6 +12,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
       name="checkbox-name"
       role="presentation"
     />
+    
     <label
       for="checkbox-id"
       id="checkbox-id-label"
@@ -34,6 +35,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
       name="checkbox-name"
       role="presentation"
     />
+    
     <label
       for="checkbox-id"
       id="checkbox-id-label"
@@ -56,6 +58,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
       name="checkbox-name"
       role="presentation"
     />
+    
     <label
       for="checkbox-id"
       id="checkbox-id-label"
@@ -78,6 +81,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
       name="checkbox-name"
       role="presentation"
     />
+    
     <label
       for="checkbox-id"
       id="checkbox-id-label"
@@ -100,6 +104,7 @@ exports[`Checkbox should render the checkbox 1`] = `
       name="checkbox-name"
       role="presentation"
     />
+    
     <label
       for="checkbox-id"
       id="checkbox-id-label"
@@ -122,6 +127,7 @@ exports[`Checkbox should render the checkbox with a complex label 1`] = `
       name="checkbox-name"
       role="presentation"
     />
+    
     <label
       for="checkbox-id"
       id="checkbox-id-label"
@@ -165,6 +171,7 @@ exports[`Checkbox should render the checkbox with disabled state 1`] = `
       name="checkbox-name"
       role="presentation"
     />
+    
     <label
       for="checkbox-id"
       id="checkbox-id-label"
@@ -188,6 +195,7 @@ exports[`Checkbox should render the checkbox with loading state 1`] = `
         style="display: inline-block; float: none; margin-top: 0px; visibility: visible;"
       />
     </div>
+    
     <label
       for="checkbox-id"
       id="checkbox-id-label"
