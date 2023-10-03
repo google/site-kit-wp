@@ -80,7 +80,7 @@ export default function MetricsSelectionPanel() {
 			closeFn={ sideSheetCloseFn }
 			focusTrapOptions={ {
 				initialFocus:
-					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-accordion__header',
+					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-selection-box input',
 			} }
 		>
 			<Header />
