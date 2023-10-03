@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -98,15 +99,13 @@ function MostEngagingPagesWidget( props ) {
 		limit: 3,
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	const pageViewsReportErrors = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			pageViewsReportOptions,
+		] )
 	);
 
 	const error = useSelect( ( select ) => {
-		const pageViewsReportErrors = select(
-			MODULES_ANALYTICS_4
-		).getErrorForSelector( 'getReport', [ pageViewsReportOptions ] );
-
 		const reportOptionsErrors = select(
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ reportOptions ] );
@@ -116,6 +115,23 @@ function MostEngagingPagesWidget( props ) {
 		}
 
 		return pageViewsReportErrors || reportOptionsErrors || undefined;
+	} );
+
+	const hasFinishedResolvingPageViewReport = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+			pageViewsReportOptions,
+		] )
+	);
+
+	const report = useSelect( ( select ) => {
+		if ( ! hasFinishedResolvingPageViewReport ) {
+			return undefined;
+		}
+		if ( pageViewsReportErrors ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 	} );
 
 	const titles = useInViewSelect( ( select ) =>
@@ -133,10 +149,7 @@ function MostEngagingPagesWidget( props ) {
 				'getReport',
 				[ reportOptions ]
 			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ pageViewsReportOptions ]
-			) ||
+			! hasFinishedResolvingPageViewReport ||
 			titles === undefined
 	);
 
@@ -185,14 +198,17 @@ function MostEngagingPagesWidget( props ) {
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<strong>
-					{ numFmt( fieldValue, {
-						style: 'percent',
-						maximumFractionDigits: 1,
-					} ) }
-				</strong>
-			),
+			Component: ( { fieldValue } ) =>
+				createInterpolateElement( '<metricValue /> CTR', {
+					metricValue: (
+						<strong>
+							{ numFmt( fieldValue, {
+								style: 'percent',
+								maximumFractionDigits: 1,
+							} ) }
+						</strong>
+					),
+				} ),
 		},
 	];
 

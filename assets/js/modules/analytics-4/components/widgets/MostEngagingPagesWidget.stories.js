@@ -33,37 +33,16 @@ import {
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import MostEngagingPagesWidget from './MostEngagingPagesWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
-const reportOptions = {
+const pageViewsReportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
 	dimensions: [ 'pagePath' ],
-	metrics: [ 'engagementRate', 'screenPageViews' ],
-	orderby: [
-		{
-			metric: { metricName: 'engagementRate' },
-			desc: true,
-		},
-		{
-			metric: { metricName: 'screenPageViews' },
-			desc: true,
-		},
-	],
-	metricFilters: {
-		screenPageViews: {
-			filterType: 'numericFilter',
-			operation: 'GREATER_THAN_OR_EQUAL',
-			value: 25,
-		},
-	},
-	limit: 3,
+	metrics: [ { name: 'screenPageViews' } ],
 };
 
 const pageTitlesReportOptions = {
@@ -113,6 +92,47 @@ Ready.args = {
 				options: pageTitlesReportOptions,
 			} );
 
+		const pageViewsReport = getAnalytics4MockResponse(
+			pageViewsReportOptions
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageViewsReport, {
+				options: pageViewsReportOptions,
+			} );
+
+		const averagePageViews =
+			Math.round(
+				pageViewsReport?.totals?.[ 0 ]?.metricValues[ 0 ].value /
+					pageViewsReport?.rowCount
+			) || 0;
+
+		const reportOptions = {
+			startDate: '2020-08-11',
+			endDate: '2020-09-07',
+			dimensions: [ 'pagePath' ],
+			metrics: [ 'engagementRate', 'screenPageViews' ],
+			orderby: [
+				{
+					metric: { metricName: 'engagementRate' },
+					desc: true,
+				},
+				{
+					metric: { metricName: 'screenPageViews' },
+					desc: true,
+				},
+			],
+			metricFilters: {
+				screenPageViews: {
+					filterType: 'numericFilter',
+					operation: 'GREATER_THAN_OR_EQUAL',
+					value: { int64Value: averagePageViews },
+				},
+			},
+			limit: 3,
+		};
+
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
@@ -121,36 +141,12 @@ Ready.scenario = {
 	delay: 250,
 };
 
-export const ReadyViewOnly = Template.bind( {} );
-ReadyViewOnly.storyName = 'Ready View Only';
-ReadyViewOnly.args = {
-	setupRegistry: ( registry ) => {
-		const pageTitlesReport = getAnalytics4MockResponse(
-			pageTitlesReportOptions,
-			{ dimensionCombinationStrategy: STRATEGY_ZIP }
-		);
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( pageTitlesReport, {
-				options: pageTitlesReportOptions,
-			} );
-
-		provideAnalytics4MockReport( registry, reportOptions );
-	},
-	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-};
-ReadyViewOnly.scenario = {
-	label: 'KeyMetrics/MostEngagingPagesWidget/ReadyViewOnly',
-	delay: 250,
-};
-
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
-			reportOptions,
+			pageViewsReportOptions,
 		] );
 	},
 };
@@ -159,7 +155,62 @@ export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( { dispatch } ) => {
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions
+		);
+
+		const zeroPageTitlesReport =
+			replaceValuesInAnalytics4ReportWithZeroData( pageTitlesReport );
+
+		const pageViewsReport = getAnalytics4MockResponse(
+			pageViewsReportOptions
+		);
+
+		const zeroPageViewsReport =
+			replaceValuesInAnalytics4ReportWithZeroData( pageViewsReport );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			zeroPageTitlesReport,
+			{
+				options: pageTitlesReportOptions,
+			}
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroPageViewsReport, {
+			options: pageViewsReportOptions,
+		} );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( pageViewsReport, {
+			options: pageViewsReportOptions,
+		} );
+
+		const reportOptions = {
+			startDate: '2020-08-11',
+			endDate: '2020-09-07',
+			dimensions: [ 'pagePath' ],
+			metrics: [ 'engagementRate', 'screenPageViews' ],
+			orderby: [
+				{
+					metric: { metricName: 'engagementRate' },
+					desc: true,
+				},
+				{
+					metric: { metricName: 'screenPageViews' },
+					desc: true,
+				},
+			],
+			metricFilters: {
+				screenPageViews: {
+					filterType: 'numericFilter',
+					operation: 'GREATER_THAN_OR_EQUAL',
+					value: { int64Value: 1 },
+				},
+			},
+			limit: 3,
+		};
+
 		const report = getAnalytics4MockResponse( reportOptions );
+
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
 
@@ -187,18 +238,18 @@ Error.args = {
 			selectorData: {
 				storeName: 'modules/analytics-4',
 				name: 'getReport',
-				args: [ reportOptions ],
+				args: [ pageViewsReportOptions ],
 			},
 		};
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			errorObject,
 			'getReport',
-			[ reportOptions ]
+			[ pageViewsReportOptions ]
 		);
 
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
-			reportOptions,
+			pageViewsReportOptions,
 		] );
 	},
 };
@@ -221,18 +272,18 @@ InsufficientPermissions.args = {
 			selectorData: {
 				storeName: 'modules/analytics-4',
 				name: 'getReport',
-				args: [ reportOptions ],
+				args: [ pageViewsReportOptions ],
 			},
 		};
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			errorObject,
 			'getReport',
-			[ reportOptions ]
+			[ pageViewsReportOptions ]
 		);
 
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
-			reportOptions,
+			pageViewsReportOptions,
 		] );
 	},
 };
