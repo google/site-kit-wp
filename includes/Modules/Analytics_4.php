@@ -117,10 +117,41 @@ final class Analytics_4 extends Module
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 				}
+
+				// Check if the property ID has changed and reset availableCustomDimensions setting to null.
+				if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+					if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
+						$this->get_settings()->merge(
+							array(
+								'availableCustomDimensions' => null,
+							)
+						);
+					}
+				}
 			},
 			10,
 			2
 		);
+
+		// if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+		// 	add_action(
+		// 		'update_option_googlesitekit_analytics-4_settings',
+		// 		function( $old_value, $new_value ) {
+		// 			if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
+		// 				// var_dump( $old_value['propertyID'] );
+		// 				// var_dump( $new_value['propertyID'] );
+		// 				// Reset availableCustomDimensions setting to null.
+		// 				$this->get_settings()->merge(
+		// 					array(
+		// 						'availableCustomDimensions' => null,
+		// 					)
+		// 				);
+		// 			}
+		// 		},
+		// 		10,
+		// 		2
+		// 	);
+		// }
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// Replicate Analytics settings for Analytics-4 if not set.
@@ -353,6 +384,9 @@ final class Analytics_4 extends Module
 				'service'                => 'analyticsdata',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
+			);
+			$datapoints['POST:sync-custom-dimensions'] = array(
+				'service' => 'analyticsadmin',
 			);
 		}
 
@@ -836,6 +870,21 @@ final class Analytics_4 extends Module
 						self::normalize_property_id( $data['propertyID'] ),
 						$custom_dimension
 					);
+			case 'POST:sync-custom-dimensions':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+
+				return $analyticsadmin
+					->properties_customDimensions // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesCustomDimensions( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -1022,6 +1071,27 @@ final class Analytics_4 extends Module
 			case 'GET:report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
+			case 'POST:sync-custom-dimensions':
+				if ( is_wp_error( $response ) ) {
+					return $response;
+				}
+
+				$custom_dimensions   = wp_list_pluck( $response->getCustomDimensions(), 'parameterName' );
+				$matching_dimensions = array_values(
+					array_filter(
+						$custom_dimensions,
+						function( $dimension ) {
+							return strpos( $dimension, 'googlesitekit_' ) === 0;
+						}
+					)
+				);
+				$this->get_settings()->merge(
+					array(
+						'availableCustomDimensions' => $matching_dimensions,
+					)
+				);
+
+				return $matching_dimensions;
 		}
 
 		return parent::parse_data_response( $data, $response );
