@@ -162,6 +162,7 @@ export const reducer = ( state, { payload, type } ) => {
 				pluginBasename,
 				productBasePaths,
 				keyMetricsSetupCompleted,
+				keyMetricsSetupCompletedByUserID,
 			} = payload.siteInfo;
 
 			return {
@@ -194,6 +195,7 @@ export const reducer = ( state, { payload, type } ) => {
 					pluginBasename,
 					productBasePaths,
 					keyMetricsSetupCompleted,
+					keyMetricsSetupCompletedByUserID,
 				},
 			};
 		}
@@ -271,6 +273,7 @@ export const resolvers = {
 			pluginBasename,
 			productBasePaths,
 			keyMetricsSetupCompleted,
+			keyMetricsSetupCompletedByUserID,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -308,6 +311,7 @@ export const resolvers = {
 			pluginBasename,
 			productBasePaths,
 			keyMetricsSetupCompleted,
+			keyMetricsSetupCompletedByUserID,
 		} );
 	},
 };
@@ -768,6 +772,17 @@ export const selectors = {
 	 * @return {string} The basename of plugin, e.g. `'google-site-kit/google-site-kit.php'`.
 	 */
 	getPluginBasename: getSiteInfoProperty( 'pluginBasename' ),
+
+	/**
+	 * Get the `userID` of the user who setup Key Metrics widget if present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {number} `userID` of the user who did initial setup of the Key Metrics widget, if setup was done, otherwise `0`.
+	 */
+	getKeyMetricsSetupCompletedByUserID: getSiteInfoProperty(
+		'keyMetricsSetupCompletedByUserID'
+	),
 
 	/**
 	 * Determines whether the current WordPress site has the minimum required version.
