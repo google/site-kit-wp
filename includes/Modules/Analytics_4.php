@@ -117,50 +117,21 @@ final class Analytics_4 extends Module
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 				}
-
-				// Check if the property ID has changed and reset availableCustomDimensions setting to null.
-				if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
-					if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
-						$this->get_settings()->merge(
-							array(
-								'availableCustomDimensions' => null,
-							)
-						);
-					}
-				}
 			},
 			10,
 			2
 		);
 
-		// if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
-		// 	add_action(
-		// 		'pre_update_option_googlesitekit_analytics-4_settings',
-		// 		function( $old_value, $new_value ) {
-		// 			if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
-		// 				// Reset availableCustomDimensions setting to null.
-		// 				$this->get_settings()->merge(
-		// 					array(
-		// 						'availableCustomDimensions' => null,
-		// 					)
-		// 				);
-		// 			}
-		// 		},
-		// 		9,
-		// 		2
-		// 	);
-		// }
-
 		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
 		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
 			add_filter(
 				'pre_update_option_googlesitekit_analytics-4_settings',
-				function ( $value, $old_value ) {
-					if ( $value['propertyID'] !== $old_value['propertyID'] ) {
-						$value['availableCustomDimensions'] = null;
+				function ( $new_value, $old_value ) {
+					if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
+						$new_value['availableCustomDimensions'] = null;
 					}
 
-					return $value;
+					return $new_value;
 				},
 				10,
 				2
