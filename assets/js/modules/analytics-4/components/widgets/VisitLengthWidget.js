@@ -111,7 +111,7 @@ function VisitLengthWidget( { Widget } ) {
 			error={ error }
 			moduleSlug="analytics-4"
 			infoTooltip={ __(
-				'Average duration (in seconds) of engaged visits',
+				'Average duration of engaged visits',
 				'google-site-kit'
 			) }
 		/>

@@ -147,7 +147,7 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_VISIT_LENGTH ] = {
 		title: __( 'Visit length', 'google-site-kit' ),
 		description: __(
-			'Average duration (in seconds) of engaged visits',
+			'Average duration of engaged visits',
 			'google-site-kit'
 		),
 	};
