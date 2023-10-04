@@ -135,11 +135,9 @@ final class Analytics_4 extends Module
 
 		// if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
 		// 	add_action(
-		// 		'update_option_googlesitekit_analytics-4_settings',
+		// 		'pre_update_option_googlesitekit_analytics-4_settings',
 		// 		function( $old_value, $new_value ) {
 		// 			if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
-		// 				// var_dump( $old_value['propertyID'] );
-		// 				// var_dump( $new_value['propertyID'] );
 		// 				// Reset availableCustomDimensions setting to null.
 		// 				$this->get_settings()->merge(
 		// 					array(
@@ -148,7 +146,7 @@ final class Analytics_4 extends Module
 		// 				);
 		// 			}
 		// 		},
-		// 		10,
+		// 		9,
 		// 		2
 		// 	);
 		// }
