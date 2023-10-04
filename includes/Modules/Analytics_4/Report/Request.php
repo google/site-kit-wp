@@ -393,7 +393,7 @@ class Request extends Report {
 	/**
 	 * Parses metric filters and returns a filter expression that should be added to the report request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.111.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression to use with the report request.
@@ -423,7 +423,7 @@ class Request extends Report {
 	/**
 	 * Parses and returns a single metric filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.111.0
 	 *
 	 * @param string $metric_name The metric name.
 	 * @param mixed  $metric_value The metric filter settings.
@@ -476,7 +476,7 @@ class Request extends Report {
 	/**
 	 * Returns correct filter expression instance based on the metric filter instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.111.0
 	 *
 	 * @param Numeric_Filter|Between_Filter $filter The metric filter instance.
 	 * @param string                        $metric_name The metric name.

@@ -18,7 +18,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\NumericValue as Nu
 /**
  * Class for parsing the metric numeric filter.
  *
- * @since n.e.x.t
+ * @since 1.111.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Numeric_Filter {
 	/**
 	 * Converts the metric filter into the GA4 compatible metric filter expression.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.111.0
 	 *
 	 * @param string  $metric_name The metric name.
 	 * @param string  $operation The filter operation.

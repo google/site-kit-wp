@@ -67,7 +67,7 @@ const durationFormat = ( durationInSeconds, options = {} ) => {
  * For example, passing 65 returns '01:05'.
  * Passing 5400 returns '01:30:00'.
  *
- * @since n.e.x.t
+ * @since 1.111.0
  * @private
  *
  * @param {number} durationInSeconds The number of seconds.
@@ -88,7 +88,7 @@ const durationISOFormat = ( durationInSeconds ) => {
 /**
  * Parses the duration in seconds into hours, minutes and seconds.
  *
- * @since n.e.x.t
+ * @since 1.111.0
  * @private
  *
  * @param {number} durationInSeconds The number of seconds.
