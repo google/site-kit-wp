@@ -151,6 +151,22 @@ final class Analytics_4 extends Module
 		// 	);
 		// }
 
+		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			add_filter(
+				'pre_update_option_googlesitekit_analytics-4_settings',
+				function ( $value, $old_value ) {
+					if ( $value['propertyID'] !== $old_value['propertyID'] ) {
+						$value['availableCustomDimensions'] = null;
+					}
+
+					return $value;
+				},
+				10,
+				2
+			);
+		}
+
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// Replicate Analytics settings for Analytics-4 if not set.
 			add_filter(
