@@ -636,7 +636,8 @@ final class Analytics_4 extends Module
 
 				return $this->get_service( 'analyticsadmin' )->properties->listProperties(
 					array(
-						'filter' => 'parent:' . self::normalize_account_id( $data['accountID'] ),
+						'filter'   => 'parent:' . self::normalize_account_id( $data['accountID'] ),
+						'pageSize' => 200,
 					)
 				);
 			case 'GET:property':
