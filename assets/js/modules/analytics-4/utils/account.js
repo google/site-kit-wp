@@ -36,7 +36,7 @@ import { ENHANCED_MEASUREMENT_ENABLED } from '../datastore/constants';
  * Gets default values for a new account.
  *
  * @since 1.98.0
- * @since n.e.x.t Added enhanced measurement enabled state to return value.
+ * @since 1.111.0 Added enhanced measurement enabled state to return value.
  *
  * @param {Object} args              Site information.
  * @param {string} args.siteName     Site name.

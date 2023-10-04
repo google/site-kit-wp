@@ -248,7 +248,7 @@ const baseSelectors = {
 	 * Gets an Analytics report for the given options.
 	 *
 	 * @since 1.94.0
-	 * @since n.e.x.t Add metricFilters to the options list, to reflect added support for the metric filters.
+	 * @since 1.111.0 Add metricFilters to the options list, to reflect added support for the metric filters.
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.

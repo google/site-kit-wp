@@ -54,7 +54,7 @@ class Account_Ticket {
 	/**
 	 * Whether or not enhanced measurement should be enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.111.0
 	 * @var boolean
 	 */
 	protected $enhanced_measurement_stream_enabled;
@@ -168,7 +168,7 @@ class Account_Ticket {
 	/**
 	 * Gets the enabled state of enhanced measurement for the data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.111.0
 	 *
 	 * @return bool $enabled Enabled state.
 	 */
@@ -179,7 +179,7 @@ class Account_Ticket {
 	/**
 	 * Sets the enabled state of enhanced measurement for the data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.111.0
 	 *
 	 * @param bool $enabled Enabled state.
 	 */
