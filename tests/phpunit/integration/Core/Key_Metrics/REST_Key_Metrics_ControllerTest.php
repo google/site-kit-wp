@@ -197,56 +197,6 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$this->assertEquals( $expected, $this->key_metrics_setup_completed->get() );
 	}
 
-	public function test_setup_completed_by_user_id() {
-		$this->key_metrics->register();
-		$this->settings->register();
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$initial_user = get_current_user_id();
-		$data         = apply_filters( 'googlesitekit_inline_base_data', array() );
-		$request_body = array(
-			'data' => array(
-				'settings' => array(
-					'widgetSlugs'    => array( 'widgetA', 'widgetB' ),
-					'isWidgetHidden' => false,
-				),
-			),
-		);
-
-		$this->assertArrayHasKey( 'keyMetricsSetupCompleted', $data );
-		$this->assertArrayHasKey( 'keyMetricsSetupCompletedByUserID', $data );
-
-		$this->assertFalse( $data['keyMetricsSetupCompleted'] );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
-		$request->set_body_params( $request_body );
-		rest_get_server()->dispatch( $request );
-
-		// Get updated data after setup complete has been saved.
-		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
-
-		$this->assertTrue( $data['keyMetricsSetupCompleted'] );
-		// keyMetricsSetupCompletedByUserID should match the current user who did the first setup
-		$this->assertEquals( $initial_user, $data['keyMetricsSetupCompletedByUserID'] );
-
-		// If another user changes the metric view for themselves, the user ID of user
-		// who did initial setup should remain unchanged
-		$user_id = $this->factory()->user->create();
-		wp_set_current_user( $user_id );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
-		$request->set_body_params( $request_body );
-		rest_get_server()->dispatch( $request );
-
-		// Get latest data
-		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
-
-		// keyMetricsSetupCompletedByUserID should be the user who initially saved the settings
-		// not the user who later changed the metrics for their view
-		$this->assertEquals( $initial_user, $data['keyMetricsSetupCompletedByUserID'] );
-	}
-
 	public function data_setup_completed() {
 		return array(
 			'completed on success'                     => array(

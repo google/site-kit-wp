@@ -28,6 +28,7 @@ import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
+import { isFeatureEnabled } from '../features';
 
 const sharedKeyMetrics = {
 	slug: 'sharedKeyMetrics',
@@ -37,8 +38,9 @@ const sharedKeyMetrics = {
 		VIEW_CONTEXT_ENTITY_DASHBOARD,
 		VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	],
-	version: 'n.e.x.t',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_shared_key-metrics`,
+	checkRequirements: () =>
+		isFeatureEnabled( 'ga4Reporting' ) && isFeatureEnabled( 'userInput' ),
 	steps: [
 		{
 			target: '.googlesitekit-km-change-metrics-cta',

@@ -24,7 +24,7 @@ class Key_Metrics_Setup_Completed extends Setting {
 	/**
 	 * The option_name for this setting.
 	 */
-	const OPTION = 'googlesitekit_key_metrics_setup_completed';
+	const OPTION = 'googlesitekit_key_metrics_setup_completed_by_user_id';
 
 	/**
 	 * Gets the expected value type.
