@@ -135,6 +135,7 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
 			'google-site-kit'
 		),
+		// TODO: Remove this once we have the correct custom dimensions.
 		requiredCustomDimensions: [
 			'googlesitekit_post_author',
 			'googlesitekit_post_date',
@@ -146,6 +147,7 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
+		// TODO: Remove this once we have the correct custom dimensions.
 		requiredCustomDimensions: [
 			'googlesitekit_post_author',
 			'googlesitekit_post_date',
