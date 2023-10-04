@@ -30,3 +30,31 @@ export const GTM_SCOPE = 'https://www.googleapis.com/auth/tagmanager.readonly';
 
 export const ENHANCED_MEASUREMENT_FORM = 'enhanced-measurement-form';
 export const ENHANCED_MEASUREMENT_ENABLED = 'enhanced-measurement-enabled';
+
+export const customDimensions = {
+	googlesitekit_post_date: {
+		parameterName: 'googlesitekit_post_date',
+		displayName: 'WordPress Post Creation Date',
+		description: 'Date of which this post was published',
+		scope: 'EVENT',
+	},
+	googlesitekit_post_author: {
+		parameterName: 'googlesitekit_post_author',
+		displayName: 'WordPress Post Author',
+		description: 'User ID of the author for this post',
+		scope: 'EVENT',
+	},
+	googlesitekit_post_categories: {
+		parameterName: 'googlesitekit_post_categories',
+		displayName: 'WordPress Post Categories',
+		description:
+			'Comma-separated list of category IDs assigned to this post',
+		scope: 'EVENT',
+	},
+	googlesitekit_post_type: {
+		parameterName: 'googlesitekit_post_type',
+		displayName: 'WordPress Post Type',
+		description: 'Content type for this post',
+		scope: 'EVENT',
+	},
+};
