@@ -28,6 +28,9 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	fireEvent,
+	act,
+	provideSiteInfo,
+	muteFetch,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import {
@@ -121,9 +124,27 @@ describe( 'SetupBanner', () => {
 	} );
 
 	it( 'should render correctly when the user does not have the edit scope granted', () => {
+		act( () => {
+			provideSiteInfo( registry, {
+				usingProxy: true,
+			} );
+		} );
+
+		const surveyTriggerEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/survey-trigger'
+		);
+		const surveyTimeoutEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/survey-timeout'
+		);
+
 		const { container, getByText } = render( <SetupBanner />, {
 			registry,
 		} );
+
+		// The survey trigger and timeout requests will fire here, so mute notices
+		// about unhandled fetch requests in this test.
+		muteFetch( surveyTriggerEndpoint );
+		muteFetch( surveyTimeoutEndpoint );
 
 		expect( container ).toMatchSnapshot();
 

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -53,12 +54,17 @@ import ErrorNotice from '../../../../../components/ErrorNotice';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( {
+	isDismissed,
 	onSubmitSuccess,
 	onDismiss,
 	children,
 } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ isSaving, setIsSaving ] = useState( false );
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -76,7 +82,7 @@ export default function SetupBanner( {
 
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const { setPermissionScopeError, triggerSurvey } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const commonSubmitChanges = useCallback( async () => {
@@ -99,6 +105,12 @@ export default function SetupBanner( {
 		// This should be called last because it will unmount this component.
 		onSubmitSuccess();
 	}, [ setValues, submitChanges, onSubmitSuccess ] );
+
+	useMount( () => {
+		if ( usingProxy && ! isDismissed ) {
+			triggerSurvey( 'view_enhanced_measurement_cta', { ttl: 0 } );
+		}
+	}, [ isDismissed, triggerSurvey, usingProxy ] );
 
 	const handleSubmitChanges = async () => {
 		const scopes = [];
