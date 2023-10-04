@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Tests\Core\Key_Metrics;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Key_Metrics\Key_Metrics;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
 use Google\Site_Kit\Core\Key_Metrics\REST_Key_Metrics_Controller;
@@ -32,13 +31,6 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 	 * @var Key_Metrics_Settings
 	 */
 	private $settings;
-
-	/**
-	 * Key_Metrics instance.
-	 *
-	 * @var Key_Metrics
-	 */
-	private $key_metrics;
 
 	/**
 	 * REST_Key_Metrics_Controller instance.
@@ -64,7 +56,6 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$options      = new Options( $context );
 		$user_options = new User_Options( $context, $user_id );
 
-		$this->key_metrics                 = new Key_Metrics( $context, $user_options, $options );
 		$this->settings                    = new Key_Metrics_Settings( $user_options );
 		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options );
 		$this->controller                  = new REST_Key_Metrics_Controller( $this->settings, $this->key_metrics_setup_completed );
