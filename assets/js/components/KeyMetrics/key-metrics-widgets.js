@@ -135,6 +135,10 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
 			'google-site-kit'
 		),
+		requiredCustomDimensions: [
+			'googlesitekit_post_author',
+			'googlesitekit_post_date',
+		],
 	};
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_PAGES_PER_VISIT ] = {
 		title: __( 'Pages per visit', 'google-site-kit' ),
@@ -142,6 +146,10 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
+		requiredCustomDimensions: [
+			'googlesitekit_post_author',
+			'googlesitekit_post_date',
+		],
 	};
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ] = {
 		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
