@@ -141,6 +141,7 @@ function EntitySearchInput() {
 						title={ __( 'Close', 'google-site-kit' ) }
 						text
 						tooltip
+						tooltipEnterDelayInMS={ 500 }
 					/>
 				</div>
 			</div>
@@ -157,6 +158,7 @@ function EntitySearchInput() {
 				title={ __( 'Search', 'google-site-kit' ) }
 				trailingIcon={ <MagnifyingGlass width="20" height="20" /> }
 				tooltip
+				tooltipEnterDelayInMS={ 500 }
 			>
 				{ __( 'URL Search', 'google-site-kit' ) }
 			</Button>
