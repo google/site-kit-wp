@@ -162,8 +162,7 @@ export const reducer = ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productBasePaths,
-				keyMetricsSetupCompleted,
-				keyMetricsSetupCompletedByUserID,
+				keyMetricsSetupCompletedBy,
 			} = payload.siteInfo;
 
 			return {
@@ -195,8 +194,7 @@ export const reducer = ( state, { payload, type } ) => {
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
 					productBasePaths,
-					keyMetricsSetupCompleted,
-					keyMetricsSetupCompletedByUserID,
+					keyMetricsSetupCompletedBy,
 				},
 			};
 		}
@@ -273,8 +271,7 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productBasePaths,
-			keyMetricsSetupCompleted,
-			keyMetricsSetupCompletedByUserID,
+			keyMetricsSetupCompletedBy,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -311,8 +308,7 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productBasePaths,
-			keyMetricsSetupCompleted,
-			keyMetricsSetupCompletedByUserID,
+			keyMetricsSetupCompletedBy,
 		} );
 	},
 };
