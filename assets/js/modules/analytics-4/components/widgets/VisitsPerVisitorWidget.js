@@ -53,7 +53,7 @@ function VisitsPerVisitorWidget( { Widget } ) {
 
 	const reportOptions = {
 		...dates,
-		metrics: [ { name: 'sessionsPerUser' }, { name: 'activeUsers' } ],
+		metrics: [ { name: 'sessionsPerUser' }, { name: 'sessions' } ],
 	};
 
 	const report = useInViewSelect( ( select ) =>
