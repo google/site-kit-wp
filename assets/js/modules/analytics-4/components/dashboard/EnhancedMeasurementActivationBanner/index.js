@@ -76,11 +76,10 @@ function EnhancedMeasurementActivationBanner() {
 
 	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
 		if (
-			! (
-				isValidPropertyID( propertyID ) &&
-				isValidWebDataStreamID( webDataStreamID ) &&
-				hasAnalytics4Access
-			)
+			! isValidPropertyID( propertyID ) ||
+			! isValidWebDataStreamID( webDataStreamID ) ||
+			! hasAnalytics4Access ||
+			isBannerDismissed
 		) {
 			return undefined;
 		}
