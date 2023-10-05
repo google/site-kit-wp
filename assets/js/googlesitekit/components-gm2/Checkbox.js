@@ -25,30 +25,31 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, forwardRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Spinner from '../../components/Spinner';
 
-export default function Checkbox( props ) {
-	const {
-		onChange,
-		id,
-		name,
-		value,
-		checked,
-		disabled,
-		children,
-		tabIndex,
-		onKeyDown,
-		loading,
-		alignLeft,
-		label,
-	} = props;
-
-	return (
+const Checkbox = forwardRef(
+	(
+		{
+			onChange,
+			id,
+			name,
+			value,
+			checked,
+			disabled,
+			children,
+			tabIndex,
+			onKeyDown,
+			loading,
+			alignLeft,
+			description,
+		},
+		ref
+	) => (
 		<div className="mdc-form-field">
 			<div
 				className={ classnames( 'mdc-checkbox', {
@@ -61,6 +62,7 @@ export default function Checkbox( props ) {
 				) : (
 					<Fragment>
 						<input
+							ref={ ref }
 							className="mdc-checkbox__native-control"
 							type="checkbox"
 							id={ id }
@@ -90,19 +92,17 @@ export default function Checkbox( props ) {
 				) }
 			</div>
 
-			{ label && (
-				<div className="mdc-checkbox__content">
-					<label htmlFor={ id }>{ label }</label>
+			<div className="mdc-checkbox__content">
+				<label htmlFor={ id }>{ children }</label>
+				{ description && (
 					<div className="mdc-checkbox__description">
-						{ children }
+						{ description }
 					</div>
-				</div>
-			) }
-
-			{ ! label && <label htmlFor={ id }>{ children }</label> }
+				) }
+			</div>
 		</div>
-	);
-}
+	)
+);
 
 Checkbox.propTypes = {
 	onChange: PropTypes.func.isRequired,
@@ -116,7 +116,7 @@ Checkbox.propTypes = {
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	loading: PropTypes.bool,
 	alignLeft: PropTypes.bool,
-	label: PropTypes.string,
+	description: PropTypes.node,
 };
 
 Checkbox.defaultProps = {
@@ -126,5 +126,7 @@ Checkbox.defaultProps = {
 	onKeyDown: null,
 	loading: false,
 	alignLeft: false,
-	label: '',
+	description: '',
 };
+
+export default Checkbox;

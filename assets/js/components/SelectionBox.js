@@ -23,6 +23,12 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback, useRef } from '@wordpress/element';
+import { ENTER, SPACE } from '@wordpress/keycodes';
+
+/**
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
@@ -36,6 +42,19 @@ export default function SelectionBox( {
 	title,
 	value,
 } ) {
+	const checkboxRef = useRef( null );
+
+	const focusOnCheckbox = useCallback( ( event ) => {
+		if (
+			event.type === 'keydown' &&
+			! [ ENTER, SPACE ].includes( event.keyCode )
+		) {
+			return;
+		}
+
+		checkboxRef.current?.focus();
+	}, [] );
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-selection-box', {
@@ -43,17 +62,20 @@ export default function SelectionBox( {
 			} ) }
 			tabIndex={ -1 }
 			role="button"
+			onClick={ focusOnCheckbox }
+			onKeyDown={ focusOnCheckbox }
 		>
 			<Checkbox
 				checked={ checked }
+				description={ children }
 				disabled={ disabled }
 				id={ id }
-				label={ title }
 				name={ id }
 				onChange={ onChange }
+				ref={ checkboxRef }
 				value={ value }
 			>
-				{ children }
+				{ title }
 			</Checkbox>
 		</div>
 	);
