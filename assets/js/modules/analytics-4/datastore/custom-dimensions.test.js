@@ -23,11 +23,27 @@ import API from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
+	provideUserAuthentication,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
 	let registry;
+
+	const propertyID = '123456';
+	const customDimension = {
+		parameterName: 'googlesitekit_post_author',
+		displayName: 'Test Custom Dimension',
+		description: 'Test Custom Dimension Description',
+		scope: 'EVENT',
+		disallowAdsPersonalization: false,
+	};
+	const customDimensionNames = [
+		'googlesitekit_dimension1',
+		'googlesitekit_dimension2',
+	];
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -47,15 +63,6 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 	describe( 'actions', () => {
 		describe( 'fetchCreateCustomDimension', () => {
-			const propertyID = '123456';
-			const customDimension = {
-				parameterName: 'googlesitekit_post_author',
-				displayName: 'Test Custom Dimension',
-				description: 'Test Custom Dimension Description',
-				scope: 'EVENT',
-				disallowAdsPersonalization: false,
-			};
-
 			it( 'requires a `propertyID` parameter', () => {
 				expect( () => {
 					registry
@@ -133,18 +140,12 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 			} );
 
 			it( 'fetches and returns custom dimensions for a valid propertyID', async () => {
-				const propertyID = '1234567';
-				const customDimensions = [
-					'googlesitekit_dimension1',
-					'googlesitekit_dimension2',
-				];
-
 				fetchMock.postOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 					),
 					{
-						body: customDimensions,
+						body: customDimensionNames,
 						status: 200,
 					}
 				);
@@ -166,7 +167,87 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 						},
 					}
 				);
-				expect( response ).toEqual( customDimensions );
+				expect( response ).toEqual( customDimensionNames );
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getAvailableCustomDimensions', () => {
+			it( 'does not make a network request if available custom dimensions is not null', () => {
+				// Simulate a scenario where availableCustomDimensions is already set.
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: customDimensionNames,
+				} );
+
+				// Trigger the resolver by invoking the selector.
+				const dimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableCustomDimensions();
+
+				expect( dimensions ).toEqual( customDimensionNames );
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'does not make a network request if the user is not authenticated or cannot manage options', () => {
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry.dispatch( CORE_USER ).receiveCapabilities( {
+					googlesitekit_manage_options: false,
+				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: null,
+				} );
+
+				// Trigger the resolver by invoking the selector.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableCustomDimensions()
+				).toBeNull();
+
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'uses the resolver to fetch and set available custom dimensions if they are null', async () => {
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				// Simulate a scenario where availableCustomDimensions is null.
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: null,
+				} );
+				provideUserAuthentication( registry );
+				registry.dispatch( CORE_USER ).receiveCapabilities( {
+					googlesitekit_manage_options: true,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableCustomDimensions()
+				).toBeNull();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAvailableCustomDimensions();
+
+				const dimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableCustomDimensions();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( dimensions ).toEqual( customDimensionNames );
 			} );
 		} );
 	} );
