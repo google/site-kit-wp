@@ -27,7 +27,12 @@ import {
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+	KM_ANALYTICS_PAGES_PER_VISIT,
+} from '../../../googlesitekit/datastore/user/constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
 	let registry;
@@ -41,8 +46,8 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		disallowAdsPersonalization: false,
 	};
 	const customDimensionNames = [
-		'googlesitekit_dimension1',
-		'googlesitekit_dimension2',
+		'googlesitekit_post_author',
+		'googlesitekit_post_categories',
 	];
 
 	beforeAll( () => {
@@ -175,6 +180,109 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				expect( response ).toEqual( customDimensionNames );
 			} );
 		} );
+
+		describe( 'createCustomDimensions', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'newsKeyMetrics' );
+			} );
+
+			const keyMetricsSettings = {
+				widgetSlugs: [
+					KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+					KM_ANALYTICS_PAGES_PER_VISIT,
+				],
+				isWidgetHidden: false,
+			};
+			const coreUserInputSettings = {
+				purpose: {
+					values: [ 'purpose1' ],
+					scope: 'site',
+				},
+				postFrequency: {
+					values: [ 'daily' ],
+					scope: 'user',
+				},
+				goals: {
+					values: [ 'goal1', 'goal2' ],
+					scope: 'user',
+				},
+			};
+			it( 'does not make a network request if there are no missing custom dimensions', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: customDimensionNames,
+				} );
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [ 'non-existent-widget-slug' ],
+					isWidgetHidden: false,
+				} );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings( coreUserInputSettings );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions();
+
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'creates missing custom dimensions and syncs them in the Analytics 4 module settings', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings( coreUserInputSettings );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings( keyMetricsSettings );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: [],
+				} );
+
+				// Mock the network requests for creating custom dimension and syncing
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+					),
+					{
+						body: customDimension,
+						status: 200,
+					}
+				);
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+					),
+					{
+						body: {
+							...customDimension,
+							parameterName: 'googlesitekit_post_categories',
+						},
+						status: 200,
+					}
+				);
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions();
+
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableCustomDimensions()
+				).toEqual( customDimensionNames );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -264,7 +372,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				const hasCustomDimensions = registry
 					.select( MODULES_ANALYTICS_4 )
-					.hasCustomDimensions( [ 'googlesitekit_dimension1' ] );
+					.hasCustomDimensions( [ 'googlesitekit_post_author' ] );
 
 				expect( hasCustomDimensions ).toBe( false );
 			} );
@@ -278,8 +386,8 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				const hasCustomDimensions = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasCustomDimensions( [
-						'googlesitekit_dimension1',
-						'googlesitekit_dimension2',
+						'googlesitekit_post_author',
+						'googlesitekit_post_categories',
 					] );
 
 				expect( hasCustomDimensions ).toBe( true );
