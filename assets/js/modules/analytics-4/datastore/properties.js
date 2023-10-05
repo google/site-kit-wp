@@ -762,7 +762,7 @@ const baseSelectors = {
 	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
 	 * components, initially the `PropertySelect` and `SettingsEnhancedMeasurementSwitch` components.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.111.0
 	 *
 	 * @param {Object}  state                Data store's state.
 	 * @param {Object}  args                 Arguments object.

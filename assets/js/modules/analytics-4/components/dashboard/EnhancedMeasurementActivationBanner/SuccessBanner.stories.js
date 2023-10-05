@@ -1,5 +1,5 @@
 /**
- * Enhanced Measurement styles.
+ * EnhancedMeasurementActivationBanner > SuccessBanner Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,28 +16,19 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * Internal dependencies
+ */
+import SuccessBanner from './SuccessBanner';
 
-	.googlesitekit-analytics-enable-enhanced-measurement--loading {
-		padding-top: 10px;
-	}
+const Template = ( args ) => <SuccessBanner { ...args } />;
 
-	.googlesitekit-analytics-enable-enhanced-measurement__progress {
-		margin: 0 0 21px;
-	}
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SuccessBanner/Default',
+};
 
-	.googlesitekit-enhanced-measurement-setup-banner,
-	.googlesitekit-enhanced-measurement-success-banner {
-		svg {
-			max-height: 175px;
-		}
-	}
-
-	.googlesitekit-enhanced-measurement-setup-banner__footer-notice {
-		color: $c-boulder;
-		font-size: 14px;
-		letter-spacing: 0.25px;
-		line-height: 1.5;
-		margin: 1em 0 0.5em;
-	}
-}
+export default {
+	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SuccessBanner',
+};
