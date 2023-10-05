@@ -114,5 +114,60 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				);
 			} );
 		} );
+
+		describe( 'syncAvailableCustomDimensions', () => {
+			it( 'requires a valid propertyID to be passed', () => {
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.syncAvailableCustomDimensions();
+				} ).toThrow( 'A valid GA4 propertyID is required.' );
+
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.syncAvailableCustomDimensions(
+							'not-valid-property-id'
+						);
+				} ).toThrow( 'A valid GA4 propertyID is required.' );
+			} );
+
+			it( 'fetches and returns custom dimensions for a valid propertyID', async () => {
+				const propertyID = '1234567';
+				const customDimensions = [
+					'googlesitekit_dimension1',
+					'googlesitekit_dimension2',
+				];
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensions,
+						status: 200,
+					}
+				);
+
+				const { response } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableCustomDimensions( propertyID );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: {
+							data: {
+								propertyID,
+							},
+						},
+					}
+				);
+				expect( response ).toEqual( customDimensions );
+			} );
+		} );
 	} );
 } );
