@@ -87,7 +87,7 @@ function VisitsPerVisitorWidget( { Widget } ) {
 		rows.find( makeFind( 'date_range_1' ) )?.metricValues?.[ 0 ]?.value ||
 		0;
 
-	const currentTotalVisitors =
+	const currentTotalSessions =
 		Number( totals[ 0 ]?.metricValues?.[ 1 ]?.value ) || 0;
 
 	return (
@@ -98,7 +98,7 @@ function VisitsPerVisitorWidget( { Widget } ) {
 			subText={ sprintf(
 				/* translators: %d: Number of total visits to the site. */
 				__( '%s total visits', 'google-site-kit' ),
-				numFmt( currentTotalVisitors, { style: 'decimal' } )
+				numFmt( currentTotalSessions, { style: 'decimal' } )
 			) }
 			previousValue={ Number( previousVisitsPerVisitor ) }
 			currentValue={ Number( currentVisitsPerVisitor ) }
