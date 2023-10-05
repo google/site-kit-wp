@@ -138,7 +138,7 @@ const baseActions = {
 			// This will be handled automatically on the back end.
 			registry
 				.dispatch( CORE_SITE )
-				.setKeyMetricsSetupCompleted(
+				.setKeyMetricsSetupCompletedBy(
 					registry.select( CORE_USER ).getID()
 				);
 		}
