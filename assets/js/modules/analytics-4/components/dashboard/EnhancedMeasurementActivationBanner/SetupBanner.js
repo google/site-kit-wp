@@ -45,11 +45,12 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
-import { getTimeInSeconds } from '../../../../../util';
+import { DAY_IN_SECONDS, getTimeInSeconds } from '../../../../../util';
 import { SpinnerButton } from 'googlesitekit-components';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
 import ErrorNotice from '../../../../../components/ErrorNotice';
+import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
 
 const { useDispatch, useSelect } = Data;
 
@@ -61,6 +62,7 @@ export default function SetupBanner( {
 } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ shouldTriggerSurvey, setShouldTriggerSurvey ] = useState( false );
 
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
@@ -82,7 +84,7 @@ export default function SetupBanner( {
 
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const { setPermissionScopeError, triggerSurvey } = useDispatch( CORE_USER );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const commonSubmitChanges = useCallback( async () => {
@@ -108,9 +110,9 @@ export default function SetupBanner( {
 
 	useMount( () => {
 		if ( usingProxy && ! isDismissed ) {
-			triggerSurvey( 'view_enhanced_measurement_cta', { ttl: 0 } );
+			setShouldTriggerSurvey( true );
 		}
-	}, [ isDismissed, triggerSurvey, usingProxy ] );
+	}, [ isDismissed, setShouldTriggerSurvey, usingProxy ] );
 
 	const handleSubmitChanges = async () => {
 		const scopes = [];
@@ -211,6 +213,12 @@ export default function SetupBanner( {
 			onDismiss={ onDismiss }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
+			{ shouldTriggerSurvey && (
+				<SurveyViewTrigger
+					triggerID="view_enhanced_measurement_cta"
+					ttl={ DAY_IN_SECONDS }
+				/>
+			) }
 			{ children }
 		</BannerNotification>
 	);
