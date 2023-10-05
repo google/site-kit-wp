@@ -27,6 +27,7 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../tests/js/utils';
 import { createGatheringDataStore } from './create-gathering-data-store';
+import { createErrorStore } from '../data/create-error-store';
 
 const MODULE_SLUG = 'test-slug';
 const STORE_NAME = `modules/${ MODULE_SLUG }`;
@@ -287,6 +288,35 @@ describe( 'createGatheringDataStore', () => {
 					STORE_NAME,
 					Data.combineStores(
 						Data.commonStore,
+						createGatheringDataStore( MODULE_SLUG, {
+							storeName: STORE_NAME,
+							selectDataAvailability,
+							dataAvailable: false,
+						} )
+					)
+				);
+
+				expect(
+					registry.select( STORE_NAME ).isGatheringData()
+				).toBeUndefined();
+
+				await untilResolved( registry, STORE_NAME ).isGatheringData();
+
+				expect( fetchMock ).not.toHaveFetched();
+
+				expect( registry.select( STORE_NAME ).isGatheringData() ).toBe(
+					true
+				);
+			} );
+
+			it( 'should set gathering data state to TRUE when selectDataAvailability returns NULL', async () => {
+				selectDataAvailability.mockReturnValue( null );
+
+				registry.registerStore(
+					STORE_NAME,
+					Data.combineStores(
+						Data.commonStore,
+						createErrorStore( STORE_NAME ),
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
 							selectDataAvailability,

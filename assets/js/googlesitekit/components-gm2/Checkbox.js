@@ -44,6 +44,7 @@ export default function Checkbox( props ) {
 		tabIndex,
 		onKeyDown,
 		loading,
+		alignLeft,
 	} = props;
 
 	return (
@@ -51,6 +52,7 @@ export default function Checkbox( props ) {
 			<div
 				className={ classnames( 'mdc-checkbox', {
 					'mdc-checkbox--disabled': disabled,
+					'mdc-checkbox--align-left': alignLeft,
 				} ) }
 			>
 				{ loading ? (
@@ -103,6 +105,7 @@ Checkbox.propTypes = {
 	children: PropTypes.node.isRequired,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	loading: PropTypes.bool,
+	alignLeft: PropTypes.bool,
 };
 
 Checkbox.defaultProps = {
@@ -111,4 +114,5 @@ Checkbox.defaultProps = {
 	tabIndex: undefined,
 	onKeyDown: null,
 	loading: false,
+	alignLeft: false,
 };

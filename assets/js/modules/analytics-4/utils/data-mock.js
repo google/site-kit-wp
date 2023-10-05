@@ -39,12 +39,17 @@ export const STRATEGY_ZIP = 'zip';
 const ANALYTICS_4_METRIC_TYPES = {
 	totalUsers: 'TYPE_INTEGER',
 	newUsers: 'TYPE_INTEGER',
+	activeUsers: 'TYPE_INTEGER',
 	sessions: 'TYPE_INTEGER',
+	bounceRate: 'TYPE_FLOAT',
 	conversions: 'TYPE_INTEGER',
 	screenPageViews: 'TYPE_INTEGER',
+	screenPageViewsPerSession: 'TYPE_FLOAT',
 	engagedSessions: 'TYPE_INTEGER',
 	engagementRate: 'TYPE_FLOAT',
 	averageSessionDuration: 'TYPE_SECONDS',
+	sessionConversionRate: 'TYPE_FLOAT',
+	sessionsPerUser: 'TYPE_FLOAT',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {
@@ -60,6 +65,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Video',
 		'Display',
 	],
+	sessionDefaultChannelGroup: [ 'Organic Search' ],
 	country: [
 		'United States',
 		'United Kingdom',
@@ -70,9 +76,19 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Italy',
 		'Mexico',
 	],
+	city: [
+		'Dublin',
+		'(not set)',
+		'Cork',
+		'New York',
+		'London',
+		'Los Angeles',
+		'San Francisco',
+	],
 	deviceCategory: [ 'Desktop', 'Tablet', 'Mobile' ],
 	pageTitle: ( i ) => ( i <= 12 ? `Test Post ${ i }` : false ),
 	pagePath: ( i ) => ( i <= 12 ? `/test-post-${ i }/` : false ),
+	newVsReturning: [ 'new', 'returning' ],
 };
 
 /**
@@ -375,7 +391,7 @@ export function getAnalytics4MockResponse(
 	// dimension set in the combined stream (array). We need to use array of streams because report arguments may
 	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
 	// of dimension values.
-	const dimensions = castArray( args.dimensions );
+	const dimensions = args.dimensions ? castArray( args.dimensions ) : [];
 
 	if ( hasDateRange ) {
 		dimensions.push( 'dateRange' );
@@ -507,7 +523,7 @@ export function getAnalytics4MockResponse(
 							value: 'RESERVED_MIN',
 						};
 					} ),
-					metricValues: [ ...( rows[ 0 ]?.metricValues || [] ) ],
+					metricValues: cloneDeep( rows[ 0 ]?.metricValues || [] ),
 				},
 			].concat(
 				hasDateRange
@@ -526,9 +542,9 @@ export function getAnalytics4MockResponse(
 										};
 									}
 								),
-								metricValues: [
-									...( rows[ 1 ]?.metricValues || [] ),
-								],
+								metricValues: cloneDeep(
+									rows[ 1 ]?.metricValues || []
+								),
 							},
 					  ]
 					: []
@@ -549,9 +565,9 @@ export function getAnalytics4MockResponse(
 							value: 'RESERVED_MAX',
 						};
 					} ),
-					metricValues: [
-						...( rows[ firstItemIndex ]?.metricValues || [] ),
-					],
+					metricValues: cloneDeep(
+						rows[ firstItemIndex ]?.metricValues || []
+					),
 				},
 			].concat(
 				hasDateRange
@@ -570,10 +586,9 @@ export function getAnalytics4MockResponse(
 										};
 									}
 								),
-								metricValues: [
-									...( rows[ rows.length - 1 ]
-										?.metricValues || [] ),
-								],
+								metricValues: cloneDeep(
+									rows[ rows.length - 1 ]?.metricValues || []
+								),
 							},
 					  ]
 					: []
@@ -591,9 +606,9 @@ export function getAnalytics4MockResponse(
 							value: 'RESERVED_TOTAL',
 						};
 					} ),
-					metricValues: [
-						...( rows[ firstItemIndex ]?.metricValues || [] ),
-					],
+					metricValues: cloneDeep(
+						rows[ firstItemIndex ]?.metricValues || []
+					),
 				},
 			].concat(
 				hasDateRange
@@ -612,10 +627,9 @@ export function getAnalytics4MockResponse(
 										};
 									}
 								),
-								metricValues: [
-									...( rows[ rows.length - 1 ]
-										?.metricValues || [] ),
-								],
+								metricValues: cloneDeep(
+									rows[ rows.length - 1 ]?.metricValues || []
+								),
 							},
 					  ]
 					: []

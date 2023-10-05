@@ -19,9 +19,14 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import {
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -31,9 +36,9 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 const Template = () => <WidgetWithComponentProps />;
 
 export const Default = Template.bind( {} );
-Default.storyName = 'KeyMetricsSetupCTAWidget';
+Default.storyName = 'SetupCTAWidget';
 Default.scenario = {
-	label: 'Global/KeyMetricsSetupCTAWidget',
+	label: 'KeyMetrics/SetupCTAWidget',
 	delay: 250,
 };
 Default.parameters = {
@@ -41,7 +46,7 @@ Default.parameters = {
 };
 
 export default {
-	title: 'Components/KeyMetrics',
+	title: 'Key Metrics',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
@@ -53,12 +58,33 @@ export default {
 						connected: true,
 					},
 				] );
+				provideUserAuthentication( registry );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveIsDataAvailableOnLoad( true );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsDataAvailableOnLoad( true );
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
+				<div
+					style={ {
+						minHeight: '200px',
+						display: 'flex',
+						alignItems: 'center',
+					} }
+				>
+					<div id="adminmenu">
+						{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
+						<a href="http://test.test/?page=googlesitekit-settings" />
+					</div>
+					<div style={ { flex: 1 } }>
+						<WithRegistrySetup func={ setupRegistry }>
+							<Story />
+						</WithRegistrySetup>
+					</div>
+				</div>
 			);
 		},
 	],

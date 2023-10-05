@@ -40,6 +40,36 @@ import { isZeroReport } from '../util';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
+/**
+ * Returns report args for a sample report.
+ *
+ * @since 1.107.0
+ *
+ * @param {Function} select The select function of the registry.
+ * @return {Object} Report args.
+ */
+const getSampleReportArgs = ( select ) => {
+	const url = select( CORE_SITE ).getCurrentEntityURL();
+	const { compareStartDate: startDate, endDate } = select(
+		CORE_USER
+	).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} );
+
+	const args = {
+		startDate,
+		endDate,
+		dimensions: 'date',
+	};
+
+	if ( url ) {
+		args.url = url;
+	}
+
+	return args;
+};
+
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	storeName: MODULES_SEARCH_CONSOLE,
@@ -88,37 +118,28 @@ const gatheringDataStore = createGatheringDataStore( 'search-console', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
-		const rangeArgs = {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } =
-			select( CORE_USER ).getDateRangeDates( rangeArgs );
-
-		const args = {
-			dimensions: 'date',
-			startDate,
-			endDate,
-		};
-
-		if ( url ) {
-			args.url = url;
-		}
-
+		const reportArgs = getSampleReportArgs( select );
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs );
 		const hasResolvedReport = select(
 			MODULES_SEARCH_CONSOLE
-		).hasFinishedResolution( 'getReport', [ args ] );
+		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
 		if ( ! hasResolvedReport ) {
 			return undefined;
 		}
 
-		if ( ! Array.isArray( report ) || report.length ) {
+		const hasReportError = select(
+			MODULES_SEARCH_CONSOLE
+		).getErrorForSelector( 'getReport', [ reportArgs ] );
+
+		// If there is an error, return `null` since we don't know if there is data or not.
+		if ( hasReportError || ! Array.isArray( report ) ) {
+			return null;
+		}
+
+		if ( report.length ) {
 			return true;
 		}
 
@@ -153,15 +174,13 @@ const baseSelectors = {
 	 *
 	 * @since 1.15.0
 	 *
-	 * @param {Object}         state                       Data store's state.
-	 * @param {Object}         options                     Options for generating the report.
-	 * @param {string}         options.startDate           Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate             Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.dateRange           Required, alternatively to startDate and endDate. A date range string such as 'last-28-days'.
-	 * @param {boolean}        [options.compareDateRanges] Optional. Only relevant with dateRange. Default false.
-	 * @param {Array.<string>} [options.dimensions]        Optional. List of {@link https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension|dimensions} to group results by. Default an empty array.
-	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
-	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         state                Data store's state.
+	 * @param {Object}         options              Options for generating the report.
+	 * @param {string}         options.startDate    Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate      Required. End date to query report data for as YYYY-mm-dd.
+	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension|dimensions} to group results by. Default an empty array.
+	 * @param {string}         [options.url]        Optional. URL to get a report for only this URL. Default an empty string.
+	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
 	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
 	 */
 	getReport( state, options = {} ) {
@@ -178,31 +197,19 @@ const baseSelectors = {
 	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const rangeArgs = {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } =
-			select( CORE_USER ).getDateRangeDates( rangeArgs );
-
-		const args = {
-			dimensions: 'date',
-			startDate,
-			endDate,
-		};
-
-		if ( url ) {
-			args.url = url;
-		}
-
 		const isGatheringData = select(
 			MODULES_SEARCH_CONSOLE
 		).isGatheringData();
+
 		if ( isGatheringData === undefined ) {
 			return undefined;
 		}
+
+		if ( isGatheringData === true ) {
+			return true;
+		}
+
+		const args = getSampleReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -220,12 +227,7 @@ const baseSelectors = {
 			return false;
 		}
 
-		const hasZeroReport = isZeroReport( report );
-		if ( isGatheringData === false && hasZeroReport === false ) {
-			return false;
-		}
-
-		return true;
+		return isZeroReport( report );
 	} ),
 };
 

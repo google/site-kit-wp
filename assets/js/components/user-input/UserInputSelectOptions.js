@@ -36,6 +36,9 @@ import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell } from '../../material-components';
+import { USER_INPUT_QUESTION_POST_FREQUENCY } from './util/constants';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputSelectOptions( {
@@ -43,9 +46,10 @@ export default function UserInputSelectOptions( {
 	options,
 	max,
 	next,
-	isActive,
 	showInstructions,
+	alignLeftOptions,
 } ) {
+	const viewContext = useViewContext();
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
@@ -59,7 +63,7 @@ export default function UserInputSelectOptions( {
 	const optionsRef = useRef();
 
 	useEffect( () => {
-		if ( ! optionsRef?.current || ! isActive ) {
+		if ( ! optionsRef?.current ) {
 			return;
 		}
 
@@ -84,7 +88,7 @@ export default function UserInputSelectOptions( {
 			);
 			focusOption( el );
 		}
-	}, [ isActive, max ] );
+	}, [ max ] );
 
 	const onClick = useCallback(
 		( event ) => {
@@ -96,12 +100,22 @@ export default function UserInputSelectOptions( {
 				newValues.delete( value );
 			}
 
-			setUserInputSetting(
-				slug,
-				Array.from( newValues ).slice( 0, max )
+			const gaEventName =
+				slug === USER_INPUT_QUESTION_POST_FREQUENCY
+					? 'content_frequency_question_answer'
+					: `site_${ slug }_question_answer`;
+
+			const checkedValues = Array.from( newValues ).slice( 0, max );
+
+			trackEvent(
+				`${ viewContext }_kmw`,
+				gaEventName,
+				checkedValues.join()
 			);
+
+			setUserInputSetting( slug, checkedValues );
 		},
-		[ max, setUserInputSetting, slug, values ]
+		[ max, setUserInputSetting, slug, values, viewContext ]
 	);
 
 	const onKeyDown = useCallback(
@@ -131,8 +145,8 @@ export default function UserInputSelectOptions( {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,
 			checked: values.includes( optionSlug ),
-			tabIndex: ! isActive ? '-1' : undefined,
 			onKeyDown,
+			alignLeft: alignLeftOptions,
 			...onClickProps,
 		};
 
@@ -199,11 +213,12 @@ UserInputSelectOptions.propTypes = {
 	options: PropTypes.shape( {} ).isRequired,
 	max: PropTypes.number,
 	next: PropTypes.func,
-	isActive: PropTypes.bool,
 	showInstructions: PropTypes.bool,
+	alignLeftOptions: PropTypes.bool,
 };
 
 UserInputSelectOptions.defaultProps = {
 	max: 1,
 	showInstructions: false,
+	alignLeftOptions: false,
 };

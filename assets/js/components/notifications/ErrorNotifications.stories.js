@@ -49,9 +49,6 @@ UnsatisfiedScopeGTESupport.args = {
 		} );
 	},
 };
-UnsatisfiedScopeGTESupport.parameters = {
-	features: [ 'gteSupport' ],
-};
 UnsatisfiedScopeGTESupport.scenario = {
 	label: 'Global/ErrorNotifications/UnsatisfiedScopeGTESupport',
 };

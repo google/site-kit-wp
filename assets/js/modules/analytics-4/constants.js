@@ -29,3 +29,18 @@ export const REPORT_ARGS_SELECTED_METRIC_KEY = '_r.explorerCard..selmet';
 export const REPORT_ARGS_SELECTED_DIMENSION_KEY = '_r.explorerCard..seldim';
 export const REPORT_ARGS_DATA_FILTERS_KEY = '_r..dataFilters';
 export const REPORT_ARGS_NAV_KEY = '_r..nav';
+
+export const KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY =
+	'key-metrics-connect-ga4-cta-widget';
+
+/**
+ * Date that Site Kit will automatically switch to using GA4: September 25, 2023.
+ *
+ * With Site Kit's maximum date range being three months, once this period has passed since the UA cutoff date,
+ * it will no longer be able to show any historical data for UA and will automatically switch to GA4.
+ * For operational reasons, we automatically make the switch a few days before the three month cutoff point.
+ *
+ * @since 1.107.0
+ * @see UA_CUTOFF_DATE.
+ */
+export const GA4_AUTO_SWITCH_DATE = '2023-09-25';

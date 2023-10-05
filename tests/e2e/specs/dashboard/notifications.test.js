@@ -69,7 +69,8 @@ describe( 'core site notifications', () => {
 
 			// Ensure the notification is displayed.
 			await page.waitForSelector(
-				`#${ testSiteNotification.id }.googlesitekit-publisher-win--is-open`
+				`#${ testSiteNotification.id }.googlesitekit-publisher-win--is-open`,
+				{ timeout: 10_000 } // Core site notifications are delayed 5s for surveys.
 			);
 			await expect( page ).toMatchElement(
 				'.googlesitekit-publisher-win__title',

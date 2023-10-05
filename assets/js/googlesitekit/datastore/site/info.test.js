@@ -49,6 +49,7 @@ describe( 'core/site site info', () => {
 				label: 'Post',
 			},
 		],
+		productBasePaths: [ '^/product/' ],
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -140,6 +141,58 @@ describe( 'core/site site info', () => {
 						.setSiteKitAutoUpdatesEnabled( false );
 				} ).not.toThrow(
 					'siteKitAutoUpdatesEnabled must be a boolean.'
+				);
+			} );
+		} );
+
+		describe( 'setKeyMetricsSetupCompleted', () => {
+			it( 'sets the keyMetricsSetupCompleted property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompleted( true );
+
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( true );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompleted( false );
+
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+			} );
+
+			it( 'requires a boolean argument', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted();
+				} ).toThrow( 'keyMetricsSetupCompleted must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted( undefined );
+				} ).toThrow( 'keyMetricsSetupCompleted must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted( 0 );
+				} ).toThrow( 'keyMetricsSetupCompleted must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted( true );
+
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted( false );
+				} ).not.toThrow(
+					'keyMetricsSetupCompleted must be a boolean.'
 				);
 			} );
 		} );
@@ -323,6 +376,8 @@ describe( 'core/site site info', () => {
 			[ 'isPrimaryAMP', 'ampMode' ],
 			[ 'isSecondaryAMP', 'ampMode' ],
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
+			[ 'getProductBasePaths', 'productBasePaths' ],
+			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompleted' ],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;

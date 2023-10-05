@@ -12,8 +12,10 @@ namespace Google\Site_Kit\Tests\Core\Key_Metrics;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
 use Google\Site_Kit\Core\Key_Metrics\REST_Key_Metrics_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -37,6 +39,13 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 	 */
 	private $controller;
 
+	/**
+	 * Key_Metrics_Setup_Completed instance.
+	 *
+	 * @var Key_Metrics_Setup_Completed
+	 */
+	private $key_metrics_setup_completed;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -44,10 +53,12 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
 		$user_options = new User_Options( $context, $user_id );
 
-		$this->settings   = new Key_Metrics_Settings( $user_options );
-		$this->controller = new REST_Key_Metrics_Controller( $this->settings );
+		$this->settings                    = new Key_Metrics_Settings( $user_options );
+		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options );
+		$this->controller                  = new REST_Key_Metrics_Controller( $this->settings, $this->key_metrics_setup_completed );
 	}
 
 	public function tear_down() {
@@ -116,6 +127,91 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data() );
 	}
 
+	public function test_set_settings__only__isWidgetHidden() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$original_settings = array(
+			'widgetSlugs'    => array( 'widgetA' ),
+			'isWidgetHidden' => false,
+		);
+
+		$changed_settings = array(
+			'isWidgetHidden' => true,
+		);
+
+		$expected_settings = array(
+			'widgetSlugs'    => array( 'widgetA' ),
+			'isWidgetHidden' => true,
+		);
+
+		$this->settings->register();
+		$this->settings->set( $original_settings );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => $changed_settings,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEqualSetsWithIndex( $expected_settings, $response->get_data() );
+	}
+
+	/**
+	 * @dataProvider data_setup_completed
+	 * @param bool $expected
+	 * @param array $settings
+	 */
+	public function test_setup_completed( $expected, $settings ) {
+		$this->settings->register();
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->assertFalse( $this->key_metrics_setup_completed->get() );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => $settings,
+				),
+			)
+		);
+
+		rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( $expected, $this->key_metrics_setup_completed->get() );
+	}
+
+	public function data_setup_completed() {
+		return array(
+			'completed on success'                     => array(
+				true,
+				array(
+					'widgetSlugs'    => array( 'widgetA' ),
+					'isWidgetHidden' => false,
+				),
+			),
+			'incomplete on error'                      => array(
+				false,
+				array(
+					'widgetSlugs'    => array(), // Insufficient number of widget slugs.
+					'isWidgetHidden' => false,
+				),
+			),
+			'incomplete on only isWidgetHidden change' => array(
+				false,
+				array(
+					'isWidgetHidden' => false,
+				),
+			),
+		);
+	}
+
 	/**
 	 * @dataProvider provider_wrong_data
 	 */
@@ -140,12 +236,18 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 	public function provider_wrong_data() {
 		return array(
-			'wrong data type'              => array(
+			'wrong data type'       => array(
 				'{}',
 			),
-			'wrong number of widget slugs' => array(
+			'too many widget slugs' => array(
 				array(
 					'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4' ),
+					'isWidgetHidden' => true,
+				),
+			),
+			'no widget slugs'       => array(
+				array(
+					'widgetSlugs'    => array(),
 					'isWidgetHidden' => true,
 				),
 			),

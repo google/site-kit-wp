@@ -58,6 +58,58 @@ const durationFormat = ( durationInSeconds, options = {} ) => {
 };
 
 /**
+ * Converts seconds to a display ready string indicating
+ * the number of hours, minutes and seconds that have elapsed
+ * in ISO format - HH:mm:ss.
+ *
+ * If the duration is less than an hour, the HH part of the string
+ * is truncated.
+ * For example, passing 65 returns '01:05'.
+ * Passing 5400 returns '01:30:00'.
+ *
+ * @since 1.111.0
+ * @private
+ *
+ * @param {number} durationInSeconds The number of seconds.
+ * @return {string} Human readable string indicating time elapsed.
+ */
+const durationISOFormat = ( durationInSeconds ) => {
+	let { hours, minutes, seconds } = parseDuration( durationInSeconds );
+
+	seconds = ( '0' + seconds ).slice( -2 );
+	minutes = ( '0' + minutes ).slice( -2 );
+	hours = ( '0' + hours ).slice( -2 );
+
+	return hours === '00'
+		? `${ minutes }:${ seconds }`
+		: `${ hours }:${ minutes }:${ seconds }`;
+};
+
+/**
+ * Parses the duration in seconds into hours, minutes and seconds.
+ *
+ * @since 1.111.0
+ * @private
+ *
+ * @param {number} durationInSeconds The number of seconds.
+ * @return {Object} Number of hours, minutes and seconds equivalent
+ * to the given duration in seconds.
+ */
+const parseDuration = ( durationInSeconds ) => {
+	durationInSeconds = parseInt( durationInSeconds, 10 );
+
+	if ( Number.isNaN( durationInSeconds ) ) {
+		durationInSeconds = 0;
+	}
+
+	const hours = Math.floor( durationInSeconds / 60 / 60 );
+	const minutes = Math.floor( ( durationInSeconds / 60 ) % 60 );
+	const seconds = Math.floor( durationInSeconds % 60 );
+
+	return { hours, minutes, seconds };
+};
+
+/**
  * Creates duration formatting utilities.
  *
  * Not intended to be used directly.
@@ -71,15 +123,7 @@ const durationFormat = ( durationInSeconds, options = {} ) => {
  * @return {Object} Formatting functions.
  */
 export const createDurationFormat = ( durationInSeconds, options = {} ) => {
-	durationInSeconds = parseInt( durationInSeconds, 10 );
-
-	if ( Number.isNaN( durationInSeconds ) ) {
-		durationInSeconds = 0;
-	}
-
-	const hours = Math.floor( durationInSeconds / 60 / 60 );
-	const minutes = Math.floor( ( durationInSeconds / 60 ) % 60 );
-	const seconds = Math.floor( durationInSeconds % 60 );
+	const { hours, minutes, seconds } = parseDuration( durationInSeconds );
 
 	return {
 		hours,
@@ -246,6 +290,40 @@ export const readableLargeNumber = ( number ) => {
 };
 
 /**
+ * Parses formatting options and returns an object with options for selected formatting.
+ *
+ * @since 1.103.0
+ *
+ * @param {(Intl.NumberFormatOptions|string)} options Formatting options or unit shorthand. Possible shorthand values are '%', 's', or a currency code.
+ * @return {Object} Formatting options.
+ */
+export function expandNumFmtOptions( options ) {
+	let formatOptions = {};
+
+	// Expand shorthand values for units.
+	if ( '%' === options ) {
+		formatOptions = {
+			style: 'percent',
+			maximumFractionDigits: 2,
+		};
+	} else if ( 's' === options ) {
+		formatOptions = {
+			style: 'duration',
+			unitDisplay: 'narrow',
+		};
+	} else if ( !! options && typeof options === 'string' ) {
+		formatOptions = {
+			style: 'currency',
+			currency: options,
+		};
+	} else if ( isPlainObject( options ) ) {
+		formatOptions = { ...options };
+	}
+
+	return formatOptions;
+}
+
+/**
  * Formats a number with unit using the JS Internationalization Number Format API.
  *
  * In addition to the supported 'style' values of the lower-level `numberFormat` function, this function
@@ -262,7 +340,7 @@ export const readableLargeNumber = ( number ) => {
  *                                                      or a currency code.
  * @return {string} The formatted number.
  */
-export const numFmt = ( number, options = {} ) => {
+export function numFmt( number, options = {} ) {
 	// Cast parsable values to numeric types.
 	number = isFinite( number ) ? number : Number( number );
 
@@ -272,38 +350,23 @@ export const numFmt = ( number, options = {} ) => {
 		number = 0;
 	}
 
-	let formatOptions = {};
-
-	// Expand shorthand values for units.
-	if ( '%' === options ) {
-		formatOptions = {
-			style: 'percent',
-			maximumFractionDigits: 2,
-		};
-	} else if ( 's' === options ) {
-		return durationFormat( number, {
-			unitDisplay: 'narrow',
-		} );
-	} else if ( !! options && typeof options === 'string' ) {
-		formatOptions = {
-			style: 'currency',
-			currency: options,
-		};
-	} else if ( isPlainObject( options ) ) {
-		formatOptions = { ...options };
-	}
-
-	// Note: `metric` is our custom, default style.
-	const { style = 'metric' } = formatOptions;
+	const formatOptions = expandNumFmtOptions( options );
+	const { style = 'metric' } = formatOptions; // Note: `metric` is our custom, default style.
 
 	if ( 'metric' === style ) {
 		return readableLargeNumber( number );
-	} else if ( 'duration' === style ) {
-		return durationFormat( number, options );
+	}
+
+	if ( 'duration' === style ) {
+		return durationFormat( number, formatOptions );
+	}
+
+	if ( 'durationISO' === style ) {
+		return durationISOFormat( number );
 	}
 
 	return numberFormat( number, formatOptions );
-};
+}
 
 // Warn once for a given message.
 const warnOnce = memize( console.warn ); // eslint-disable-line no-console

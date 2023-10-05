@@ -11,8 +11,12 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -106,6 +110,44 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->set_available_modules( array( $fake_module ) );
 	}
 
+	private function setup_fake_module_with_view_only_settings( $force_active = true ) {
+		$fake_module = new FakeModule_WithViewOnlySettings( $this->context );
+		$fake_module->set_force_active( $force_active );
+
+		$fake_module_settings = new FakeModuleSettings_WithViewOnlyKeys( $this->options );
+		$fake_module_settings->register();
+
+		$this->set_available_modules( array( $fake_module ) );
+	}
+
+	private function share_modules_with_user_role( $shared_with_role, $shared_modules = array( 'fake-module' ) ) {
+		$sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+
+		$shared_modules = array_combine(
+			$shared_modules,
+			array_fill(
+				0,
+				count( $shared_modules ),
+				array( 'sharedRoles' => array( $shared_with_role ) )
+			)
+		);
+
+		$sharing_settings->set( $shared_modules );
+	}
+
+	private function set_current_active_user_role( $role ) {
+		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
+
+		wp_set_current_user( $user->ID );
+	}
+
+	private function request_get_module_setings( $module = 'fake-module' ) {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/' . $module . '/data/settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		return $response;
+	}
+
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
@@ -167,17 +209,6 @@ class REST_Modules_ControllerTest extends TestCase {
 			'owner',
 		);
 		$this->assertNotEmpty( $response->get_data() );
-		$this->assertArrayIntersection(
-			array(
-				array(
-					'slug' => 'site-verification',
-				),
-				array(
-					'slug' => 'search-console',
-				),
-			),
-			$response->get_data()
-		);
 
 		foreach ( $response->get_data() as $data ) {
 			foreach ( $module_data_keys as $module_data_key ) {
@@ -239,7 +270,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug'   => 'optimize',
+					'slug'   => 'analytics-4',
 					'active' => true,
 				),
 			)
@@ -296,9 +327,9 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$this->modules->activate_module( 'analytics' );
-		$this->modules->activate_module( 'optimize' );
+		$this->modules->activate_module( 'analytics-4' );
 
-		$this->assertTrue( $this->modules->is_module_active( 'optimize' ) );
+		$this->assertTrue( $this->modules->is_module_active( 'analytics-4' ) );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
 		$request->set_body_params(
@@ -311,7 +342,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		rest_get_server()->dispatch( $request );
 
-		$this->assertFalse( $this->modules->is_module_active( 'optimize' ) );
+		$this->assertFalse( $this->modules->is_module_active( 'analytics-4' ) );
 	}
 
 	public function test_info_rest_endpoint__no_post_method() {
@@ -416,9 +447,6 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		// Enabling this feature flag is required for a module to be declared shareable.
-		$this->enable_feature( 'dashboardSharing' );
-
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$request->set_body_params(
 			array(
@@ -431,28 +459,6 @@ class REST_Modules_ControllerTest extends TestCase {
 
 		$this->assertEquals( true, $response->get_data()['access'] );
 		$this->assertEquals( 200, $response->get_status() );
-	}
-
-	public function test_check_access_rest_endpoint__unshareable_module_does_not_have_service_entity() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$optimize = $this->modules->get_module( 'optimize' );
-		$optimize->get_settings()->merge( array( 'optimizeID' => 'GTM-XXXXX' ) );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slug' => 'optimize',
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'invalid_module', $response->get_data()['code'] );
-		$this->assertEquals( 500, $response->get_status() );
 	}
 
 	public function test_check_access_rest_endpoint__success() {
@@ -562,10 +568,99 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/non-existent-module/data/settings' );
-		$response = rest_get_server()->dispatch( $request );
+		$response = $this->request_get_module_setings( 'non-existent-module' );
 
 		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_settings_rest_endpoint__admins_with_no_view_only_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		$response = $this->request_get_module_setings();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'defaultKey' => 'default-value',
+			),
+			$response->get_data()
+		);
+	}
+
+	public function test_settings_rest_endpoint__shared_roles_with_no_view_only_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		$shared_with_roles = array( 'editor', 'author', 'contributor' );
+		foreach ( $shared_with_roles as $shared_with_role ) {
+			$this->set_current_active_user_role( $shared_with_role );
+			$this->share_modules_with_user_role( $shared_with_role );
+
+			$response = $this->request_get_module_setings();
+
+			$this->assertEquals( '500', $response->get_status() );
+			$this->assertEquals( 'no_view_only_settings', $response->get_data()['code'] );
+		}
+	}
+
+	public function test_settings_rest_endpoint__admins_with_view_only_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module_with_view_only_settings();
+
+		$response = $this->request_get_module_setings();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'defaultKey'  => 'default-value',
+				'viewOnlyKey' => 'default-value',
+			),
+			$response->get_data()
+		);
+	}
+
+	public function test_settings_rest_endpoint__non_admins_require_view_only_access() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module_with_view_only_settings();
+
+		$roles = array( 'editor', 'author', 'contributor' );
+		foreach ( $roles as $role ) {
+			$this->set_current_active_user_role( $role );
+
+			$response = $this->request_get_module_setings();
+
+			$this->assertEquals( '403', $response->get_status() );
+		}
+	}
+
+	public function test_settings_rest_endpoint__shared_role_with_view_only_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module_with_view_only_settings();
+
+		$shared_with_roles = array( 'editor', 'author', 'contributor' );
+		foreach ( $shared_with_roles as $shared_with_role ) {
+			$this->set_current_active_user_role( $shared_with_role );
+			$this->share_modules_with_user_role( $shared_with_role );
+
+			$response = $this->request_get_module_setings();
+
+			$this->assertEquals( '200', $response->get_status() );
+			$this->assertEqualSetsWithIndex(
+				array(
+					'viewOnlyKey' => 'default-value',
+				),
+				$response->get_data()
+			);
+		}
 	}
 
 	public function test_data_available_rest_endpoint__valid_method__non_implementing_module() {
@@ -587,6 +682,10 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$fake_module_with_data_available = new FakeModule_WithDataAvailable( $this->context );
+
+		// A module being active is a pre-requisite for it to be connected.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
+
 		$this->set_available_modules( array( $fake_module_with_data_available ) );
 		$this->assertEmpty( $fake_module_with_data_available->is_data_available() );
 
@@ -719,20 +818,17 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slugs' => array( 'search-console' ),
+					'slugs' => array( 'adsense' ),
 				),
 			)
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_shareable', $response->get_data()['error']['search-console']['code'] );
+		$this->assertEquals( 'module_not_shareable', $response->get_data()['error']['adsense']['code'] );
 		$this->assertEquals( 200, $response->get_status() );
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_recoverable_module() {
-		// Enabling this feature flag is required for a module to be declared shareable.
-		$this->enable_feature( 'dashboardSharing' );
-
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -752,9 +848,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_accessible_module() {
-		// Enabling this feature flag is required for a module to be declared shareable.
-		$this->enable_feature( 'dashboardSharing' );
-
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -789,9 +882,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__success() {
-		// Enabling this feature flag is required for a module to be declared shareable.
-		$this->enable_feature( 'dashboardSharing' );
-
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -837,10 +927,8 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__analytics_4_exception() {
-		// Enabling the following feature flags is required for analytics-4
-		// module to be declared shareable.
+		// Enabling this feature flag is required for a module to be declared shareable.
 		$this->enable_feature( 'ga4Reporting' );
-		$this->enable_feature( 'dashboardSharing' );
 
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();

@@ -264,7 +264,7 @@ export const resolvers = {
 	*isUserInputCompleted() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( CORE_USER ).isUserInputCompleted() ) {
+		if ( undefined !== select( CORE_USER ).isUserInputCompleted() ) {
 			return;
 		}
 

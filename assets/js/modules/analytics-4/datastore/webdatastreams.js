@@ -359,29 +359,6 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets matched web data streams for selected property.
-	 *
-	 * @since 1.98.0
-	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
-	 * @return {(Array.<Object>|undefined)} A web data stream objects if found, `undefined` if web data streams are not loaded.
-	 */
-	getMatchingWebDataStreamsByPropertyID: createRegistrySelector(
-		( select ) => ( _state, propertyID ) => {
-			const datastreams =
-				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
-			if ( datastreams === undefined ) {
-				return undefined;
-			}
-
-			return select( MODULES_ANALYTICS_4 ).getMatchingWebDataStreams(
-				datastreams
-			);
-		}
-	),
-
-	/**
 	 * Gets web data streams in batch for selected properties.
 	 *
 	 * @since 1.32.0
@@ -467,8 +444,7 @@ const baseSelectors = {
 				? measurements
 				: [ measurements ];
 
-			const summaries =
-				select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+			let summaries = select( MODULES_ANALYTICS_4 ).getAccountSummaries();
 			if ( ! Array.isArray( summaries ) ) {
 				return undefined;
 			}
@@ -477,7 +453,8 @@ const baseSelectors = {
 			// so we can check it first because its more likely that the current
 			// account will contain a measurement ID that we are looking for.
 			const currentAccountID = select( MODULES_ANALYTICS ).getAccountID();
-			summaries.sort( ( { _id: accountID } ) =>
+			// Clone summaries to avoid mutating the original array.
+			summaries = [ ...summaries ].sort( ( { _id: accountID } ) =>
 				accountID === currentAccountID ? -1 : 0
 			);
 
@@ -561,6 +538,65 @@ const baseSelectors = {
 
 			return firstlyFoundConfig || null;
 		}
+	),
+
+	/**
+	 * Checks if web data streams are currently being loaded.
+	 *
+	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
+	 * components, initially the `WebDataStreamSelect` and `SettingsEnhancedMeasurementSwitch` components.
+	 *
+	 * @since 1.111.0
+	 *
+	 * @param {Object}  state                Data store's state.
+	 * @param {Object}  args                 Arguments object.
+	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 */
+	isLoadingWebDataStreams: createRegistrySelector(
+		( select ) =>
+			( state, { hasModuleAccess } ) => {
+				const accountID = select( MODULES_ANALYTICS ).getAccountID();
+
+				const propertyID =
+					select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+				const loadedAccounts =
+					select( MODULES_ANALYTICS ).hasFinishedResolution(
+						'getAccounts'
+					);
+
+				const loadedProperties =
+					hasModuleAccess !== false
+						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+								'getProperties',
+								[ accountID ]
+						  )
+						: true;
+
+				const loadedWebDataStreams =
+					isValidPropertyID( propertyID ) && hasModuleAccess !== false
+						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+								'getWebDataStreams',
+								[ propertyID ]
+						  )
+						: true;
+
+				const finishedSelectingAccount =
+					select(
+						MODULES_ANALYTICS
+					).hasFinishedSelectingAccount() !== false;
+
+				const isMatchingAccountProperty =
+					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty();
+
+				return (
+					isMatchingAccountProperty ||
+					! loadedAccounts ||
+					! loadedProperties ||
+					! loadedWebDataStreams ||
+					! finishedSelectingAccount
+				);
+			}
 	),
 };
 

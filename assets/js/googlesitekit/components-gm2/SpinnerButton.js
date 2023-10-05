@@ -24,7 +24,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import Button from './Button';
-import { CircularProgress } from '../../material-components';
+import CircularProgress from './CircularProgress';
 
 export default function SpinnerButton( props ) {
 	const {

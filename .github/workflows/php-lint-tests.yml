@@ -1,0 +1,162 @@
+name: PHP Tests
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    # Only run if PHP-related files changed.
+    paths:
+      - '.github/workflows/php-lint-tests.yml'
+      - includes/**
+      - tests/phpunit/**
+      - '**.php'
+      - 'phpcs.xml.dist'
+      - 'phpunit*.xml*'
+      - 'composer.json'
+      - 'composer.lock'
+  pull_request:
+    branches:
+      - develop
+      - main
+      - 'feature/**'
+    # Only run if PHP-related files changed.
+    paths:
+      - '.github/workflows/php-lint-tests.yml'
+      - includes/**
+      - tests/phpunit/**
+      - '**.php'
+      - 'phpcs.xml.dist'
+      - 'phpunit*.xml*'
+      - 'composer.json'
+      - 'composer.lock'
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+concurrency:
+  group: php-lint-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php-lint:
+    name: PHP Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate Composer configuration
+        run: composer validate --strict
+      - name: Composer Install
+        run: composer install --no-interaction --no-progress
+      - name: PHP Lint
+        run: composer lint
+  php-tests:
+    name: PHP Tests (PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }}${{ matrix.wp_multisite && ', Multisite' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        composer_php_version: ['']
+        php_version: ['7.4', '8.0']
+        wp_multisite: ['']
+        wp_version: ['latest']
+        include:
+          # PHP 7.4 is necessary for `composer install` to work,
+          # so override it when using PHP 5.6.
+          - composer_php_version: '7.4'
+            php_version: '5.6'
+            wp_version: '5.2'
+          - php_version: '7.4'
+            wp_multisite: '1'
+            wp_version: 'latest'
+          - php_version: '7.4'
+            wp_version: 'nightly'
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: wordpress
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress_test
+      WP_MULTISITE: ${{ matrix.wp_multisite }}
+      WP_VERSION: ${{ matrix.wp_version }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          extensions: mysqli, runkit7, uopz
+          tools: composer:2.1
+          php-version: ${{ matrix.php_version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ !matrix.composer_php_version }}
+      - uses: shivammathur/setup-php@v2
+        with:
+          tools: composer:2.1
+          php-version: ${{ matrix.composer_php_version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ matrix.composer_php_version }}
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Composer Install
+        run: composer install --no-interaction --no-progress
+      - uses: shivammathur/setup-php@v2
+        with:
+          extensions: mysqli, runkit, uopz
+          tools: composer:2.1
+          php-version: ${{ matrix.php_version }}
+        if: ${{ matrix.composer_php_version }}
+
+      - name: Update PHPUnit
+        run: |
+          composer config --unset platform.php
+          composer update phpunit/phpunit --with-dependencies --no-scripts
+        if: startsWith( matrix.php_version,  '8.' )
+
+      - name: Set up PHP test data
+        run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
+
+      - name: Run Unit Tests
+        run: composer test -- --verbose
+        if: ${{ !matrix.wp_multisite }}
+      - name: Run Unit Tests
+        run: composer test:multisite -- --verbose
+        if: ${{ matrix.wp_multisite }}

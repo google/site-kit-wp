@@ -41,7 +41,6 @@ import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics from '../../assets/js/modules/analytics';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
-import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
@@ -74,7 +73,6 @@ const allCoreModules = [
 	modulesAdSense,
 	modulesAnalytics,
 	modulesAnalytics4,
-	modulesOptimize,
 	modulesPageSpeedInsights,
 	modulesSearchConsole,
 	modulesTagManager,
@@ -249,6 +247,8 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 				label: 'Media',
 			},
 		],
+		productBasePaths: [ '^/product/' ],
+		keyMetricsSetupCompleted: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -400,6 +400,25 @@ export function provideCurrentSurvey(
 export function provideTracking( registry, enabled = true ) {
 	registry.dispatch( CORE_USER ).receiveGetTracking( { enabled } );
 }
+
+/**
+ * Provides key metrics settings data to the given registry.
+ *
+ * @since 1.103.0
+ *
+ * @param {Object} registry    The registry to set up.
+ * @param {Object} [extraData] Extra data to merge with the default settings.
+ */
+export const provideKeyMetrics = ( registry, extraData = {} ) => {
+	const defaults = {
+		widgetSlugs: [ 'test-slug' ],
+		isWidgetHidden: false,
+	};
+	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+		...defaults,
+		...extraData,
+	} );
+};
 
 /**
  * Mutes a fetch request to the given URL once.

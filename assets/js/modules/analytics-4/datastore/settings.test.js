@@ -22,17 +22,26 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	provideUserAuthentication,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from './constants';
+import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from './constants';
+import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import {
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 	INVARIANT_INVALID_WEBDATASTREAM_ID,
 } from './settings';
 import * as fixtures from './__fixtures__';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 settings', () => {
 	let registry;
@@ -73,6 +82,8 @@ describe( 'modules/analytics-4 settings', () => {
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			beforeEach( () => {
+				provideUserAuthentication( registry );
+
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					accountID: fixtures.createProperty._accountID,
 				} );
@@ -229,6 +240,147 @@ describe( 'modules/analytics-4 settings', () => {
 				expect( console ).toHaveErrored();
 			} );
 
+			describe( 'when enhanced measurement is enabled', () => {
+				const propertyID = '1000';
+				const webDataStreamID = '2000';
+
+				const enhancedMeasurementSettingsEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+				);
+
+				const enabledSettingsMock = {
+					fileDownloadsEnabled: null,
+					name: 'properties/1000/dataStreams/2000/enhancedMeasurementSettings',
+					outboundClicksEnabled: null,
+					pageChangesEnabled: null,
+					scrollsEnabled: null,
+					searchQueryParameter: 'q,s,search,query,keyword',
+					siteSearchEnabled: null,
+					streamEnabled: true,
+					uriQueryParameter: null,
+					videoEngagementEnabled: null,
+				};
+
+				const disabledSettingsMock = {
+					...enabledSettingsMock,
+					streamEnabled: false,
+				};
+
+				beforeEach( () => {
+					enabledFeatures.add( 'enhancedMeasurement' );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( { propertyID, webDataStreamID } );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetEnhancedMeasurementSettings(
+							disabledSettingsMock,
+							{ propertyID, webDataStreamID }
+						);
+
+					registry
+						.dispatch( CORE_FORMS )
+						.setValues( ENHANCED_MEASUREMENT_FORM, {
+							[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+						} );
+
+					fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
+						status: 200,
+						body: enabledSettingsMock,
+					} );
+				} );
+
+				it( 'should save the enhanced measurement settings if the setting has been changed', async () => {
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.submitChanges();
+
+					expect( fetchMock ).toHaveFetched(
+						enhancedMeasurementSettingsEndpoint,
+						{
+							body: {
+								data: {
+									propertyID,
+									webDataStreamID,
+									enhancedMeasurementSettings:
+										enabledSettingsMock,
+								},
+							},
+						}
+					);
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.haveEnhancedMeasurementSettingsChanged(
+								propertyID,
+								webDataStreamID
+							)
+					).toBe( false );
+				} );
+
+				it( 'should not save the enhanced measurement settings if the form value is not defined', async () => {
+					registry
+						.dispatch( CORE_FORMS )
+						.setValues( ENHANCED_MEASUREMENT_FORM, {
+							[ ENHANCED_MEASUREMENT_ENABLED ]: undefined,
+						} );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.submitChanges();
+
+					expect( fetchMock ).toHaveFetchedTimes( 0 );
+				} );
+
+				it( 'should not save the enhanced measurement settings if the setting has not been changed', async () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetEnhancedMeasurementSettings(
+							enabledSettingsMock,
+							{ propertyID, webDataStreamID }
+						);
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.submitChanges();
+
+					expect( fetchMock ).toHaveFetchedTimes( 0 );
+				} );
+
+				it( 'should handle and return an error when saving enhanced measurement settings', async () => {
+					const errorObject = {
+						code: 'internal_error',
+						message: 'Something wrong happened.',
+						data: { status: 500 },
+					};
+
+					fetchMock.reset();
+					fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
+						status: 500,
+						body: errorObject,
+					} );
+
+					const { error: responseError } = await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.submitChanges();
+
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( responseError ).toEqual( errorObject );
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.haveEnhancedMeasurementSettingsChanged(
+								propertyID,
+								webDataStreamID
+							)
+					).toBe( true );
+					expect( console ).toHaveErrored();
+				} );
+			} );
+
 			it( 'should dispatch saveSettings', async () => {
 				const validSettings = {
 					propertyID: fixtures.createProperty._id,
@@ -258,17 +410,83 @@ describe( 'modules/analytics-4 settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'canSubmitChanges', () => {
-			beforeEach( () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: fixtures.createProperty._id,
-					webDataStreamID: fixtures.createWebDataStream._id,
-				} );
-			} );
+			const propertyID = '1000';
+			const webDataStreamID = '2000';
 
-			it( 'should return TRUE when all settings are valid', () => {
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).canSubmitChanges()
-				).toBe( true );
+			describe( 'required changes', () => {
+				beforeEach( () => {
+					enabledFeatures.add( 'enhancedMeasurement' );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {
+							propertyID,
+							webDataStreamID,
+						} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetEnhancedMeasurementSettings(
+							{ streamEnabled: true },
+							{ propertyID, webDataStreamID }
+						);
+				} );
+
+				it( 'requires a change to analytics-4 settings or enhanced measurement settings to have been made', () => {
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.canSubmitChanges()
+					).toBe( false );
+
+					expect( () =>
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.__dangerousCanSubmitChanges()
+					).toThrow( INVARIANT_SETTINGS_NOT_CHANGED );
+				} );
+
+				it( 'accepts a change to analytics-4 settings as a valid change', () => {
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						propertyID: '1001',
+					} );
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.canSubmitChanges()
+					).toBe( true );
+
+					expect( () =>
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.__dangerousCanSubmitChanges()
+					).not.toThrow();
+				} );
+
+				it( 'accepts a change to enhanced measurement settings as a valid change', () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setEnhancedMeasurementSettings(
+							propertyID,
+							webDataStreamID,
+							{
+								streamEnabled: false,
+							}
+						);
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.canSubmitChanges()
+					).toBe( true );
+
+					expect( () =>
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.__dangerousCanSubmitChanges()
+					).not.toThrow();
+				} );
 			} );
 
 			it( 'should require a valid propertyID', () => {
@@ -281,6 +499,9 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should require a valid webDataStreamID', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( '' );

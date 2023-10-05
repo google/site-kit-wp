@@ -25,9 +25,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { Select, Option } from '../../../../material-components';
 import {
 	MODULES_ANALYTICS,
 	ACCOUNT_CREATE,
@@ -40,6 +39,7 @@ import {
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { isValidPropertyID } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect( { hasModuleAccess } ) {
@@ -61,6 +61,9 @@ export default function AccountSelect( { hasModuleAccess } ) {
 
 		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
 	} );
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
 	const isUAEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
 	);
@@ -72,12 +75,13 @@ export default function AccountSelect( { hasModuleAccess } ) {
 	useEffect( () => {
 		if (
 			isUAEnabled &&
+			! isValidPropertyID( propertyID ) &&
 			hasModuleAccess !== false && // Show disabled UA settings for Admins who do not have access to the connected Analytics Property.
 			properties.length === 0
 		) {
 			setValues( FORM_SETUP, { enableUA: false } );
 		}
-	}, [ isUAEnabled, properties, setValues, hasModuleAccess ] );
+	}, [ isUAEnabled, properties, setValues, hasModuleAccess, propertyID ] );
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(

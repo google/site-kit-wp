@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
+export { default as ConnectGA4CTATileWidget } from './ConnectGA4CTATileWidget';
+export { default as ConnectGA4CTAWidget } from './ConnectGA4CTAWidget';
 export { default as EngagedTrafficSourceWidget } from './EngagedTrafficSourceWidget';
+export { default as LeastEngagingPagesWidget } from './LeastEngagingPagesWidget';
 export { default as LoyalVisitorsWidget } from './LoyalVisitorsWidget';
 export { default as NewVisitorsWidget } from './NewVisitorsWidget';
 export { default as PopularContentWidget } from './PopularContentWidget';
@@ -25,3 +28,7 @@ export { default as TopCitiesWidget } from './TopCitiesWidget';
 export { default as TopCountriesWidget } from './TopCountriesWidget';
 export { default as TopTrafficSourceWidget } from './TopTrafficSourceWidget';
 export { default as TopConvertingTrafficSourceWidget } from './TopConvertingTrafficSourceWidget';
+export { default as PagesPerVisitWidget } from './PagesPerVisitWidget';
+export { default as VisitLengthWidget } from './VisitLengthWidget';
+export { default as TopReturningVisitorPages } from './TopReturningVisitorPages';
+export { default as VisitsPerVisitorWidget } from './VisitsPerVisitorWidget';

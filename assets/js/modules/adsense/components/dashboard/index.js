@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export { default as AdBlockerRecoveryWidget } from './AdBlockerRecoveryWidget';
+export { default as AdBlockingRecoverySetupCTAWidget } from './AdBlockingRecoverySetupCTAWidget';
 export { default as AdBlockerWarningWidget } from './AdBlockerWarningWidget';
 export { default as AdSenseConnectCTAWidget } from './AdSenseConnectCTAWidget';
 export { default as DashboardTopEarningPagesWidget } from './DashboardTopEarningPagesWidget';

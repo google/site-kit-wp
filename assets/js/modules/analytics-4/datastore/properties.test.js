@@ -35,13 +35,14 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
-import { enabledFeatures } from '../../../features';
+import * as uaFixtures from '../../analytics/datastore/__fixtures__';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -165,6 +166,8 @@ describe( 'modules/analytics-4 properties', () => {
 					measurementID: 'abcd',
 				};
 
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( settings );
@@ -183,7 +186,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( '' );
 			} );
 
-			it( 'should set property ID only and reset datastream with measurement IDs when web data stream is not found', async () => {
+			it( 'should set property ID and the first web data stream when a matching web data stream is not found', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
@@ -194,6 +197,7 @@ describe( 'modules/analytics-4 properties', () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.io',
 				} );
+				provideUserAuthentication( registry );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -201,6 +205,46 @@ describe( 'modules/analytics-4 properties', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectProperty( propertyID );
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
+				).toBe( propertyID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
+				).toBe( fixtures.webDataStreams[ 0 ]._id );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
+				).toBe(
+					// eslint-disable-next-line sitekit/acronym-case
+					fixtures.webDataStreams[ 0 ].webStreamData.measurementId
+				);
+			} );
+
+			it( 'should set property ID, and reset datastream and measurement IDs when no web data streams are available', async () => {
+				const propertyID = '09876';
+				const settings = {
+					propertyID: '12345',
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+				};
+
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'https://www.example.io',
+				} );
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( [], {
+						// No web data streams are available for this property.
 						propertyID,
 					} );
 				await registry
@@ -229,6 +273,7 @@ describe( 'modules/analytics-4 properties', () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
 				} );
+				provideUserAuthentication( registry );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -277,6 +322,8 @@ describe( 'modules/analytics-4 properties', () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
 				} );
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( settings );
@@ -399,6 +446,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 
 				const properties = [
 					{
@@ -543,20 +591,24 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 		describe( 'updateSettingsForMeasurementID', () => {
-			it( 'should update the settings with the measurement ID.', () => {
+			it( 'should update the settings with the measurement ID.', async () => {
 				const measurementID = 'G-1A2BCD346E';
-				registry
+
+				provideUserAuthentication( registry );
+
+				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.updateSettingsForMeasurementID( measurementID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getSettings()
-				).toMatchObject( {
+
+				expect( store.getState().settings ).toMatchObject( {
 					measurementID,
 				} );
 			} );
 
 			it( 'dispatches a request to get and populate Google Tag settings', async () => {
-				enabledFeatures.add( 'gteSupport' );
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
 
 				fetchMock.getOnce( googleTagSettingsEndpoint, {
 					body: fixtures.googleTagSettings,
@@ -577,23 +629,25 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.googleTagSettings,
 				} );
 
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagAccountID()
-				).toEqual( fixtures.googleTagSettings.googleTagAccountID );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagContainerID()
-				).toEqual( fixtures.googleTagSettings.googleTagContainerID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( fixtures.googleTagSettings.googleTagID );
+				expect( store.getState().settings ).toMatchObject(
+					fixtures.googleTagSettings
+				);
 			} );
 
-			it( 'empties the Google Tag Settings if measurement ID is an empty string', () => {
-				enabledFeatures.add( 'gteSupport' );
+			it( 'requires the GTM readonly scope to dispatch a request for Google Tag settings', async () => {
+				provideUserAuthentication( registry );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( 'G-1A2BCD346E' );
+
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'empties the Google Tag Settings if measurement ID is an empty string', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -605,37 +659,21 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setGoogleTagID( 'GT-123456' );
 
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagAccountID()
-				).toEqual( '123456' );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagContainerID()
-				).toEqual( '321654' );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( 'GT-123456' );
+				expect( store.getState().settings ).toMatchObject( {
+					googleTagAccountID: '123456',
+					googleTagContainerID: '321654',
+					googleTagID: 'GT-123456',
+				} );
 
-				registry
+				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.updateSettingsForMeasurementID( '' );
 
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagAccountID()
-				).toEqual( '' );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagContainerID()
-				).toEqual( '' );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( '' );
+				expect( store.getState().settings ).toMatchObject( {
+					googleTagAccountID: '',
+					googleTagContainerID: '',
+					googleTagID: '',
+				} );
 			} );
 		} );
 
@@ -683,10 +721,6 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'syncGoogleTagSettings', () => {
-			beforeEach( () => {
-				enabledFeatures.add( 'gteSupport' );
-			} );
-
 			it( 'should not execute if the Tag Manager readonly scope is not granted', async () => {
 				provideUserAuthentication( registry );
 
@@ -1313,6 +1347,158 @@ describe( 'modules/analytics-4 properties', () => {
 					.isWebDataStreamAvailable();
 
 				expect( updatedIsWebDataStreamAvailable ).toBe( false );
+			} );
+		} );
+
+		describe( 'isLoadingProperties', () => {
+			const { accounts } = uaFixtures.accountsPropertiesProfiles;
+			const { properties } = fixtures;
+			const accountID = accounts[ 0 ].id;
+			const propertyID = properties[ 0 ]._id;
+			const hasModuleAccess = true;
+
+			beforeEach( () => {
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
+				provideModules( registry );
+
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+					accountID,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetAccounts( accounts );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.finishResolution( 'getAccounts', [] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( properties, { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getProperties', [ accountID ] );
+			} );
+
+			it( 'should return false if the required state is already loaded', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( false );
+			} );
+
+			it( 'should return true while matching the account properties', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: properties.map( ( { _id } ) => _id ),
+						}
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.matchAndSelectProperty( accountID );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( true );
+			} );
+
+			it( 'should return true if accounts are not yet loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.startResolution( 'getAccounts', [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( true );
+			} );
+
+			describe( 'while loading properties', () => {
+				beforeEach( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.startResolution( 'getProperties', [ accountID ] );
+				} );
+
+				it( 'should return false when hasModuleAccess is false', () => {
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isLoadingProperties( {
+								hasModuleAccess: false,
+							} )
+					).toBe( false );
+				} );
+
+				it( 'should return true when hasModuleAccess is not false', () => {
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isLoadingProperties( {
+								hasModuleAccess,
+							} )
+					).toBe( true );
+				} );
+			} );
+
+			it( 'should return true while selecting an account', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProperties( [], { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.finishResolution( 'getProperties', [ accountID ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: properties.map( ( { _id } ) => _id ),
+						}
+					);
+
+				// Verify that the selector returns false before selecting an account.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.selectAccount( accountID );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( true );
 			} );
 		} );
 	} );

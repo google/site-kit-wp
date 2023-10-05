@@ -32,7 +32,7 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Dialog } from 'googlesitekit-components';
+import ModalDialog from '../../ModalDialog';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -159,7 +159,7 @@ export default function ConfirmDisconnect( { slug } ) {
 	}
 
 	return (
-		<Dialog
+		<ModalDialog
 			dialogActive
 			handleDialog={ handleDialog }
 			title={ title }

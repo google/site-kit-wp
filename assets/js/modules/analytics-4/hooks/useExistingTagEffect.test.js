@@ -23,12 +23,13 @@ import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../tests/js/utils';
+import * as fixtures from '../datastore/__fixtures__';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {
 	let registry;
 
-	const measurementID = 'G-1A2B3C4D5E';
+	const measurementID = 'G-2B7M8YQ1K6';
 	const secondMeasurementID = 'G-2A2B3C4D5E';
 	const thirdMeasurementID = 'G-3A2B3C4D5E';
 
@@ -39,6 +40,13 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		// Set no existing tag.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+
+		const containerMock = fixtures.container[ measurementID ];
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetGoogleTagContainer( containerMock, {
+				measurementID,
+			} );
 	} );
 
 	it( 'should not update the "use snippet" setting if there is no existing tag or measurementID', () => {

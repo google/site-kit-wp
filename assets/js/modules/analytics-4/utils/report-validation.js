@@ -97,24 +97,124 @@ export function isValidDimensions( dimensions ) {
  *
  * @since 1.94.0
  *
- * @param {Object} dimensionFilters The dimension filters to check.
+ * @param {Object} filters The dimension filters to check.
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
  */
-export function isValidDimensionFilters( dimensionFilters ) {
+export function isValidDimensionFilters( filters ) {
 	// Ensure every dimensionFilter key corresponds to a valid dimension.
 	const validType = [ 'string' ];
-	return Object.keys( dimensionFilters ).every(
-		( dimension ) =>
-			( validType.includes( typeof dimensionFilters[ dimension ] ) &&
-				typeof dimension === 'string' ) ||
-			( Array.isArray( dimensionFilters[ dimension ] ) &&
-				Object.keys( dimensionFilters[ dimension ] ).every(
-					( param ) =>
-						validType.includes(
-							typeof dimensionFilters[ dimension ][ param ]
-						) && validType.includes( typeof param )
-				) )
-	);
+	return Object.keys( filters ).every( ( dimension ) => {
+		if ( validType.includes( typeof filters[ dimension ] ) ) {
+			return true;
+		}
+
+		if ( Array.isArray( filters[ dimension ] ) ) {
+			return filters[ dimension ].every( ( param ) =>
+				validType.includes( typeof param )
+			);
+		}
+
+		if ( isPlainObject( filters[ dimension ] ) ) {
+			const props = Object.keys( filters[ dimension ] );
+			return props.includes( 'filterType' ) && props.includes( 'value' );
+		}
+
+		return false;
+	} );
+}
+
+/**
+ * Verifies provided metricFilters to make sure they match allowed values found in metrics and supported filters.
+ *
+ * @since 1.111.0
+ *
+ * @param {Object} filters The metric filters to check.
+ * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
+ */
+export function isValidMetricFilters( filters ) {
+	// Ensure every dimensionFilter key corresponds to a valid dimension.
+	const validType = [ 'string' ];
+	return Object.keys( filters ).every( ( metric ) => {
+		if ( validType.includes( typeof filters[ metric ] ) ) {
+			return true;
+		}
+
+		if ( Array.isArray( filters[ metric ] ) ) {
+			return filters[ metric ].every( ( param ) =>
+				validType.includes( typeof param )
+			);
+		}
+
+		if ( isPlainObject( filters[ metric ] ) ) {
+			const props = Object.keys( filters[ metric ] );
+
+			// Confirm that filter type if present is one of the available/allowed filter types.
+			// If not, bail early.
+			const allowedFilterTypes = [ 'numericFilter', 'betweenFilter' ];
+			if (
+				props.includes( 'filterType' ) &&
+				! allowedFilterTypes.includes( filters[ metric ].filterType )
+			) {
+				return false;
+			}
+
+			// Verify that proper params are used with each filter type.
+			// Numeric filter is used by default if no filterType is provided.
+			if (
+				( props.includes( 'filterType' ) &&
+					filters[ metric ].filterType === 'numericFilter' ) ||
+				! props.includes( 'filterType' )
+			) {
+				// Confirm value is added as proper NumericField
+				if (
+					props.includes( 'value' ) &&
+					isPlainObject( filters[ metric ].value )
+				) {
+					if (
+						! Object.keys( filters[ metric ].value ).includes(
+							'int64Value'
+						)
+					) {
+						return false;
+					}
+				}
+
+				return (
+					props.includes( 'operation' ) && props.includes( 'value' )
+				);
+			} else if (
+				props.includes( 'filterType' ) &&
+				filters[ metric ].filterType === 'betweenFilter'
+			) {
+				// Confirm values are added as proper NumericField
+				const values = [ 'fromValue', 'toValue' ];
+				const isNumericField = values.every( ( value ) => {
+					if (
+						props.includes( value ) &&
+						isPlainObject( filters[ metric ][ value ] )
+					) {
+						if (
+							! Object.keys(
+								filters[ metric ][ value ]
+							).includes( 'int64Value' )
+						) {
+							return false;
+						}
+					}
+
+					return true;
+				} );
+
+				return (
+					props.includes( 'fromValue' ) &&
+					props.includes( 'toValue' ) &&
+					isNumericField
+				);
+			}
+		}
+
+		return false;
+	} );
 }
 
 /**

@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, Option } from '../assets/js/material-components';
+import { Option, Select } from 'googlesitekit-components';
 
 storiesOf( 'Global', module ).add(
 	'Selects',
@@ -92,7 +92,7 @@ storiesOf( 'Global', module ).add(
 						] }
 					/>
 				</div>
-				<div style={ { marginBottom: '250px' } }>
+				<div style={ { marginBottom: '50px' } }>
 					<Select
 						enhanced
 						outlined
@@ -105,6 +105,19 @@ storiesOf( 'Global', module ).add(
 							'VRT: Open Select',
 							'Demo Option 3',
 						] }
+					/>
+				</div>
+				<div style={ { marginBottom: '250px' } }>
+					<Select
+						name="select"
+						label={ __( 'Basic Select', 'google-site-kit' ) }
+						options={ [
+							'Demo Option 1',
+							'Demo Option 2',
+							'Demo Option 3',
+						] }
+						value="Demo Option 1"
+						outlined
 					/>
 				</div>
 			</div>

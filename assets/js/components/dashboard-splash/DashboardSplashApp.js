@@ -25,15 +25,12 @@ import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 } from '../../googlesitekit/datastore/user/constants';
-import { useFeature } from '../../hooks/useFeature';
 import SetupUsingProxyWithSignIn from '../setup/SetupUsingProxyWithSignIn';
 import SetupUsingProxyViewOnly from '../setup/SetupUsingProxyViewOnly';
 import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
 const { useSelect } = Data;
 
 export default function DashboardSplashApp() {
-	const dashboardSharing = useFeature( 'dashboardSharing' );
-
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
@@ -42,7 +39,7 @@ export default function DashboardSplashApp() {
 	);
 
 	if ( usingProxy === true ) {
-		if ( dashboardSharing && ! canAuthenticate ) {
+		if ( ! canAuthenticate ) {
 			return <SetupUsingProxyViewOnly />;
 		}
 

@@ -34,6 +34,9 @@ describe( 'setting up the Analytics module with an existing account and existing
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
+			const measurementID = 'G-2B7M8YQ1K6';
+			const containerMock = fixtures.container[ measurementID ];
+
 			if (
 				request
 					.url()
@@ -77,6 +80,25 @@ describe( 'setting up the Analytics module with an existing account and existing
 			) {
 				request.respond( {
 					body: JSON.stringify( fixtures.createWebDataStream ),
+					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/google-tag-settings' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.googleTagSettings ),
+					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/container-lookup' )
+			) {
+				request.respond( {
+					body: JSON.stringify( containerMock ),
+					status: 200,
+				} );
+			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
+				request.respond( {
+					body: JSON.stringify( fixtures.properties[ 1 ] ),
 					status: 200,
 				} );
 			} else if (

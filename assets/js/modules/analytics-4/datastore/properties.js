@@ -30,6 +30,7 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -42,7 +43,7 @@ import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { isFeatureEnabled } from '../../../features';
+import { createRegistrySelector } from '@wordpress/data';
 const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -229,9 +230,19 @@ const baseActions = {
 
 			yield webDataStreamActions.waitForWebDataStreams( propertyID );
 
-			const webdatastream = registry
+			let webdatastream = registry
 				.select( MODULES_ANALYTICS_4 )
 				.getMatchingWebDataStreamByPropertyID( propertyID );
+
+			if ( ! webdatastream ) {
+				const webdatastreams = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getWebDataStreams( propertyID );
+
+				if ( webdatastreams && webdatastreams.length > 0 ) {
+					webdatastream = webdatastreams[ 0 ];
+				}
+			}
 
 			if ( webdatastream ) {
 				registry
@@ -468,18 +479,21 @@ const baseActions = {
 	 * @param {string} measurementID Measurement ID.
 	 */
 	*updateSettingsForMeasurementID( measurementID ) {
-		const registry = yield commonActions.getRegistry();
+		const { select, dispatch, __experimentalResolveSelect } =
+			yield commonActions.getRegistry();
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setMeasurementID( measurementID );
+		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( measurementID );
 
-		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
+		// Wait for authentication to be resolved to check scopes.
+		yield commonActions.await(
+			__experimentalResolveSelect( CORE_USER ).getAuthentication()
+		);
+		if ( ! select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE ) ) {
 			return;
 		}
 
 		if ( ! measurementID ) {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 				googleTagAccountID: '',
 				googleTagContainerID: '',
 				googleTagID: '',
@@ -505,7 +519,7 @@ const baseActions = {
 		// GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with mismatched settings. To mitigate this, we
 		// dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
 		// See issue https://github.com/google/site-kit-wp/issues/6784 and the PR https://github.com/google/site-kit-wp/pull/6814.
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			googleTagAccountID,
 			googleTagContainerID,
 			googleTagID,
@@ -548,10 +562,6 @@ const baseActions = {
 	 * @since 1.95.0
 	 */
 	*syncGoogleTagSettings() {
-		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
-			return;
-		}
-
 		const { select, dispatch, __experimentalResolveSelect } =
 			yield Data.commonActions.getRegistry();
 
@@ -745,6 +755,44 @@ const baseSelectors = {
 	isWebDataStreamAvailable( state ) {
 		return state.isWebDataStreamAvailable;
 	},
+
+	/**
+	 * Checks if properties are currently being loaded.
+	 *
+	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
+	 * components, initially the `PropertySelect` and `SettingsEnhancedMeasurementSwitch` components.
+	 *
+	 * @since 1.111.0
+	 *
+	 * @param {Object}  state                Data store's state.
+	 * @param {Object}  args                 Arguments object.
+	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 */
+	isLoadingProperties: createRegistrySelector(
+		( select ) =>
+			( state, { hasModuleAccess } ) => {
+				const accountID = select( MODULES_ANALYTICS ).getAccountID();
+
+				const isResolvingProperties =
+					hasModuleAccess === false || ! accountID
+						? false
+						: select( MODULES_ANALYTICS_4 ).isResolving(
+								'getProperties',
+								[ accountID ]
+						  );
+
+				return (
+					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
+					! select( MODULES_ANALYTICS ).hasFinishedResolution(
+						'getAccounts'
+					) ||
+					isResolvingProperties ||
+					select(
+						MODULES_ANALYTICS
+					).hasFinishedSelectingAccount() === false
+				);
+			}
+	),
 };
 
 const store = Data.combineStores(

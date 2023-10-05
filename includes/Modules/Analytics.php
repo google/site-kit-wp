@@ -150,8 +150,7 @@ final class Analytics extends Module
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
 				if ( Feature_Flags::enabled( 'ga4Reporting' ) && ! $this->authentication->is_authenticated() ) {
-					$settings              = $this->get_settings()->get();
-					$data['dashboardView'] = $settings['dashboardView'];
+					$settings = $this->get_settings()->get();
 				}
 
 				return $data;
@@ -252,7 +251,7 @@ final class Analytics extends Module
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$fields = array(
 			'analytics_account_id'  => array(
 				'label' => __( 'Analytics account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
@@ -274,6 +273,8 @@ final class Analytics extends Module
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 		);
+
+		return $fields;
 	}
 
 	/**
@@ -372,11 +373,6 @@ final class Analytics extends Module
 		// At this point, account creation was successful.
 		$new_settings['accountID'] = $account_id;
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			// For GA4-SPECIFIC provisioning callback, switch to GA4 dashboard view.
-			$new_settings['dashboardView'] = 'google-analytics-4';
-		}
-
 		$this->get_settings()->merge( $new_settings );
 
 		do_action(
@@ -405,6 +401,8 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
+		$shareable = true;
+
 		$datapoints = array(
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
 			'POST:create-account-ticket'       => array(
@@ -424,13 +422,13 @@ final class Analytics extends Module
 			),
 			'GET:goals'                        => array(
 				'service'   => 'analytics',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => $shareable,
 			),
 			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
 			'GET:report'                       => array(
 				'service'   => 'analyticsreporting',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+				'shareable' => $shareable,
 			),
 		);
 
@@ -670,14 +668,7 @@ final class Analytics extends Module
 						$date_ranges[] = array( $compare_start_date, $compare_end_date );
 					}
 				} else {
-					$date_range    = $data['dateRange'] ?: 'last-28-days';
-					$date_ranges[] = Date::parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
-
-					// When using multiple date ranges, it changes the structure of the response,
-					// where each date range becomes an item in a list.
-					if ( ! empty( $data['multiDateRange'] ) ) {
-						$date_ranges[] = Date::parse_date_range( $date_range, 1, 1, true );
-					}
+					$date_ranges[] = Date::parse_date_range( 'last-28-days' );
 				}
 
 				$date_ranges = array_map(

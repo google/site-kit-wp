@@ -146,7 +146,7 @@ export default function AnalyticsStats( props ) {
 		];
 	}
 
-	if ( ! isGA4DashboardView ) {
+	if ( isGA4DashboardView === false ) {
 		dateMarkers = [
 			{
 				date: UA_CUTOFF_DATE,

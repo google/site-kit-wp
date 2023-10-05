@@ -55,9 +55,35 @@ describe( 'modules/analytics report', () => {
 	describe( 'selectors', () => {
 		const zeroRowsReport = [ { data: { rows: [] } } ];
 
+		const analyticsReportRegexp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics/data/report'
+		);
+		const dataAvailableRegexp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics/data/data-available'
+		);
+		const errorResponse = {
+			status: 403,
+			body: {
+				code: 403,
+				message:
+					'User does not have sufficient permissions for this profile.',
+				data: { status: 403, reason: 'forbidden' },
+			},
+		};
+
+		const consoleError = [
+			'Google Site Kit API Error',
+			'method:GET',
+			'datapoint:report',
+			'type:modules',
+			'identifier:analytics',
+			'error:"User does not have sufficient permissions for this profile."',
+		];
+
 		describe( 'getReport', () => {
 			const options = {
-				dateRange: 'last-90-days',
+				startDate: '2000-01-01',
+				endDate: '2000-01-05',
 				metrics: {
 					expression: 'testExpression',
 					alias: 'testAlias',
@@ -65,15 +91,10 @@ describe( 'modules/analytics report', () => {
 			};
 
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: fixtures.report,
-						status: 200,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: fixtures.report,
+					status: 200,
+				} );
 
 				const initialReport = registry
 					.select( MODULES_ANALYTICS )
@@ -118,15 +139,10 @@ describe( 'modules/analytics report', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: response,
-						status: 500,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: response,
+					status: 500,
+				} );
 
 				registry.select( MODULES_ANALYTICS ).getReport( options );
 				await untilResolved( registry, MODULES_ANALYTICS ).getReport(
@@ -144,7 +160,8 @@ describe( 'modules/analytics report', () => {
 
 			it( 'sets adsenseLinked to false if a 400 error is returned for AdSense metrics due to them being restricted', async () => {
 				const adsenseOptions = {
-					dateRange: 'last-28-days',
+					startDate: '2000-01-01',
+					endDate: '2000-01-05',
 					metrics: 'ga:adsenseRevenue',
 				};
 				const restrictedMetricsError = {
@@ -152,15 +169,10 @@ describe( 'modules/analytics report', () => {
 					message:
 						'Restricted metric(s): ga:adsenseRevenue can only be queried under certain conditions.',
 				};
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: restrictedMetricsError,
-						status: 400,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: restrictedMetricsError,
+					status: 400,
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
@@ -185,7 +197,8 @@ describe( 'modules/analytics report', () => {
 
 			it( 'does not modify adsenseLinked if a 400 error is returned for non-AdSense metrics', async () => {
 				const nonAdsenseOptions = {
-					dateRange: 'last-28-days',
+					startDate: '2000-01-01',
+					endDate: '2000-01-05',
 					metrics: 'ga:nonadsenseMetric',
 				};
 				const restrictedMetricsError = {
@@ -193,15 +206,10 @@ describe( 'modules/analytics report', () => {
 					message:
 						'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
 				};
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: restrictedMetricsError,
-						status: 400,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: restrictedMetricsError,
+					status: 400,
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
@@ -226,7 +234,8 @@ describe( 'modules/analytics report', () => {
 
 			it( 'sets adsenseLinked to true if a successful response is returned for AdSense metrics', async () => {
 				const adsenseOptions = {
-					dateRange: 'last-28-days',
+					startDate: '2000-01-01',
+					endDate: '2000-01-05',
 					metrics: 'ga:adsenseRevenue',
 				};
 				const restrictedMetricsSuccess = [
@@ -235,15 +244,10 @@ describe( 'modules/analytics report', () => {
 						rows: [],
 					},
 				];
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: restrictedMetricsSuccess,
-						status: 200,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: restrictedMetricsSuccess,
+					status: 200,
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry
@@ -269,7 +273,8 @@ describe( 'modules/analytics report', () => {
 
 			it( 'sets adsenseLinked to true if a 400 error is returned for AdSense metrics due to non-AdSense restricted metrics', async () => {
 				const adsenseAndNonAdSenseOptions = {
-					dateRange: 'last-28-days',
+					startDate: '2000-01-01',
+					endDate: '2000-01-05',
 					metrics: [ 'ga:nonadsenseMetric', 'ga:adsenseRevenue' ],
 				};
 				const restrictedMetricsError = {
@@ -277,15 +282,10 @@ describe( 'modules/analytics report', () => {
 					message:
 						'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
 				};
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: restrictedMetricsError,
-						status: 400,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: restrictedMetricsError,
+					status: 400,
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry
@@ -368,11 +368,7 @@ describe( 'modules/analytics report', () => {
 
 		describe( 'isGatheringData', () => {
 			it( 'should return undefined if getReport is not resolved yet', async () => {
-				freezeFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					)
-				);
+				freezeFetch( new RegExp( analyticsReportRegexp ) );
 
 				const { isGatheringData } =
 					registry.select( MODULES_ANALYTICS );
@@ -383,15 +379,26 @@ describe( 'modules/analytics report', () => {
 				await waitForTimeouts( 30 );
 			} );
 
-			it( 'should return TRUE if the returned report is null', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: [ { data: { rows: null } } ],
-					}
-				);
+			it( 'should return TRUE if report API returns error', async () => {
+				fetchMock.getOnce( analyticsReportRegexp, errorResponse );
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForTimeouts( 30 );
+
+				expect( console ).toHaveErroredWith( ...consoleError );
+				expect( isGatheringData() ).toBe( true );
+				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
+			} );
+
+			it( 'should return TRUE if the returned report rows are null', async () => {
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: [ { data: { rows: null } } ],
+				} );
 
 				const { isGatheringData } =
 					registry.select( MODULES_ANALYTICS );
@@ -407,14 +414,9 @@ describe( 'modules/analytics report', () => {
 			} );
 
 			it( 'should return TRUE if the returned report is an empty array', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: zeroRowsReport,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: zeroRowsReport,
+				} );
 
 				const { isGatheringData } =
 					registry.select( MODULES_ANALYTICS );
@@ -430,20 +432,11 @@ describe( 'modules/analytics report', () => {
 			} );
 
 			it( 'should return FALSE if the returned report has rows', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: fixtures.report,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: fixtures.report,
+				} );
 
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/data-available'
-					)
-				);
+				muteFetch( dataAvailableRegexp );
 
 				const { isGatheringData } =
 					registry.select( MODULES_ANALYTICS );
@@ -460,18 +453,27 @@ describe( 'modules/analytics report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
-				freezeFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					)
+			it( 'should return `undefined` if getReport or isGatheringData is not resolved yet', async () => {
+				freezeFetch( new RegExp( analyticsReportRegexp ) );
+
+				const { hasZeroData, isResolving } =
+					registry.select( MODULES_ANALYTICS );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isResolving( 'isGatheringData', [] ) === true
 				);
 
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/data-available'
-					)
-				);
+				// Wait for resolvers to run.
+				await waitForTimeouts( 30 );
+
+				expect( fetchMock ).toHaveFetched( analyticsReportRegexp );
+			} );
+
+			it( 'should return TRUE if report API returns error', async () => {
+				fetchMock.getOnce( analyticsReportRegexp, errorResponse );
 
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS );
 
@@ -479,13 +481,16 @@ describe( 'modules/analytics report', () => {
 
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
+
+				expect( console ).toHaveErroredWith( ...consoleError );
+
+				expect( hasZeroData() ).toBe( true );
+				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
 
 			it( 'should return TRUE if isGatheringData is true', async () => {
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
+					new RegExp( analyticsReportRegexp ),
 					// When `rows` is `null` it means we're still gathering data for
 					// this report.
 					{ body: [ { data: { rows: null } } ] }
@@ -506,12 +511,9 @@ describe( 'modules/analytics report', () => {
 			} );
 
 			it( 'should return TRUE if isZeroReport is true', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{ body: zeroRowsReport }
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: zeroRowsReport,
+				} );
 
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS );
 
@@ -526,20 +528,11 @@ describe( 'modules/analytics report', () => {
 			} );
 
 			it( 'should return FALSE if isGatheringData returns FALSE', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: fixtures.report,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: fixtures.report,
+				} );
 
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/data-available'
-					)
-				);
+				muteFetch( dataAvailableRegexp );
 
 				const { hasZeroData, isGatheringData } =
 					registry.select( MODULES_ANALYTICS );
@@ -558,20 +551,11 @@ describe( 'modules/analytics report', () => {
 
 			it( 'should return FALSE if isZeroReport returns FALSE', async () => {
 				expect( isZeroReport( fixtures.report ) ).toBe( false );
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/report'
-					),
-					{
-						body: fixtures.report,
-					}
-				);
+				fetchMock.getOnce( new RegExp( analyticsReportRegexp ), {
+					body: fixtures.report,
+				} );
 
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/data-available'
-					)
-				);
+				muteFetch( dataAvailableRegexp );
 
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS );
 

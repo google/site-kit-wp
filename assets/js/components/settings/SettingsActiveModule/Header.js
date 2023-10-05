@@ -191,7 +191,7 @@ export default function Header( { slug } ) {
 				</p>
 			);
 		} else {
-			moduleStatus = <ProgressBar height={ 32 } small />;
+			moduleStatus = <ProgressBar height={ 36 } small />;
 		}
 	} else {
 		moduleStatus = (
@@ -247,7 +247,7 @@ export default function Header( { slug } ) {
 										'Experimental',
 										'google-site-kit'
 									) }
-									hasLeftSpacing={ true }
+									hasLeftSpacing
 								/>
 							) }
 						</div>

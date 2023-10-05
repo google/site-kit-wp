@@ -105,21 +105,39 @@ describe( 'UserMenu', () => {
 		} );
 
 		describe( 'clicking the disconnect menu item', () => {
-			beforeEach( () => {
+			beforeEach( async () => {
 				fireEvent.click( menu.children[ 2 ] );
+
+				await waitFor( () => {
+					expect(
+						document.querySelector( '.mdc-dialog--open' )
+					).toBeInTheDocument();
+				} );
 			} );
 
 			it( 'should open the modal dialog', () => {
-				expect(
-					document.querySelector( '.mdc-dialog--open' )
-				).toBeInTheDocument();
+				expect( document.querySelector( '.mdc-dialog' ) ).toHaveClass(
+					'mdc-dialog--open'
+				);
 			} );
 
-			it( 'should close the modal dialog after pressing escape key', () => {
+			it( 'should close the modal dialog after pressing escape key', async () => {
 				fireEvent.keyUp( document, { keyCode: ESCAPE } );
+
+				await waitFor( () => {
+					expect(
+						document.querySelector( '.mdc-dialog--closing' )
+					).not.toBeInTheDocument();
+				} );
+
 				expect(
 					document.querySelector( '.mdc-dialog--open' )
 				).not.toBeInTheDocument();
+
+				// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are appied to the .mdc-dialog element.
+				expect(
+					document.querySelector( '.mdc-dialog' ).classList.length
+				).toBe( 1 );
 			} );
 
 			it( 'should redirect user to Site Kit splash screen and clear storage', async () => {
@@ -165,18 +183,24 @@ describe( 'UserMenu', () => {
 			expect( url ).toEqual( proxyPermissionsURL );
 		} );
 
-		it( 'should select a menu option on pressing space', () => {
+		it( 'should select a menu option on pressing space', async () => {
 			fireEvent.keyDown( menu.children[ 2 ], { keyCode: SPACE } );
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).toBeInTheDocument();
+
+			await waitFor( () => {
+				expect(
+					document.querySelector( '.mdc-dialog--open' )
+				).toBeInTheDocument();
+			} );
 		} );
 
-		it( 'should select a menu option on pressing enter', () => {
+		it( 'should select a menu option on pressing enter', async () => {
 			fireEvent.keyDown( menu.children[ 2 ], { keyCode: ENTER } );
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).toBeInTheDocument();
+
+			await waitFor( () => {
+				expect(
+					document.querySelector( '.mdc-dialog--open' )
+				).toBeInTheDocument();
+			} );
 		} );
 	} );
 } );

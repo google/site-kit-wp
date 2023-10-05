@@ -11,7 +11,9 @@
 namespace Google\Site_Kit\Core\Key_Metrics;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for handling Key_Metrics.
@@ -22,6 +24,8 @@ use Google\Site_Kit\Core\Storage\User_Options;
  */
 class Key_Metrics {
 
+	use Method_Proxy_Trait;
+
 	/**
 	 * Key_Metrics_Settings instance.
 	 *
@@ -29,6 +33,14 @@ class Key_Metrics {
 	 * @var Key_Metrics_Settings
 	 */
 	protected $key_metrics_settings;
+
+	/**
+	 * Key_Metrics_Setup_Completed instance.
+	 *
+	 * @since 1.108.0
+	 * @var Key_Metrics_Setup_Completed
+	 */
+	protected $key_metrics_setup_completed;
 
 	/**
 	 * REST_Key_Metrics_Controller instance.
@@ -45,10 +57,12 @@ class Key_Metrics {
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
+	 * @param Options      $options        Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, User_Options $user_options = null ) {
-		$this->key_metrics_settings = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
-		$this->rest_controller      = new REST_Key_Metrics_Controller( $this->key_metrics_settings );
+	public function __construct( Context $context, User_Options $user_options = null, Options $options = null ) {
+		$this->key_metrics_settings        = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
+		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options ?: new Options( $context ) );
+		$this->rest_controller             = new REST_Key_Metrics_Controller( $this->key_metrics_settings, $this->key_metrics_setup_completed );
 	}
 
 	/**
@@ -58,7 +72,24 @@ class Key_Metrics {
 	 */
 	public function register() {
 		$this->key_metrics_settings->register();
+		$this->key_metrics_setup_completed->register();
 		$this->rest_controller->register();
+
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+	}
+
+	/**
+	 * Adds the status of the Key Metrics widget setup to the inline JS data.
+	 *
+	 * @since 1.108.0
+	 *
+	 * @param array $data Inline JS data.
+	 * @return array Filtered $data.
+	 */
+	private function inline_js_base_data( $data ) {
+		$data['keyMetricsSetupCompleted'] = (bool) $this->key_metrics_setup_completed->get();
+
+		return $data;
 	}
 
 }

@@ -25,23 +25,21 @@ export const SMALL_IMAGE_SVG_SIZE = 1;
  * @since 1.69.0
  *
  * @param {Object}  args                   Arguments.
- * @param {boolean} args.inlineLayout      Whether the layout is inline.
  * @param {boolean} args.hasErrorOrWarning Whether the banner is rendering an error or a warning.
  * @param {boolean} args.hasSmallImageSVG  Whether the banner is rendering a small image.
  * @param {boolean} args.hasWinImageSVG    Whether the banner is rendering a large image.
  * @param {string}  [args.format]          The notification format. Can be either small, large or larger. Default: small.
  * @return {Object} The cell size for each breakpoint denoted by the smSize, mdSize and lgSize keys.
  */
-export const getContentCellSizeProperties = ( {
+export function getContentCellSizeProperties( {
 	format = 'small',
-	inlineLayout,
 	hasErrorOrWarning,
 	hasSmallImageSVG,
 	hasWinImageSVG,
-} ) => {
+} ) {
 	const sizes = {
 		smSize: 4,
-		mdSize: inlineLayout ? 7 : 8,
+		mdSize: 8,
 		lgSize: 12,
 	};
 	const imageCellSizes = getImageCellSizeProperties( format );
@@ -64,7 +62,7 @@ export const getContentCellSizeProperties = ( {
 	} );
 
 	return sizes;
-};
+}
 
 /**
  * Gets the cell order for the content area within BannerNotification.

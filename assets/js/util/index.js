@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { isFinite, unescape } from 'lodash';
+import { unescape } from 'lodash';
 
 /**
  * Internal dependencies
@@ -28,7 +28,6 @@ import { trackEvent } from './tracking';
 export { trackEvent };
 export * from './sanitize';
 export * from './stringify';
-export * from './standalone';
 export * from './storage';
 export * from './i18n';
 export * from './markdown';
@@ -84,21 +83,27 @@ export const getTimeInSeconds = ( period ) => {
  * @param {number} current  The current value.
  * @return {(number|null)} The percent change. Null if the input or output is invalid.
  */
-export const calculateChange = ( previous, current ) => {
+export function calculateChange( previous, current ) {
+	const isZero = ( value ) => value === '0' || value === 0;
+
+	// Prevent null result when both values are legitimately zero.
+	if ( isZero( previous ) && isZero( current ) ) {
+		return 0;
+	}
+
 	// Prevent divide by zero errors.
-	if ( '0' === previous || 0 === previous || isNaN( previous ) ) {
+	if ( isZero( previous ) || Number.isNaN( previous ) ) {
 		return null;
 	}
 
-	const change = ( current - previous ) / previous;
-
 	// Avoid NaN at all costs.
-	if ( isNaN( change ) || ! isFinite( change ) ) {
+	const change = ( current - previous ) / previous;
+	if ( Number.isNaN( change ) || ! Number.isFinite( change ) ) {
 		return null;
 	}
 
 	return change;
-};
+}
 
 /**
  * Verifies whether JSON is valid.

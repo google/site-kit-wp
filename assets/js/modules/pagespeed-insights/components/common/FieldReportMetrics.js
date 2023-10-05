@@ -25,6 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -42,7 +43,7 @@ export default function FieldReportMetrics( { data, error } ) {
 		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
 		CUMULATIVE_LAYOUT_SHIFT_SCORE: cumulativeLayoutShift,
 		FIRST_INPUT_DELAY_MS: firstInputDelay,
-		EXPERIMENTAL_INTERACTION_TO_NEXT_PAINT: interactionToNextPaint,
+		INTERACTION_TO_NEXT_PAINT: interactionToNextPaint,
 	} = data?.loadingExperience?.metrics || {};
 
 	if ( error ) {
@@ -95,11 +96,15 @@ export default function FieldReportMetrics( { data, error } ) {
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
-					{ __(
-						'Field data shows how real users actually loaded and interacted with your page over time.',
-						'google-site-kit'
-					) }{ ' ' }
-					<MetricsLearnMoreLink />
+					{ createInterpolateElement(
+						__(
+							'Field data shows how real users actually loaded and interacted with your page over time. <LearnMoreLink />',
+							'google-site-kit'
+						),
+						{
+							LearnMoreLink: <MetricsLearnMoreLink />,
+						}
+					) }
 				</p>
 			</div>
 			<table
@@ -161,7 +166,6 @@ export default function FieldReportMetrics( { data, error } ) {
 							firstInputDelay.percentile
 						) }
 						category={ firstInputDelay.category }
-						isLast={ ! interactionToNextPaint }
 					/>
 					<ReportMetric
 						title={ _x(
@@ -181,9 +185,7 @@ export default function FieldReportMetrics( { data, error } ) {
 						category={
 							interactionToNextPaint?.category || CATEGORY_AVERAGE
 						}
-						experimental
-						isLast={ !! interactionToNextPaint }
-						isHidden={ ! interactionToNextPaint }
+						isLast
 					/>
 				</tbody>
 			</table>

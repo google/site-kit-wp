@@ -21,8 +21,19 @@
 	}
 
 	.mdc-dialog__content {
+		color: $c-surfaces-on-surface;
+		font-family: $f-primary;
+		letter-spacing: normal;
+		padding: 0;
+	}
+
+	.mdc-dialog__provides {
 		overflow: initial;
 		padding: 20px 16px;
+	}
+
+	.mdc-dialog__dependencies {
+		margin: 1em 0;
 	}
 
 	.mdc-dialog__actions {

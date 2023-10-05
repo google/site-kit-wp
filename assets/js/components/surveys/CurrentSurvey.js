@@ -97,12 +97,13 @@ export default function CurrentSurvey() {
 
 	// We only have trigger conditions for questions that are answered with
 	// ordinal values right now.
-	const ordinalAnswerMap = answers.reduce( ( acc, answer ) => {
-		return {
+	const ordinalAnswerMap = answers.reduce(
+		( acc, { question_ordinal: ordinal, answer } ) => ( {
 			...acc,
-			[ answer.question_ordinal ]: answer.answer.answer.answer_ordinal,
-		};
-	}, {} );
+			[ ordinal ]: answer.answer.answer_ordinal || answer.answer,
+		} ),
+		{}
+	);
 
 	let currentQuestionOrdinal =
 		Math.max( 0, ...answers.map( ( answer ) => answer.question_ordinal ) ) +
@@ -114,11 +115,16 @@ export default function CurrentSurvey() {
 			trigger_condition: conditions,
 		} = question;
 
+		// Ignore questions that have ordinal lower than the current one.
+		if ( questionOrdinal < currentQuestionOrdinal ) {
+			return false;
+		}
+
 		if ( Array.isArray( conditions ) && conditions.length > 0 ) {
 			for ( const condition of conditions ) {
 				const answer = ordinalAnswerMap[ condition.question_ordinal ];
 				const allowedAnswers = condition.answer_ordinal || [];
-				if ( answer && ! allowedAnswers.includes( answer ) ) {
+				if ( ! answer || ! allowedAnswers.includes( answer ) ) {
 					currentQuestionOrdinal++;
 					return false;
 				}

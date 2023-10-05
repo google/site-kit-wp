@@ -25,6 +25,8 @@ import accounts from './accounts';
 import baseModuleStore from './base';
 import containers from './containers';
 import conversionEvents from './conversion-events';
+import customDimensions from './custom-dimensions';
+import enhancedMeasurement from './enhanced-measurement';
 import properties from './properties';
 import report from './report';
 import service from './service';
@@ -38,6 +40,8 @@ const store = Data.combineStores(
 	containers,
 	conversionEvents,
 	createSnapshotStore( MODULES_ANALYTICS_4 ),
+	customDimensions,
+	enhancedMeasurement,
 	properties,
 	report,
 	service,

@@ -42,6 +42,7 @@ import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper'
 
 const defaultSettings = {
 	accountID: '',
+	adBlockingRecoverySetupStatus: '',
 	clientID: '',
 	accountStatus: '',
 	siteStatus: '',
@@ -54,6 +55,7 @@ const defaultSettings = {
 const completeSettings = {
 	...defaultSettings,
 	accountID: fixtures.accounts[ 0 ]._id,
+	adBlockingRecoverySetupStatus: '',
 	clientID: fixtures.clients[ 0 ]._id,
 	accountStatus: ACCOUNT_STATUS_APPROVED,
 	siteStatus: SITE_STATUS_ADDED,
@@ -147,6 +149,46 @@ storiesOf( 'AdSense Module/Settings', module )
 		}
 	)
 	.add(
+		'View, open with Ad Blocking Recovery tag placed',
+		( args, { registry } ) => {
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				...completeSettings,
+				adBlockingRecoverySetupStatus: 'tag-placed',
+				useAdBlockingRecoverySnippet: true,
+			} );
+
+			return (
+				<Settings
+					route="/connected-services/adsense"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'View, open with Ad Blocking Recovery tag not placed',
+		( args, { registry } ) => {
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				...completeSettings,
+				adBlockingRecoverySetupStatus: 'setup-confirmed',
+				useAdBlockingRecoverySnippet: false,
+			} );
+
+			return (
+				<Settings
+					route="/connected-services/adsense"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
 		'Edit, open',
 		( args, { registry } ) => {
 			registry
@@ -196,6 +238,52 @@ storiesOf( 'AdSense Module/Settings', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( 'ca-pub-12345678' );
+			setUpAdUnits( registry );
+
+			return (
+				<Settings
+					route="/connected-services/adsense/edit"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with existing ad blocking recovery tag (same account)',
+		( args, { registry } ) => {
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetSettings( completeSettings );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag(
+					completeSettings.accountID
+				);
+			setUpAdUnits( registry );
+
+			return (
+				<Settings
+					route="/connected-services/adsense/edit"
+					registry={ registry }
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with existing ad blocking recovery tag (different account)',
+		( args, { registry } ) => {
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetSettings( completeSettings );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( 'pub-12345678' );
 			setUpAdUnits( registry );
 
 			return (

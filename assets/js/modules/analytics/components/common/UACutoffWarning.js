@@ -42,6 +42,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { FORM_SETUP } from '../../datastore/constants';
 import { UA_CUTOFF_DATE } from '../../constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../../analytics-4/constants';
 import { stringToDate, trackEvent } from '../../../../util';
 import { Grid, Row, Cell } from '../../../../material-components/layout';
 import { Button } from 'googlesitekit-components';
@@ -115,6 +116,17 @@ export default function UACutoffWarning( { className } ) {
 		navigateTo( `${ settingsURL }#connected-services/analytics/edit` );
 	};
 
+	const warningMessage =
+		stringToDate( referenceDate ) >= stringToDate( GA4_AUTO_SWITCH_DATE )
+			? __(
+					'No fresh data to display. Universal Analytics stopped collecting data on July 1. To resume collecting Analytics data, set up Google Analytics 4. <a>Learn more</a>',
+					'google-site-kit'
+			  )
+			: __(
+					'Your data is stale because Universal Analytics stopped collecting data on July 1, 2023. <a>Learn more</a>',
+					'google-site-kit'
+			  );
+
 	return (
 		<Grid className={ className }>
 			<Row>
@@ -134,10 +146,7 @@ export default function UACutoffWarning( { className } ) {
 							<Fragment>
 								<p className="googlesitekit-settings-notice-ua-cutoff-warning__notice">
 									{ createInterpolateElement(
-										__(
-											'Your data is stale because Universal Analytics stopped collecting data on July 1, 2023. <a>Learn more</a>',
-											'google-site-kit'
-										),
+										warningMessage,
 										{
 											a: (
 												<Link

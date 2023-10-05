@@ -26,7 +26,6 @@ import { EVENTS, ACTIONS, STATUS } from 'react-joyride';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
-import { isFeatureEnabled } from '../features';
 import settingsTour from './dashboard-sharing-settings';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
@@ -53,7 +52,6 @@ const dashboardSharing = {
 		},
 		...settingsTour.steps,
 	],
-	checkRequirements: () => isFeatureEnabled( 'dashboardSharing' ),
 	callback: ( data, { select, dispatch } ) => {
 		const { action, index, size, type, status } = data;
 

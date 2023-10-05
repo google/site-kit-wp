@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { set } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { visitAdminPage } from '@wordpress/e2e-test-utils';
@@ -35,20 +40,21 @@ import {
 	step,
 	setSearchConsoleProperty,
 	setupAnalytics,
+	setupAnalytics4,
 } from '../utils';
+import { getAnalytics4MockResponse } from '../../../assets/js/modules/analytics-4/utils/data-mock';
+import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
-		await page.waitForSelector(
-			'.googlesitekit-user-input__question--active'
-		);
+		await page.waitForSelector( '.googlesitekit-user-input__question' );
 
 		await step( 'select purpose', async () => {
 			await expect( page ).toClick( '#purpose-publish_blog' );
 		} );
 
 		await expect( page ).toClick(
-			'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+			'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
 		);
 
 		await pageWait();
@@ -58,7 +64,7 @@ describe( 'User Input Settings', () => {
 		} );
 
 		await expect( page ).toClick(
-			'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+			'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
 		);
 
 		await pageWait();
@@ -71,7 +77,7 @@ describe( 'User Input Settings', () => {
 
 		await step( 'go to preview page', async () => {
 			await expect( page ).toClick(
-				'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+				'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
 			);
 		} );
 
@@ -89,9 +95,18 @@ describe( 'User Input Settings', () => {
 		);
 
 		await step(
-			'wait for success notification',
-			page.waitForSelector( '#user-input-success' )
+			'wait for a Key Metric tile to successfully appear',
+			page.waitForSelector(
+				'.googlesitekit-widget--kmAnalyticsLoyalVisitors'
+			)
 		);
+	}
+
+	function getMultiDimensionalObjectFromParams( params ) {
+		return Object.entries( params ).reduce( ( acc, [ key, value ] ) => {
+			set( acc, key, value );
+			return acc;
+		}, {} );
 	}
 
 	beforeAll( async () => {
@@ -100,7 +115,51 @@ describe( 'User Input Settings', () => {
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 
-			if ( url.match( '/google-site-kit/v1/modules' ) ) {
+			const paramsObject = Object.fromEntries(
+				new URL( url ).searchParams.entries()
+			);
+
+			// Provide mock data for Analytics 4 and Search Console requests to ensure they are not in the "gathering data" state.
+			if (
+				url.match(
+					'/google-site-kit/v1/modules/analytics-4/data/report?'
+				)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						getAnalytics4MockResponse(
+							// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
+							getMultiDimensionalObjectFromParams( paramsObject )
+						)
+					),
+				} );
+			} else if (
+				url.match(
+					'/google-site-kit/v1/modules/search-console/data/searchanalytics?'
+				)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						getSearchConsoleMockResponse( paramsObject )
+					),
+				} );
+			} else if (
+				url.match(
+					'/google-site-kit/v1/modules/search-console/data/data-available'
+				)
+			) {
+				request.continue();
+			} else if (
+				url.match(
+					'/google-site-kit/v1/modules/analytics-4/data/data-available'
+				)
+			) {
+				request.continue();
+			} else if ( url.match( 'user/data/survey-timeout' ) ) {
+				request.respond( { status: 200 } );
+			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {
 				request.continue();
@@ -110,6 +169,7 @@ describe( 'User Input Settings', () => {
 
 	beforeEach( async () => {
 		await enableFeature( 'userInput' );
+		await enableFeature( 'ga4Reporting' );
 		await activatePlugins(
 			'e2e-tests-proxy-setup',
 			'e2e-tests-oauth-callback-plugin'
@@ -127,6 +187,7 @@ describe( 'User Input Settings', () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
 		await setupAnalytics();
+		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 
@@ -135,15 +196,39 @@ describe( 'User Input Settings', () => {
 			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
 		);
 
-		await page.waitForSelector( '.googlesitekit-user-input__notification' );
+		await Promise.all( [
+			page.waitForResponse( ( res ) =>
+				res
+					.url()
+					.match(
+						'/google-site-kit/v1/modules/search-console/data/data-available'
+					)
+			),
+			page.waitForResponse( ( res ) =>
+				res
+					.url()
+					.match(
+						'/google-site-kit/v1/modules/analytics-4/data/data-available'
+					)
+			),
+		] );
+
+		// On the first load of the dashboard, report requests made by the isGatheringData selector for SC and GA4
+		// will fetch some data since we intercept those requests providing mock report data. This the data-available
+		// endpoint which sets the appropriate transients that will be prefetched only on the next page load.
+		await page.reload();
+
+		await page.waitForSelector(
+			'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
+		);
 
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
-				'.googlesitekit-user-input__notification'
+				'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
 			);
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+					'.googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
 				),
 				page.waitForNavigation(),
 			] );
@@ -156,6 +241,7 @@ describe( 'User Input Settings', () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
 		await setupAnalytics();
+		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 

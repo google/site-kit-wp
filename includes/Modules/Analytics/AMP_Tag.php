@@ -106,14 +106,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	 * @since 1.24.0
 	 */
 	protected function render() {
-		$config = array(
-			$this->tag_id => array(
-				'groups' => 'default',
-				'linker' => array(
-					'domains' => array( $this->home_domain ),
-				),
-			),
-		);
+		$config = $this->get_tag_config();
 
 		if ( ! empty( $this->ads_conversion_id ) ) {
 			$config[ $this->ads_conversion_id ] = array(
@@ -150,8 +143,6 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 			$gtag_amp_opt_filtered['vars'] = $gtag_amp_opt['vars'];
 		}
 
-		$gtag_amp_opt_filtered['vars']['gtag_id'] = $this->tag_id;
-
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics AMP snippet added by Site Kit', 'google-site-kit' ) );
 
 		printf(
@@ -161,6 +152,22 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 		);
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics AMP snippet added by Site Kit', 'google-site-kit' ) );
+	}
+
+	/**
+	 * Gets the tag config as used in the gtag data vars.
+	 *
+	 * @return array[]
+	 */
+	protected function get_tag_config() {
+		return array(
+			$this->tag_id => array(
+				'groups' => 'default',
+				'linker' => array(
+					'domains' => array( $this->home_domain ),
+				),
+			),
+		);
 	}
 
 }

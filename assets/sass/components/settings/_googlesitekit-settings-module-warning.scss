@@ -31,12 +31,15 @@
 }
 
 .googlesitekit-settings-module-warning--modules-list {
+	align-items: flex-start;
+	display: flex;
 	font-size: $fs-body-sm;
 	letter-spacing: $ls-xs;
 	margin: 1em 0;
 
-	.svg {
+	svg {
 		height: auto;
+		margin: 0.25em 0.5em 0 0;
 		width: 15px;
 	}
 }

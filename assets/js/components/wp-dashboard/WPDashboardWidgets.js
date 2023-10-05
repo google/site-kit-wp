@@ -119,12 +119,13 @@ export default function WPDashboardWidgets() {
 				}
 			) }
 		>
-			{ analyticsModuleActiveAndConnected && ! isGA4DashboardView && (
-				<Fragment>
-					<WPDashboardUniqueVisitorsWidget />
-					<WPDashboardSessionDurationWidget />
-				</Fragment>
-			) }
+			{ analyticsModuleActiveAndConnected &&
+				isGA4DashboardView === false && (
+					<Fragment>
+						<WPDashboardUniqueVisitorsWidget />
+						<WPDashboardSessionDurationWidget />
+					</Fragment>
+				) }
 
 			{ isGA4DashboardView && (
 				<Fragment>
@@ -142,12 +143,13 @@ export default function WPDashboardWidgets() {
 				</div>
 			) }
 
-			{ analyticsModuleActiveAndConnected && ! isGA4DashboardView && (
-				<Fragment>
-					<WPDashboardUniqueVisitorsChartWidget />
-					<WPDashboardPopularPagesWidget />
-				</Fragment>
-			) }
+			{ analyticsModuleActiveAndConnected &&
+				isGA4DashboardView === false && (
+					<Fragment>
+						<WPDashboardUniqueVisitorsChartWidget />
+						<WPDashboardPopularPagesWidget />
+					</Fragment>
+				) }
 
 			{ isGA4DashboardView && (
 				<Fragment>

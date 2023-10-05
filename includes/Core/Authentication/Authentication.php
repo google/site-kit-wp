@@ -20,7 +20,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\User_Input\User_Input;
@@ -230,19 +229,21 @@ final class Authentication {
 	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
 	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
 	 * @param Transients   $transients   Optional. Transient API instance. Default is a new instance.
+	 * @param User_Input   $user_input   Optional. User_Input instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
-		Transients $transients = null
+		Transients $transients = null,
+		User_Input $user_input = null
 	) {
 		$this->context              = $context;
 		$this->options              = $options ?: new Options( $this->context );
 		$this->user_options         = $user_options ?: new User_Options( $this->context );
 		$this->transients           = $transients ?: new Transients( $this->context );
 		$this->modules              = new Modules( $this->context, $this->options, $this->user_options, $this );
-		$this->user_input           = new User_Input( $context, $this->options, $this->user_options );
+		$this->user_input           = $user_input ?: new User_Input( $context, $this->options, $this->user_options );
 		$this->google_proxy         = new Google_Proxy( $this->context );
 		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
 		$this->verification         = new Verification( $this->user_options );
@@ -273,9 +274,6 @@ final class Authentication {
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
 		$this->initial_version->register();
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
-			$this->user_input->register();
-		}
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
@@ -404,6 +402,25 @@ final class Authentication {
 			'heartbeat_tick',
 			function() {
 				$this->maybe_refresh_token_for_screen( $this->context->input()->filter( INPUT_POST, 'screen_id' ) );
+			}
+		);
+
+		// Regularly synchronize Google profile data.
+		add_action(
+			'googlesitekit_reauthorize_user',
+			function() {
+				if ( ! $this->profile->has() ) {
+					return;
+				}
+
+				$profile_data = $this->profile->get();
+
+				if (
+					! isset( $profile_data['last_updated'] ) ||
+					time() - $profile_data['last_updated'] > DAY_IN_SECONDS
+				) {
+					$this->get_oauth_client()->refresh_profile_data( 30 * MINUTE_IN_SECONDS );
+				}
 			}
 		);
 	}
@@ -656,9 +673,7 @@ final class Authentication {
 			return;
 		}
 
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$this->refresh_shared_module_owner_tokens();
-		}
+		$this->refresh_shared_module_owner_tokens();
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) || ! $this->credentials()->has() ) {
 			return;
@@ -1239,8 +1254,7 @@ final class Authentication {
 					$unsatisfied_scopes = $this->get_oauth_client()->get_unsatisfied_scopes();
 
 					if (
-						Feature_Flags::enabled( 'gteSupport' )
-						&& count( $unsatisfied_scopes ) === 1
+						count( $unsatisfied_scopes ) === 1
 						&& 'https://www.googleapis.com/auth/tagmanager.readonly' === $unsatisfied_scopes[0]
 					) {
 						return false;

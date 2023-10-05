@@ -28,7 +28,8 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
  */
 final class Screens {
 
-	const PREFIX = 'googlesitekit-';
+	const PREFIX           = 'googlesitekit-';
+	const PARENT_SLUG_NULL = self::PREFIX . 'null';
 
 	/**
 	 * Plugin context.
@@ -405,14 +406,12 @@ final class Screens {
 				array(
 					'title'               => __( 'Dashboard', 'google-site-kit' ),
 					'capability'          => Permissions::VIEW_SPLASH,
-					'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : null,
+					'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : self::PARENT_SLUG_NULL,
 					// This callback will redirect to the dashboard on successful authentication.
 					'initialize_callback' => function( Context $context ) {
-						if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-							// Get the dismissed items for this user.
-							$user_options = new User_Options( $context );
-							$dismissed_items = new Dismissed_Items( $user_options );
-						}
+						// Get the dismissed items for this user.
+						$user_options = new User_Options( $context );
+						$dismissed_items = new Dismissed_Items( $user_options );
 
 						$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
 						$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
@@ -435,7 +434,6 @@ final class Screens {
 						if (
 							$this->authentication->is_authenticated() ||
 							(
-								Feature_Flags::enabled( 'dashboardSharing' ) &&
 								! current_user_can( Permissions::AUTHENTICATE ) &&
 								$dismissed_items->is_dismissed( 'shared_dashboard_splash' ) &&
 								current_user_can( Permissions::VIEW_SHARED_DASHBOARD )
@@ -470,21 +468,19 @@ final class Screens {
 				array(
 					'title'       => __( 'User Input', 'google-site-kit' ),
 					'capability'  => Permissions::MANAGE_OPTIONS,
-					'parent_slug' => null,
+					'parent_slug' => self::PARENT_SLUG_NULL,
 				)
 			);
 		}
 
-		if ( Feature_Flags::enabled( 'adBlockerDetection' ) ) {
-			$screens[] = new Screen(
-				self::PREFIX . 'ad-blocking-recovery',
-				array(
-					'title'       => __( 'Ad Blocking Recovery', 'google-site-kit' ),
-					'capability'  => Permissions::MANAGE_OPTIONS,
-					'parent_slug' => null,
-				)
-			);
-		}
+		$screens[] = new Screen(
+			self::PREFIX . 'ad-blocking-recovery',
+			array(
+				'title'       => __( 'Ad Blocking Recovery', 'google-site-kit' ),
+				'capability'  => Permissions::MANAGE_OPTIONS,
+				'parent_slug' => self::PARENT_SLUG_NULL,
+			)
+		);
 
 		return $screens;
 	}

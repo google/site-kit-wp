@@ -82,7 +82,8 @@ describe( 'API cache', () => {
 		await goToSiteKitDashboard();
 
 		await page.waitForSelector(
-			`#${ firstTestNotification.id }.googlesitekit-publisher-win--is-open`
+			`#${ firstTestNotification.id }.googlesitekit-publisher-win--is-open`,
+			{ timeout: 10_000 } // Core site notifications are delayed 5s for surveys.
 		);
 
 		await expect( page ).toClick(
@@ -108,7 +109,8 @@ describe( 'API cache', () => {
 
 		// Ensure the second notification is displayed.
 		await page.waitForSelector(
-			`#${ secondTestNotification.id }.googlesitekit-publisher-win--is-open`
+			`#${ secondTestNotification.id }.googlesitekit-publisher-win--is-open`,
+			{ timeout: 10_000 } // Core site notifications are delayed 5s for surveys.
 		);
 
 		await expect( page ).toMatchElement(

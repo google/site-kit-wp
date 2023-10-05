@@ -31,13 +31,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { TextField, HelperText, Input } from '../../../../material-components';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { TextField } from 'googlesitekit-components';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidAdsConversionID } from '../../util';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAdsConversionID()
 	);
@@ -47,6 +51,12 @@ export default function AdsConversionIDTextField() {
 			select( MODULES_ANALYTICS ).getUseSnippet()
 		);
 	} );
+	const ga4SnippetEnabled = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getUseSnippet()
+	);
+	const isUAEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
+	);
 
 	const { setAdsConversionID } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
@@ -70,7 +80,12 @@ export default function AdsConversionIDTextField() {
 
 	// Only show the field if the snippet is enabled for output,
 	// but only hide it if the value is valid otherwise the user will be blocked.
-	if ( isValidValue && ! snippetEnabled ) {
+	if (
+		isValidValue &&
+		( ga4ReportingEnabled
+			? ! ( isUAEnabled && snippetEnabled ) && ! ga4SnippetEnabled
+			: ! snippetEnabled )
+	) {
 		return null;
 	}
 
@@ -85,13 +100,10 @@ export default function AdsConversionIDTextField() {
 					'mdc-text-field--error': ! isValidValue,
 				} ) }
 				helperText={
-					! isValidValue && (
-						<HelperText persistent>
-							{ __(
-								'Conversion IDs must be in the format: AW-XXXXX',
-								'google-site-kit'
-							) }
-						</HelperText>
+					! isValidValue &&
+					__(
+						'Conversion IDs must be in the format: AW-XXXXX',
+						'google-site-kit'
 					)
 				}
 				trailingIcon={
@@ -104,9 +116,9 @@ export default function AdsConversionIDTextField() {
 					)
 				}
 				outlined
-			>
-				<Input value={ adsConversionID } onChange={ onChange } />
-			</TextField>
+				value={ adsConversionID }
+				onChange={ onChange }
+			/>
 
 			<p>
 				{ __(

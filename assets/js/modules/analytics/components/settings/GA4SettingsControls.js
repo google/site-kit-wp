@@ -41,6 +41,7 @@ import {
 	PropertySelect,
 	WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
+import SettingsEnhancedMeasurementSwitch from '../../../analytics-4/components/settings/SettingsEnhancedMeasurementSwitch';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -55,6 +56,7 @@ const { useSelect, useDispatch } = Data;
 export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
 
+	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewContext = useViewContext();
@@ -103,6 +105,12 @@ export default function GA4SettingsControls( props ) {
 		} );
 	}, [ eventCategory, setValues ] );
 
+	const toggleDocumentClass = useCallback( () => {
+		global.document.body.classList.toggle(
+			'googlesitekit--has-visible-tooltip'
+		);
+	}, [] );
+
 	const isDisabled = ! propertyID && ! enableGA4;
 	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
 
@@ -150,7 +158,7 @@ export default function GA4SettingsControls( props ) {
 							) }
 							styles={ {
 								options: {
-									zIndex: 9999,
+									zIndex: 10,
 								},
 							} }
 							target=".googlesitekit-analytics-4__select-property--loaded"
@@ -166,6 +174,8 @@ export default function GA4SettingsControls( props ) {
 								</Button>
 							}
 							onView={ onViewTooltip }
+							onTourStart={ toggleDocumentClass }
+							onTourEnd={ toggleDocumentClass }
 						/>
 					) }
 			</div>
@@ -187,6 +197,12 @@ export default function GA4SettingsControls( props ) {
 				<div className="googlesitekit-settings-module__meta-item">
 					<SettingsUseSnippetSwitch />
 				</div>
+			) }
+
+			{ enhancedMeasurementEnabled && (
+				<SettingsEnhancedMeasurementSwitch
+					hasAnalytics4Access={ hasAnalytics4Access }
+				/>
 			) }
 		</div>
 	);

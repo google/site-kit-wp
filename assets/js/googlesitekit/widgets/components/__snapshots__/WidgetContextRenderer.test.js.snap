@@ -18,11 +18,15 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
         >
           Dashboard Header
         </h3>
-        <h4
-          class="googlesitekit-widget-area-header__subtitle"
+        <div
+          class="googlesitekit-widget-area-header__details"
         >
-          Cool stuff for yoursite.com
-        </h4>
+          <h4
+            class="googlesitekit-widget-area-header__subtitle"
+          >
+            Cool stuff for yoursite.com
+          </h4>
+        </div>
       </div>
     </div>
     <div
@@ -75,11 +79,15 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
         >
           Dashboard Body
         </h3>
-        <h4
-          class="googlesitekit-widget-area-header__subtitle"
+        <div
+          class="googlesitekit-widget-area-header__details"
         >
-          More cool stuff for yoursite.com
-        </h4>
+          <h4
+            class="googlesitekit-widget-area-header__subtitle"
+          >
+            More cool stuff for yoursite.com
+          </h4>
+        </div>
       </div>
     </div>
     <div

@@ -35,12 +35,9 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import BannerNotification from './BannerNotification';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function ErrorNotifications() {
-	const gteSupportEnabled = useFeature( 'gteSupport' );
-
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -68,7 +65,15 @@ export default function ErrorNotifications() {
 	);
 
 	const showUnsatisfiedScopesAlertGTE =
-		gteSupportEnabled && ga4ModuleConnected && ! hasTagManagerReadScope;
+		ga4ModuleConnected && ! hasTagManagerReadScope;
+
+	let title = __( 'Error connecting Site Kit', 'google-site-kit' );
+	let ctaLabel = __( 'Redo the plugin setup', 'google-site-kit' );
+
+	if ( setupErrorCode === 'access_denied' ) {
+		title = __( 'Permissions Error', 'google-site-kit' );
+		ctaLabel = __( 'Redo setup', 'google-site-kit' );
+	}
 
 	return (
 		<Fragment>
@@ -78,17 +83,11 @@ export default function ErrorNotifications() {
 				<BannerNotification
 					id="setup_error"
 					type="win-error"
-					title={ __(
-						'Error connecting Site Kit',
-						'google-site-kit'
-					) }
+					title={ title }
 					description={ setupErrorMessage }
 					isDismissible={ false }
 					ctaLink={ setupErrorRedoURL }
-					ctaLabel={ __(
-						'Redo the plugin setup',
-						'google-site-kit'
-					) }
+					ctaLabel={ ctaLabel }
 					learnMoreLabel={ __( 'Get help', 'google-site-kit' ) }
 					learnMoreURL={ errorTroubleshootingLinkURL }
 				/>

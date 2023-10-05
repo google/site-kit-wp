@@ -128,6 +128,10 @@ const baseActions = {
 			yield receiveError( error, 'saveUserInputSettings', [] );
 		}
 
+		if ( ! error ) {
+			yield baseActions.maybeTriggerUserInputSurvey();
+		}
+
 		yield {
 			type: SET_USER_INPUT_SETTINGS_SAVING_FLAG,
 			payload: { isSaving: false },
@@ -148,6 +152,40 @@ const baseActions = {
 			type: RESET_USER_INPUT_SETTINGS,
 			payload: {},
 		};
+	},
+
+	/**
+	 * Triggers user input survey if any of the answers is "Other".
+	 *
+	 * @since 1.104.0
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*maybeTriggerUserInputSurvey() {
+		const { __experimentalResolveSelect, dispatch } =
+			yield commonActions.getRegistry();
+
+		const settings = yield commonActions.await(
+			__experimentalResolveSelect( CORE_USER ).getUserInputSettings()
+		);
+
+		const settingsAnsweredOther = Object.keys( settings ).filter( ( key ) =>
+			settings[ key ].values.includes( 'other' )
+		);
+
+		if ( ! settingsAnsweredOther.length > 0 ) {
+			return;
+		}
+
+		const triggerID = `userInput_answered_other__${ settingsAnsweredOther.join(
+			'_'
+		) }`;
+
+		const { response, error } = yield commonActions.await(
+			dispatch( CORE_USER ).triggerSurvey( triggerID )
+		);
+
+		return { response, error };
 	},
 };
 

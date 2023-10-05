@@ -56,6 +56,12 @@ describe( 'modules/analytics-4 report', () => {
 
 	describe( 'selectors', () => {
 		const zeroDataReport = { totals: [ {} ] };
+		const analytics4ReportRegexp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/report'
+		);
+		const dataAvailableRegexp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+		);
 
 		describe( 'getReport', () => {
 			const options = {
@@ -83,13 +89,10 @@ describe( 'modules/analytics-4 report', () => {
 			};
 
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/report/,
-					{
-						body: fixtures.report,
-						status: 200,
-					}
-				);
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
 
 				const initialReport = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -134,15 +137,10 @@ describe( 'modules/analytics-4 report', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					),
-					{
-						body: response,
-						status: 500,
-					}
-				);
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: response,
+					status: 500,
+				} );
 
 				registry.select( MODULES_ANALYTICS_4 ).getReport( options );
 				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
@@ -217,12 +215,8 @@ describe( 'modules/analytics-4 report', () => {
 		} );
 
 		describe( 'isGatheringData', () => {
-			it( 'should return undefined if getReport is not resolved yet', async () => {
-				freezeFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					)
-				);
+			it( 'should return `undefined` if getReport is not resolved yet', async () => {
+				freezeFetch( analytics4ReportRegexp );
 
 				const { isGatheringData } =
 					registry.select( MODULES_ANALYTICS_4 );
@@ -231,23 +225,16 @@ describe( 'modules/analytics-4 report', () => {
 
 				// Wait for resolvers to run.
 				await waitForTimeouts( 30 );
+
+				expect( fetchMock ).toHaveFetched( analytics4ReportRegexp );
 			} );
 
 			it( 'should return FALSE if the returned report has data', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					),
-					{
-						body: fixtures.report,
-					}
-				);
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+				} );
 
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/data-available'
-					)
-				);
+				muteFetch( dataAvailableRegexp );
 
 				const { isGatheringData } =
 					registry.select( MODULES_ANALYTICS_4 );
@@ -262,41 +249,29 @@ describe( 'modules/analytics-4 report', () => {
 				expect( isGatheringData() ).toBe( false );
 			} );
 
-			it( 'should return FALSE if the report request fails', async () => {
+			it( 'should return TRUE if report API returns error', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/data-available'
-					)
-				);
-
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					),
-					{
-						body: response,
-						status: 500,
-					}
-				);
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: response,
+					status: 500,
+				} );
 
 				const { isGatheringData } =
 					registry.select( MODULES_ANALYTICS_4 );
 
 				expect( isGatheringData() ).toBeUndefined();
 
-				await subscribeUntil(
-					registry,
-					() => isGatheringData() !== undefined
-				);
+				// Wait for resolvers to run.
+				await waitForTimeouts( 30 );
 
-				expect( isGatheringData() ).toBe( false );
+				expect( isGatheringData() ).toBe( true );
 				expect( console ).toHaveErrored();
+				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
 
 			describe.each( [
@@ -313,14 +288,9 @@ describe( 'modules/analytics-4 report', () => {
 				],
 			] )( 'when the returned report is %s', ( _, body ) => {
 				beforeEach( () => {
-					fetchMock.getOnce(
-						new RegExp(
-							'^/google-site-kit/v1/modules/analytics-4/data/report'
-						),
-						{
-							body,
-						}
-					);
+					fetchMock.getOnce( analytics4ReportRegexp, {
+						body,
+					} );
 				} );
 
 				it( 'should return undefined if getSettings is not resolved yet', async () => {
@@ -397,11 +367,7 @@ describe( 'modules/analytics-4 report', () => {
 						authenticated: true,
 					} );
 
-					muteFetch(
-						new RegExp(
-							'^/google-site-kit/v1/modules/analytics-4/data/data-available'
-						)
-					);
+					muteFetch( dataAvailableRegexp );
 
 					// Create a timestamp that is three days ago.
 					const createTime = new Date(
@@ -502,12 +468,8 @@ describe( 'modules/analytics-4 report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport has not resolved yet', async () => {
-				freezeFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					)
-				);
+			it( 'should return `undefined` if getReport has not resolved yet', async () => {
+				freezeFetch( analytics4ReportRegexp );
 
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
 
@@ -517,43 +479,33 @@ describe( 'modules/analytics-4 report', () => {
 				await waitForTimeouts( 30 );
 			} );
 
-			it( 'should return FALSE if the report request fails', async () => {
+			it( 'should return TRUE if report API returns error', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					),
-					{
-						body: response,
-						status: 500,
-					}
-				);
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: response,
+					status: 500,
+				} );
 
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
 
 				expect( hasZeroData() ).toBeUndefined();
 
-				await subscribeUntil(
-					registry,
-					() => hasZeroData() !== undefined
-				);
+				// Wait for resolvers to run.
+				await waitForTimeouts( 30 );
 
-				expect( hasZeroData() ).toBe( false );
+				expect( hasZeroData() ).toBe( true );
 				expect( console ).toHaveErrored();
 			} );
 
 			it( 'should return TRUE if isZeroReport is true', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					),
-					{ body: zeroDataReport }
-				);
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: zeroDataReport,
+				} );
 
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
 
@@ -569,14 +521,9 @@ describe( 'modules/analytics-4 report', () => {
 
 			it( 'should return FALSE if isZeroReport returns FALSE', async () => {
 				expect( isZeroReport( fixtures.report ) ).toBe( false );
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					),
-					{
-						body: fixtures.report,
-					}
-				);
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+				} );
 
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
 

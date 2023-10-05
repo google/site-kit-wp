@@ -19,21 +19,27 @@ use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\AdSense;
+use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\AdBlockingRecoveryTag;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\ListAlertsResponse;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use ReflectionMethod;
 use WP_REST_Request;
 
 /**
  * @group Modules
+ * @group AdSense
  */
 class AdSenseTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
@@ -333,6 +339,133 @@ class AdSenseTest extends TestCase {
 		);
 	}
 
+	public function test_set_data__sync_ad_blocking_recovery_tags() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$adsense->get_scopes()
+		);
+
+		$adsense->get_settings()->merge( array( 'accountID' => 'pub-1234567890' ) );
+
+		FakeHttp::fake_google_http_handler(
+			$adsense->get_client(),
+			function() {
+				$response = new AdBlockingRecoveryTag();
+				$response->setTag( 'test-recovery-tag' );
+				$response->setErrorProtectionCode( 'test-error-protection-code' );
+
+				return new Response( 200, array(), json_encode( $response ) );
+			}
+		);
+
+		// Assert that the tags are not available in database before fetching.
+		$this->assertOptionNotExists( Ad_Blocking_Recovery_Tag::OPTION );
+
+		$response = $adsense->set_data( 'sync-ad-blocking-recovery-tags', array() );
+
+		// Assert API response.
+		$this->assertNotWPError( $response );
+		$this->assertEqualSetsWithIndex( array( 'success' => true ), $response->get_data() );
+
+		// Assert that the tags are available in database after fetching.
+		$this->assertOptionExists( Ad_Blocking_Recovery_Tag::OPTION );
+	}
+
+	public function test_get_data__notifications() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$adsense->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$adsense->get_client(),
+			function() {
+				$mock_alert_severe = new Alert();
+				$mock_alert_severe->setSeverity( 'SEVERE' );
+
+				$mock_alert_warning = new Alert();
+				$mock_alert_warning->setSeverity( 'WARNING' );
+
+				$response = new ListAlertsResponse();
+				$response->setAlerts( array( $mock_alert_severe, $mock_alert_warning ) );
+
+				return new Response( 200, array(), json_encode( $response ) );
+			}
+		);
+
+		// Should return empty array when account ID is not available in settings.
+		$response = $adsense->get_data( 'notifications' );
+		$this->assertCount( 0, $response );
+
+		// Should return an array of `adsense-notification` with `SEVERE` severity when account ID is available.
+		$adsense->get_settings()->merge( array( 'accountID' => 'pub-1234567890' ) );
+
+		$response = $adsense->get_data( 'notifications' );
+		$this->assertNotWPError( $response );
+		$this->assertCount( 1, $response );
+	}
+
+	public function test_get_data__alerts() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$adsense->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$adsense->get_client(),
+			function() {
+				$mock_alert_severe = new Alert();
+				$mock_alert_severe->setSeverity( 'SEVERE' );
+
+				$mock_alert_warning = new Alert();
+				$mock_alert_warning->setSeverity( 'WARNING' );
+
+				$response = new ListAlertsResponse();
+				$response->setAlerts( array( $mock_alert_severe, $mock_alert_warning ) );
+
+				return new Response( 200, array(), json_encode( $response ) );
+			}
+		);
+
+		// Should return WP Error when account ID is not provided.
+		$response = $adsense->get_data( 'alerts' );
+		$this->assertWPError( $response );
+
+		// Should return an array of alerts when account ID is provided.
+		$response = $adsense->get_data( 'alerts', array( 'accountID' => 'pub-1234567890' ) );
+		$this->assertNotWPError( $response );
+		$this->assertCount( 2, $response );
+		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert', $response[0] );
+		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert', $response[1] );
+	}
+
 	public function test_is_connected() {
 		$adsense  = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -356,12 +489,15 @@ class AdSenseTest extends TestCase {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$options->set( Settings::OPTION, 'test-value' );
+		$options->set( Settings::OPTION, 'test-value-settings' );
+		$options->set( Ad_Blocking_Recovery_Tag::OPTION, 'test-value-ad-blocking-recovery-tag' );
 		$this->assertOptionExists( Settings::OPTION );
+		$this->assertOptionExists( Ad_Blocking_Recovery_Tag::OPTION );
 
 		$adsense->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
+		$this->assertOptionNotExists( Ad_Blocking_Recovery_Tag::OPTION );
 	}
 
 	public function test_get_datapoints() {
@@ -377,6 +513,7 @@ class AdSenseTest extends TestCase {
 				'report',
 				'adunits',
 				'sites',
+				'sync-ad-blocking-recovery-tags',
 			),
 			$adsense->get_datapoints()
 		);
@@ -504,5 +641,25 @@ class AdSenseTest extends TestCase {
 
 		// Confirm the request returns 400 status code.
 		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function test_get_debug_fields() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				'adsense_account_id',
+				'adsense_client_id',
+				'adsense_account_status',
+				'adsense_site_status',
+				'adsense_use_snippet',
+				'adsense_web_stories_adunit_id',
+				'adsense_setup_completed_timestamp',
+				'adsense_abr_use_snippet',
+				'adsense_abr_use_error_protection_snippet',
+				'adsense_abr_setup_status',
+			),
+			array_keys( $adsense->get_debug_fields() )
+		);
 	}
 }

@@ -528,16 +528,20 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @param int $retry_after Optional. Number of seconds to retry data fetch if unsuccessful.
 	 */
 	public function refresh_profile_data( $retry_after = 0 ) {
+		$client        = $this->get_client();
+		$restore_defer = $client->withDefer( false );
+
 		try {
-			$people_service = new Google_Service_PeopleService( $this->get_client() );
+			$people_service = new Google_Service_PeopleService( $client );
 			$response       = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos,names' ) );
 
 			if ( isset( $response['emailAddresses'][0]['value'], $response['photos'][0]['url'], $response['names'][0]['displayName'] ) ) {
 				$this->profile->set(
 					array(
-						'email'     => $response['emailAddresses'][0]['value'],
-						'photo'     => $response['photos'][0]['url'],
-						'full_name' => $response['names'][0]['displayName'],
+						'email'        => $response['emailAddresses'][0]['value'],
+						'photo'        => $response['photos'][0]['url'],
+						'full_name'    => $response['names'][0]['displayName'],
+						'last_updated' => time(),
 					)
 				);
 			}
@@ -556,6 +560,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 				self::CRON_REFRESH_PROFILE_DATA,
 				array( $this->user_options->get_user_id() )
 			);
+		} finally {
+			$restore_defer();
 		}
 	}
 

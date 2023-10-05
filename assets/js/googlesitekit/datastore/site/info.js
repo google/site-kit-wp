@@ -47,6 +47,7 @@ function getSiteInfoProperty( propName ) {
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
 const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
+const SET_KEY_METRICS_SETUP_COMPLETED = 'SET_KEY_METRICS_SETUP_COMPLETED';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -106,6 +107,26 @@ export const actions = {
 			type: SET_SITE_KIT_AUTO_UPDATES_ENABLED,
 		};
 	},
+
+	/**
+	 * Sets the `keyMetricsSetupCompleted` boolean value.
+	 *
+	 * @since 1.108.0
+	 *
+	 * @param {boolean} keyMetricsSetupCompleted Whether key metrics setup is completed.
+	 * @return {Object} Redux-style action.
+	 */
+	setKeyMetricsSetupCompleted( keyMetricsSetupCompleted ) {
+		invariant(
+			typeof keyMetricsSetupCompleted === 'boolean',
+			'keyMetricsSetupCompleted must be a boolean.'
+		);
+
+		return {
+			payload: { keyMetricsSetupCompleted },
+			type: SET_KEY_METRICS_SETUP_COMPLETED,
+		};
+	},
 };
 
 export const controls = {};
@@ -139,6 +160,8 @@ export const reducer = ( state, { payload, type } ) => {
 				changePluginAutoUpdatesCapacity,
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
+				productBasePaths,
+				keyMetricsSetupCompleted,
 			} = payload.siteInfo;
 
 			return {
@@ -169,6 +192,8 @@ export const reducer = ( state, { payload, type } ) => {
 					changePluginAutoUpdatesCapacity,
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
+					productBasePaths,
+					keyMetricsSetupCompleted,
 				},
 			};
 		}
@@ -187,6 +212,16 @@ export const reducer = ( state, { payload, type } ) => {
 				siteInfo: {
 					...state.siteInfo,
 					siteKitAutoUpdatesEnabled,
+				},
+			};
+
+		case SET_KEY_METRICS_SETUP_COMPLETED:
+			const { keyMetricsSetupCompleted } = payload;
+			return {
+				...state,
+				siteInfo: {
+					...state.siteInfo,
+					keyMetricsSetupCompleted,
 				},
 			};
 
@@ -234,6 +269,8 @@ export const resolvers = {
 			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
+			productBasePaths,
+			keyMetricsSetupCompleted,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -269,6 +306,8 @@ export const resolvers = {
 			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
+			productBasePaths,
+			keyMetricsSetupCompleted,
 		} );
 	},
 };
@@ -757,6 +796,27 @@ export const selectors = {
 				( minimumMajor === major && minimumMinor <= minor )
 			);
 		}
+	),
+
+	/**
+	 * Gets base paths for products found in WordPress.
+	 *
+	 * @since 1.106.0
+	 *
+	 * @return {Array.<string>} The list of product base paths.
+	 */
+	getProductBasePaths: getSiteInfoProperty( 'productBasePaths' ),
+
+	/**
+	 * Checks if the Key Metrics widget has been setup either if at least one user
+	 * has answered the User Input questionnaire or picked their own metrics.
+	 *
+	 * @since 1.108.0
+	 *
+	 * @return {(boolean)} `true` if the Key Metrics widget has been setup, otherwise `false`.
+	 */
+	isKeyMetricsSetupCompleted: getSiteInfoProperty(
+		'keyMetricsSetupCompleted'
 	),
 };
 

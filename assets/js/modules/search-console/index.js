@@ -36,6 +36,10 @@ import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import { isFeatureEnabled } from '../../features';
 import { negateDefined } from '../../util/negate';
 import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
+import {
+	CORE_USER,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from '../../googlesitekit/datastore/user/constants';
 
 export { registerStore } from './datastore';
 
@@ -54,10 +58,6 @@ const isAnalytics4Active = ( select ) =>
 	select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 export const registerWidgets = ( widgets ) => {
-	const isPreloaded = ( select ) => {
-		return select( MODULES_ANALYTICS ).shouldPromptGA4DashboardView();
-	};
-
 	widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{
@@ -100,7 +100,6 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'search-console' ],
 			isActive: isAnalytics4Active,
-			isPreloaded,
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -113,13 +112,17 @@ export const registerWidgets = ( widgets ) => {
 		 * Key metrics widgets.
 		 */
 		widgets.registerWidget(
-			'kmSearchConsolePopularKeywords',
+			KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 			{
 				Component: PopularKeywordsWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'search-console' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);

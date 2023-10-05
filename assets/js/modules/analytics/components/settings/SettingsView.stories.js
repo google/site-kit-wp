@@ -21,11 +21,10 @@
  */
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
-import {
-	DASHBOARD_VIEW_GA4,
-	MODULES_ANALYTICS,
-} from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../..//analytics-4/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -81,27 +80,27 @@ WithGA4Snippet.args = {
 	},
 };
 
-export const WithDashboardView = Template.bind( null );
-WithDashboardView.storyName = 'Settings with Dashboard View';
-WithDashboardView.args = {
+export const PostGA4AutoSwitch = Template.bind( null );
+PostGA4AutoSwitch.storyName = 'Settings post GA4 auto-switch';
+PostGA4AutoSwitch.args = {
 	setupRegistry: ( registry ) => {
+		// Ensure UA is in a connected state so that the Dashboard View section would ordinarily be shown.
 		registry.dispatch( MODULES_ANALYTICS ).selectProperty(
 			properties[ 0 ].id,
 			// eslint-disable-next-line sitekit/acronym-case
 			properties[ 0 ].internalWebPropertyId
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.setDashboardView( DASHBOARD_VIEW_GA4 );
+		// Set the reference date to the GA4 auto-switch date, to demonstrate that the Dashboard View section is hidden
+		// in this case.
+		registry.dispatch( CORE_USER ).setReferenceDate( GA4_AUTO_SWITCH_DATE );
 	},
 };
-WithDashboardView.parameters = {
+PostGA4AutoSwitch.parameters = {
 	features: [ 'ga4Reporting' ],
 };
-WithDashboardView.scenario = {
-	label: 'Modules/Analytics/Settings/SettingsView/WithDashboardView',
-	delay: 250,
+PostGA4AutoSwitch.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsView/PostGA4AutoSwitch',
 };
 
 export default {

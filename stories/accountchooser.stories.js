@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import TextField, { Input } from '@material/react-text-field';
-
-/**
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
@@ -30,7 +25,7 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { Button, TextField } from 'googlesitekit-components';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideUserInfo } from '../tests/js/utils';
 const { useSelect, useRegistry } = Data;
@@ -60,17 +55,15 @@ export const AccountChooser = () => {
 				label="Google Account Email"
 				onChange={ onEmailChange }
 				outlined
-			>
-				<Input value={ email } />
-			</TextField>
+				value={ email }
+			/>
 
 			<TextField
 				label="Destination URL"
 				onChange={ ( { target } ) => setDestURL( target.value ) }
 				outlined
-			>
-				<Input value={ destURL } />
-			</TextField>
+				value={ destURL }
+			/>
 
 			<pre>{ accountChooserURL }</pre>
 			<Button href={ accountChooserURL } target="_blank">

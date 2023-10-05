@@ -49,6 +49,7 @@ import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
+import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_KEY_METRICS,
@@ -60,14 +61,11 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
-import DashboardViewIndicator from './DashboardViewIndicator';
 const { useSelect } = Data;
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const viewOnlyDashboard = useViewOnly();
 
@@ -125,6 +123,11 @@ export default function DashboardMainApp() {
 		)
 	);
 
+	const isKeyMetricsWidgetHidden = useSelect(
+		( select ) =>
+			userInputEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
+
 	let lastWidgetAnchor = null;
 
 	if ( isMonetizationActive ) {
@@ -146,23 +149,20 @@ export default function DashboardMainApp() {
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ dashboardSharingEnabled && ! viewOnlyDashboard && (
-					<DashboardSharingSettingsButton />
-				) }
+				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			{ ga4ReportingEnabled && <DashboardViewIndicator /> }
 			{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally
 				render when `userInputEnabled` is false.
 
-				This check can be removed once the User Input feature is fully launched
+				The userInputEnabled check can be removed once the User Input feature is fully launched
 				and we remove this feature flag.
 
 				See: https://github.com/google/site-kit-wp/pull/6630#discussion_r1127229162
 			*/ }
-			{ userInputEnabled && (
+			{ userInputEnabled && isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
 					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
@@ -211,6 +211,8 @@ export default function DashboardMainApp() {
 			/>
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
+
+			{ userInputEnabled && <MetricsSelectionPanel /> }
 		</Fragment>
 	);
 }

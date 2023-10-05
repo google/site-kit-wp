@@ -44,6 +44,7 @@ export default function Radio( props ) {
 		onKeyDown = null,
 		onClick = null,
 		onChange = null,
+		alignLeft = false,
 	} = props;
 
 	const formFieldRef = useCallback( ( el ) => {
@@ -62,6 +63,7 @@ export default function Radio( props ) {
 			<div
 				className={ classnames( 'mdc-radio', {
 					'mdc-radio--disabled': disabled,
+					'mdc-radio--align-left': alignLeft,
 				} ) }
 			>
 				<input

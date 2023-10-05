@@ -34,7 +34,6 @@ import {
 } from '../../../analytics-4/datastore/constants';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { escapeURI } from '../../../../util/escape-uri';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
@@ -46,9 +45,6 @@ export default function GA4SettingsView() {
 	const ga4MeasurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
-	const webDataStreamID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -56,9 +52,10 @@ export default function GA4SettingsView() {
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 	const editDataStreamSettingsURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getServiceURL( {
-			path: escapeURI`/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
-		} )
+		select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
+	);
+	const googleTagID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getGoogleTagID()
 	);
 
 	if ( ! ga4PropertyID || ga4PropertyID === PROPERTY_CREATE ) {
@@ -105,6 +102,16 @@ export default function GA4SettingsView() {
 						<DisplaySetting value={ ga4MeasurementID } />
 					</p>
 				</div>
+				{ googleTagID && (
+					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Google Tag ID', 'google-site-kit' ) }
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting value={ googleTagID } />
+						</p>
+					</div>
+				) }
 				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
 					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
 						<Link href={ editDataStreamSettingsURL } external>

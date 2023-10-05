@@ -88,7 +88,7 @@ const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics-4" error={ error } />;
 	}
 
 	const { totals } = analytics4Data;

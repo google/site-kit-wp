@@ -598,6 +598,7 @@ const baseSelectors = {
 			if ( sharingSettings === undefined ) {
 				return undefined;
 			}
+
 			return sharingSettings[ moduleSlug ]?.sharedRoles || null;
 		}
 	),

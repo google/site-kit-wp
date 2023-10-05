@@ -59,6 +59,49 @@ class Dismissed_ItemsTest extends TestCase {
 		);
 	}
 
+	public function test_remove() {
+		$this->user_options->set(
+			Dismissed_Items::OPTION,
+			array(
+				'foo' => 0,
+				'bar' => time() + 100,
+				'baz' => time() + 200,
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				'foo' => 0,
+				'bar' => time() + 100,
+				'baz' => time() + 200,
+			),
+			$this->user_options->get( Dismissed_Items::OPTION )
+		);
+
+		$this->dismissed_items->remove( 'bar' );
+
+		$this->assertEquals(
+			array(
+				'foo' => 0,
+				'baz' => time() + 200,
+
+			),
+			$this->user_options->get( Dismissed_Items::OPTION )
+		);
+
+		// If the item is not in dismissed items, there should be no change.
+		$this->dismissed_items->remove( 'bar' );
+
+		$this->assertEquals(
+			array(
+				'foo' => 0,
+				'baz' => time() + 200,
+
+			),
+			$this->user_options->get( Dismissed_Items::OPTION )
+		);
+	}
+
 	public function test_get_dismissed_items() {
 		$this->user_options->set(
 			Dismissed_Items::OPTION,

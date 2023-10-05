@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import NavKeyMetricsIcon from '../../../svg/icons/nav-key-metrics-icon.svg';
 import NavTrafficIcon from '../../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../../svg/icons/nav-content-icon.svg';
 import NavSpeedIcon from '../../../svg/icons/nav-speed-icon.svg';
@@ -99,13 +100,21 @@ export default function Navigation() {
 	} );
 
 	const userInputEnabled = useFeature( 'userInput' );
+	const isKeyMetricsWidgetHidden = useSelect(
+		( select ) =>
+			userInputEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
 
 	const widgetContextOptions = {
 		modules: viewableModules ? viewableModules : undefined,
 	};
 
 	const showKeyMetrics = useSelect( ( select ) => {
-		if ( ! userInputEnabled || dashboardType !== DASHBOARD_TYPE_MAIN ) {
+		if (
+			! userInputEnabled ||
+			dashboardType !== DASHBOARD_TYPE_MAIN ||
+			isKeyMetricsWidgetHidden === true
+		) {
 			return false;
 		}
 
@@ -290,7 +299,7 @@ export default function Navigation() {
 			const margin = 20;
 
 			const areas = [
-				...( showKeyMetrics ? [ ANCHOR_ID_TRAFFIC ] : [] ),
+				...( showKeyMetrics ? [ ANCHOR_ID_KEY_METRICS ] : [] ),
 				...( showTraffic ? [ ANCHOR_ID_TRAFFIC ] : [] ),
 				...( showContent ? [ ANCHOR_ID_CONTENT ] : [] ),
 				...( showSpeed ? [ ANCHOR_ID_SPEED ] : [] ),
@@ -380,7 +389,7 @@ export default function Navigation() {
 				<Chip
 					id={ ANCHOR_ID_KEY_METRICS }
 					label={ __( 'Key metrics', 'google-site-kit' ) }
-					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
+					leadingIcon={ <NavKeyMetricsIcon width="18" height="16" /> }
 					onClick={ handleSelect }
 					selected={ selectedID === ANCHOR_ID_KEY_METRICS }
 					data-context-id={ ANCHOR_ID_KEY_METRICS }

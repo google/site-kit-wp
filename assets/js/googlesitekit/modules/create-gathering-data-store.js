@@ -31,6 +31,7 @@ import { createFetchStore } from '../data/create-fetch-store';
 const { createRegistryControl } = Data;
 
 const RECEIVE_GATHERING_DATA = 'RECEIVE_GATHERING_DATA';
+const RECEIVE_DATA_AVAILABLE_ON_LOAD = 'RECEIVE_DATA_AVAILABLE_ON_LOAD';
 const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
 
 /**
@@ -46,7 +47,8 @@ const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
  * @param {Function} args.selectDataAvailability Selector to determine data availability.
  *                                               This is a function that should return a boolean, or undefined while resolving.
  *                                               Since logic to determine data availability is different for every module,
- *                                               this selector must be provided by the module.
+ *                                               this selector must be provided by the module. If the data availability can
+ *                                               not be determined, the selector should return null.
  * @return {Object} The gathering data store object.
  */
 export const createGatheringDataStore = (
@@ -107,6 +109,32 @@ export const createGatheringDataStore = (
 				type: RECEIVE_GATHERING_DATA,
 			};
 		},
+
+		/**
+		 * Receives data available on load state.
+		 *
+		 * This action was added to easily manipulate the state for
+		 * JS tests and Storybook / VRT scenarios.
+		 *
+		 * @since 1.110.0
+		 * @private
+		 *
+		 * @param {boolean} dataAvailableOnLoad Gathering data.
+		 * @return {Object} Redux-style action.
+		 */
+		receiveIsDataAvailableOnLoad( dataAvailableOnLoad ) {
+			invariant(
+				'boolean' === typeof dataAvailableOnLoad,
+				'dataAvailableOnLoad must be a boolean.'
+			);
+
+			return {
+				payload: {
+					dataAvailableOnLoad,
+				},
+				type: RECEIVE_DATA_AVAILABLE_ON_LOAD,
+			};
+		},
 	};
 
 	const controls = {
@@ -139,6 +167,14 @@ export const createGatheringDataStore = (
 				return {
 					...state,
 					gatheringData,
+				};
+			}
+
+			case RECEIVE_DATA_AVAILABLE_ON_LOAD: {
+				const { dataAvailableOnLoad } = payload;
+				return {
+					...state,
+					dataAvailableOnLoad,
 				};
 			}
 
@@ -191,8 +227,11 @@ export const createGatheringDataStore = (
 		 * Determines whether data is available for the module.
 		 *
 		 * @since 1.96.0
+		 * @since 1.107.0 Returns null if the data availability can not be determined.
 		 *
-		 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
+		 * @return {boolean|undefined|null} Returns TRUE if data is available, otherwise FALSE.
+		 *                                  If the request is still being resolved, returns undefined.
+		 *                                  If the data availability can not be determined, returns null.
 		 */
 		selectDataAvailability,
 

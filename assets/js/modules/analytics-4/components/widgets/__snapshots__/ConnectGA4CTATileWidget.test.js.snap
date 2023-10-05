@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConnectGA4CTATileWidget should render the Connect GA4 CTA tile 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectGA4CTATile"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-widget--connectModuleCTATile"
+      >
+        <div
+          class="googlesitekit-km-connect-module-cta-tile"
+        >
+          <div
+            class="googlesitekit-km-connect-module-cta-tile__content"
+          >
+            <p
+              class="googlesitekit-km-connect-module-cta-tile__text"
+            >
+              Analytics is disconnected, some of your metrics can’t be displayed
+            </p>
+            <a
+              class="googlesitekit-cta-link"
+              href="#"
+            >
+              Connect Analytics
+            </a>
+          </div>
+        </div>
+        <div
+          class="googlesitekit-km-connect-module-cta-tile__ghost-card"
+        >
+          <div
+            class="googlesitekit-preview-block"
+            style="width: 100%; height: 90px;"
+          >
+            <div
+              class="googlesitekit-preview-block__wrapper"
+            />
+          </div>
+        </div>
+        <div
+          class="googlesitekit-km-connect-module-cta-tile__ghost-card"
+        >
+          <div
+            class="googlesitekit-preview-block"
+            style="width: 100%; height: 90px;"
+          >
+            <div
+              class="googlesitekit-preview-block__wrapper"
+            />
+          </div>
+        </div>
+        <div
+          class="googlesitekit-km-connect-module-cta-tile__ghost-card"
+        >
+          <div
+            class="googlesitekit-preview-block"
+            style="width: 100%; height: 90px;"
+          >
+            <div
+              class="googlesitekit-preview-block__wrapper"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -37,7 +37,7 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
-import { getErrorMessageForAnswer } from './util/validation';
+import { getErrorMessageForAnswer, hasErrorForAnswer } from './util/validation';
 import useViewContext from '../../hooks/useViewContext';
 import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,
@@ -87,9 +87,11 @@ export default function UserInputPreviewGroup( {
 	const isEditing = currentlyEditingSlug === slug;
 	const isScreenLoading = isSavingSettings || isNavigating;
 
+	const gaEventCategory = `${ viewContext }_kmw`;
+
 	const toggleEditMode = useCallback( () => {
 		if ( ! isEditing ) {
-			trackEvent( viewContext, 'question_edit', slug );
+			trackEvent( gaEventCategory, 'question_edit', slug );
 		} else {
 			onCollapse();
 		}
@@ -97,20 +99,23 @@ export default function UserInputPreviewGroup( {
 		setValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: isEditing ? undefined : slug,
 		} );
-	}, [ isEditing, onCollapse, setValues, slug, viewContext ] );
+	}, [ gaEventCategory, isEditing, onCollapse, setValues, slug ] );
 
 	const error = getErrorMessageForAnswer(
 		values,
 		USER_INPUT_MAX_ANSWERS[ slug ]
 	);
 
+	const answerHasError = hasErrorForAnswer( values );
+
 	const submitChanges = useCallback( async () => {
 		const response = await saveUserInputSettings();
 
 		if ( ! response.error ) {
+			trackEvent( gaEventCategory, 'question_update', slug );
 			toggleEditMode();
 		}
-	}, [ saveUserInputSettings, toggleEditMode ] );
+	}, [ gaEventCategory, saveUserInputSettings, slug, toggleEditMode ] );
 
 	const handleOnEditClick = useCallback( async () => {
 		if ( showIndividualCTAs ) {
@@ -157,6 +162,7 @@ export default function UserInputPreviewGroup( {
 			<div className="googlesitekit-user-input__preview-group-title">
 				<p>{ title }</p>
 				<Link
+					secondary
 					onClick={ handleOnEditClick }
 					disabled={
 						isScreenLoading ||
@@ -190,10 +196,10 @@ export default function UserInputPreviewGroup( {
 			{ isEditing && (
 				<Fragment>
 					<UserInputSelectOptions
-						isActive={ true }
 						slug={ slug }
 						max={ USER_INPUT_MAX_ANSWERS[ slug ] }
 						options={ options }
+						alignLeftOptions
 					/>
 					{ errorMessage && (
 						<p className="googlesitekit-error-text">
@@ -210,7 +216,9 @@ export default function UserInputPreviewGroup( {
 
 							<div className="googlesitekit-user-input__preview-actions">
 								<SpinnerButton
-									disabled={ ! hasSettingChanged }
+									disabled={
+										! hasSettingChanged || answerHasError
+									}
 									onClick={
 										hasSettingChanged
 											? submitChanges

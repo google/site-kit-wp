@@ -2,12 +2,12 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.2
+Tested up to:      6.3
 Requires PHP:      5.6
-Stable tag:        1.102.0
+Stable tag:        1.111.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
-Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
+Tags:              google, search-console, analytics, adsense, pagespeed-insights, tag-manager, site-kit
 
 Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
 
@@ -34,7 +34,6 @@ Site Kit shows key metrics and insights from different Google products:
 * **AdSense:** Keep track of how much your site is earning you.
 * **PageSpeed Insights:** See how your pages perform compared to other real-world sites. Improve performance with actionable tips from PageSpeed Insights.
 * **Tag Manager:** Use Site Kit to easily set up Tag Manager- no code editing required. Then, manage your tags in Tag Manager.
-* **Optimize:** Use Site Kit to easily set up Optimize- no code editing required. Then, set up A/B tests in Optimize.
 
 == Installation ==
 **Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
@@ -110,6 +109,238 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
+= 1.111.0 =
+
+**Enhanced**
+
+* Add the "Top pages by returning visitors" Key Metric widget tile. See [#7584](https://github.com/google/site-kit-wp/issues/7584).
+* Create "Least engaging pages" key metric widget tile. See [#7579](https://github.com/google/site-kit-wp/issues/7579).
+* Add the "Visits per Visitor" Key Metric Widget. See [#7577](https://github.com/google/site-kit-wp/issues/7577).
+* Add "Visit Length" Key Metric tile. See [#7576](https://github.com/google/site-kit-wp/issues/7576).
+* Add a new "Pages per Visit" Key Metric tile. See [#7575](https://github.com/google/site-kit-wp/issues/7575).
+* Add datastore infrastructure for creating custom dimensions in GA4. See [#7574](https://github.com/google/site-kit-wp/issues/7574).
+* Add datapoint for creating an Analytics custom dimension. See [#7573](https://github.com/google/site-kit-wp/issues/7573).
+* Add tooltips with extra info to each Key Metrics tile. See [#7472](https://github.com/google/site-kit-wp/issues/7472).
+* Add the "Enable Enhanced Measurement" option to Analytics when creating an account. See [#7460](https://github.com/google/site-kit-wp/issues/7460).
+* Add the "Enable enhanced measurement" toggle to Analytics. See [#7459](https://github.com/google/site-kit-wp/issues/7459).
+* Change behaviour/visibility of Key Metric Widgets when their modules are disconnected. See [#7425](https://github.com/google/site-kit-wp/issues/7425).
+* Update the design of the CTA shown in the Key Metrics section when GA4 has been disconnected, for the cases where three or four GA4 widget tiles are present. See [#7278](https://github.com/google/site-kit-wp/issues/7278).
+* Remove Optimize from available Site Kit modules. See [#6469](https://github.com/google/site-kit-wp/issues/6469).
+
+**Fixed**
+
+* Fix a bug that prevented severe AdSense alerts from appearing in Site Kit Dashboard. See [#7559](https://github.com/google/site-kit-wp/issues/7559).
+
+= 1.110.0 =
+
+**Enhanced**
+
+* Update metrics used in the "Most engaged traffic source" tile. See [#7548](https://github.com/google/site-kit-wp/issues/7548).
+* Improve copy in "Change metrics" sidebar panel. See [#7467](https://github.com/google/site-kit-wp/issues/7467).
+* Create API endpoints and Redux store infrastructure for "Enable enhanced measurement" feature. See [#7458](https://github.com/google/site-kit-wp/issues/7458).
+* Ensure the Key Metrics navigation chip is correctly highlighted on page load. See [#7442](https://github.com/google/site-kit-wp/issues/7442).
+* Hide Key Metrics widget area when only one widget is present on the Shared Dashboard. See [#7435](https://github.com/google/site-kit-wp/issues/7435).
+* Remove experimental status/label from "Interaction to Next Paint" in PageSpeed Insights. See [#7065](https://github.com/google/site-kit-wp/issues/7065).
+* Remove option to connect Universal Analytics and update dashboard to show GA4 only. See [#6786](https://github.com/google/site-kit-wp/issues/6786).
+* Improve wording for permission errors to be consistent while setting up Site Kit or a module. See [#6662](https://github.com/google/site-kit-wp/issues/6662).
+
+**Fixed**
+
+* Ensure icon and link/button colors are shared. See [#7479](https://github.com/google/site-kit-wp/issues/7479).
+* Show a specific error message and a "Request access" CTA for Key Metrics widget tiles when they encounter a permissions error. See [#7465](https://github.com/google/site-kit-wp/issues/7465).
+* Ensure Analytics sharing settings work correctly when automatically switching to the GA4 dashboard view. See [#7417](https://github.com/google/site-kit-wp/issues/7417).
+* Fix console error thrown while using Site Kit in conjunction with Google Translate. See [#7121](https://github.com/google/site-kit-wp/issues/7121).
+
+= 1.109.0 =
+
+**Enhanced**
+
+* Improve Key metrics selection panel initial focus behavior by selecting the first item. See [#7485](https://github.com/google/site-kit-wp/issues/7485).
+* Update copy text in Key Metrics tailored metrics screen. See [#7484](https://github.com/google/site-kit-wp/issues/7484).
+* Update Key Metrics heading in settings. See [#7480](https://github.com/google/site-kit-wp/issues/7480).
+* Update text used in metrics slide-out panels to match widget names. See [#7451](https://github.com/google/site-kit-wp/issues/7451).
+* Remove old User Input banner notification. See [#7429](https://github.com/google/site-kit-wp/issues/7429).
+* Enhance relevancy of "Most popular products" Key Metric widget availability. See [#7420](https://github.com/google/site-kit-wp/issues/7420).
+* Display a "New" badge on the Key Metrics widget. See [#7376](https://github.com/google/site-kit-wp/issues/7376).
+* Change gray color used in settings screen when locking modules during editing. See [#7302](https://github.com/google/site-kit-wp/issues/7302).
+* Improve copy consistency on the Analytics Settings view. See [#6923](https://github.com/google/site-kit-wp/issues/6923).
+* Improve styling of error messages in the Site Kit Admin Bar. See [#6369](https://github.com/google/site-kit-wp/issues/6369).
+
+**Changed**
+
+* Remove `adBlockerDetection` feature flag and unused code. Props smamun19. See [#6969](https://github.com/google/site-kit-wp/issues/6969).
+
+**Fixed**
+
+* Ensure that Google Analytics 4 widgets display a "Request access" button when they are showing an "Insufficient permissions" error. See [#7492](https://github.com/google/site-kit-wp/issues/7492).
+* Fix bug that caused some Key Metric tiles to briefly show zero data while loading. See [#7482](https://github.com/google/site-kit-wp/issues/7482).
+* Fix Key Metrics Selection Panel layout at 600px viewport. See [#7474](https://github.com/google/site-kit-wp/issues/7474).
+* Ensure user cannot edit/save Key Metrics answers with the last question blank. See [#7473](https://github.com/google/site-kit-wp/issues/7473).
+* Fix the "Retry" functionality of the "Top traffic source" Key Metrics widget tile, to ensure the correct data is shown upon retrying an error. See [#7453](https://github.com/google/site-kit-wp/issues/7453).
+* Fix hover state and keyboard navigation for User Input radio buttons. See [#7452](https://github.com/google/site-kit-wp/issues/7452).
+* Fix bug that caused the "Display key metrics in dashboard" toggle not to work when no user-defined metrics were saved. See [#7441](https://github.com/google/site-kit-wp/issues/7441).
+* Hide inaccessible links in Key Metrics tiles when using the view-only dashboard. See [#7436](https://github.com/google/site-kit-wp/issues/7436).
+
+= 1.108.0 =
+
+**Enhanced**
+
+* Update surveys to skip rendering when no answers are found. See [#7450](https://github.com/google/site-kit-wp/issues/7450).
+* Update the date that Universal Analytics support is removed from Site Kit to September 25, 2023. See [#7423](https://github.com/google/site-kit-wp/issues/7423).
+* Improve accuracy of "Most popular products by pageviews" widget. See [#7390](https://github.com/google/site-kit-wp/issues/7390).
+* Fix the conditions for showing the Key Metrics Setup CTA banner, ensuring that it does not display when the user has setup their choice of metrics, or when viewing the shared dashboard. See [#7349](https://github.com/google/site-kit-wp/issues/7349).
+* Add a Key Metric tile that allows users to add more tiles to the Dashboard. See [#7336](https://github.com/google/site-kit-wp/issues/7336).
+* Take user back to AdSense settings if they cancel ABR setup when it is initiated from the Settings. See [#7298](https://github.com/google/site-kit-wp/issues/7298).
+* Improve the text in the buttons of the Analytics and Google Tag mismatch notification. See [#6734](https://github.com/google/site-kit-wp/issues/6734).
+* Combine similar error boundary action components into a single component. See [#6515](https://github.com/google/site-kit-wp/issues/6515).
+* Create the "Top countries driving traffic" Key Metrics widget tile. See [#6253](https://github.com/google/site-kit-wp/issues/6253).
+* Update language from Google "products" to "services" in the Site Kit setup screen. See [#5343](https://github.com/google/site-kit-wp/issues/5343).
+* Ensure the determined AMP mode correctly reflects the AMP plugin configuration (if active) and whether the Web Stories plugin is active. See [#5118](https://github.com/google/site-kit-wp/issues/5118).
+
+**Fixed**
+
+* Fix a bug that caused an unneeded network request when viewing the Analytics activation banner. See [#7438](https://github.com/google/site-kit-wp/issues/7438).
+* Fix issue that caused Key Metrics Widgets in view-only dashboard to appear as unusable links or cause errors. See [#7400](https://github.com/google/site-kit-wp/issues/7400).
+* Fix Key Metrics widgets layout at 600px viewport width. See [#7395](https://github.com/google/site-kit-wp/issues/7395).
+* Update Key Metrics navigation icon to match design. See [#7347](https://github.com/google/site-kit-wp/issues/7347).
+* Update code to stop deprecation warning appearing on sites using PHP 8.1. See [#7147](https://github.com/google/site-kit-wp/issues/7147).
+* Fix console error from appearing when AdSense is shared with certain user roles. See [#7074](https://github.com/google/site-kit-wp/issues/7074).
+* Fix issue that caused the post-switched to Google Analytics 4 banner to appear for users with no access to the connected Analytics property. See [#7044](https://github.com/google/site-kit-wp/issues/7044).
+* Fix the "Set up Google Analytics" CTA on Site Kit's WordPress Dashboard widget, ensuring it correctly navigates to the setup page. See [#6710](https://github.com/google/site-kit-wp/issues/6710).
+* Update Google account menu's accessibility labels to improve VoiceOver navigation. See [#6636](https://github.com/google/site-kit-wp/issues/6636).
+* Fix bug that could cause select component to be hidden underneath the Site Kit header. See [#6576](https://github.com/google/site-kit-wp/issues/6576).
+
+= 1.107.0 =
+
+**Enhanced**
+
+* Update key metric widget rendering for consistency with other widgets regarding module dependencies. See [#7337](https://github.com/google/site-kit-wp/issues/7337).
+* Add error and retry UI for Key Metric Widgets. See [#7310](https://github.com/google/site-kit-wp/issues/7310).
+* Add Ad Blocking Recovery information to Site Health. See [#7290](https://github.com/google/site-kit-wp/issues/7290).
+* Update loading state for Key Metric widget tiles. See [#7158](https://github.com/google/site-kit-wp/issues/7158).
+* Add a learn more tooltip to the most popular products KM widget. See [#7060](https://github.com/google/site-kit-wp/issues/7060).
+* Prevent "data available" state being persisted when the state cannot reliably be determined due to an API error. See [#6698](https://github.com/google/site-kit-wp/issues/6698).
+* Automatically switch users to GA4 dashboard on October 1, 2023 (when no more Universal Analytics data will be available). See [#6549](https://github.com/google/site-kit-wp/issues/6549).
+* Update key metrics area to support editing selected metrics. See [#6259](https://github.com/google/site-kit-wp/issues/6259).
+* Add management panel for selected key metrics. See [#6258](https://github.com/google/site-kit-wp/issues/6258).
+
+**Fixed**
+
+* Fix a potential PHP error in WPML introduced in `1.106.0` on a site with a `product` post type. See [#7389](https://github.com/google/site-kit-wp/issues/7389).
+* Address data inconsistencies in the "Loyal visitors", "New visitors", and "Most popular content" Key Metrics widgets. See [#7366](https://github.com/google/site-kit-wp/issues/7366).
+* Remove the requirement for a web data stream's URL to match the current site URL for it to be selectable. See [#7052](https://github.com/google/site-kit-wp/issues/7052).
+* Fix bug that caused cached Analytics data not to refresh when a new account is created. See [#6852](https://github.com/google/site-kit-wp/issues/6852).
+* Fix potential bug in AdSense set up which could leave the setup incomplete. See [#5614](https://github.com/google/site-kit-wp/issues/5614).
+
+= 1.106.0 =
+
+**Enhanced**
+
+* Update the Ad Blocking Recovery CTA text. See [#7357](https://github.com/google/site-kit-wp/issues/7357).
+* Update copy for the Ad Blocking Recovery setup screen, success notification and "existing tag" settings notice. See [#7313](https://github.com/google/site-kit-wp/issues/7313).
+* Add a "Learn more" link after the "Place error protection tag" option in the AdSense setup flow and settings. See [#7295](https://github.com/google/site-kit-wp/issues/7295).
+* Update Ad Blocking Recovery message status language in settings. See [#7287](https://github.com/google/site-kit-wp/issues/7287).
+* Update key metric tiles to be full-width on mobile viewports. See [#7159](https://github.com/google/site-kit-wp/issues/7159).
+* Hide Key Metric widget tiles when the feature isn't setup. See [#7061](https://github.com/google/site-kit-wp/issues/7061).
+* Move Universal Analytics notice in settings page. See [#6809](https://github.com/google/site-kit-wp/issues/6809).
+* Display Google Tag ID in Analytics Settings view. See [#6769](https://github.com/google/site-kit-wp/issues/6769).
+* Replace direct usage of components from `@material/react-text-field` with the new `TextField` component. See [#6651](https://github.com/google/site-kit-wp/issues/6651).
+* Hide Key Metric Widget area when Search Console and Google Analytics are still gathering data. See [#6607](https://github.com/google/site-kit-wp/issues/6607).
+* Create "Top converting traffic source" key metric widget tile. See [#6255](https://github.com/google/site-kit-wp/issues/6255).
+* Add "Top cities driving traffic" key metric widget. See [#6252](https://github.com/google/site-kit-wp/issues/6252).
+* Add support for WooCommerce/Google Analytics with a key metric widget for "Most popular products by pageviews". See [#6249](https://github.com/google/site-kit-wp/issues/6249).
+* Add the "Most engaged traffic source" key metric widget tile. See [#6246](https://github.com/google/site-kit-wp/issues/6246).
+* Show a tooltip when clicking "Maybe later" on the Key Metrics Setup CTA widget, and allow the widget to be dismissed. See [#6232](https://github.com/google/site-kit-wp/issues/6232).
+
+**Fixed**
+
+* Fix potential PHP error when refreshing profile data on the fly. See [#7356](https://github.com/google/site-kit-wp/issues/7356).
+* Ensure AdSense CTA appears again if tooltip is ignored after dismissing the CTA widget. See [#7294](https://github.com/google/site-kit-wp/issues/7294).
+* Ensure setup success notification is always shown when completing setup for ad blocking recovery. See [#7288](https://github.com/google/site-kit-wp/issues/7288).
+* Fix AdSense options cleanup issues. See [#7286](https://github.com/google/site-kit-wp/issues/7286).
+* Fix the tag ID used in the GA tracking opt-out for logged in users when tagging with a Google tag. See [#7262](https://github.com/google/site-kit-wp/issues/7262).
+* Ensure the WordPress Dashboard submenu can be seen when Site Kit is the current page. See [#6907](https://github.com/google/site-kit-wp/issues/6907).
+* Prevent layout shift in GA4 settings area when the dropdown options finish loading. See [#6570](https://github.com/google/site-kit-wp/issues/6570).
+
+= 1.105.0 =
+
+**Enhanced**
+
+* Improve formatting of larger numbers in Key Metric Widget tiles. See [#7190](https://github.com/google/site-kit-wp/issues/7190).
+* Place Ad Blocking Recovery tags on the front end. See [#7186](https://github.com/google/site-kit-wp/issues/7186).
+* Fix bug that could cause zero percent in key metric widgets not to appear. See [#7172](https://github.com/google/site-kit-wp/issues/7172).
+* Improve creation of the GM3 checkbox component. See [#7120](https://github.com/google/site-kit-wp/issues/7120).
+* Show notice to users who have an existing Ad Blocking Recovery tag placed on their site. See [#6967](https://github.com/google/site-kit-wp/issues/6967).
+* Fix inconsistent focus styles in feature tours. See [#6926](https://github.com/google/site-kit-wp/issues/6926).
+* Add CTA to connect Analytics if disconnected after setting up Key Metrics. See [#6265](https://github.com/google/site-kit-wp/issues/6265).
+* Implement the "Top traffic source" key metric widget. See [#6245](https://github.com/google/site-kit-wp/issues/6245).
+* Implement the design for the Key Metrics Setup CTA widget. See [#6210](https://github.com/google/site-kit-wp/issues/6210).
+
+**Fixed**
+
+* Fix bug that additionally requested UA Analytics reports on the WP dashboard when dashboard view was set to GA4. See [#7306](https://github.com/google/site-kit-wp/issues/7306).
+* Fix bug that caused PageSpeed Insights to appear in Dashboard Sharing Settings when PageSpeed Insights is not connected. See [#7197](https://github.com/google/site-kit-wp/issues/7197).
+* Fix bug that could cause infinite loop in Analytics setup flow if user had view-only permissions for an Analytics property. See [#7168](https://github.com/google/site-kit-wp/issues/7168).
+* Fix bug that caused Ad Blocking Recovery widget to appear/hide under the wrong conditions. See [#7164](https://github.com/google/site-kit-wp/issues/7164).
+
+= 1.104.0 =
+
+**Added**
+
+* Add support for tagging with Google Analytics 4 in AMP mode. See [#7221](https://github.com/google/site-kit-wp/issues/7221).
+* Complete Ad Blocking Recovery set up interface. See [#6966](https://github.com/google/site-kit-wp/issues/6966).
+* Add infrastructure for fetching and storing the Ad Blocking Recovery tag. See [#6902](https://github.com/google/site-kit-wp/issues/6902).
+
+**Enhanced**
+
+* Add PHP version to requests for features. See [#7209](https://github.com/google/site-kit-wp/issues/7209).
+* Add the Analytics dashboard type to Site Health information. See [#7119](https://github.com/google/site-kit-wp/issues/7119).
+* Ensure the Universal Analytics controls are shown in the case where the connected property belongs to another Google account and permission has been removed. See [#7063](https://github.com/google/site-kit-wp/issues/7063).
+* Add settings controls for Ad blocking recovery tags. See [#6962](https://github.com/google/site-kit-wp/issues/6962).
+* Add ad blocking recovery state to the settings view for AdSense. See [#6961](https://github.com/google/site-kit-wp/issues/6961).
+* Show the Ad Blocking Recovery Notification on the Dashboard. See [#6953](https://github.com/google/site-kit-wp/issues/6953).
+* Rework the Dialog component to use dialog components from the `googlesitekit-components` library instead of `@material/react-dialog` directly. See [#6652](https://github.com/google/site-kit-wp/issues/6652).
+* Show a “Connect AdSense CTA” Key Metrics tile if AdSense is disconnected after setting up AdSense-related Key Metrics. See [#6264](https://github.com/google/site-kit-wp/issues/6264).
+* Add the Connect GA tile to Key Metrics widget. See [#6263](https://github.com/google/site-kit-wp/issues/6263).
+* Create the "Top performing keywords" key metric widget tile. See [#6251](https://github.com/google/site-kit-wp/issues/6251).
+* Create the "Most popular content by pageviews" key metric widget tile. See [#6247](https://github.com/google/site-kit-wp/issues/6247).
+* Implement HaTS survey triggers for users who answers "Other" to any User Input question. See [#6180](https://github.com/google/site-kit-wp/issues/6180).
+* Migrate `TextField` component to our GM2 component library. See [#6113](https://github.com/google/site-kit-wp/issues/6113).
+
+**Fixed**
+
+* Ensure Ad Blocking Recovery elements are only present when the feature is enabled. See [#7179](https://github.com/google/site-kit-wp/issues/7179).
+* Restore notice width in setup and settings views. See [#7140](https://github.com/google/site-kit-wp/issues/7140).
+* Fix the Optimize sunset banner re-appearing issue. See [#7138](https://github.com/google/site-kit-wp/issues/7138).
+* Fix broken view-only dashboard when Analytics isn't shared. See [#7116](https://github.com/google/site-kit-wp/issues/7116).
+* Fix notices about granting view-only access when changing module settings for modules that are not shared with any roles. See [#6633](https://github.com/google/site-kit-wp/issues/6633).
+* Fix issue in the All Traffic widget/Google Charts pie charts that caused selected elements to become de-selected. See [#4589](https://github.com/google/site-kit-wp/issues/4589).
+
+= 1.103.0 =
+
+**Added**
+
+* Add the skeleton component for the Ad Blocking Recovery page. See [#6964](https://github.com/google/site-kit-wp/issues/6964).
+* Add the new Ad Blocking Recovery CTA to the AdSense module settings. See [#6958](https://github.com/google/site-kit-wp/issues/6958).
+
+**Enhanced**
+
+* Update Material 3 Checkbox component. See [#6696](https://github.com/google/site-kit-wp/issues/6696).
+* Improve accessibility for user menu tooltip. See [#6637](https://github.com/google/site-kit-wp/issues/6637).
+* Add notice about Optimize sunset to settings and setup screens. See [#6468](https://github.com/google/site-kit-wp/issues/6468).
+* Update the messaging for site goals in the Site Kit admin setting when user metrics have been selected. See [#6262](https://github.com/google/site-kit-wp/issues/6262).
+* Implement settings toggle to show/hide the Key metrics widget. See [#6261](https://github.com/google/site-kit-wp/issues/6261).
+* Implement the `New visitors` key metric widget. See [#6244](https://github.com/google/site-kit-wp/issues/6244).
+* Add "Loyal visitors" key metric widget tile. See [#6243](https://github.com/google/site-kit-wp/issues/6243).
+* Implement Google profile data synchronisation. See [#6003](https://github.com/google/site-kit-wp/issues/6003).
+
+**Fixed**
+
+* Update layout of Analytics settings to better support the now optional UA Analytics. See [#6875](https://github.com/google/site-kit-wp/issues/6875).
+* Correct page titles on screens that don't exist in the admin menu. See [#6668](https://github.com/google/site-kit-wp/issues/6668).
+* Ensure focus remains on user menu button when the menu is exited with the keyboard. See [#6635](https://github.com/google/site-kit-wp/issues/6635).
+* Fix a bug that could prevent AdSense from being set up on a subdomain. See [#5852](https://github.com/google/site-kit-wp/issues/5852).
+
 = 1.102.0 =
 
 **Added**
@@ -132,6 +363,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Fixed**
 
+* Fix a potential error when creating a new Analytics account. See [#7124](https://github.com/google/site-kit-wp/issues/7124).
 * Update Universal Analytics settings UX for consistency with previous interface when GA4 is the primary version and current admin lacks access. See [#7028](https://github.com/google/site-kit-wp/issues/7028).
 * Fix accessibility issue where tab navigation could get trapped on dashboard. See [#6901](https://github.com/google/site-kit-wp/issues/6901).
 

@@ -561,9 +561,14 @@ export const baseControls = {
 			}
 	),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
-		( { select } ) =>
-			( { payload } ) => {
+		( { select, __experimentalResolveSelect } ) =>
+			async ( { payload } ) => {
 				const { slug } = payload;
+				// Ensure the module is loaded before selecting the store name.
+				await __experimentalResolveSelect( CORE_MODULES ).getModule(
+					slug
+				);
+
 				const storeName =
 					select( CORE_MODULES ).getModuleStoreName( slug );
 
@@ -572,10 +577,10 @@ export const baseControls = {
 					return;
 				}
 
-				const getAdminReauthURL =
-					select( storeName )?.getAdminReauthURL;
-				if ( getAdminReauthURL ) {
-					return getAdminReauthURL();
+				if ( select( storeName )?.getAdminReauthURL ) {
+					return await __experimentalResolveSelect(
+						storeName
+					).getAdminReauthURL();
 				}
 				return select( CORE_SITE ).getAdminURL(
 					'googlesitekit-dashboard'
@@ -1189,7 +1194,10 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		return moduleRequirements === true;
+		return (
+			moduleRequirements === true ||
+			moduleRequirements?.canActivate === true
+		);
 	},
 
 	/**
@@ -1208,12 +1216,19 @@ const baseSelectors = {
 		( select ) => ( state, slug ) => {
 			invariant( slug, 'slug is required.' );
 
-			// Need to use registry selector here to ensure resolver is invoked.
-			if ( select( CORE_MODULES ).canActivateModule( slug ) ) {
+			const { checkRequirementsResults } = state;
+			const canActivate =
+				// Need to use registry selector here to ensure resolver is invoked.
+				select( CORE_MODULES ).canActivateModule( slug );
+
+			if (
+				canActivate === undefined ||
+				checkRequirementsResults[ slug ] === true
+			) {
 				return null;
 			}
 
-			return state.checkRequirementsResults[ slug ];
+			return checkRequirementsResults[ slug ];
 		}
 	),
 
@@ -1378,19 +1393,18 @@ const baseSelectors = {
 			return undefined;
 		}
 
+		const isGA4DashboardView =
+			select( MODULES_ANALYTICS ).isGA4DashboardView();
+
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
-			// When Analytics is not connected, it is set to not shareable. So moving this if block
-			// within the shareable and internal check below will cause issues in that case. Specifically,
-			// when Analytics is active with GA4 connected, but UA is not connected, the Analytics 4 module
-			// would not be included in the shareable modules list when it should be.
 			if (
-				slug === 'analytics' &&
-				select( MODULES_ANALYTICS ).isGA4DashboardView()
+				( slug === 'analytics' && isGA4DashboardView ) ||
+				( slug === 'analytics-4' && ! isGA4DashboardView )
 			) {
-				return { 'analytics-4': modules[ 'analytics-4' ], ...acc };
+				return acc;
 			}
 
-			if ( modules[ slug ].shareable && ! modules[ slug ].internal ) {
+			if ( modules[ slug ].shareable ) {
 				return { [ slug ]: modules[ slug ], ...acc };
 			}
 

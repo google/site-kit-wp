@@ -19,6 +19,7 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
           <div
             class="googlesitekit-cta"
           >
+            
             <h3
               class="googlesitekit-cta__title"
             >
@@ -40,6 +41,7 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
         <div
           class="googlesitekit-cta"
         >
+          
           <h3
             class="googlesitekit-cta__title"
           >
@@ -67,6 +69,7 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
           <div
             class="googlesitekit-cta"
           >
+            
             <h3
               class="googlesitekit-cta__title"
             >

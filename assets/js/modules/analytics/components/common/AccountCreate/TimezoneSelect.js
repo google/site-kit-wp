@@ -25,9 +25,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, Option } from '../../../../../material-components';
-import { timeZonesByCountryCode } from '../../../util/countries-timezones';
+import { Option, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
+import { timeZonesByCountryCode } from '../../../util/countries-timezones';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 

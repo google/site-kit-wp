@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -30,23 +29,19 @@ import { ProgressBar } from 'googlesitekit-components';
 import {
 	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
-	EnableUniversalAnalytics,
 	ExistingGTMPropertyNotice,
 	TrackingExclusionSwitches,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID, isValidPropertyID } from '../../util';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import GA4DashboardViewToggle from './GA4DashboardViewToggle';
 import { useFeature } from '../../../../hooks/useFeature';
-import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 const { useSelect } = Data;
 
 export default function SettingsForm( {
@@ -61,10 +56,6 @@ export default function SettingsForm( {
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 	const isUAConnected = isValidPropertyID( propertyID );
-	const isUAEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
-	);
-
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -88,9 +79,10 @@ export default function SettingsForm( {
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
 
-	const showTrackingExclusion =
-		useAnalyticsSnippet ||
-		( useTagManagerSnippet && analyticsSinglePropertyID );
+	const showTrackingExclusion = ga4ReportingEnabled
+		? isGA4Connected || isUAConnected
+		: useAnalyticsSnippet ||
+		  ( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	if ( ! gtmContainersResolved ) {
 		return <ProgressBar />;
@@ -98,7 +90,6 @@ export default function SettingsForm( {
 
 	return (
 		<Fragment>
-			<SettingsUACutoffWarning />
 			{ ! ga4ReportingEnabled && (
 				<Fragment>
 					<ExistingGTMPropertyNotice
@@ -110,18 +101,8 @@ export default function SettingsForm( {
 					/>
 				</Fragment>
 			) }
-			{ ga4ReportingEnabled && isUAConnected && isUAEnabled && (
-				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
-					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'Dashboard View', 'google-site-kit' ) }
-					</h4>
-					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
-						{ isGA4Connected && <GA4DashboardViewToggle /> }
-						{ ! isGA4Connected &&
-							__( 'Universal Analytics', 'google-site-kit' ) }
-					</div>
-				</div>
-			) }
+
+			<SettingsUACutoffWarning />
 
 			{ ! ga4ReportingEnabled && (
 				<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
@@ -132,19 +113,9 @@ export default function SettingsForm( {
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
 
-			{ ga4ReportingEnabled && (
-				<EnableUniversalAnalytics
-					hasModuleAccess={ hasAnalyticsAccess }
-					showErrors
-					showTitle
-				>
-					<SettingsUseSnippetSwitch />
-				</EnableUniversalAnalytics>
-			) }
-
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
-					<AnonymizeIPSwitch />
+					{ ! ga4ReportingEnabled && <AnonymizeIPSwitch /> }
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
 				</Fragment>

@@ -479,9 +479,10 @@ class AnalyticsTest extends TestCase {
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
 		wp_styles(); // Prevent potential ->queue of non-object error.
-		remove_all_actions( 'wp_enqueue_scripts' );
+
 		// Remove irrelevant script from throwing errors in CI from readfile().
 		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+
 		// Set the current user (can be 0 for no user)
 		$role = $is_content_creator ? 'administrator' : 'subscriber';
 		$user = $logged_in ?
@@ -826,6 +827,36 @@ class AnalyticsTest extends TestCase {
 		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
 		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
 		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
+	}
+
+	public function test_get_debug_fields() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				'analytics_account_id',
+				'analytics_property_id',
+				'analytics_profile_id',
+				'analytics_use_snippet',
+			),
+			array_keys( $analytics->get_debug_fields() )
+		);
+	}
+
+	public function test_get_debug_fields__ga4Reporting() {
+		$this->enable_feature( 'ga4Reporting' );
+
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				'analytics_account_id',
+				'analytics_property_id',
+				'analytics_profile_id',
+				'analytics_use_snippet',
+			),
+			array_keys( $analytics->get_debug_fields() )
+		);
 	}
 
 	/**
