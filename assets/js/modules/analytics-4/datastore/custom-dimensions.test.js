@@ -51,6 +51,11 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_USER ).receiveCapabilities( {
+			googlesitekit_manage_options: true,
+		} );
 	} );
 
 	afterEach( () => {
@@ -226,10 +231,6 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					propertyID,
 					availableCustomDimensions: null,
 				} );
-				provideUserAuthentication( registry );
-				registry.dispatch( CORE_USER ).receiveCapabilities( {
-					googlesitekit_manage_options: true,
-				} );
 
 				expect(
 					registry
@@ -248,6 +249,66 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( dimensions ).toEqual( customDimensionNames );
+			} );
+		} );
+
+		describe( 'hasCustomDimensions', () => {
+			it( 'returns false when available custom dimensions are null or not set', () => {
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry.dispatch( CORE_USER ).receiveCapabilities( {
+					googlesitekit_manage_options: false,
+				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: null,
+				} );
+
+				const hasCustomDimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasCustomDimensions( [ 'googlesitekit_dimension1' ] );
+
+				expect( hasCustomDimensions ).toBe( false );
+			} );
+
+			it( 'returns true when all provided custom dimensions are available', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: customDimensionNames,
+				} );
+
+				const hasCustomDimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasCustomDimensions( [
+						'googlesitekit_dimension1',
+						'googlesitekit_dimension2',
+					] );
+
+				expect( hasCustomDimensions ).toBe( true );
+			} );
+
+			it( 'returns false when some or all provided custom dimensions are not available', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: customDimensionNames,
+				} );
+
+				const hasCustomDimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasCustomDimensions( 'googlesitekit_dimension3' );
+
+				expect( hasCustomDimensions ).toBe( false );
+			} );
+
+			it( 'returns false when some or all provided custom dimensions are not available (array input)', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: customDimensionNames,
+				} );
+
+				const hasCustomDimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasCustomDimensions( [ 'dimension1', 'dimension3' ] );
+
+				expect( hasCustomDimensions ).toBe( false );
 			} );
 		} );
 	} );
