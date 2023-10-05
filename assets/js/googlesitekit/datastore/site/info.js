@@ -36,9 +36,16 @@ import { normalizeURL, untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
-function getSiteInfoProperty( propName ) {
+function getSiteInfoProperty( propName, castToBool = false ) {
 	return createRegistrySelector( ( select ) => () => {
 		const siteInfo = select( CORE_SITE ).getSiteInfo() || {};
+
+		// Added to convert keyMetricsSetupCompleted user ID to
+		// boolean, for flexibility it is made as parameter.
+		if ( castToBool && undefined !== siteInfo[ propName ] ) {
+			return !! siteInfo[ propName ];
+		}
+
 		return siteInfo[ propName ];
 	} );
 }
@@ -112,14 +119,15 @@ export const actions = {
 	 * Sets the `keyMetricsSetupCompleted` boolean value.
 	 *
 	 * @since 1.108.0
+	 * @since n.e.x.t Changed boolean to number since value is holding user ID.
 	 *
-	 * @param {boolean} keyMetricsSetupCompleted Whether key metrics setup is completed.
+	 * @param {number} keyMetricsSetupCompleted Positive integer if key metrics setup is completed, otherwise 0.
 	 * @return {Object} Redux-style action.
 	 */
 	setKeyMetricsSetupCompleted( keyMetricsSetupCompleted ) {
 		invariant(
-			typeof keyMetricsSetupCompleted === 'boolean',
-			'keyMetricsSetupCompleted must be a boolean.'
+			typeof keyMetricsSetupCompleted === 'number',
+			'keyMetricsSetupCompleted must be a number.'
 		);
 
 		return {
@@ -781,7 +789,7 @@ export const selectors = {
 	 * @return {number} `userID` of the user who did initial setup of the Key Metrics widget, if setup was done, otherwise `0`.
 	 */
 	getKeyMetricsSetupCompletedByUserID: getSiteInfoProperty(
-		'keyMetricsSetupCompletedByUserID'
+		'keyMetricsSetupCompleted'
 	),
 
 	/**
@@ -831,7 +839,8 @@ export const selectors = {
 	 * @return {(boolean)} `true` if the Key Metrics widget has been setup, otherwise `false`.
 	 */
 	isKeyMetricsSetupCompleted: getSiteInfoProperty(
-		'keyMetricsSetupCompleted'
+		'keyMetricsSetupCompleted',
+		true
 	),
 };
 

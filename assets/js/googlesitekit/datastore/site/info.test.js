@@ -147,53 +147,47 @@ describe( 'core/site site info', () => {
 
 		describe( 'setKeyMetricsSetupCompleted', () => {
 			it( 'sets the keyMetricsSetupCompleted property', () => {
-				registry
-					.dispatch( CORE_SITE )
-					.setKeyMetricsSetupCompleted( true );
+				registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompleted( 1 );
 
 				expect(
 					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
 				).toBe( true );
 
-				registry
-					.dispatch( CORE_SITE )
-					.setKeyMetricsSetupCompleted( false );
+				registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompleted( 0 );
 
 				expect(
 					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
 				).toBe( false );
 			} );
 
-			it( 'requires a boolean argument', () => {
+			it( 'requires a number argument', () => {
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
 						.setKeyMetricsSetupCompleted();
-				} ).toThrow( 'keyMetricsSetupCompleted must be a boolean.' );
+				} ).toThrow( 'keyMetricsSetupCompleted must be a number.' );
 
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
 						.setKeyMetricsSetupCompleted( undefined );
-				} ).toThrow( 'keyMetricsSetupCompleted must be a boolean.' );
-
-				expect( () => {
-					registry
-						.dispatch( CORE_SITE )
-						.setKeyMetricsSetupCompleted( 0 );
-				} ).toThrow( 'keyMetricsSetupCompleted must be a boolean.' );
+				} ).toThrow( 'keyMetricsSetupCompleted must be a number.' );
 
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
 						.setKeyMetricsSetupCompleted( true );
+				} ).toThrow( 'keyMetricsSetupCompleted must be a number.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompleted( 1 );
 
 					registry
 						.dispatch( CORE_SITE )
-						.setKeyMetricsSetupCompleted( false );
-				} ).not.toThrow(
-					'keyMetricsSetupCompleted must be a boolean.'
-				);
+						.setKeyMetricsSetupCompleted( 0 );
+				} ).not.toThrow( 'keyMetricsSetupCompleted must be a number.' );
 			} );
 		} );
 	} );
@@ -373,7 +367,7 @@ describe( 'core/site site info', () => {
 			[ 'getPostTypes', 'postTypes' ],
 			[
 				'getKeyMetricsSetupCompletedByUserID',
-				'keyMetricsSetupCompletedByUserID',
+				'keyMetricsSetupCompleted',
 			],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],

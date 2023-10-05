@@ -139,7 +139,7 @@ const baseActions = {
 			// TODO: We should find a better way of keeping this value synced.
 			yield registry
 				.dispatch( CORE_SITE )
-				.setKeyMetricsSetupCompleted( true );
+				.setKeyMetricsSetupCompleted( 1 ); // Return positive integer
 		}
 
 		return { response, error };
@@ -400,7 +400,7 @@ const baseSelectors = {
 
 				if (
 					! isAuthenticated &&
-					module.shareable &&
+					module?.shareable &&
 					! canViewSharedModule( slug )
 				) {
 					return false;
