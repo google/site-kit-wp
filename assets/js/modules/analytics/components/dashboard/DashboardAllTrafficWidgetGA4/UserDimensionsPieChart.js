@@ -21,7 +21,6 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -485,7 +484,7 @@ export default function UserDimensionsPieChart( props ) {
 		}
 	};
 
-	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
+	const options = structuredClone( UserDimensionsPieChart.chartOptions );
 
 	let labels = {
 		sessionDefaultChannelGrouping: __(

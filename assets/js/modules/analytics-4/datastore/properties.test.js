@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { cloneDeep } from 'lodash';
 
 /**
  * Internal dependencies
@@ -880,7 +879,7 @@ describe( 'modules/analytics-4 properties', () => {
 				} );
 
 				fetchMock.getOnce( googleTagSettingsEndpoint, {
-					body: cloneDeep( fixtures.googleTagSettings ),
+					body: structuredClone( fixtures.googleTagSettings ),
 					status: 200,
 				} );
 

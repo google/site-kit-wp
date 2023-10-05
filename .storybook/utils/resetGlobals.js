@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { cloneDeep } from 'lodash';
 
 /**
  * Internal dependencies
@@ -27,7 +26,7 @@ import { cloneDeep } from 'lodash';
 import dashboardData from '../__fixtures__/_googlesitekitLegacyData';
 
 export const resetGlobals = () => {
-	global._googlesitekitLegacyData = cloneDeep( dashboardData );
+	global._googlesitekitLegacyData = structuredClone( dashboardData );
 	global._googlesitekitBaseData = {
 		homeURL: 'http://example.com/',
 		referenceSiteURL: 'http://example.com/',

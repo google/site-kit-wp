@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -111,7 +110,7 @@ export default function WPDashboardPopularPagesGA4( props ) {
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.
-	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
+	const rows = report?.rows?.length ? structuredClone( report.rows ) : [];
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensionValues[ 0 ].value;

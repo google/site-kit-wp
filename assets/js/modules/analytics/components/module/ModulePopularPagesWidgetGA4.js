@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -207,7 +206,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 		},
 	];
 
-	let rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
+	let rows = report?.rows?.length ? structuredClone( report.rows ) : [];
 	let ZeroState = ZeroDataMessage;
 	// Use a custom zero state when the GA4 reporting tour is active
 	// while data is still loading.

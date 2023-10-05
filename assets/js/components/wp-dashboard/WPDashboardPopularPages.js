@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -110,7 +109,7 @@ export default function WPDashboardPopularPages( props ) {
 	// data.rows is not guaranteed to be set so we need a fallback.
 	let rows = [];
 	if ( report[ 0 ].data.rows ) {
-		rows = cloneDeep( report[ 0 ].data.rows );
+		rows = structuredClone( report[ 0 ].data.rows );
 	}
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {

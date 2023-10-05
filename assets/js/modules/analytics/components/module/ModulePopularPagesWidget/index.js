@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -203,7 +202,7 @@ function ModulePopularPagesWidget( props ) {
 	];
 
 	const rows = report?.[ 0 ]?.data?.rows?.length
-		? cloneDeep( report[ 0 ].data.rows )
+		? structuredClone( report[ 0 ].data.rows )
 		: [];
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
