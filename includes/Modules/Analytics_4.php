@@ -370,7 +370,7 @@ final class Analytics_4 extends Module
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
 			);
-			$datapoints['POST:sync-custom-dimensions'] = array(
+			$datapoints['POST:sync-custom-dimensions']  = array(
 				'service' => 'analyticsadmin',
 			);
 		}
