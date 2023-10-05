@@ -134,12 +134,13 @@ const baseActions = {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
 			yield receiveError( error, 'saveKeyMetricsSettings', [] );
 		} else if ( isEmpty( settings ) || settings.widgetSlugs ) {
-			// Update the `keyMetricsSetupCompleted` value to keep it in sync, as it will have been set
-			// to `true` on the backend when the key metrics settings were successfully saved.
-			// TODO: We should find a better way of keeping this value synced.
-			yield registry
+			// Update the `keyMetricsSetupCompletedBy` value to mark setup completed.
+			// This will be handled automatically on the back end.
+			registry
 				.dispatch( CORE_SITE )
-				.setKeyMetricsSetupCompleted( 1 ); // Return positive integer
+				.setKeyMetricsSetupCompleted(
+					registry.select( CORE_USER ).getID()
+				);
 		}
 
 		return { response, error };
