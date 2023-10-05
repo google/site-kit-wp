@@ -136,7 +136,7 @@ const KEY_METRICS_WIDGETS = {
 		// TODO: Remove this once we have the correct custom dimensions.
 		requiredCustomDimensions: [
 			'googlesitekit_post_author',
-			'googlesitekit_post_date',
+			'googlesitekit_post_categories',
 		],
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
@@ -149,7 +149,7 @@ const KEY_METRICS_WIDGETS = {
 		// TODO: Remove this once we have the correct custom dimensions.
 		requiredCustomDimensions: [
 			'googlesitekit_post_author',
-			'googlesitekit_post_date',
+			'googlesitekit_post_categories',
 		],
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
