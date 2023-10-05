@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Util\Activation_Flag;
 use Google\Site_Kit\Core\Util\Beta_Migration;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
-use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Tag_Manager;
 
@@ -32,7 +31,6 @@ trait OptionsTestTrait {
 			AdSense\Settings::OPTION,
 			Analytics\Settings::OPTION,
 			Credentials::OPTION,
-			Optimize\Settings::OPTION,
 			Search_Console\Settings::OPTION,
 			Tag_Manager\Settings::OPTION,
 		);

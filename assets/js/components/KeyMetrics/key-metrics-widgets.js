@@ -39,6 +39,7 @@ import {
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -152,6 +153,13 @@ if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 			'googlesitekit_post_author',
 			'googlesitekit_post_date',
 		],
+	};
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_VISIT_LENGTH ] = {
+		title: __( 'Visit length', 'google-site-kit' ),
+		description: __(
+			'Average duration of engaged visits',
+			'google-site-kit'
+		),
 	};
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ] = {
 		title: __( 'Top pages by returning visitors', 'google-site-kit' ),

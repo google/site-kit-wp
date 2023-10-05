@@ -37,13 +37,16 @@ import {
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	FORM_SETUP,
 	MODULES_ANALYTICS,
 } from '../../analytics/datastore/constants';
+import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
+	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
@@ -135,6 +138,19 @@ export async function submitChanges( { select, dispatch } ) {
 
 				if ( error ) {
 					return { error };
+				}
+
+				const shouldDismissActivationBanner = select(
+					CORE_FORMS
+				).getValue(
+					ENHANCED_MEASUREMENT_FORM,
+					ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
+				);
+
+				if ( shouldDismissActivationBanner ) {
+					await dispatch( CORE_USER ).dismissItem(
+						ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+					);
 				}
 			}
 		}

@@ -38,6 +38,7 @@ import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
 import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
+import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
@@ -45,11 +46,11 @@ import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
-import OptimizeRemovalNotification from './OptimizeRemovalNotification';
 
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
+	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewOnly = useViewOnly();
@@ -109,13 +110,15 @@ export default function BannerNotifications() {
 				analyticsModuleConnected &&
 				ga4ModuleConnected && <SwitchedToGA4Banner /> }
 			<ActivationBanner />
+			{ enhancedMeasurementEnabled && (
+				<EnhancedMeasurementActivationBanner />
+			) }
 			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
 				<Fragment>
 					<GoogleTagIDMismatchNotification />
 					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }
-			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 		</Fragment>

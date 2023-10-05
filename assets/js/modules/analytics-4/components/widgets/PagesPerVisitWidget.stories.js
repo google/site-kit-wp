@@ -47,7 +47,7 @@ const reportOptions = {
 			name: 'screenPageViewsPerSession',
 		},
 		{
-			name: 'sessions',
+			name: 'screenPageViews',
 		},
 	],
 };

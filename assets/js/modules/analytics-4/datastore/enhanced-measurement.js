@@ -236,9 +236,16 @@ const baseActions = {
 				return null;
 			}
 
+			// TODO: Here we coerce `false` to `null`, for compatibility with the API response, which returns
+			// `null` for all settings that are not enabled. This helps to ensure that we don't incorrectly consider
+			// the setting to have changed in haveEnhancedMeasurementSettingsChanged().
+			// We should address this in a more robust manner in future if we start using additional properties of
+			// the settings object.
+			const streamEnabled = enabled || null;
+
 			const newSettings = {
 				...currentSettings,
-				streamEnabled: enabled,
+				streamEnabled,
 			};
 
 			return yield Data.commonActions.await(
@@ -447,7 +454,7 @@ const baseSelectors = {
 	 * This is a utility selector that checks if either the GA4 module settings, or the
 	 * current web data stream's enhanced measurement settings, have changed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.111.0
 	 *
 	 * @return {boolean} True if settings have changed, otherwise false.
 	 */

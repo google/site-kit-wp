@@ -148,11 +148,11 @@ describe( 'core/user surveys', () => {
 
 				await registry
 					.dispatch( CORE_USER )
-					.triggerSurvey( 'optimizeSurvey' );
+					.triggerSurvey( 'userInput_answered_other__goals' );
 
 				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint, {
 					body: {
-						data: { triggerID: 'optimizeSurvey' },
+						data: { triggerID: 'userInput_answered_other__goals' },
 					},
 				} );
 			} );
@@ -174,7 +174,7 @@ describe( 'core/user surveys', () => {
 
 				const triggerSurveyPromise = registry
 					.dispatch( CORE_USER )
-					.triggerSurvey( 'optimizeSurvey' );
+					.triggerSurvey( 'userInput_answered_other__goals' );
 
 				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 
@@ -182,7 +182,7 @@ describe( 'core/user surveys', () => {
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
-						data: { triggerID: 'optimizeSurvey' },
+						data: { triggerID: 'userInput_answered_other__goals' },
 					},
 				} );
 			} );
@@ -197,17 +197,17 @@ describe( 'core/user surveys', () => {
 
 				await registry
 					.dispatch( CORE_USER )
-					.triggerSurvey( 'optimizeSurvey' );
+					.triggerSurvey( 'userInput_answered_other__goals' );
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
-						data: { triggerID: 'optimizeSurvey' },
+						data: { triggerID: 'userInput_answered_other__goals' },
 					},
 				} );
 			} );
 
 			it( 'should not fetch if the survey is timed out', async () => {
-				const triggerID = 'optimizeSurvey';
+				const triggerID = 'userInput_answered_other__goals';
 
 				provideUserAuthentication( registry );
 
@@ -225,7 +225,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'should cache survey for provided ttl', async () => {
-				const triggerID = 'optimizeSurvey';
+				const triggerID = 'userInput_answered_other__goals';
 
 				provideUserAuthentication( registry );
 
@@ -255,7 +255,10 @@ describe( 'core/user surveys', () => {
 
 				expect( fetchMock ).toHaveFetched( surveyTimeoutEndpoint, {
 					body: {
-						data: { slug: 'optimizeSurvey', timeout: 500 },
+						data: {
+							slug: 'userInput_answered_other__goals',
+							timeout: 500,
+						},
 					},
 				} );
 			} );
