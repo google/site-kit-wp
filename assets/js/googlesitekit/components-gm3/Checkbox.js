@@ -28,13 +28,14 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import * as WordPressElement from '@wordpress/element';
-const { useCallback, useEffect, useRef } = WordPressElement;
+const { forwardRef, useCallback, useEffect } = WordPressElement;
 
 /**
  * Internal dependencies
  */
 import { getLabelFromChildren } from '../../util/react-children-to-text';
 import Spinner from '../../components/Spinner';
+import { useFallbackRef } from '../../hooks/useFallbackRef';
 
 const MdCheckboxComponent = createComponent( {
 	tagName: 'md-checkbox',
@@ -46,99 +47,103 @@ const MdCheckboxComponent = createComponent( {
 	},
 } );
 
-export default function Checkbox( {
-	onChange,
-	id,
-	name,
-	value,
-	checked,
-	disabled,
-	children,
-	tabIndex,
-	onKeyDown,
-	loading,
-	alignLeft,
-	label,
-} ) {
-	const ref = useRef( null );
+const Checkbox = forwardRef(
+	(
+		{
+			onChange,
+			id,
+			name,
+			value,
+			checked,
+			disabled,
+			children,
+			tabIndex,
+			onKeyDown,
+			loading,
+			alignLeft,
+			description,
+		},
+		forwardedRef
+	) => {
+		const ref = useFallbackRef( forwardedRef );
 
-	const updateCheckedState = useCallback( () => {
-		const { current } = ref;
+		const updateCheckedState = useCallback( () => {
+			const { current } = ref;
 
-		if ( ! current ) {
-			return;
+			if ( ! current ) {
+				return;
+			}
+
+			current.checked = checked;
+
+			// The checked property doesn't get reflected to the inner input element checked state,
+			// so we need to set it manually.
+			const innerInput = current.shadowRoot?.querySelector( 'input' );
+			if ( innerInput ) {
+				innerInput.checked = checked;
+			}
+		}, [ checked, ref ] );
+
+		function handleChange( event ) {
+			onChange?.( event );
+
+			// Restore current checked state for controlled component behaviour.
+			updateCheckedState();
 		}
 
-		current.checked = checked;
+		useEffect( () => {
+			updateCheckedState();
+		}, [ updateCheckedState ] );
 
-		// The checked property doesn't get reflected to the inner input element checked state,
-		// so we need to set it manually.
-		const innerInput = current.shadowRoot.querySelector( 'input' );
-		if ( innerInput ) {
-			innerInput.checked = checked;
-		}
-	}, [ checked ] );
+		const labelID = `${ id }-label`;
 
-	function handleChange( event ) {
-		onChange?.( event );
-
-		// Restore current checked state for controlled component behaviour.
-		updateCheckedState();
-	}
-
-	useEffect( () => {
-		updateCheckedState();
-	}, [ updateCheckedState ] );
-
-	const labelID = `${ id }-label`;
-
-	return (
-		<div
-			className={ classnames( 'googlesitekit-component-gm3_checkbox', {
-				'googlesitekit-component-gm3_checkbox--align-left': alignLeft,
-			} ) }
-		>
-			{ loading && (
-				<div className="googlesitekit-component-gm3_checkbox--loading">
-					<Spinner isSaving />
-				</div>
-			) }
-			{ ! loading && (
-				<MdCheckboxComponent
-					id={ id }
-					ref={ ref }
-					aria-label={ getLabelFromChildren( children ) }
-					aria-labelledby={ labelID }
-					// `Lit` boolean attributes treat anything non-null/undefined as true.
-					// Coerce to null if false.
-					// See https://lit.dev/docs/v1/components/properties/#attributes
-					checked={ checked || null }
-					disabled={ disabled || null }
-					name={ name }
-					value={ value }
-					tabIndex={ tabIndex }
-					onChange={ handleChange }
-					onKeyDown={ onKeyDown }
-				/>
-			) }
-			{ label && (
+		return (
+			<div
+				className={ classnames(
+					'googlesitekit-component-gm3_checkbox',
+					{
+						'googlesitekit-component-gm3_checkbox--align-left':
+							alignLeft,
+					}
+				) }
+			>
+				{ loading && (
+					<div className="googlesitekit-component-gm3_checkbox--loading">
+						<Spinner isSaving />
+					</div>
+				) }
+				{ ! loading && (
+					<MdCheckboxComponent
+						id={ id }
+						ref={ ref }
+						aria-label={ getLabelFromChildren( children ) }
+						aria-labelledby={ labelID }
+						// `Lit` boolean attributes treat anything non-null/undefined as true.
+						// Coerce to null if false.
+						// See https://lit.dev/docs/v1/components/properties/#attributes
+						checked={ checked || null }
+						disabled={ disabled || null }
+						name={ name }
+						value={ value }
+						tabIndex={ tabIndex }
+						onChange={ handleChange }
+						onKeyDown={ onKeyDown }
+					/>
+				) }
 				<div className="googlesitekit-component-gm3_checkbox__content">
 					<label id={ labelID } htmlFor={ id }>
-						{ label }
-					</label>
-					<div className="googlesitekit-component-gm3_checkbox__description">
 						{ children }
-					</div>
+					</label>
+					{ description && (
+						<div className="googlesitekit-component-gm3_checkbox__description">
+							{ description }
+						</div>
+					) }
 				</div>
-			) }
-			{ ! label && (
-				<label id={ labelID } htmlFor={ id }>
-					{ children }
-				</label>
-			) }
-		</div>
-	);
-}
+			</div>
+		);
+	}
+);
 
 Checkbox.propTypes = {
 	onChange: PropTypes.func.isRequired,
@@ -164,3 +169,5 @@ Checkbox.defaultProps = {
 	alignLeft: false,
 	label: '',
 };
+
+export default Checkbox;
