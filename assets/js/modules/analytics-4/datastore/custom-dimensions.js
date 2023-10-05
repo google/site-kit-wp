@@ -100,15 +100,21 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 const baseInitialState = {};
 
 const baseActions = {
+	/**
+	 * Creates custom dimensions and syncs them in the settings.
+	 *
+	 * @since n.e.x.t
+	 */
 	*createCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		// Wait for key metrics to be loaded before checking.
+		// Wait for key metrics settings to be loaded before checking.
 		yield Data.commonActions.await(
 			registry
 				.__experimentalResolveSelect( CORE_USER )
 				.getKeyMetricsSettings()
 		);
+		// Wait for user input settings to be loaded before checking.
 		yield Data.commonActions.await(
 			registry
 				.__experimentalResolveSelect( CORE_USER )
@@ -119,37 +125,33 @@ const baseActions = {
 			.select( CORE_USER )
 			.getKeyMetrics();
 
-		// Extract required custom dimensions from selected metric tiles
+		// Extract required custom dimensions from selected metric tiles.
 		const requiredCustomDimensions = selectedMetricTiles.flatMap(
 			( tileName ) => {
 				const tile = KEY_METRICS_WIDGETS[ tileName ];
 				return tile?.requiredCustomDimensions || [];
 			}
 		);
-		global.console.log( { requiredCustomDimensions, selectedMetricTiles } );
 
-		// Deduplicate if any custom dimensions are repeated among tiles
+		// Deduplicate if any custom dimensions are repeated among tiles.
 		const uniqueRequiredCustomDimensions = [
 			...new Set( requiredCustomDimensions ),
 		];
 
-		// Fetch available custom dimensions
 		const availableCustomDimensions = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAvailableCustomDimensions();
-		// Replace 'your-datastore-name' with the correct name of your datastore
 
-		// Find out the missing custom dimensions
+		// Find out the missing custom dimensions.
 		const missingCustomDimensions = uniqueRequiredCustomDimensions.filter(
-			( dimension ) => ! availableCustomDimensions.includes( dimension )
+			( dimension ) => ! availableCustomDimensions?.includes( dimension )
 		);
 
-		// Get property ID
 		const propertyID = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getPropertyID();
 
-		// Use the fetch store to create each missing custom dimension
+		// Create missing custom dimensions.
 		for ( const dimension of missingCustomDimensions ) {
 			const dimensionData = possibleCustomDimensions[ dimension ];
 			if ( dimensionData ) {
@@ -160,20 +162,27 @@ const baseActions = {
 			}
 		}
 
-		// Dispatch syncAvailableCustomDimensions action
-		const { response } = yield baseActions.syncAvailableCustomDimensions(
-			propertyID
-		);
+		// Sync available custom dimensions.
+		if ( missingCustomDimensions.length > 0 ) {
+			const { response } =
+				yield baseActions.syncAvailableCustomDimensions( propertyID );
 
-		global.console.log( { updatedDimensions: response } );
-
-		if ( response ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableCustomDimensions( response );
+			if ( response ) {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableCustomDimensions( response );
+			}
 		}
 	},
 
+	/**
+	 * Syncs available custom dimensions in the settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} propertyID GA4 property ID.
+	 * @return {Array<string>} Available custom dimensions.
+	 */
 	syncAvailableCustomDimensions: createValidatedAction(
 		( propertyID ) => {
 			invariant(
@@ -199,8 +208,6 @@ const baseResolvers = {
 			.select( MODULES_ANALYTICS_4 )
 			.getAvailableCustomDimensions();
 
-		global.console.log( { availableCustomDimensions } );
-
 		if ( availableCustomDimensions === null ) {
 			const isAuthenticated = registry
 				.select( CORE_USER )
@@ -215,7 +222,6 @@ const baseResolvers = {
 			const canManageOptions = registry
 				.select( CORE_USER )
 				.hasCapability( PERMISSION_MANAGE_OPTIONS );
-			global.console.log( { canManageOptions } );
 
 			if ( isAuthenticated && canManageOptions ) {
 				const propertyID = registry
@@ -239,6 +245,15 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+	/**
+	 * Checks whether the provided custom dimensions are available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}               state            Data store's state.
+	 * @param {string|Array<string>} customDimensions Custom dimensions to check.
+	 * @return {boolean} True if all provided custom dimensions are available, otherwise false.
+	 */
 	hasCustomDimensions: createRegistrySelector(
 		( select ) => ( state, customDimensions ) => {
 			// Ensure customDimensions is always an array, even if a string is passed.
@@ -246,16 +261,13 @@ const baseSelectors = {
 				? customDimensions
 				: [ customDimensions ];
 
-			// Retrieve the available custom dimensions using the getAvailableCustomDimensions selector.
 			const availableCustomDimensions =
 				select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
 
-			// If there are no available custom dimensions, return false.
 			if ( ! availableCustomDimensions ) {
 				return false;
 			}
 
-			// Check if all requested custom dimensions are available.
 			return dimensionsToCheck.every( ( dimension ) =>
 				availableCustomDimensions.includes( dimension )
 			);
