@@ -110,10 +110,9 @@ export const actions = {
 	},
 
 	/**
-	 * Sets the `keyMetricsSetupCompleted` boolean value.
+	 * Sets the `setKeyMetricsSetupCompletedBy` value.
 	 *
-	 * @since 1.108.0
-	 * @since n.e.x.t Changed boolean to number since value is holding user ID.
+	 * @since n.e.x.t
 	 *
 	 * @param {number} keyMetricsSetupCompletedBy Positive integer if key metrics setup is completed, otherwise 0.
 	 * @return {Object} Redux-style action.
