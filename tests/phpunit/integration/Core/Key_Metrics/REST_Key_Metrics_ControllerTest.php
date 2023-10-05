@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Key_Metrics;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
-use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Key_Metrics\REST_Key_Metrics_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -40,11 +40,11 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 	private $controller;
 
 	/**
-	 * Key_Metrics_Setup_Completed instance.
+	 * Key_Metrics_Setup_Completed_By instance.
 	 *
-	 * @var Key_Metrics_Setup_Completed
+	 * @var Key_Metrics_Setup_Completed_By
 	 */
-	private $key_metrics_setup_completed;
+	private $key_metrics_setup_completed_by;
 
 	public function set_up() {
 		parent::set_up();
@@ -56,9 +56,9 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$options      = new Options( $context );
 		$user_options = new User_Options( $context, $user_id );
 
-		$this->settings                    = new Key_Metrics_Settings( $user_options );
-		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options );
-		$this->controller                  = new REST_Key_Metrics_Controller( $this->settings, $this->key_metrics_setup_completed );
+		$this->settings                       = new Key_Metrics_Settings( $user_options );
+		$this->key_metrics_setup_completed_by = new Key_Metrics_Setup_Completed_By( $options );
+		$this->controller                     = new REST_Key_Metrics_Controller( $this->settings, $this->key_metrics_setup_completed_by );
 	}
 
 	public function tear_down() {
@@ -172,7 +172,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$this->assertFalse( $this->key_metrics_setup_completed->get() );
+		$this->assertFalse( $this->key_metrics_setup_completed_by->get() );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$request->set_body_params(
@@ -185,7 +185,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 		rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( $expected, $this->key_metrics_setup_completed->get() );
+		$this->assertEquals( $expected, $this->key_metrics_setup_completed_by->get() );
 	}
 
 	public function data_setup_completed() {

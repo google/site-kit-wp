@@ -35,12 +35,12 @@ class Key_Metrics {
 	protected $key_metrics_settings;
 
 	/**
-	 * Key_Metrics_Setup_Completed instance.
+	 * Key_Metrics_Setup_Completed_By instance.
 	 *
-	 * @since 1.108.0
-	 * @var Key_Metrics_Setup_Completed
+	 * @since n.e.x.t
+	 * @var Key_Metrics_Setup_Completed_By
 	 */
-	protected $key_metrics_setup_completed;
+	protected $key_metrics_setup_completed_by;
 
 	/**
 	 * REST_Key_Metrics_Controller instance.
@@ -60,9 +60,9 @@ class Key_Metrics {
 	 * @param Options      $options        Optional. Option API instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, User_Options $user_options = null, Options $options = null ) {
-		$this->key_metrics_settings        = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
-		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options ?: new Options( $context ) );
-		$this->rest_controller             = new REST_Key_Metrics_Controller( $this->key_metrics_settings, $this->key_metrics_setup_completed );
+		$this->key_metrics_settings           = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
+		$this->key_metrics_setup_completed_by = new Key_Metrics_Setup_Completed_By( $options ?: new Options( $context ) );
+		$this->rest_controller                = new REST_Key_Metrics_Controller( $this->key_metrics_settings, $this->key_metrics_setup_completed_by );
 	}
 
 	/**
@@ -72,7 +72,7 @@ class Key_Metrics {
 	 */
 	public function register() {
 		$this->key_metrics_settings->register();
-		$this->key_metrics_setup_completed->register();
+		$this->key_metrics_setup_completed_by->register();
 		$this->rest_controller->register();
 
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
@@ -88,7 +88,7 @@ class Key_Metrics {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
-		$data['keyMetricsSetupCompletedBy'] = (int) $this->key_metrics_setup_completed->get();
+		$data['keyMetricsSetupCompletedBy'] = (int) $this->key_metrics_setup_completed_by->get();
 
 		return $data;
 	}

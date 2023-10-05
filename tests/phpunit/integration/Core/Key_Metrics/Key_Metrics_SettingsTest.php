@@ -14,7 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
-use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -35,11 +35,11 @@ class Key_Metrics_SettingsTest extends TestCase {
 	private $key_metrics_settings;
 
 	/**
-	 * Key_Metrics_Setup_Completed instance.
+	 * Key_Metrics_Setup_Completed_By instance.
 	 *
-	 * @var Key_Metrics_Setup_Completed
+	 * @var Key_Metrics_Setup_Completed_By
 	 */
-	private $key_metrics_setup_completed;
+	private $key_metrics_setup_completed_by;
 
 	public function set_up() {
 		parent::set_up();
@@ -53,9 +53,9 @@ class Key_Metrics_SettingsTest extends TestCase {
 		// Needed to unregister the instance registered during plugin bootstrap.
 		remove_all_filters( "sanitize_user_meta_{$meta_key}" );
 
-		$this->key_metrics                 = new Key_Metrics( $context, $user_options, $options );
-		$this->key_metrics_setup_completed = new Key_Metrics_Setup_Completed( $options );
-		$this->key_metrics_settings        = new Key_Metrics_Settings( $user_options );
+		$this->key_metrics                    = new Key_Metrics( $context, $user_options, $options );
+		$this->key_metrics_setup_completed_by = new Key_Metrics_Setup_Completed_By( $options );
+		$this->key_metrics_settings           = new Key_Metrics_Settings( $user_options );
 
 		$this->key_metrics->register();
 		$this->key_metrics_settings->register();
@@ -201,7 +201,7 @@ class Key_Metrics_SettingsTest extends TestCase {
 	public function test_key_metrics_setup_completed_by_user_id() {
 		// Set ID of user who did initial setup
 		$user_id = 100;
-		$this->key_metrics_setup_completed->set( $user_id );
+		$this->key_metrics_setup_completed_by->set( $user_id );
 
 		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
 
