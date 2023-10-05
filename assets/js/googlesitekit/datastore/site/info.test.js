@@ -59,9 +59,11 @@ describe( 'core/site site info', () => {
 		currentEntityID: '4',
 	};
 	let registry;
+	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ CORE_SITE ].store;
 	} );
 
 	afterEach( () => {
@@ -145,49 +147,47 @@ describe( 'core/site site info', () => {
 			} );
 		} );
 
-		describe( 'setKeyMetricsSetupCompleted', () => {
-			it( 'sets the keyMetricsSetupCompleted property', () => {
-				registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompleted( 1 );
+		describe( 'setKeyMetricsSetupCompletedBy', () => {
+			it( 'sets the `keyMetricsSetupCompletedBy` property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 123 );
 
 				expect(
-					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
-				).toBe( true );
-
-				registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompleted( 0 );
-
-				expect(
-					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
-				).toBe( false );
+					store.getState().siteInfo.keyMetricsSetupCompletedBy
+				).toBe( 123 );
 			} );
 
 			it( 'requires a number argument', () => {
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
-						.setKeyMetricsSetupCompleted();
-				} ).toThrow( 'keyMetricsSetupCompleted must be a number.' );
+						.setKeyMetricsSetupCompletedBy();
+				} ).toThrow( 'keyMetricsSetupCompletedBy must be a number.' );
 
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
-						.setKeyMetricsSetupCompleted( undefined );
-				} ).toThrow( 'keyMetricsSetupCompleted must be a number.' );
+						.setKeyMetricsSetupCompletedBy( undefined );
+				} ).toThrow( 'keyMetricsSetupCompletedBy must be a number.' );
 
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
-						.setKeyMetricsSetupCompleted( true );
-				} ).toThrow( 'keyMetricsSetupCompleted must be a number.' );
+						.setKeyMetricsSetupCompletedBy( true );
+				} ).toThrow( 'keyMetricsSetupCompletedBy must be a number.' );
 
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
-						.setKeyMetricsSetupCompleted( 1 );
+						.setKeyMetricsSetupCompletedBy( 1 );
 
 					registry
 						.dispatch( CORE_SITE )
-						.setKeyMetricsSetupCompleted( 0 );
-				} ).not.toThrow( 'keyMetricsSetupCompleted must be a number.' );
+						.setKeyMetricsSetupCompletedBy( 0 );
+				} ).not.toThrow(
+					'keyMetricsSetupCompletedBy must be a number.'
+				);
 			} );
 		} );
 	} );
@@ -365,17 +365,14 @@ describe( 'core/site site info', () => {
 			[ 'getUpdateCoreURL', 'updateCoreURL' ],
 			[ 'getTimezone', 'timezone' ],
 			[ 'getPostTypes', 'postTypes' ],
-			[
-				'getKeyMetricsSetupCompletedByUserID',
-				'keyMetricsSetupCompleted',
-			],
+			[ 'getKeyMetricsSetupCompletedBy', 'keyMetricsSetupCompletedBy' ],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],
 			[ 'isSecondaryAMP', 'ampMode' ],
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
 			[ 'getProductBasePaths', 'productBasePaths' ],
-			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompleted' ],
+			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;

@@ -33,6 +33,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '../../../util';
+import { negateDefined } from '../../../util/negate';
 
 const { createRegistrySelector } = Data;
 
@@ -47,7 +48,7 @@ function getSiteInfoProperty( propName ) {
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
 const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
-const SET_KEY_METRICS_SETUP_COMPLETED = 'SET_KEY_METRICS_SETUP_COMPLETED';
+const SET_KEY_METRICS_SETUP_COMPLETED_BY = 'SET_KEY_METRICS_SETUP_COMPLETED_BY';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -114,18 +115,18 @@ export const actions = {
 	 * @since 1.108.0
 	 * @since n.e.x.t Changed boolean to number since value is holding user ID.
 	 *
-	 * @param {number} keyMetricsSetupCompleted Positive integer if key metrics setup is completed, otherwise 0.
+	 * @param {number} keyMetricsSetupCompletedBy Positive integer if key metrics setup is completed, otherwise 0.
 	 * @return {Object} Redux-style action.
 	 */
-	setKeyMetricsSetupCompleted( keyMetricsSetupCompleted ) {
+	setKeyMetricsSetupCompletedBy( keyMetricsSetupCompletedBy ) {
 		invariant(
-			typeof keyMetricsSetupCompleted === 'number',
-			'keyMetricsSetupCompleted must be a number.'
+			typeof keyMetricsSetupCompletedBy === 'number',
+			'keyMetricsSetupCompletedBy must be a number.'
 		);
 
 		return {
-			payload: { keyMetricsSetupCompleted },
-			type: SET_KEY_METRICS_SETUP_COMPLETED,
+			payload: { keyMetricsSetupCompletedBy },
+			type: SET_KEY_METRICS_SETUP_COMPLETED_BY,
 		};
 	},
 };
@@ -216,13 +217,13 @@ export const reducer = ( state, { payload, type } ) => {
 				},
 			};
 
-		case SET_KEY_METRICS_SETUP_COMPLETED:
-			const { keyMetricsSetupCompleted } = payload;
+		case SET_KEY_METRICS_SETUP_COMPLETED_BY:
+			const { keyMetricsSetupCompletedBy } = payload;
 			return {
 				...state,
 				siteInfo: {
 					...state.siteInfo,
-					keyMetricsSetupCompleted,
+					keyMetricsSetupCompletedBy,
 				},
 			};
 
@@ -771,14 +772,14 @@ export const selectors = {
 	getPluginBasename: getSiteInfoProperty( 'pluginBasename' ),
 
 	/**
-	 * Get the `userID` of the user who setup Key Metrics widget if present.
+	 * Get the user ID of the user who setup Key Metrics widget if present.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {number} `userID` of the user who did initial setup of the Key Metrics widget, if setup was done, otherwise `0`.
+	 * @return {number} `ID` of the user who did initial setup of the Key Metrics widget, if setup was done, otherwise `0`.
 	 */
-	getKeyMetricsSetupCompletedByUserID: getSiteInfoProperty(
-		'keyMetricsSetupCompleted'
+	getKeyMetricsSetupCompletedBy: getSiteInfoProperty(
+		'keyMetricsSetupCompletedBy'
 	),
 
 	/**
@@ -825,11 +826,16 @@ export const selectors = {
 	 *
 	 * @since 1.108.0
 	 *
-	 * @return {(boolean)} `true` if the Key Metrics widget has been setup, otherwise `false`.
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if the Key Metrics widget has been setup, otherwise `false`.
 	 */
-	isKeyMetricsSetupCompleted: getSiteInfoProperty(
-		'keyMetricsSetupCompleted'
-	),
+	isKeyMetricsSetupCompleted: ( state ) => {
+		// Here we double-negate the value of the setup completed by state
+		// in order to cast it to a boolean, but only if it's not undefined.
+		return negateDefined(
+			negateDefined( selectors.getKeyMetricsSetupCompletedBy( state ) )
+		);
+	},
 };
 
 export default {

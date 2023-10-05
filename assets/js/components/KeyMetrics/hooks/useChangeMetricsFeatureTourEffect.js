@@ -38,8 +38,8 @@ const { useSelect, useDispatch } = Data;
  * @param {boolean} renderChangeMetricLink If metric link meets the conditions to render.
  */
 export const useChangeMetricsFeatureTourEffect = ( renderChangeMetricLink ) => {
-	const keyMetricsSetupCompletedByUserID = useSelect( ( select ) =>
-		select( CORE_SITE ).getKeyMetricsSetupCompletedByUserID()
+	const keyMetricsSetupCompletedBy = useSelect( ( select ) =>
+		select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
 	);
 	const currentUserID = useSelect( ( select ) =>
 		select( CORE_USER ).getID()
@@ -48,17 +48,17 @@ export const useChangeMetricsFeatureTourEffect = ( renderChangeMetricLink ) => {
 
 	useEffect( () => {
 		const isUserEligibleForTour =
-			Number.isInteger( keyMetricsSetupCompletedByUserID ) &&
+			Number.isInteger( keyMetricsSetupCompletedBy ) &&
 			Number.isInteger( currentUserID ) &&
-			keyMetricsSetupCompletedByUserID > 0 &&
-			currentUserID !== keyMetricsSetupCompletedByUserID;
+			keyMetricsSetupCompletedBy > 0 &&
+			currentUserID !== keyMetricsSetupCompletedBy;
 
 		if ( renderChangeMetricLink && isUserEligibleForTour ) {
 			triggerOnDemandTour( sharedKeyMetrics );
 		}
 	}, [
 		renderChangeMetricLink,
-		keyMetricsSetupCompletedByUserID,
+		keyMetricsSetupCompletedBy,
 		currentUserID,
 		triggerOnDemandTour,
 	] );
