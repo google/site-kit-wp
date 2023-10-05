@@ -82,13 +82,13 @@ class Key_Metrics {
 	 * Adds the status of the Key Metrics widget setup to the inline JS data.
 	 *
 	 * @since 1.108.0
-	 * @since n.e.x.t Return casted to integer.
+	 * @since n.e.x.t Add keyMetricsSetupCompletedBy (id) instead of keyMetricsSetupCompleted boolean.
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
-		$data['keyMetricsSetupCompleted'] = (int) $this->key_metrics_setup_completed->get();
+		$data['keyMetricsSetupCompletedBy'] = (int) $this->key_metrics_setup_completed->get();
 
 		return $data;
 	}

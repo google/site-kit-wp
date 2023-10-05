@@ -205,7 +205,7 @@ class Key_Metrics_SettingsTest extends TestCase {
 
 		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
 
-		$this->assertArrayHasKey( 'keyMetricsSetupCompleted', $data );
-		$this->assertEquals( $user_id, $data['keyMetricsSetupCompleted'] );
+		$this->assertArrayHasKey( 'keyMetricsSetupCompletedBy', $data );
+		$this->assertEquals( $user_id, $data['keyMetricsSetupCompletedBy'] );
 	}
 }
