@@ -36,16 +36,9 @@ import { normalizeURL, untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
-function getSiteInfoProperty( propName, castToBool = false ) {
+function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
 		const siteInfo = select( CORE_SITE ).getSiteInfo() || {};
-
-		// Added to convert keyMetricsSetupCompleted user ID to
-		// boolean, for flexibility it is made as parameter.
-		if ( castToBool && undefined !== siteInfo[ propName ] ) {
-			return !! siteInfo[ propName ];
-		}
-
 		return siteInfo[ propName ];
 	} );
 }
@@ -839,8 +832,7 @@ export const selectors = {
 	 * @return {(boolean)} `true` if the Key Metrics widget has been setup, otherwise `false`.
 	 */
 	isKeyMetricsSetupCompleted: getSiteInfoProperty(
-		'keyMetricsSetupCompleted',
-		true
+		'keyMetricsSetupCompleted'
 	),
 };
 
