@@ -74,7 +74,7 @@ function VisitsPerVisitorWidget( { Widget } ) {
 			)
 	);
 
-	const { rows = [], totals = [] } = report || {};
+	const { rows = [] } = report || {};
 
 	const makeFind = ( dateRange ) => ( row ) =>
 		get( row, 'dimensionValues.0.value' ) === dateRange;
@@ -88,7 +88,9 @@ function VisitsPerVisitorWidget( { Widget } ) {
 		0;
 
 	const currentTotalSessions =
-		Number( totals[ 0 ]?.metricValues?.[ 1 ]?.value ) || 0;
+		Number(
+			rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 1 ]?.value
+		) || 0;
 
 	return (
 		<MetricTileNumeric
