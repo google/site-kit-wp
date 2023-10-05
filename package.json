@@ -230,7 +230,7 @@
 		"lint-staged": "^10.2.11",
 		"mini-css-extract-plugin": "^1.2.1",
 		"node-fetch": "^2.6.7",
-		"postcss": "^8.4.16",
+		"postcss": "^8.4.31",
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^4.0.0",
 		"postcss-preset-env": "^6.7.0",
