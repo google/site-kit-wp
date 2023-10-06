@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
 export const PROPERTY_CREATE = 'property_create';
@@ -36,27 +41,35 @@ export const ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER =
 export const customDimensions = {
 	googlesitekit_post_date: {
 		parameterName: 'googlesitekit_post_date',
-		displayName: 'WordPress Post Creation Date',
-		description: 'Date of which this post was published',
+		displayName: __( 'WordPress Post Creation Date', 'google-site-kit' ),
+		description: __(
+			'Date of which this post was published',
+			'google-site-kit'
+		),
 		scope: 'EVENT',
 	},
 	googlesitekit_post_author: {
 		parameterName: 'googlesitekit_post_author',
-		displayName: 'WordPress Post Author',
-		description: 'User ID of the author for this post',
+		displayName: __( 'WordPress Post Author', 'google-site-kit' ),
+		description: __(
+			'User ID of the author for this post',
+			'google-site-kit'
+		),
 		scope: 'EVENT',
 	},
 	googlesitekit_post_categories: {
 		parameterName: 'googlesitekit_post_categories',
-		displayName: 'WordPress Post Categories',
-		description:
+		displayName: __( 'WordPress Post Categories', 'google-site-kit' ),
+		description: __(
 			'Comma-separated list of category IDs assigned to this post',
+			'google-site-kit'
+		),
 		scope: 'EVENT',
 	},
 	googlesitekit_post_type: {
 		parameterName: 'googlesitekit_post_type',
-		displayName: 'WordPress Post Type',
-		description: 'Content type for this post',
+		displayName: __( 'WordPress Post Type', 'google-site-kit' ),
+		description: __( 'Content type for this post', 'google-site-kit' ),
 		scope: 'EVENT',
 	},
 };
