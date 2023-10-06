@@ -163,14 +163,7 @@ const baseActions = {
 
 		// Sync available custom dimensions.
 		if ( missingCustomDimensions.length > 0 ) {
-			const { response } =
-				yield baseActions.syncAvailableCustomDimensions( propertyID );
-
-			if ( response ) {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableCustomDimensions( response );
-			}
+			yield baseActions.syncAvailableCustomDimensions( propertyID );
 		}
 	},
 
@@ -190,10 +183,18 @@ const baseActions = {
 			);
 		},
 		function* ( propertyID ) {
+			const registry = yield Data.commonActions.getRegistry();
+
 			const { response, error } =
 				yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
 					propertyID
 				);
+
+			if ( response ) {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableCustomDimensions( response );
+			}
 
 			return { response, error };
 		}
@@ -230,17 +231,11 @@ const baseResolvers = {
 			.select( MODULES_ANALYTICS_4 )
 			.getPropertyID();
 
-		const { response } = yield Data.commonActions.await(
+		yield Data.commonActions.await(
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.syncAvailableCustomDimensions( propertyID )
 		);
-
-		if ( response ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableCustomDimensions( response );
-		}
 	},
 };
 
