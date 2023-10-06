@@ -133,7 +133,7 @@ async function assertEmptyDebugLog() {
 	const filteredDebugLog = debugLogData.filter( ( line ) => {
 		const lineWithoutTimestamp = line.replace( /^\[[^\]]+\]\s+/, '' );
 
-		return ignoreList.some( ( ignoreLine ) =>
+		return ! ignoreList.some( ( ignoreLine ) =>
 			lineWithoutTimestamp.startsWith( ignoreLine )
 		);
 	} );
