@@ -203,42 +203,43 @@ const baseActions = {
 const baseResolvers = {
 	*getAvailableCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
+
 		const availableCustomDimensions = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAvailableCustomDimensions();
 
-		if ( availableCustomDimensions === null ) {
-			const isAuthenticated = registry
-				.select( CORE_USER )
-				.isAuthenticated();
+		const isAuthenticated = registry.select( CORE_USER ).isAuthenticated();
 
-			// Wait for permissions to be loaded before checking if the user can manage options.
-			yield Data.commonActions.await(
-				registry
-					.__experimentalResolveSelect( CORE_USER )
-					.getCapabilities()
-			);
-			const canManageOptions = registry
-				.select( CORE_USER )
-				.hasCapability( PERMISSION_MANAGE_OPTIONS );
+		if ( availableCustomDimensions || ! isAuthenticated ) {
+			return;
+		}
 
-			if ( isAuthenticated && canManageOptions ) {
-				const propertyID = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPropertyID();
+		// Wait for permissions to be loaded before checking if the user can manage options.
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_USER ).getCapabilities()
+		);
+		const canManageOptions = registry
+			.select( CORE_USER )
+			.hasCapability( PERMISSION_MANAGE_OPTIONS );
 
-				const { response } = yield Data.commonActions.await(
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.syncAvailableCustomDimensions( propertyID )
-				);
+		if ( ! canManageOptions ) {
+			return;
+		}
 
-				if ( response ) {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setAvailableCustomDimensions( response );
-				}
-			}
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		const { response } = yield Data.commonActions.await(
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.syncAvailableCustomDimensions( propertyID )
+		);
+
+		if ( response ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableCustomDimensions( response );
 		}
 	},
 };
