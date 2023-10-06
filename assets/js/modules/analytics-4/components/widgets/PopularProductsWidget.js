@@ -93,7 +93,7 @@ function PopularProductsWidget( props ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pageTitle', 'pagePath' ],
+		dimensions: [ 'pagePath' ],
 		dimensionFilters: {
 			pagePath: {
 				filterType: 'stringFilter',
@@ -131,12 +131,21 @@ function PopularProductsWidget( props ) {
 		] )
 	);
 
+	const titles = useInViewSelect( ( select ) =>
+		! error && report
+			? select( MODULES_ANALYTICS_4 ).getPageTitles(
+					report,
+					reportOptions
+			  )
+			: undefined
+	);
+
 	const loading = useSelect( ( select ) =>
 		showWidget
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
 					[ reportOptions ]
-			  )
+			  ) || titles === undefined
 			: undefined
 	);
 
@@ -144,9 +153,10 @@ function PopularProductsWidget( props ) {
 
 	const columns = [
 		{
-			field: 'dimensionValues',
+			field: 'dimensionValues.0.value',
 			Component: ( { fieldValue } ) => {
-				const [ title, url ] = fieldValue;
+				const url = fieldValue;
+				const title = titles[ url ];
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,
@@ -158,7 +168,7 @@ function PopularProductsWidget( props ) {
 								'all-pages-and-screens',
 								{
 									filters: {
-										unifiedPagePathScreen: url.value,
+										unifiedPagePathScreen: url,
 									},
 									dates,
 								}
@@ -167,17 +177,17 @@ function PopularProductsWidget( props ) {
 				} );
 
 				if ( viewOnlyDashboard ) {
-					return <MetricTileTablePlainText content={ title.value } />;
+					return <MetricTileTablePlainText content={ title } />;
 				}
 
 				return (
 					<Link
 						href={ serviceURL }
-						title={ title.value }
+						title={ title }
 						external
 						hideExternalIndicator
 					>
-						{ title.value }
+						{ title }
 					</Link>
 				);
 			},
