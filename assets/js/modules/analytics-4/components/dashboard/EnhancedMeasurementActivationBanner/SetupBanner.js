@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -62,7 +61,6 @@ export default function SetupBanner( {
 } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ isSaving, setIsSaving ] = useState( false );
-	const [ shouldTriggerSurvey, setShouldTriggerSurvey ] = useState( false );
 
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
@@ -107,12 +105,6 @@ export default function SetupBanner( {
 		// This should be called last because it will unmount this component.
 		onSubmitSuccess();
 	}, [ setValues, submitChanges, onSubmitSuccess ] );
-
-	useMount( () => {
-		if ( usingProxy && ! isDismissed ) {
-			setShouldTriggerSurvey( true );
-		}
-	}, [ isDismissed, setShouldTriggerSurvey, usingProxy ] );
 
 	const handleSubmitChanges = async () => {
 		const scopes = [];
@@ -213,7 +205,7 @@ export default function SetupBanner( {
 			onDismiss={ onDismiss }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
-			{ shouldTriggerSurvey && (
+			{ usingProxy && ! isDismissed && (
 				<SurveyViewTrigger
 					triggerID="view_enhanced_measurement_cta"
 					ttl={ DAY_IN_SECONDS }
