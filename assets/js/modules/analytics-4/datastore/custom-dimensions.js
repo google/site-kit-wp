@@ -23,12 +23,62 @@ import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { MODULES_ANALYTICS_4 } from './constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '../../../googlesitekit/datastore/user/constants';
+import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
+
+const { createRegistrySelector } = Data;
+
+const possibleCustomDimensions = {
+	googlesitekit_post_date: {
+		parameterName: 'googlesitekit_post_date',
+		displayName: __( 'WordPress Post Creation Date', 'google-site-kit' ),
+		description: __(
+			'Date of which this post was published',
+			'google-site-kit'
+		),
+		scope: 'EVENT',
+	},
+	googlesitekit_post_author: {
+		parameterName: 'googlesitekit_post_author',
+		displayName: __( 'WordPress Post Author', 'google-site-kit' ),
+		description: __(
+			'User ID of the author for this post',
+			'google-site-kit'
+		),
+		scope: 'EVENT',
+	},
+	googlesitekit_post_categories: {
+		parameterName: 'googlesitekit_post_categories',
+		displayName: __( 'WordPress Post Categories', 'google-site-kit' ),
+		description: __(
+			'Comma-separated list of category IDs assigned to this post',
+			'google-site-kit'
+		),
+		scope: 'EVENT',
+	},
+	googlesitekit_post_type: {
+		parameterName: 'googlesitekit_post_type',
+		displayName: __( 'WordPress Post Type', 'google-site-kit' ),
+		description: __( 'Content type for this post', 'google-site-kit' ),
+		scope: 'EVENT',
+	},
+};
 
 const customDimensionFields = [
 	'parameterName',
@@ -67,17 +117,210 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 	},
 } );
 
+const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
+	baseName: 'syncAvailableCustomDimensions',
+	controlCallback: ( { propertyID } ) => {
+		return API.set( 'modules', 'analytics-4', 'sync-custom-dimensions', {
+			propertyID,
+		} );
+	},
+	argsToParams: ( propertyID ) => ( {
+		propertyID,
+	} ),
+	validateParams: ( { propertyID } ) => {
+		invariant(
+			isValidPropertyID( propertyID ),
+			'A valid GA4 propertyID is required.'
+		);
+	},
+} );
+
 const baseInitialState = {};
 
-const baseActions = {};
+const baseActions = {
+	/**
+	 * Creates custom dimensions and syncs them in the settings.
+	 *
+	 * @since n.e.x.t
+	 */
+	*createCustomDimensions() {
+		const registry = yield Data.commonActions.getRegistry();
 
-const baseSelectors = {};
+		// Wait for the necessary settings to be loaded before checking.
+		yield Data.commonActions.await(
+			Promise.all( [
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getSettings(),
+				registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getKeyMetricsSettings(),
+				registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getUserInputSettings(),
+			] )
+		);
 
-const store = Data.combineStores( fetchCreateCustomDimensionStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	selectors: baseSelectors,
-} );
+		const selectedMetricTiles = registry
+			.select( CORE_USER )
+			.getKeyMetrics();
+
+		// Extract required custom dimensions from selected metric tiles.
+		const requiredCustomDimensions = selectedMetricTiles.flatMap(
+			( tileName ) => {
+				const tile = KEY_METRICS_WIDGETS[ tileName ];
+				return tile?.requiredCustomDimensions || [];
+			}
+		);
+
+		// Deduplicate if any custom dimensions are repeated among tiles.
+		const uniqueRequiredCustomDimensions = [
+			...new Set( requiredCustomDimensions ),
+		];
+
+		const availableCustomDimensions = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableCustomDimensions();
+
+		// Find out the missing custom dimensions.
+		const missingCustomDimensions = uniqueRequiredCustomDimensions.filter(
+			( dimension ) => ! availableCustomDimensions?.includes( dimension )
+		);
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		// Create missing custom dimensions.
+		for ( const dimension of missingCustomDimensions ) {
+			const dimensionData = possibleCustomDimensions[ dimension ];
+			if ( dimensionData ) {
+				yield fetchCreateCustomDimensionStore.actions.fetchCreateCustomDimension(
+					propertyID,
+					dimensionData
+				);
+			}
+		}
+
+		// Sync available custom dimensions.
+		if ( missingCustomDimensions.length > 0 ) {
+			yield baseActions.syncAvailableCustomDimensions( propertyID );
+		}
+	},
+
+	/**
+	 * Syncs available custom dimensions in the settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} propertyID GA4 property ID.
+	 * @return {Array<string>} Available custom dimensions.
+	 */
+	syncAvailableCustomDimensions: createValidatedAction(
+		( propertyID ) => {
+			invariant(
+				isValidPropertyID( propertyID ),
+				'A valid GA4 propertyID is required.'
+			);
+		},
+		function* ( propertyID ) {
+			const registry = yield Data.commonActions.getRegistry();
+
+			const { response, error } =
+				yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
+					propertyID
+				);
+
+			if ( response ) {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableCustomDimensions( response );
+			}
+
+			return { response, error };
+		}
+	),
+};
+
+const baseResolvers = {
+	*getAvailableCustomDimensions() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const availableCustomDimensions = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableCustomDimensions();
+
+		const isAuthenticated = registry.select( CORE_USER ).isAuthenticated();
+
+		if ( availableCustomDimensions || ! isAuthenticated ) {
+			return;
+		}
+
+		// Wait for permissions to be loaded before checking if the user can manage options.
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_USER ).getCapabilities()
+		);
+		const canManageOptions = registry
+			.select( CORE_USER )
+			.hasCapability( PERMISSION_MANAGE_OPTIONS );
+
+		if ( ! canManageOptions ) {
+			return;
+		}
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		yield Data.commonActions.await(
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.syncAvailableCustomDimensions( propertyID )
+		);
+	},
+};
+
+const baseSelectors = {
+	/**
+	 * Checks whether the provided custom dimensions are available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}               state            Data store's state.
+	 * @param {string|Array<string>} customDimensions Custom dimensions to check.
+	 * @return {boolean} True if all provided custom dimensions are available, otherwise false.
+	 */
+	hasCustomDimensions: createRegistrySelector(
+		( select ) => ( state, customDimensions ) => {
+			// Ensure customDimensions is always an array, even if a string is passed.
+			const dimensionsToCheck = Array.isArray( customDimensions )
+				? customDimensions
+				: [ customDimensions ];
+
+			const availableCustomDimensions =
+				select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
+
+			if ( ! availableCustomDimensions ) {
+				return false;
+			}
+
+			return dimensionsToCheck.every( ( dimension ) =>
+				availableCustomDimensions.includes( dimension )
+			);
+		}
+	),
+};
+
+const store = Data.combineStores(
+	fetchCreateCustomDimensionStore,
+	fetchSyncAvailableCustomDimensionsStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;
