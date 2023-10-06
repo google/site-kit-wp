@@ -46,20 +46,15 @@ export const useChangeMetricsFeatureTourEffect = ( renderChangeMetricLink ) => {
 	);
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 
-	useEffect( () => {
-		const isUserEligibleForTour =
-			Number.isInteger( keyMetricsSetupCompletedBy ) &&
-			Number.isInteger( currentUserID ) &&
-			keyMetricsSetupCompletedBy > 0 &&
-			currentUserID !== keyMetricsSetupCompletedBy;
+	const isUserEligibleForTour =
+		Number.isInteger( keyMetricsSetupCompletedBy ) &&
+		Number.isInteger( currentUserID ) &&
+		keyMetricsSetupCompletedBy > 0 &&
+		currentUserID !== keyMetricsSetupCompletedBy;
 
+	useEffect( () => {
 		if ( renderChangeMetricLink && isUserEligibleForTour ) {
 			triggerOnDemandTour( sharedKeyMetrics );
 		}
-	}, [
-		renderChangeMetricLink,
-		keyMetricsSetupCompletedBy,
-		currentUserID,
-		triggerOnDemandTour,
-	] );
+	}, [ renderChangeMetricLink, isUserEligibleForTour, triggerOnDemandTour ] );
 };
