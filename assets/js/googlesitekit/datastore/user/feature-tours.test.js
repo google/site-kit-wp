@@ -404,6 +404,23 @@ describe( 'core/user feature-tours', () => {
 
 				expect( store.getState().currentTour ).toEqual( testTourB );
 			} );
+
+			it( 'does not override an existing tour if present when no tour qualifies', async () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveAllFeatureTours( [ testTourA ] );
+
+				expect( store.getState().currentTour ).toBeUndefined();
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourB );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerTourForView( 'non-existent-context' );
+
+				expect( store.getState().currentTour ).toEqual( testTourB );
+			} );
 		} );
 	} );
 

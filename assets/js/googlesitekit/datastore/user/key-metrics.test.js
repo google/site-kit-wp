@@ -24,6 +24,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -296,7 +297,9 @@ describe( 'core/user key metrics', () => {
 		} );
 
 		describe( 'saveKeyMetricsSettings', () => {
+			const userID = 123;
 			beforeEach( async () => {
+				provideUserInfo( registry, { id: userID } );
 				await registry
 					.dispatch( CORE_USER )
 					.setKeyMetricsSetting( settingID, settingValue );
@@ -388,23 +391,21 @@ describe( 'core/user key metrics', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should set the keyMetricsSetupCompleted site info setting to true', async () => {
+			it( 'should mark key metrics setup as completed by current user', async () => {
 				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
 					body: coreKeyMetricsExpectedResponse,
 					status: 200,
 				} );
 
-				// Verify the setting is initially false.
 				expect(
-					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
-				).toBe( false );
+					registry.select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+				).toBe( 0 );
 
 				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
 
-				// Assert that the setting is now true.
 				expect(
-					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
-				).toBe( true );
+					registry.select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+				).toBe( userID );
 			} );
 
 			it( 'should not set the keyMetricsSetupCompleted site info setting to true if the request fails', async () => {

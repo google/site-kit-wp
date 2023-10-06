@@ -248,7 +248,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 			},
 		],
 		productBasePaths: [ '^/product/' ],
-		keyMetricsSetupCompleted: false,
+		keyMetricsSetupCompletedBy: 0,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
