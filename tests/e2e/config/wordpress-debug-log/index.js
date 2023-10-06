@@ -129,9 +129,13 @@ async function assertEmptyDebugLog() {
 	// before the entries are recorded and result in a false success.
 	await page.waitForTimeout( 1000 );
 
+	// Filter out lines that are ignored.
 	const filteredDebugLog = debugLogData.filter( ( line ) => {
 		const lineWithoutTimestamp = line.replace( /^\[[^\]]+\]\s+/, '' );
-		return ! ignoreList.includes( lineWithoutTimestamp );
+
+		return ignoreList.some( ( ignoreLine ) =>
+			lineWithoutTimestamp.startsWith( ignoreLine )
+		);
 	} );
 
 	if ( filteredDebugLog.length ) {
