@@ -33,7 +33,10 @@ import {
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../googlesitekit/constants';
 import MostEngagingPagesWidget from './MostEngagingPagesWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
@@ -138,6 +141,74 @@ Ready.args = {
 };
 Ready.scenario = {
 	label: 'KeyMetrics/MostEngagingPagesWidget/Ready',
+	delay: 250,
+};
+
+export const ReadyViewOnly = Template.bind( {} );
+ReadyViewOnly.storyName = 'Ready View Only';
+ReadyViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions,
+			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+			// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+			// page paths to page titles.
+			{ dimensionCombinationStrategy: STRATEGY_ZIP }
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageTitlesReport, {
+				options: pageTitlesReportOptions,
+			} );
+
+		const pageViewsReport = getAnalytics4MockResponse(
+			pageViewsReportOptions
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageViewsReport, {
+				options: pageViewsReportOptions,
+			} );
+
+		const averagePageViews =
+			Math.round(
+				pageViewsReport?.totals?.[ 0 ]?.metricValues[ 0 ].value /
+					pageViewsReport?.rowCount
+			) || 0;
+
+		const reportOptions = {
+			startDate: '2020-08-11',
+			endDate: '2020-09-07',
+			dimensions: [ 'pagePath' ],
+			metrics: [ 'engagementRate', 'screenPageViews' ],
+			orderby: [
+				{
+					metric: { metricName: 'engagementRate' },
+					desc: true,
+				},
+				{
+					metric: { metricName: 'screenPageViews' },
+					desc: true,
+				},
+			],
+			metricFilters: {
+				screenPageViews: {
+					filterType: 'numericFilter',
+					operation: 'GREATER_THAN_OR_EQUAL',
+					value: { int64Value: averagePageViews },
+				},
+			},
+			limit: 3,
+		};
+
+		provideAnalytics4MockReport( registry, reportOptions );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+ReadyViewOnly.scenario = {
+	label: 'KeyMetrics/MostEngagingPagesWidget/ReadyViewOnly',
 	delay: 250,
 };
 
