@@ -108,17 +108,16 @@ const baseActions = {
 	*createCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		// Wait for key metrics settings to be loaded before checking.
+		// Wait for key metrics settings and user input settings to be loaded before checking.
 		yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( CORE_USER )
-				.getKeyMetricsSettings()
-		);
-		// Wait for user input settings to be loaded before checking.
-		yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( CORE_USER )
-				.getUserInputSettings()
+			Promise.all( [
+				registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getKeyMetricsSettings(),
+				registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getUserInputSettings(),
+			] )
 		);
 
 		const selectedMetricTiles = registry
