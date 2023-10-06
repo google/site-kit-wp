@@ -190,12 +190,12 @@ const baseActions = {
 			);
 		},
 		function* ( propertyID ) {
-			const dimensions =
+			const { response, error } =
 				yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
 					propertyID
 				);
 
-			return dimensions;
+			return { response, error };
 		}
 	),
 };
