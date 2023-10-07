@@ -41,8 +41,6 @@ export default function SelectionBox( {
 			className={ classnames( 'googlesitekit-selection-box', {
 				'googlesitekit-selection-box--disabled': disabled,
 			} ) }
-			tabIndex={ -1 }
-			role="button"
 		>
 			<Checkbox
 				checked={ checked }
