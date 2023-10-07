@@ -73,11 +73,6 @@ describe( 'SettingsApp', () => {
 				),
 			},
 			{
-				slug: 'optimize',
-				active: true,
-				connected: true,
-			},
-			{
 				slug: 'tagmanager',
 				active: true,
 				connected: true,

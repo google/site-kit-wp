@@ -37,30 +37,38 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
+	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 } from '../../datastore/constants';
 import SupportLink from '../../../../components/SupportLink';
+import { useMount } from 'react-use';
 const { useSelect, useDispatch } = Data;
 
 export default function EnhancedMeasurementSwitch( {
 	onClick,
 	disabled = false,
 	loading = false,
+	formName = ENHANCED_MEASUREMENT_FORM,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ENHANCED_MEASUREMENT_FORM,
-			ENHANCED_MEASUREMENT_ENABLED
-		)
+		select( CORE_FORMS ).getValue( formName, ENHANCED_MEASUREMENT_ENABLED )
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const handleClick = useCallback( () => {
-		setValues( ENHANCED_MEASUREMENT_FORM, {
+		setValues( formName, {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: ! isEnhancedMeasurementEnabled,
 		} );
 		onClick?.();
-	}, [ isEnhancedMeasurementEnabled, onClick, setValues ] );
+	}, [ formName, isEnhancedMeasurementEnabled, onClick, setValues ] );
+
+	useMount( () => {
+		// Ensure the Enhanced Measurement activation banner won't be shown if we've updated the setting
+		// via the switch.
+		setValues( ENHANCED_MEASUREMENT_FORM, {
+			[ ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER ]: true,
+		} );
+	} );
 
 	return (
 		<div

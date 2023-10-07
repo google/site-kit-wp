@@ -4,10 +4,10 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.3
 Requires PHP:      5.6
-Stable tag:        1.110.0
+Stable tag:        1.111.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
-Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
+Tags:              google, search-console, analytics, adsense, pagespeed-insights, tag-manager, site-kit
 
 Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
 
@@ -34,7 +34,6 @@ Site Kit shows key metrics and insights from different Google products:
 * **AdSense:** Keep track of how much your site is earning you.
 * **PageSpeed Insights:** See how your pages perform compared to other real-world sites. Improve performance with actionable tips from PageSpeed Insights.
 * **Tag Manager:** Use Site Kit to easily set up Tag Manager- no code editing required. Then, manage your tags in Tag Manager.
-* **Optimize:** Use Site Kit to easily set up Optimize- no code editing required. Then, set up A/B tests in Optimize.
 
 == Installation ==
 **Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
@@ -109,6 +108,28 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.111.0 =
+
+**Enhanced**
+
+* Add the "Top pages by returning visitors" Key Metric widget tile. See [#7584](https://github.com/google/site-kit-wp/issues/7584).
+* Create "Least engaging pages" key metric widget tile. See [#7579](https://github.com/google/site-kit-wp/issues/7579).
+* Add the "Visits per Visitor" Key Metric Widget. See [#7577](https://github.com/google/site-kit-wp/issues/7577).
+* Add "Visit Length" Key Metric tile. See [#7576](https://github.com/google/site-kit-wp/issues/7576).
+* Add a new "Pages per Visit" Key Metric tile. See [#7575](https://github.com/google/site-kit-wp/issues/7575).
+* Add datastore infrastructure for creating custom dimensions in GA4. See [#7574](https://github.com/google/site-kit-wp/issues/7574).
+* Add datapoint for creating an Analytics custom dimension. See [#7573](https://github.com/google/site-kit-wp/issues/7573).
+* Add tooltips with extra info to each Key Metrics tile. See [#7472](https://github.com/google/site-kit-wp/issues/7472).
+* Add the "Enable Enhanced Measurement" option to Analytics when creating an account. See [#7460](https://github.com/google/site-kit-wp/issues/7460).
+* Add the "Enable enhanced measurement" toggle to Analytics. See [#7459](https://github.com/google/site-kit-wp/issues/7459).
+* Change behaviour/visibility of Key Metric Widgets when their modules are disconnected. See [#7425](https://github.com/google/site-kit-wp/issues/7425).
+* Update the design of the CTA shown in the Key Metrics section when GA4 has been disconnected, for the cases where three or four GA4 widget tiles are present. See [#7278](https://github.com/google/site-kit-wp/issues/7278).
+* Remove Optimize from available Site Kit modules. See [#6469](https://github.com/google/site-kit-wp/issues/6469).
+
+**Fixed**
+
+* Fix a bug that prevented severe AdSense alerts from appearing in Site Kit Dashboard. See [#7559](https://github.com/google/site-kit-wp/issues/7559).
 
 = 1.110.0 =
 
