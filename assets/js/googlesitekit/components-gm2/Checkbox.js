@@ -25,31 +25,30 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, forwardRef } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Spinner from '../../components/Spinner';
 
-const Checkbox = forwardRef(
-	(
-		{
-			onChange,
-			id,
-			name,
-			value,
-			checked,
-			disabled,
-			children,
-			tabIndex,
-			onKeyDown,
-			loading,
-			alignLeft,
-			description,
-		},
-		ref
-	) => (
+export default function Checkbox( props ) {
+	const {
+		onChange,
+		id,
+		name,
+		value,
+		checked,
+		disabled,
+		children,
+		tabIndex,
+		onKeyDown,
+		loading,
+		alignLeft,
+		label,
+	} = props;
+
+	return (
 		<div className="mdc-form-field">
 			<div
 				className={ classnames( 'mdc-checkbox', {
@@ -62,7 +61,6 @@ const Checkbox = forwardRef(
 				) : (
 					<Fragment>
 						<input
-							ref={ ref }
 							className="mdc-checkbox__native-control"
 							type="checkbox"
 							id={ id }
@@ -92,17 +90,19 @@ const Checkbox = forwardRef(
 				) }
 			</div>
 
-			<div className="mdc-checkbox__content">
-				<label htmlFor={ id }>{ children }</label>
-				{ description && (
+			{ label && (
+				<div className="mdc-checkbox__content">
+					<label htmlFor={ id }>{ label }</label>
 					<div className="mdc-checkbox__description">
-						{ description }
+						{ children }
 					</div>
-				) }
-			</div>
+				</div>
+			) }
+
+			{ ! label && <label htmlFor={ id }>{ children }</label> }
 		</div>
-	)
-);
+	);
+}
 
 Checkbox.propTypes = {
 	onChange: PropTypes.func.isRequired,
@@ -116,7 +116,7 @@ Checkbox.propTypes = {
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	loading: PropTypes.bool,
 	alignLeft: PropTypes.bool,
-	description: PropTypes.node,
+	label: PropTypes.string,
 };
 
 Checkbox.defaultProps = {
@@ -126,7 +126,5 @@ Checkbox.defaultProps = {
 	onKeyDown: null,
 	loading: false,
 	alignLeft: false,
-	description: '',
+	label: '',
 };
-
-export default Checkbox;
