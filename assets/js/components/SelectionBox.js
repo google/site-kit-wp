@@ -44,14 +44,14 @@ export default function SelectionBox( {
 		>
 			<Checkbox
 				checked={ checked }
+				description={ children }
 				disabled={ disabled }
 				id={ id }
-				label={ title }
 				name={ id }
 				onChange={ onChange }
 				value={ value }
 			>
-				{ children }
+				{ title }
 			</Checkbox>
 		</div>
 	);
