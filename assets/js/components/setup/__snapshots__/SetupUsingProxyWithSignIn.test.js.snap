@@ -262,27 +262,31 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                             style="display: inline-block; float: none; visibility: visible; margin: 0px;"
                           />
                         </div>
-                        
-                        <label
-                          for="googlesitekit-opt-in"
+                        <div
+                          class="mdc-checkbox__content"
                         >
-                          <span>
-                            Help us improve Site Kit by sharing anonymous usage data.
-                          </span>
-                           
-                          <span>
-                            All collected data is treated in accordance with the 
-                            <a
-                              aria-label="Google Privacy Policy. (opens in a new tab)"
-                              class="googlesitekit-cta-link googlesitekit-cta-link--external"
-                              href="https://policies.google.com/privacy"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              Google Privacy Policy.
-                            </a>
-                          </span>
-                        </label>
+                          <label
+                            for="googlesitekit-opt-in"
+                          >
+                            <span>
+                              Help us improve Site Kit by sharing anonymous usage data.
+                            </span>
+                             
+                            <span>
+                              All collected data is treated in accordance with the 
+                              <a
+                                aria-label="Google Privacy Policy. (opens in a new tab)"
+                                class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                                href="https://policies.google.com/privacy"
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                Google Privacy Policy.
+                              </a>
+                            </span>
+                          </label>
+                          
+                        </div>
                       </div>
                     </div>
                     <div
@@ -596,15 +600,19 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                               />
                             </div>
                           </div>
-                          
-                          <label
-                            for="googlesitekit-analytics-setup-opt-in"
+                          <div
+                            class="mdc-checkbox__content"
                           >
-                            <strong>
-                              Connect Google Analytics as part of your setup.
-                            </strong>
-                             Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.
-                          </label>
+                            <label
+                              for="googlesitekit-analytics-setup-opt-in"
+                            >
+                              <strong>
+                                Connect Google Analytics as part of your setup.
+                              </strong>
+                               Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.
+                            </label>
+                            
+                          </div>
                         </div>
                       </div>
                       <div
@@ -627,27 +635,31 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             style="display: inline-block; float: none; visibility: visible; margin: 0px;"
                           />
                         </div>
-                        
-                        <label
-                          for="googlesitekit-opt-in"
+                        <div
+                          class="mdc-checkbox__content"
                         >
-                          <span>
-                            Help us improve Site Kit by sharing anonymous usage data.
-                          </span>
-                           
-                          <span>
-                            All collected data is treated in accordance with the 
-                            <a
-                              aria-label="Google Privacy Policy. (opens in a new tab)"
-                              class="googlesitekit-cta-link googlesitekit-cta-link--external"
-                              href="https://policies.google.com/privacy"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              Google Privacy Policy.
-                            </a>
-                          </span>
-                        </label>
+                          <label
+                            for="googlesitekit-opt-in"
+                          >
+                            <span>
+                              Help us improve Site Kit by sharing anonymous usage data.
+                            </span>
+                             
+                            <span>
+                              All collected data is treated in accordance with the 
+                              <a
+                                aria-label="Google Privacy Policy. (opens in a new tab)"
+                                class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                                href="https://policies.google.com/privacy"
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                Google Privacy Policy.
+                              </a>
+                            </span>
+                          </label>
+                          
+                        </div>
                       </div>
                     </div>
                     <div
