@@ -97,6 +97,7 @@ export default function ViewOnlyMenu() {
 				aria-controls="view-only-menu"
 				aria-label={ __( 'View only', 'google-site-kit' ) }
 				tooltip
+				tooltipEnterDelayInMS={ 500 }
 			>
 				{ __( 'View only', 'google-site-kit' ) }
 			</Button>

@@ -108,6 +108,7 @@ export default function DateRangeSelector() {
 				aria-controls="date-range-selector-menu"
 				title={ __( 'Date range', 'google-site-kit' ) }
 				tooltip
+				tooltipEnterDelayInMS={ 500 }
 			>
 				{ currentDateRangeLabel }
 			</Button>
