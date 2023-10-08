@@ -12,12 +12,17 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
       name="checkbox-name"
       role="presentation"
     />
-    <label
-      for="checkbox-id"
-      id="checkbox-id-label"
+    <div
+      class="googlesitekit-component-gm3_checkbox__content"
     >
-      Checkbox Label
-    </label>
+      <label
+        for="checkbox-id"
+        id="checkbox-id-label"
+      >
+        Checkbox Label
+      </label>
+      
+    </div>
   </div>
 </div>
 `;
@@ -34,12 +39,17 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
       name="checkbox-name"
       role="presentation"
     />
-    <label
-      for="checkbox-id"
-      id="checkbox-id-label"
+    <div
+      class="googlesitekit-component-gm3_checkbox__content"
     >
-      Checkbox Label
-    </label>
+      <label
+        for="checkbox-id"
+        id="checkbox-id-label"
+      >
+        Checkbox Label
+      </label>
+      
+    </div>
   </div>
 </div>
 `;
@@ -56,12 +66,17 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
       name="checkbox-name"
       role="presentation"
     />
-    <label
-      for="checkbox-id"
-      id="checkbox-id-label"
+    <div
+      class="googlesitekit-component-gm3_checkbox__content"
     >
-      Checkbox Label
-    </label>
+      <label
+        for="checkbox-id"
+        id="checkbox-id-label"
+      >
+        Checkbox Label
+      </label>
+      
+    </div>
   </div>
 </div>
 `;
@@ -78,12 +93,17 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
       name="checkbox-name"
       role="presentation"
     />
-    <label
-      for="checkbox-id"
-      id="checkbox-id-label"
+    <div
+      class="googlesitekit-component-gm3_checkbox__content"
     >
-      Checkbox Label
-    </label>
+      <label
+        for="checkbox-id"
+        id="checkbox-id-label"
+      >
+        Checkbox Label
+      </label>
+      
+    </div>
   </div>
 </div>
 `;
@@ -100,12 +120,17 @@ exports[`Checkbox should render the checkbox 1`] = `
       name="checkbox-name"
       role="presentation"
     />
-    <label
-      for="checkbox-id"
-      id="checkbox-id-label"
+    <div
+      class="googlesitekit-component-gm3_checkbox__content"
     >
-      Checkbox Label
-    </label>
+      <label
+        for="checkbox-id"
+        id="checkbox-id-label"
+      >
+        Checkbox Label
+      </label>
+      
+    </div>
   </div>
 </div>
 `;
@@ -122,30 +147,35 @@ exports[`Checkbox should render the checkbox with a complex label 1`] = `
       name="checkbox-name"
       role="presentation"
     />
-    <label
-      for="checkbox-id"
-      id="checkbox-id-label"
+    <div
+      class="googlesitekit-component-gm3_checkbox__content"
     >
-      <div>
-        Complex Label
-        <span>
-          <a
-            href="https://example.com"
-          >
-             With
-          </a>
+      <label
+        for="checkbox-id"
+        id="checkbox-id-label"
+      >
+        <div>
+          Complex Label
           <span>
-            5
+            <a
+              href="https://example.com"
+            >
+               With
+            </a>
+            <span>
+              5
+            </span>
           </span>
-        </span>
-        <span>
-          Sub
           <span>
-             Children 
+            Sub
+            <span>
+               Children 
+            </span>
           </span>
-        </span>
-      </div>
-    </label>
+        </div>
+      </label>
+      
+    </div>
   </div>
 </div>
 `;
@@ -165,12 +195,17 @@ exports[`Checkbox should render the checkbox with disabled state 1`] = `
       name="checkbox-name"
       role="presentation"
     />
-    <label
-      for="checkbox-id"
-      id="checkbox-id-label"
+    <div
+      class="googlesitekit-component-gm3_checkbox__content"
     >
-      Checkbox Label
-    </label>
+      <label
+        for="checkbox-id"
+        id="checkbox-id-label"
+      >
+        Checkbox Label
+      </label>
+      
+    </div>
   </div>
 </div>
 `;
@@ -188,12 +223,17 @@ exports[`Checkbox should render the checkbox with loading state 1`] = `
         style="display: inline-block; float: none; margin-top: 0px; visibility: visible;"
       />
     </div>
-    <label
-      for="checkbox-id"
-      id="checkbox-id-label"
+    <div
+      class="googlesitekit-component-gm3_checkbox__content"
     >
-      Checkbox Label
-    </label>
+      <label
+        for="checkbox-id"
+        id="checkbox-id-label"
+      >
+        Checkbox Label
+      </label>
+      
+    </div>
   </div>
 </div>
 `;

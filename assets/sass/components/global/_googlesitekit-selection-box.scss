@@ -27,13 +27,16 @@
 		align-items: flex-start;
 	}
 
+	.mdc-checkbox__content {
+		padding-top: 10px;
+	}
+
 	label {
 		cursor: pointer;
-		font-family: $f-primary;
+		font-family: $f-secondary;
 		font-size: $fs-label-md;
 		font-weight: $fw-medium;
 		line-height: $lh-label-md;
-		padding-top: 10px;
 		position: relative;
 		width: 100%;
 
@@ -46,11 +49,9 @@
 		}
 	}
 
-	.googlesitekit-selection-box__description {
+	.mdc-checkbox__description {
 		color: $c-surfaces-on-surface-variant;
-		display: block;
 		font-size: $fs-body-sm;
-		font-weight: $fw-normal;
 		line-height: $lh-body-sm;
 		padding: 7px 0 5px;
 	}
@@ -61,7 +62,8 @@
 
 	&.googlesitekit-selection-box--disabled {
 
-		label {
+		label,
+		.mdc-checkbox__description {
 			color: $c-interactive-on-disable-container;
 			pointer-events: none;
 		}
