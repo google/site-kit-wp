@@ -90,14 +90,16 @@ export default function Checkbox( props ) {
 				) }
 			</div>
 
-			<div className="mdc-checkbox__content">
-				<label htmlFor={ id }>{ children }</label>
-				{ description && (
+			{ ! description && <label htmlFor={ id }>{ children }</label> }
+
+			{ description && (
+				<div className="mdc-checkbox__content">
+					<label htmlFor={ id }>{ children }</label>
 					<div className="mdc-checkbox__description">
 						{ description }
 					</div>
-				) }
-			</div>
+				</div>
+			) }
 		</div>
 	);
 }

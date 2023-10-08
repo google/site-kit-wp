@@ -122,16 +122,22 @@ export default function Checkbox( {
 				/>
 			) }
 
-			<div className="googlesitekit-component-gm3_checkbox__content">
+			{ ! description && (
 				<label id={ labelID } htmlFor={ id }>
 					{ children }
 				</label>
-				{ description && (
+			) }
+
+			{ description && (
+				<div className="googlesitekit-component-gm3_checkbox__content">
+					<label id={ labelID } htmlFor={ id }>
+						{ children }
+					</label>
 					<div className="googlesitekit-component-gm3_checkbox__description">
 						{ description }
 					</div>
-				) }
-			</div>
+				</div>
+			) }
 		</div>
 	);
 }
