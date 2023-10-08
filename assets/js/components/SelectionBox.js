@@ -26,6 +26,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
+import VisuallyHidden from './VisuallyHidden';
 
 export default function SelectionBox( {
 	checked,
@@ -52,6 +53,10 @@ export default function SelectionBox( {
 				value={ value }
 			>
 				{ title }
+				<VisuallyHidden>.</VisuallyHidden>
+				<span className="googlesitekit-selection-box__description">
+					{ children }
+				</span>
 			</Checkbox>
 		</div>
 	);

@@ -126,18 +126,6 @@ export const Checkboxes = () => (
 				Interactive Checkbox
 			</InteractiveCheckbox>
 		</div>
-
-		<div>
-			<Checkbox
-				id="googlesitekit-checkbox-7"
-				name="googlesitekit__checkbox"
-				value="value-7"
-				description="This is a checkbox with a description."
-				{ ...defaultProps }
-			>
-				Checkbox with description
-			</Checkbox>
-		</div>
 	</div>
 );
 
