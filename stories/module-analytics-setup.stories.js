@@ -43,7 +43,6 @@ import {
 	provideModuleRegistrations,
 	provideSiteInfo,
 	provideUserAuthentication,
-	WithTestRegistry,
 } from '../tests/js/utils';
 const { useRegistry } = Data;
 
@@ -381,7 +380,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry, {
-				grantedScopes: [ PROVISIONING_SCOPE ],
+				grantedScopes: [ EDIT_SCOPE ],
 			} );
 
 			registry
@@ -415,33 +414,6 @@ storiesOf( 'Analytics Module/Setup', module )
 			/* eslint-enable */
 
 			return <Setup />;
-		},
-		{
-			decorators: [ WithRegistry ],
-			padding: 0,
-		}
-	)
-	.add(
-		'Create Account (ga4Reporting enabled)',
-		( _args, { registry } ) => {
-			provideSiteInfo( registry );
-			provideUserAuthentication( registry, {
-				grantedScopes: [ EDIT_SCOPE ],
-			} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetSettings( { accountID: ACCOUNT_CREATE } );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( null );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
-
-			return (
-				<WithTestRegistry registry={ registry }>
-					<Setup />
-				</WithTestRegistry>
-			);
 		},
 		{
 			decorators: [ WithRegistry ],
