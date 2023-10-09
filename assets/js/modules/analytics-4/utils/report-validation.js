@@ -126,7 +126,7 @@ export function isValidDimensionFilters( filters ) {
 /**
  * Verifies provided metricFilters to make sure they match allowed values found in metrics and supported filters.
  *
- * @since n.e.x.t
+ * @since 1.111.0
  *
  * @param {Object} filters The metric filters to check.
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.

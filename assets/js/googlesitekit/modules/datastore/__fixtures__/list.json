@@ -61,7 +61,7 @@
 		"active": false,
 		"connected": false,
 		"dependencies": [],
-		"dependants": [ "optimize", "analytics-4" ],
+		"dependants": [ "analytics-4" ],
 		"owner": null,
 		"forceActive": false,
 		"shareable": true,
@@ -88,27 +88,6 @@
 		"shareable": true,
 		"recoverable": false,
 		"features": [ "Website performance reports for mobile and desktop" ]
-	},
-	{
-		"slug": "optimize",
-		"name": "Optimize",
-		"description": "Create free A/B tests that help you drive metric-based design solutions to your site.",
-		"homepage": "https://optimize.google.com/optimize/home/",
-		"internal": false,
-		"order": 5,
-		"active": false,
-		"connected": false,
-		"dependencies": [ "analytics" ],
-		"dependants": [],
-		"owner": null,
-		"forceActive": false,
-		"shareable": true,
-		"recoverable": false,
-		"features": [
-			"A/B or multivariate testing",
-			"Improvement tracking",
-			"Probability and confidence calculations"
-		]
 	},
 	{
 		"slug": "tagmanager",

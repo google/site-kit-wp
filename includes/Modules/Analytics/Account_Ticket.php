@@ -52,6 +52,14 @@ class Account_Ticket {
 	protected $timezone;
 
 	/**
+	 * Whether or not enhanced measurement should be enabled.
+	 *
+	 * @since 1.111.0
+	 * @var boolean
+	 */
+	protected $enhanced_measurement_stream_enabled;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.98.0
@@ -155,6 +163,28 @@ class Account_Ticket {
 	 */
 	public function set_timezone( $timezone ) {
 		$this->timezone = (string) $timezone;
+	}
+
+	/**
+	 * Gets the enabled state of enhanced measurement for the data stream.
+	 *
+	 * @since 1.111.0
+	 *
+	 * @return bool $enabled Enabled state.
+	 */
+	public function get_enhanced_measurement_stream_enabled() {
+		return $this->enhanced_measurement_stream_enabled;
+	}
+
+	/**
+	 * Sets the enabled state of enhanced measurement for the data stream.
+	 *
+	 * @since 1.111.0
+	 *
+	 * @param bool $enabled Enabled state.
+	 */
+	public function set_enhanced_measurement_stream_enabled( $enabled ) {
+		$this->enhanced_measurement_stream_enabled = (bool) $enabled;
 	}
 
 	/**

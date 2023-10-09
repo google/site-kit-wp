@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { ENHANCED_MEASUREMENT_ENABLED } from '../datastore/constants';
 import * as accountUtils from './account';
 
 describe( 'getAccountDefaults', () => {
@@ -107,6 +108,14 @@ describe( 'getAccountDefaults', () => {
 				getAccountDefaults( { siteName, siteURL, timezone: 'UTC' } )
 					.timezone
 			).toBe( fallbackTimezone );
+		} );
+	} );
+
+	describe( 'enhanced measurement enabled', () => {
+		it( 'defaults to true', () => {
+			expect(
+				getAccountDefaults( { siteName, siteURL, timezone } )
+			).toHaveProperty( ENHANCED_MEASUREMENT_ENABLED, true );
 		} );
 	} );
 } );

@@ -226,6 +226,7 @@ export default function UserMenu() {
 					aria-controls="user-menu"
 					aria-label={ __( 'Account', 'google-site-kit' ) }
 					tooltip
+					tooltipEnterDelayInMS={ 500 }
 					customizedTooltip={
 						<span aria-label={ accountLabel }>
 							<strong>

@@ -21,7 +21,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -39,11 +38,13 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListCustomDimensionsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
@@ -113,6 +114,7 @@ class Analytics_4Test extends TestCase {
 
 	public function set_up() {
 		parent::set_up();
+		$this->request_handler_calls = array();
 
 		$this->enable_feature( 'ga4Reporting' );
 
@@ -449,6 +451,143 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_handle_provisioning_callback__with_enhancedMeasurement_streamEnabled() {
+		$this->enable_feature( 'enhancedMeasurement' );
+		$account_id       = '12345678';
+		$property_id      = '1001';
+		$webdatastream_id = '2001';
+		$measurement_id   = '1A2BCD345E';
+
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => $account_id,
+				'propertyID'      => '',
+				'webDataStreamID' => '',
+				'measurementID'   => '',
+			)
+		);
+
+		// TODO: Rework this giant handler into one composed of per-request handlers.
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id ) {
+				$url    = parse_url( $request->getUri() );
+				$params = json_decode( (string) $request->getBody(), true );
+
+				$this->request_handler_calls[] = array(
+					'url'    => $url,
+					'params' => $params,
+				);
+
+				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
+					return new Response( 403 ); // Includes container lookup
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/properties':
+						return new Response(
+							200,
+							array(),
+							json_encode(
+								array(
+									'name' => "properties/{$property_id}",
+								)
+							)
+						);
+					case "/v1beta/properties/{$property_id}/dataStreams":
+						$data = new GoogleAnalyticsAdminV1betaDataStreamWebStreamData();
+						$data->setMeasurementId( $measurement_id );
+						$datastream = new GoogleAnalyticsAdminV1betaDataStream();
+						$datastream->setName( "properties/{$property_id}/dataStreams/{$webdatastream_id}" );
+						$datastream->setType( 'WEB_DATA_STREAM' );
+						$datastream->setWebStreamData( $data );
+
+						return new Response(
+							200,
+							array(),
+							json_encode( $datastream->toSimpleObject() )
+						);
+					case "/v1alpha/properties/{$property_id}/dataStreams/$webdatastream_id/enhancedMeasurementSettings":
+						$body = json_decode( $request->getBody(), true );
+						$data = new GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings( $body );
+
+						return new Response(
+							200,
+							array(),
+							json_encode( $data->toSimpleObject() )
+						);
+
+					default:
+						return new Response( 200 );
+				}
+			}
+		);
+
+		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
+
+		$this->analytics->register();
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				array( Analytics::EDIT_SCOPE )
+			)
+		);
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'accountID'               => $account_id,
+				'propertyID'              => '',
+				'webDataStreamID'         => '',
+				'measurementID'           => '',
+				'ownerID'                 => 0,
+				'useSnippet'              => true,
+				'googleTagID'             => '',
+				'googleTagAccountID'      => '',
+				'googleTagContainerID'    => '',
+				'googleTagLastSyncedAtMs' => 0,
+			),
+			$options->get( Settings::OPTION )
+		);
+
+		$account_ticket = new Analytics\Account_Ticket();
+		$account_ticket->set_enhanced_measurement_stream_enabled( true );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, $account_ticket );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'accountID'               => $account_id,
+				'propertyID'              => $property_id,
+				'webDataStreamID'         => $webdatastream_id,
+				'measurementID'           => $measurement_id,
+				'ownerID'                 => 0,
+				'useSnippet'              => true,
+				'googleTagID'             => '',
+				'googleTagAccountID'      => '',
+				'googleTagContainerID'    => '',
+				'googleTagLastSyncedAtMs' => 0,
+			),
+			$options->get( Settings::OPTION )
+		);
+
+		// Reduce the handler calls to only those for enhanced measurement settings.
+		$enhanced_measurement_settings_requests = array_filter(
+			$this->request_handler_calls,
+			function ( $call ) {
+				return false !== strpos( $call['url']['path'], 'enhancedMeasurementSettings' );
+			}
+		);
+
+		// Ensure the enhanced measurement settings request was made.
+		$this->assertCount( 1, $enhanced_measurement_settings_requests );
+		list( $request ) = array_values( $enhanced_measurement_settings_requests );
+		$this->assertArrayIntersection(
+			array( 'streamEnabled' => true ),
+			$request['params']
+		);
+	}
+
 	public function data_create_account_ticket_required_parameters() {
 		return array(
 			'displayName'    => array( 'displayName' ),
@@ -583,6 +722,42 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $timezone, $account_ticket_params['timezone'] );
 	}
 
+	public function test_create_account_ticket__with_enhancedMeasurement() {
+		// TODO: Merge with above test or keep separate when feature flag is removed.
+		$this->enable_feature( 'enhancedMeasurement' );
+		$this->analytics->register();
+		$data = array(
+			'displayName'                      => 'test account name',
+			'regionCode'                       => 'US',
+			'propertyName'                     => 'test property name',
+			'dataStreamName'                   => 'test stream name',
+			'timezone'                         => 'UTC',
+			'enhancedMeasurementStreamEnabled' => true,
+		);
+
+		// Required scopes are tested above.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		// No need to control response again.
+		FakeHttp::fake_google_http_handler( $this->analytics->get_client() );
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+		// Assert request was made with expected arguments.
+		$this->assertNotWPError( $response );
+
+		// Assert transient is set with params.
+		$account_ticket_params = get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
+		$this->assertEquals( 'test property name', $account_ticket_params['property_name'] );
+		$this->assertEquals( 'test stream name', $account_ticket_params['data_stream_name'] );
+		$this->assertEquals( 'UTC', $account_ticket_params['timezone'] );
+		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'] );
+	}
+
 	public function test_get_scopes() {
 		$this->assertEqualSets(
 			array(
@@ -673,6 +848,60 @@ class Analytics_4Test extends TestCase {
 		$this->assertFalse( $this->analytics->is_data_available() );
 	}
 
+	public function test_available_custom_dimensions_reset_on_property_id_change() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		// Given: Analytics 4 is registered with a specific propertyID.
+		$this->analytics->register();
+		$this->analytics->get_settings()->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'availableCustomDimensions' => array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ),
+			)
+		);
+
+		// Assert that the availableCustomDimensions are set correctly before the change.
+		$initial_settings = $this->analytics->get_settings()->get();
+		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $initial_settings['availableCustomDimensions'] );
+
+		// When: The propertyID is changed.
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '7654321',
+			)
+		);
+
+		// Then: The availableCustomDimensions should be reset to null.
+		$settings = $this->analytics->get_settings()->get();
+		$this->assertNull( $settings['availableCustomDimensions'] );
+	}
+
+	public function test_only_googlesitekit_prefixed_dimensions_are_retained() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		// Given: Analytics 4 is registered with a mixture of valid and invalid custom dimensions.
+		$this->analytics->register();
+		$this->analytics->get_settings()->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'availableCustomDimensions' => array(
+					'googlesitekit_dimension1',
+					'invalid_dimension',
+					'googlesitekit_dimension2',
+					'another_invalid_dimension',
+				),
+			)
+		);
+
+		// When: The settings are fetched after merging.
+		$current_settings = $this->analytics->get_settings()->get();
+
+		// Then: Only the dimensions with the 'googlesitekit_' prefix should be retained.
+		$this->assertEquals(
+			array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ),
+			$current_settings['availableCustomDimensions']
+		);
+	}
+
+
 	public function test_on_activation() {
 		$dismissed_items = new Dismissed_Items( $this->user_options );
 
@@ -748,6 +977,7 @@ class Analytics_4Test extends TestCase {
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
+				'sync-custom-dimensions',
 			),
 			$this->analytics->get_datapoints()
 		);
@@ -2147,6 +2377,65 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
 	}
 
+	public function test_sync_custom_dimensions__required_params() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		// Grant READONLY_SCOPE so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::READONLY_SCOPE
+			)
+		);
+
+		$data = $this->analytics->set_data(
+			'sync-custom-dimensions',
+			array()
+		);
+
+		// Verify that the propertyID is required.
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+	}
+
+	public function test_sync_custom_dimensions() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		$property_id = 'sync-custom-dimension-property-id';
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_sync_custom_dimensions_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::READONLY_SCOPE
+			)
+		);
+
+		$response = $this->analytics->set_data(
+			'sync-custom-dimensions',
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$this->assertNotWPError( $response );
+
+		// Verify the response is an array of custom dimension names.
+		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $response );
+
+		// Verify the request URL and params were correctly generated.
+		$this->assertCount( 1, $this->request_handler_calls );
+
+		$request_url = $this->request_handler_calls[0]['url'];
+
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
+		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
+	}
+
 	/**
 	 * Returns a date string for the given number of days ago.
 	 *
@@ -2263,6 +2552,65 @@ class Analytics_4Test extends TestCase {
 						200,
 						array(),
 						json_encode( $custom_dimension )
+					);
+
+				default:
+					return new Response( 200 );
+			}
+		};
+	}
+
+	/**
+	 * Creates a fake HTTP handler with call tracking for sync custom dimensions.
+	 *
+	 * @param string $property_id The GA4 property ID to use.
+	 * @return Closure The fake HTTP client.
+	 */
+	protected function create_sync_custom_dimensions_fake_http_handler( $property_id ) {
+		$this->request_handler_calls = array();
+
+		return function ( Request $request ) use ( $property_id ) {
+			$url    = parse_url( $request->getUri() );
+			$params = json_decode( (string) $request->getBody(), true );
+
+			$this->request_handler_calls[] = array(
+				'url'    => $url,
+				'params' => $params,
+			);
+
+			if (
+				! in_array(
+					$url['host'],
+					array( 'analyticsdata.googleapis.com', 'analyticsadmin.googleapis.com' ),
+					true
+				)
+			) {
+				return new Response( 200 );
+			}
+
+			switch ( $url['path'] ) {
+				case "/v1beta/properties/$property_id/customDimensions":
+					$custom_dimension1 = new GoogleAnalyticsAdminV1betaCustomDimension();
+					$custom_dimension1->setParameterName( 'googlesitekit_dimension1' );
+					$custom_dimension1->setDisplayName( 'Test Custom Dimension' );
+					$custom_dimension1->setDescription( 'Test Custom Dimension Description' );
+					$custom_dimension1->setScope( 'EVENT' );
+					$custom_dimension1->setDisallowAdsPersonalization( false );
+
+					$custom_dimension2 = new GoogleAnalyticsAdminV1betaCustomDimension();
+					$custom_dimension2->setParameterName( 'googlesitekit_dimension2' );
+					$custom_dimension2->setDisplayName( 'Test Custom Dimension 2' );
+					$custom_dimension2->setDescription( 'Test Custom Dimension Description 2' );
+					$custom_dimension2->setScope( 'EVENT' );
+					$custom_dimension2->setDisallowAdsPersonalization( false );
+
+					$custom_dimensions = new GoogleAnalyticsAdminV1betaListCustomDimensionsResponse();
+					$custom_dimensions->setCustomDimensions( array( $custom_dimension1, $custom_dimension2 ) );
+
+					return new Response(
+						200,
+						array(),
+						json_encode( $custom_dimensions )
 					);
 
 				default:
