@@ -359,6 +359,17 @@ final class Analytics_4 extends Module
 			'shareable' => $shareable,
 		);
 
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$datapoints['POST:create-custom-dimension'] = array(
+				'service'                => 'analyticsdata',
+				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
+			);
+			$datapoints['POST:sync-custom-dimensions']  = array(
+				'service' => 'analyticsadmin',
+			);
+		}
+
 		return $datapoints;
 	}
 
