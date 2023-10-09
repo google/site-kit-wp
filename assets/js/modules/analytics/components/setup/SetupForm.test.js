@@ -37,7 +37,7 @@ import {
 } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
-import ga4Reporting from '../../../../feature-tours/ga4-reporting';
+import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
 
 const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
@@ -152,7 +152,7 @@ describe( 'SetupForm', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
 		const updateAnalyticsSettingsRegexp = new RegExp(
 			'/analytics/data/settings'
@@ -237,7 +237,7 @@ describe( 'SetupForm', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
 		const createPropertyRegexp = new RegExp(
 			'/analytics-4/data/create-property'
@@ -365,7 +365,7 @@ describe( 'SetupForm', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
 		const createPropertyRegexp = new RegExp(
 			'/analytics-4/data/create-property'

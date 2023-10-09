@@ -55,7 +55,7 @@ import {
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import ga4Reporting from '../../../feature-tours/ga4-reporting';
+import ga4ReportingTour from '../../../feature-tours/ga4-reporting';
 
 const { createRegistrySelector } = Data;
 
@@ -154,8 +154,8 @@ export async function submitChanges( registry ) {
 		return { error };
 	}
 
-	if ( ! select( CORE_USER ).isTourDismissed( ga4Reporting.slug ) ) {
-		dispatch( CORE_USER ).dismissTour( ga4Reporting.slug );
+	if ( ! select( CORE_USER ).isTourDismissed( ga4ReportingTour.slug ) ) {
+		dispatch( CORE_USER ).dismissTour( ga4ReportingTour.slug );
 	}
 
 	return {};

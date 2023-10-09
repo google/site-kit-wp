@@ -51,7 +51,7 @@ import {
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
-import ga4Reporting from '../../../feature-tours/ga4-reporting';
+import ga4ReportingTour from '../../../feature-tours/ga4-reporting';
 import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics settings', () => {
@@ -129,7 +129,7 @@ describe( 'modules/analytics settings', () => {
 			beforeEach( () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+					.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 			} );
 
 			it( 'dispatches saveSettings', async () => {
@@ -282,7 +282,7 @@ describe( 'modules/analytics settings', () => {
 				it( 'should not dismiss the ga4Reporting feature tour if it is already dismissed', async () => {
 					registry
 						.dispatch( CORE_USER )
-						.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+						.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 						...validSettings,
 					} );
@@ -294,7 +294,7 @@ describe( 'modules/analytics settings', () => {
 					expect(
 						registry
 							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
+							.isTourDismissed( ga4ReportingTour.slug )
 					).toBe( true );
 
 					await registry
@@ -304,7 +304,7 @@ describe( 'modules/analytics settings', () => {
 					expect(
 						registry
 							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
+							.isTourDismissed( ga4ReportingTour.slug )
 					).toBe( true );
 
 					expect( fetchMock ).not.toHaveFetched(
@@ -324,13 +324,13 @@ describe( 'modules/analytics settings', () => {
 						body: validSettings,
 					} );
 					fetchMock.postOnce( fetchDismissTourRegExp, {
-						body: [ ga4Reporting.slug ],
+						body: [ ga4ReportingTour.slug ],
 					} );
 
 					expect(
 						registry
 							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
+							.isTourDismissed( ga4ReportingTour.slug )
 					).toBe( false );
 
 					await registry
@@ -340,7 +340,7 @@ describe( 'modules/analytics settings', () => {
 					expect(
 						registry
 							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
+							.isTourDismissed( ga4ReportingTour.slug )
 					).toBe( true );
 				} );
 			} );
@@ -661,7 +661,7 @@ describe( 'modules/analytics settings', () => {
 					.receiveGetSettings( validSettings );
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+					.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 				expect(
 					registry.select( MODULES_ANALYTICS ).haveSettingsChanged()
 				).toBe( false );
@@ -671,7 +671,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( false );
 
 				fetchMock.postOnce( fetchDismissTourRegExp, {
-					body: [ ga4Reporting.slug ],
+					body: [ ga4ReportingTour.slug ],
 				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).submitChanges();
