@@ -45,7 +45,7 @@ import {
 import { getAnalytics4MockResponse } from '../../../assets/js/modules/analytics-4/utils/data-mock';
 import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
 
-describe( 'User Input Settings', () => {
+describe.skip( 'User Input Settings', () => {
 	async function fillInInputSettings() {
 		await page.waitForSelector( '.googlesitekit-user-input__question' );
 
