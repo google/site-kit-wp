@@ -94,24 +94,24 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		$options = array(
-			'ownerID'                   => 0,
+			'ownerID'                 => 0,
 			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-			/* 'accountID'              => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			/* 'adsConversionID'        => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			'propertyID'                => '',
-			'webDataStreamID'           => '',
-			'measurementID'             => '',
-			'useSnippet'                => true,
-			'googleTagID'               => '',
-			'googleTagAccountID'        => '',
-			'googleTagContainerID'      => '',
-			'googleTagLastSyncedAtMs'   => 0,
-			'availableCustomDimensions' => null,
+			/* 'accountID'            => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			/* 'adsConversionID'      => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			'propertyID'              => '',
+			'webDataStreamID'         => '',
+			'measurementID'           => '',
+			'useSnippet'              => true,
+			'googleTagID'             => '',
+			'googleTagAccountID'      => '',
+			'googleTagContainerID'    => '',
+			'googleTagLastSyncedAtMs' => 0,
+			// 'availableCustomDimensions' => null,
 		);
 
-		// if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
-		// 	$options['availableCustomDimensions'] = null;
-		// }
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$options['availableCustomDimensions'] = null;
+		}
 
 		return $options;
 	}
@@ -145,7 +145,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					}
 				}
 
-				// Enabling the snaitization.
 				if ( Feature_Flags::enabled( 'newsKeyMetrics' ) && isset( $option['availableCustomDimensions'] ) ) {
 					if ( is_array( $option['availableCustomDimensions'] ) ) {
 						$valid_dimensions = array_filter(
