@@ -18,6 +18,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
     >
       Checkbox Label
     </label>
+    
   </div>
 </div>
 `;
@@ -40,6 +41,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
     >
       Checkbox Label
     </label>
+    
   </div>
 </div>
 `;
@@ -62,6 +64,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
     >
       Checkbox Label
     </label>
+    
   </div>
 </div>
 `;
@@ -84,6 +87,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
     >
       Checkbox Label
     </label>
+    
   </div>
 </div>
 `;
@@ -106,6 +110,7 @@ exports[`Checkbox should render the checkbox 1`] = `
     >
       Checkbox Label
     </label>
+    
   </div>
 </div>
 `;
@@ -146,6 +151,38 @@ exports[`Checkbox should render the checkbox with a complex label 1`] = `
         </span>
       </div>
     </label>
+    
+  </div>
+</div>
+`;
+
+exports[`Checkbox should render the checkbox with a description 1`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3_checkbox"
+  >
+    <md-checkbox
+      aria-label="Checkbox Label"
+      aria-labelledby="checkbox-id-label"
+      id="checkbox-id"
+      name="checkbox-name"
+      role="presentation"
+    />
+    <div
+      class="googlesitekit-component-gm3_checkbox__content"
+    >
+      <label
+        for="checkbox-id"
+        id="checkbox-id-label"
+      >
+        Checkbox Label
+      </label>
+      <div
+        class="googlesitekit-component-gm3_checkbox__description"
+      >
+        Checkbox description
+      </div>
+    </div>
   </div>
 </div>
 `;
@@ -171,6 +208,7 @@ exports[`Checkbox should render the checkbox with disabled state 1`] = `
     >
       Checkbox Label
     </label>
+    
   </div>
 </div>
 `;
@@ -194,6 +232,7 @@ exports[`Checkbox should render the checkbox with loading state 1`] = `
     >
       Checkbox Label
     </label>
+    
   </div>
 </div>
 `;
