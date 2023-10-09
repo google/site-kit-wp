@@ -1,5 +1,5 @@
 /**
- * MetricTileHeader component.
+ * InfoTooltip component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -24,18 +24,30 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import InfoTooltip from './InfoTooltip';
+import { Tooltip } from 'googlesitekit-components';
+import InfoIcon from '../../../svg/icons/info-green.svg';
 
-export default function MetricTileHeader( { title, infoTooltip } ) {
+export default function InfoTooltip( { title } ) {
+	if ( ! title ) {
+		return null;
+	}
+
 	return (
-		<div className="googlesitekit-km-widget-tile__title-container">
-			<h3 className="googlesitekit-km-widget-tile__title">{ title }</h3>
-			{ infoTooltip && <InfoTooltip title={ infoTooltip } /> }
-		</div>
+		<Tooltip
+			tooltipClassName="googlesitekit-km-widget-tile-title__tooltip"
+			title={ title }
+			placement="top"
+			enterTouchDelay={ 0 }
+			leaveTouchDelay={ 5000 }
+			interactive
+		>
+			<span>
+				<InfoIcon width="16" height="16" />
+			</span>
+		</Tooltip>
 	);
 }
 
-MetricTileHeader.propTypes = {
-	title: PropTypes.string,
-	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
+InfoTooltip.propTypes = {
+	title: PropTypes.string.isRequired,
 };
