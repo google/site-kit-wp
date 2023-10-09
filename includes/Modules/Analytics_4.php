@@ -122,21 +122,21 @@ final class Analytics_4 extends Module
 			2
 		);
 
-		// // Check if the property ID has changed and reset availableCustomDimensions setting to null.
-		// if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
-		// 	add_filter(
-		// 		'pre_update_option_googlesitekit_analytics-4_settings',
-		// 		function ( $new_value, $old_value ) {
-		// 			if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
-		// 				$new_value['availableCustomDimensions'] = null;
-		// 			}
+		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			add_filter(
+				'pre_update_option_googlesitekit_analytics-4_settings',
+				function ( $new_value, $old_value ) {
+					if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
+						$new_value['availableCustomDimensions'] = null;
+					}
 
-		// 			return $new_value;
-		// 		},
-		// 		10,
-		// 		2
-		// 	);
-		// }
+					return $new_value;
+				},
+				10,
+				2
+			);
+		}
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// Replicate Analytics settings for Analytics-4 if not set.
