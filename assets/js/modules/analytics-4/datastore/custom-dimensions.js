@@ -309,6 +309,48 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Checks whether the provided custom dimension is being created.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} customDimension Custom dimensions to check.
+	 * @return {boolean} True the provided custom dimension is being created, otherwise false.
+	 */
+	isCreatingCustomDimension: createRegistrySelector(
+		( select ) => ( state, customDimension ) => {
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+			return select(
+				MODULES_ANALYTICS_4
+			).isFetchingCreateCustomDimension(
+				propertyID,
+				possibleCustomDimensions[ customDimension ]
+			);
+		}
+	),
+
+	/**
+	 * Returns the error if encountered while creating the provided custom dimension.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} customDimension Custom dimension to obtain creation error for.
+	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+	 */
+	getCustomDimensionCreationError: createRegistrySelector(
+		( select ) => ( state, customDimension ) => {
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+			return select( MODULES_ANALYTICS_4 ).getErrorForAction(
+				'createCustomDimension',
+				[ propertyID, possibleCustomDimensions[ customDimension ] ]
+			);
+		}
+	),
 };
 
 const store = Data.combineStores(
