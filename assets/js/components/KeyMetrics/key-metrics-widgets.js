@@ -87,7 +87,7 @@ const KEY_METRICS_WIDGETS = {
 			'Products that brought in the most visitors',
 			'google-site-kit'
 		),
-		displayInList: ( select ) =>
+		displayInList: ( { select } ) =>
 			select( CORE_USER ).isKeyMetricActive(
 				KM_ANALYTICS_POPULAR_PRODUCTS
 			) || select( CORE_SITE ).getProductBasePaths()?.length > 0,
@@ -138,7 +138,8 @@ const KEY_METRICS_WIDGETS = {
 			'googlesitekit_post_author',
 			'googlesitekit_post_categories',
 		],
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+		displayInList: ( { isViewOnlyDashboard } ) =>
+			isFeatureEnabled( 'newsKeyMetrics' ) && ! isViewOnlyDashboard,
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
 		title: __( 'Pages per visit', 'google-site-kit' ),
@@ -151,7 +152,8 @@ const KEY_METRICS_WIDGETS = {
 			'googlesitekit_post_author',
 			'googlesitekit_post_categories',
 		],
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+		displayInList: ( { isViewOnlyDashboard } ) =>
+			isFeatureEnabled( 'newsKeyMetrics' ) && ! isViewOnlyDashboard,
 	},
 	[ KM_ANALYTICS_VISIT_LENGTH ]: {
 		title: __( 'Visit length', 'google-site-kit' ),
