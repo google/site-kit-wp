@@ -108,9 +108,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'googleTagLastSyncedAtMs' => 0,
 		);
 
-		// if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
-		// 	$options['availableCustomDimensions'] = null;
-		// }
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$options['availableCustomDimensions'] = null;
+		}
 
 		return $options;
 	}
