@@ -34,8 +34,10 @@ import {
 	useRequestInterception,
 	setupSiteKit,
 	pageWait,
+	step,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
+import { EDIT_SCOPE } from '../../../../../assets/js/modules/analytics/datastore/constants';
 
 function ignorePermissionScopeErrors() {
 	// eslint-disable-next-line no-console
@@ -46,7 +48,6 @@ function ignorePermissionScopeErrors() {
 }
 
 describe( 'Analytics write scope requests', () => {
-	let scope;
 	// These variables are used to determine whether or not we need to intercept requests to the server. By default the first request
 	// won't be intercepted to reach the server and to trigger the insufficient scopes error on the server. The following requests will
 	// be intercepted and mocked to immediately return fake data to emulate property/profile creation.
@@ -68,7 +69,7 @@ describe( 'Analytics write scope requests', () => {
 					headers: {
 						location: createURL(
 							'/wp-admin/index.php',
-							`oauth2callback=1&code=valid-test-code&scope=${ scope }`
+							`oauth2callback=1&code=valid-test-code&scope=${ EDIT_SCOPE }`
 						),
 					},
 				} );
@@ -155,8 +156,6 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	beforeEach( async () => {
-		scope = 'https://www.googleapis.com/auth/analytics.edit';
-
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setupSiteKit();
 	} );
@@ -172,53 +171,63 @@ describe( 'Analytics write scope requests', () => {
 		interceptCreatePropertyRequest = true;
 		interceptCreateWebDataStreamRequest = true;
 
-		await activatePlugin(
-			'e2e-tests-module-setup-analytics-api-mock-no-account'
-		);
+		await step( 'arrange', async () => {
+			await activatePlugin(
+				'e2e-tests-module-setup-analytics-api-mock-no-account'
+			);
 
-		// Go to the analytics setup page.
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', {
-			text: /connect more services/i,
-		} );
-		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--analytics'
-		);
-		await expect( page ).toClick( '.googlesitekit-cta-link', {
-			text: /set up analytics/i,
-		} );
-		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
-		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
+			// Go to the analytics setup page.
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+			await page.waitForSelector( '.mdc-tab-bar' );
+			await expect( page ).toClick( '.mdc-tab', {
+				text: /connect more services/i,
+			} );
+			await page.waitForSelector(
+				'.googlesitekit-settings-connect-module--analytics'
+			);
+			await expect( page ).toClick( '.googlesitekit-cta-link', {
+				text: /set up analytics/i,
+			} );
+			await page.waitForSelector(
+				'.googlesitekit-setup-module--analytics'
+			);
+			await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
-		global.console.debug( 'Wait for permission message' );
+			global.console.debug( 'Wait for permission message' );
 
-		// The user sees a notice above the button that explains they will need to grant additional permissions.
-		await expect( page ).toMatchElement( 'p', {
-			text: /You will need to give Site Kit permission to create an Analytics account/i,
-		} );
-
-		global.console.debug( 'Wait for create account click' );
-		// Upon clicking the button, they're redirected to OAuth (should be mocked).
-		await expect( page ).toClick( '.mdc-button', {
-			text: /create account/i,
+			// The user sees a notice above the button that explains they will need to grant additional permissions.
+			await expect( page ).toMatchElement( 'p', {
+				text: /You will need to give Site Kit permission to create an Analytics account/i,
+			} );
 		} );
 
-		global.console.debug( 'Wait for create account ticket response' );
-		// When returning, their original action is automatically invoked, without requiring them to click the button again.
-		await page.waitForResponse( ( res ) =>
-			res.url().match( 'analytics-4/data/create-account-ticket' )
-		);
+		await step( 'act', async () => {
+			global.console.debug( 'Click create account' );
+			// Upon clicking the button, they're redirected to OAuth (should be mocked).
+			await Promise.all( [
+				// When returning, their original action is automatically invoked, without requiring them to click the button again.
+				page.waitForResponse( ( res ) =>
+					res.url().match( 'analytics-4/data/create-account-ticket' )
+				),
+				expect( page ).toClick( '.mdc-button', {
+					text: /create account/i,
+				} ),
+			] );
+		} );
 
-		global.console.debug( 'Wait for TOS navigation' );
-		// They should be redirected to the Analytics TOS.
-		await page.waitForRequest( ( req ) =>
-			req
-				.url()
-				.match(
-					encodeURIComponent( 'analytics.google.com/analytics/web' )
-				)
-		);
+		await step( 'assert', async () => {
+			global.console.debug( 'Wait for TOS navigation' );
+			// They should be redirected to the Analytics TOS.
+			await page.waitForRequest( ( req ) =>
+				req
+					.url()
+					.match(
+						encodeURIComponent(
+							'analytics.google.com/analytics/web'
+						)
+					)
+			);
+		} );
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
