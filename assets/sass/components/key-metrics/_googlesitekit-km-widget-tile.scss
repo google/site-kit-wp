@@ -174,9 +174,14 @@
 			background: $c-white;
 			border: 2px solid $c-utility-on-error-container;
 
+			.googlesitekit-cta__header {
+				column-gap: $grid-gap-phone / 2;
+				display: flex;
+				flex-basis: 50%;
+			}
+
 			.googlesitekit-cta__header_text {
 				color: $c-neutral-n-500;
-				flex-basis: 50%;
 				font-family: $f-primary;
 				font-size: $fs-label-sm;
 				font-weight: $fw-normal;
