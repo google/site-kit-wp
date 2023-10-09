@@ -40,14 +40,22 @@ const CTA = ( {
 	onClick,
 	'aria-label': ariaLabel,
 	children,
+	headerContent,
 } ) => (
 	<div
 		className={ classnames( 'googlesitekit-cta', {
 			'googlesitekit-cta--error': error,
 		} ) }
 	>
-		{ headerText && (
-			<h2 className="googlesitekit-cta__header_text">{ headerText }</h2>
+		{ ( headerText || headerContent ) && (
+			<div className="googlesitekit-cta__header">
+				{ headerText && (
+					<h2 className="googlesitekit-cta__header_text">
+						{ headerText }
+					</h2>
+				) }
+				{ headerContent }
+			</div>
 		) }
 		{ title && <h3 className="googlesitekit-cta__title">{ title }</h3> }
 		{ description && typeof description === 'string' && (
@@ -95,6 +103,7 @@ CTA.propTypes = {
 	error: PropTypes.bool,
 	onClick: PropTypes.func,
 	children: PropTypes.node,
+	headerContent: PropTypes.node,
 };
 
 CTA.defaultProps = {
@@ -106,6 +115,7 @@ CTA.defaultProps = {
 	ctaType: 'link',
 	error: false,
 	onClick: () => {},
+	headerContent: '',
 };
 
 export default CTA;
