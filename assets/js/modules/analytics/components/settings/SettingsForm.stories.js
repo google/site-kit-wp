@@ -369,8 +369,7 @@ WithEnhancedMeasurementToggle.args = {
 	hasAnalytics4Access: true,
 };
 WithEnhancedMeasurementToggle.parameters = {
-	// TODO: Ensure this usage of the `ga4Reporting` feature flag is removed in conjunction with #6856.
-	features: [ 'ga4Reporting', 'enhancedMeasurement' ],
+	features: [ 'enhancedMeasurement' ],
 };
 
 WithEnhancedMeasurementToggle.scenario = {
