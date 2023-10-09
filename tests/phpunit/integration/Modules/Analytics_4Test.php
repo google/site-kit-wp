@@ -997,9 +997,9 @@ class Analytics_4Test extends TestCase {
 
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertContains(
-			'analytics_4_available_custom_dimensions',
-			array_keys( $analytics->get_debug_fields() )
+		$this->assertsEquals(
+			$analytics->get_debug_fields()['analytics_4_available_custom_dimensions']['label'],
+			'Analytics 4 available custom dimensions'
 		);
 	}
 
