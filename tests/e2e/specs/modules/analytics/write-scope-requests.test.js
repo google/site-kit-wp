@@ -80,9 +80,7 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 					body: JSON.stringify( {
 						// eslint-disable-next-line sitekit/acronym-case
-						accountTicketId: `${ Math.ceil(
-							100000 * Math.random()
-						) }`,
+						accountTicketId: 'testAccountTicketID',
 					} ),
 				} );
 			} else if (
