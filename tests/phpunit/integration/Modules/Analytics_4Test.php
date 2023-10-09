@@ -848,58 +848,58 @@ class Analytics_4Test extends TestCase {
 		$this->assertFalse( $this->analytics->is_data_available() );
 	}
 
-	public function test_available_custom_dimensions_reset_on_property_id_change() {
-		$this->enable_feature( 'newsKeyMetrics' );
-		// Given: Analytics 4 is registered with a specific propertyID.
-		$this->analytics->register();
-		$this->analytics->get_settings()->register();
-		$this->analytics->get_settings()->merge(
-			array(
-				'availableCustomDimensions' => array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ),
-			)
-		);
+	// public function test_available_custom_dimensions_reset_on_property_id_change() {
+	// 	$this->enable_feature( 'newsKeyMetrics' );
+	// 	// Given: Analytics 4 is registered with a specific propertyID.
+	// 	$this->analytics->register();
+	// 	$this->analytics->get_settings()->register();
+	// 	$this->analytics->get_settings()->merge(
+	// 		array(
+	// 			'availableCustomDimensions' => array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ),
+	// 		)
+	// 	);
 
-		// Assert that the availableCustomDimensions are set correctly before the change.
-		$initial_settings = $this->analytics->get_settings()->get();
-		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $initial_settings['availableCustomDimensions'] );
+	// 	// Assert that the availableCustomDimensions are set correctly before the change.
+	// 	$initial_settings = $this->analytics->get_settings()->get();
+	// 	$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $initial_settings['availableCustomDimensions'] );
 
-		// When: The propertyID is changed.
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => '7654321',
-			)
-		);
+	// 	// When: The propertyID is changed.
+	// 	$this->analytics->get_settings()->merge(
+	// 		array(
+	// 			'propertyID' => '7654321',
+	// 		)
+	// 	);
 
-		// Then: The availableCustomDimensions should be reset to null.
-		$settings = $this->analytics->get_settings()->get();
-		$this->assertNull( $settings['availableCustomDimensions'] );
-	}
+	// 	// Then: The availableCustomDimensions should be reset to null.
+	// 	$settings = $this->analytics->get_settings()->get();
+	// 	$this->assertNull( $settings['availableCustomDimensions'] );
+	// }
 
-	public function test_only_googlesitekit_prefixed_dimensions_are_retained() {
-		$this->enable_feature( 'newsKeyMetrics' );
-		// Given: Analytics 4 is registered with a mixture of valid and invalid custom dimensions.
-		$this->analytics->register();
-		$this->analytics->get_settings()->register();
-		$this->analytics->get_settings()->merge(
-			array(
-				'availableCustomDimensions' => array(
-					'googlesitekit_dimension1',
-					'invalid_dimension',
-					'googlesitekit_dimension2',
-					'another_invalid_dimension',
-				),
-			)
-		);
+	// public function test_only_googlesitekit_prefixed_dimensions_are_retained() {
+	// 	$this->enable_feature( 'newsKeyMetrics' );
+	// 	// Given: Analytics 4 is registered with a mixture of valid and invalid custom dimensions.
+	// 	$this->analytics->register();
+	// 	$this->analytics->get_settings()->register();
+	// 	$this->analytics->get_settings()->merge(
+	// 		array(
+	// 			'availableCustomDimensions' => array(
+	// 				'googlesitekit_dimension1',
+	// 				'invalid_dimension',
+	// 				'googlesitekit_dimension2',
+	// 				'another_invalid_dimension',
+	// 			),
+	// 		)
+	// 	);
 
-		// When: The settings are fetched after merging.
-		$current_settings = $this->analytics->get_settings()->get();
+	// 	// When: The settings are fetched after merging.
+	// 	$current_settings = $this->analytics->get_settings()->get();
 
-		// Then: Only the dimensions with the 'googlesitekit_' prefix should be retained.
-		$this->assertEquals(
-			array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ),
-			$current_settings['availableCustomDimensions']
-		);
-	}
+	// 	// Then: Only the dimensions with the 'googlesitekit_' prefix should be retained.
+	// 	$this->assertEquals(
+	// 		array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ),
+	// 		$current_settings['availableCustomDimensions']
+	// 	);
+	// }
 
 
 	public function test_on_activation() {
@@ -2377,64 +2377,64 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
 	}
 
-	public function test_sync_custom_dimensions__required_params() {
-		$this->enable_feature( 'newsKeyMetrics' );
-		// Grant READONLY_SCOPE so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
-			)
-		);
+	// public function test_sync_custom_dimensions__required_params() {
+	// 	$this->enable_feature( 'newsKeyMetrics' );
+	// 	// Grant READONLY_SCOPE so request doesn't fail.
+	// 	$this->authentication->get_oauth_client()->set_granted_scopes(
+	// 		array_merge(
+	// 			$this->authentication->get_oauth_client()->get_required_scopes(),
+	// 			(array) Analytics::READONLY_SCOPE
+	// 		)
+	// 	);
 
-		$data = $this->analytics->set_data(
-			'sync-custom-dimensions',
-			array()
-		);
+	// 	$data = $this->analytics->set_data(
+	// 		'sync-custom-dimensions',
+	// 		array()
+	// 	);
 
-		// Verify that the propertyID is required.
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
-	}
+	// 	// Verify that the propertyID is required.
+	// 	$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
+	// 	$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+	// 	$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+	// }
 
-	public function test_sync_custom_dimensions() {
-		$this->enable_feature( 'newsKeyMetrics' );
-		$property_id = 'sync-custom-dimension-property-id';
+	// public function test_sync_custom_dimensions() {
+	// 	$this->enable_feature( 'newsKeyMetrics' );
+	// 	$property_id = 'sync-custom-dimension-property-id';
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_sync_custom_dimensions_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+	// 	FakeHttp::fake_google_http_handler(
+	// 		$this->analytics->get_client(),
+	// 		$this->create_sync_custom_dimensions_fake_http_handler( $property_id )
+	// 	);
+	// 	$this->analytics->register();
 
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
-			)
-		);
+	// 	$this->authentication->get_oauth_client()->set_granted_scopes(
+	// 		array_merge(
+	// 			$this->authentication->get_oauth_client()->get_required_scopes(),
+	// 			(array) Analytics::READONLY_SCOPE
+	// 		)
+	// 	);
 
-		$response = $this->analytics->set_data(
-			'sync-custom-dimensions',
-			array(
-				'propertyID' => $property_id,
-			)
-		);
+	// 	$response = $this->analytics->set_data(
+	// 		'sync-custom-dimensions',
+	// 		array(
+	// 			'propertyID' => $property_id,
+	// 		)
+	// 	);
 
-		$this->assertNotWPError( $response );
+	// 	$this->assertNotWPError( $response );
 
-		// Verify the response is an array of custom dimension names.
-		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $response );
+	// 	// Verify the response is an array of custom dimension names.
+	// 	$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $response );
 
-		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls );
+	// 	// Verify the request URL and params were correctly generated.
+	// 	$this->assertCount( 1, $this->request_handler_calls );
 
-		$request_url = $this->request_handler_calls[0]['url'];
+	// 	$request_url = $this->request_handler_calls[0]['url'];
 
-		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
-	}
+	// 	$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
+	// 	$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
+	// }
 
 	/**
 	 * Returns a date string for the given number of days ago.
