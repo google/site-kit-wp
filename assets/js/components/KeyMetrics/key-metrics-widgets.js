@@ -35,6 +35,7 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -168,6 +169,15 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
+		title: __( 'Top recent trending pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the most pageviews published in the last 3 days',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
 	},
 };
 
