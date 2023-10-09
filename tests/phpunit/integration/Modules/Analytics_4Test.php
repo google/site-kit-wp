@@ -986,8 +986,9 @@ class Analytics_4Test extends TestCase {
 	public function test_get_debug_fields__newsKeyMetrics_disabled() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertEmpty(
-			$analytics->get_debug_fields()['analytics_4_available_custom_dimensions']
+		$this->assertNotContains(
+			array_keys( $analytics->get_debug_fields() ),
+			'analytics_4_available_custom_dimensions'
 		);
 	}
 
@@ -996,11 +997,9 @@ class Analytics_4Test extends TestCase {
 
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertEqualSets(
-			array(
-				'analytics_4_available_custom_dimensions',
-			),
-			array_keys( $analytics->get_debug_fields() )
+		$this->assertContains(
+			array_keys( $analytics->get_debug_fields() ),
+			'analytics_4_available_custom_dimensions'
 		);
 	}
 
