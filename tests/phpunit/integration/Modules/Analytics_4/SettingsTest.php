@@ -82,6 +82,30 @@ class SettingsTest extends SettingsTestCase {
 		);
 	}
 
+	public function test_get_default__news_key_metrics() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		$this->settings->register();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
+				// 'accountID'              => '',
+				// 'adsConversionID'        => '',
+				'propertyID'                => '',
+				'webDataStreamID'           => '',
+				'measurementID'             => '',
+				'useSnippet'                => true,
+				'ownerID'                   => 0,
+				'googleTagID'               => '',
+				'googleTagAccountID'        => '',
+				'googleTagContainerID'      => '',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
+			),
+			get_option( Settings::OPTION )
+		);
+	}
+
 	public function data_tag_ids() {
 		return array(
 			'googleTagID is valid G-XXXX string'           => array( 'googleTagID', 'G-XXXX', 'G-XXXX' ),

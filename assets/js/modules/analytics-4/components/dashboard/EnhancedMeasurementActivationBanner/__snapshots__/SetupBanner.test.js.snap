@@ -1,0 +1,167 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SetupBanner should render correctly when the user does have the edit scope granted 1`] = `
+<div>
+  <section
+    class="googlesitekit-enhanced-measurement-setup-banner googlesitekit-publisher-win--small googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
+    id="googlesitekit-enhanced-measurement-activation-banner"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
+        >
+          <div
+            class="googlesitekit-publisher-win__title-image-wrapper"
+          >
+            <h3
+              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+            >
+              Understand how visitors interact with your content
+            </h3>
+            <div
+              class="googlesitekit-publisher-win__image-small"
+            >
+              <svg />
+            </div>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__desc"
+          >
+            <p>
+              <span>
+                Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
+              </span>
+               
+              <a
+                aria-label="Learn more (opens in a new tab)"
+                class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Learn more
+              </a>
+            </p>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__actions"
+          >
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Enable now
+              </span>
+            </button>
+            <button
+              class="googlesitekit-cta-link"
+            >
+              Maybe later
+            </button>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__footer"
+          >
+            <p
+              class="googlesitekit-enhanced-measurement-setup-banner__footer-notice"
+            >
+              You can always add/edit this in the Site Kit Settings
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;
+
+exports[`SetupBanner should render correctly when the user does not have the edit scope granted 1`] = `
+<div>
+  <section
+    class="googlesitekit-enhanced-measurement-setup-banner googlesitekit-publisher-win--small googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
+    id="googlesitekit-enhanced-measurement-activation-banner"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
+        >
+          <div
+            class="googlesitekit-publisher-win__title-image-wrapper"
+          >
+            <h3
+              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+            >
+              Understand how visitors interact with your content
+            </h3>
+            <div
+              class="googlesitekit-publisher-win__image-small"
+            >
+              <svg />
+            </div>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__desc"
+          >
+            <p>
+              <span>
+                Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required — you’ll be redirected to give permission for Site Kit to enable it on your behalf.
+              </span>
+               
+              <a
+                aria-label="Learn more (opens in a new tab)"
+                class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Learn more
+              </a>
+            </p>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__actions"
+          >
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Enable now
+              </span>
+            </button>
+            <button
+              class="googlesitekit-cta-link"
+            >
+              Maybe later
+            </button>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__footer"
+          >
+            <p
+              class="googlesitekit-enhanced-measurement-setup-banner__footer-notice"
+            >
+              You can always add/edit this in the Site Kit Settings
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

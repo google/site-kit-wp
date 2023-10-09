@@ -41,12 +41,15 @@ const ANALYTICS_4_METRIC_TYPES = {
 	newUsers: 'TYPE_INTEGER',
 	activeUsers: 'TYPE_INTEGER',
 	sessions: 'TYPE_INTEGER',
+	bounceRate: 'TYPE_FLOAT',
 	conversions: 'TYPE_INTEGER',
 	screenPageViews: 'TYPE_INTEGER',
+	screenPageViewsPerSession: 'TYPE_FLOAT',
 	engagedSessions: 'TYPE_INTEGER',
 	engagementRate: 'TYPE_FLOAT',
 	averageSessionDuration: 'TYPE_SECONDS',
 	sessionConversionRate: 'TYPE_FLOAT',
+	sessionsPerUser: 'TYPE_FLOAT',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {

@@ -105,25 +105,6 @@
 				@media (min-width: $bp-desktop) {
 					margin: $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop 0;
 				}
-
-				&.googlesitekit-optimize__container-id {
-					margin-right: 0;
-					width: 100%;
-
-					@media (min-width: $bp-tablet) {
-						align-items: center;
-						display: flex;
-						flex-wrap: nowrap;
-					}
-
-					.mdc-text-field-helper-line {
-						margin: ($grid-gap-phone / 2) 0 0;
-
-						@media (min-width: $bp-tablet) {
-							margin: 0;
-						}
-					}
-				}
 			}
 
 			> .googlesitekit-setup-module__input {

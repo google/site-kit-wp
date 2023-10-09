@@ -305,8 +305,6 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-analytics.js',
 			'googlesitekit-modules-analytics-4':
 				'./assets/js/googlesitekit-modules-analytics-4.js',
-			'googlesitekit-modules-optimize':
-				'./assets/js/googlesitekit-modules-optimize.js',
 			'googlesitekit-modules-pagespeed-insights':
 				'assets/js/googlesitekit-modules-pagespeed-insights.js',
 			'googlesitekit-modules-search-console':
