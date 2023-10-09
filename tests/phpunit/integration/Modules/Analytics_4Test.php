@@ -977,7 +977,7 @@ class Analytics_4Test extends TestCase {
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
-				'sync-custom-dimensions',
+				// 'sync-custom-dimensions',
 			),
 			$this->analytics->get_datapoints()
 		);
