@@ -497,7 +497,44 @@ final class Analytics_4 extends Module
 			)
 		);
 
+		if ( Feature_Flags::enabled( 'enhancedMeasurement' ) ) {
+			$enable_enhanced_measurement = (bool) $this->transients->get( $this->get_enable_enhanced_measurement_transient_name() );
+
+			if ( $enable_enhanced_measurement ) {
+				$enhanced_measurement_settings = $this->get_data(
+					'enhanced-measurement-settings',
+					array(
+						'propertyID'      => $property->_id,
+						'webDataStreamID' => $web_datastream->_id,
+					)
+				);
+
+				$new_enhanced_measurement_settings = new EnhancedMeasurementSettingsModel( $enhanced_measurement_settings );
+				$new_enhanced_measurement_settings->setStreamEnabled( true );
+
+				$this->set_data(
+					'enhanced-measurement-settings',
+					array(
+						'propertyID'                  => $property->_id,
+						'webDataStreamID'             => $web_datastream->_id,
+						'enhancedMeasurementSettings' => $new_enhanced_measurement_settings,
+					)
+				);
+			}
+		}
+
 		$this->sync_google_tag_settings();
+	}
+
+	/**
+	 * Gets the enable enhanced measurement transient name for the current user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Transient name.
+	 */
+	private function get_enable_enhanced_measurement_transient_name() {
+		return 'googlesitekit_analytics-4_enable_enhanced_measurement::' . get_current_user_id();
 	}
 
 	/**
@@ -555,6 +592,10 @@ final class Analytics_4 extends Module
 				}
 				if ( empty( $data['timezone'] ) ) {
 					throw new Missing_Required_Param_Exception( 'timezone' );
+				}
+
+				if ( Feature_Flags::enabled( 'enhancedMeasurement' ) && empty( $data['enableEnhancedMeasurement'] ) ) {
+					throw new Missing_Required_Param_Exception( 'enableEnhancedMeasurement' );
 				}
 
 				$account = new GoogleAnalyticsAdminV1betaAccount();
@@ -917,6 +958,14 @@ final class Analytics_4 extends Module
 					15 * MINUTE_IN_SECONDS
 				);
 
+				if ( Feature_Flags::enabled( 'enhancedMeasurement' ) ) {
+					$this->transients->set(
+						$this->get_enable_enhanced_measurement_transient_name(),
+						$data['enableEnhancedMeasurement'],
+						15 * MINUTE_IN_SECONDS
+					);
+				}
+
 				return $response;
 			case 'POST:create-property':
 				return self::filter_property_with_ids( $response );
@@ -1162,7 +1211,7 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Parses property and web datastream IDs, adds it to the model object and returns updated model.
+	 * Parget_enable_enhanced_measurement_transient_namees property and web datastream IDs, adds it to the model object and returns updated model.
 	 *
 	 * @since 1.31.0
 	 *

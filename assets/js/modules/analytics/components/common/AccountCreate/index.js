@@ -58,10 +58,12 @@ import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useFeature } from '../../../../../hooks/useFeature';
+import AccountCreateEnhancedMeasurementSwitch from './AccountCreateEnhancedMeasurementSwitch';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
@@ -299,6 +301,10 @@ export default function AccountCreate() {
 
 				<TimezoneSelect />
 			</div>
+
+			{ enhancedMeasurementEnabled && (
+				<AccountCreateEnhancedMeasurementSwitch />
+			) }
 
 			<p>
 				{ hasRequiredScope && (

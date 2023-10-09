@@ -28,13 +28,18 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
+import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
+	MODULES_ANALYTICS_4,
+} from './constants';
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
 } from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { isFeatureEnabled } from '../../../features';
 
 const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
@@ -106,6 +111,13 @@ const baseActions = {
 			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
 			regionCode: getValue( FORM_ACCOUNT_CREATE, 'countryCode' ),
 		};
+
+		if ( isFeatureEnabled( 'enhancedMeasurement' ) ) {
+			data.enableEnhancedMeasurement = getValue(
+				ENHANCED_MEASUREMENT_FORM,
+				ENHANCED_MEASUREMENT_ENABLED
+			);
+		}
 
 		yield clearError( 'createAccount', [] );
 		const { response, error } =
