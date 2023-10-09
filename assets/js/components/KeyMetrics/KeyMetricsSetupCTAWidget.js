@@ -20,12 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -113,14 +114,14 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		);
 	}, [ viewContext ] );
 
-	const [ hasBeenInView, setHasBeenInView ] = useState( false );
-
-	useEffect( () => {
-		if ( isTooltipVisible && ! hasBeenInView ) {
+	useMount( () => {
+		// Since components are conditionally rendered, when tooltip
+		// appears, old component will unmount and new componnet will mount,
+		// with tooltip visible equal to true, so here we ensure event is sent only once when that occurs,
+		if ( isTooltipVisible ) {
 			trackEvent( `${ viewContext }_kmw`, 'tooltip_view' );
-			setHasBeenInView( true );
 		}
-	}, [ isTooltipVisible, viewContext, hasBeenInView, setHasBeenInView ] );
+	} );
 
 	if ( isTooltipVisible ) {
 		return (

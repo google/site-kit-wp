@@ -74,7 +74,7 @@ export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID =
 	'cannot submit changes with incorrect internal webPropertyID';
 
 async function submitGA4Changes( { select, dispatch } ) {
-	if ( ! select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+	if ( ! select( MODULES_ANALYTICS_4 ).haveAnyGA4SettingsChanged() ) {
 		return {};
 	}
 
@@ -188,7 +188,7 @@ export function validateCanSubmitChanges( select ) {
 
 	invariant(
 		haveSettingsChanged() ||
-			select( MODULES_ANALYTICS_4 ).haveSettingsChanged(),
+			select( MODULES_ANALYTICS_4 ).haveAnyGA4SettingsChanged(),
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 

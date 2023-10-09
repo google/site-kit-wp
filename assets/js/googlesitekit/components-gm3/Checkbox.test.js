@@ -397,4 +397,26 @@ describe( 'Checkbox', () => {
 			} );
 		}
 	);
+
+	it( 'should render the checkbox with a description', () => {
+		const { container } = render(
+			<Checkbox
+				id="checkbox-id"
+				name="checkbox-name"
+				value="checkbox-value"
+				onChange={ () => {} }
+				description="Checkbox description"
+			>
+				Checkbox Label
+			</Checkbox>
+		);
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-component-gm3_checkbox__description'
+			)
+		).toHaveTextContent( 'Checkbox description' );
+	} );
 } );

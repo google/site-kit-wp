@@ -57,38 +57,9 @@
 		margin-bottom: $grid-gap-phone;
 		padding: 0 $grid-gap-desktop;
 
-		.googlesitekit-accordion {
-			border: 1px solid $c-neutral-n-66;
-			border-radius: 8px;
-			padding: 0 20px;
-
-			&:focus-within {
-				border: 2px solid $c-content-primary;
-			}
-		}
-
-		.googlesitekit-accordion__header {
-			padding: 12px 0;
-
-			.mdc-checkbox + label {
-				font-weight: $fw-medium;
-			}
-		}
-
-		.googlesitekit-accordion__header::after {
-			right: 0;
-		}
-
-		.googlesitekit-accordion__content {
-			border-top: 1px solid $c-neutral-n-50;
-			padding: 16px 0 20px;
-		}
-
-		.googlesitekit-accordion--disabled {
-
-			.mdc-checkbox + label {
-				color: $c-interactive-on-disable-container;
-			}
+		.googlesitekit-km-selection-panel-metrics__metric-item-error {
+			color: $c-red-600;
+			padding-top: 10px;
 		}
 	}
 

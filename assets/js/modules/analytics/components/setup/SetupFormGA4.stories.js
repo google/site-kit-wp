@@ -69,6 +69,17 @@ WithEnableUAToggle.scenario = {
 	delay: 250,
 };
 
+export const WithEnhancedMeasurementToggle = Template.bind( null );
+WithEnhancedMeasurementToggle.storyName = 'With Enhanced Measurement Toggle';
+WithEnhancedMeasurementToggle.parameters = {
+	// TODO: Ensure this usage of the `ga4Reporting` feature flag is removed in conjunction with #6856.
+	features: [ 'ga4Reporting', 'enhancedMeasurement' ],
+};
+WithEnhancedMeasurementToggle.scenario = {
+	label: 'Modules/Analytics/Setup/SetupFormGA4/WithEnhancedMeasurementToggle',
+	delay: 250,
+};
+
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormGA4',
 	decorators: [

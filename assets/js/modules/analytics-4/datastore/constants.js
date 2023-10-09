@@ -27,3 +27,8 @@ export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 export const DATE_RANGE_OFFSET = 1;
 
 export const GTM_SCOPE = 'https://www.googleapis.com/auth/tagmanager.readonly';
+
+export const ENHANCED_MEASUREMENT_FORM = 'enhanced-measurement-form';
+export const ENHANCED_MEASUREMENT_ENABLED = 'enhanced-measurement-enabled';
+export const ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER =
+	'enhanced-measurement-should-dismiss-activation-banner';
