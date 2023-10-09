@@ -145,6 +145,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					}
 				}
 
+				// Enabling the snaitization.
 				if ( Feature_Flags::enabled( 'newsKeyMetrics' ) && isset( $option['availableCustomDimensions'] ) ) {
 					if ( is_array( $option['availableCustomDimensions'] ) ) {
 						$valid_dimensions = array_filter(
