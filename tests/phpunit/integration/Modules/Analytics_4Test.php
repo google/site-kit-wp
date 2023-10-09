@@ -983,6 +983,27 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_debug_fields__newsKeyMetrics_disabled() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEmpty(
+			$analytics->get_debug_fields()['analytics_4_available_custom_dimensions']
+		);
+	}
+
+	public function test_get_debug_fields__newsKeyMetrics_enabled() {
+		$this->enable_feature( 'newsKeyMetrics' );
+
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				'analytics_4_available_custom_dimensions',
+			),
+			array_keys( $analytics->get_debug_fields() )
+		);
+	}
+
 	/**
 	 * @dataProvider data_google_tag_ids
 	 *
