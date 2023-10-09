@@ -62,10 +62,6 @@ export default function SetupBanner( {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
-
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
@@ -205,7 +201,7 @@ export default function SetupBanner( {
 			onDismiss={ onDismiss }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
-			{ usingProxy && ! isDismissed && (
+			{ ! isDismissed && (
 				<SurveyViewTrigger
 					triggerID="view_enhanced_measurement_cta"
 					ttl={ DAY_IN_SECONDS }
