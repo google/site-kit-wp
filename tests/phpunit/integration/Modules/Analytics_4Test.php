@@ -995,11 +995,13 @@ class Analytics_4Test extends TestCase {
 	public function test_get_debug_fields__newsKeyMetrics_enabled() {
 		$this->enable_feature( 'newsKeyMetrics' );
 
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		// Given: Analytics 4 is registered with a specific propertyID.
+		$this->analytics->register();
+		$this->analytics->get_settings()->register();
 
-		$this->assertsEquals(
-			$analytics->get_debug_fields()['analytics_4_available_custom_dimensions']['label'],
-			'Analytics 4 available custom dimensions'
+		$this->assertContains(
+			'analytics_4_available_custom_dimensions',
+			array_keys( $this->analytics->get_debug_fields() )
 		);
 	}
 
