@@ -109,13 +109,23 @@ export default function UserInputPreviewGroup( {
 	const answerHasError = hasErrorForAnswer( values );
 
 	const submitChanges = useCallback( async () => {
+		if ( answerHasError ) {
+			return;
+		}
+
 		const response = await saveUserInputSettings();
 
 		if ( ! response.error ) {
 			trackEvent( gaEventCategory, 'question_update', slug );
 			toggleEditMode();
 		}
-	}, [ gaEventCategory, saveUserInputSettings, slug, toggleEditMode ] );
+	}, [
+		answerHasError,
+		gaEventCategory,
+		saveUserInputSettings,
+		slug,
+		toggleEditMode,
+	] );
 
 	const handleOnEditClick = useCallback( async () => {
 		if ( settingsView ) {

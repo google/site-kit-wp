@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useEffect, useRef } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -83,6 +83,14 @@ export default function UserInputPreview( props ) {
 	const hasError = USER_INPUT_QUESTIONS_LIST.some( ( slug ) =>
 		hasErrorForAnswer( settings?.[ slug ]?.values || [] )
 	);
+
+	const onSaveClick = useCallback( () => {
+		if ( hasError || isScreenLoading ) {
+			return;
+		}
+
+		submitChanges();
+	}, [ hasError, isScreenLoading, submitChanges ] );
 
 	useEffect( () => {
 		if (
@@ -175,7 +183,7 @@ export default function UserInputPreview( props ) {
 						<div className="googlesitekit-user-input__footer-nav">
 							<SpinnerButton
 								className="googlesitekit-user-input__buttons--next"
-								onClick={ submitChanges }
+								onClick={ onSaveClick }
 								disabled={ hasError || isScreenLoading }
 								isSaving={ isScreenLoading }
 							>
