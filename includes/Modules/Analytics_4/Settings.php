@@ -145,20 +145,20 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					}
 				}
 
-				// if ( Feature_Flags::enabled( 'newsKeyMetrics' ) && isset( $option['availableCustomDimensions'] ) ) {
-				// 	if ( is_array( $option['availableCustomDimensions'] ) ) {
-				// 		$valid_dimensions = array_filter(
-				// 			$option['availableCustomDimensions'],
-				// 			function( $dimension ) {
-				// 				return is_string( $dimension ) && strpos( $dimension, 'googlesitekit_' ) === 0;
-				// 			}
-				// 		);
+				if ( Feature_Flags::enabled( 'newsKeyMetrics' ) && isset( $option['availableCustomDimensions'] ) ) {
+					if ( is_array( $option['availableCustomDimensions'] ) ) {
+						$valid_dimensions = array_filter(
+							$option['availableCustomDimensions'],
+							function( $dimension ) {
+								return is_string( $dimension ) && strpos( $dimension, 'googlesitekit_' ) === 0;
+							}
+						);
 
-				// 		$option['availableCustomDimensions'] = array_values( $valid_dimensions );
-				// 	} else {
-				// 		$option['availableCustomDimensions'] = null;
-				// 	}
-				// }
+						$option['availableCustomDimensions'] = array_values( $valid_dimensions );
+					} else {
+						$option['availableCustomDimensions'] = null;
+					}
+				}
 			}
 
 			return $option;
