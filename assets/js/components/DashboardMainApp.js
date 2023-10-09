@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 import { useMount } from 'react-use';
 
 /**
@@ -61,13 +61,33 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
-const { useSelect } = Data;
+import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import {
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '../modules/analytics-4/datastore/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const userInputEnabled = useFeature( 'userInput' );
+	const newsKeyMetricsEnabled = useFeature( 'newsKeyMetrics' );
 	const viewOnlyDashboard = useViewOnly();
+
+	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
+		select( CORE_SITE ).isKeyMetricsSetupCompleted()
+	);
+
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_CUSTOM_DIMENSIONS_CREATE,
+			'autoSubmit'
+		)
+	);
+
+	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useMount( () => {
 		if ( ! viewOnlyDashboard ) {
@@ -75,6 +95,21 @@ export default function DashboardMainApp() {
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
 		}
 	} );
+
+	useEffect( () => {
+		if (
+			newsKeyMetricsEnabled &&
+			isKeyMetricsSetupCompleted &&
+			autoSubmit
+		) {
+			createCustomDimensions().catch( () => {} );
+		}
+	}, [
+		autoSubmit,
+		createCustomDimensions,
+		isKeyMetricsSetupCompleted,
+		newsKeyMetricsEnabled,
+	] );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
