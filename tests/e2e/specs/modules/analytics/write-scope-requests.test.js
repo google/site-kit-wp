@@ -98,6 +98,7 @@ describe( 'Analytics write scope requests', () => {
 				request.url().match( 'analytics-4/data/create-property' )
 			) {
 				if ( interceptCreatePropertyRequest ) {
+					interceptCreatePropertyRequest = false;
 					request.respond( {
 						status: 200,
 						body: JSON.stringify( {
@@ -105,7 +106,6 @@ describe( 'Analytics write scope requests', () => {
 							_id: '1001', // Ensure match with ID in tests/e2e/plugins/module-setup-analytics.php
 						} ),
 					} );
-					interceptCreatePropertyRequest = false;
 				} else {
 					request.continue();
 				}
@@ -113,11 +113,11 @@ describe( 'Analytics write scope requests', () => {
 				request.url().match( 'analytics-4/data/create-webdatastream' )
 			) {
 				if ( interceptCreateWebDataStreamRequest ) {
+					interceptCreateWebDataStreamRequest = false;
 					request.respond( {
 						status: 200,
 						body: JSON.stringify( fixtures.createWebDataStream ),
 					} );
-					interceptCreateWebDataStreamRequest = false;
 				} else {
 					request.continue();
 				}
