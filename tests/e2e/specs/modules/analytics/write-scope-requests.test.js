@@ -219,7 +219,7 @@ describe( 'Analytics write scope requests', () => {
 			await page.waitForRequest( ( req ) =>
 				req
 					.url()
-					.match(
+					.includes(
 						encodeURIComponent(
 							'analytics.google.com/analytics/web'
 						)
