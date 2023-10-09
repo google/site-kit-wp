@@ -300,8 +300,6 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$shareable = true;
-
 		$datapoints = array(
 			'GET:account-summaries'              => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                       => array( 'service' => 'analyticsadmin' ),
@@ -319,7 +317,7 @@ final class Analytics_4 extends Module
 			),
 			'GET:conversion-events'              => array(
 				'service'   => 'analyticsadmin',
-				'shareable' => $shareable,
+				'shareable' => true,
 			),
 			'POST:create-account-ticket'         => array(
 				'service'                => 'analyticsprovisioning',
@@ -344,6 +342,10 @@ final class Analytics_4 extends Module
 			),
 			'GET:properties'                     => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                       => array( 'service' => 'analyticsadmin' ),
+			'GET:report'                         => array(
+				'service'   => 'analyticsdata',
+				'shareable' => true,
+			),
 			'GET:webdatastreams'                 => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'           => array( 'service' => 'analyticsadmin' ),
 			'GET:enhanced-measurement-settings'  => array( 'service' => 'analyticsenhancedmeasurement' ),
@@ -352,11 +354,6 @@ final class Analytics_4 extends Module
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
 			),
-		);
-
-		$datapoints['GET:report'] = array(
-			'service'   => 'analyticsdata',
-			'shareable' => $shareable,
 		);
 
 		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
