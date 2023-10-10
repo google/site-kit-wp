@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
 	render,
 	provideModules,
@@ -87,21 +88,21 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			);
 	} );
 
-	it( 'should render the setup step when enhanced measurement is initially false and the banner is not dismissed', async () => {
-		const { container, getByRole, waitForRegistry } = render(
+	it( 'should render the setup step when enhanced measurement is initially false and the banner is not dismissed', () => {
+		const { container, getByRole } = render(
 			<EnhancedMeasurementActivationBanner />,
 			{
 				registry,
 			}
 		);
 
-		await waitForRegistry();
+		act( () => {
+			expect( container ).toMatchSnapshot();
 
-		expect( container ).toMatchSnapshot();
-
-		expect(
-			getByRole( 'button', { name: 'Enable now' } )
-		).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Enable now' } )
+			).toBeInTheDocument();
+		} );
 	} );
 
 	it( 'should render the success step when the the setup form is successfully submitted', async () => {
