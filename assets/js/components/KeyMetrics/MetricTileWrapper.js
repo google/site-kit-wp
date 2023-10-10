@@ -29,6 +29,7 @@ import PropTypes from 'prop-types';
 import {
 	createInterpolateElement,
 	useCallback,
+	useEffect,
 	useMemo,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -49,7 +50,10 @@ import MetricTileError from './MetricTileError';
 import MetricTileHeader from './MetricTileHeader';
 import ReportErrorActions from '../ReportErrorActions';
 import GetHelpLink from './MetricTileError/GetHelpLink';
-import { isInsufficientPermissionsError } from '../../util/errors';
+import {
+	ERROR_REASON_BAD_REQUEST,
+	isInsufficientPermissionsError,
+} from '../../util/errors';
 import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
@@ -121,7 +125,7 @@ export default function MetricTileWrapper( {
 	} );
 	const helpLink = useSelect( ( select ) => {
 		if ( ! customDimensionsCreationErrors.length ) {
-			return false;
+			return undefined;
 		}
 
 		return select( CORE_SITE ).getErrorTroubleshootingLinkURL(
@@ -130,13 +134,30 @@ export default function MetricTileWrapper( {
 			) || customDimensionsCreationErrors[ 0 ]
 		);
 	} );
-	const hasAnalyticsEditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( EDIT_SCOPE )
-	);
+	const hasAnalyticsEditScope = useSelect( ( select ) => {
+		if ( ! customDimensions ) {
+			return undefined;
+		}
 
-	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
+		return select( CORE_USER ).hasScope( EDIT_SCOPE );
+	} );
+	const isSyncingAvailableCustomDimensions = useSelect( ( select ) => {
+		if ( ! customDimensions ) {
+			return undefined;
+		}
 
-	const loading = isReportLoading || isCreatingCustomDimensions;
+		return select(
+			MODULES_ANALYTICS_4
+		).isSyncingAvailableCustomDimensions();
+	} );
+
+	const { createCustomDimensions, syncAvailableCustomDimensions } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
+	const loading =
+		isReportLoading ||
+		isCreatingCustomDimensions ||
+		isSyncingAvailableCustomDimensions;
 	const hasError = !! reportError || !! customDimensionsCreationErrors.length;
 
 	const tileTitle = title || KEY_METRICS_WIDGETS[ widgetSlug ]?.title;
@@ -161,6 +182,24 @@ export default function MetricTileWrapper( {
 
 		// TODO: Handle case where user does not have edit scope (from #7599).
 	}, [ createCustomDimensions, hasAnalyticsEditScope, loading ] );
+
+	// If the list of available custom dimensions is outdated, sync it.
+	useEffect( () => {
+		if (
+			! customDimensions ||
+			reportError?.data?.reason !== ERROR_REASON_BAD_REQUEST ||
+			isSyncingAvailableCustomDimensions
+		) {
+			return;
+		}
+
+		syncAvailableCustomDimensions();
+	}, [
+		customDimensions,
+		isSyncingAvailableCustomDimensions,
+		reportError?.data?.reason,
+		syncAvailableCustomDimensions,
+	] );
 
 	if ( !! customDimensions && newsKeyMetricsEnabled ) {
 		if ( !! customDimensionsCreationErrors.length ) {
@@ -208,7 +247,7 @@ export default function MetricTileWrapper( {
 										RetryLink: (
 											<Link
 												onClick={
-													createCustomDimensions
+													handleCreateCustomDimensions
 												}
 											>
 												{ __(
@@ -233,6 +272,9 @@ export default function MetricTileWrapper( {
 					{ ...commonErrorProps }
 				>
 					<div className="googlesitekit-report-error-actions">
+						<Button onClick={ handleCreateCustomDimensions }>
+							{ __( 'Retry', 'google-site-kit' ) }
+						</Button>
 						<span className="googlesitekit-error-retry-text">
 							{ createInterpolateElement(
 								__(
