@@ -87,13 +87,15 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			);
 	} );
 
-	it( 'should render the setup step when enhanced measurement is initially false and the banner is not dismissed', () => {
-		const { container, getByRole } = render(
+	it( 'should render the setup step when enhanced measurement is initially false and the banner is not dismissed', async () => {
+		const { container, getByRole, waitForRegistry } = render(
 			<EnhancedMeasurementActivationBanner />,
 			{
 				registry,
 			}
 		);
+
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
