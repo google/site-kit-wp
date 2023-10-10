@@ -29,6 +29,7 @@ import {
 	provideUserAuthentication,
 	fireEvent,
 	provideSiteInfo,
+	act,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import {
@@ -112,13 +113,15 @@ describe( 'SetupBanner', () => {
 			registry,
 		} );
 
-		expect( container ).toMatchSnapshot();
+		act( () => {
+			expect( container ).toMatchSnapshot();
 
-		expect(
-			getByText(
-				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.'
-			)
-		).toBeInTheDocument();
+			expect(
+				getByText(
+					'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.'
+				)
+			).toBeInTheDocument();
+		} );
 	} );
 
 	it( 'should render correctly when the user does not have the edit scope granted', () => {
