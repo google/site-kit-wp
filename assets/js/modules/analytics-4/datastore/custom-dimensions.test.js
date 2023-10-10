@@ -133,23 +133,11 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 
 		describe( 'syncAvailableCustomDimensions', () => {
-			it( 'requires a valid propertyID to be passed', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.syncAvailableCustomDimensions();
-				} ).toThrow( 'A valid GA4 propertyID is required.' );
+			it( 'fetches and returns custom dimensions', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
 
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.syncAvailableCustomDimensions(
-							'not-valid-property-id'
-						);
-				} ).toThrow( 'A valid GA4 propertyID is required.' );
-			} );
-
-			it( 'fetches and returns custom dimensions for a valid propertyID', async () => {
 				fetchMock.postOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'

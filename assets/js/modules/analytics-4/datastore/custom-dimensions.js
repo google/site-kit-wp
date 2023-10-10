@@ -34,7 +34,6 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	CORE_USER,
@@ -135,7 +134,13 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	},
 } );
 
-const baseInitialState = {};
+const baseInitialState = {
+	isSyncingAvailableCustomDimensions: false,
+};
+
+// Actions
+const SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION =
+	'SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION';
 
 const baseActions = {
 	/**
@@ -204,7 +209,7 @@ const baseActions = {
 
 		// Sync available custom dimensions.
 		if ( missingCustomDimensions.length > 0 ) {
-			yield baseActions.syncAvailableCustomDimensions( propertyID );
+			yield baseActions.syncAvailableCustomDimensions();
 		}
 	},
 
@@ -213,33 +218,52 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} propertyID GA4 property ID.
 	 * @return {Array<string>} Available custom dimensions.
 	 */
-	syncAvailableCustomDimensions: createValidatedAction(
-		( propertyID ) => {
-			invariant(
-				isValidPropertyID( propertyID ),
-				'A valid GA4 propertyID is required.'
+	*syncAvailableCustomDimensions() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		yield {
+			type: SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION,
+			payload: { isSyncing: true },
+		};
+
+		const { response, error } =
+			yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
+				propertyID
 			);
-		},
-		function* ( propertyID ) {
-			const registry = yield Data.commonActions.getRegistry();
 
-			const { response, error } =
-				yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
-					propertyID
-				);
-
-			if ( response ) {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableCustomDimensions( response );
-			}
-
-			return { response, error };
+		if ( response ) {
+			yield registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableCustomDimensions( response );
 		}
-	),
+
+		yield {
+			type: SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION,
+			payload: { isSyncing: true },
+		};
+
+		return { response, error };
+	},
+};
+
+export const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION: {
+			return {
+				...state,
+				isSyncingAvailableCustomDimensions: payload.isSyncing,
+			};
+		}
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseResolvers = {
@@ -268,14 +292,10 @@ const baseResolvers = {
 			return;
 		}
 
-		const propertyID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyID();
-
 		yield Data.commonActions.await(
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.syncAvailableCustomDimensions( propertyID )
+				.syncAvailableCustomDimensions()
 		);
 	},
 };
@@ -351,6 +371,18 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Determines whether the available custom dimensions are being synced.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the available custom dimensions are being synced, otherwise FALSE.
+	 */
+	isSyncingAvailableCustomDimensions( state ) {
+		return !! state?.isSyncingAvailableCustomDimensions;
+	},
 };
 
 const store = Data.combineStores(
