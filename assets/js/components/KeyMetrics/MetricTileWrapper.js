@@ -44,12 +44,12 @@ import { EDIT_SCOPE } from '../../modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import { Button } from 'googlesitekit-components';
+import GetHelpLink from './GetHelpLink';
 import Link from '../Link';
 import MetricTileLoader from './MetricTileLoader';
 import MetricTileError from './MetricTileError';
 import MetricTileHeader from './MetricTileHeader';
 import ReportErrorActions from '../ReportErrorActions';
-import GetHelpLink from './MetricTileError/GetHelpLink';
 import {
 	ERROR_REASON_BAD_REQUEST,
 	isInsufficientPermissionsError,
