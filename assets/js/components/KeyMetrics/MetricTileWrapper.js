@@ -143,7 +143,7 @@ export default function MetricTileWrapper( {
 	} );
 	const isSyncingAvailableCustomDimensions = useSelect( ( select ) => {
 		if ( ! customDimensions ) {
-			return undefined;
+			return false;
 		}
 
 		return select(
@@ -201,7 +201,7 @@ export default function MetricTileWrapper( {
 		syncAvailableCustomDimensions,
 	] );
 
-	if ( !! customDimensions && newsKeyMetricsEnabled ) {
+	if ( newsKeyMetricsEnabled && !! customDimensions && ! loading ) {
 		if ( !! customDimensionsCreationErrors.length ) {
 			// Handle permissions error encountered while creating
 			// custom dimensions.
