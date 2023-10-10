@@ -41,6 +41,9 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	CORE_USER,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_POPULAR_AUTHORS,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
@@ -133,11 +136,6 @@ const KEY_METRICS_WIDGETS = {
 			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
 			'google-site-kit'
 		),
-		// TODO: Remove this once we have the correct custom dimensions.
-		requiredCustomDimensions: [
-			'googlesitekit_post_author',
-			'googlesitekit_post_categories',
-		],
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
@@ -146,11 +144,6 @@ const KEY_METRICS_WIDGETS = {
 			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
-		// TODO: Remove this once we have the correct custom dimensions.
-		requiredCustomDimensions: [
-			'googlesitekit_post_author',
-			'googlesitekit_post_categories',
-		],
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_VISIT_LENGTH ]: {
@@ -168,6 +161,33 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
+		title: __( 'Top recent trending pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the most pageviews published in the last 3 days',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
+	},
+	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
+		title: __( 'Top categories by pageviews', 'google-site-kit' ),
+		description: __(
+			'Categories that your site visitors viewed the most',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
+	},
+	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
+		title: __( 'Most popular authors by pageviews', 'google-site-kit' ),
+		description: __(
+			'Authors whose posts got the most visits',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
 	},
 };
 

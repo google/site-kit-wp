@@ -32,3 +32,6 @@ export { default as PagesPerVisitWidget } from './PagesPerVisitWidget';
 export { default as VisitLengthWidget } from './VisitLengthWidget';
 export { default as TopReturningVisitorPages } from './TopReturningVisitorPages';
 export { default as VisitsPerVisitorWidget } from './VisitsPerVisitorWidget';
+export { default as TopRecentTrendingPagesWidget } from './TopRecentTrendingPagesWidget';
+export { default as TopCategoriesWidget } from './TopCategoriesWidget';
+export { default as PopularAuthorsWidget } from './PopularAuthorsWidget';
