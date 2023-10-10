@@ -132,61 +132,18 @@ describe( 'User Input Settings', () => {
 				const multiDimensionalObjectParams =
 					getMultiDimensionalObjectFromParams( paramsObject );
 
-				// Widget `ModulePopularPagesWidgetGA4` needs titles, so if
-				// `pagePath` dimension is requested from getTitles report, it needs to return
-				// titles mocked data, otherwise it will throw error and cause test failure
-				// https://github.com/google/site-kit-wp/issues/7630
-				if (
-					multiDimensionalObjectParams?.dimensions?.find(
-						( dimension ) => dimension?.name === 'pagePath'
-					)
-				) {
-					// Combine missing metric values for `ModulePopularPagesWidgetGA4` table
-					// so when titles is returned it also holds other report args to complete the data
-					// and preven invalid number NaN warning/error
-					const pageTitlesReportOptions = {
-						startDate: '2020-12-09',
-						endDate: '2021-01-05',
-						dimensionFilters: {
-							pagePath: new Array( 10 )
-								.fill( '' )
-								.map( ( _, i ) => `/test-post-${ i + 1 }/` )
-								.sort(),
-						},
-						dimensions: [
-							'pagePath',
-							'pageTitle',
-							'screenPageViews',
-						],
-						metrics: [
-							{
-								name: 'screenPageViews',
-							},
-							{
-								name: 'sessions',
-							},
-							{
-								name: 'engagementRate',
-							},
-							{
-								name: 'averageSessionDuration',
-							},
-						],
-						orderby: [
-							{
-								metric: { metricName: 'screenPageViews' },
-								desc: true,
-							},
-						],
-						limit: 50,
-					};
+				// At the time of writing, the report used in `getPageTitles()` is the only report that specifies an array of `pagePath` values in
+				// the `dimensionFilters` object.
+				const isPageTitlesReport = Array.isArray(
+					multiDimensionalObjectParams?.dimensionFilters?.pagePath
+				);
 
-					// Mock `getTitles` response
+				if ( isPageTitlesReport ) {
 					request.respond( {
 						status: 200,
 						body: JSON.stringify(
 							getAnalytics4MockResponse(
-								pageTitlesReportOptions,
+								multiDimensionalObjectParams,
 								// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
 								// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
 								// page paths to page titles.
