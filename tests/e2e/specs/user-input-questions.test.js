@@ -234,8 +234,6 @@ describe( 'User Input Settings', () => {
 			),
 		] );
 
-		await page.waitForTimeout( 1000000 );
-
 		// On the first load of the dashboard, report requests made by the isGatheringData selector for SC and GA4
 		// will fetch some data since we intercept those requests providing mock report data. This the data-available
 		// endpoint which sets the appropriate transients that will be prefetched only on the next page load.
