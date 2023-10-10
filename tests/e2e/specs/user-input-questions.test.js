@@ -141,6 +141,9 @@ describe( 'User Input Settings', () => {
 						( o ) => o?.name === 'pagePath'
 					)
 				) {
+					// Combine missing metric values for `ModulePopularPagesWidgetGA4` table
+					// so when titles is returned it also holds other report args to complete the data
+					// and preven invalid number NaN warning/error
 					const pageTitlesReportOptions = {
 						startDate: '2020-12-09',
 						endDate: '2021-01-05',
@@ -150,8 +153,25 @@ describe( 'User Input Settings', () => {
 								.map( ( _, i ) => `/test-post-${ i + 1 }/` )
 								.sort(),
 						},
-						dimensions: [ 'pagePath', 'pageTitle' ],
-						metrics: [ { name: 'screenPageViews' } ],
+						dimensions: [
+							'pagePath',
+							'pageTitle',
+							'screenPageViews',
+						],
+						metrics: [
+							{
+								name: 'screenPageViews',
+							},
+							{
+								name: 'sessions',
+							},
+							{
+								name: 'engagementRate',
+							},
+							{
+								name: 'averageSessionDuration',
+							},
+						],
 						orderby: [
 							{
 								metric: { metricName: 'screenPageViews' },
