@@ -65,10 +65,10 @@ export default function Metrics( { savedMetrics } ) {
 				if (
 					typeof KEY_METRICS_WIDGETS[ metric ].displayInList ===
 						'function' &&
-					! KEY_METRICS_WIDGETS[ metric ].displayInList( {
+					! KEY_METRICS_WIDGETS[ metric ].displayInList(
 						select,
-						isViewOnlyDashboard,
-					} )
+						isViewOnlyDashboard
+					)
 				) {
 					return acc;
 				}

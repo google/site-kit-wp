@@ -44,6 +44,38 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+
+/**
+ * Determines whether to display a widget that reruires custom dimensionsin the key
+ * metrics selection panel.
+ *
+ * All widgets are displayed in authenticated dashboard. However, in view only dashboard,
+ * widgets that require custom dimensions will only be displayed if the required custom
+ * dimensions are available in the shared property.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select              Data store select function.
+ * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @return {boolean} Whether to display the widget.
+ */
+function shouldDisplayWidgetWithCustomDimensions(
+	select,
+	isViewOnlyDashboard
+) {
+	if ( ! isFeatureEnabled( 'newsKeyMetrics' ) ) {
+		return false;
+	}
+
+	if ( ! isViewOnlyDashboard ) {
+		return true;
+	}
+
+	return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+		this.requiredCustomDimensions
+	);
+}
 
 const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
@@ -87,7 +119,7 @@ const KEY_METRICS_WIDGETS = {
 			'Products that brought in the most visitors',
 			'google-site-kit'
 		),
-		displayInList: ( { select } ) =>
+		displayInList: ( select ) =>
 			select( CORE_USER ).isKeyMetricActive(
 				KM_ANALYTICS_POPULAR_PRODUCTS
 			) || select( CORE_SITE ).getProductBasePaths()?.length > 0,
@@ -138,8 +170,7 @@ const KEY_METRICS_WIDGETS = {
 			'googlesitekit_post_author',
 			'googlesitekit_post_categories',
 		],
-		displayInList: ( { isViewOnlyDashboard } ) =>
-			isFeatureEnabled( 'newsKeyMetrics' ) && ! isViewOnlyDashboard,
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
 		title: __( 'Pages per visit', 'google-site-kit' ),
@@ -150,10 +181,9 @@ const KEY_METRICS_WIDGETS = {
 		// TODO: Remove this once we have the correct custom dimensions.
 		requiredCustomDimensions: [
 			'googlesitekit_post_author',
-			'googlesitekit_post_categories',
+			'googlesitekit_post_tags',
 		],
-		displayInList: ( { isViewOnlyDashboard } ) =>
-			isFeatureEnabled( 'newsKeyMetrics' ) && ! isViewOnlyDashboard,
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_VISIT_LENGTH ]: {
 		title: __( 'Visit length', 'google-site-kit' ),
