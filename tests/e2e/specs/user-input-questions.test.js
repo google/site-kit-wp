@@ -129,7 +129,7 @@ describe( 'User Input Settings', () => {
 				)
 			) {
 				// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
-				const multidimensionalObjectParams =
+				const multiDimensionalObjectParams =
 					getMultiDimensionalObjectFromParams( paramsObject );
 
 				// Widget `ModulePopularPagesWidgetGA4` needs titles, so if
@@ -137,8 +137,8 @@ describe( 'User Input Settings', () => {
 				// titles mocked data, otherwise it will throw error and cause test failure
 				// https://github.com/google/site-kit-wp/issues/7630
 				if (
-					multidimensionalObjectParams?.dimensions?.find(
-						( o ) => o?.name === 'pagePath'
+					multiDimensionalObjectParams?.dimensions?.find(
+						( dimension ) => dimension?.name === 'pagePath'
 					)
 				) {
 					// Combine missing metric values for `ModulePopularPagesWidgetGA4` table
@@ -199,7 +199,7 @@ describe( 'User Input Settings', () => {
 						status: 200,
 						body: JSON.stringify(
 							getAnalytics4MockResponse(
-								multidimensionalObjectParams
+								multiDimensionalObjectParams
 							)
 						),
 					} );
