@@ -128,44 +128,56 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 	},
-};
-
-if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
-	KEY_METRICS_WIDGETS[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ] = {
+	[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
 		title: __( 'Least engaging pages', 'google-site-kit' ),
 		description: __(
 			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
 			'google-site-kit'
 		),
-	};
-	KEY_METRICS_WIDGETS[ KM_ANALYTICS_PAGES_PER_VISIT ] = {
+		// TODO: Remove this once we have the correct custom dimensions.
+		requiredCustomDimensions: [
+			'googlesitekit_post_author',
+			'googlesitekit_post_categories',
+		],
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
 		title: __( 'Pages per visit', 'google-site-kit' ),
 		description: __(
 			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
-	};
-	KEY_METRICS_WIDGETS[ KM_ANALYTICS_VISIT_LENGTH ] = {
+		// TODO: Remove this once we have the correct custom dimensions.
+		requiredCustomDimensions: [
+			'googlesitekit_post_author',
+			'googlesitekit_post_categories',
+		],
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_VISIT_LENGTH ]: {
 		title: __( 'Visit length', 'google-site-kit' ),
 		description: __(
-			'Average duration (in seconds) of engaged visits',
+			'Average duration of engaged visits',
 			'google-site-kit'
 		),
-	};
-	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ] = {
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ]: {
 		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
 		description: __(
 			'Pages that attracted the most returning visitors',
 			'google-site-kit'
 		),
-	};
-	KEY_METRICS_WIDGETS[ KM_ANALYTICS_MOST_ENGAGING_PAGES ] = {
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
 		title: __( 'Most engaging pages', 'google-site-kit' ),
 		description: __(
 			'Pages with the highest engagement rate',
 			'google-site-kit'
 		),
-	};
-}
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+};
 
 export { KEY_METRICS_WIDGETS };

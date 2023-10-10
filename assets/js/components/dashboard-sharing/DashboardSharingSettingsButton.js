@@ -61,6 +61,7 @@ export default function DashboardSharingSettingsButton() {
 				className="googlesitekit-sharing-settings__button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon"
 				onClick={ openDialog }
 				icon={ <ShareIcon width={ 20 } height={ 20 } /> }
+				tooltipEnterDelayInMS={ 500 }
 			/>
 
 			<DashboardSharingDialog />
