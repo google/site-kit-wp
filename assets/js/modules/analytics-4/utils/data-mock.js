@@ -409,11 +409,9 @@ export function getAnalytics4MockResponse(
 	// dimension set in the combined stream (array). We need to use array of streams because report arguments may
 	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
 	// of dimension values.
-	const parsedDimensionArgs = args.dimensions
+	const dimensions = args.dimensions
 		? parseDimensionArgs( args.dimensions )
 		: [];
-
-	const dimensions = [ ...parsedDimensionArgs ];
 
 	if ( hasDateRange ) {
 		dimensions.push( 'dateRange' );
@@ -497,12 +495,7 @@ export function getAnalytics4MockResponse(
 		// Sort rows if args.orderby is provided.
 		map( ( rows ) =>
 			args.orderby
-				? sortRows(
-						rows,
-						validMetrics,
-						parsedDimensionArgs,
-						args.orderby
-				  )
+				? sortRows( rows, validMetrics, dimensions, args.orderby )
 				: rows
 		),
 	];
@@ -667,10 +660,11 @@ export function getAnalytics4MockResponse(
 	faker.seed( originalSeedValue );
 
 	return {
-		dimensionHeaders:
-			parsedDimensionArgs?.map( ( dimension ) => ( {
-				name: dimension,
-			} ) ) || null,
+		dimensionHeaders: args?.dimensions
+			? dimensions.map( ( dimension ) => ( {
+					name: dimension,
+			  } ) )
+			: null,
 		metricHeaders: validMetrics.map( ( metric ) => ( {
 			name: metric?.name || metric.toString(),
 			type: getMetricType( metric ),
