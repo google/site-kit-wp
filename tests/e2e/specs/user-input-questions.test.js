@@ -43,6 +43,7 @@ import {
 	setupAnalytics4,
 } from '../utils';
 import {
+	STRATEGY_CARTESIAN,
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 } from '../../../assets/js/modules/analytics-4/utils/data-mock';
@@ -138,29 +139,22 @@ describe( 'User Input Settings', () => {
 					multiDimensionalObjectParams?.dimensionFilters?.pagePath
 				);
 
-				if ( isPageTitlesReport ) {
-					request.respond( {
-						status: 200,
-						body: JSON.stringify(
-							getAnalytics4MockResponse(
-								multiDimensionalObjectParams,
-								// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
-								// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
-								// page paths to page titles.
-								{ dimensionCombinationStrategy: STRATEGY_ZIP }
-							)
-						),
-					} );
-				} else {
-					request.respond( {
-						status: 200,
-						body: JSON.stringify(
-							getAnalytics4MockResponse(
-								multiDimensionalObjectParams
-							)
-						),
-					} );
-				}
+				// Use the zip combination strategy for the page titles report to ensure a one-to-one mapping of page paths to page titles.
+				// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+				// page paths to page titles.
+				const dimensionCombinationStrategy = isPageTitlesReport
+					? STRATEGY_ZIP
+					: STRATEGY_CARTESIAN;
+
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						getAnalytics4MockResponse(
+							multiDimensionalObjectParams,
+							{ dimensionCombinationStrategy }
+						)
+					),
+				} );
 			} else if (
 				url.match(
 					'/google-site-kit/v1/modules/search-console/data/searchanalytics?'
@@ -239,6 +233,8 @@ describe( 'User Input Settings', () => {
 					)
 			),
 		] );
+
+		await page.waitForTimeout( 1000000 );
 
 		// On the first load of the dashboard, report requests made by the isGatheringData selector for SC and GA4
 		// will fetch some data since we intercept those requests providing mock report data. This the data-available
