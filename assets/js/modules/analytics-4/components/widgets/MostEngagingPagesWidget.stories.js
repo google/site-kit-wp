@@ -46,6 +46,7 @@ const pageViewsReportOptions = {
 	endDate: '2020-09-07',
 	dimensions: [ 'pagePath' ],
 	metrics: [ { name: 'screenPageViews' } ],
+	limit: 1,
 };
 
 const pageTitlesReportOptions = {
