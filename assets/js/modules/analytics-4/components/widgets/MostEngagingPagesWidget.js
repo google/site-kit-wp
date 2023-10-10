@@ -63,6 +63,7 @@ function MostEngagingPagesWidget( props ) {
 		...dates,
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
+		limit: 1,
 	};
 
 	const pageViewsReport = useInViewSelect( ( select ) =>
@@ -123,7 +124,7 @@ function MostEngagingPagesWidget( props ) {
 		] )
 	);
 
-	const report = useSelect( ( select ) => {
+	const report = useInViewSelect( ( select ) => {
 		if ( ! hasFinishedResolvingPageViewReport ) {
 			return undefined;
 		}
