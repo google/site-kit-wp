@@ -296,7 +296,7 @@ final class Analytics_4 extends Module
 		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
 			$debug_fields['analytics_4_available_custom_dimensions'] = array(
 				'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
-				'value' => empty( $settings['availableCustomDimensions'] ) ? 'none' : implode( ',', $settings['availableCustomDimensions'] ),
+				'value' => empty( $settings['availableCustomDimensions'] ) ? __( 'None', 'google-site-kit' ) : implode( ',', $settings['availableCustomDimensions'] ),
 				'debug' => empty( $settings['availableCustomDimensions'] ) ? 'none' : implode( ',', $settings['availableCustomDimensions'] ),
 			);
 		}
