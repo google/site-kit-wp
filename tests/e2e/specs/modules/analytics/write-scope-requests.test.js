@@ -55,6 +55,7 @@ describe( 'Analytics write scope requests', () => {
 	let interceptCreateWebDataStreamRequest;
 
 	beforeAll( async () => {
+		global.console.debug( 'beforeAll:start' );
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			if (
@@ -151,18 +152,35 @@ describe( 'Analytics write scope requests', () => {
 				request.continue();
 			}
 		} );
+		global.console.debug( 'beforeAll:end' );
 	} );
 
 	beforeEach( async () => {
+		global.console.debug(
+			'beforeEach:start',
+			expect.getState().currentTestName
+		);
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setupSiteKit();
+		global.console.debug(
+			'beforeEach:end',
+			expect.getState().currentTestName
+		);
 	} );
 
 	afterEach( async () => {
+		global.console.debug(
+			'afterEach:start',
+			expect.getState().currentTestName
+		);
 		// Avoid using .toHaveErrored as it will ignore ALL console errors.
 		ignorePermissionScopeErrors();
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
+		global.console.debug(
+			'afterEach:end',
+			expect.getState().currentTestName
+		);
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics account creation if the user has not granted the Analytics edit scope', async () => {
