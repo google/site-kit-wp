@@ -42,7 +42,10 @@ import {
 	setupAnalytics,
 	setupAnalytics4,
 } from '../utils';
-import { getAnalytics4MockResponse } from '../../../assets/js/modules/analytics-4/utils/data-mock';
+import {
+	STRATEGY_ZIP,
+	getAnalytics4MockResponse,
+} from '../../../assets/js/modules/analytics-4/utils/data-mock';
 import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
 
 describe( 'User Input Settings', () => {
@@ -125,15 +128,62 @@ describe( 'User Input Settings', () => {
 					'/google-site-kit/v1/modules/analytics-4/data/report?'
 				)
 			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify(
-						getAnalytics4MockResponse(
-							// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
-							getMultiDimensionalObjectFromParams( paramsObject )
-						)
-					),
-				} );
+				// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
+				const multidimensionalObjectParams =
+					getMultiDimensionalObjectFromParams( paramsObject );
+
+				// Widget `ModulePopularPagesWidgetGA4` needs titles, so if
+				// `pagePath` dimension is requested from getTitles report, it needs to return
+				// titles mocked data, otherwise it will throw error and cause test failure
+				// https://github.com/google/site-kit-wp/issues/7630
+				if (
+					multidimensionalObjectParams?.dimensions?.find(
+						( o ) => o?.name === 'pagePath'
+					)
+				) {
+					const pageTitlesReportOptions = {
+						startDate: '2020-12-09',
+						endDate: '2021-01-05',
+						dimensionFilters: {
+							pagePath: new Array( 10 )
+								.fill( '' )
+								.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+								.sort(),
+						},
+						dimensions: [ 'pagePath', 'pageTitle' ],
+						metrics: [ { name: 'screenPageViews' } ],
+						orderby: [
+							{
+								metric: { metricName: 'screenPageViews' },
+								desc: true,
+							},
+						],
+						limit: 50,
+					};
+
+					// Mock `getTitles` response
+					request.respond( {
+						status: 200,
+						body: JSON.stringify(
+							getAnalytics4MockResponse(
+								pageTitlesReportOptions,
+								// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+								// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+								// page paths to page titles.
+								{ dimensionCombinationStrategy: STRATEGY_ZIP }
+							)
+						),
+					} );
+				} else {
+					request.respond( {
+						status: 200,
+						body: JSON.stringify(
+							getAnalytics4MockResponse(
+								multidimensionalObjectParams
+							)
+						),
+					} );
+				}
 			} else if (
 				url.match(
 					'/google-site-kit/v1/modules/search-console/data/searchanalytics?'
