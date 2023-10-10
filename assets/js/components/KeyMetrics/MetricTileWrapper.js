@@ -278,7 +278,7 @@ export default function MetricTileWrapper( {
 						<span className="googlesitekit-error-retry-text">
 							{ createInterpolateElement(
 								__(
-									'Retry did’nt work? <GetHelpLink />',
+									'Retry didn’t work? <GetHelpLink />',
 									'google-site-kit'
 								),
 								{
