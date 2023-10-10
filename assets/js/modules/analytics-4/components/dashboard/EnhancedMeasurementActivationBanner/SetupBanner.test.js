@@ -28,6 +28,8 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	fireEvent,
+	provideSiteInfo,
+	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import {
@@ -102,7 +104,7 @@ describe( 'SetupBanner', () => {
 		);
 	} );
 
-	it( 'should render correctly when the user does have the edit scope granted', () => {
+	it( 'should render correctly when the user does have the edit scope granted', async () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
@@ -111,16 +113,44 @@ describe( 'SetupBanner', () => {
 			registry,
 		} );
 
-		expect( container ).toMatchSnapshot();
+		await waitFor( () => expect( container ).toMatchSnapshot() );
 
-		expect(
-			getByText(
-				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.'
-			)
-		).toBeInTheDocument();
+		await waitFor( () =>
+			expect(
+				getByText(
+					'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.'
+				)
+			).toBeInTheDocument()
+		);
 	} );
 
 	it( 'should render correctly when the user does not have the edit scope granted', () => {
+		const surveyTriggerEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/survey-trigger'
+		);
+		const surveyTimeoutEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/survey-timeout'
+		);
+
+		fetchMock.postOnce( surveyTriggerEndpoint, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.getOnce( surveyTimeoutEndpoint, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.postOnce( surveyTimeoutEndpoint, {
+			status: 200,
+			body: {},
+		} );
+
+		provideSiteInfo( registry, {
+			usingProxy: true,
+		} );
+
 		const { container, getByText } = render( <SetupBanner />, {
 			registry,
 		} );
