@@ -29,7 +29,7 @@ import {
 	provideUserAuthentication,
 	fireEvent,
 	provideSiteInfo,
-	act,
+	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import {
@@ -104,7 +104,7 @@ describe( 'SetupBanner', () => {
 		);
 	} );
 
-	it( 'should render correctly when the user does have the edit scope granted', () => {
+	it( 'should render correctly when the user does have the edit scope granted', async () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
@@ -113,15 +113,15 @@ describe( 'SetupBanner', () => {
 			registry,
 		} );
 
-		act( () => {
-			expect( container ).toMatchSnapshot();
+		await waitFor( () => expect( container ).toMatchSnapshot() );
 
+		await waitFor( () =>
 			expect(
 				getByText(
 					'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.'
 				)
-			).toBeInTheDocument();
-		} );
+			).toBeInTheDocument()
+		);
 	} );
 
 	it( 'should render correctly when the user does not have the edit scope granted', () => {
