@@ -1246,12 +1246,9 @@ final class Analytics_4 extends Module
 	 * @since 1.104.0 Added support for AMP tag.
 	 */
 	private function register_tag() {
-		if ( $this->context->is_amp() ) {
-			// AMP currently only works with the measurement ID.
-			$tag = new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG );
-		} else {
-			$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
-		}
+		$tag = $this->context->is_amp()
+			? new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG ) // AMP currently only works with the measurement ID.
+			: new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -1261,18 +1258,75 @@ final class Analytics_4 extends Module
 		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
-		if ( $tag->can_register() ) {
-			$tag->set_home_domain(
-				URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST )
-			);
-			// Here we need to retrieve the ads conversion ID from the
-			// classic/UA Analytics settings as it does not exist yet for this module.
-			// TODO: Update the value to be sourced from GA4 module settings once decoupled.
-			$ua_settings = ( new Analytics_Settings( $this->options ) )->get();
-			$tag->set_ads_conversion_id( $ua_settings['adsConversionID'] );
-
-			$tag->register();
+		if ( ! $tag->can_register() ) {
+			return;
 		}
+
+		$home_domain = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST );
+		$tag->set_home_domain( $home_domain );
+
+		// Here we need to retrieve the ads conversion ID from the
+		// classic/UA Analytics settings as it does not exist yet for this module.
+		// TODO: Update the value to be sourced from GA4 module settings once decoupled.
+		$ua_settings = ( new Analytics_Settings( $this->options ) )->get();
+		$tag->set_ads_conversion_id( $ua_settings['adsConversionID'] );
+
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$custom_dimensions_data = $this->get_custom_dimensions_data();
+			if ( ! empty( $custom_dimensions_data ) ) {
+				// TODO: set custom dimensions data
+			}
+		}
+
+		$tag->register();
+	}
+
+	/**
+	 * Gets custom dimensions data based on available custom dimensions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array An associated array of custom dimensions data.
+	 */
+	private function get_custom_dimensions_data() {
+		$settings = $this->get_settings()->get();
+		if ( empty( $settings['availableCustomDimensions'] ) ) {
+			return array();
+		}
+
+		/**
+		 * Filters the allowed post types for custom dimensions tracking.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $allowed_post_types The array of allowed post types.
+		 */
+		$allowed_post_types = apply_filters( 'custom_dimension_valid_post_types', array( 'post' ) );
+		if ( ! is_singular( $allowed_post_types ) ) {
+			return array();
+		}
+
+		$data = array();
+		$post = get_queried_object();
+
+		foreach ( $settings['availableCustomDimensions'] as $custom_dimension ) {
+			switch ( $custom_dimension ) {
+				case 'googlesitekit_post_type':
+					$data[ $custom_dimension ] = $post->post_type;
+					break;
+				case 'googlesitekit_post_author':
+					$data[ $custom_dimension ] = $post->post_author;
+					break;
+				case 'googlesitekit_post_categories':
+					$data[ $custom_dimension ] = implode( ',', wp_get_post_categories( $post, array( 'fields' => 'ids' ) ) );
+					break;
+				case 'googlesitekit_post_date':
+					$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );
+					break;
+			}
+		}
+
+		return $data;
 	}
 
 	/**
