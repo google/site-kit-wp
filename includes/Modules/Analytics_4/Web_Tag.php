@@ -20,9 +20,28 @@ use Google\Site_Kit\Modules\Analytics\Web_Tag as Analytics_Web_Tag;
  * @access private
  * @ignore
  */
-class Web_Tag extends Analytics_Web_Tag {
+class Web_Tag extends Analytics_Web_Tag implements Tag_Interface {
 
 	use Method_Proxy_Trait;
+
+	/**
+	 * Custom dimensions data.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $custom_dimensions;
+
+	/**
+	 * Sets custom dimensions data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $custom_dimensions Custom dimensions data.
+	 */
+	public function set_custom_dimensions( $custom_dimensions ) {
+		$this->custom_dimensions = $custom_dimensions;
+	}
 
 	/**
 	 * Registers tag hooks.
