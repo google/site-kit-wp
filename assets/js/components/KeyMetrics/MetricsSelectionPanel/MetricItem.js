@@ -30,11 +30,10 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Checkbox } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
-import Accordion from '../../Accordion';
+import SelectionBox from '../../SelectionBox';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricItem( {
@@ -77,36 +76,15 @@ export default function MetricItem( {
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
-			<Accordion
-				title={
-					<div
-						onClick={ ( event ) => {
-							event.stopPropagation();
-						} }
-						onKeyDown={ () => {} }
-						tabIndex={ -1 }
-						role="button"
-					>
-						<Checkbox
-							alignLeft
-							checked={ isMetricSelected }
-							onChange={ onCheckboxChange }
-							disabled={ isMetricDisabled }
-							id={ id }
-							name={ id }
-							value={ slug }
-							onKeyDown={ ( event ) => {
-								event.stopPropagation();
-							} }
-						>
-							{ title }
-						</Checkbox>
-					</div>
-				}
+			<SelectionBox
+				checked={ isMetricSelected }
 				disabled={ isMetricDisabled }
+				id={ id }
+				onChange={ onCheckboxChange }
+				title={ title }
+				value={ slug }
 			>
 				{ description }
-
 				{ disconnectedModules.length > 0 && (
 					<div className="googlesitekit-km-selection-panel-metrics__metric-item-error">
 						{ sprintf(
@@ -123,7 +101,7 @@ export default function MetricItem( {
 						) }
 					</div>
 				) }
-			</Accordion>
+			</SelectionBox>
 		</div>
 	);
 }
