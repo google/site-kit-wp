@@ -146,7 +146,7 @@
 		"md5": "^2.2.1",
 		"memize": "^1.1.0",
 		"natives": "^1.1.6",
-		"polyfill-library": "^3.95.0",
+		"polyfill-library": "^3.111.0",
 		"promise-polyfill": "^8.1.3",
 		"prop-types": "^15.7.2",
 		"psl": "^1.8.0",

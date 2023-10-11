@@ -291,16 +291,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => '',
-				'webDataStreamID'         => '',
-				'measurementID'           => '',
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => '',
-				'googleTagAccountID'      => '',
-				'googleTagContainerID'    => '',
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => '',
+				'webDataStreamID'           => '',
+				'measurementID'             => '',
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => '',
+				'googleTagAccountID'        => '',
+				'googleTagContainerID'      => '',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -309,16 +310,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => $property_id,
-				'webDataStreamID'         => $webdatastream_id,
-				'measurementID'           => $measurement_id,
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => 'GT-123',
-				'googleTagAccountID'      => $google_tag_account_id,
-				'googleTagContainerID'    => $google_tag_container_id,
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => $property_id,
+				'webDataStreamID'           => $webdatastream_id,
+				'measurementID'             => $measurement_id,
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => 'GT-123',
+				'googleTagAccountID'        => $google_tag_account_id,
+				'googleTagContainerID'      => $google_tag_container_id,
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -424,16 +426,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => '',
-				'webDataStreamID'         => '',
-				'measurementID'           => '',
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => '',
-				'googleTagAccountID'      => '',
-				'googleTagContainerID'    => '',
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => '',
+				'webDataStreamID'           => '',
+				'measurementID'             => '',
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => '',
+				'googleTagAccountID'        => '',
+				'googleTagContainerID'      => '',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -537,16 +540,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => '',
-				'webDataStreamID'         => '',
-				'measurementID'           => '',
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => '',
-				'googleTagAccountID'      => '',
-				'googleTagContainerID'    => '',
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => '',
+				'webDataStreamID'           => '',
+				'measurementID'             => '',
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => '',
+				'googleTagAccountID'        => '',
+				'googleTagContainerID'      => '',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -557,16 +561,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => $property_id,
-				'webDataStreamID'         => $webdatastream_id,
-				'measurementID'           => $measurement_id,
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => '',
-				'googleTagAccountID'      => '',
-				'googleTagContainerID'    => '',
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => $property_id,
+				'webDataStreamID'           => $webdatastream_id,
+				'measurementID'             => $measurement_id,
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => '',
+				'googleTagAccountID'        => '',
+				'googleTagContainerID'      => '',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -980,6 +985,28 @@ class Analytics_4Test extends TestCase {
 				'sync-custom-dimensions',
 			),
 			$this->analytics->get_datapoints()
+		);
+	}
+
+	public function test_get_debug_fields__newsKeyMetrics_disabled() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertNotContains(
+			'analytics_4_available_custom_dimensions',
+			array_keys( $analytics->get_debug_fields() )
+		);
+	}
+
+	public function test_get_debug_fields__newsKeyMetrics_enabled() {
+		$this->enable_feature( 'newsKeyMetrics' );
+
+		// Given: Analytics 4 is registered with a specific propertyID.
+		$this->analytics->register();
+		$this->analytics->get_settings()->register();
+
+		$this->assertContains(
+			'analytics_4_available_custom_dimensions',
+			array_keys( $this->analytics->get_debug_fields() )
 		);
 	}
 
