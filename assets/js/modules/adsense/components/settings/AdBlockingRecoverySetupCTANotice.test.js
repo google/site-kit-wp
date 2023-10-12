@@ -24,7 +24,6 @@ import { mockSurveyEndpoints } from '../../../../../../tests/js/mock-survey-endp
 import {
 	act,
 	fireEvent,
-	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
@@ -95,13 +94,6 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 				<AdBlockingRecoverySetupCTANotice />,
 				{
 					setupRegistry: ( registry ) => {
-						provideModules( registry, [
-							{
-								slug: 'adsense',
-								active: true,
-								connected: true,
-							},
-						] );
 						registry
 							.dispatch( MODULES_ADSENSE )
 							.receiveGetSettings( {
@@ -138,13 +130,6 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 			<AdBlockingRecoverySetupCTANotice />,
 			{
 				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
 					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 						accountStatus: ACCOUNT_STATUS_READY,
 						siteStatus: SITE_STATUS_READY,
@@ -184,13 +169,6 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 				setupRegistry: ( testRegistry ) => {
 					provideSiteInfo( testRegistry );
 					provideUserAuthentication( testRegistry );
-					provideModules( testRegistry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
 					testRegistry
 						.dispatch( MODULES_ADSENSE )
 						.receiveGetSettings( {
@@ -230,13 +208,6 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 			setupRegistry: ( registry ) => {
 				provideSiteInfo( registry );
 				provideUserAuthentication( registry );
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
 				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 					accountStatus: ACCOUNT_STATUS_READY,
 					siteStatus: SITE_STATUS_READY,
