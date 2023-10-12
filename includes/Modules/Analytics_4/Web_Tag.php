@@ -62,12 +62,31 @@ class Web_Tag extends Analytics_Web_Tag implements Tag_Interface {
 	protected function enqueue_gtag_script() {
 		if ( did_action( 'googlesitekit_analytics_init_tag' ) ) {
 			// If the gtag script is already registered in the Analytics module, then we need to add <MEASUREMENT_ID> configuration only.
-			$config = sprintf( 'gtag("config", "%s");', esc_js( $this->tag_id ) );
-			wp_add_inline_script( 'google_gtagjs', $config );
+			$this->add_inline_config( $this->tag_id, array() );
 		} else {
 			// Otherwise register gtag as in the Analytics module knowing that we used Measurement ID from GA4 instead of Property ID.
 			parent::enqueue_gtag_script();
 		}
+	}
+
+	/**
+	 * Gets the tag config as used in the gtag data vars.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Tag configuration.
+	 */
+	protected function get_tag_config() {
+		$config = parent::get_tag_config();
+
+		if ( ! empty( $this->custom_dimensions ) ) {
+			$config[ $this->tag_id ] = array_merge(
+				$config[ $this->tag_id ],
+				$this->custom_dimensions
+			);
+		}
+
+		return $config;
 	}
 
 }
