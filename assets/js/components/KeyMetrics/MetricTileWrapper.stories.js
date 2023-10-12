@@ -38,19 +38,6 @@ const Template = ( { setupRegistry, ...args } ) => (
 	</WithRegistrySetup>
 );
 
-const columns = [
-	{
-		field: 'field1.0',
-		Component: ( { fieldValue } ) => (
-			<a href="http://example.com">{ fieldValue }</a>
-		),
-	},
-	{
-		field: 'field2',
-		Component: ( { fieldValue } ) => <strong>{ fieldValue }</strong>,
-	},
-];
-
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
@@ -68,7 +55,18 @@ Ready.args = {
 			field2: 0.312,
 		},
 	],
-	columns,
+	columns: [
+		{
+			field: 'field1.0',
+			Component: ( { fieldValue } ) => (
+				<a href="http://example.com">{ fieldValue }</a>
+			),
+		},
+		{
+			field: 'field2',
+			Component: ( { fieldValue } ) => <strong>{ fieldValue }</strong>,
+		},
+	],
 };
 Ready.scenario = {
 	label: 'KeyMetrics/MetricTileWrapper/Ready',
@@ -76,23 +74,6 @@ Ready.scenario = {
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
-ErrorMissingCustomDimensions.args = {
-	rows: [
-		{
-			field1: [ 'keyword1' ],
-			field2: 0.112,
-		},
-		{
-			field1: [ 'keyword2' ],
-			field2: 0.212,
-		},
-		{
-			field1: [ 'keyword3' ],
-			field2: 0.312,
-		},
-	],
-	columns,
-};
 ErrorMissingCustomDimensions.scenario = {
 	label: 'KeyMetrics/MetricTileWrapper/ErrorMissingCustomDimensions',
 };
@@ -104,21 +85,6 @@ export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
 ErrorCustomDimensionsInsufficientPermissions.storyName =
 	'Error - Custom dimensions creation - Insufficient Permissions';
 ErrorCustomDimensionsInsufficientPermissions.args = {
-	rows: [
-		{
-			field1: [ 'keyword1' ],
-			field2: 0.112,
-		},
-		{
-			field1: [ 'keyword2' ],
-			field2: 0.212,
-		},
-		{
-			field1: [ 'keyword3' ],
-			field2: 0.312,
-		},
-	],
-	columns,
 	setupRegistry: ( registry ) => {
 		const error = {
 			code: 'test-error-code',
@@ -150,21 +116,6 @@ export const ErrorCustomDimensionsGeneric = Template.bind( {} );
 ErrorCustomDimensionsGeneric.storyName =
 	'Error - Custom dimensions creation - Generic';
 ErrorCustomDimensionsGeneric.args = {
-	rows: [
-		{
-			field1: [ 'keyword1' ],
-			field2: 0.112,
-		},
-		{
-			field1: [ 'keyword2' ],
-			field2: 0.212,
-		},
-		{
-			field1: [ 'keyword3' ],
-			field2: 0.312,
-		},
-	],
-	columns,
 	setupRegistry: ( registry ) => {
 		const error = {
 			code: 'test-error-code',
