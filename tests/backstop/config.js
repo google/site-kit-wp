@@ -21,20 +21,13 @@ const viewports = require( './viewports' );
 
 module.exports = {
 	onBeforeScript: 'puppet/onBefore.js',
-	asyncCaptureLimit: 5,
-	asyncCompareLimit: 70,
+	asyncCaptureLimit: 6,
+	asyncCompareLimit: 50,
 	debug: false,
 	debugWindow: false,
 	engine: 'puppeteer',
 	engineOptions: {
-		args: [
-			'--no-sandbox',
-			'--disable-setuid-sandbox',
-			'--no-first-run',
-			'--disable-dev-shm-usage',
-			'--disable-pushstate-throttle',
-			'--double-buffer-compositing',
-		],
+		args: [ '--no-sandbox' ],
 		executablePath: '/usr/bin/chromium-browser',
 	},
 	id: 'google-site-kit',
