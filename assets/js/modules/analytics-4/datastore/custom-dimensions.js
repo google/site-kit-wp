@@ -250,6 +250,31 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	/**
+	 * Sets custom dimension creation error in the store.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} error           The error object.
+	 * @param {string} customDimension Custom dimension to set creation error for.
+	 */
+	*receiveCustomDimensionCreationError( error, customDimension ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		const options = [
+			propertyID,
+			possibleCustomDimensions[ customDimension ],
+		];
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( error, 'createCustomDimension', options );
+	},
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
