@@ -2867,7 +2867,7 @@ class Analytics_4Test extends TestCase {
 		$hook = function( $post_types ) use ( $post_type ) {
 			return array_merge( $post_types, array( $post_type ) );
 		};
-		
+
 		// Returns an empty array if no custom dimensions are added to settings.
 		$data = $method->invoke( $this->analytics );
 		$this->assertEmpty( $data );

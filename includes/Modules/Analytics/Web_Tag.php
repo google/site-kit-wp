@@ -201,7 +201,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since n.e.x.t
 	 *
 	 * @param string $tag_id The tag ID to add config for.
-	 * @param array $gtag_opt The gtag configuration.
+	 * @param array  $gtag_opt The gtag configuration.
 	 */
 	protected function add_inline_config( $tag_id, $gtag_opt ) {
 		$config = ! empty( $gtag_opt )
