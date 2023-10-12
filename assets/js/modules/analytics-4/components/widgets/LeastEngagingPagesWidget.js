@@ -116,7 +116,7 @@ function LeastEngagingPagesWidget( props ) {
 		] )
 	);
 
-	const report = useSelect( ( select ) => {
+	const report = useInViewSelect( ( select ) => {
 		if ( ! loadedPageViewsReport ) {
 			return undefined;
 		}

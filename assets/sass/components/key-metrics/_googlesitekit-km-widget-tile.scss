@@ -150,6 +150,8 @@
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
 			margin: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 	}
 

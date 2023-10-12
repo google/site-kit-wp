@@ -282,6 +282,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                             </a>
                           </span>
                         </label>
+                        
                       </div>
                     </div>
                     <div
@@ -603,6 +604,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             </strong>
                              Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.
                           </label>
+                          
                         </div>
                       </div>
                       <div
@@ -645,6 +647,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             </a>
                           </span>
                         </label>
+                        
                       </div>
                     </div>
                     <div
