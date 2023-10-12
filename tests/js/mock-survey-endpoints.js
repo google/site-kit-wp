@@ -1,14 +1,9 @@
-import { provideSiteInfo } from './utils';
-
 /**
- * Mocks the survey endpoints and ensure the proxy is considered
- * in-use for this test/`registry` instance.
+ * Mocks the survey endpoints.
  *
  * @since n.e.x.t
- *
- * @param {*} registry WordPress Data registry instance.
  */
-export const mockSurveyEndpoints = ( registry ) => {
+export const mockSurveyEndpoints = () => {
 	const surveyTriggerEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/survey-trigger'
 	);
@@ -29,9 +24,5 @@ export const mockSurveyEndpoints = ( registry ) => {
 	fetchMock.postOnce( surveyTimeoutEndpoint, {
 		status: 200,
 		body: {},
-	} );
-
-	provideSiteInfo( registry, {
-		usingProxy: true,
 	} );
 };
