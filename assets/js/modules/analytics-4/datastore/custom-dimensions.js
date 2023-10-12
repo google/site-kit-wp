@@ -136,11 +136,14 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 
 const baseInitialState = {
 	isSyncingAvailableCustomDimensions: false,
+	customDimensionsBeingCreated: [],
 };
 
 // Actions
 const SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION =
 	'SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION';
+const SET_CUSTOM_DIMENSIONS_BEING_CREATED =
+	'SET_CUSTOM_DIMENSIONS_BEING_CREATED';
 
 const baseActions = {
 	/**
@@ -192,6 +195,16 @@ const baseActions = {
 			( dimension ) => ! availableCustomDimensions?.includes( dimension )
 		);
 
+		// If there are no missing custom dimensions, bail.
+		if ( ! missingCustomDimensions.length ) {
+			return;
+		}
+
+		yield {
+			type: SET_CUSTOM_DIMENSIONS_BEING_CREATED,
+			payload: { customDimensions: missingCustomDimensions },
+		};
+
 		const propertyID = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getPropertyID();
@@ -211,6 +224,11 @@ const baseActions = {
 		if ( missingCustomDimensions.length > 0 ) {
 			yield baseActions.syncAvailableCustomDimensions();
 		}
+
+		yield {
+			type: SET_CUSTOM_DIMENSIONS_BEING_CREATED,
+			payload: { customDimensions: [] },
+		};
 	},
 
 	/**
@@ -245,7 +263,7 @@ const baseActions = {
 
 		yield {
 			type: SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION,
-			payload: { isSyncing: true },
+			payload: { isSyncing: false },
 		};
 
 		return { response, error };
@@ -283,6 +301,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				isSyncingAvailableCustomDimensions: payload.isSyncing,
+			};
+		}
+		case SET_CUSTOM_DIMENSIONS_BEING_CREATED: {
+			return {
+				...state,
+				customDimensionsBeingCreated: payload.customDimensions,
 			};
 		}
 		default: {
@@ -364,18 +388,11 @@ const baseSelectors = {
 	 * @param {string} customDimension Custom dimensions to check.
 	 * @return {boolean} True the provided custom dimension is being created, otherwise false.
 	 */
-	isCreatingCustomDimension: createRegistrySelector(
-		( select ) => ( state, customDimension ) => {
-			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-			return select(
-				MODULES_ANALYTICS_4
-			).isFetchingCreateCustomDimension(
-				propertyID,
-				possibleCustomDimensions[ customDimension ]
-			);
-		}
-	),
+	isCreatingCustomDimension( state, customDimension ) {
+		return !! state?.customDimensionsBeingCreated.includes(
+			customDimension
+		);
+	},
 
 	/**
 	 * Returns the error if encountered while creating the provided custom dimension.
@@ -417,6 +434,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		actions: baseActions,
 		resolvers: baseResolvers,
+		reducer: baseReducer,
 		selectors: baseSelectors,
 	}
 );
