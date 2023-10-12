@@ -67,9 +67,18 @@ Ready.args = {
 			Component: ( { fieldValue } ) => <strong>{ fieldValue }</strong>,
 		},
 	],
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '123456789',
+			availableCustomDimensions: [ 'googlesitekit_post_categories' ],
+		} );
+	},
 };
 Ready.scenario = {
 	label: 'KeyMetrics/MetricTileWrapper/Ready',
+};
+Ready.parameters = {
+	features: [ 'newsKeyMetrics' ],
 };
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
@@ -121,7 +130,7 @@ ErrorCustomDimensionsGeneric.args = {
 			code: 'test-error-code',
 			message: 'Test error message',
 			data: {
-				reason: 'test-reason',
+				reason: 'test-error-reason',
 			},
 		};
 
