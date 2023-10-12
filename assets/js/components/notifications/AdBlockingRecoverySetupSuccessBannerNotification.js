@@ -19,11 +19,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	createInterpolateElement,
-	useCallback,
-} from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -41,12 +37,19 @@ import {
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import Link from '../Link';
 import BannerNotification from './BannerNotification';
-import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function AdBlockingRecoverySetupSuccessBannerNotification() {
 	const viewContext = useViewContext();
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
@@ -80,7 +83,11 @@ export default function AdBlockingRecoverySetupSuccessBannerNotification() {
 			`${ viewContext }_adsense-abr-success-notification`,
 			'view_notification'
 		);
-	}, [ viewContext ] );
+
+		if ( usingProxy ) {
+			triggerSurvey( 'abr_setup_completed', { ttl: DAY_IN_SECONDS } );
+		}
+	}, [ triggerSurvey, usingProxy, viewContext ] );
 
 	if (
 		adBlockingRecoverySetupStatus !==
@@ -90,41 +97,35 @@ export default function AdBlockingRecoverySetupSuccessBannerNotification() {
 	}
 
 	return (
-		<Fragment>
-			<SurveyViewTrigger
-				triggerID="abr_setup_completed"
-				ttl={ DAY_IN_SECONDS }
-			/>
-			<BannerNotification
-				id={ AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID }
-				className="googlesitekit-ad-blocking-recovery-notification"
-				title={ __(
-					'You successfully enabled the ad blocking recovery message',
+		<BannerNotification
+			id={ AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID }
+			className="googlesitekit-ad-blocking-recovery-notification"
+			title={ __(
+				'You successfully enabled the ad blocking recovery message',
+				'google-site-kit'
+			) }
+			description={ createInterpolateElement(
+				__(
+					'Make sure to also create the message in <a>AdSense</a>, otherwise this feature won’t work.',
 					'google-site-kit'
-				) }
-				description={ createInterpolateElement(
-					__(
-						'Make sure to also create the message in <a>AdSense</a>, otherwise this feature won’t work.',
-						'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							href={ privacyMessagingURL }
+							external
+							hideExternalIndicator
+						/>
 					),
-					{
-						a: (
-							<Link
-								href={ privacyMessagingURL }
-								external
-								hideExternalIndicator
-							/>
-						),
-					}
-				) }
-				dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-				onDismiss={ handleDismiss }
-				isDismissible
-				onView={ handleView }
-				type="win-success"
-				WinImageSVG={ () => <SuccessSVG /> }
-				format="small"
-			/>
-		</Fragment>
+				}
+			) }
+			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+			onDismiss={ handleDismiss }
+			isDismissible
+			onView={ handleView }
+			type="win-success"
+			WinImageSVG={ () => <SuccessSVG /> }
+			format="small"
+		/>
 	);
 }
