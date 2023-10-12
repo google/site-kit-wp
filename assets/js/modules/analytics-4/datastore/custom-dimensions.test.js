@@ -29,8 +29,8 @@ import {
 } from '../../../../../tests/js/utils';
 import {
 	CORE_USER,
-	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../../googlesitekit/datastore/user/constants';
 import { enabledFeatures } from '../../../features';
 
@@ -176,8 +176,8 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 			const keyMetricsSettings = {
 				widgetSlugs: [
-					KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-					KM_ANALYTICS_PAGES_PER_VISIT,
+					KM_ANALYTICS_POPULAR_AUTHORS,
+					KM_ANALYTICS_TOP_CATEGORIES,
 				],
 				isWidgetHidden: false,
 			};
@@ -269,6 +269,37 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableCustomDimensions()
 				).toEqual( customDimensionNames );
+			} );
+		} );
+
+		describe( 'receiveCreateCustomDimensionError', () => {
+			it( 'sets error in the datastore for the provided custom dimension', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				const error = {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: 'test-error-reason',
+					},
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveCreateCustomDimensionError(
+						error,
+						'googlesitekit_post_date'
+					);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getCreateCustomDimensionError(
+							'googlesitekit_post_date'
+						)
+				).toEqual( error );
 			} );
 		} );
 	} );
@@ -405,6 +436,37 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					.hasCustomDimensions( [ 'dimension1', 'dimension3' ] );
 
 				expect( hasCustomDimensions ).toBe( false );
+			} );
+		} );
+
+		describe( 'getCustomDimensionCreationError', () => {
+			it( 'gets error set in the datastore for the provided custom dimension', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				const error = {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: 'test-error-reason',
+					},
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveCreateCustomDimensionError(
+						error,
+						'googlesitekit_post_categories'
+					);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getCreateCustomDimensionError(
+							'googlesitekit_post_categories'
+						)
+				).toEqual( error );
 			} );
 		} );
 	} );
