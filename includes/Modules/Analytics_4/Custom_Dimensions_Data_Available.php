@@ -21,14 +21,14 @@ use Google\Site_Kit\Core\Storage\Transients;
  */
 class Custom_Dimensions_Data_Available {
 
-	// TODO: Rename custom dimension name -> parameter name throughout?
+	// TODO: Flag that I've used parameterName over customDimensionName etc throughout.
 	/**
-	 * List of custom dimension names.
+	 * List of valid custom dimension parameter names.
 	 *
 	 * @since n.e.x.t
 	 * @var array
 	 */
-	const CUSTOM_DIMENSION_NAMES = array(
+	const CUSTOM_DIMENSION_PARAMETER_NAMES = array(
 		'googlesitekit_post_date',
 		'googlesitekit_post_author',
 		'googlesitekit_post_categories',
@@ -59,11 +59,11 @@ class Custom_Dimensions_Data_Available {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $custom_dimension_name Custom dimension name.
+	 * @param string $parameter_name Custom dimension parameter name.
 	 * @return string Data available transient name.
 	 */
-	protected function get_data_available_transient_name( $custom_dimension_name ) {
-		return "googlesitekit_custom_dimension_{$custom_dimension_name}_data_available";
+	protected function get_data_available_transient_name( $parameter_name ) {
+		return "googlesitekit_custom_dimension_{$parameter_name}_data_available";
 	}
 
 	/**
@@ -75,9 +75,9 @@ class Custom_Dimensions_Data_Available {
 	 */
 	public function get_data_availability() {
 		return array_reduce(
-			self::CUSTOM_DIMENSION_NAMES,
-			function ( $data_availability, $custom_dimension_name ) {
-				$data_availability[ $custom_dimension_name ] = $this->is_data_available( $custom_dimension_name );
+			self::CUSTOM_DIMENSION_PARAMETER_NAMES,
+			function ( $data_availability, $parameter_name ) {
+				$data_availability[ $parameter_name ] = $this->is_data_available( $parameter_name );
 				return $data_availability;
 			},
 			array()
@@ -90,11 +90,11 @@ class Custom_Dimensions_Data_Available {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $custom_dimension_name Custom dimension name.
+	 * @param string $parameter_name Custom dimension parameter name.
 	 * @return bool True if data is available, false otherwise.
 	 */
-	public function is_data_available( $custom_dimension_name ) {
-		return (bool) $this->transients->get( $this->get_data_available_transient_name( $custom_dimension_name ) );
+	public function is_data_available( $parameter_name ) {
+		return (bool) $this->transients->get( $this->get_data_available_transient_name( $parameter_name ) );
 	}
 
 	/**
@@ -102,11 +102,11 @@ class Custom_Dimensions_Data_Available {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $custom_dimension_name Custom dimension name.
+	 * @param string $parameter_name Custom dimension parameter name.
 	 * @return bool True on success, false otherwise.
 	 */
-	public function set_data_available( $custom_dimension_name ) {
-		return $this->transients->set( $this->get_data_available_transient_name( $custom_dimension_name ), true );
+	public function set_data_available( $parameter_name ) {
+		return $this->transients->set( $this->get_data_available_transient_name( $parameter_name ), true );
 	}
 
 	// TODO: Flag variation from IB.
@@ -118,8 +118,8 @@ class Custom_Dimensions_Data_Available {
 	 * @return bool True on success, false otherwise.
 	 */
 	public function reset_data_available() {
-		foreach ( self::CUSTOM_DIMENSION_NAMES as $custom_dimension_name ) {
-			if ( ! $this->transients->delete( $this->get_data_available_transient_name( $custom_dimension_name ) ) ) {
+		foreach ( self::CUSTOM_DIMENSION_PARAMETER_NAMES as $parameter_name ) {
+			if ( ! $this->transients->delete( $this->get_data_available_transient_name( $parameter_name ) ) ) {
 				return false;
 			}
 		}
@@ -128,14 +128,14 @@ class Custom_Dimensions_Data_Available {
 	}
 
 	/**
-	 * Checks whether the custom dimension name is valid.
+	 * Checks whether the custom dimension is valid.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $custom_dimension_name Custom dimension name.
+	 * @param string $parameter_name Custom dimension parameter name.
 	 * @return bool True if valid, false otherwise.
 	 */
-	public function is_valid_custom_dimension_name( $custom_dimension_name ) {
-		return in_array( $custom_dimension_name, self::CUSTOM_DIMENSION_NAMES, true );
+	public function is_valid_custom_dimension( $parameter_name ) {
+		return in_array( $parameter_name, self::CUSTOM_DIMENSION_PARAMETER_NAMES, true );
 	}
 }
