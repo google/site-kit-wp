@@ -49,7 +49,9 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use WP_Query;
 use WP_User;
+use ReflectionMethod;
 
 /**
  * @group Modules
@@ -2840,6 +2842,53 @@ class Analytics_4Test extends TestCase {
 
 		// Ensure disabling tracking does not change if its already allowed.
 		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', true ) );
+	}
+
+	public function test_get_custom_dimensions_data() {
+		global $wp_query;
+
+		$settings = array(
+			'availableCustomDimensions' => array(
+				'googlesitekit_post_author',
+				'googlesitekit_post_type',
+			),
+		);
+
+		$method = new ReflectionMethod( Analytics_4::class, 'get_custom_dimensions_data' );
+		$method->setAccessible( true );
+
+		$post_type = 'test-post-type';
+		$post_id   = $this->factory()->post->create( array( 'post_type' => $post_type ) );
+
+		$wp_query                 = new WP_Query();
+		$wp_query->is_singular    = true;
+		$wp_query->queried_object = get_post( $post_id );
+
+		$hook = function( $post_types ) use ( $post_type ) {
+			return array_merge( $post_types, array( $post_type ) );
+		};
+		
+		// Returns an empty array if no custom dimensions are added to settings.
+		$data = $method->invoke( $this->analytics );
+		$this->assertEmpty( $data );
+		$this->assertTrue( ! did_action( 'custom_dimension_valid_post_types' ) );
+
+		// Returns an empty array if the queried object is not in the allowed post types list.
+		$this->analytics->get_settings()->merge( $settings );
+		$data = $method->invoke( $this->analytics );
+		$this->assertEmpty( $data );
+		$this->assertTrue( ! did_action( 'custom_dimension_valid_post_types' ) );
+
+		// Returns correct data when all conditions are met.
+		add_filter( 'custom_dimension_valid_post_types', $hook );
+		$data = $method->invoke( $this->analytics );
+		$this->assertEquals(
+			array(
+				'googlesitekit_post_author' => $wp_query->queried_object->post_author,
+				'googlesitekit_post_type'   => $post_type,
+			),
+			$data
+		);
 	}
 
 	/**

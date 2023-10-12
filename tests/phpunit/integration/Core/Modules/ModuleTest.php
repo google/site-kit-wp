@@ -36,7 +36,7 @@ class ModuleTest extends TestCase {
 
 	public function test_register() {
 		// The register method is abstract and required by any implementation
-		$method = new \ReflectionMethod( self::MODULE_CLASS_NAME, 'register' );
+		$method = new ReflectionMethod( self::MODULE_CLASS_NAME, 'register' );
 		$this->assertTrue( $method->isAbstract() );
 	}
 
@@ -81,7 +81,7 @@ class ModuleTest extends TestCase {
 
 	public function test_get_data() {
 		// get_data is a wrapper for the protected execute_data_request method.
-		$method = new \ReflectionMethod( self::MODULE_CLASS_NAME, 'get_data' );
+		$method = new ReflectionMethod( self::MODULE_CLASS_NAME, 'get_data' );
 		// Make assertions that affect backwards compatibility
 		$this->assertTrue( $method->isPublic() );
 		// Number of parameters can increase while preserving B/C, but not decrease
@@ -252,7 +252,7 @@ class ModuleTest extends TestCase {
 
 	public function test_set_data() {
 		// set_data is a wrapper for the protected execute_data_request method.
-		$method = new \ReflectionMethod( self::MODULE_CLASS_NAME, 'set_data' );
+		$method = new ReflectionMethod( self::MODULE_CLASS_NAME, 'set_data' );
 		// Make assertions that affect backwards compatibility
 		$this->assertTrue( $method->isPublic() );
 		// Number of parameters can increase while preserving B/C, but not decrease
