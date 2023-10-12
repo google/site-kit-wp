@@ -40,8 +40,11 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { EDIT_SCOPE } from '../../modules/analytics/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../modules/analytics/datastore/constants';
+import {
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import { Button } from 'googlesitekit-components';
 import GetHelpLink from './GetHelpLink';
@@ -51,10 +54,12 @@ import MetricTileError from './MetricTileError';
 import MetricTileHeader from './MetricTileHeader';
 import ReportErrorActions from '../ReportErrorActions';
 import {
+	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_BAD_REQUEST,
 	isInsufficientPermissionsError,
 } from '../../util/errors';
 import { useFeature } from '../../hooks/useFeature';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricTileWrapper( {
@@ -139,7 +144,7 @@ export default function MetricTileWrapper( {
 			return undefined;
 		}
 
-		return select( CORE_USER ).hasScope( EDIT_SCOPE );
+		return select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE );
 	} );
 	const isSyncingAvailableCustomDimensions = useSelect( ( select ) => {
 		if ( ! customDimensions ) {
@@ -151,8 +156,10 @@ export default function MetricTileWrapper( {
 		).isSyncingAvailableCustomDimensions();
 	} );
 
-	const { createCustomDimensions, syncAvailableCustomDimensions } =
+	const { syncAvailableCustomDimensions } =
 		useDispatch( MODULES_ANALYTICS_4 );
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 	const loading =
 		isReportLoading ||
@@ -171,17 +178,30 @@ export default function MetricTileWrapper( {
 		infoTooltip: tileInfoTooltip,
 	};
 
-	const handleCreateCustomDimensions = useCallback( async () => {
+	const handleCreateCustomDimensions = useCallback( () => {
 		if ( loading ) {
 			return;
 		}
 
-		if ( hasAnalyticsEditScope ) {
-			await createCustomDimensions();
-		}
+		setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+			autoSubmit: true,
+		} );
 
-		// TODO: Handle case where user does not have edit scope (from #7599).
-	}, [ createCustomDimensions, hasAnalyticsEditScope, loading ] );
+		if ( ! hasAnalyticsEditScope ) {
+			setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: __(
+					'Additional permissions are required to create new Analytics custom dimensions.',
+					'google-site-kit'
+				),
+				data: {
+					status: 403,
+					scopes: [ ANALYTICS_EDIT_SCOPE ],
+					skipModal: true,
+				},
+			} );
+		}
+	}, [ hasAnalyticsEditScope, loading, setPermissionScopeError, setValues ] );
 
 	// If the list of available custom dimensions is outdated, sync it.
 	useEffect( () => {
