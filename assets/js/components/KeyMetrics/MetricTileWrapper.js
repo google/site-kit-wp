@@ -222,24 +222,6 @@ export default function MetricTileWrapper( {
 							<span className="googlesitekit-error-retry-text">
 								{ createInterpolateElement(
 									__(
-										'You’ll need to contact your administrator. <LearnMoreLink />',
-										'google-site-kit'
-									),
-									{
-										LearnMoreLink: (
-											<Link href={ helpLink } external>
-												{ __(
-													'Learn more',
-													'google-site-kit'
-												) }
-											</Link>
-										),
-									}
-								) }
-							</span>
-							<span className="googlesitekit-error-retry-text">
-								{ createInterpolateElement(
-									__(
 										'Permissions updated? <RetryLink />',
 										'google-site-kit'
 									),
@@ -252,6 +234,24 @@ export default function MetricTileWrapper( {
 											>
 												{ __(
 													'Retry',
+													'google-site-kit'
+												) }
+											</Link>
+										),
+									}
+								) }
+							</span>
+							<span className="googlesitekit-error-retry-text">
+								{ createInterpolateElement(
+									__(
+										'You’ll need to contact your administrator. <LearnMoreLink />',
+										'google-site-kit'
+									),
+									{
+										LearnMoreLink: (
+											<Link href={ helpLink } external>
+												{ __(
+													'Learn more',
 													'google-site-kit'
 												) }
 											</Link>

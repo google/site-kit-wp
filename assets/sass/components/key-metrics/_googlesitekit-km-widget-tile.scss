@@ -208,17 +208,20 @@
 					margin: 0;
 				}
 
-				button,
+				button:not(.googlesitekit-cta-link),
 				a.mdc-button {
 					font-weight: $fw-medium;
 					margin-top: 10px;
 					padding: 6px 16px;
 				}
 
+				.googlesitekit-cta-link {
+					color: $c-teal-t-500;
+				}
+
 				// Removes the external link icon.
 				.googlesitekit-cta-link--external {
 					background: none;
-					color: $c-teal-t-500;
 					padding-right: 0;
 				}
 			}
