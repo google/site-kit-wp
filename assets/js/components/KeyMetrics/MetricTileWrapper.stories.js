@@ -98,7 +98,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveCustomDimensionCreationError(
+			.receiveCreateCustomDimensionError(
 				error,
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ]
@@ -129,7 +129,7 @@ ErrorCustomDimensionsGeneric.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveCustomDimensionCreationError(
+			.receiveCreateCustomDimensionError(
 				error,
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ]

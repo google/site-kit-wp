@@ -115,10 +115,10 @@ export default function MetricTileWrapper( {
 				( dimension ) =>
 					!! select(
 						MODULES_ANALYTICS_4
-					).getCustomDimensionCreationError( dimension )
+					).getCreateCustomDimensionError( dimension )
 			)
 			.map( ( dimension ) =>
-				select( MODULES_ANALYTICS_4 ).getCustomDimensionCreationError(
+				select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
 					dimension
 				)
 			);

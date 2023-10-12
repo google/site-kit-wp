@@ -259,7 +259,7 @@ const baseActions = {
 	 * @param {Object} error           The error object.
 	 * @param {string} customDimension Custom dimension to set creation error for.
 	 */
-	*receiveCustomDimensionCreationError( error, customDimension ) {
+	*receiveCreateCustomDimensionError( error, customDimension ) {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const propertyID = registry
@@ -386,7 +386,7 @@ const baseSelectors = {
 	 * @param {string} customDimension Custom dimension to obtain creation error for.
 	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 	 */
-	getCustomDimensionCreationError: createRegistrySelector(
+	getCreateCustomDimensionError: createRegistrySelector(
 		( select ) => ( state, customDimension ) => {
 			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
