@@ -152,9 +152,22 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 				} );
 			} else if (
-				request.url().includes( '//accounts.google.com/accountchooser' )
+				// Intercept request to GA TOS URL and redirect to gatoscallback.
+				request
+					.url()
+					.includes( '//accounts.google.com/accountchooser' ) &&
+				request.url().includes( 'provisioningSignup' )
 			) {
-				request.respond( { status: 200 } );
+				request.respond( {
+					status: 302,
+					headers: {
+						location: createURL(
+							// Here we intentionally leave out the accountId to cut the process short and avoid API requests.
+							'/wp-admin/index.php',
+							'gatoscallback=1&accountTicketId=testAccountTicketID'
+						),
+					},
+				} );
 			} else {
 				request.continue();
 			}
@@ -228,27 +241,26 @@ describe( 'Analytics write scope requests', () => {
 		await step( 'act', async () => {
 			global.console.debug( 'Click create account' );
 			// Upon clicking the button, they're redirected to OAuth (should be mocked).
+			// This request is intercepted above and handled through the oauth callback plugin.
+			await expect( page ).toClick( '.mdc-button', {
+				text: /create account/i,
+			} );
+			// Once redirected back from OAuth, the user will end back on the Analytics setup screen
+			// where the original action is automatically invoked, without requiring them to click the button again.
+			// This request is intercepted above and returns a test account ticket ID.
+			// Once the account ticket ID is received, the TOS URL will be available which will invoke a navigation
+			// to the external Analytics TOS screen to action.
+			await page.waitForResponse( ( res ) =>
+				res.url().match( 'analytics-4/data/create-account-ticket' )
+			);
 
-			await Promise.all( [
-				// When returning, their original action is automatically invoked, without requiring them to click the button again.
-				page.waitForResponse( ( res ) =>
-					res.url().match( 'analytics-4/data/create-account-ticket' )
-				),
-				expect( page ).toClick( '.mdc-button', {
-					text: /create account/i,
-				} ),
-				page.waitForRequest(
-					( req ) =>
-						req.isNavigationRequest() &&
-						req
-							.url()
-							.includes(
-								encodeURIComponent(
-									'analytics.google.com/analytics/web'
-								)
-							)
-				),
-			] );
+			await page.waitForRequest(
+				( req ) =>
+					req.isNavigationRequest() &&
+					req.url().includes( 'provisioningSignup' )
+			);
+			// Without this, we might run into a weird issue when ending the test during the request above.
+			await page.waitForNavigation( { waitUntil: 'networkidle2' } );
 		} );
 	} );
 
