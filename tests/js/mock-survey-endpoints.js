@@ -17,7 +17,7 @@
 /**
  * Mocks the survey endpoints.
  *
- * @since n.e.x.t
+ * @since 1.111.1
  */
 export const mockSurveyEndpoints = () => {
 	const surveyTriggerEndpoint = new RegExp(
