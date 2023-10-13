@@ -79,6 +79,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
+		mockSurveyEndpoints( registry );
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
@@ -230,8 +231,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		);
 
 		it( 'should render the widget for the existing site without the setup completion time', () => {
-			mockSurveyEndpoints( registry );
-
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
@@ -262,8 +261,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should render the widget for the site with a setup completion time of more than three weeks', () => {
-			mockSurveyEndpoints( registry );
-
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...validSettings,
 				setupCompletedTimestamp: timestampThreeWeeksPrior,
@@ -295,8 +292,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should trigger a survey when in-view', async () => {
-			mockSurveyEndpoints( registry );
-
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...validSettings,
 				setupCompletedTimestamp: timestampThreeWeeksPrior,
@@ -354,8 +349,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should navigate to ABR setup page when primary CTA is clicked', async () => {
-			mockSurveyEndpoints( registry );
-
 			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
@@ -395,8 +388,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should dismiss the CTA and open the tooltip when dismiss button is clicked', async () => {
-			mockSurveyEndpoints( registry );
-
 			const { container, getByRole } = render(
 				<div>
 					<div id="adminmenu">
@@ -443,8 +434,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should close the tooltip on clicking the `X` button', async () => {
-			mockSurveyEndpoints( registry );
-
 			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
@@ -486,8 +475,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should close the tooltip on clicking the `Got it` button', async () => {
-			mockSurveyEndpoints( registry );
-
 			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
@@ -529,8 +516,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should fire track event when "learn more" is clicked', async () => {
-			mockSurveyEndpoints( registry );
-
 			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
