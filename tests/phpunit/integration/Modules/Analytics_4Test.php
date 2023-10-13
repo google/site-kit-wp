@@ -2851,14 +2851,21 @@ class Analytics_4Test extends TestCase {
 			'availableCustomDimensions' => array(
 				'googlesitekit_post_author',
 				'googlesitekit_post_type',
+				'googlesitekit_post_categories',
+				'googlesitekit_post_date',
 			),
 		);
 
 		$method = new ReflectionMethod( Analytics_4::class, 'get_custom_dimensions_data' );
 		$method->setAccessible( true );
 
+		$category1_id = $this->factory()->category->create();
+		$category2_id = $this->factory()->category->create();
+		$category3_id = $this->factory()->category->create();
+
 		$post_type = 'test-post-type';
 		$post_id   = $this->factory()->post->create( array( 'post_type' => $post_type ) );
+		wp_set_post_categories( $post_id, array( $category1_id, $category3_id ) );
 
 		$wp_query                 = new WP_Query();
 		$wp_query->is_singular    = true;
@@ -2884,8 +2891,10 @@ class Analytics_4Test extends TestCase {
 		$data = $method->invoke( $this->analytics );
 		$this->assertEquals(
 			array(
-				'googlesitekit_post_author' => $wp_query->queried_object->post_author,
-				'googlesitekit_post_type'   => $post_type,
+				'googlesitekit_post_author'     => $wp_query->queried_object->post_author,
+				'googlesitekit_post_type'       => $post_type,
+				'googlesitekit_post_date'       => get_the_date( 'Ymd', $wp_query->queried_object ),
+				'googlesitekit_post_categories' => $category1_id . ',' . $category3_id,
 			),
 			$data
 		);
