@@ -62,7 +62,12 @@ class Web_Tag extends Analytics_Web_Tag implements Tag_Interface {
 	protected function enqueue_gtag_script() {
 		if ( did_action( 'googlesitekit_analytics_init_tag' ) ) {
 			// If the gtag script is already registered in the Analytics module, then we need to add <MEASUREMENT_ID> configuration only.
-			$this->add_inline_config( $this->tag_id, array() );
+			$this->add_inline_config(
+				$this->tag_id,
+				! empty( $this->custom_dimensions )
+					? $this->custom_dimensions
+					: array()
+			);
 		} else {
 			// Otherwise register gtag as in the Analytics module knowing that we used Measurement ID from GA4 instead of Property ID.
 			parent::enqueue_gtag_script();
@@ -78,6 +83,12 @@ class Web_Tag extends Analytics_Web_Tag implements Tag_Interface {
 	 */
 	protected function get_tag_config() {
 		$config = parent::get_tag_config();
+
+		// Do not add custom dimensions if UA is enabled because they will be
+		// added to the UA property instead of to the GA4 measurement ID.
+		if ( did_action( 'googlesitekit_analytics_init_tag' ) ) {
+			return $config;
+		}
 
 		if ( ! empty( $this->custom_dimensions ) ) {
 			$config = array_merge( $config, $this->custom_dimensions );
