@@ -245,6 +245,7 @@ describe( 'Analytics write scope requests', () => {
 			await expect( page ).toClick( '.mdc-button', {
 				text: /create account/i,
 			} );
+			global.console.debug( 'Wait for create-account-ticket response' );
 			// Once redirected back from OAuth, the user will end back on the Analytics setup screen
 			// where the original action is automatically invoked, without requiring them to click the button again.
 			// This request is intercepted above and returns a test account ticket ID.
@@ -254,14 +255,17 @@ describe( 'Analytics write scope requests', () => {
 				res.url().match( 'analytics-4/data/create-account-ticket' )
 			);
 
+			global.console.debug( 'Wait for provisioningSignup request' );
 			await page.waitForRequest(
 				( req ) =>
 					req.isNavigationRequest() &&
 					req.url().includes( 'provisioningSignup' )
 			);
-			// Without this, we might run into a weird issue when ending the test during the request above.
-			await page.waitForNavigation( { waitUntil: 'networkidle2' } );
 		} );
+
+		global.console.debug( 'Wait for network idle' );
+		// Without this, we might run into a weird issue when ending the test during the request above.
+		await page.waitForNavigation( { waitUntil: 'networkidle2' } );
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
