@@ -37,7 +37,6 @@ import {
 	step,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
-import { EDIT_SCOPE } from '../../../../../assets/js/modules/analytics/datastore/constants';
 
 function ignorePermissionScopeErrors() {
 	// eslint-disable-next-line no-console
@@ -69,12 +68,16 @@ describe( 'Analytics write scope requests', () => {
 						'https://sitekit.withgoogle.com/o/oauth2/auth'
 					)
 			) {
+				const reqURL = new URL( request.url() );
+				const scope = reqURL.searchParams.get( 'scope' );
 				request.respond( {
 					status: 302,
 					headers: {
 						location: createURL(
 							'/wp-admin/index.php',
-							`oauth2callback=1&code=valid-test-code&scope=${ EDIT_SCOPE }`
+							`oauth2callback=1&code=valid-test-code&scope=${ encodeURIComponent(
+								scope
+							) }`
 						),
 					},
 				} );
