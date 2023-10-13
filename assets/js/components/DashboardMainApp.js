@@ -67,6 +67,7 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../modules/analytics-4/datastore/constants';
+import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
@@ -80,6 +81,10 @@ export default function DashboardMainApp() {
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
 	);
 
+	const hasAnalyticsEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+
 	const autoSubmit = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_CUSTOM_DIMENSIONS_CREATE,
@@ -88,6 +93,7 @@ export default function DashboardMainApp() {
 	);
 
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	useMount( () => {
 		if ( ! viewOnlyDashboard ) {
@@ -100,15 +106,19 @@ export default function DashboardMainApp() {
 		if (
 			newsKeyMetricsEnabled &&
 			isKeyMetricsSetupCompleted &&
+			hasAnalyticsEditScope &&
 			autoSubmit
 		) {
-			createCustomDimensions().catch( () => {} );
+			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, { autoSubmit: false } );
+			createCustomDimensions();
 		}
 	}, [
 		autoSubmit,
 		createCustomDimensions,
+		hasAnalyticsEditScope,
 		isKeyMetricsSetupCompleted,
 		newsKeyMetricsEnabled,
+		setValues,
 	] );
 
 	const viewableModules = useSelect( ( select ) => {

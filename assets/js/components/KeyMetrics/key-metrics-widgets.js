@@ -48,7 +48,7 @@ import { isFeatureEnabled } from '../../features';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 /**
- * Determines whether to display a widget that reruires custom dimensionsin the key
+ * Determines whether to display a widget that requires custom dimensions in the key
  * metrics selection panel.
  *
  * All widgets are displayed in authenticated dashboard. However, in view only dashboard,
@@ -182,7 +182,7 @@ const KEY_METRICS_WIDGETS = {
 		// TODO: Remove this once we have the correct custom dimensions.
 		requiredCustomDimensions: [
 			'googlesitekit_post_author',
-			'googlesitekit_post_tags',
+			'googlesitekit_post_type',
 		],
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
