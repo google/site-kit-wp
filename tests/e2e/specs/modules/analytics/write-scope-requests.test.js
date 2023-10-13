@@ -41,6 +41,10 @@ import { EDIT_SCOPE } from '../../../../../assets/js/modules/analytics/datastore
 
 function ignorePermissionScopeErrors() {
 	// eslint-disable-next-line no-console
+	if ( ! console.error.mock ) {
+		return;
+	}
+	// eslint-disable-next-line no-console
 	console.error.mock.calls = console.error.mock.calls.filter( ( call ) => {
 		const [ message ] = call;
 		return ! message.includes( 'need to grant Site Kit permission' );
@@ -145,7 +149,7 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 				} );
 			} else if (
-				request.url().match( '//analytics.google.com/analytics/web/' )
+				request.url().includes( '//accounts.google.com/accountchooser' )
 			) {
 				request.respond( { status: 200 } );
 			} else {
@@ -221,40 +225,27 @@ describe( 'Analytics write scope requests', () => {
 		await step( 'act', async () => {
 			global.console.debug( 'Click create account' );
 			// Upon clicking the button, they're redirected to OAuth (should be mocked).
-			// await Promise.all( [
-			// 	// When returning, their original action is automatically invoked, without requiring them to click the button again.
-			// 	page.waitForResponse( ( res ) =>
-			// 		res.url().match( 'analytics-4/data/create-account-ticket' )
-			// 	),
-			// 	expect( page ).toClick( '.mdc-button', {
-			// 		text: /create account/i,
-			// 	} ),
-			// ] );
-			await page.waitForResponse( ( res ) =>
-				res.url().match( 'analytics-4/data/create-account-ticket' )
-			);
-			global.console.debug(
-				'Got response for analytics-4/data/create-account-ticket'
-			);
 
-			await expect( page ).toClick( '.mdc-button', {
-				text: /create account/i,
-			} );
-			global.console.debug( 'Actual Button Click (create account)' );
-		} );
-
-		await step( 'assert', async () => {
-			global.console.debug( 'Wait for TOS navigation' );
-			// They should be redirected to the Analytics TOS.
-			await page.waitForRequest( ( req ) =>
-				req
-					.url()
-					.includes(
-						encodeURIComponent(
-							'analytics.google.com/analytics/web'
-						)
-					)
-			);
+			await Promise.all( [
+				// When returning, their original action is automatically invoked, without requiring them to click the button again.
+				page.waitForResponse( ( res ) =>
+					res.url().match( 'analytics-4/data/create-account-ticket' )
+				),
+				expect( page ).toClick( '.mdc-button', {
+					text: /create account/i,
+				} ),
+				page.waitForRequest(
+					( req ) =>
+						req.isNavigationRequest() &&
+						req
+							.url()
+							.includes(
+								encodeURIComponent(
+									'analytics.google.com/analytics/web'
+								)
+							)
+				),
+			] );
 		} );
 	} );
 
