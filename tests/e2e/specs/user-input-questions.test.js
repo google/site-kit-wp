@@ -42,7 +42,11 @@ import {
 	setupAnalytics,
 	setupAnalytics4,
 } from '../utils';
-import { getAnalytics4MockResponse } from '../../../assets/js/modules/analytics-4/utils/data-mock';
+import {
+	STRATEGY_CARTESIAN,
+	STRATEGY_ZIP,
+	getAnalytics4MockResponse,
+} from '../../../assets/js/modules/analytics-4/utils/data-mock';
 import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
 
 describe.skip( 'User Input Settings', () => {
@@ -125,12 +129,29 @@ describe.skip( 'User Input Settings', () => {
 					'/google-site-kit/v1/modules/analytics-4/data/report?'
 				)
 			) {
+				// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
+				const multiDimensionalObjectParams =
+					getMultiDimensionalObjectFromParams( paramsObject );
+
+				// At the time of writing, the report used in `getPageTitles()` is the only report that specifies an array of `pagePath` values in
+				// the `dimensionFilters` object.
+				const isPageTitlesReport = Array.isArray(
+					multiDimensionalObjectParams?.dimensionFilters?.pagePath
+				);
+
+				// Use the zip combination strategy for the page titles report to ensure a one-to-one mapping of page paths to page titles.
+				// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+				// page paths to page titles.
+				const dimensionCombinationStrategy = isPageTitlesReport
+					? STRATEGY_ZIP
+					: STRATEGY_CARTESIAN;
+
 				request.respond( {
 					status: 200,
 					body: JSON.stringify(
 						getAnalytics4MockResponse(
-							// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
-							getMultiDimensionalObjectFromParams( paramsObject )
+							multiDimensionalObjectParams,
+							{ dimensionCombinationStrategy }
 						)
 					),
 				} );

@@ -44,15 +44,17 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
-import { getTimeInSeconds } from '../../../../../util';
+import { DAY_IN_SECONDS, getTimeInSeconds } from '../../../../../util';
 import { SpinnerButton } from 'googlesitekit-components';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
 import ErrorNotice from '../../../../../components/ErrorNotice';
+import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
 
 const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( {
+	isDismissed,
 	onSubmitSuccess,
 	onDismiss,
 	children,
@@ -199,6 +201,12 @@ export default function SetupBanner( {
 			onDismiss={ onDismiss }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
+			{ ! isDismissed && (
+				<SurveyViewTrigger
+					triggerID="view_enhanced_measurement_cta"
+					ttl={ DAY_IN_SECONDS }
+				/>
+			) }
 			{ children }
 		</BannerNotification>
 	);

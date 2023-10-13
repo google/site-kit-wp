@@ -253,7 +253,7 @@ final class Analytics_4 extends Module
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$debug_fields = array(
 			// phpcs:disable
 			/*
 			TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
@@ -290,6 +290,16 @@ final class Analytics_4 extends Module
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$debug_fields['analytics_4_available_custom_dimensions'] = array(
+				'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
+				'value' => empty( $settings['availableCustomDimensions'] ) ? __( 'None', 'google-site-kit' ) : implode( ',', $settings['availableCustomDimensions'] ),
+				'debug' => empty( $settings['availableCustomDimensions'] ) ? 'none' : implode( ',', $settings['availableCustomDimensions'] ),
+			);
+		}
+
+		return $debug_fields;
 	}
 
 	/**

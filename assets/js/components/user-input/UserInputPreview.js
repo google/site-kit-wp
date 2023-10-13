@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,9 +41,8 @@ import {
 	USER_INPUT_QUESTIONS_GOALS,
 	USER_INPUT_QUESTIONS_PURPOSE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_QUESTIONS_LIST,
-	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
+	USER_INPUT_QUESTIONS_LIST,
 } from './util/constants';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
@@ -51,20 +50,12 @@ import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
 import CancelUserInputButton from './CancelUserInputButton';
-import { getErrorMessageForAnswer } from './util/validation';
 import { Row, Cell } from '../../material-components';
+import { hasErrorForAnswer } from './util/validation';
 const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
-	const {
-		noFooter,
-		goBack,
-		submitChanges,
-		error,
-		noHeader,
-		settingsView = false,
-		showIndividualCTAs = false,
-	} = props;
+	const { goBack, submitChanges, error, settingsView = false } = props;
 	const previewContainer = useRef();
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
@@ -86,13 +77,20 @@ export default function UserInputPreview( props ) {
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 		USER_INPUT_ANSWERS_GOALS,
 	} = getUserInputAnswers();
+
 	const [ page ] = useQueryArg( 'page' );
 
-	const [ errorMessages, setErrorMessages ] = useState( {
-		[ USER_INPUT_QUESTIONS_GOALS ]: null,
-		[ USER_INPUT_QUESTIONS_PURPOSE ]: null,
-		[ USER_INPUT_QUESTION_POST_FREQUENCY ]: null,
-	} );
+	const hasError = USER_INPUT_QUESTIONS_LIST.some( ( slug ) =>
+		hasErrorForAnswer( settings?.[ slug ]?.values || [] )
+	);
+
+	const onSaveClick = useCallback( () => {
+		if ( hasError || isScreenLoading ) {
+			return;
+		}
+
+		submitChanges();
+	}, [ hasError, isScreenLoading, submitChanges ] );
 
 	useEffect( () => {
 		if (
@@ -115,33 +113,6 @@ export default function UserInputPreview( props ) {
 		return <ProgressBar />;
 	}
 
-	const updateErrorMessages = () => {
-		const newErrorMessages = USER_INPUT_QUESTIONS_LIST.reduce(
-			( errors, slug ) => {
-				const errorMessage = getErrorMessageForAnswer(
-					settings?.[ slug ]?.values || [],
-					USER_INPUT_MAX_ANSWERS[ slug ]
-				);
-				errors[ slug ] = errorMessage;
-				return errors;
-			},
-			{}
-		);
-
-		setErrorMessages( newErrorMessages );
-
-		return newErrorMessages;
-	};
-
-	const onSaveClick = () => {
-		const newErrorMessages = updateErrorMessages();
-
-		const hasErrors = Object.values( newErrorMessages ).some( Boolean );
-		if ( ! hasErrors ) {
-			submitChanges();
-		}
-	};
-
 	return (
 		<div
 			className={ classnames( 'googlesitekit-user-input__preview', {
@@ -150,7 +121,7 @@ export default function UserInputPreview( props ) {
 			ref={ previewContainer }
 		>
 			<div className="googlesitekit-user-input__preview-contents">
-				{ ! noHeader && (
+				{ ! settingsView && (
 					<p className="googlesitekit-user-input__preview-subheader">
 						{ __( 'Review your answers', 'google-site-kit' ) }
 					</p>
@@ -175,11 +146,7 @@ export default function UserInputPreview( props ) {
 					) }
 					values={ settings?.purpose?.values || [] }
 					options={ USER_INPUT_ANSWERS_PURPOSE }
-					errorMessage={
-						errorMessages[ USER_INPUT_QUESTIONS_PURPOSE ]
-					}
-					onCollapse={ updateErrorMessages }
-					showIndividualCTAs={ showIndividualCTAs }
+					settingsView={ settingsView }
 				/>
 
 				<UserInputPreviewGroup
@@ -190,11 +157,7 @@ export default function UserInputPreview( props ) {
 					) }
 					values={ settings?.postFrequency?.values || [] }
 					options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
-					errorMessage={
-						errorMessages[ USER_INPUT_QUESTION_POST_FREQUENCY ]
-					}
-					onCollapse={ updateErrorMessages }
-					showIndividualCTAs={ showIndividualCTAs }
+					settingsView={ settingsView }
 				/>
 
 				<UserInputPreviewGroup
@@ -205,15 +168,13 @@ export default function UserInputPreview( props ) {
 					) }
 					values={ settings?.goals?.values || [] }
 					options={ USER_INPUT_ANSWERS_GOALS }
-					errorMessage={ errorMessages[ USER_INPUT_QUESTIONS_GOALS ] }
-					onCollapse={ updateErrorMessages }
-					showIndividualCTAs={ showIndividualCTAs }
+					settingsView={ settingsView }
 				/>
 
 				{ error && <ErrorNotice error={ error } /> }
 			</div>
 
-			{ ! noFooter && (
+			{ ! settingsView && (
 				<Fragment>
 					<div className="googlesitekit-user-input__preview-notice">
 						<UserInputQuestionNotice />
@@ -223,7 +184,7 @@ export default function UserInputPreview( props ) {
 							<SpinnerButton
 								className="googlesitekit-user-input__buttons--next"
 								onClick={ onSaveClick }
-								disabled={ isScreenLoading }
+								disabled={ hasError || isScreenLoading }
 								isSaving={ isScreenLoading }
 							>
 								{ __( 'Save', 'google-site-kit' ) }
@@ -250,11 +211,7 @@ export default function UserInputPreview( props ) {
 
 UserInputPreview.propTypes = {
 	submitChanges: PropTypes.func,
-	noFooter: PropTypes.bool,
 	goBack: PropTypes.func,
-	redirectURL: PropTypes.string,
-	errors: PropTypes.object,
-	noHeader: PropTypes.bool,
+	error: PropTypes.object,
 	settingsView: PropTypes.bool,
-	showIndividualCTAs: PropTypes.bool,
 };

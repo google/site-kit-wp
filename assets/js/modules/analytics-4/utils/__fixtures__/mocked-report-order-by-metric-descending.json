@@ -1,5 +1,5 @@
 {
-	"dimensionHeaders": [ { "name": { "name": "date" } } ],
+	"dimensionHeaders": [ { "name": "date" } ],
 	"metricHeaders": [
 		{ "name": "totalUsers", "type": "TYPE_INTEGER" },
 		{ "name": "averageSessionDuration", "type": "TYPE_SECONDS" }

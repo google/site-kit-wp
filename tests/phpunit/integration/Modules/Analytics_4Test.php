@@ -986,6 +986,28 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_debug_fields__newsKeyMetrics_disabled() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertNotContains(
+			'analytics_4_available_custom_dimensions',
+			array_keys( $analytics->get_debug_fields() )
+		);
+	}
+
+	public function test_get_debug_fields__newsKeyMetrics_enabled() {
+		$this->enable_feature( 'newsKeyMetrics' );
+
+		// Given: Analytics 4 is registered with a specific propertyID.
+		$this->analytics->register();
+		$this->analytics->get_settings()->register();
+
+		$this->assertContains(
+			'analytics_4_available_custom_dimensions',
+			array_keys( $this->analytics->get_debug_fields() )
+		);
+	}
+
 	/**
 	 * @dataProvider data_google_tag_ids
 	 *

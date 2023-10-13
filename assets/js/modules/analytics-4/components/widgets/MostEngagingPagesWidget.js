@@ -1,5 +1,5 @@
 /**
- * LeastEngagingPagesWidget component.
+ * MostEngagingPagesWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,13 +42,13 @@ import {
 } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
-import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import { numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
-function LeastEngagingPagesWidget( props ) {
+function MostEngagingPagesWidget( props ) {
 	const { Widget } = props;
 
 	const viewOnlyDashboard = useViewOnly();
@@ -62,32 +63,26 @@ function LeastEngagingPagesWidget( props ) {
 		...dates,
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
-		orderby: [
-			{
-				metric: { metricName: 'screenPageViews' },
-				desc: true,
-			},
-		],
+		limit: 1,
 	};
 
 	const pageViewsReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( pageViewsReportOptions )
 	);
 
-	const medianIndex = parseInt( pageViewsReport?.rowCount / 2, 10 );
-	const medianPageViews =
-		parseInt(
-			pageViewsReport?.rows?.[ medianIndex ]?.metricValues?.[ 0 ]?.value,
-			10
+	const averagePageViews =
+		Math.round(
+			pageViewsReport?.totals?.[ 0 ]?.metricValues[ 0 ].value /
+				pageViewsReport?.rowCount
 		) || 0;
 
 	const reportOptions = {
 		...dates,
 		dimensions: [ 'pagePath' ],
-		metrics: [ 'bounceRate', 'screenPageViews' ],
+		metrics: [ 'engagementRate', 'screenPageViews' ],
 		orderby: [
 			{
-				metric: { metricName: 'bounceRate' },
+				metric: { metricName: 'engagementRate' },
 				desc: true,
 			},
 			{
@@ -97,46 +92,47 @@ function LeastEngagingPagesWidget( props ) {
 		],
 		metricFilters: {
 			screenPageViews: {
+				filterType: 'numericFilter',
 				operation: 'GREATER_THAN_OR_EQUAL',
-				value: { int64Value: medianPageViews },
+				value: { int64Value: averagePageViews },
 			},
 		},
 		limit: 3,
 	};
 
-	const loadedPageViewsReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-			pageViewsReportOptions,
-		] )
-	);
-
-	const pageViewsReportError = useSelect( ( select ) =>
+	const pageViewsReportErrors = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			pageViewsReportOptions,
 		] )
 	);
 
-	const report = useInViewSelect( ( select ) => {
-		if ( ! loadedPageViewsReport ) {
-			return undefined;
+	const error = useSelect( ( select ) => {
+		const reportOptionsErrors = select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ reportOptions ] );
+
+		if ( pageViewsReportErrors && reportOptionsErrors ) {
+			return [ pageViewsReportErrors, reportOptionsErrors ];
 		}
-		if ( pageViewsReportError ) {
-			return null;
-		}
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+
+		return pageViewsReportErrors || reportOptionsErrors || undefined;
 	} );
 
-	const error = useSelect( ( select ) => {
-		const reportError = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-			'getReport',
-			[ reportOptions ]
-		);
+	const hasFinishedResolvingPageViewReport = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+			pageViewsReportOptions,
+		] )
+	);
 
-		if ( pageViewsReportError && reportError ) {
-			return [ pageViewsReportError, reportError ];
+	const report = useInViewSelect( ( select ) => {
+		if ( ! hasFinishedResolvingPageViewReport ) {
+			return undefined;
+		}
+		if ( pageViewsReportErrors ) {
+			return null;
 		}
 
-		return pageViewsReportError || reportError || undefined;
+		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 	} );
 
 	const titles = useInViewSelect( ( select ) =>
@@ -154,15 +150,9 @@ function LeastEngagingPagesWidget( props ) {
 				'getReport',
 				[ reportOptions ]
 			) ||
-			titles === undefined ||
-			! loadedPageViewsReport
+			! hasFinishedResolvingPageViewReport ||
+			titles === undefined
 	);
-
-	const format = {
-		style: 'percent',
-		signDisplay: 'never',
-		maximumFractionDigits: 1,
-	};
 
 	const { rows = [] } = report || {};
 
@@ -209,16 +199,24 @@ function LeastEngagingPagesWidget( props ) {
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<strong>{ numFmt( fieldValue, format ) }</strong>
-			),
+			Component: ( { fieldValue } ) =>
+				createInterpolateElement( '<metricValue /> CTR', {
+					metricValue: (
+						<strong>
+							{ numFmt( fieldValue, {
+								style: 'percent',
+								maximumFractionDigits: 1,
+							} ) }
+						</strong>
+					),
+				} ),
 		},
 	];
 
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'Least engaging pages', 'google-site-kit' ) }
+			title={ __( 'Most engaging pages', 'google-site-kit' ) }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
@@ -226,18 +224,18 @@ function LeastEngagingPagesWidget( props ) {
 			error={ error }
 			moduleSlug="analytics-4"
 			infoTooltip={ __(
-				'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
+				'Pages with the highest engagement rate',
 				'google-site-kit'
 			) }
 		/>
 	);
 }
 
-LeastEngagingPagesWidget.propTypes = {
+MostEngagingPagesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( {
 	moduleName: 'analytics-4',
 	FallbackComponent: ConnectGA4CTATileWidget,
-} )( LeastEngagingPagesWidget );
+} )( MostEngagingPagesWidget );

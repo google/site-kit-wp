@@ -40,6 +40,7 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -165,6 +166,14 @@ const KEY_METRICS_WIDGETS = {
 		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
 		description: __(
 			'Pages that attracted the most returning visitors',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
+		title: __( 'Most engaging pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the highest engagement rate',
 			'google-site-kit'
 		),
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
