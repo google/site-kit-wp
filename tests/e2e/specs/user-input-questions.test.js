@@ -79,6 +79,8 @@ describe( 'User Input Settings', () => {
 			await expect( page ).toClick( '#goals-help_better_rank' );
 		} );
 
+		await pageWait();
+
 		await step( 'go to preview page', async () => {
 			await expect( page ).toClick(
 				'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
@@ -92,9 +94,11 @@ describe( 'User Input Settings', () => {
 					'.googlesitekit-user-input__preview button',
 					{ text: /save/i }
 				),
-				page.waitForNavigation( { waitUntil: [ 'networkidle2' ] } ),
+				page.waitForNavigation(),
 			] )
 		);
+
+		await pageWait();
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
@@ -297,6 +301,8 @@ describe( 'User Input Settings', () => {
 				page.waitForNavigation(),
 			] );
 		} );
+
+		await pageWait();
 
 		await fillInInputSettings();
 	} );
