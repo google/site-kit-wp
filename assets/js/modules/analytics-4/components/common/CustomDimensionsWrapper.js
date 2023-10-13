@@ -241,21 +241,16 @@ export default function CustomDimensionsWrapper( {
 							<span className="googlesitekit-error-retry-text">
 								{ createInterpolateElement(
 									__(
-										'Permissions updated? <RetryLink />',
+										'Permissions updated? <a>Retry</a>',
 										'google-site-kit'
 									),
 									{
-										RetryLink: (
+										a: (
 											<Link
 												onClick={
 													handleCreateCustomDimensions
 												}
-											>
-												{ __(
-													'Retry',
-													'google-site-kit'
-												) }
-											</Link>
+											/>
 										),
 									}
 								) }
@@ -263,18 +258,11 @@ export default function CustomDimensionsWrapper( {
 							<span className="googlesitekit-error-retry-text">
 								{ createInterpolateElement(
 									__(
-										'You’ll need to contact your administrator. <LearnMoreLink />',
+										'You’ll need to contact your administrator. <a>Learn more</a>',
 										'google-site-kit'
 									),
 									{
-										LearnMoreLink: (
-											<Link href={ helpLink } external>
-												{ __(
-													'Learn more',
-													'google-site-kit'
-												) }
-											</Link>
-										),
+										a: <Link href={ helpLink } external />,
 									}
 								) }
 							</span>
@@ -297,18 +285,11 @@ export default function CustomDimensionsWrapper( {
 						<span className="googlesitekit-error-retry-text">
 							{ createInterpolateElement(
 								__(
-									'Retry didn’t work? <GetHelpLink />',
+									'Retry didn’t work? <a>Learn more</a>',
 									'google-site-kit'
 								),
 								{
-									GetHelpLink: (
-										<Link href={ helpLink } external>
-											{ __(
-												'Learn more',
-												'google-site-kit'
-											) }
-										</Link>
-									),
+									a: <Link href={ helpLink } external />,
 								}
 							) }
 						</span>
