@@ -985,6 +985,7 @@ class Analytics_4Test extends TestCase {
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
 				'sync-custom-dimensions',
+				'custom-dimension-data-available',
 			),
 			$this->analytics->get_datapoints()
 		);
