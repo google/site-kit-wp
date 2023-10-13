@@ -29,15 +29,20 @@ import { MetricTileTable } from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import CustomDimensionsWrapper from '../common/CustomDimensionsWrapper';
 
 function TopRecentTrendingPagesWidget( { Widget } ) {
 	return (
-		<MetricTileTable
+		<CustomDimensionsWrapper
 			widgetSlug={ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES }
-			Widget={ Widget }
-			ZeroState={ ZeroDataMessage }
-			moduleSlug="analytics-4"
-		/>
+		>
+			<MetricTileTable
+				widgetSlug={ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES }
+				Widget={ Widget }
+				ZeroState={ ZeroDataMessage }
+				moduleSlug="analytics-4"
+			/>
+		</CustomDimensionsWrapper>
 	);
 }
 

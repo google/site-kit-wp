@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MetricTileWrapper renders appropriate error if creating custom dimensions failed due to a generic error 1`] = `
+exports[`CustomDimensionsWrapper renders appropriate error if creating custom dimensions failed due to a generic error 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -65,7 +65,7 @@ exports[`MetricTileWrapper renders appropriate error if creating custom dimensio
 </div>
 `;
 
-exports[`MetricTileWrapper renders appropriate error if creating custom dimensions failed due to insufficient permissions 1`] = `
+exports[`CustomDimensionsWrapper renders appropriate error if creating custom dimensions failed due to insufficient permissions 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -130,7 +130,7 @@ exports[`MetricTileWrapper renders appropriate error if creating custom dimensio
 </div>
 `;
 
-exports[`MetricTileWrapper renders appropriate error if required custom dimensions are not available 1`] = `
+exports[`CustomDimensionsWrapper renders appropriate error if required custom dimensions are not available 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -186,7 +186,7 @@ exports[`MetricTileWrapper renders appropriate error if required custom dimensio
 </div>
 `;
 
-exports[`MetricTileWrapper renders report correctly if there are no errors 1`] = `
+exports[`CustomDimensionsWrapper renders report correctly if there are no errors 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCategories googlesitekit-widget--no-padding"

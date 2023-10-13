@@ -26,324 +26,35 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	useCallback,
-	useEffect,
-	useMemo,
-} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../modules/analytics/datastore/constants';
-import {
-	FORM_CUSTOM_DIMENSIONS_CREATE,
-	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
-import { Button } from 'googlesitekit-components';
 import GetHelpLink from './GetHelpLink';
-import Link from '../Link';
 import MetricTileLoader from './MetricTileLoader';
 import MetricTileError from './MetricTileError';
 import MetricTileHeader from './MetricTileHeader';
 import ReportErrorActions from '../ReportErrorActions';
-import {
-	ERROR_CODE_MISSING_REQUIRED_SCOPE,
-	ERROR_REASON_BAD_REQUEST,
-	isInsufficientPermissionsError,
-} from '../../util/errors';
-import { useFeature } from '../../hooks/useFeature';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-const { useSelect, useDispatch } = Data;
+import { isInsufficientPermissionsError } from '../../util/errors';
 
 export default function MetricTileWrapper( {
 	className,
 	children,
-	error: reportError,
-	title,
-	infoTooltip,
-	loading: isReportLoading,
+	error,
+	loading,
 	moduleSlug,
 	Widget,
 	widgetSlug,
+	title = KEY_METRICS_WIDGETS[ widgetSlug ]?.title,
+	infoTooltip = KEY_METRICS_WIDGETS[ widgetSlug ]?.infoTooltip ||
+		KEY_METRICS_WIDGETS[ widgetSlug ]?.description,
 } ) {
-	const newsKeyMetricsEnabled = useFeature( 'newsKeyMetrics' );
-
-	const customDimensions = useMemo( () => {
-		if ( ! widgetSlug || ! newsKeyMetricsEnabled ) {
-			return null;
-		}
-
-		const { requiredCustomDimensions } = KEY_METRICS_WIDGETS[ widgetSlug ];
-
-		if (
-			! Array.isArray( requiredCustomDimensions ) ||
-			! requiredCustomDimensions.length
-		) {
-			return null;
-		}
-
-		return requiredCustomDimensions;
-	}, [ newsKeyMetricsEnabled, widgetSlug ] );
-
-	const hasCustomDimensions = useSelect( ( select ) => {
-		if ( ! customDimensions ) {
-			return true;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-			customDimensions
+	if ( error ) {
+		const hasInsufficientPermissionsReportError = castArray( error ).some(
+			isInsufficientPermissionsError
 		);
-	} );
-	const isCreatingCustomDimensions = useSelect( ( select ) => {
-		if ( ! customDimensions ) {
-			return false;
-		}
-
-		return customDimensions.some( ( dimension ) =>
-			select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension( dimension )
-		);
-	} );
-	const customDimensionsCreationErrors = useSelect( ( select ) => {
-		if ( ! customDimensions ) {
-			return [];
-		}
-
-		return customDimensions
-			.filter(
-				( dimension ) =>
-					!! select(
-						MODULES_ANALYTICS_4
-					).getCreateCustomDimensionError( dimension )
-			)
-			.map( ( dimension ) =>
-				select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
-					dimension
-				)
-			);
-	} );
-	const helpLink = useSelect( ( select ) => {
-		if ( ! customDimensionsCreationErrors.length ) {
-			return undefined;
-		}
-
-		return select( CORE_SITE ).getErrorTroubleshootingLinkURL(
-			customDimensionsCreationErrors.find(
-				isInsufficientPermissionsError
-			) || customDimensionsCreationErrors[ 0 ]
-		);
-	} );
-	const hasAnalyticsEditScope = useSelect( ( select ) => {
-		if ( ! customDimensions ) {
-			return undefined;
-		}
-
-		return select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE );
-	} );
-	const isSyncingAvailableCustomDimensions = useSelect( ( select ) => {
-		if ( ! customDimensions ) {
-			return false;
-		}
-
-		return select(
-			MODULES_ANALYTICS_4
-		).isSyncingAvailableCustomDimensions();
-	} );
-
-	const { syncAvailableCustomDimensions } =
-		useDispatch( MODULES_ANALYTICS_4 );
-	const { setValues } = useDispatch( CORE_FORMS );
-	const { setPermissionScopeError } = useDispatch( CORE_USER );
-
-	const loading =
-		isReportLoading ||
-		isCreatingCustomDimensions ||
-		isSyncingAvailableCustomDimensions;
-	const hasError = !! reportError || !! customDimensionsCreationErrors.length;
-
-	const tileTitle = title || KEY_METRICS_WIDGETS[ widgetSlug ]?.title;
-	const tileInfoTooltip =
-		infoTooltip ||
-		KEY_METRICS_WIDGETS[ widgetSlug ]?.infoTooltip ||
-		KEY_METRICS_WIDGETS[ widgetSlug ]?.description;
-
-	const commonErrorProps = {
-		headerText: tileTitle,
-		infoTooltip: tileInfoTooltip,
-	};
-
-	const handleCreateCustomDimensions = useCallback( () => {
-		if ( loading ) {
-			return;
-		}
-
-		setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-			autoSubmit: true,
-		} );
-
-		if ( ! hasAnalyticsEditScope ) {
-			setPermissionScopeError( {
-				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-				message: __(
-					'Additional permissions are required to create new Analytics custom dimensions.',
-					'google-site-kit'
-				),
-				data: {
-					status: 403,
-					scopes: [ ANALYTICS_EDIT_SCOPE ],
-					skipModal: true,
-				},
-			} );
-		}
-	}, [ hasAnalyticsEditScope, loading, setPermissionScopeError, setValues ] );
-
-	// If the list of available custom dimensions is outdated, sync it.
-	useEffect( () => {
-		if (
-			! customDimensions ||
-			reportError?.data?.reason !== ERROR_REASON_BAD_REQUEST ||
-			isSyncingAvailableCustomDimensions
-		) {
-			return;
-		}
-
-		syncAvailableCustomDimensions();
-	}, [
-		customDimensions,
-		isSyncingAvailableCustomDimensions,
-		reportError?.data?.reason,
-		syncAvailableCustomDimensions,
-	] );
-
-	if ( newsKeyMetricsEnabled && !! customDimensions && ! loading ) {
-		if ( !! customDimensionsCreationErrors.length ) {
-			// Handle permissions error encountered while creating
-			// custom dimensions.
-			if (
-				customDimensionsCreationErrors.some(
-					isInsufficientPermissionsError
-				)
-			) {
-				return (
-					<MetricTileError
-						title={ __(
-							'Insufficient permissions',
-							'google-site-kit'
-						) }
-						{ ...commonErrorProps }
-					>
-						<div className="googlesitekit-report-error-actions">
-							<span className="googlesitekit-error-retry-text">
-								{ createInterpolateElement(
-									__(
-										'Permissions updated? <RetryLink />',
-										'google-site-kit'
-									),
-									{
-										RetryLink: (
-											<Link
-												onClick={
-													handleCreateCustomDimensions
-												}
-											>
-												{ __(
-													'Retry',
-													'google-site-kit'
-												) }
-											</Link>
-										),
-									}
-								) }
-							</span>
-							<span className="googlesitekit-error-retry-text">
-								{ createInterpolateElement(
-									__(
-										'You’ll need to contact your administrator. <LearnMoreLink />',
-										'google-site-kit'
-									),
-									{
-										LearnMoreLink: (
-											<Link href={ helpLink } external>
-												{ __(
-													'Learn more',
-													'google-site-kit'
-												) }
-											</Link>
-										),
-									}
-								) }
-							</span>
-						</div>
-					</MetricTileError>
-				);
-			}
-
-			// Handle generic errors encountered while creating
-			// custom dimensions.
-			return (
-				<MetricTileError
-					title={ __( 'Analytics update failed', 'google-site-kit' ) }
-					{ ...commonErrorProps }
-				>
-					<div className="googlesitekit-report-error-actions">
-						<Button onClick={ handleCreateCustomDimensions }>
-							{ __( 'Retry', 'google-site-kit' ) }
-						</Button>
-						<span className="googlesitekit-error-retry-text">
-							{ createInterpolateElement(
-								__(
-									'Retry didn’t work? <GetHelpLink />',
-									'google-site-kit'
-								),
-								{
-									GetHelpLink: (
-										<Link href={ helpLink } external>
-											{ __(
-												'Learn more',
-												'google-site-kit'
-											) }
-										</Link>
-									),
-								}
-							) }
-						</span>
-					</div>
-				</MetricTileError>
-			);
-		}
-
-		if ( ! hasCustomDimensions ) {
-			return (
-				<MetricTileError
-					title={ __( 'No data to show', 'google-site-kit' ) }
-					{ ...commonErrorProps }
-				>
-					<div className="googlesitekit-report-error-actions">
-						<Button onClick={ handleCreateCustomDimensions }>
-							{ __( 'Update', 'google-site-kit' ) }
-						</Button>
-						<span className="googlesitekit-error-retry-text">
-							{ __(
-								'Update Analytics to track metric',
-								'google-site-kit'
-							) }
-						</span>
-					</div>
-				</MetricTileError>
-			);
-		}
-	}
-
-	if ( reportError ) {
-		const hasInsufficientPermissionsReportError = castArray(
-			reportError
-		).some( isInsufficientPermissionsError );
 
 		return (
 			<MetricTileError
@@ -352,11 +63,12 @@ export default function MetricTileWrapper( {
 						? __( 'Insufficient permissions', 'google-site-kit' )
 						: __( 'Data loading failed', 'google-site-kit' )
 				}
-				{ ...commonErrorProps }
+				headerText={ title }
+				infoTooltip={ infoTooltip }
 			>
 				<ReportErrorActions
 					moduleSlug={ moduleSlug }
-					error={ reportError }
+					error={ error }
 					GetHelpLink={
 						hasInsufficientPermissionsReportError
 							? GetHelpLink
@@ -375,13 +87,10 @@ export default function MetricTileWrapper( {
 					className
 				) }
 			>
-				<MetricTileHeader
-					title={ tileTitle }
-					infoTooltip={ tileInfoTooltip }
-				/>
+				<MetricTileHeader title={ title } infoTooltip={ infoTooltip } />
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <MetricTileLoader /> }
-					{ ! loading && ! hasError && children }
+					{ ! loading && children }
 				</div>
 			</div>
 		</Widget>

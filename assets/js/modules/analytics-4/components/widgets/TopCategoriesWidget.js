@@ -29,15 +29,18 @@ import { MetricTileTable } from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import CustomDimensionsWrapper from '../common/CustomDimensionsWrapper';
 
 function TopCategoriesWidget( { Widget } ) {
 	return (
-		<MetricTileTable
-			widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
-			Widget={ Widget }
-			ZeroState={ ZeroDataMessage }
-			moduleSlug="analytics-4"
-		/>
+		<CustomDimensionsWrapper widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }>
+			<MetricTileTable
+				widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
+				Widget={ Widget }
+				ZeroState={ ZeroDataMessage }
+				moduleSlug="analytics-4"
+			/>
+		</CustomDimensionsWrapper>
 	);
 }
 
