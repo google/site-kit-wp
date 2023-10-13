@@ -1660,7 +1660,7 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
-	public function test_report__no_metrics( $access_token ) {
+	public function test_report__no_metrics_or_dimensions( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
 		$property_id = '123456789';
@@ -1677,7 +1677,7 @@ class Analytics_4Test extends TestCase {
 
 		$data = $this->analytics->get_data( 'report', array() );
 
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: metrics.', $data );
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: at least one of metrics or dimensions must be provided.', $data );
 		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
 	}
