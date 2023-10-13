@@ -201,6 +201,7 @@ describe( 'Analytics write scope requests', () => {
 			await page.waitForSelector(
 				'.googlesitekit-settings-connect-module--analytics'
 			);
+
 			await expect( page ).toClick( '.googlesitekit-cta-link', {
 				text: /set up analytics/i,
 			} );
@@ -220,15 +221,26 @@ describe( 'Analytics write scope requests', () => {
 		await step( 'act', async () => {
 			global.console.debug( 'Click create account' );
 			// Upon clicking the button, they're redirected to OAuth (should be mocked).
-			await Promise.all( [
-				// When returning, their original action is automatically invoked, without requiring them to click the button again.
-				page.waitForResponse( ( res ) =>
-					res.url().match( 'analytics-4/data/create-account-ticket' )
-				),
-				expect( page ).toClick( '.mdc-button', {
-					text: /create account/i,
-				} ),
-			] );
+			// await Promise.all( [
+			// 	// When returning, their original action is automatically invoked, without requiring them to click the button again.
+			// 	page.waitForResponse( ( res ) =>
+			// 		res.url().match( 'analytics-4/data/create-account-ticket' )
+			// 	),
+			// 	expect( page ).toClick( '.mdc-button', {
+			// 		text: /create account/i,
+			// 	} ),
+			// ] );
+			await page.waitForResponse( ( res ) =>
+				res.url().match( 'analytics-4/data/create-account-ticket' )
+			);
+			global.console.debug(
+				'Got response for analytics-4/data/create-account-ticket'
+			);
+
+			await expect( page ).toClick( '.mdc-button', {
+				text: /create account/i,
+			} );
+			global.console.debug( 'Actual Button Click (create account)' );
 		} );
 
 		await step( 'assert', async () => {
