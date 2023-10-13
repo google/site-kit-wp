@@ -80,10 +80,7 @@ class Web_Tag extends Analytics_Web_Tag implements Tag_Interface {
 		$config = parent::get_tag_config();
 
 		if ( ! empty( $this->custom_dimensions ) ) {
-			$config[ $this->tag_id ] = array_merge(
-				$config[ $this->tag_id ],
-				$this->custom_dimensions
-			);
+			$config = array_merge( $config, $this->custom_dimensions );
 		}
 
 		return $config;
