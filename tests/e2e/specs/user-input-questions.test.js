@@ -102,16 +102,9 @@ describe( 'User Input Settings', () => {
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
-			async () => {
-				await Promise.race( [
-					page.waitForSelector(
-						'.googlesitekit-widget--kmAnalyticsNewVisitors'
-					),
-					page.waitForSelector(
-						'.googlesitekit-widget--kmAnalyticsLoyalVisitors'
-					),
-				] );
-			}
+			page.waitForSelector(
+				'.googlesitekit-widget--kmAnalyticsLoyalVisitors'
+			)
 		);
 	}
 
