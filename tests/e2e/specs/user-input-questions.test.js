@@ -85,8 +85,6 @@ describe( 'User Input Settings', () => {
 			);
 		} );
 
-		await pageWait();
-
 		await step(
 			'wait for settings submission',
 			Promise.all( [
@@ -94,15 +92,22 @@ describe( 'User Input Settings', () => {
 					'.googlesitekit-user-input__preview button',
 					{ text: /save/i }
 				),
-				page.waitForNavigation(),
+				page.waitForNavigation( { waitUntil: [ 'networkidle2' ] } ),
 			] )
 		);
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
-			page.waitForSelector(
-				'.googlesitekit-widget--kmAnalyticsLoyalVisitors'
-			)
+			async () => {
+				await Promise.race( [
+					page.waitForSelector(
+						'.googlesitekit-widget--kmAnalyticsNewVisitors'
+					),
+					page.waitForSelector(
+						'.googlesitekit-widget--kmAnalyticsLoyalVisitors'
+					),
+				] );
+			}
 		);
 	}
 
@@ -233,14 +238,20 @@ describe( 'User Input Settings', () => {
 					)
 			),
 		] );
-		// Random change
+
 		// On the first load of the dashboard, report requests made by the isGatheringData selector for SC and GA4
 		// will fetch some data since we intercept those requests providing mock report data. This the data-available
 		// endpoint which sets the appropriate transients that will be prefetched only on the next page load.
 		await page.reload();
 
-		await page.waitForSelector(
-			'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
+		await step(
+			'click on key metrics navigation tab and scroll to the key metrics widget',
+			async () => {
+				await page.waitForSelector( '.googlesitekit-navigation' );
+				await expect( page ).toClick( '.mdc-chip', {
+					text: /key metrics/i,
+				} );
+			}
 		);
 
 		await step( 'click on CTA button and wait for navigation', async () => {
