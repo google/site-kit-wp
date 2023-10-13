@@ -110,7 +110,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/MetricTileWrapper/Ready',
+	label: 'KeyMetrics/CustomDimensionsWrapper/Ready',
 };
 Ready.parameters = {
 	features: [ 'newsKeyMetrics' ],

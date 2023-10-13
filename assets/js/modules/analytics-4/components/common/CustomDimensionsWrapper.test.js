@@ -1,5 +1,5 @@
 /**
- * Key Metrics CustomDimensionsWrapper component tests.
+ * CustomDimensionsWrapper component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
