@@ -35,20 +35,9 @@ import {
 	setupSiteKit,
 	pageWait,
 	step,
+	ignorePermissionScopeErrors,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
-
-function ignorePermissionScopeErrors() {
-	// eslint-disable-next-line no-console
-	if ( ! console.error.mock ) {
-		return;
-	}
-	// eslint-disable-next-line no-console
-	console.error.mock.calls = console.error.mock.calls.filter( ( call ) => {
-		const [ message ] = call;
-		return ! message.includes( 'need to grant Site Kit permission' );
-	} );
-}
 
 describe( 'Analytics write scope requests', () => {
 	// These variables are used to determine whether or not we need to intercept requests to the server. By default the first request
