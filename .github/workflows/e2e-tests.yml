@@ -79,11 +79,10 @@ jobs:
       fail-fast: false
       matrix:
         amp_version: ['']
-        wp_version: ['latest'] # Temp
-        # wp_version: ['latest', 'nightly']
-        # include:
-          # - amp_version: '1.5.5'
-            # wp_version: '5.2.16'
+        wp_version: ['latest', 'nightly']
+        include:
+          - amp_version: '1.5.5'
+            wp_version: '5.2.16'
     env:
       AMP_VERSION: ${{ matrix.amp_version }}
       WP_VERSION: ${{ matrix.wp_version }}
