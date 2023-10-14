@@ -131,11 +131,6 @@ jobs:
 
       - name: Run the tests
         run: npm run test:e2e
-        env:
-          # Temporary debugging
-          DEBUG_REST: 1
-          DEBUG_NAV: 1
-          DEBUG_PHP: 1
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
