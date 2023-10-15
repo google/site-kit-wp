@@ -169,13 +169,20 @@ export default function Footer( props ) {
 	}, [ slug, viewContext ] );
 
 	const isLoading = useSelect( ( select ) => {
-		if ( ( module && slug === 'analytics' ) || slug === 'tagmanager' ) {
-			return ! select( module.storeName ).hasFinishedResolution(
-				'getAccounts'
-			);
+		const resolutionMapping = {
+			analytics: 'getAccounts',
+			tagmanager: 'getAccounts',
+			'search-console': 'getMatchedProperties',
+		};
+		const resolutionSelector = resolutionMapping[ slug ];
+
+		if ( ! module || ! resolutionSelector ) {
+			return false;
 		}
 
-		return false;
+		return ! select( module.storeName ).hasFinishedResolution(
+			resolutionSelector
+		);
 	} );
 
 	let buttonText;
