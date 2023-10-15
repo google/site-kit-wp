@@ -168,6 +168,11 @@ export default function Footer( props ) {
 		);
 	}, [ slug, viewContext ] );
 
+	// Check if the resolution for the specified selector has finished.
+	// This allows us to determine if the data needed by the module is still being loaded.
+	// The primary reason for this loading check is to disable the submit button
+	// while the necessary data for the settings is still being loaded, preventing
+	// premature interactions by the user.
 	const isLoading = useSelect( ( select ) => {
 		const resolutionMapping = {
 			analytics: 'getAccounts',
