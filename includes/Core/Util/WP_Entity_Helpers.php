@@ -22,54 +22,39 @@ class WP_Entity_Helpers {
 	/**
 	 * Gets the display name for a given user ID.
 	 *
+	 * If no user is found for a given user ID, the original user ID is
+	 * returned.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int $user_id User ID of the user to get the display name of.
-	 * @return string Display name of the user for the given user ID.
+	 * @return string|int Display name of the user or their original ID if no name is found.
 	 */
 	public static function get_user_display_name( $user_id ) {
 		$user = get_userdata( $user_id );
+		if ( ! $user ) {
+			return $user_id;
+		}
 		return $user->display_name;
 	}
 
 	/**
-	 * Gets the category names for a given array of category IDs.
+	 * Gets the term names for a given array of term IDs.
 	 *
-	 * If no category is found for a given ID, the original ID is preserved in
-	 * the returned array.
+	 * If no term is found for a given term ID, the original term ID is
+	 * returned.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $category_ids Array of IDs of categories to get names of.
-	 * @return array Array of category names (or their original IDs if no name is found).
+	 * @param int $term_id Term ID of the term to get the name of.
+	 * @return string|int Display name or their original ID if no name is found.
 	 */
-	public static function get_category_names( $category_ids ) {
-		$category_names = array();
-		foreach ( $category_ids as $category_id ) {
-			$category_name    = get_cat_name( $category_id );
-			$category_names[] = empty( $category_name ) ? $category_id : $category_name;
+	public static function get_term_name( $term_id ) {
+		$term = get_term( $term_id );
+		if ( ! $term ) {
+			return $term_id;
 		}
-		return $category_names;
-	}
-
-	/**
-	 * Converts a string list of category IDs to a stringified array of their
-	 * category names.
-	 *
-	 * If no category is found for a given ID, the original ID is preserved in
-	 * the returned string.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $category_ids_string Comma separated string list of IDs of categories to get names of.
-	 * @return string JSON encoded string of comma separated category names (or their original IDs if no name is found).
-	 */
-	public static function parse_category_names( $category_ids_string ) {
-		$category_ids = json_decode( '[' . $category_ids_string . ']', true );
-
-		$category_names = self::get_category_names( $category_ids );
-
-		return wp_json_encode( $category_names );
+		return $term->name;
 	}
 
 }
