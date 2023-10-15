@@ -168,6 +168,26 @@ export default function Footer( props ) {
 		);
 	}, [ slug, viewContext ] );
 
+	const isLoading = useSelect( ( select ) => {
+		if ( ( module && slug === 'analytics' ) || slug === 'tagmanager' ) {
+			return ! select( module.storeName ).hasFinishedResolution(
+				'getAccounts'
+			);
+		}
+
+		return false;
+	} );
+
+	let buttonText;
+
+	if ( isSaving ) {
+		buttonText = __( 'Saving…', 'google-site-kit' );
+	} else if ( canSubmitChanges ) {
+		buttonText = __( 'Apply changes', 'google-site-kit' );
+	} else {
+		buttonText = __( 'Save', 'google-site-kit' );
+	}
+
 	if ( ! module ) {
 		return null;
 	}
@@ -181,13 +201,11 @@ export default function Footer( props ) {
 			<Fragment>
 				{ hasSettings && moduleConnected ? (
 					<SpinnerButton
-						disabled={ isSaving || ! canSubmitChanges }
+						disabled={ isSaving || isLoading }
 						onClick={ handleConfirm }
 						isSaving={ isSaving }
 					>
-						{ isSaving
-							? __( 'Saving…', 'google-site-kit' )
-							: __( 'Confirm Changes', 'google-site-kit' ) }
+						{ buttonText }
 					</SpinnerButton>
 				) : (
 					<Button onClick={ handleClose }>
