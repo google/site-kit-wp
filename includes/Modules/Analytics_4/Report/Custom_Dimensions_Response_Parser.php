@@ -71,7 +71,8 @@ class Custom_Dimensions_Response_Parser {
 		}
 
 		if ( ! isset( $this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ][ $user_id ] ) ) {
-			$this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ][ $user_id ] = WP_Entity_Helpers::get_user_display_name( $user_id );
+			$user = get_userdata( $user_id );
+			$this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ][ $user_id ] = isset( $user->display_name ) ? $user->display_name : $user_id;
 		}
 
 		return $this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ][ $user_id ];
@@ -99,7 +100,8 @@ class Custom_Dimensions_Response_Parser {
 		$category_names = array();
 		foreach ( $category_ids as $category_id ) {
 			if ( ! isset( $this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ][ $category_id ] ) ) {
-				$this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ][ $category_id ] = WP_Entity_Helpers::get_term_name( $category_id );
+				$term = get_term( $category_id );
+				$this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ][ $category_id ] = isset( $term->name ) ? $term->name : $category_id;
 			}
 
 			$category_names[] = $this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ][ $category_id ];
