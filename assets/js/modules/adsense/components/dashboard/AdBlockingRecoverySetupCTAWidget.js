@@ -56,13 +56,19 @@ import { useInView } from '../../../../hooks/useInView';
 import useViewContext from '../../../../hooks/useViewContext';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { Cell } from '../../../../material-components';
-import { WEEK_IN_SECONDS, stringToDate, trackEvent } from '../../../../util';
+import {
+	DAY_IN_SECONDS,
+	WEEK_IN_SECONDS,
+	stringToDate,
+	trackEvent,
+} from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import {
 	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
+import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
 
 const { useSelect, useDispatch } = Data;
 
@@ -211,6 +217,12 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget>
+			{ inView && shouldShowWidget && (
+				<SurveyViewTrigger
+					triggerID="view_abr_setup_cta"
+					ttl={ DAY_IN_SECONDS }
+				/>
+			) }
 			<Banner>
 				<Cell smSize={ 8 } mdSize={ 4 } lgSize={ 7 }>
 					<BannerTitle
