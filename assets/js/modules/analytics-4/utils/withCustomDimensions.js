@@ -91,43 +91,41 @@ export default function withCustomDimensions( options = {} ) {
 				return null;
 			}, [ newsKeyMetricsEnabled, requiredCustomDimensions ] );
 
-			const hasCustomDimensions = useSelect( ( select ) => {
-				if ( ! customDimensions ) {
-					return true;
-				}
-
-				return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-					customDimensions
-				);
-			} );
-			const isCreatingCustomDimensions = useSelect( ( select ) => {
-				if ( ! customDimensions ) {
-					return false;
-				}
-
-				return customDimensions.some( ( dimension ) =>
-					select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
-						dimension
+			const hasCustomDimensions = useSelect(
+				( select ) =>
+					! customDimensions ||
+					select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+						customDimensions
 					)
-				);
-			} );
+			);
+			const isCreatingCustomDimensions = useSelect(
+				( select ) =>
+					!! customDimensions &&
+					customDimensions.some( ( dimension ) =>
+						select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
+							dimension
+						)
+					)
+			);
 			const customDimensionsCreationErrors = useSelect( ( select ) => {
 				if ( ! customDimensions ) {
 					return [];
 				}
 
-				return customDimensions
-					.filter(
-						( dimension ) =>
-							!! select(
-								MODULES_ANALYTICS_4
-							).getCreateCustomDimensionError( dimension )
-					)
-					.map( ( dimension ) =>
+				const errors = [];
+
+				customDimensions.forEach( ( dimension ) => {
+					const error =
 						select(
 							MODULES_ANALYTICS_4
-						).getCreateCustomDimensionError( dimension )
-					);
+						).getCreateCustomDimensionError( dimension );
+
+					if ( error ) {
+						errors.push( error );
+					}
+				} );
+
+				return errors;
 			} );
 			const helpLink = useSelect( ( select ) => {
 				if ( ! customDimensionsCreationErrors.length ) {
