@@ -118,20 +118,8 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 
 const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	baseName: 'syncAvailableCustomDimensions',
-	controlCallback: ( { propertyID } ) => {
-		return API.set( 'modules', 'analytics-4', 'sync-custom-dimensions', {
-			propertyID,
-		} );
-	},
-	argsToParams: ( propertyID ) => ( {
-		propertyID,
-	} ),
-	validateParams: ( { propertyID } ) => {
-		invariant(
-			isValidPropertyID( propertyID ),
-			'A valid GA4 propertyID is required.'
-		);
-	},
+	controlCallback: () =>
+		API.set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
 } );
 
 const baseInitialState = {

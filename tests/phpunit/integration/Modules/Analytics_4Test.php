@@ -2404,30 +2404,15 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
 	}
 
-	public function test_sync_custom_dimensions__required_params() {
-		$this->enable_feature( 'newsKeyMetrics' );
-		// Grant READONLY_SCOPE so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
-			)
-		);
-
-		$data = $this->analytics->set_data(
-			'sync-custom-dimensions',
-			array()
-		);
-
-		// Verify that the propertyID is required.
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
-	}
-
 	public function test_sync_custom_dimensions() {
 		$this->enable_feature( 'newsKeyMetrics' );
 		$property_id = 'sync-custom-dimension-property-id';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
@@ -2444,9 +2429,7 @@ class Analytics_4Test extends TestCase {
 
 		$response = $this->analytics->set_data(
 			'sync-custom-dimensions',
-			array(
-				'propertyID' => $property_id,
-			)
+			array()
 		);
 
 		$this->assertNotWPError( $response );
