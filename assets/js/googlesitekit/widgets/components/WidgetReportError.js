@@ -17,14 +17,65 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import { useLifecycles } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { useInstanceId } from '@wordpress/compose';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import ReportError from '../../../components/ReportError';
+import { CORE_UI } from '../../datastore/ui/constants';
+
+const { useSelect, useDispatch } = Data;
 
 export default function WidgetReportError( { moduleSlug, error } ) {
+	const errorInstanceID = useInstanceId(
+		WidgetReportError,
+		'WidgetReportError'
+	);
+
+	const { setValue } = useDispatch( CORE_UI );
+
+	const selectInstanceID = useSelect( ( select ) =>
+		select( CORE_UI ).getValue(
+			`WidgetReportError-${ moduleSlug }-${ error.message }`
+		)
+	);
+
+	useLifecycles(
+		() => {
+			setValue(
+				`WidgetReportError-${ moduleSlug }-${ error.message }`,
+				errorInstanceID
+			);
+		},
+		() => {
+			setValue(
+				`WidgetReportError-${ moduleSlug }-${ error.message }`,
+				undefined
+			);
+		}
+	);
+
+	if ( selectInstanceID !== errorInstanceID ) {
+		return null;
+	}
+
 	return <ReportError moduleSlug={ moduleSlug } error={ error } />;
 }
 
 WidgetReportError.propTypes = {
-	...ReportError.propTypes,
+	moduleSlug: PropTypes.string.isRequired,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ).isRequired,
 };
