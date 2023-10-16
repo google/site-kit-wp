@@ -150,20 +150,13 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				const { response } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.syncAvailableCustomDimensions( propertyID );
+					.syncAvailableCustomDimensions();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-					),
-					{
-						body: {
-							data: {
-								propertyID,
-							},
-						},
-					}
+					)
 				);
 				expect( response ).toEqual( customDimensionNames );
 			} );
