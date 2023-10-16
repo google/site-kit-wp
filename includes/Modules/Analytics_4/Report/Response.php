@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Modules\Analytics_4\Report;
 
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Report;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Row as Google_Service_AnalyticsData_Row;
@@ -43,7 +42,8 @@ class Response extends Report {
 			return $response;
 		}
 
-		$response = $this->parse_custom_dimensions( $response );
+		$custom_dimension_query = new Custom_Dimensions_Response_Parser( $response );
+		$custom_dimension_query->swap_custom_dimension_ids_with_names();
 
 		// Get report dimensions and return early if there is either more than one dimension or
 		// the only dimension is not "date".
@@ -116,51 +116,6 @@ class Response extends Report {
 		// Set updated rows back to the response object.
 		$response->setRows( array_values( $rows ) );
 		$response->setRowCount( $new_rows_count );
-
-		return $response;
-	}
-
-	/**
-	 * Converts the IDs of any custom dimensions within the response into their respective display names.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Google_Service_AnalyticsData_RunReportResponse $response Request response that may contain custom dimensions.
-	 * @return Google_Service_AnalyticsData_RunReportResponse Response with any IDs of custom dimensions converted to their display names.
-	 */
-	protected function parse_custom_dimensions( $response ) {
-		if ( empty( $response['rows'] ) ) {
-			return $response;
-		}
-
-		// Create a map of any custom dimension to its equivalent parsing function to avoid
-		// looping through report rows multiple times below.
-		$custom_dimension_map = array();
-		foreach ( $response['dimensionHeaders'] as $dimension_key => $dimension ) {
-			if ( Analytics_4::CUSTOM_EVENT_PREFIX . Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR === $dimension['name'] ) {
-				$custom_dimension_map[ $dimension_key ] = array( 'Google\\Site_Kit\\Core\\Util\\WP_Entity_Helpers', 'get_user_display_name' );
-			}
-
-			if ( Analytics_4::CUSTOM_EVENT_PREFIX . Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES === $dimension['name'] ) {
-				$custom_dimension_map[ $dimension_key ] = array( 'Google\\Site_Kit\\Core\\Util\\WP_Entity_Helpers', 'parse_category_names' );
-			}
-		}
-
-		if ( empty( $custom_dimension_map ) ) {
-			return $response;
-		}
-
-		foreach ( $response['rows'] as &$row ) {
-			foreach ( $custom_dimension_map as $dimension_key => $callable ) {
-				$dimension_value = $row['dimensionValues'][ $dimension_key ]->getValue();
-				if ( '(not set)' === $dimension_value ) {
-					continue;
-				}
-
-				$new_dimension_value = call_user_func( $callable, $dimension_value );
-				$row['dimensionValues'][ $dimension_key ]->setValue( $new_dimension_value );
-			}
-		}
 
 		return $response;
 	}
