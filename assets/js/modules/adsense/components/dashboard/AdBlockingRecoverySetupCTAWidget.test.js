@@ -19,7 +19,9 @@
 /**
  * Internal dependencies
  */
+import fetchMock from 'fetch-mock';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { mockSurveyEndpoints } from '../../../../../../tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -29,6 +31,7 @@ import {
 	provideUserAuthentication,
 	render,
 	unsubscribeFromAll,
+	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -76,6 +79,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
+		mockSurveyEndpoints( registry );
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
@@ -286,6 +290,40 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				'view_notification'
 			);
 		} );
+
+		it( 'should trigger a survey when in-view', async () => {
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				...validSettings,
+				setupCompletedTimestamp: timestampThreeWeeksPrior,
+			} );
+
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
+
+			render(
+				<AdBlockingRecoverySetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			const surveyTriggerEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/survey-trigger'
+			);
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID: 'view_abr_setup_cta' },
+					},
+				} )
+			);
+		} );
 	} );
 
 	describe( 'CTA actions', () => {
@@ -310,7 +348,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				.receiveGetExistingAdBlockingRecoveryTag( null );
 		} );
 
-		it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
+		it( 'should navigate to ABR setup page when primary CTA is clicked', async () => {
 			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
@@ -477,7 +515,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			);
 		} );
 
-		it( 'Should fire track event when learn more is clicked', async () => {
+		it( 'should fire track event when "learn more" is clicked', async () => {
 			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
