@@ -41,8 +41,6 @@ class Custom_Dimensions_Response_ParserTest extends TestCase {
 		$dimension_header_post_author->setName( 'customEvent:googlesitekit_post_author' );
 		$response->setDimensionHeaders( array( $dimension_header_post_author ) );
 
-		$rows = array();
-
 		// Existing author with a valid display name.
 		$author_id = $this->factory()->user->create( array( 'display_name' => 'test author 1' ) );
 
@@ -50,14 +48,13 @@ class Custom_Dimensions_Response_ParserTest extends TestCase {
 		$rows = $this->create_rows_with_dimension_values( array( (string) $author_id, '5000', '(not set)' ) );
 
 		$response->setRows( $rows );
-		$custom_dimension_query = new Custom_Dimensions_Response_Parser( $response );
-		$custom_dimension_query->swap_custom_dimension_ids_with_names();
+		$custom_dimension_query = new Custom_Dimensions_Response_Parser();
+		$custom_dimension_query->swap_custom_dimension_ids_with_names( $response );
 
-		$swappedRows = $response->getRows();
-
-		$this->assertEquals( 'test author 1', $swappedRows[0]->getDimensionValues()[0]->getValue() );
-		$this->assertEquals( '5000', $swappedRows[1]->getDimensionValues()[0]->getValue() );
-		$this->assertEquals( '(not set)', $swappedRows[2]->getDimensionValues()[0]->getValue() );
+		// `$rows` would have mutated within $response now having the swapped values.
+		$this->assertEquals( 'test author 1', $rows[0]->getDimensionValues()[0]->getValue() );
+		$this->assertEquals( '5000', $rows[1]->getDimensionValues()[0]->getValue() );
+		$this->assertEquals( '(not set)', $rows[2]->getDimensionValues()[0]->getValue() );
 	}
 
 	public function test_swap_custom_dimension_ids_with_names__post_categories() {
@@ -75,10 +72,10 @@ class Custom_Dimensions_Response_ParserTest extends TestCase {
 
 		$rows = $this->create_rows_with_dimension_values( array( $category_ids_string ) );
 		$response->setRows( $rows );
-		$custom_dimension_query = new Custom_Dimensions_Response_Parser( $response );
-		$custom_dimension_query->swap_custom_dimension_ids_with_names();
+		$custom_dimension_query = new Custom_Dimensions_Response_Parser();
+		$custom_dimension_query->swap_custom_dimension_ids_with_names( $response );
 
-		$swappedRows = $response->getRows();
-		$this->assertEquals( '["2","Category,with,commas",1955,"Uncategorized","Normal Category"]', $swappedRows[0]->getDimensionValues()[0]->getValue() );
+		// `$rows` would have mutated within $response now having the swapped values.
+		$this->assertEquals( '["2","Category,with,commas",1955,"Uncategorized","Normal Category"]', $rows[0]->getDimensionValues()[0]->getValue() );
 	}
 }
