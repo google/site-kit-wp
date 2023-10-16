@@ -51,7 +51,7 @@ class WP_Entity_Helpers {
 	 */
 	public static function get_term_name( $term_id ) {
 		$term = get_term( $term_id );
-		if ( ! $term ) {
+		if ( ! $term || ! $term->name ) {
 			return $term_id;
 		}
 		return $term->name;
