@@ -30,7 +30,7 @@ export default function MetricTileHeader( { title, infoTooltip } ) {
 	return (
 		<div className="googlesitekit-km-widget-tile__title-container">
 			<h3 className="googlesitekit-km-widget-tile__title">{ title }</h3>
-			{ infoTooltip && <InfoTooltip title={ infoTooltip } /> }
+			<InfoTooltip title={ infoTooltip } />
 		</div>
 	);
 }

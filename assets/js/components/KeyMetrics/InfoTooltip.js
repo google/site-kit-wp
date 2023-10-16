@@ -49,5 +49,5 @@ export default function InfoTooltip( { title } ) {
 }
 
 InfoTooltip.propTypes = {
-	title: PropTypes.string.isRequired,
+	title: PropTypes.string,
 };
