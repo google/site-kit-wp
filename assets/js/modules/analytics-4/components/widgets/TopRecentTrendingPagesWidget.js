@@ -22,27 +22,28 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { compose } from '@wordpress/compose';
+
+/**
  * Internal dependencies
  */
 import { KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES } from '../../../../googlesitekit/datastore/user/constants';
 import { MetricTileTable } from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import whenActive from '../../../../util/when-active';
+import withCustomDimensions from '../../utils/withCustomDimensions';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import CustomDimensionsWrapper from '../common/CustomDimensionsWrapper';
 
 function TopRecentTrendingPagesWidget( { Widget } ) {
 	return (
-		<CustomDimensionsWrapper
+		<MetricTileTable
 			widgetSlug={ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES }
-		>
-			<MetricTileTable
-				widgetSlug={ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES }
-				Widget={ Widget }
-				ZeroState={ ZeroDataMessage }
-				moduleSlug="analytics-4"
-			/>
-		</CustomDimensionsWrapper>
+			Widget={ Widget }
+			ZeroState={ ZeroDataMessage }
+			moduleSlug="analytics-4"
+		/>
 	);
 }
 
@@ -50,7 +51,10 @@ TopRecentTrendingPagesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( {
-	moduleName: 'analytics-4',
-	FallbackComponent: ConnectGA4CTATileWidget,
-} )( TopRecentTrendingPagesWidget );
+export default compose(
+	whenActive( {
+		moduleName: 'analytics-4',
+		FallbackComponent: ConnectGA4CTATileWidget,
+	} ),
+	withCustomDimensions()
+)( TopRecentTrendingPagesWidget );

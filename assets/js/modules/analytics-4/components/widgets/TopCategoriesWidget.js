@@ -22,25 +22,28 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { compose } from '@wordpress/compose';
+
+/**
  * Internal dependencies
  */
 import { KM_ANALYTICS_TOP_CATEGORIES } from '../../../../googlesitekit/datastore/user/constants';
 import { MetricTileTable } from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import whenActive from '../../../../util/when-active';
+import withCustomDimensions from '../../utils/withCustomDimensions';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import CustomDimensionsWrapper from '../common/CustomDimensionsWrapper';
 
 function TopCategoriesWidget( { Widget } ) {
 	return (
-		<CustomDimensionsWrapper widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }>
-			<MetricTileTable
-				widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
-				Widget={ Widget }
-				ZeroState={ ZeroDataMessage }
-				moduleSlug="analytics-4"
-			/>
-		</CustomDimensionsWrapper>
+		<MetricTileTable
+			widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
+			Widget={ Widget }
+			ZeroState={ ZeroDataMessage }
+			moduleSlug="analytics-4"
+		/>
 	);
 }
 
@@ -48,7 +51,10 @@ TopCategoriesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( {
-	moduleName: 'analytics-4',
-	FallbackComponent: ConnectGA4CTATileWidget,
-} )( TopCategoriesWidget );
+export default compose(
+	whenActive( {
+		moduleName: 'analytics-4',
+		FallbackComponent: ConnectGA4CTATileWidget,
+	} ),
+	withCustomDimensions()
+)( TopCategoriesWidget );

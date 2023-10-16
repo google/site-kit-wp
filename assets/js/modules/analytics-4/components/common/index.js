@@ -20,4 +20,3 @@ export { default as EnhancedMeasurementSwitch } from './EnhancedMeasurementSwitc
 export { default as WebDataStreamSelect } from './WebDataStreamSelect';
 export { default as PropertySelect } from './PropertySelect';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
-export { default as CustomDimensionsWrapper } from './CustomDimensionsWrapper';

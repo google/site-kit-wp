@@ -1,5 +1,5 @@
 /**
- * CustomDimensionsWrapper Component Stories.
+ * PopularAuthorsWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -21,96 +21,38 @@
  */
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { KM_ANALYTICS_TOP_CATEGORIES } from '../../../../googlesitekit/datastore/user/constants';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import CustomDimensionsWrapper from './CustomDimensionsWrapper';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import { KM_ANALYTICS_POPULAR_AUTHORS } from '../../../../googlesitekit/datastore/user/constants';
+import { provideModules } from '../../../../../../tests/js/utils';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import PopularAuthorsWidget from './PopularAuthorsWidget';
 
-const { Widget } = getWidgetComponentProps( KM_ANALYTICS_TOP_CATEGORIES );
+const WidgetWithComponentProps = withWidgetComponentProps(
+	KM_ANALYTICS_POPULAR_AUTHORS
+)( PopularAuthorsWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<CustomDimensionsWrapper
-			widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
-			{ ...args }
-		>
-			<MetricTileTable
-				widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
-				Widget={ Widget }
-				moduleSlug="analytics-4"
-				rows={ [
-					{
-						field1: [ 'keyword1' ],
-						field2: 0.112,
-					},
-					{
-						field1: [ 'keyword2' ],
-						field2: 0.212,
-					},
-					{
-						field1: [ 'keyword3' ],
-						field2: 0.312,
-					},
-				] }
-				columns={ [
-					{
-						field: 'field1.0',
-						Component: ( { fieldValue } ) => (
-							<a href="http://example.com">{ fieldValue }</a>
-						),
-					},
-					{
-						field: 'field2',
-						Component: ( { fieldValue } ) => (
-							<strong>{ fieldValue }</strong>
-						),
-					},
-				] }
-			/>
-		</CustomDimensionsWrapper>
+		<WidgetWithComponentProps { ...args } />
 	</WithRegistrySetup>
 );
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	rows: [
-		{
-			field1: [ 'keyword1' ],
-			field2: 0.112,
-		},
-		{
-			field1: [ 'keyword2' ],
-			field2: 0.212,
-		},
-		{
-			field1: [ 'keyword3' ],
-			field2: 0.312,
-		},
-	],
-	columns: [
-		{
-			field: 'field1.0',
-			Component: ( { fieldValue } ) => (
-				<a href="http://example.com">{ fieldValue }</a>
-			),
-		},
-		{
-			field: 'field2',
-			Component: ( { fieldValue } ) => <strong>{ fieldValue }</strong>,
-		},
-	],
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '123456789',
-			availableCustomDimensions: [ 'googlesitekit_post_categories' ],
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
 		} );
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/CustomDimensionsWrapper/Ready',
+	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
 };
 Ready.parameters = {
 	features: [ 'newsKeyMetrics' ],
@@ -118,8 +60,11 @@ Ready.parameters = {
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
+ErrorMissingCustomDimensions.args = {
+	setupRegistry: () => {},
+};
 ErrorMissingCustomDimensions.scenario = {
-	label: 'KeyMetrics/CustomDimensionsWrapper/ErrorMissingCustomDimensions',
+	label: 'KeyMetrics/PopularAuthorsWidget/ErrorMissingCustomDimensions',
 };
 ErrorMissingCustomDimensions.parameters = {
 	features: [ 'newsKeyMetrics' ],
@@ -144,13 +89,13 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveCreateCustomDimensionError(
 				error,
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
 					.requiredCustomDimensions?.[ 0 ]
 			);
 	},
 };
 ErrorCustomDimensionsInsufficientPermissions.scenario = {
-	label: 'KeyMetrics/CustomDimensionsWrapper/ErrorCustomDimensionsInsufficientPermissions',
+	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsInsufficientPermissions',
 };
 ErrorCustomDimensionsInsufficientPermissions.parameters = {
 	features: [ 'newsKeyMetrics' ],
@@ -175,22 +120,41 @@ ErrorCustomDimensionsGeneric.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveCreateCustomDimensionError(
 				error,
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
 					.requiredCustomDimensions?.[ 0 ]
 			);
 	},
 };
 ErrorCustomDimensionsGeneric.scenario = {
-	label: 'KeyMetrics/CustomDimensionsWrapper/ErrorCustomDimensionsGeneric',
+	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 };
 ErrorCustomDimensionsGeneric.parameters = {
 	features: [ 'newsKeyMetrics' ],
 };
 
 export default {
-	title: 'Key Metrics/CustomDimensionsWrapper',
-	component: CustomDimensionsWrapper,
-	args: {
-		setupRegistry: () => {},
-	},
+	title: 'Key Metrics/PopularAuthorsWidget',
+	component: PopularAuthorsWidget,
+	decorators: [
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				// Call story-specific setup.
+				args.setupRegistry( registry );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
