@@ -93,6 +93,17 @@ final class Analytics_4 extends Module
 	const MODULE_SLUG = 'analytics-4';
 
 	/**
+	 * Prefix used to fetch custom dimensions in reports.
+	 */
+	const CUSTOM_EVENT_PREFIX = 'customEvent:';
+
+	/**
+	 * Custom dimensions tracked by Site Kit.
+	 */
+	const CUSTOM_DIMENSION_POST_AUTHOR     = 'googlesitekit_post_author';
+	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.30.0
