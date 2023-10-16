@@ -187,7 +187,7 @@ const KEY_METRICS_WIDGETS = {
 		// TODO: Remove this once we have the correct custom dimensions.
 		requiredCustomDimensions: [
 			'googlesitekit_post_author',
-			'googlesitekit_post_type',
+			'googlesitekit_post_categories',
 		],
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
