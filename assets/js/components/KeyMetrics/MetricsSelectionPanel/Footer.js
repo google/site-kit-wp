@@ -54,9 +54,18 @@ import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
+import { useFeature } from '../../../hooks/useFeature';
+import {
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
+import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { savedMetrics } ) {
+	const newsKeyMetricsEnabled = useFeature( 'newsKeyMetrics' );
 	const viewContext = useViewContext();
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -80,6 +89,27 @@ export default function Footer( { savedMetrics } ) {
 		);
 	}, [ savedMetrics, selectedMetrics ] );
 
+	const requiredCustomDimensions = selectedMetrics?.flatMap( ( tileName ) => {
+		const tile = KEY_METRICS_WIDGETS[ tileName ];
+		return tile?.requiredCustomDimensions || [];
+	} );
+
+	const hasMissingCustomDimensions = useSelect( ( select ) => {
+		if ( ! newsKeyMetricsEnabled || ! requiredCustomDimensions?.length ) {
+			return false;
+		}
+
+		const hasCustomDimensions = select(
+			MODULES_ANALYTICS_4
+		).hasCustomDimensions( requiredCustomDimensions );
+
+		return ! hasCustomDimensions;
+	} );
+
+	const hasAnalytics4EditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE )
+	);
+
 	const saveError = useSelect( ( select ) => {
 		if ( haveSettingsChanged && selectedMetrics?.length < 2 ) {
 			return {
@@ -101,8 +131,10 @@ export default function Footer( { savedMetrics } ) {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
 
-	const { saveKeyMetricsSettings } = useDispatch( CORE_USER );
+	const { saveKeyMetricsSettings, setPermissionScopeError } =
+		useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
+	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const [ finalButtonText, setFinalButtonText ] = useState( null );
@@ -121,6 +153,29 @@ export default function Footer( { savedMetrics } ) {
 		if ( ! error ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 			trackEvent( trackingCategory, 'metrics_sidebar_save' );
+			if ( newsKeyMetricsEnabled ) {
+				if ( hasMissingCustomDimensions ) {
+					setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+						autoSubmit: true,
+					} );
+
+					if ( ! hasAnalytics4EditScope ) {
+						setPermissionScopeError( {
+							code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+							message: __(
+								'Additional permissions are required to create new Analytics custom dimensions.',
+								'google-site-kit'
+							),
+							data: {
+								status: 403,
+								scopes: [ ANALYTICS_EDIT_SCOPE ],
+								skipModal: true,
+							},
+						} );
+					}
+				}
+			}
+
 			// lock the button label while panel is closing
 			setFinalButtonText( currentButtonText );
 			setWasSaved( true );
@@ -129,8 +184,13 @@ export default function Footer( { savedMetrics } ) {
 		saveKeyMetricsSettings,
 		selectedMetrics,
 		setValue,
-		currentButtonText,
 		trackingCategory,
+		newsKeyMetricsEnabled,
+		currentButtonText,
+		hasMissingCustomDimensions,
+		setValues,
+		hasAnalytics4EditScope,
+		setPermissionScopeError,
 	] );
 
 	const onCancelClick = useCallback( () => {
@@ -166,8 +226,23 @@ export default function Footer( { savedMetrics } ) {
 		setPrevIsOpen( isOpen );
 	}, [ isOpen, prevIsOpen ] );
 
+	const customDimensionMessage = hasAnalytics4EditScope
+		? __(
+				'The metrics you selected require more data tracking. We will update your Analytics property after saving your selection.',
+				'google-site-kit'
+		  )
+		: __(
+				'The metrics you selected require more data tracking. You will be directed to update your Analytics property after saving your selection.',
+				'google-site-kit'
+		  );
+
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
+			{ hasMissingCustomDimensions && (
+				<p className="googlesitekit-km-selection-panel-footer__note">
+					{ customDimensionMessage }
+				</p>
+			) }
 			{ saveError && (
 				<ErrorNotice
 					error={ saveError }
