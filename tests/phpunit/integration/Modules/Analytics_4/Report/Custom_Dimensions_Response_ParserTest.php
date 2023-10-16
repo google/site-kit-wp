@@ -63,8 +63,6 @@ class Custom_Dimensions_Response_ParserTest extends TestCase {
 		$dimension_header_post_categories->setName( 'customEvent:googlesitekit_post_categories' );
 		$response->setDimensionHeaders( array( $dimension_header_post_categories ) );
 
-		$rows = array();
-
 		$category_with_number = $this->factory()->category->create( array( 'name' => '2' ) );
 		$category_with_commas = $this->factory()->category->create( array( 'name' => 'Category,with,commas' ) );
 		$normal_category      = $this->factory()->category->create( array( 'name' => 'Normal Category' ) );
