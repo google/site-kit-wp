@@ -31,6 +31,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	render,
+	waitFor,
 } from '../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import {
@@ -39,6 +40,7 @@ import {
 } from '../../modules/adsense/datastore/constants';
 import * as tracking from '../../util/tracking';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
+import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -90,6 +92,15 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 	} );
 
 	it( 'should render notification otherwise', async () => {
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			{
+				authenticated: true,
+			}
+		);
+
+		mockSurveyEndpoints( registry );
+
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.setAdBlockingRecoverySetupStatus(
@@ -121,6 +132,19 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'mainDashboard_adsense-abr-success-notification',
 			'confirm_notification'
+		);
+
+		// The survey trigger endpoint should be called.
+		const surveyTriggerEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/survey-trigger'
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'abr_setup_completed' },
+				},
+			} )
 		);
 	} );
 } );
