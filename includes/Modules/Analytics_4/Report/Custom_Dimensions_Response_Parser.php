@@ -107,7 +107,7 @@ class Custom_Dimensions_Response_Parser {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Google_Service_AnalyticsData_RunReportResponse $response The respone to swap values in.
+	 * @param Google_Service_AnalyticsData_RunReportResponse $response The response to swap values in.
 	 * @return void Swaps the IDs of custom dimensions within the given response instance.
 	 */
 	public function swap_custom_dimension_ids_with_names( $response ) {
