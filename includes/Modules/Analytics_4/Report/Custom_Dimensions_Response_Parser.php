@@ -91,14 +91,26 @@ class Custom_Dimensions_Response_Parser {
 	 * @return string JSON encoded string of comma separated category names (or their original IDs if no name is found).
 	 */
 	public function get_post_category_names( $category_ids_string ) {
-		$category_ids = json_decode( '[' . $category_ids_string . ']', true );
+		$category_ids = explode( ',', $category_ids_string );
 
-		if ( ! $category_ids ) {
-			return $category_ids_string;
-		}
+		// Explode converts all split values to strings. So we cast any numeric
+		// strings to `int` so that if a display name is not found for a
+		// category_id, then the original category_id int can be passed
+		// through directly in the response.
+		$category_ids = array_map(
+			function ( $id ) {
+				return is_numeric( $id ) ? (int) $id : $id;
+			},
+			$category_ids
+		);
 
 		$category_names = array();
 		foreach ( $category_ids as $category_id ) {
+			if ( ! is_numeric( $category_id ) ) {
+				$category_names[] = $category_id;
+				continue;
+			}
+
 			if ( ! isset( $this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ][ $category_id ] ) ) {
 				$term = get_term( $category_id );
 				$this->cache_map[ Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ][ $category_id ] = isset( $term->name ) ? $term->name : $category_id;

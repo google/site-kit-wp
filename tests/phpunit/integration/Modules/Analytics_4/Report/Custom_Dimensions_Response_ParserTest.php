@@ -71,7 +71,7 @@ class Custom_Dimensions_Response_ParserTest extends TestCase {
 		$category_with_number = $this->factory()->category->create( array( 'name' => '2' ) );
 		$category_with_commas = $this->factory()->category->create( array( 'name' => 'Category,with,commas' ) );
 		$normal_category      = $this->factory()->category->create( array( 'name' => 'Normal Category' ) );
-		$category_ids_string  = implode( ',', array( $category_with_number, $category_with_commas, 1955, $normal_category ) ); // 1955 would be a non-existent category
+		$category_ids_string  = implode( ',', array( $category_with_number, $category_with_commas, 1955, 'Uncategorized', $normal_category ) ); // 1955 would be a non-existent category
 
 		$rows = $this->create_rows_with_dimension_values( array( $category_ids_string ) );
 		$response->setRows( $rows );
@@ -79,6 +79,6 @@ class Custom_Dimensions_Response_ParserTest extends TestCase {
 		$custom_dimension_query->swap_custom_dimension_ids_with_names();
 
 		$swappedRows = $response->getRows();
-		$this->assertEquals( '["2","Category,with,commas",1955,"Normal Category"]', $swappedRows[0]->getDimensionValues()[0]->getValue() );
+		$this->assertEquals( '["2","Category,with,commas",1955,"Uncategorized","Normal Category"]', $swappedRows[0]->getDimensionValues()[0]->getValue() );
 	}
 }
