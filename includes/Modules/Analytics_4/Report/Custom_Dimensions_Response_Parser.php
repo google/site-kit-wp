@@ -26,7 +26,7 @@ class Custom_Dimensions_Response_Parser {
 	 * Cache display name results.
 	 *
 	 * @since n.e.x.t
-	 * @var $cache_map
+	 * @var array
 	 */
 	protected $cache_map = array(
 		Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR     => array(),
