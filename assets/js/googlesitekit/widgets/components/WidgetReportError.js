@@ -17,21 +17,14 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import ReportError from '../../../components/ReportError';
 
-// eslint-disable-next-line no-unused-vars
-export default function WidgetReportError( { widgetSlug, ...props } ) {
-	return <ReportError { ...props } />;
+export default function WidgetReportError( { moduleSlug, error } ) {
+	return <ReportError moduleSlug={ moduleSlug } error={ error } />;
 }
 
 WidgetReportError.propTypes = {
-	widgetSlug: PropTypes.string.isRequired,
 	...ReportError.propTypes,
 };
