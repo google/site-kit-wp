@@ -49,7 +49,7 @@ import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metri
 import { Button } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import MetricTileError from '../../../../components/KeyMetrics/MetricTileError';
-import MetricTileLoading from '../../../../components/KeyMetrics/MetricTileLoading';
+import MetricTileWrapper from '../../../../components/KeyMetrics/MetricTileWrapper';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_BAD_REQUEST,
@@ -324,12 +324,13 @@ export default function CustomDimensionsWrapper( {
 		const { Widget } = getWidgetComponentProps( widgetSlug );
 
 		return (
-			<Widget noPadding>
-				<MetricTileLoading
-					title={ title }
-					infoTooltip={ infoTooltip }
-				/>
-			</Widget>
+			<MetricTileWrapper
+				infoTooltip={ infoTooltip }
+				loading
+				moduleSlug="analytics-4"
+				title={ title }
+				Widget={ Widget }
+			/>
 		);
 	}
 
