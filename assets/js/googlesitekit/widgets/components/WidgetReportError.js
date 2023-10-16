@@ -44,22 +44,26 @@ export default function WidgetReportError( { moduleSlug, error } ) {
 
 	const { setValue } = useDispatch( CORE_UI );
 
+	const errorMessage = Array.isArray( error )
+		? error[ 0 ].message
+		: error.message;
+
 	const selectInstanceID = useSelect( ( select ) =>
 		select( CORE_UI ).getValue(
-			`WidgetReportError-${ moduleSlug }-${ error.message }`
+			`WidgetReportError-${ moduleSlug }-${ errorMessage }`
 		)
 	);
 
 	useLifecycles(
 		() => {
 			setValue(
-				`WidgetReportError-${ moduleSlug }-${ error.message }`,
+				`WidgetReportError-${ moduleSlug }-${ errorMessage }`,
 				errorInstanceID
 			);
 		},
 		() => {
 			setValue(
-				`WidgetReportError-${ moduleSlug }-${ error.message }`,
+				`WidgetReportError-${ moduleSlug }-${ errorMessage }`,
 				undefined
 			);
 		}
