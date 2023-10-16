@@ -38,9 +38,10 @@ import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/cons
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { useInView } from '../../../../hooks/useInView';
 import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
+import { DAY_IN_SECONDS, trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
+import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
 
 const { useDispatch, useSelect } = Data;
 
@@ -135,6 +136,10 @@ export default function AdBlockingRecoverySetupCTANotice() {
 					),
 				}
 			) }
+			<SurveyViewTrigger
+				triggerID="view_abr_setup_cta"
+				ttl={ DAY_IN_SECONDS }
+			/>
 		</SettingsNotice>
 	);
 }

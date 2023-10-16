@@ -34,14 +34,22 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../modules/adsense/datastore/constants';
-import { trackEvent } from '../../util';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import Link from '../Link';
 import BannerNotification from './BannerNotification';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function AdBlockingRecoverySetupSuccessBannerNotification() {
 	const viewContext = useViewContext();
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
@@ -75,7 +83,11 @@ export default function AdBlockingRecoverySetupSuccessBannerNotification() {
 			`${ viewContext }_adsense-abr-success-notification`,
 			'view_notification'
 		);
-	}, [ viewContext ] );
+
+		if ( usingProxy ) {
+			triggerSurvey( 'abr_setup_completed', { ttl: DAY_IN_SECONDS } );
+		}
+	}, [ triggerSurvey, usingProxy, viewContext ] );
 
 	if (
 		adBlockingRecoverySetupStatus !==
