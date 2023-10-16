@@ -45,7 +45,7 @@ class Custom_Dimensions_Response_Parser {
 	 * @param string|int $user_id User ID of the user to get the display name of.
 	 * @return string|int Display name of the user or their original ID if no name is found.
 	 */
-	public function get_post_author_name( $user_id ) {
+	protected function get_post_author_name( $user_id ) {
 		if ( ! is_numeric( $user_id ) ) {
 			return $user_id;
 		}
@@ -70,7 +70,7 @@ class Custom_Dimensions_Response_Parser {
 	 * @param string $category_ids_string Comma separated string list of IDs of categories to get names of.
 	 * @return string JSON encoded string of comma separated category names (or their original IDs if no name is found).
 	 */
-	public function get_post_category_names( $category_ids_string ) {
+	protected function get_post_category_names( $category_ids_string ) {
 		$category_ids = explode( ',', $category_ids_string );
 
 		// Explode converts all split values to strings. So we cast any numeric
