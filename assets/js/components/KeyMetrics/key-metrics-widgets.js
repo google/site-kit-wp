@@ -55,6 +55,9 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
  * widgets that require custom dimensions will only be displayed if the required custom
  * dimensions are available in the shared property.
  *
+ * This function is attached to the widget object that requires the custom dimensions and
+ * has the `requiredCustomDimensions` property.
+ *
  * @since n.e.x.t
  *
  * @param {Function} select              Data store select function.
@@ -74,6 +77,8 @@ function shouldDisplayWidgetWithCustomDimensions(
 	}
 
 	return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+		// This property is available to the widget object that requires the
+		// custom dimensions, where the function is attached.
 		this.requiredCustomDimensions
 	);
 }
