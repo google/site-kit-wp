@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Report;
 
-use Google\Site_Kit\Core\Util\WP_Entity_Helpers;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse as Google_Service_AnalyticsData_RunReportResponse;
 
@@ -24,14 +23,6 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse 
 class Custom_Dimensions_Response_Parser {
 
 	/**
-	 * Request response that should be modified.
-	 *
-	 * @since n.e.x.t
-	 * @var $response
-	 */
-	protected $response;
-
-	/**
 	 * Cache display name results.
 	 *
 	 * @since n.e.x.t
@@ -41,17 +32,6 @@ class Custom_Dimensions_Response_Parser {
 		Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR     => array(),
 		Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES => array(),
 	);
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Google_Service_AnalyticsData_RunReportResponse $response The respone to swap values in.
-	 */
-	public function __construct( Google_Service_AnalyticsData_RunReportResponse $response ) {
-		$this->response = $response;
-	}
 
 	/**
 	 * Gets the display name for a given user ID.
@@ -127,14 +107,15 @@ class Custom_Dimensions_Response_Parser {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return Google_Service_AnalyticsData_RunReportResponse Response with any IDs of custom dimensions converted to their display names.
+	 * @param Google_Service_AnalyticsData_RunReportResponse $response The respone to swap values in.
+	 * @return void Swaps the IDs of custom dimensions within the given response instance.
 	 */
-	public function swap_custom_dimension_ids_with_names() {
-		if ( $this->response->getRowCount() === 0 ) {
-			return $this->response;
+	public function swap_custom_dimension_ids_with_names( $response ) {
+		if ( $response->getRowCount() === 0 ) {
+			return;
 		}
 
-		$dimension_headers = $this->response->getDimensionHeaders();
+		$dimension_headers = $response->getDimensionHeaders();
 
 		// Create a map of any custom dimension to its equivalent parsing function to avoid
 		// looping through report rows multiple times below.
@@ -150,10 +131,10 @@ class Custom_Dimensions_Response_Parser {
 		}
 
 		if ( empty( $custom_dimension_map ) ) {
-			return $this->response;
+			return;
 		}
 
-		$rows = $this->response->getRows();
+		$rows = $response->getRows();
 
 		foreach ( $rows as $row ) {
 			foreach ( $custom_dimension_map as $dimension_key => $callable ) {
@@ -163,8 +144,7 @@ class Custom_Dimensions_Response_Parser {
 			}
 		}
 
-		$this->response->setRows( $rows );
-		return $this->response;
+		$response->setRows( $rows );
 	}
 
 }
