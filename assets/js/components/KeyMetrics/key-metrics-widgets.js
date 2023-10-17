@@ -42,6 +42,7 @@ import {
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	CORE_USER,
+	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
@@ -176,6 +177,15 @@ const KEY_METRICS_WIDGETS = {
 			'Pages with the highest engagement rate',
 			'google-site-kit'
 		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
+		title: __( 'Top categories by pageviews', 'google-site-kit' ),
+		description: __(
+			'Categories that your site visitors viewed the most',
+			'google-site-kit'
+		),
+		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 };
