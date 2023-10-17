@@ -114,17 +114,11 @@ class Custom_Dimensions_Data_Available {
 	 * Resets the data available state for all custom dimensions.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @return bool True on success, false otherwise.
 	 */
 	public function reset_data_available() {
 		foreach ( self::CUSTOM_DIMENSION_PARAMETER_NAMES as $parameter_name ) {
-			if ( ! $this->transients->delete( $this->get_data_available_transient_name( $parameter_name ) ) ) {
-				return false;
-			}
+			$this->transients->delete( $this->get_data_available_transient_name( $parameter_name ) );
 		}
-
-		return true;
 	}
 
 	/**
