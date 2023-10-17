@@ -36,12 +36,15 @@ import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 
 describe( 'MetricsSelectionPanel', () => {
 	let registry;
@@ -365,6 +368,9 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
+				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
+					modules: [ 'analytics-4' ],
+				},
 			} );
 		} );
 
@@ -376,6 +382,84 @@ describe( 'MetricsSelectionPanel', () => {
 					'.googlesitekit-km-selection-panel-footer .googlesitekit-button-icon--spinner'
 				)
 			).toBeDisabled();
+		} );
+
+		it( 'should display appropriate message when a metric requires custom dimensions and does not have edit scope', async () => {
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_LOYAL_VISITORS,
+				],
+			} );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				availableCustomDimensions: [],
+			} );
+
+			const { container, getByText, findByLabelText } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+					features: [ 'newsKeyMetrics' ],
+				}
+			);
+
+			// Verify that the message is not displayed by default.
+			expect( container ).not.toHaveTextContent(
+				'The metrics you selected require more data tracking. You will be directed to update your Analytics property after saving your selection.'
+			);
+
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				getByText(
+					/The metrics you selected require more data tracking. You will be directed to update your Analytics property after saving your selection./i
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should display appropriate message when a metric requires custom dimensions and has edit scope', async () => {
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_LOYAL_VISITORS,
+				],
+			} );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				availableCustomDimensions: [],
+			} );
+
+			provideUserAuthentication( registry, {
+				grantedScopes: EDIT_SCOPE,
+			} );
+
+			const { container, getByText, findByLabelText } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+					features: [ 'newsKeyMetrics' ],
+				}
+			);
+
+			// Verify that the message is not displayed by default.
+			expect( container ).not.toHaveTextContent(
+				'The metrics you selected require more data tracking. We will update your Analytics property after saving your selection.'
+			);
+
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				getByText(
+					/The metrics you selected require more data tracking. We will update your Analytics property after saving your selection./i
+				)
+			).toBeInTheDocument();
 		} );
 
 		describe( 'CTA', () => {

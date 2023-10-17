@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.3
 Requires PHP:      5.6
-Stable tag:        1.111.0
+Stable tag:        1.111.1
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, tag-manager, site-kit
@@ -108,6 +108,12 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.111.1 =
+
+**Enhanced**
+
+* Add happiness tracking surveys for the Ad Blocking Recovery feature. See [#7686](https://github.com/google/site-kit-wp/issues/7686).
 
 = 1.111.0 =
 
