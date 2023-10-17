@@ -106,6 +106,8 @@ function TopRecentTrendingPages( { Widget } ) {
 			) || titles === undefined
 	);
 
+	const { rows = [] } = report || {};
+
 	const columns = [
 		{
 			field: 'dimensionValues.0.value',
@@ -160,6 +162,7 @@ function TopRecentTrendingPages( { Widget } ) {
 			Widget={ Widget }
 			title={ __( 'Top recent trending pages', 'google-site-kit' ) }
 			loading={ loading }
+			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
