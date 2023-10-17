@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { isFunction } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import {
@@ -158,9 +163,13 @@ export default function withCustomDimensions( options = {} ) {
 					return null;
 				}
 
+				const args = isFunction( reportOptions )
+					? reportOptions( select )
+					: reportOptions;
+
 				return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 					'getReport',
-					[ reportOptions ]
+					[ args ]
 				);
 			} );
 
