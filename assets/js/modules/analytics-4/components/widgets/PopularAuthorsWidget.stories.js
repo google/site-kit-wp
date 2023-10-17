@@ -24,6 +24,7 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { KM_ANALYTICS_POPULAR_AUTHORS } from '../../../../googlesitekit/datastore/user/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
+import { provideCustomDimensionError } from '../../test-utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PopularAuthorsWidget from './PopularAuthorsWidget';
@@ -79,13 +80,12 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveCreateCustomDimensionError(
-				error,
+		provideCustomDimensionError( registry, {
+			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ]
-			);
+					.requiredCustomDimensions?.[ 0 ],
+			error,
+		} );
 	},
 };
 ErrorCustomDimensionsInsufficientPermissions.parameters = {
@@ -107,13 +107,12 @@ ErrorCustomDimensionsGeneric.args = {
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveCreateCustomDimensionError(
-				error,
+		provideCustomDimensionError( registry, {
+			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ]
-			);
+					.requiredCustomDimensions?.[ 0 ],
+			error,
+		} );
 	},
 };
 ErrorCustomDimensionsGeneric.parameters = {

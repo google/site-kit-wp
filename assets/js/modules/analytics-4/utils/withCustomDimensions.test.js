@@ -22,6 +22,7 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../tests/js/test-utils';
+import { provideCustomDimensionError } from '../test-utils';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import withCustomDimensions from './withCustomDimensions';
@@ -69,9 +70,10 @@ describe( 'withCustomDimensions', () => {
 			},
 		};
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveCreateCustomDimensionError( error, customDimension );
+		provideCustomDimensionError( registry, {
+			customDimension,
+			error,
+		} );
 
 		const { container } = render( <WithCustomDimensionsComponent />, {
 			registry,
@@ -94,9 +96,10 @@ describe( 'withCustomDimensions', () => {
 			},
 		};
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveCreateCustomDimensionError( error, customDimension );
+		provideCustomDimensionError( registry, {
+			customDimension,
+			error,
+		} );
 
 		const { container } = render( <WithCustomDimensionsComponent />, {
 			registry,

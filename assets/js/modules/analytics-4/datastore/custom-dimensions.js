@@ -43,7 +43,7 @@ import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-
 
 const { createRegistrySelector } = Data;
 
-const possibleCustomDimensions = {
+export const possibleCustomDimensions = {
 	googlesitekit_post_date: {
 		parameterName: 'googlesitekit_post_date',
 		displayName: __( 'WordPress Post Creation Date', 'google-site-kit' ),
@@ -229,19 +229,13 @@ const baseActions = {
 	*syncAvailableCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const propertyID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyID();
-
 		yield {
 			type: SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION,
 			payload: { isSyncing: true },
 		};
 
 		const { response, error } =
-			yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
-				propertyID
-			);
+			yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
 
 		if ( response ) {
 			yield registry
@@ -255,31 +249,6 @@ const baseActions = {
 		};
 
 		return { response, error };
-	},
-
-	/**
-	 * Sets custom dimension creation error in the store.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} error           The error object.
-	 * @param {string} customDimension Custom dimension to set creation error for.
-	 */
-	*receiveCreateCustomDimensionError( error, customDimension ) {
-		const registry = yield Data.commonActions.getRegistry();
-
-		const propertyID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyID();
-
-		const options = [
-			propertyID,
-			possibleCustomDimensions[ customDimension ],
-		];
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'createCustomDimension', options );
 	},
 };
 
