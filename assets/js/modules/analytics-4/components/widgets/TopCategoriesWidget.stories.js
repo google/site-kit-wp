@@ -27,7 +27,7 @@ import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopCategoriesWidget from './TopCategoriesWidget';
-import { provideCustomDimensionError } from '../../test-utils';
+import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_CATEGORIES

@@ -22,7 +22,7 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../tests/js/test-utils';
-import { provideCustomDimensionError } from '../test-utils';
+import { provideCustomDimensionError } from '../utils/custom-dimensions';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import withCustomDimensions from './withCustomDimensions';

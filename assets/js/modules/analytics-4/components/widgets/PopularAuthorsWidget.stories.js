@@ -24,7 +24,7 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { KM_ANALYTICS_POPULAR_AUTHORS } from '../../../../googlesitekit/datastore/user/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
-import { provideCustomDimensionError } from '../../test-utils';
+import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PopularAuthorsWidget from './PopularAuthorsWidget';
