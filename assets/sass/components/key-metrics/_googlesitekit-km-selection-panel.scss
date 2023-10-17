@@ -31,10 +31,11 @@
 		}
 
 		p {
+			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
-			margin: 4px 0 8px;
+			margin: $grid-gap-desktop / 2 0 0;
 		}
 	}
 
@@ -81,20 +82,26 @@
 		}
 	}
 
+	.googlesitekit-km-selection-panel-footer__content {
+		align-items: center;
+		column-gap: $grid-gap-desktop;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		margin-top: $grid-gap-desktop / 2;
+	}
+
+	.googlesitekit-km-selection-panel-footer__metric-count {
+		font-weight: $fw-medium;
+	}
+
 	.googlesitekit-km-selection-panel-footer__actions {
 		align-items: center;
 		column-gap: $grid-gap-desktop;
 		display: flex;
-		justify-content: center;
-		margin-top: $grid-gap-desktop / 2;
 
 		.googlesitekit-cta-link {
 			color: $c-surfaces-on-surface-variant;
 		}
-	}
-
-	.googlesitekit-km-selection-panel-footer__note {
-		color: $c-surfaces-on-surface;
-		margin: 14px 0 0;
 	}
 }
