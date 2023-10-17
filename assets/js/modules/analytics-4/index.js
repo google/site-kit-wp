@@ -217,22 +217,6 @@ export const registerWidgets = ( widgets ) => {
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
 
-		widgets.registerWidget(
-			KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-			{
-				Component: TopRecentTrendingPages,
-				width: widgets.WIDGET_WIDTHS.QUARTER,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ 'analytics-4' ],
-				isActive: ( select ) =>
-					select( CORE_USER ).isKeyMetricActive(
-						KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
-					),
-			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-
 		if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
 			widgets.registerWidget(
 				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
@@ -299,6 +283,22 @@ export const registerWidgets = ( widgets ) => {
 				isActive: ( select ) =>
 					select( CORE_USER ).isKeyMetricActive(
 						KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+			{
+				Component: TopRecentTrendingPages,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
 					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
