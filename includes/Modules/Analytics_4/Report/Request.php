@@ -282,6 +282,7 @@ class Request extends Report {
 				'pageTitle',
 				'sessionDefaultChannelGroup',
 				'sessionDefaultChannelGrouping',
+				'customEvent:googlesitekit_post_date',
 			)
 		);
 
