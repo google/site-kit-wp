@@ -221,6 +221,10 @@ ErrorMissingCustomDimensions.args = {
 ErrorMissingCustomDimensions.parameters = {
 	features: [ 'newsKeyMetrics' ],
 };
+ErrorMissingCustomDimensions.scenario = {
+	label: 'KeyMetrics/TopCategoriesWidget/ErrorMissingCustomDimensions',
+	delay: 250,
+};
 
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
 ErrorCustomDimensionsInsufficientPermissions.storyName =
@@ -248,6 +252,10 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 ErrorCustomDimensionsInsufficientPermissions.parameters = {
 	features: [ 'newsKeyMetrics' ],
 };
+ErrorCustomDimensionsInsufficientPermissions.scenario = {
+	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsInsufficientPermissions',
+	delay: 250,
+};
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
 ErrorCustomDimensionsGeneric.storyName =
@@ -274,6 +282,10 @@ ErrorCustomDimensionsGeneric.args = {
 };
 ErrorCustomDimensionsGeneric.parameters = {
 	features: [ 'newsKeyMetrics' ],
+};
+ErrorCustomDimensionsGeneric.scenario = {
+	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsGeneric',
+	delay: 250,
 };
 
 export default {
