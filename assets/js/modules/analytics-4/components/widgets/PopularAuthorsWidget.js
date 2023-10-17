@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -44,12 +43,10 @@ import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
-import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import withCustomDimensions from '../../utils/withCustomDimensions';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import useViewOnly from '../../../../hooks/useViewOnly';
 import { numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
@@ -75,8 +72,6 @@ function getPopularAuthorsWidgetReportOptions( select ) {
 function PopularAuthorsWidget( props ) {
 	const { Widget } = props;
 
-	const viewOnlyDashboard = useViewOnly();
-
 	const reportOptions = useSelect( getPopularAuthorsWidgetReportOptions );
 	const report = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
@@ -101,57 +96,15 @@ function PopularAuthorsWidget( props ) {
 	const columns = [
 		{
 			field: 'dimensionValues.0.value',
-			Component: ( { fieldValue } ) => {
-				const url = fieldValue;
-				const title = fieldValue;
-				// Utilizing `useSelect` inside the component rather than
-				// returning its direct value to the `columns` array.
-				// This pattern ensures that the component re-renders correctly based on changes in state,
-				// preventing potential issues with stale or out-of-sync data.
-				// Note: This pattern is replicated in a few other spots within our codebase.
-				const serviceURL = useSelect( ( select ) => {
-					return ! viewOnlyDashboard
-						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
-								'all-pages-and-screens',
-								{
-									filters: {
-										unifiedPagePathScreen: url,
-									},
-									dates: {},
-								}
-						  )
-						: null;
-				} );
-
-				if ( viewOnlyDashboard ) {
-					return <MetricTileTablePlainText content={ title } />;
-				}
-
-				return (
-					<Link
-						href={ serviceURL }
-						title={ title }
-						external
-						hideExternalIndicator
-					>
-						{ title }
-					</Link>
-				);
-			},
+			Component: ( { fieldValue } ) => (
+				<MetricTileTablePlainText content={ fieldValue } />
+			),
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) =>
-				createInterpolateElement( '<metricValue /> CTR', {
-					metricValue: (
-						<strong>
-							{ numFmt( fieldValue, {
-								style: 'percent',
-								maximumFractionDigits: 1,
-							} ) }
-						</strong>
-					),
-				} ),
+			Component: ( { fieldValue } ) => (
+				<strong>{ numFmt( fieldValue ) }</strong>
+			),
 		},
 	];
 
