@@ -2887,6 +2887,123 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_inline_custom_dimension_data_initial_state() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		$this->analytics->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'customDimensionsDataAvailable' => array(
+					'googlesitekit_post_author'     => false,
+					'googlesitekit_post_type'       => false,
+					'googlesitekit_post_date'       => false,
+					'googlesitekit_post_categories' => false,
+				),
+			),
+			$inline_modules_data['analytics-4']
+		);
+	}
+
+	public function test_set_custom_dimension_data_available() {
+		$this->enable_feature( 'newsKeyMetrics' );
+
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$this->analytics->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$response = $this->analytics->set_data(
+			'custom-dimension-data-available',
+			array(
+				'parameterName' => 'googlesitekit_post_author',
+			)
+		);
+
+		$this->assertEquals( true, $response );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'customDimensionsDataAvailable' => array(
+					'googlesitekit_post_author'     => true,
+					'googlesitekit_post_type'       => false,
+					'googlesitekit_post_date'       => false,
+					'googlesitekit_post_categories' => false,
+				),
+			),
+			$inline_modules_data['analytics-4']
+		);
+	}
+
+	public function test_custom_dimension_data_available_reset_on_measurement_id_change() {
+		$this->enable_feature( 'newsKeyMetrics' );
+
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$this->analytics->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'measurementID' => 'A1B2C3D4E5',
+			)
+		);
+
+		$this->analytics->set_data(
+			'custom-dimension-data-available',
+			array(
+				'parameterName' => 'googlesitekit_post_author',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'customDimensionsDataAvailable' => array(
+					'googlesitekit_post_author'     => true,
+					'googlesitekit_post_type'       => false,
+					'googlesitekit_post_date'       => false,
+					'googlesitekit_post_categories' => false,
+				),
+			),
+			$inline_modules_data['analytics-4']
+		);
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'measurementID' => 'F6G7H8I9J0',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'customDimensionsDataAvailable' => array(
+					'googlesitekit_post_author'     => false,
+					'googlesitekit_post_type'       => false,
+					'googlesitekit_post_date'       => false,
+					'googlesitekit_post_categories' => false,
+				),
+			),
+			$inline_modules_data['analytics-4']
+		);
+	}
+
 	/**
 	 * @return Module_With_Scopes
 	 */
