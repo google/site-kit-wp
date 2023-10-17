@@ -120,34 +120,26 @@ export default function withCustomDimensions( options = {} ) {
 
 				return errors;
 			} );
-			const helpLink = useSelect( ( select ) => {
-				if ( ! customDimensionsCreationErrors.length ) {
-					return undefined;
-				}
-
-				return select( CORE_SITE ).getErrorTroubleshootingLinkURL(
-					customDimensionsCreationErrors.find(
-						isInsufficientPermissionsError
-					) || customDimensionsCreationErrors[ 0 ]
-				);
-			} );
-			const hasAnalyticsEditScope = useSelect( ( select ) => {
-				if ( ! customDimensions ) {
-					return undefined;
-				}
-
-				return select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE );
-			} );
+			const helpLink = useSelect(
+				( select ) =>
+					!! customDimensionsCreationErrors.length &&
+					select( CORE_SITE ).getErrorTroubleshootingLinkURL(
+						customDimensionsCreationErrors.find(
+							isInsufficientPermissionsError
+						) || customDimensionsCreationErrors[ 0 ]
+					)
+			);
+			const hasAnalyticsEditScope = useSelect(
+				( select ) =>
+					!! customDimensions &&
+					select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE )
+			);
 			const isSyncingAvailableCustomDimensions = useSelect(
-				( select ) => {
-					if ( ! customDimensions ) {
-						return false;
-					}
-
-					return select(
+				( select ) =>
+					!! customDimensions &&
+					select(
 						MODULES_ANALYTICS_4
-					).isSyncingAvailableCustomDimensions();
-				}
+					).isSyncingAvailableCustomDimensions()
 			);
 			const isNavigatingToOAuthURL = useSelect( ( select ) => {
 				const OAuthURL = select( CORE_USER ).getConnectURL( {
@@ -368,6 +360,14 @@ export default function withCustomDimensions( options = {} ) {
 
 			return <WrappedComponent { ...props } />;
 		};
+
+		WithCustomDimensionsComponent.displayName = 'WithCustomDimensions';
+
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			WithCustomDimensionsComponent.displayName += `(${
+				WrappedComponent.displayName || WrappedComponent.name
+			})`;
+		}
 
 		return WithCustomDimensionsComponent;
 	};
