@@ -80,9 +80,7 @@ export default function Notice() {
 
 	return (
 		<div className="googlesitekit-km-selection-panel-notice">
-			<p className="googlesitekit-km-selection-panel-footer__note">
-				{ customDimensionMessage }
-			</p>
+			<p>{ customDimensionMessage }</p>
 		</div>
 	);
 }

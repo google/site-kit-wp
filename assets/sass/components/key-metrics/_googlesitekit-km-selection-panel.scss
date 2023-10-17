@@ -64,6 +64,18 @@
 		}
 	}
 
+	.googlesitekit-km-selection-panel-notice {
+		background-color: $c-utility-warning-container;
+		padding: $grid-gap-phone $grid-gap-desktop;
+
+		p {
+			font-size: $fs-label-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-label-sm;
+			margin: 0;
+		}
+	}
+
 	.googlesitekit-km-selection-panel-footer {
 		background-color: $c-surfaces-background;
 		margin-top: auto;
