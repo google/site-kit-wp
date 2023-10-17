@@ -36,7 +36,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { numFmt } from '../../../../util';
+import { listFormat, numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import {
 	MetricTileTable,
@@ -94,8 +94,8 @@ function TopCategoriesWidget( { Widget } ) {
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ categories ] = fieldValue;
-				const categoriesString = JSON.parse( categories.value ).join(
-					', '
+				const categoriesString = listFormat(
+					JSON.parse( categories.value )
 				);
 
 				return (
