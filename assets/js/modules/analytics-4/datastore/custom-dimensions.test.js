@@ -33,9 +33,11 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../../googlesitekit/datastore/user/constants';
 import { enabledFeatures } from '../../../features';
+import { generateErrorKey } from '../../../googlesitekit/data/create-error-store';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
 	let registry;
+	let store;
 
 	const propertyID = '123456';
 	const customDimension = {
@@ -56,6 +58,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
 
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -267,6 +270,14 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 		describe( 'receiveCreateCustomDimensionError', () => {
 			it( 'sets error in the datastore for the provided custom dimension', () => {
+				const dimension = 'googlesitekit_post_date';
+				const dimensionOptions = {
+					parameterName: 'googlesitekit_post_date',
+					displayName: 'WordPress Post Creation Date',
+					description: 'Date of which this post was published',
+					scope: 'EVENT',
+				};
+
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 				} );
@@ -281,17 +292,21 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveCreateCustomDimensionError(
-						error,
-						'googlesitekit_post_date'
-					);
+					.receiveCreateCustomDimensionError( error, dimension );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getCreateCustomDimensionError(
-							'googlesitekit_post_date'
-						)
+						.getCreateCustomDimensionError( dimension )
+				).toEqual( error );
+
+				expect(
+					store.getState().errors[
+						generateErrorKey( 'createCustomDimension', [
+							propertyID,
+							dimensionOptions,
+						] )
+					]
 				).toEqual( error );
 			} );
 		} );
