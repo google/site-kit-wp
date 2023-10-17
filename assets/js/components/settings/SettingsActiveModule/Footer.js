@@ -190,14 +190,13 @@ export default function Footer( props ) {
 		);
 	} );
 
-	let buttonText;
+	let buttonText = __( 'Save', 'google-site-kit' );
 
+	if ( canSubmitChanges ) {
+		buttonText = __( 'Apply changes', 'google-site-kit' );
+	}
 	if ( isSaving ) {
 		buttonText = __( 'Saving…', 'google-site-kit' );
-	} else if ( canSubmitChanges ) {
-		buttonText = __( 'Apply changes', 'google-site-kit' );
-	} else {
-		buttonText = __( 'Save', 'google-site-kit' );
 	}
 
 	if ( ! module ) {
