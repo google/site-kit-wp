@@ -35,16 +35,56 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	CORE_USER,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_POPULAR_AUTHORS,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+
+/**
+ * Determines whether to display a widget that requires custom dimensions in the key
+ * metrics selection panel.
+ *
+ * All widgets are displayed in authenticated dashboard. However, in view only dashboard,
+ * widgets that require custom dimensions will only be displayed if the required custom
+ * dimensions are available in the shared property.
+ *
+ * This function is attached to the widget object that requires the custom dimensions and
+ * has the `requiredCustomDimensions` property.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select              Data store select function.
+ * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @return {boolean} Whether to display the widget.
+ */
+function shouldDisplayWidgetWithCustomDimensions(
+	select,
+	isViewOnlyDashboard
+) {
+	if ( ! isFeatureEnabled( 'newsKeyMetrics' ) ) {
+		return false;
+	}
+
+	if ( ! isViewOnlyDashboard ) {
+		return true;
+	}
+
+	return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+		// This property is available to the widget object that requires the
+		// custom dimensions, where the function is attached.
+		this.requiredCustomDimensions
+	);
+}
 
 const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
@@ -134,11 +174,6 @@ const KEY_METRICS_WIDGETS = {
 			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
 			'google-site-kit'
 		),
-		// TODO: Remove this once we have the correct custom dimensions.
-		requiredCustomDimensions: [
-			'googlesitekit_post_author',
-			'googlesitekit_post_categories',
-		],
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
@@ -147,11 +182,6 @@ const KEY_METRICS_WIDGETS = {
 			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
-		// TODO: Remove this once we have the correct custom dimensions.
-		requiredCustomDimensions: [
-			'googlesitekit_post_author',
-			'googlesitekit_post_categories',
-		],
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_VISIT_LENGTH ]: {
@@ -170,14 +200,40 @@ const KEY_METRICS_WIDGETS = {
 		),
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
+	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
+		title: __( 'Most engaging pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the highest engagement rate',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
 	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
 		title: __( 'Top recent trending pages', 'google-site-kit' ),
 		description: __(
 			'Pages with the most pageviews published in the last 3 days',
 			'google-site-kit'
 		),
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
+	},
+	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
+		title: __( 'Top categories by pageviews', 'google-site-kit' ),
+		description: __(
+			'Categories that your site visitors viewed the most',
+			'google-site-kit'
+		),
+		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
+	},
+	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
+		title: __( 'Most popular authors by pageviews', 'google-site-kit' ),
+		description: __(
+			'Authors whose posts got the most visits',
+			'google-site-kit'
+		),
+		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
 };
 

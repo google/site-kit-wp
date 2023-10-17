@@ -27,6 +27,7 @@ import {
 	provideUserInfo,
 	provideUserAuthentication,
 	fireEvent,
+	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -87,7 +88,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			);
 	} );
 
-	it( 'should render the setup step when enhanced measurement is initially false and the banner is not dismissed', () => {
+	it( 'should render the setup step when enhanced measurement is initially false and the banner is not dismissed', async () => {
 		const { container, getByRole } = render(
 			<EnhancedMeasurementActivationBanner />,
 			{
@@ -95,11 +96,13 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			}
 		);
 
-		expect( container ).toMatchSnapshot();
+		await waitFor( () => expect( container ).toMatchSnapshot() );
 
-		expect(
-			getByRole( 'button', { name: 'Enable now' } )
-		).toBeInTheDocument();
+		await waitFor( () =>
+			expect(
+				getByRole( 'button', { name: 'Enable now' } )
+			).toBeInTheDocument()
+		);
 	} );
 
 	it( 'should render the success step when the the setup form is successfully submitted', async () => {

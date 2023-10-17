@@ -19,7 +19,6 @@
  */
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -27,8 +26,6 @@ import { addQueryArgs } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import SettingsKeyMetrics from './SettingsKeyMetrics';
@@ -37,7 +34,7 @@ import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import Link from '../Link';
 
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function SettingsCardKeyMetrics() {
 	const viewContext = useViewContext();
@@ -56,22 +53,6 @@ export default function SettingsCardKeyMetrics() {
 		}
 	}, [ isUserInputCompleted, gaEventCategory ] );
 
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const goTo = ( questionIndex = 1 ) => {
-		const questionSlug = USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ];
-		if ( questionSlug ) {
-			trackEvent( gaEventCategory, 'question_edit', questionSlug );
-
-			navigateTo(
-				addQueryArgs( userInputURL, {
-					question: questionSlug,
-					redirect_url: global.location.href,
-					single: 'settings', // Allows the user to edit a single question then return to the settings page.
-				} )
-			);
-		}
-	};
-
 	const hasUserPickedMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getUserPickedMetrics()
 	);
@@ -89,13 +70,7 @@ export default function SettingsCardKeyMetrics() {
 					{ isUserInputCompleted && (
 						<Row>
 							<Cell size={ 12 }>
-								<UserInputPreview
-									goTo={ goTo }
-									noHeader
-									noFooter
-									settingsView
-									showIndividualCTAs
-								/>
+								<UserInputPreview settingsView />
 							</Cell>
 						</Row>
 					) }

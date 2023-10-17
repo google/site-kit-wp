@@ -150,6 +150,8 @@
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
 			margin: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 	}
 
@@ -174,9 +176,14 @@
 			background: $c-white;
 			border: 2px solid $c-utility-on-error-container;
 
+			.googlesitekit-cta__header {
+				column-gap: $grid-gap-phone / 2;
+				display: flex;
+				flex-basis: 50%;
+			}
+
 			.googlesitekit-cta__header_text {
 				color: $c-neutral-n-500;
-				flex-basis: 50%;
 				font-family: $f-primary;
 				font-size: $fs-label-sm;
 				font-weight: $fw-normal;
@@ -203,17 +210,20 @@
 					margin: 0;
 				}
 
-				button,
+				button:not(.googlesitekit-cta-link),
 				a.mdc-button {
 					font-weight: $fw-medium;
 					margin-top: 10px;
 					padding: 6px 16px;
 				}
 
+				.googlesitekit-cta-link {
+					color: $c-teal-t-500;
+				}
+
 				// Removes the external link icon.
 				.googlesitekit-cta-link--external {
 					background: none;
-					color: $c-teal-t-500;
 					padding-right: 0;
 				}
 			}
