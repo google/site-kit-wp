@@ -64,7 +64,7 @@ function TopRecentTrendingPages( { Widget } ) {
 		dimensionFilters: {
 			'customEvent:googlesitekit_post_date': {
 				filterType: 'inListFilter',
-				values: [ yesterday, twoDaysAgo, threeDaysAgo ],
+				value: [ yesterday, twoDaysAgo, threeDaysAgo ],
 			},
 		},
 		metrics: [ { name: 'screenPageViews' } ],
