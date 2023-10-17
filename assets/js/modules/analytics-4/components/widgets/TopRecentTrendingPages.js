@@ -25,12 +25,15 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import { KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES } from '../../../../googlesitekit/datastore/user/constants';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import { getDateString, getPreviousDate, numFmt } from '../../../../util';
@@ -41,11 +44,10 @@ import {
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import withCustomDimensions from '../../utils/withCustomDimensions';
 const { useSelect, useInViewSelect } = Data;
 
-function TopRecentTrendingPages( { Widget } ) {
-	const viewOnlyDashboard = useViewOnly();
-
+const getReportOptions = () => {
 	const today = new Date();
 	const todayDateString = getDateString( today );
 
@@ -64,7 +66,11 @@ function TopRecentTrendingPages( { Widget } ) {
 		dimensionFilters: {
 			'customEvent:googlesitekit_post_date': {
 				filterType: 'inListFilter',
-				value: [ yesterday, twoDaysAgo, threeDaysAgo ],
+				value: [
+					yesterday.replace( /-/g, '' ),
+					twoDaysAgo.replace( /-/g, '' ),
+					threeDaysAgo.replace( /-/g, '' ),
+				],
 			},
 		},
 		metrics: [ { name: 'screenPageViews' } ],
@@ -78,6 +84,15 @@ function TopRecentTrendingPages( { Widget } ) {
 		],
 		limit: 3,
 	};
+
+	return [ reportOptions, dates ];
+};
+function TopRecentTrendingPages( { Widget } ) {
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = getReportOptions()[ 1 ];
+
+	const reportOptions = getReportOptions()[ 0 ];
 
 	const report = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
@@ -179,7 +194,15 @@ TopRecentTrendingPages.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( {
-	moduleName: 'analytics-4',
-	FallbackComponent: ConnectGA4CTATileWidget,
-} )( TopRecentTrendingPages );
+export default compose(
+	whenActive( {
+		moduleName: 'analytics-4',
+		FallbackComponent: ConnectGA4CTATileWidget,
+	} ),
+	withCustomDimensions( {
+		dimensions:
+			KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
+				.requiredCustomDimensions?.[ 0 ],
+		reportOptions: getReportOptions()[ 0 ],
+	} )
+)( TopRecentTrendingPages );
