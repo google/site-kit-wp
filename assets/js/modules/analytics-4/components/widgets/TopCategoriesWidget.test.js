@@ -21,6 +21,7 @@
  */
 import { render } from '../../../../../../tests/js/test-utils';
 import {
+	createTestRegistry,
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
@@ -35,42 +36,40 @@ import TopCategoriesWidget from './TopCategoriesWidget';
 describe( 'TopCategoriesWidget', () => {
 	const { Widget } = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
 
+	let registry;
+	beforeEach( () => {
+		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideKeyMetrics( registry );
+	} );
+
 	it( 'renders correctly with the expected metrics', async () => {
+		provideAnalytics4MockReport( registry, {
+			startDate: '2020-08-11',
+			endDate: '2020-09-07',
+			dimensions: [ 'customEvent:googlesitekit_post_categories' ],
+			metrics: [ { name: 'screenPageViews' } ],
+			orderby: [
+				{
+					metric: {
+						metricName: 'screenPageViews',
+					},
+					desc: true,
+				},
+			],
+			limit: 3,
+		} );
+
 		const { container, waitForRegistry } = render(
 			<TopCategoriesWidget Widget={ Widget } />,
-			{
-				setupRegistry: ( registry ) => {
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( '2020-09-08' );
-
-					provideModules( registry, [
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideKeyMetrics( registry );
-					provideAnalytics4MockReport( registry, {
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-						dimensions: [
-							'customEvent:googlesitekit_post_categories',
-						],
-						metrics: [ { name: 'screenPageViews' } ],
-						orderby: [
-							{
-								metric: {
-									metricName: 'screenPageViews',
-								},
-								desc: true,
-							},
-						],
-						limit: 3,
-					} );
-				},
-			}
+			{ registry }
 		);
 		await waitForRegistry();
 
