@@ -24,6 +24,9 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -34,9 +37,6 @@ import { getAnalytics4MockResponse } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopCategoriesWidget from './TopCategoriesWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 
 const reportOptions = {
@@ -68,11 +68,18 @@ const Template = ( { setupRegistry, ...args } ) => (
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( { dispatch } ) => {
 		const report = getAnalytics4MockResponse( reportOptions );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
 			options: reportOptions,
+		} );
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
 		} );
 	},
 };
@@ -87,6 +94,13 @@ Loading.args = {
 		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
 			reportOptions,
 		] );
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
+		} );
 	},
 };
 
@@ -100,6 +114,13 @@ ZeroData.args = {
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
+		} );
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
 		} );
 	},
 };
@@ -134,6 +155,14 @@ Error.args = {
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
 			reportOptions,
 		] );
+
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
+		} );
 	},
 };
 Error.scenario = {
@@ -168,6 +197,14 @@ InsufficientPermissions.args = {
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
 			reportOptions,
 		] );
+
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
+		} );
 	},
 };
 
@@ -198,7 +235,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '12345' );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
@@ -225,7 +262,7 @@ ErrorCustomDimensionsGeneric.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '12345' );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
