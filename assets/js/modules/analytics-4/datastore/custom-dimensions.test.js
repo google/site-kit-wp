@@ -133,7 +133,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 			} );
 		} );
 
-		describe( 'syncAvailableCustomDimensions', () => {
+		describe( 'fetchSyncAvailableCustomDimensions', () => {
 			it( 'fetches and returns custom dimensions', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
@@ -151,7 +151,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				const { response } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.syncAvailableCustomDimensions();
+					.fetchSyncAvailableCustomDimensions();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(

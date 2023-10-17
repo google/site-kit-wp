@@ -120,16 +120,22 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	baseName: 'syncAvailableCustomDimensions',
 	controlCallback: () =>
 		API.set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
+	reducerCallback: ( state, dimensions ) => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				availableCustomDimensions: [ ...dimensions ],
+			},
+		};
+	},
 } );
 
 const baseInitialState = {
-	isSyncingAvailableCustomDimensions: false,
 	customDimensionsBeingCreated: [],
 };
 
 // Actions
-const SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION =
-	'SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION';
 const SET_CUSTOM_DIMENSIONS_BEING_CREATED =
 	'SET_CUSTOM_DIMENSIONS_BEING_CREATED';
 
@@ -210,7 +216,7 @@ const baseActions = {
 
 		// Sync available custom dimensions.
 		if ( missingCustomDimensions.length > 0 ) {
-			yield baseActions.syncAvailableCustomDimensions();
+			yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
 		}
 
 		yield {
@@ -218,48 +224,10 @@ const baseActions = {
 			payload: { customDimensions: [] },
 		};
 	},
-
-	/**
-	 * Syncs available custom dimensions in the settings.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Array<string>} Available custom dimensions.
-	 */
-	*syncAvailableCustomDimensions() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield {
-			type: SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION,
-			payload: { isSyncing: true },
-		};
-
-		const { response, error } =
-			yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
-
-		if ( response ) {
-			yield registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableCustomDimensions( response );
-		}
-
-		yield {
-			type: SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION,
-			payload: { isSyncing: false },
-		};
-
-		return { response, error };
-	},
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_AVAILABLE_CUSTOM_DIMENSIONS_SYNCING_ACTION: {
-			return {
-				...state,
-				isSyncingAvailableCustomDimensions: payload.isSyncing,
-			};
-		}
 		case SET_CUSTOM_DIMENSIONS_BEING_CREATED: {
 			return {
 				...state,
@@ -298,11 +266,7 @@ const baseResolvers = {
 			return;
 		}
 
-		yield Data.commonActions.await(
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.syncAvailableCustomDimensions()
-		);
+		yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
 	},
 };
 
@@ -379,9 +343,13 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the available custom dimensions are being synced, otherwise FALSE.
 	 */
-	isSyncingAvailableCustomDimensions( state ) {
-		return !! state?.isSyncingAvailableCustomDimensions;
-	},
+	isSyncingAvailableCustomDimensions: createRegistrySelector(
+		( select ) => () => {
+			return select(
+				MODULES_ANALYTICS_4
+			).isFetchingSyncAvailableCustomDimensions();
+		}
+	),
 };
 
 const store = Data.combineStores(

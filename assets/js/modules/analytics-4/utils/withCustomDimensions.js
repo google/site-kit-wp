@@ -172,7 +172,7 @@ export default function withCustomDimensions( options = {} ) {
 				);
 			} );
 
-			const { syncAvailableCustomDimensions } =
+			const { fetchSyncAvailableCustomDimensions } =
 				useDispatch( MODULES_ANALYTICS_4 );
 			const { setValues } = useDispatch( CORE_FORMS );
 			const { setPermissionScopeError } = useDispatch( CORE_USER );
@@ -227,12 +227,12 @@ export default function withCustomDimensions( options = {} ) {
 					return;
 				}
 
-				syncAvailableCustomDimensions();
+				fetchSyncAvailableCustomDimensions();
 			}, [
 				customDimensions,
 				isSyncingAvailableCustomDimensions,
 				reportError,
-				syncAvailableCustomDimensions,
+				fetchSyncAvailableCustomDimensions,
 			] );
 
 			// Show loading state.
