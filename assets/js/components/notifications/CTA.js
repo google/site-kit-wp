@@ -31,6 +31,7 @@ import Link from '../Link';
 const CTA = ( {
 	title,
 	headerText,
+	headerContent,
 	description,
 	ctaLink,
 	ctaLabel,
@@ -40,7 +41,6 @@ const CTA = ( {
 	onClick,
 	'aria-label': ariaLabel,
 	children,
-	headerContent,
 } ) => (
 	<div
 		className={ classnames( 'googlesitekit-cta', {
@@ -109,13 +109,13 @@ CTA.propTypes = {
 CTA.defaultProps = {
 	title: '',
 	headerText: '',
+	headerContent: '',
 	description: '',
 	ctaLink: '',
 	ctaLabel: '',
 	ctaType: 'link',
 	error: false,
 	onClick: () => {},
-	headerContent: '',
 };
 
 export default CTA;
