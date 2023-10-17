@@ -89,6 +89,13 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 	pageTitle: ( i ) => ( i <= 12 ? `Test Post ${ i }` : false ),
 	pagePath: ( i ) => ( i <= 12 ? `/test-post-${ i }/` : false ),
 	newVsReturning: [ 'new', 'returning' ],
+	'customEvent:googlesitekit_post_categories': [
+		'Entertainment',
+		'Sports',
+		'Wealth',
+		'Politics',
+		'Health',
+	],
 };
 
 /**
