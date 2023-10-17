@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../Link';
+import Link from '../Link';
 
 export default function GetHelpLink( { linkURL } ) {
 	return createInterpolateElement(
