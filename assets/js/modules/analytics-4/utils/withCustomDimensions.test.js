@@ -17,6 +17,7 @@
  */
 
 import {
+	createTestRegistry,
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
@@ -26,23 +27,27 @@ import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import withCustomDimensions from './withCustomDimensions';
 
 describe( 'withCustomDimensions', () => {
+	let registry;
 	const customDimension = 'test_custom_dimension';
 	const TestComponent = () => <div data-testid="component" />;
 	const WithCustomDimensionsComponent = withCustomDimensions( {
 		dimensions: [ customDimension ],
 	} )( TestComponent );
 
+	beforeEach( () => {
+		registry = createTestRegistry();
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+	} );
+
 	it( 'renders appropriate error if required custom dimensions are not available', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '123456789',
+			availableCustomDimensions: [],
+		} );
+
 		const { container } = render( <WithCustomDimensionsComponent />, {
-			setupRegistry: ( registry ) => {
-				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: '123456789',
-					availableCustomDimensions: [],
-				} );
-			},
-			features: [ 'newsKeyMetrics' ],
+			registry,
 		} );
 
 		expect( container ).toHaveTextContent(
@@ -51,81 +56,63 @@ describe( 'withCustomDimensions', () => {
 	} );
 
 	it( 'renders appropriate error if creating custom dimensions failed due to insufficient permissions', () => {
-		const { container } = render( <WithCustomDimensionsComponent />, {
-			setupRegistry: ( registry ) => {
-				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '123456789',
+			availableCustomDimensions: [],
+		} );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: '123456789',
-					availableCustomDimensions: [],
-				} );
-
-				const error = {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-					},
-				};
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveCreateCustomDimensionError(
-						error,
-						customDimension
-					);
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 			},
-			features: [ 'newsKeyMetrics' ],
+		};
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveCreateCustomDimensionError( error, customDimension );
+
+		const { container } = render( <WithCustomDimensionsComponent />, {
+			registry,
 		} );
 
 		expect( container ).toHaveTextContent( 'Insufficient permissions' );
 	} );
 
 	it( 'renders appropriate error if creating custom dimensions failed due to a generic error', () => {
-		const { container } = render( <WithCustomDimensionsComponent />, {
-			setupRegistry: ( registry ) => {
-				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '123456789',
+			availableCustomDimensions: [],
+		} );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: '123456789',
-					availableCustomDimensions: [],
-				} );
-
-				const error = {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: 'test-error-reason',
-					},
-				};
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveCreateCustomDimensionError(
-						error,
-						customDimension
-					);
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: 'test-error-reason',
 			},
-			features: [ 'newsKeyMetrics' ],
+		};
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveCreateCustomDimensionError( error, customDimension );
+
+		const { container } = render( <WithCustomDimensionsComponent />, {
+			registry,
 		} );
 
 		expect( container ).toHaveTextContent( 'Analytics update failed' );
 	} );
 
 	it( 'renders report correctly if there are no errors', () => {
-		const { queryByTestID } = render( <WithCustomDimensionsComponent />, {
-			setupRegistry: ( registry ) => {
-				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '123456789',
+			availableCustomDimensions: [ customDimension ],
+		} );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: '123456789',
-					availableCustomDimensions: [ customDimension ],
-				} );
-			},
-			features: [ 'newsKeyMetrics' ],
+		const { queryByTestID } = render( <WithCustomDimensionsComponent />, {
+			registry,
 		} );
 
 		expect( queryByTestID( 'component' ) ).toBeInTheDocument();
