@@ -24,6 +24,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -33,13 +34,18 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -263,6 +269,23 @@ describe( 'core/user key metrics', () => {
 				}
 			);
 
+			it( 'should return the correct metrics for the publish_news purpose when the newsKeyMetrics feature is enabled', () => {
+				enabledFeatures.add( 'newsKeyMetrics' );
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: { values: [ 'publish_news' ] },
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getAnswerBasedMetrics()
+				).toEqual( [
+					KM_ANALYTICS_PAGES_PER_VISIT,
+					KM_ANALYTICS_VISIT_LENGTH,
+					KM_ANALYTICS_VISITS_PER_VISITOR,
+					KM_ANALYTICS_MOST_ENGAGING_PAGES,
+				] );
+				enabledFeatures.delete( 'newsKeyMetrics' );
+			} );
+
 			it( 'should return the correct metrics for the sell_products_or_service purposes when the site has a product post type', () => {
 				provideSiteInfo( registry, {
 					postTypes: [ { slug: 'product', label: 'Product' } ],
@@ -296,7 +319,9 @@ describe( 'core/user key metrics', () => {
 		} );
 
 		describe( 'saveKeyMetricsSettings', () => {
+			const userID = 123;
 			beforeEach( async () => {
+				provideUserInfo( registry, { id: userID } );
 				await registry
 					.dispatch( CORE_USER )
 					.setKeyMetricsSetting( settingID, settingValue );
@@ -388,23 +413,21 @@ describe( 'core/user key metrics', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should set the keyMetricsSetupCompleted site info setting to true', async () => {
+			it( 'should mark key metrics setup as completed by current user', async () => {
 				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
 					body: coreKeyMetricsExpectedResponse,
 					status: 200,
 				} );
 
-				// Verify the setting is initially false.
 				expect(
-					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
-				).toBe( false );
+					registry.select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+				).toBe( 0 );
 
 				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
 
-				// Assert that the setting is now true.
 				expect(
-					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
-				).toBe( true );
+					registry.select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+				).toBe( userID );
 			} );
 
 			it( 'should not set the keyMetricsSetupCompleted site info setting to true if the request fails', async () => {

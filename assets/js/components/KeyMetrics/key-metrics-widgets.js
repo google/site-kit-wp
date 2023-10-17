@@ -40,10 +40,48 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+
+/**
+ * Determines whether to display a widget that requires custom dimensions in the key
+ * metrics selection panel.
+ *
+ * All widgets are displayed in authenticated dashboard. However, in view only dashboard,
+ * widgets that require custom dimensions will only be displayed if the required custom
+ * dimensions are available in the shared property.
+ *
+ * This function is attached to the widget object that requires the custom dimensions and
+ * has the `requiredCustomDimensions` property.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select              Data store select function.
+ * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @return {boolean} Whether to display the widget.
+ */
+function shouldDisplayWidgetWithCustomDimensions(
+	select,
+	isViewOnlyDashboard
+) {
+	if ( ! isFeatureEnabled( 'newsKeyMetrics' ) ) {
+		return false;
+	}
+
+	if ( ! isViewOnlyDashboard ) {
+		return true;
+	}
+
+	return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+		// This property is available to the widget object that requires the
+		// custom dimensions, where the function is attached.
+		this.requiredCustomDimensions
+	);
+}
 
 const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
@@ -127,37 +165,56 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 	},
-};
-
-if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
-	KEY_METRICS_WIDGETS[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ] = {
+	[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
 		title: __( 'Least engaging pages', 'google-site-kit' ),
 		description: __(
 			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
 			'google-site-kit'
 		),
-	};
-	KEY_METRICS_WIDGETS[ KM_ANALYTICS_PAGES_PER_VISIT ] = {
+		// TODO: Remove this once we have the correct custom dimensions.
+		requiredCustomDimensions: [
+			'googlesitekit_post_author',
+			'googlesitekit_post_categories',
+		],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
+	},
+	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
 		title: __( 'Pages per visit', 'google-site-kit' ),
 		description: __(
 			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
-	};
-	KEY_METRICS_WIDGETS[ KM_ANALYTICS_VISIT_LENGTH ] = {
+		// TODO: Remove this once we have the correct custom dimensions.
+		requiredCustomDimensions: [
+			'googlesitekit_post_author',
+			'googlesitekit_post_categories',
+		],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
+	},
+	[ KM_ANALYTICS_VISIT_LENGTH ]: {
 		title: __( 'Visit length', 'google-site-kit' ),
 		description: __(
 			'Average duration of engaged visits',
 			'google-site-kit'
 		),
-	};
-	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ] = {
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ]: {
 		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
 		description: __(
 			'Pages that attracted the most returning visitors',
 			'google-site-kit'
 		),
-	};
-}
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
+		title: __( 'Most engaging pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the highest engagement rate',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+};
 
 export { KEY_METRICS_WIDGETS };

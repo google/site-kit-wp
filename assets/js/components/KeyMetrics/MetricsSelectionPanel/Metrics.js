@@ -31,9 +31,12 @@ import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import MetricItem from './MetricItem';
+import useViewOnly from '../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 export default function Metrics( { savedMetrics } ) {
+	const isViewOnlyDashboard = useViewOnly();
+
 	const availableMetrics = useSelect( ( select ) => {
 		const widgets =
 			select( CORE_WIDGETS ).getWidgets(
@@ -62,7 +65,10 @@ export default function Metrics( { savedMetrics } ) {
 				if (
 					typeof KEY_METRICS_WIDGETS[ metric ].displayInList ===
 						'function' &&
-					! KEY_METRICS_WIDGETS[ metric ].displayInList( select )
+					! KEY_METRICS_WIDGETS[ metric ].displayInList(
+						select,
+						isViewOnlyDashboard
+					)
 				) {
 					return acc;
 				}

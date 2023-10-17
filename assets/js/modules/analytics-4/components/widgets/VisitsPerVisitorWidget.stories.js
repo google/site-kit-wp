@@ -47,7 +47,7 @@ const reportOptions = {
 			name: 'sessionsPerUser',
 		},
 		{
-			name: 'activeUsers',
+			name: 'sessions',
 		},
 	],
 };

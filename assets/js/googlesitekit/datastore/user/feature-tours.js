@@ -222,7 +222,8 @@ const baseActions = {
 			}
 		}
 
-		yield baseActions.receiveCurrentTour( null );
+		// Trigger with null here to avoid overriding an on-demand tour.
+		yield baseActions.triggerTour( null );
 		return null;
 	},
 };

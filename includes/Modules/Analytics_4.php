@@ -47,17 +47,18 @@ use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
+use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
@@ -92,6 +93,17 @@ final class Analytics_4 extends Module
 	const MODULE_SLUG = 'analytics-4';
 
 	/**
+	 * Prefix used to fetch custom dimensions in reports.
+	 */
+	const CUSTOM_EVENT_PREFIX = 'customEvent:';
+
+	/**
+	 * Custom dimensions tracked by Site Kit.
+	 */
+	const CUSTOM_DIMENSION_POST_AUTHOR     = 'googlesitekit_post_author';
+	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.30.0
@@ -121,6 +133,22 @@ final class Analytics_4 extends Module
 			10,
 			2
 		);
+
+		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			add_filter(
+				'pre_update_option_googlesitekit_analytics-4_settings',
+				function ( $new_value, $old_value ) {
+					if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
+						$new_value['availableCustomDimensions'] = null;
+					}
+
+					return $new_value;
+				},
+				10,
+				2
+			);
+		}
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// Replicate Analytics settings for Analytics-4 if not set.
@@ -239,7 +267,7 @@ final class Analytics_4 extends Module
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$debug_fields = array(
 			// phpcs:disable
 			/*
 			TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
@@ -276,6 +304,16 @@ final class Analytics_4 extends Module
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$debug_fields['analytics_4_available_custom_dimensions'] = array(
+				'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
+				'value' => empty( $settings['availableCustomDimensions'] ) ? __( 'None', 'google-site-kit' ) : implode( ',', $settings['availableCustomDimensions'] ),
+				'debug' => empty( $settings['availableCustomDimensions'] ) ? 'none' : implode( ',', $settings['availableCustomDimensions'] ),
+			);
+		}
+
+		return $debug_fields;
 	}
 
 	/**
@@ -353,6 +391,9 @@ final class Analytics_4 extends Module
 				'service'                => 'analyticsdata',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
+			);
+			$datapoints['POST:sync-custom-dimensions']  = array(
+				'service' => 'analyticsadmin',
 			);
 		}
 
@@ -851,6 +892,21 @@ final class Analytics_4 extends Module
 						self::normalize_property_id( $data['propertyID'] ),
 						$custom_dimension
 					);
+			case 'POST:sync-custom-dimensions':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+
+				return $analyticsadmin
+					->properties_customDimensions // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesCustomDimensions( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -1038,6 +1094,27 @@ final class Analytics_4 extends Module
 			case 'GET:report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
+			case 'POST:sync-custom-dimensions':
+				if ( is_wp_error( $response ) ) {
+					return $response;
+				}
+
+				$custom_dimensions   = wp_list_pluck( $response->getCustomDimensions(), 'parameterName' );
+				$matching_dimensions = array_values(
+					array_filter(
+						$custom_dimensions,
+						function( $dimension ) {
+							return strpos( $dimension, 'googlesitekit_' ) === 0;
+						}
+					)
+				);
+				$this->get_settings()->merge(
+					array(
+						'availableCustomDimensions' => $matching_dimensions,
+					)
+				);
+
+				return $matching_dimensions;
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -1181,12 +1258,9 @@ final class Analytics_4 extends Module
 	 * @since 1.104.0 Added support for AMP tag.
 	 */
 	private function register_tag() {
-		if ( $this->context->is_amp() ) {
-			// AMP currently only works with the measurement ID.
-			$tag = new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG );
-		} else {
-			$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
-		}
+		$tag = $this->context->is_amp()
+			? new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG ) // AMP currently only works with the measurement ID.
+			: new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -1196,18 +1270,75 @@ final class Analytics_4 extends Module
 		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
-		if ( $tag->can_register() ) {
-			$tag->set_home_domain(
-				URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST )
-			);
-			// Here we need to retrieve the ads conversion ID from the
-			// classic/UA Analytics settings as it does not exist yet for this module.
-			// TODO: Update the value to be sourced from GA4 module settings once decoupled.
-			$ua_settings = ( new Analytics_Settings( $this->options ) )->get();
-			$tag->set_ads_conversion_id( $ua_settings['adsConversionID'] );
-
-			$tag->register();
+		if ( ! $tag->can_register() ) {
+			return;
 		}
+
+		$home_domain = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST );
+		$tag->set_home_domain( $home_domain );
+
+		// Here we need to retrieve the ads conversion ID from the
+		// classic/UA Analytics settings as it does not exist yet for this module.
+		// TODO: Update the value to be sourced from GA4 module settings once decoupled.
+		$ua_settings = ( new Analytics_Settings( $this->options ) )->get();
+		$tag->set_ads_conversion_id( $ua_settings['adsConversionID'] );
+
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$custom_dimensions_data = $this->get_custom_dimensions_data();
+			if ( ! empty( $custom_dimensions_data ) && $tag instanceof Tag_Interface ) {
+				$tag->set_custom_dimensions( $custom_dimensions_data );
+			}
+		}
+
+		$tag->register();
+	}
+
+	/**
+	 * Gets custom dimensions data based on available custom dimensions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array An associated array of custom dimensions data.
+	 */
+	private function get_custom_dimensions_data() {
+		$settings = $this->get_settings()->get();
+		if ( empty( $settings['availableCustomDimensions'] ) ) {
+			return array();
+		}
+
+		/**
+		 * Filters the allowed post types for custom dimensions tracking.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $allowed_post_types The array of allowed post types.
+		 */
+		$allowed_post_types = apply_filters( 'custom_dimension_valid_post_types', array( 'post' ) );
+		if ( ! is_singular( $allowed_post_types ) ) {
+			return array();
+		}
+
+		$data = array();
+		$post = get_queried_object();
+
+		foreach ( $settings['availableCustomDimensions'] as $custom_dimension ) {
+			switch ( $custom_dimension ) {
+				case 'googlesitekit_post_type':
+					$data[ $custom_dimension ] = $post->post_type;
+					break;
+				case 'googlesitekit_post_author':
+					$data[ $custom_dimension ] = $post->post_author;
+					break;
+				case 'googlesitekit_post_categories':
+					$data[ $custom_dimension ] = implode( ',', wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) ) );
+					break;
+				case 'googlesitekit_post_date':
+					$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );
+					break;
+			}
+		}
+
+		return $data;
 	}
 
 	/**

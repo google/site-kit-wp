@@ -33,6 +33,7 @@ import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
 const { useSelect, useDispatch } = Data;
 
 export default function ChangeMetricsLink() {
@@ -48,7 +49,12 @@ export default function ChangeMetricsLink() {
 		trackEvent( `${ viewContext }_kmw`, 'change_metrics' );
 	}, [ setValue, viewContext ] );
 
-	if ( ! Array.isArray( keyMetrics ) || ! keyMetrics?.length > 0 ) {
+	const renderChangeMetricLink =
+		Array.isArray( keyMetrics ) || keyMetrics?.length > 0;
+
+	useChangeMetricsFeatureTourEffect( renderChangeMetricLink );
+
+	if ( ! renderChangeMetricLink ) {
 		return null;
 	}
 
