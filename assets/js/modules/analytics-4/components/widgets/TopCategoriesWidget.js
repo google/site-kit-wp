@@ -95,7 +95,8 @@ function TopCategoriesWidget( { Widget } ) {
 			Component: ( { fieldValue } ) => {
 				const [ categories ] = fieldValue;
 				const categoriesString = listFormat(
-					JSON.parse( categories.value )
+					JSON.parse( categories.value ),
+					{ style: 'narrow' }
 				);
 
 				return (
