@@ -25,12 +25,16 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CATEGORIES,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -42,6 +46,7 @@ import {
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
 import whenActive from '../../../../util/when-active';
+import withCustomDimensions from '../../utils/withCustomDimensions';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 const { useSelect, useInViewSelect } = Data;
 
@@ -110,6 +115,7 @@ function TopCategoriesWidget( { Widget } ) {
 
 	return (
 		<MetricTileTable
+			widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
 			Widget={ Widget }
 			title={ __( 'Top categories by pageviews', 'google-site-kit' ) }
 			loading={ loading }
@@ -130,7 +136,10 @@ TopCategoriesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( {
-	moduleName: 'analytics-4',
-	FallbackComponent: ConnectGA4CTATileWidget,
-} )( TopCategoriesWidget );
+export default compose(
+	whenActive( {
+		moduleName: 'analytics-4',
+		FallbackComponent: ConnectGA4CTATileWidget,
+	} ),
+	withCustomDimensions()
+)( TopCategoriesWidget );

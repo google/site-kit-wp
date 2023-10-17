@@ -1,5 +1,5 @@
 /**
- * TopCategoriesWidget component stories.
+ * TopCategoriesWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CATEGORIES,
+} from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import {
 	provideKeyMetrics,
@@ -33,6 +36,8 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopCategoriesWidget from './TopCategoriesWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -51,7 +56,7 @@ const reportOptions = {
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'kmAnalyticsTopCategories'
+	KM_ANALYTICS_TOP_CATEGORIES
 )( TopCategoriesWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
@@ -169,6 +174,69 @@ InsufficientPermissions.args = {
 InsufficientPermissions.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/InsufficientPermissions',
 	delay: 250,
+};
+
+export const ErrorMissingCustomDimensions = Template.bind( {} );
+ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
+ErrorMissingCustomDimensions.args = {
+	setupRegistry: () => {},
+};
+ErrorMissingCustomDimensions.parameters = {
+	features: [ 'newsKeyMetrics' ],
+};
+
+export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
+ErrorCustomDimensionsInsufficientPermissions.storyName =
+	'Error - Custom dimensions creation - Insufficient Permissions';
+ErrorCustomDimensionsInsufficientPermissions.args = {
+	setupRegistry: ( registry ) => {
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			},
+		};
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
+
+		provideCustomDimensionError( registry, {
+			customDimension:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			error,
+		} );
+	},
+};
+ErrorCustomDimensionsInsufficientPermissions.parameters = {
+	features: [ 'newsKeyMetrics' ],
+};
+
+export const ErrorCustomDimensionsGeneric = Template.bind( {} );
+ErrorCustomDimensionsGeneric.storyName =
+	'Error - Custom dimensions creation - Generic';
+ErrorCustomDimensionsGeneric.args = {
+	setupRegistry: ( registry ) => {
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: 'test-error-reason',
+			},
+		};
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
+
+		provideCustomDimensionError( registry, {
+			customDimension:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			error,
+		} );
+	},
+};
+ErrorCustomDimensionsGeneric.parameters = {
+	features: [ 'newsKeyMetrics' ],
 };
 
 export default {

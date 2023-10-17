@@ -35,7 +35,9 @@ import {
 	VisitLengthWidget,
 	TopReturningVisitorPages,
 	VisitsPerVisitorWidget,
+	TopRecentTrendingPagesWidget,
 	TopCategoriesWidget,
+	PopularAuthorsWidget,
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
@@ -48,12 +50,14 @@ import {
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_COUNTRIES,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_VISIT_LENGTH,
@@ -323,6 +327,22 @@ export const registerWidgets = ( widgets ) => {
 		);
 
 		widgets.registerWidget(
+			KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+			{
+				Component: TopRecentTrendingPagesWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
 			KM_ANALYTICS_TOP_CATEGORIES,
 			{
 				Component: TopCategoriesWidget,
@@ -333,6 +353,22 @@ export const registerWidgets = ( widgets ) => {
 				isActive: ( select ) =>
 					select( CORE_USER ).isKeyMetricActive(
 						KM_ANALYTICS_TOP_CATEGORIES
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_POPULAR_AUTHORS,
+			{
+				Component: PopularAuthorsWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_POPULAR_AUTHORS
 					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]

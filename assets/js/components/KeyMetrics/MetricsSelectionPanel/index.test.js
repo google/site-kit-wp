@@ -32,11 +32,11 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../googlesitekit/datastore/user/constants';
@@ -368,7 +368,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
-				[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
+				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -384,7 +384,7 @@ describe( 'MetricsSelectionPanel', () => {
 			).toBeDisabled();
 		} );
 
-		it( 'should display sppropriate message when a metric requires custom dimensions and does not have edit scope', async () => {
+		it( 'should display appropriate message when a metric requires custom dimensions and does not have edit scope', async () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -409,7 +409,9 @@ describe( 'MetricsSelectionPanel', () => {
 				'The metrics you selected require more data tracking. You will be directed to update your Analytics property after saving your selection.'
 			);
 
-			const checkbox = await findByLabelText( 'Least engaging pages' );
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
 			fireEvent.click( checkbox );
 
 			expect(
@@ -419,7 +421,7 @@ describe( 'MetricsSelectionPanel', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should display sppropriate message when a metric requires custom dimensions and have edit scope', async () => {
+		it( 'should display appropriate message when a metric requires custom dimensions and has edit scope', async () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -448,7 +450,9 @@ describe( 'MetricsSelectionPanel', () => {
 				'The metrics you selected require more data tracking. We will update your Analytics property after saving your selection.'
 			);
 
-			const checkbox = await findByLabelText( 'Least engaging pages' );
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
 			fireEvent.click( checkbox );
 
 			expect(
