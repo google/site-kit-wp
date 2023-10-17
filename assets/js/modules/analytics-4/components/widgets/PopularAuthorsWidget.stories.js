@@ -51,9 +51,6 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
-};
 Ready.parameters = {
 	features: [ 'newsKeyMetrics' ],
 };
@@ -62,9 +59,6 @@ export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
 	setupRegistry: () => {},
-};
-ErrorMissingCustomDimensions.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorMissingCustomDimensions',
 };
 ErrorMissingCustomDimensions.parameters = {
 	features: [ 'newsKeyMetrics' ],
@@ -94,9 +88,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			);
 	},
 };
-ErrorCustomDimensionsInsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsInsufficientPermissions',
-};
 ErrorCustomDimensionsInsufficientPermissions.parameters = {
 	features: [ 'newsKeyMetrics' ],
 };
@@ -124,9 +115,6 @@ ErrorCustomDimensionsGeneric.args = {
 					.requiredCustomDimensions?.[ 0 ]
 			);
 	},
-};
-ErrorCustomDimensionsGeneric.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 };
 ErrorCustomDimensionsGeneric.parameters = {
 	features: [ 'newsKeyMetrics' ],
