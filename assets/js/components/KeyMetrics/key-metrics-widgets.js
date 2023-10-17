@@ -48,6 +48,43 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+
+/**
+ * Determines whether to display a widget that requires custom dimensions in the key
+ * metrics selection panel.
+ *
+ * All widgets are displayed in authenticated dashboard. However, in view only dashboard,
+ * widgets that require custom dimensions will only be displayed if the required custom
+ * dimensions are available in the shared property.
+ *
+ * This function is attached to the widget object that requires the custom dimensions and
+ * has the `requiredCustomDimensions` property.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select              Data store select function.
+ * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @return {boolean} Whether to display the widget.
+ */
+function shouldDisplayWidgetWithCustomDimensions(
+	select,
+	isViewOnlyDashboard
+) {
+	if ( ! isFeatureEnabled( 'newsKeyMetrics' ) ) {
+		return false;
+	}
+
+	if ( ! isViewOnlyDashboard ) {
+		return true;
+	}
+
+	return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+		// This property is available to the widget object that requires the
+		// custom dimensions, where the function is attached.
+		this.requiredCustomDimensions
+	);
+}
 
 const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
@@ -177,8 +214,8 @@ const KEY_METRICS_WIDGETS = {
 			'Pages with the most pageviews published in the last 3 days',
 			'google-site-kit'
 		),
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
 		title: __( 'Top categories by pageviews', 'google-site-kit' ),
@@ -186,8 +223,8 @@ const KEY_METRICS_WIDGETS = {
 			'Categories that your site visitors viewed the most',
 			'google-site-kit'
 		),
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
 		title: __( 'Most popular authors by pageviews', 'google-site-kit' ),
@@ -195,8 +232,8 @@ const KEY_METRICS_WIDGETS = {
 			'Authors whose posts got the most visits',
 			'google-site-kit'
 		),
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
 };
 
