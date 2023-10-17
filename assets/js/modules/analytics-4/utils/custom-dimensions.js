@@ -1,6 +1,4 @@
 /**
- * Analytics 4 test utility functions.
- *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +17,8 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from './datastore/constants';
-import { possibleCustomDimensions } from './datastore/custom-dimensions';
+import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { possibleCustomDimensions } from '../datastore/custom-dimensions';
 
 /**
  * Provides custom dimension error data to the given registry.

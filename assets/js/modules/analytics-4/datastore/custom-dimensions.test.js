@@ -33,7 +33,7 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../../googlesitekit/datastore/user/constants';
 import { enabledFeatures } from '../../../features';
-import { provideCustomDimensionError } from '../test-utils';
+import { provideCustomDimensionError } from '../utils/custom-dimensions';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
 	let registry;
