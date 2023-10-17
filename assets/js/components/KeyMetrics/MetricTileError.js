@@ -30,9 +30,7 @@ export default function MetricTileError( props ) {
 			<CTA
 				title={ title }
 				headerText={ headerText }
-				headerContent={
-					infoTooltip && <InfoTooltip title={ infoTooltip } />
-				}
+				headerContent={ <InfoTooltip title={ infoTooltip } /> }
 				description=""
 				error
 			>
