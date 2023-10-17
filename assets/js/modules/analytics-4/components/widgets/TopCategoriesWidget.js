@@ -31,16 +31,13 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_TOP_CATEGORIES,
-} from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { ZeroDataMessage } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
+import { ZeroDataMessage } from '../../../analytics/components/common';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -76,8 +73,6 @@ function TopCategoriesWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReport( topCategoriesReportOptions )
 	);
 
-	// global.console.log( { topCategoriesReport } );
-
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			topCategoriesReportOptions,
@@ -94,15 +89,20 @@ function TopCategoriesWidget( { Widget } ) {
 
 	const { rows = [] } = topCategoriesReport || {};
 
-	// const totalPageViews = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
-
 	const columns = [
 		{
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
-				const [ title ] = fieldValue;
+				const [ categories ] = fieldValue;
 
-				return <MetricTileTablePlainText content={ title.value } />;
+				global.console.log( { categories } );
+				const categoriesString = JSON.parse( categories.value ).join(
+					', '
+				);
+
+				return (
+					<MetricTileTablePlainText content={ categoriesString } />
+				);
 			},
 		},
 		{
@@ -115,7 +115,6 @@ function TopCategoriesWidget( { Widget } ) {
 
 	return (
 		<MetricTileTable
-			widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
 			Widget={ Widget }
 			title={ __( 'Top categories by pageviews', 'google-site-kit' ) }
 			loading={ loading }
