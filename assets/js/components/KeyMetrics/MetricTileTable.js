@@ -24,34 +24,15 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import MetricTileError from './MetricTileError';
-import MetricTileLoader from './MetricTileLoader';
-import MetricTileHeader from './MetricTileHeader';
+import MetricTileWrapper from './MetricTileWrapper';
 
-export default function MetricTileTable( props ) {
-	const {
-		Widget,
-		loading,
-		title,
-		rows = [],
-		columns = [],
-		limit,
-		infoTooltip,
-		ZeroState,
-		error,
-		moduleSlug,
-	} = props;
-
-	if ( error ) {
-		return (
-			<MetricTileError
-				moduleSlug={ moduleSlug }
-				error={ error }
-				headerText={ title }
-			/>
-		);
-	}
-
+export default function MetricTileTable( {
+	rows = [],
+	columns = [],
+	limit,
+	ZeroState,
+	...props
+} ) {
 	let tileBody = null;
 
 	if ( rows?.length > 0 ) {
@@ -98,34 +79,20 @@ export default function MetricTileTable( props ) {
 	}
 
 	return (
-		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table">
-				<MetricTileHeader title={ title } infoTooltip={ infoTooltip } />
-				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && <MetricTileLoader /> }
-					{ ! loading && (
-						<div className="googlesitekit-km-widget-tile__table">
-							{ tileBody }
-						</div>
-					) }
-				</div>
+		<MetricTileWrapper
+			className="googlesitekit-km-widget-tile--table"
+			{ ...props }
+		>
+			<div className="googlesitekit-km-widget-tile__table">
+				{ tileBody }
 			</div>
-		</Widget>
+		</MetricTileWrapper>
 	);
 }
 
 MetricTileTable.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	loading: PropTypes.bool,
-	title: PropTypes.string,
 	rows: PropTypes.array,
 	columns: PropTypes.array,
 	limit: PropTypes.number,
-	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	ZeroState: PropTypes.elementType,
-	error: PropTypes.oneOfType( [
-		PropTypes.arrayOf( PropTypes.object ),
-		PropTypes.object,
-	] ),
-	moduleSlug: PropTypes.string.isRequired,
 };

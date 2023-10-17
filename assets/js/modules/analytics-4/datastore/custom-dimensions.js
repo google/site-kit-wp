@@ -34,7 +34,6 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	CORE_USER,
@@ -44,7 +43,7 @@ import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-
 
 const { createRegistrySelector } = Data;
 
-const possibleCustomDimensions = {
+export const possibleCustomDimensions = {
 	googlesitekit_post_date: {
 		parameterName: 'googlesitekit_post_date',
 		displayName: __( 'WordPress Post Creation Date', 'google-site-kit' ),
@@ -119,23 +118,26 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 
 const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	baseName: 'syncAvailableCustomDimensions',
-	controlCallback: ( { propertyID } ) => {
-		return API.set( 'modules', 'analytics-4', 'sync-custom-dimensions', {
-			propertyID,
-		} );
-	},
-	argsToParams: ( propertyID ) => ( {
-		propertyID,
-	} ),
-	validateParams: ( { propertyID } ) => {
-		invariant(
-			isValidPropertyID( propertyID ),
-			'A valid GA4 propertyID is required.'
-		);
+	controlCallback: () =>
+		API.set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
+	reducerCallback: ( state, dimensions ) => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				availableCustomDimensions: [ ...dimensions ],
+			},
+		};
 	},
 } );
 
-const baseInitialState = {};
+const baseInitialState = {
+	customDimensionsBeingCreated: [],
+};
+
+// Actions
+const SET_CUSTOM_DIMENSIONS_BEING_CREATED =
+	'SET_CUSTOM_DIMENSIONS_BEING_CREATED';
 
 const baseActions = {
 	/**
@@ -187,6 +189,16 @@ const baseActions = {
 			( dimension ) => ! availableCustomDimensions?.includes( dimension )
 		);
 
+		// If there are no missing custom dimensions, bail.
+		if ( ! missingCustomDimensions.length ) {
+			return;
+		}
+
+		yield {
+			type: SET_CUSTOM_DIMENSIONS_BEING_CREATED,
+			payload: { customDimensions: missingCustomDimensions },
+		};
+
 		const propertyID = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getPropertyID();
@@ -204,42 +216,28 @@ const baseActions = {
 
 		// Sync available custom dimensions.
 		if ( missingCustomDimensions.length > 0 ) {
-			yield baseActions.syncAvailableCustomDimensions( propertyID );
+			yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
 		}
+
+		yield {
+			type: SET_CUSTOM_DIMENSIONS_BEING_CREATED,
+			payload: { customDimensions: [] },
+		};
 	},
+};
 
-	/**
-	 * Syncs available custom dimensions in the settings.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} propertyID GA4 property ID.
-	 * @return {Array<string>} Available custom dimensions.
-	 */
-	syncAvailableCustomDimensions: createValidatedAction(
-		( propertyID ) => {
-			invariant(
-				isValidPropertyID( propertyID ),
-				'A valid GA4 propertyID is required.'
-			);
-		},
-		function* ( propertyID ) {
-			const registry = yield Data.commonActions.getRegistry();
-
-			const { response, error } =
-				yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions(
-					propertyID
-				);
-
-			if ( response ) {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableCustomDimensions( response );
-			}
-
-			return { response, error };
+export const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_CUSTOM_DIMENSIONS_BEING_CREATED: {
+			return {
+				...state,
+				customDimensionsBeingCreated: payload.customDimensions,
+			};
 		}
-	),
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseResolvers = {
@@ -268,15 +266,7 @@ const baseResolvers = {
 			return;
 		}
 
-		const propertyID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyID();
-
-		yield Data.commonActions.await(
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.syncAvailableCustomDimensions( propertyID )
-		);
+		yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
 	},
 };
 
@@ -309,6 +299,57 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Checks whether the provided custom dimension is being created.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} customDimension Custom dimensions to check.
+	 * @return {boolean} True the provided custom dimension is being created, otherwise false.
+	 */
+	isCreatingCustomDimension( state, customDimension ) {
+		return !! state?.customDimensionsBeingCreated.includes(
+			customDimension
+		);
+	},
+
+	/**
+	 * Returns the error if encountered while creating the provided custom dimension.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} customDimension Custom dimension to obtain creation error for.
+	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+	 */
+	getCreateCustomDimensionError: createRegistrySelector(
+		( select ) => ( state, customDimension ) => {
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+			return select( MODULES_ANALYTICS_4 ).getErrorForAction(
+				'createCustomDimension',
+				[ propertyID, possibleCustomDimensions[ customDimension ] ]
+			);
+		}
+	),
+
+	/**
+	 * Determines whether the available custom dimensions are being synced.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the available custom dimensions are being synced, otherwise FALSE.
+	 */
+	isSyncingAvailableCustomDimensions: createRegistrySelector(
+		( select ) => () => {
+			return select(
+				MODULES_ANALYTICS_4
+			).isFetchingSyncAvailableCustomDimensions();
+		}
+	),
 };
 
 const store = Data.combineStores(
@@ -318,6 +359,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		actions: baseActions,
 		resolvers: baseResolvers,
+		reducer: baseReducer,
 		selectors: baseSelectors,
 	}
 );
