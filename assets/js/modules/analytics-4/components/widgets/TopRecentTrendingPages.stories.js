@@ -1,5 +1,5 @@
 /**
- * TopRecentTrendingPagesWidget Component Stories.
+ * TopRecentTrendingPages Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -26,12 +26,67 @@ import { KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES } from '../../../../googlesiteki
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import TopRecentTrendingPagesWidget from './TopRecentTrendingPagesWidget';
+import TopRecentTrendingPages from './TopRecentTrendingPages';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
+import {
+	STRATEGY_ZIP,
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '../../utils/data-mock';
+import { getDateString, getPreviousDate } from '../../../../util';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
-)( TopRecentTrendingPagesWidget );
+)( TopRecentTrendingPages );
+
+const today = new Date();
+const todayDateString = getDateString( today );
+
+const yesterday = getPreviousDate( todayDateString, 1 );
+const twoDaysAgo = getPreviousDate( todayDateString, 2 );
+const threeDaysAgo = getPreviousDate( todayDateString, 3 );
+
+const reportOptions = {
+	startDate: threeDaysAgo,
+	endDate: yesterday,
+	dimensions: [ 'pagePath' ],
+	dimensionFilters: {
+		'customEvent:googlesitekit_post_date': {
+			filterType: 'inListFilter',
+			value: [
+				yesterday.replace( /-/g, '' ),
+				twoDaysAgo.replace( /-/g, '' ),
+				threeDaysAgo.replace( /-/g, '' ),
+			],
+		},
+	},
+	metrics: [ { name: 'screenPageViews' } ],
+	orderby: [
+		{
+			metric: {
+				metricName: 'screenPageViews',
+			},
+			desc: true,
+		},
+	],
+	limit: 3,
+};
+
+const pageTitlesReportOptions = {
+	startDate: threeDaysAgo,
+	endDate: yesterday,
+	dimensionFilters: {
+		pagePath: new Array( 3 )
+			.fill( '' )
+			.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+			.sort(),
+	},
+	dimensions: [ 'pagePath', 'pageTitle' ],
+	metrics: [ { name: 'screenPageViews' } ],
+	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+	limit: 15,
+};
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -50,10 +105,115 @@ Ready.args = {
 					.requiredCustomDimensions?.[ 0 ],
 			],
 		} );
+
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions,
+			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+			// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+			// page paths to page titles.
+			{ dimensionCombinationStrategy: STRATEGY_ZIP }
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageTitlesReport, {
+				options: pageTitlesReportOptions,
+			} );
+
+		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
 Ready.parameters = {
 	features: [ 'newsKeyMetrics' ],
+};
+Ready.scenario = {
+	label: 'KeyMetrics/TopRecentTrendingPages/Ready',
+};
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.args = {
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
+			reportOptions,
+		] );
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
+		} );
+	},
+};
+Loading.parameters = {
+	features: [ 'newsKeyMetrics' ],
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options: reportOptions,
+		} );
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
+		} );
+	},
+};
+ZeroData.scenario = {
+	label: 'KeyMetrics/TopRecentTrendingPages/ZeroData',
+};
+
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const errorObject = {
+			code: 400,
+			message: 'Test error message. ',
+			data: {
+				status: 400,
+				reason: 'badRequest',
+			},
+			selectorData: {
+				storeName: 'modules/analytics-4',
+				name: 'getReport',
+				args: [ reportOptions ],
+			},
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
+		} );
+	},
+};
+Error.scenario = {
+	label: 'KeyMetrics/TopRecentTrendingPages/Error',
+	delay: 250,
 };
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
@@ -120,8 +280,8 @@ ErrorCustomDimensionsGeneric.parameters = {
 };
 
 export default {
-	title: 'Key Metrics/TopRecentTrendingPagesWidget',
-	component: TopRecentTrendingPagesWidget,
+	title: 'Key Metrics/TopRecentTrendingPages',
+	component: TopRecentTrendingPages,
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
