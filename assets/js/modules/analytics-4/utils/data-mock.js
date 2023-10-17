@@ -90,11 +90,11 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 	pagePath: ( i ) => ( i <= 12 ? `/test-post-${ i }/` : false ),
 	newVsReturning: [ 'new', 'returning' ],
 	'customEvent:googlesitekit_post_categories': [
-		'Entertainment',
-		'Sports',
-		'Wealth',
-		'Politics',
-		'Health',
+		JSON.stringify( [ 'Entertainment', 'Sports', 'Media' ] ),
+		JSON.stringify( [ 'Wealth' ] ),
+		JSON.stringify( [ 'Health' ] ),
+		JSON.stringify( [ 'Technology' ] ),
+		JSON.stringify( [ 'Business' ] ),
 	],
 };
 
