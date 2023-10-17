@@ -50,7 +50,6 @@ import {
 	ERROR_REASON_BAD_REQUEST,
 	isInsufficientPermissionsError,
 } from '../../../util/errors';
-import { useFeature } from '../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function withCustomDimensions( options = {} ) {
@@ -66,17 +65,11 @@ export default function withCustomDimensions( options = {} ) {
 				title: definedTitle,
 			} = KEY_METRICS_WIDGETS[ widgetSlug ] || {};
 
-			const newsKeyMetricsEnabled = useFeature( 'newsKeyMetrics' );
-
 			const tileTitle = title || definedTitle;
 			const tileInfoTooltip =
 				infoTooltip || definedInfoTooltip || description;
 
 			const customDimensions = useMemo( () => {
-				if ( ! newsKeyMetricsEnabled ) {
-					return null;
-				}
-
 				if ( Array.isArray( dimensions ) && dimensions.length ) {
 					return dimensions;
 				}
@@ -89,7 +82,7 @@ export default function withCustomDimensions( options = {} ) {
 				}
 
 				return null;
-			}, [ newsKeyMetricsEnabled, requiredCustomDimensions ] );
+			}, [ requiredCustomDimensions ] );
 
 			const hasCustomDimensions = useSelect(
 				( select ) =>
@@ -241,10 +234,6 @@ export default function withCustomDimensions( options = {} ) {
 				reportError,
 				syncAvailableCustomDimensions,
 			] );
-
-			if ( ! newsKeyMetricsEnabled ) {
-				return null;
-			}
 
 			// Show loading state.
 			if ( !! customDimensions && loading ) {
