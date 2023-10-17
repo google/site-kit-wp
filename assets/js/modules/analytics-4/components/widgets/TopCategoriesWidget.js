@@ -94,8 +94,6 @@ function TopCategoriesWidget( { Widget } ) {
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ categories ] = fieldValue;
-
-				global.console.log( { categories } );
 				const categoriesString = JSON.parse( categories.value ).join(
 					', '
 				);
