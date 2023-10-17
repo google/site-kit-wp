@@ -134,9 +134,6 @@ export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
-			reportOptions,
-		] );
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [
@@ -144,10 +141,17 @@ Loading.args = {
 					.requiredCustomDimensions?.[ 0 ],
 			],
 		} );
+
+		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
+			reportOptions,
+		] );
 	},
 };
 Loading.parameters = {
 	features: [ 'newsKeyMetrics' ],
+};
+Loading.scenario = {
+	label: 'KeyMetrics/TopRecentTrendingPages/Loading',
 };
 
 export const ZeroData = Template.bind( {} );
