@@ -47,14 +47,12 @@ import withCustomDimensions from '../../utils/withCustomDimensions';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 const { useSelect, useInViewSelect } = Data;
 
-function TopCategoriesWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
+function getReportOptions( select ) {
+	const dates = select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} );
 
-	const topCategoriesReportOptions = {
+	return {
 		...dates,
 		dimensions: [ 'customEvent:googlesitekit_post_categories' ],
 		metrics: [ { name: 'screenPageViews' } ],
@@ -68,6 +66,10 @@ function TopCategoriesWidget( { Widget } ) {
 		],
 		limit: 3,
 	};
+}
+
+function TopCategoriesWidget( { Widget } ) {
+	const topCategoriesReportOptions = useSelect( getReportOptions );
 
 	const topCategoriesReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( topCategoriesReportOptions )
@@ -139,5 +141,7 @@ export default compose(
 		moduleName: 'analytics-4',
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
-	withCustomDimensions()
+	withCustomDimensions( {
+		reportOptions: getReportOptions,
+	} )
 )( TopCategoriesWidget );
