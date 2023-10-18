@@ -349,10 +349,10 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state         Data store's state.
 	 * @param {string} parameterName Custom dimension parameter name.
-	 * @return {(string|null|undefined)} The existing tag `string` if present, `null` if not present, or `undefined` if not loaded yet.
+	 * @return {boolean} Returns TRUE if data is available on load, otherwise FALSE.
 	 */
 	isCustomDimensionDataAvailableOnLoad( state, parameterName ) {
-		return state.customDimensionsDataAvailableOnLoad[ parameterName ];
+		return !! state.customDimensionsDataAvailableOnLoad?.[ parameterName ];
 	},
 
 	/**
