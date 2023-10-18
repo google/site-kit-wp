@@ -35,7 +35,7 @@ import {
 	VisitLengthWidget,
 	TopReturningVisitorPages,
 	VisitsPerVisitorWidget,
-	TopRecentTrendingPages,
+	TopRecentTrendingPagesWidget,
 	TopCategoriesWidget,
 	PopularAuthorsWidget,
 } from './components/widgets';
@@ -329,7 +329,7 @@ export const registerWidgets = ( widgets ) => {
 		widgets.registerWidget(
 			KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 			{
-				Component: TopRecentTrendingPages,
+				Component: TopRecentTrendingPagesWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 1,
 				wrapWidget: false,
