@@ -49,6 +49,7 @@ import {
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 import Link from '../../../components/Link';
 import MetricTileError from '../../../components/KeyMetrics/MetricTileError';
+import MetricTileTable from '../../../components/KeyMetrics/MetricTileTable';
 import MetricTileWrapper from '../../../components/KeyMetrics/MetricTileWrapper';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
@@ -197,6 +198,40 @@ export default function withCustomDimensions( options = {} ) {
 				isNavigatingToOAuthURL ||
 				hasCustomDimensions === undefined;
 
+			const isGatheringData = useSelect( ( select ) => {
+				const isGA4GatheringData =
+					select( MODULES_ANALYTICS_4 ).isGatheringData();
+
+				if ( isGA4GatheringData !== false ) {
+					return isGA4GatheringData;
+				}
+
+				if ( loading || ! hasCustomDimensions ) {
+					// Custom dimension gathering data is not applicable if we're still loading or there are no custom dimensions.
+					return null;
+				}
+
+				const { isCustomDimensionGatheringData } =
+					select( MODULES_ANALYTICS_4 );
+
+				// Return undefined if any of the custom dimensions' gathering data state is undefined,
+				// or true if any of the custom dimensions' gathering data state is true.
+				for ( const gatheringDataState of [ undefined, true ] ) {
+					if (
+						customDimensions?.some(
+							( dimension ) =>
+								isCustomDimensionGatheringData( dimension ) ===
+								gatheringDataState
+						)
+					) {
+						return gatheringDataState;
+					}
+				}
+
+				// Otherwise, all custom dimensions' gathering data state is false.
+				return false;
+			} );
+
 			const commonErrorProps = {
 				headerText: tileTitle,
 				infoTooltip: tileInfoTooltip,
@@ -262,7 +297,10 @@ export default function withCustomDimensions( options = {} ) {
 			] );
 
 			// Show loading state.
-			if ( !! customDimensions && loading ) {
+			if (
+				!! customDimensions &&
+				( loading || isGatheringData === undefined )
+			) {
 				return (
 					<MetricTileWrapper
 						infoTooltip={ tileInfoTooltip }
@@ -388,6 +426,24 @@ export default function withCustomDimensions( options = {} ) {
 								</span>
 							</div>
 						</MetricTileError>
+					);
+				}
+
+				if ( isGatheringData ) {
+					// TODO: Flag that there's no need for the separate ZeroDataState-like component as it won't be reused and it's just a simple message.
+					return (
+						<MetricTileTable
+							infoTooltip={ tileInfoTooltip }
+							moduleSlug="analytics-4"
+							title={ tileTitle }
+							Widget={ Widget }
+							ZeroState={ () =>
+								__(
+									'Setup successful: Analytics is gathering data for this metric',
+									'google-site-kit'
+								)
+							}
+						/>
 					);
 				}
 			}
