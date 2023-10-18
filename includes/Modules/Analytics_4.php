@@ -1301,6 +1301,10 @@ final class Analytics_4 extends Module
 	 * @return array An associated array of custom dimensions data.
 	 */
 	private function get_custom_dimensions_data() {
+		if ( ! is_singular() ) {
+			return array();
+		}
+
 		$settings = $this->get_settings()->get();
 		if ( empty( $settings['availableCustomDimensions'] ) ) {
 			return array();
@@ -1314,27 +1318,27 @@ final class Analytics_4 extends Module
 		 * @param array $allowed_post_types The array of allowed post types.
 		 */
 		$allowed_post_types = apply_filters( 'custom_dimension_valid_post_types', array( 'post' ) );
-		if ( ! is_singular( $allowed_post_types ) ) {
-			return array();
-		}
 
 		$data = array();
 		$post = get_queried_object();
 
-		foreach ( $settings['availableCustomDimensions'] as $custom_dimension ) {
-			switch ( $custom_dimension ) {
-				case 'googlesitekit_post_type':
-					$data[ $custom_dimension ] = $post->post_type;
-					break;
-				case 'googlesitekit_post_author':
-					$data[ $custom_dimension ] = $post->post_author;
-					break;
-				case 'googlesitekit_post_categories':
-					$data[ $custom_dimension ] = implode( ',', wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) ) );
-					break;
-				case 'googlesitekit_post_date':
-					$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );
-					break;
+		if ( in_array( 'googlesitekit_post_type', $settings['availableCustomDimensions'] ) ) {
+			$data[ $custom_dimension ] = $post->post_type;
+		}
+
+		if ( is_singular( $allowed_post_types ) ) {
+			foreach ( $settings['availableCustomDimensions'] as $custom_dimension ) {
+				switch ( $custom_dimension ) {
+					case 'googlesitekit_post_author':
+						$data[ $custom_dimension ] = $post->post_author;
+						break;
+					case 'googlesitekit_post_categories':
+						$data[ $custom_dimension ] = implode( ',', wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) ) );
+						break;
+					case 'googlesitekit_post_date':
+						$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );
+						break;
+				}
 			}
 		}
 
