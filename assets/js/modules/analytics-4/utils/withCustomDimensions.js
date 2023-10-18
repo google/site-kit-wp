@@ -54,6 +54,7 @@ import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	isInsufficientPermissionsError,
 } from '../../../util/errors';
+import { isInvalidCustomDimensionError } from './custom-dimensions';
 const { useSelect, useDispatch } = Data;
 
 export default function withCustomDimensions( options = {} ) {
@@ -235,7 +236,7 @@ export default function withCustomDimensions( options = {} ) {
 			useEffect( () => {
 				if (
 					! customDimensions ||
-					reportError?.data?.reason !== 'badRequest' ||
+					! isInvalidCustomDimensionError( reportError ) ||
 					isSyncingAvailableCustomDimensions
 				) {
 					return;
@@ -256,7 +257,7 @@ export default function withCustomDimensions( options = {} ) {
 				fetchSyncAvailableCustomDimensions,
 				invalidateResolution,
 				isSyncingAvailableCustomDimensions,
-				reportError?.data?.reason,
+				reportError,
 				reportOptions,
 			] );
 
