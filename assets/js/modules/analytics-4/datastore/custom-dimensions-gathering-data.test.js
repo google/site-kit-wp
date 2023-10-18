@@ -26,6 +26,7 @@ import { MODULES_ANALYTICS_4 } from './constants';
 
 let {
 	createTestRegistry,
+	untilResolved,
 	waitForDefaultTimeouts,
 	provideUserAuthentication,
 	muteFetch,
@@ -189,6 +190,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 
 			( {
 				createTestRegistry,
+				untilResolved,
 				waitForDefaultTimeouts,
 				provideUserAuthentication,
 				muteFetch,
@@ -212,6 +214,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				property,
 				availableCustomDimensions,
 				report,
+				reportError,
 			} = { ...defaultOptions, ...options };
 
 			if ( authenticated !== undefined ) {
@@ -238,18 +241,24 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					} );
 			}
 
-			const reportArgs = {
-				startDate: createDate,
-				endDate: referenceDate,
-				dimensions: [ `customEvent:${ parameterName }` ],
-			};
+			if ( report || reportError ) {
+				const reportArgs = {
+					startDate: createDate,
+					endDate: referenceDate,
+					dimensions: [ `customEvent:${ parameterName }` ],
+				};
 
-			if ( report ) {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetReport( report, {
-						options: reportArgs,
-					} );
+				if ( report ) {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetReport( report, { options: reportArgs } );
+				}
+
+				if ( reportError ) {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveError( report, 'getReport', [ reportArgs ] );
+				}
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -342,6 +351,25 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					},
 				],
 				[
+					null,
+					'the report returns an error',
+					() => {
+						setupCustomDimensionDataAvailability( {
+							reportError: {
+								code: 'test_error',
+								message: 'Error message.',
+								data: {},
+							},
+						} );
+
+						muteFetch(
+							new RegExp(
+								'^/google-site-kit/v1/modules/analytics-4/data/report'
+							)
+						);
+					},
+				],
+				[
 					false,
 					'data is not available',
 					() => {
@@ -396,6 +424,154 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.isCustomDimensionDataAvailableOnLoad( parameterName )
+				).toBe( true );
+			} );
+		} );
+
+		describe( 'isCustomDimensionGatheringData', () => {
+			const customDimensionDataAvailableEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/custom-dimension-data-available'
+			);
+
+			it( 'should return undefined if it is not resolved yet', async () => {
+				setupCustomDimensionDataAvailability();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
+				).toBeUndefined();
+
+				muteFetch( customDimensionDataAvailableEndpoint );
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return the value of gathering data if it is set and do nothing else', async () => {
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						parameterName,
+						true
+					);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
+				).toBe( true );
+			} );
+
+			it( 'should return FALSE and do nothing else when data is available on load', async () => {
+				setupRegistryWithDataAvailabilityOnLoad( true );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).isCustomDimensionGatheringData( parameterName );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
+				).toBe( false );
+			} );
+
+			it( 'should set gathering data state and dispatch a fetch request to save it when selectCustomDimensionDataAvailability returns TRUE', async () => {
+				setupRegistryWithDataAvailabilityOnLoad( false );
+				setupCustomDimensionDataAvailability();
+
+				fetchMock.postOnce( customDimensionDataAvailableEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).isCustomDimensionGatheringData( parameterName );
+
+				expect( fetchMock ).toHaveFetched(
+					customDimensionDataAvailableEndpoint
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
+				).toBe( false );
+			} );
+
+			it( 'should set gathering data state and do nothing else when selectCustomDimensionDataAvailability returns FALSE', async () => {
+				setupRegistryWithDataAvailabilityOnLoad( false );
+				// `selectCustomDimensionDataAvailability()` returns FALSE when the custom dimension is not available, as verified in
+				// the relevant test case for `selectCustomDimensionDataAvailability()` above.
+				setupCustomDimensionDataAvailability( {
+					availableCustomDimensions: [],
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).isCustomDimensionGatheringData( parameterName );
+
+				expect( fetchMock ).not.toHaveFetched();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
+				).toBe( true );
+			} );
+
+			it( 'should set gathering data state to TRUE when selectCustomDimensionDataAvailability returns NULL', async () => {
+				setupRegistryWithDataAvailabilityOnLoad( false );
+				// `selectCustomDimensionDataAvailability()` returns NULL when the report returns an error, as verified in
+				// the relevant test case for `selectCustomDimensionDataAvailability()` above.
+				setupCustomDimensionDataAvailability( {
+					reportError: {
+						code: 'test_error',
+						message: 'Error message.',
+						data: {},
+					},
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).isCustomDimensionGatheringData( parameterName );
+
+				expect( fetchMock ).not.toHaveFetched();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData( parameterName )
 				).toBe( true );
 			} );
 		} );
