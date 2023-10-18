@@ -1323,7 +1323,7 @@ final class Analytics_4 extends Module
 		$post = get_queried_object();
 
 		if ( in_array( 'googlesitekit_post_type', $settings['availableCustomDimensions'] ) ) {
-			$data[ $custom_dimension ] = $post->post_type;
+			$data['googlesitekit_post_type'] = $post->post_type;
 		}
 
 		if ( is_singular( $allowed_post_types ) ) {
