@@ -52,13 +52,17 @@ import MetricTileError from '../../../components/KeyMetrics/MetricTileError';
 import MetricTileWrapper from '../../../components/KeyMetrics/MetricTileWrapper';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
-	ERROR_REASON_BAD_REQUEST,
 	isInsufficientPermissionsError,
 } from '../../../util/errors';
 const { useSelect, useDispatch } = Data;
 
 export default function withCustomDimensions( options = {} ) {
-	const { dimensions, infoTooltip, reportOptions, title } = options;
+	const {
+		dimensions,
+		infoTooltip,
+		reportOptions: wrappedReportOptions,
+		title,
+	} = options;
 
 	return ( WrappedComponent ) => {
 		const WithCustomDimensionsComponent = ( props ) => {
@@ -158,30 +162,39 @@ export default function withCustomDimensions( options = {} ) {
 
 				return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
 			} );
+			const reportOptions = useSelect( ( select ) => {
+				if ( ! wrappedReportOptions ) {
+					return null;
+				}
+
+				return isFunction( wrappedReportOptions )
+					? wrappedReportOptions( select )
+					: wrappedReportOptions;
+			} );
 			const reportError = useSelect( ( select ) => {
 				if ( ! reportOptions ) {
 					return null;
 				}
 
-				const args = isFunction( reportOptions )
-					? reportOptions( select )
-					: reportOptions;
-
 				return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 					'getReport',
-					[ args ]
+					[ reportOptions ]
 				);
 			} );
 
-			const { fetchSyncAvailableCustomDimensions } =
-				useDispatch( MODULES_ANALYTICS_4 );
+			const {
+				clearError,
+				fetchSyncAvailableCustomDimensions,
+				invalidateResolution,
+			} = useDispatch( MODULES_ANALYTICS_4 );
 			const { setValues } = useDispatch( CORE_FORMS );
 			const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 			const loading =
 				isCreatingCustomDimensions ||
 				isSyncingAvailableCustomDimensions ||
-				isNavigatingToOAuthURL;
+				isNavigatingToOAuthURL ||
+				hasCustomDimensions === undefined;
 
 			const commonErrorProps = {
 				headerText: tileTitle,
@@ -222,18 +235,29 @@ export default function withCustomDimensions( options = {} ) {
 			useEffect( () => {
 				if (
 					! customDimensions ||
-					reportError?.data?.reason !== ERROR_REASON_BAD_REQUEST ||
+					reportError?.data?.reason !== 'badRequest' ||
 					isSyncingAvailableCustomDimensions
 				) {
 					return;
 				}
 
-				fetchSyncAvailableCustomDimensions();
+				// Clear report error so that the fetch sync action isn't
+				// triggered multiple times.
+				clearError( 'getReport', [ reportOptions ] );
+
+				// Sync available custom dimensions.
+				fetchSyncAvailableCustomDimensions().then( () => {
+					// Invalidate report request so that it is re-fetched.
+					invalidateResolution( 'getReport', [ reportOptions ] );
+				} );
 			}, [
+				clearError,
 				customDimensions,
-				isSyncingAvailableCustomDimensions,
-				reportError,
 				fetchSyncAvailableCustomDimensions,
+				invalidateResolution,
+				isSyncingAvailableCustomDimensions,
+				reportError?.data?.reason,
+				reportOptions,
 			] );
 
 			// Show loading state.
@@ -343,7 +367,7 @@ export default function withCustomDimensions( options = {} ) {
 					);
 				}
 
-				if ( ! hasCustomDimensions ) {
+				if ( false === hasCustomDimensions ) {
 					return (
 						<MetricTileError
 							title={ __( 'No data to show', 'google-site-kit' ) }
