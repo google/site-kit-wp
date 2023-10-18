@@ -137,7 +137,7 @@ Error.args = {
 			message: 'Test error message. ',
 			data: {
 				status: 400,
-				reason: 'badRequest',
+				reason: 'test-error-reason',
 			},
 			selectorData: {
 				storeName: 'modules/analytics-4',
@@ -216,7 +216,12 @@ InsufficientPermissions.scenario = {
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
-	setupRegistry: () => {},
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [],
+		} );
+	},
 };
 ErrorMissingCustomDimensions.parameters = {
 	features: [ 'newsKeyMetrics' ],
@@ -239,7 +244,13 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '12345' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
+		} );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
@@ -270,7 +281,13 @@ ErrorCustomDimensionsGeneric.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '12345' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
+		} );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
