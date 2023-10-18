@@ -278,7 +278,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object}               state            Data store's state.
 	 * @param {string|Array<string>} customDimensions Custom dimensions to check.
-	 * @return {boolean} True if all provided custom dimensions are available, otherwise false.
+	 * @return {(boolean|undefined)} True if all provided custom dimensions are available, otherwise false. Undefined if available custom dimensions are not loaded yet.
 	 */
 	hasCustomDimensions: createRegistrySelector(
 		( select ) => ( state, customDimensions ) => {
@@ -289,6 +289,10 @@ const baseSelectors = {
 
 			const availableCustomDimensions =
 				select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
+
+			if ( availableCustomDimensions === undefined ) {
+				return undefined;
+			}
 
 			if ( ! availableCustomDimensions ) {
 				return false;

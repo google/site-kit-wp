@@ -343,6 +343,18 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 
 		describe( 'hasCustomDimensions', () => {
+			it( 'returns undefined when available custom dimensions have not loaded', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				const hasCustomDimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasCustomDimensions( [ 'googlesitekit_post_author' ] );
+
+				expect( hasCustomDimensions ).toBe( undefined );
+			} );
+
 			it( 'returns false when available custom dimensions are null or not set', () => {
 				provideUserAuthentication( registry, { authenticated: false } );
 				registry.dispatch( CORE_USER ).receiveCapabilities( {
