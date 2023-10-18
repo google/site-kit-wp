@@ -54,7 +54,6 @@ export const KM_ANALYTICS_NEW_VISITORS = 'kmAnalyticsNewVisitors';
 export const KM_ANALYTICS_POPULAR_AUTHORS = 'kmAnalyticsPopularAuthors';
 export const KM_ANALYTICS_POPULAR_CONTENT = 'kmAnalyticsPopularContent';
 export const KM_ANALYTICS_POPULAR_PRODUCTS = 'kmAnalyticsPopularProducts';
-export const KM_ANALYTICS_TOP_CATEGORIES = 'kmAnalyticsTopCategories';
 export const KM_ANALYTICS_TOP_CITIES = 'kmAnalyticsTopCities';
 export const KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE =
 	'kmAnalyticsTopConvertingTrafficSource';
@@ -70,6 +69,7 @@ export const KM_SEARCH_CONSOLE_POPULAR_KEYWORDS =
 	'kmSearchConsolePopularKeywords';
 export const KM_ANALYTICS_VISITS_PER_VISITOR = 'kmAnalyticsVisitsPerVisitor';
 export const KM_ANALYTICS_MOST_ENGAGING_PAGES = 'kmAnalyticsMostEngagingPages';
+export const KM_ANALYTICS_TOP_CATEGORIES = 'kmAnalyticsTopCategories';
 
 export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
@@ -91,6 +91,7 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+	KM_ANALYTICS_TOP_CATEGORIES,
 ];
 
 export const allKeyMetricsTileWidgets = [
