@@ -431,18 +431,17 @@ final class Analytics_4 extends Module
 		}
 
 		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
-			$datapoints['POST:create-custom-dimension']         = array(
+			$datapoints['POST:create-custom-dimension'] = array(
 				'service'                => 'analyticsdata',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
 			);
-			$datapoints['POST:sync-custom-dimensions']          = array(
+			$datapoints['POST:sync-custom-dimensions']  = array(
 				'service' => 'analyticsadmin',
 			);
-			$datapoints['POST:custom-dimension-data-available'] = array(
-				'service'   => '',
-				'shareable' => $shareable,
-			);
+			// TODO: Flag that I've not made the endpoint shareable, as the user needs to be authenticated in order to get the property creation date in order to determine
+			// data availability. Note that this also applies to the module-level GA4 gathering data logic.
+			$datapoints['POST:custom-dimension-data-available'] = array( 'service' => '' );
 		}
 
 		return $datapoints;
