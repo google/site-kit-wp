@@ -158,6 +158,9 @@ export default function withCustomDimensions( options = {} ) {
 
 				return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
 			} );
+			const availableCustomDimensions = useSelect( ( select ) =>
+				select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
+			);
 			const reportError = useSelect( ( select ) => {
 				if ( ! reportOptions ) {
 					return null;
@@ -181,7 +184,8 @@ export default function withCustomDimensions( options = {} ) {
 			const loading =
 				isCreatingCustomDimensions ||
 				isSyncingAvailableCustomDimensions ||
-				isNavigatingToOAuthURL;
+				isNavigatingToOAuthURL ||
+				availableCustomDimensions === undefined;
 
 			const commonErrorProps = {
 				headerText: tileTitle,
