@@ -162,9 +162,6 @@ export default function withCustomDimensions( options = {} ) {
 
 				return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
 			} );
-			const availableCustomDimensions = useSelect( ( select ) =>
-				select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
-			);
 			const reportOptions = useSelect( ( select ) => {
 				if ( ! wrappedReportOptions ) {
 					return null;
@@ -197,7 +194,7 @@ export default function withCustomDimensions( options = {} ) {
 				isCreatingCustomDimensions ||
 				isSyncingAvailableCustomDimensions ||
 				isNavigatingToOAuthURL ||
-				availableCustomDimensions === undefined;
+				hasCustomDimensions === undefined;
 
 			const commonErrorProps = {
 				headerText: tileTitle,
@@ -370,7 +367,7 @@ export default function withCustomDimensions( options = {} ) {
 					);
 				}
 
-				if ( ! hasCustomDimensions ) {
+				if ( false === hasCustomDimensions ) {
 					return (
 						<MetricTileError
 							title={ __( 'No data to show', 'google-site-kit' ) }
