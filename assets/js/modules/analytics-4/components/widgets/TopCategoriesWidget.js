@@ -96,9 +96,13 @@ function TopCategoriesWidget( { Widget } ) {
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ categories ] = fieldValue;
+				let categoriesList = JSON.parse( categories.value );
+				if ( ! Array.isArray( categoriesList ) ) {
+					categoriesList = [];
+				}
 				const categoriesString = listFormat(
 					// All values _must_ be a string or format will throw an error.
-					JSON.parse( categories.value ).map( String ),
+					categoriesList.map( String ),
 					{ style: 'narrow' }
 				);
 
