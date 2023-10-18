@@ -143,10 +143,8 @@ export const getReportOptions = ( select ) => {
 
 function TopRecentTrendingPagesWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
-
-	const dates = getDateRange();
-
-	const reportOptions = getReportOptions();
+	const dates = useSelect( getDateRange );
+	const reportOptions = useSelect( getReportOptions );
 
 	const report = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
