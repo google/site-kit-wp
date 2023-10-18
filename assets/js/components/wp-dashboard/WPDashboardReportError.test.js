@@ -1,5 +1,5 @@
 /**
- * WidgetReportError component tests.
+ * WPDashboardReportError component tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import WidgetReportError from './WidgetReportError';
-import { provideModules, render } from '../../../../../tests/js/test-utils';
+import { provideModules, render } from '../../../../tests/js/test-utils';
+import WPDashboardReportError from './WPDashboardReportError';
 
-describe( 'WidgetReportError', () => {
+describe( 'WPDashboardReportError', () => {
 	it( 'In case of multiple instances with same error, only one error should be rendered per module', () => {
 		const error = {
 			code: 'test_error',
@@ -34,16 +34,22 @@ describe( 'WidgetReportError', () => {
 
 		const TestRender = () => (
 			<div>
-				<WidgetReportError
+				<WPDashboardReportError
 					moduleSlug="search-console"
 					error={ error }
 				/>
-				<WidgetReportError
+				<WPDashboardReportError
 					moduleSlug="search-console"
 					error={ error }
 				/>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
+				<WPDashboardReportError
+					moduleSlug="analytics-4"
+					error={ error }
+				/>
+				<WPDashboardReportError
+					moduleSlug="analytics-4"
+					error={ error }
+				/>
 			</div>
 		);
 
