@@ -97,7 +97,8 @@ function TopCategoriesWidget( { Widget } ) {
 			Component: ( { fieldValue } ) => {
 				const [ categories ] = fieldValue;
 				const categoriesString = listFormat(
-					JSON.parse( categories.value ),
+					// All values _must_ be a string or format will throw an error.
+					JSON.parse( categories.value ).map( String ),
 					{ style: 'narrow' }
 				);
 
