@@ -38,6 +38,9 @@ import {
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 
+const KM_WIDGET_DEF =
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ];
+
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
 )( TopRecentTrendingPagesWidget );
@@ -73,8 +76,7 @@ Ready.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '123456789',
 			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
 		} );
 
@@ -109,8 +111,7 @@ Loading.args = {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
 		} );
 
@@ -140,8 +141,7 @@ ZeroData.args = {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
 		} );
 	},
@@ -159,7 +159,7 @@ Error.args = {
 			message: 'Test error message. ',
 			data: {
 				status: 400,
-				reason: 'badRequest',
+				reason: 'test-error-reason',
 			},
 			selectorData: {
 				storeName: 'modules/analytics-4',
@@ -181,8 +181,7 @@ Error.args = {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
 		} );
 	},
@@ -195,7 +194,12 @@ Error.scenario = {
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
-	setupRegistry: () => {},
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [],
+		} );
+	},
 };
 ErrorMissingCustomDimensions.parameters = {
 	features: [ 'newsKeyMetrics' ],
@@ -214,12 +218,15 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				...KM_WIDGET_DEF.requiredCustomDimensions,
+			],
+		} );
 
 		provideCustomDimensionError( registry, {
-			customDimension:
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+			customDimension: KM_WIDGET_DEF.requiredCustomDimensions,
 			error,
 		} );
 	},
@@ -241,12 +248,15 @@ ErrorCustomDimensionsGeneric.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				...KM_WIDGET_DEF.requiredCustomDimensions,
+			],
+		} );
 
 		provideCustomDimensionError( registry, {
-			customDimension:
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+			customDimension: KM_WIDGET_DEF.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 	},
