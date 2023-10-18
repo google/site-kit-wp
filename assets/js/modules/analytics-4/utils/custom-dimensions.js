@@ -42,3 +42,18 @@ export const provideCustomDimensionError = (
 		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveError( error, 'createCustomDimension', options );
 };
+
+/**
+ * Checks whether the given error is an invalid custom dimension error.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error Error object instance.
+ * @return {boolean} `true` if it is an invalid custom dimension error, otherwise `false`.
+ */
+export function isInvalidCustomDimensionError( error ) {
+	return (
+		error?.code === 400 &&
+		error?.message?.includes( 'is not a valid dimension' )
+	);
+}
