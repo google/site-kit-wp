@@ -36,9 +36,10 @@ import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { calculateChange } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
+import WPDashboardReportError from './WPDashboardReportError';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardImpressions = ( { WidgetReportError } ) => {
+const WPDashboardImpressions = () => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -80,7 +81,10 @@ const WPDashboardImpressions = ( { WidgetReportError } ) => {
 
 	if ( error ) {
 		return (
-			<WidgetReportError moduleSlug="search-console" error={ error } />
+			<WPDashboardReportError
+				moduleSlug="search-console"
+				error={ error }
+			/>
 		);
 	}
 

@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
 
 /**
@@ -40,11 +39,10 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { extractAnalyticsDashboardData } from '../../modules/analytics/util';
 import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
+import WPDashboardReportError from './WPDashboardReportError';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardUniqueVisitorsChart( props ) {
-	const { WidgetReportError } = props;
-
+export default function WPDashboardUniqueVisitorsChart() {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -101,7 +99,9 @@ export default function WPDashboardUniqueVisitorsChart( props ) {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics" error={ error } />
+		);
 	}
 
 	if ( ! isEmpty( data?.[ 0 ] ) ) {
@@ -170,7 +170,3 @@ export default function WPDashboardUniqueVisitorsChart( props ) {
 		</div>
 	);
 }
-
-WPDashboardUniqueVisitorsChart.propTypes = {
-	WidgetReportError: PropTypes.elementType.isRequired,
-};

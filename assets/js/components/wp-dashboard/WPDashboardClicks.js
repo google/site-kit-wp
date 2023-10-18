@@ -36,9 +36,10 @@ import { partitionReport } from '../../util/partition-report';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
+import WPDashboardReportError from './WPDashboardReportError';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardClicks = ( { WidgetReportError } ) => {
+const WPDashboardClicks = () => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -80,7 +81,10 @@ const WPDashboardClicks = ( { WidgetReportError } ) => {
 
 	if ( error ) {
 		return (
-			<WidgetReportError moduleSlug="search-console" error={ error } />
+			<WPDashboardReportError
+				moduleSlug="search-console"
+				error={ error }
+			/>
 		);
 	}
 

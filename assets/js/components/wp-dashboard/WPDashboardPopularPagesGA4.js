@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 
 /**
@@ -42,11 +41,10 @@ import TableOverflowContainer from '../TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
+import WPDashboardReportError from './WPDashboardReportError';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardPopularPagesGA4( props ) {
-	const { WidgetReportError } = props;
-
+export default function WPDashboardPopularPagesGA4() {
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -107,7 +105,9 @@ export default function WPDashboardPopularPagesGA4( props ) {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics-4" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics-4" error={ error } />
+		);
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.
@@ -158,7 +158,3 @@ export default function WPDashboardPopularPagesGA4( props ) {
 		</div>
 	);
 }
-
-WPDashboardPopularPagesGA4.propTypes = {
-	WidgetReportError: PropTypes.elementType.isRequired,
-};

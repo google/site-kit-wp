@@ -41,11 +41,10 @@ import TableOverflowContainer from '../../components/TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
+import WPDashboardReportError from './WPDashboardReportError';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardPopularPages( props ) {
-	const { WidgetReportError } = props;
-
+export default function WPDashboardPopularPages() {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -104,7 +103,9 @@ export default function WPDashboardPopularPages( props ) {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics" error={ error } />
+		);
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.

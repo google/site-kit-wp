@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
@@ -35,11 +30,10 @@ import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../modules/
 import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
 import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/extract-dashboard-data';
+import WPDashboardReportError from './WPDashboardReportError';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardUniqueVisitorsChartGA4( props ) {
-	const { WidgetReportError } = props;
-
+export default function WPDashboardUniqueVisitorsChartGA4() {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
@@ -99,7 +93,9 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics-4" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics-4" error={ error } />
+		);
 	}
 
 	const googleChartData = extractAnalytics4DashboardData(
@@ -159,7 +155,3 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 		</div>
 	);
 }
-
-WPDashboardUniqueVisitorsChartGA4.propTypes = {
-	WidgetReportError: PropTypes.elementType.isRequired,
-};

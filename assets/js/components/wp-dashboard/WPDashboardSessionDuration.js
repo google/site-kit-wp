@@ -34,9 +34,10 @@ import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
+import WPDashboardReportError from './WPDashboardReportError';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardSessionDuration = ( { WidgetReportError } ) => {
+const WPDashboardSessionDuration = () => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -79,7 +80,9 @@ const WPDashboardSessionDuration = ( { WidgetReportError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics" error={ error } />
+		);
 	}
 
 	const { totals } = data[ 0 ].data;
