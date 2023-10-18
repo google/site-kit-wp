@@ -32,8 +32,6 @@ import { compose } from '@wordpress/compose';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
-import { KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES } from '../../../../googlesitekit/datastore/user/constants';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
 import { getDateString, getPreviousDate, numFmt } from '../../../../util';
@@ -253,9 +251,6 @@ export default compose(
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {
-		dimensions:
-			KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-				.requiredCustomDimensions?.[ 0 ],
-		reportOptions: getReportOptions(),
+		reportOptions: getReportOptions,
 	} )
 )( TopRecentTrendingPagesWidget );
