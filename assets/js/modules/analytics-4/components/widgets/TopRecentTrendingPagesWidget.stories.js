@@ -38,16 +38,15 @@ import {
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 
+const KM_WIDGET_DEF =
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ];
+
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
 )( TopRecentTrendingPagesWidget );
 
-const reportOptions = getReportOptions();
-
-const dateRange = getDateRange();
-
-const pageTitlesReportOptions = {
-	...dateRange,
+const selectPageTitlesReportOptions = ( select ) => ( {
+	...getDateRange( select ),
 	dimensionFilters: {
 		pagePath: new Array( 3 )
 			.fill( '' )
@@ -58,7 +57,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
-};
+} );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -70,14 +69,16 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		const { select, dispatch } = registry;
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '123456789',
 			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
 		} );
 
+		const reportOptions = getReportOptions( select );
+		const pageTitlesReportOptions = selectPageTitlesReportOptions( select );
 		const pageTitlesReport = getAnalytics4MockResponse(
 			pageTitlesReportOptions,
 			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -86,11 +87,9 @@ Ready.args = {
 			{ dimensionCombinationStrategy: STRATEGY_ZIP }
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( pageTitlesReport, {
-				options: pageTitlesReportOptions,
-			} );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( pageTitlesReport, {
+			options: pageTitlesReportOptions,
+		} );
 
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
@@ -105,12 +104,12 @@ Ready.scenario = {
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( { select, dispatch } ) => {
+		const reportOptions = getReportOptions( select );
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
 		} );
 
@@ -129,7 +128,8 @@ Loading.scenario = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( { select, dispatch } ) => {
+		const reportOptions = getReportOptions( select );
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
@@ -140,8 +140,7 @@ ZeroData.args = {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
 		} );
 	},
@@ -153,13 +152,14 @@ ZeroData.scenario = {
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( { select, dispatch } ) => {
+		const reportOptions = getReportOptions( select );
 		const errorObject = {
 			code: 400,
 			message: 'Test error message. ',
 			data: {
 				status: 400,
-				reason: 'badRequest',
+				reason: 'test-error-reason',
 			},
 			selectorData: {
 				storeName: 'modules/analytics-4',
@@ -181,8 +181,7 @@ Error.args = {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
 		} );
 	},
@@ -195,7 +194,12 @@ Error.scenario = {
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
-	setupRegistry: () => {},
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [],
+		} );
+	},
 };
 ErrorMissingCustomDimensions.parameters = {
 	features: [ 'newsKeyMetrics' ],
@@ -214,12 +218,15 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				...KM_WIDGET_DEF.requiredCustomDimensions,
+			],
+		} );
 
 		provideCustomDimensionError( registry, {
-			customDimension:
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+			customDimension: KM_WIDGET_DEF.requiredCustomDimensions,
 			error,
 		} );
 	},
@@ -241,12 +248,15 @@ ErrorCustomDimensionsGeneric.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				...KM_WIDGET_DEF.requiredCustomDimensions,
+			],
+		} );
 
 		provideCustomDimensionError( registry, {
-			customDimension:
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-					.requiredCustomDimensions?.[ 0 ],
+			customDimension: KM_WIDGET_DEF.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 	},
