@@ -36,7 +36,7 @@ import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metri
 import { KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES } from '../../../../googlesitekit/datastore/user/constants';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
-import { numFmt } from '../../../../util';
+import { getDateString, getPreviousDate, numFmt } from '../../../../util';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -45,16 +45,106 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import withCustomDimensions from '../../utils/withCustomDimensions';
-import { getReportOptions } from './custom-dimensions-report-options/topRecentTrendingPagesOptions';
 const { useSelect, useInViewSelect } = Data;
+
+/**
+ * Computes the dates for the last three days relative to today.
+ *
+ * Utilizing the current date, the function calculates the dates
+ * for the previous day, two days ago, and three days ago.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} An object containing the dates for yesterday,
+ *                  two days ago, and three days ago.
+ */
+export const getDates = () => {
+	const today = new Date();
+	const todayDateString = getDateString( today );
+
+	const yesterday = getPreviousDate( todayDateString, 1 );
+	const twoDaysAgo = getPreviousDate( todayDateString, 2 );
+	const threeDaysAgo = getPreviousDate( todayDateString, 3 );
+
+	return {
+		yesterday,
+		twoDaysAgo,
+		threeDaysAgo,
+	};
+};
+
+/**
+ * Returns the date range (eg. the `startDate` and `endDate`) for this widget's
+ * reporting options.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} An object containing the `startDate` and `endDate` for a
+ *                  report.
+ */
+export const getDateRange = () => {
+	const { yesterday, threeDaysAgo } = getDates();
+
+	return {
+		startDate: threeDaysAgo,
+		endDate: yesterday,
+	};
+};
+
+/**
+ * Generates the report options required for fetching data in
+ * `topRecentTrendingPagesWidget`.
+ *
+ * The function utilizes the dates from the last three days to
+ * prepare the filter and structure required for the report.
+ *
+ * This is defined as a function outside the component so that both
+ * the component and the higher-order-component (`withCustomDimensions`)
+ * can use it.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} The report options containing dimensions, filters,
+ *                  metrics, and other parameters.
+ */
+export const getReportOptions = () => {
+	const { yesterday, twoDaysAgo, threeDaysAgo } = getDates();
+
+	const dates = getDateRange();
+
+	const reportOptions = {
+		...dates,
+		dimensions: [ 'pagePath' ],
+		dimensionFilters: {
+			'customEvent:googlesitekit_post_date': {
+				filterType: 'inListFilter',
+				value: [
+					yesterday.replace( /-/g, '' ),
+					twoDaysAgo.replace( /-/g, '' ),
+					threeDaysAgo.replace( /-/g, '' ),
+				],
+			},
+		},
+		metrics: [ { name: 'screenPageViews' } ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'screenPageViews',
+				},
+				desc: true,
+			},
+		],
+		limit: 3,
+	};
+
+	return reportOptions;
+};
 
 function TopRecentTrendingPagesWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
 
-	const dates = getReportOptions()[ 1 ];
+	const dates = getDateRange();
 
-	// Options are retrieved from function, as it is needed param
-	// in `withCustomDimensions` HOC called outside of this component
 	const reportOptions = getReportOptions();
 
 	const report = useInViewSelect( ( select ) =>

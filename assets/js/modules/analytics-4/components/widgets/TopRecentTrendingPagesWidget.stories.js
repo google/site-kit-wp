@@ -26,7 +26,10 @@ import { KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES } from '../../../../googlesiteki
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import TopRecentTrendingPagesWidget from './TopRecentTrendingPagesWidget';
+import TopRecentTrendingPagesWidget, {
+	getDateRange,
+	getReportOptions,
+} from './TopRecentTrendingPagesWidget';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 import {
 	STRATEGY_ZIP,
@@ -34,10 +37,6 @@ import {
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
-import {
-	getDates,
-	getReportOptions,
-} from './custom-dimensions-report-options/topRecentTrendingPagesOptions';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
@@ -45,11 +44,10 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 
 const reportOptions = getReportOptions();
 
-const { yesterday, threeDaysAgo } = getDates();
+const dateRange = getDateRange();
 
 const pageTitlesReportOptions = {
-	startDate: threeDaysAgo,
-	endDate: yesterday,
+	...dateRange,
 	dimensionFilters: {
 		pagePath: new Array( 3 )
 			.fill( '' )
