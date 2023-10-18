@@ -45,12 +45,8 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
 )( TopRecentTrendingPagesWidget );
 
-const reportOptions = getReportOptions();
-
-const dateRange = getDateRange();
-
-const pageTitlesReportOptions = {
-	...dateRange,
+const selectPageTitlesReportOptions = ( select ) => ( {
+	...getDateRange( select ),
 	dimensionFilters: {
 		pagePath: new Array( 3 )
 			.fill( '' )
@@ -61,7 +57,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
-};
+} );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -73,13 +69,16 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		const { select, dispatch } = registry;
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '123456789',
 			availableCustomDimensions: [
 				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
 		} );
 
+		const reportOptions = getReportOptions( select );
+		const pageTitlesReportOptions = selectPageTitlesReportOptions( select );
 		const pageTitlesReport = getAnalytics4MockResponse(
 			pageTitlesReportOptions,
 			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -88,11 +87,9 @@ Ready.args = {
 			{ dimensionCombinationStrategy: STRATEGY_ZIP }
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( pageTitlesReport, {
-				options: pageTitlesReportOptions,
-			} );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( pageTitlesReport, {
+			options: pageTitlesReportOptions,
+		} );
 
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
@@ -107,7 +104,8 @@ Ready.scenario = {
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( { select, dispatch } ) => {
+		const reportOptions = getReportOptions( select );
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [
@@ -130,7 +128,8 @@ Loading.scenario = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( { select, dispatch } ) => {
+		const reportOptions = getReportOptions( select );
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
@@ -153,7 +152,8 @@ ZeroData.scenario = {
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( { select, dispatch } ) => {
+		const reportOptions = getReportOptions( select );
 		const errorObject = {
 			code: 400,
 			message: 'Test error message. ',

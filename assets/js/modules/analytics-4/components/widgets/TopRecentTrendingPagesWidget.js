@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
-import { getDateString, getPreviousDate, numFmt } from '../../../../util';
+import { getPreviousDate, numFmt } from '../../../../util';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -43,22 +43,23 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import withCustomDimensions from '../../utils/withCustomDimensions';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect, useInViewSelect } = Data;
 
 /**
- * Computes the dates for the last three days relative to today.
+ * Computes the dates for the last three days relative to today (reference date).
  *
  * Utilizing the current date, the function calculates the dates
  * for the previous day, two days ago, and three days ago.
  *
  * @since n.e.x.t
  *
+ * @param {Function} select Registry select.
  * @return {Object} An object containing the dates for yesterday,
  *                  two days ago, and three days ago.
  */
-export const getDates = () => {
-	const today = new Date();
-	const todayDateString = getDateString( today );
+export const getDates = ( select ) => {
+	const todayDateString = select( CORE_USER ).getReferenceDate();
 
 	const yesterday = getPreviousDate( todayDateString, 1 );
 	const twoDaysAgo = getPreviousDate( todayDateString, 2 );
@@ -77,11 +78,12 @@ export const getDates = () => {
  *
  * @since n.e.x.t
  *
+ * @param {Function} select Registry select.
  * @return {Object} An object containing the `startDate` and `endDate` for a
- *                  report.
+ * report.
  */
-export const getDateRange = () => {
-	const { yesterday, threeDaysAgo } = getDates();
+export const getDateRange = ( select ) => {
+	const { yesterday, threeDaysAgo } = getDates( select );
 
 	return {
 		startDate: threeDaysAgo,
@@ -102,13 +104,14 @@ export const getDateRange = () => {
  *
  * @since n.e.x.t
  *
+ * @param {Function} select Registry select.
  * @return {Object} The report options containing dimensions, filters,
- *                  metrics, and other parameters.
+ * metrics, and other parameters.
  */
-export const getReportOptions = () => {
-	const { yesterday, twoDaysAgo, threeDaysAgo } = getDates();
+export const getReportOptions = ( select ) => {
+	const { yesterday, twoDaysAgo, threeDaysAgo } = getDates( select );
 
-	const dates = getDateRange();
+	const dates = getDateRange( select );
 
 	const reportOptions = {
 		...dates,
