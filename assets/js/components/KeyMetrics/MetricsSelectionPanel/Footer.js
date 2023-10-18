@@ -25,14 +25,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	useCallback,
-	useEffect,
-	useState,
-	useMemo,
-} from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { useCallback, useEffect, useState, useMemo } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -42,8 +36,6 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 	KEY_METRICS_SELECTED,
@@ -54,9 +46,18 @@ import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
+import { useFeature } from '../../../hooks/useFeature';
+import {
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
+import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { savedMetrics } ) {
+	const newsKeyMetricsEnabled = useFeature( 'newsKeyMetrics' );
 	const viewContext = useViewContext();
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -80,6 +81,27 @@ export default function Footer( { savedMetrics } ) {
 		);
 	}, [ savedMetrics, selectedMetrics ] );
 
+	const requiredCustomDimensions = selectedMetrics?.flatMap( ( tileName ) => {
+		const tile = KEY_METRICS_WIDGETS[ tileName ];
+		return tile?.requiredCustomDimensions || [];
+	} );
+
+	const hasMissingCustomDimensions = useSelect( ( select ) => {
+		if ( ! newsKeyMetricsEnabled || ! requiredCustomDimensions?.length ) {
+			return false;
+		}
+
+		const hasCustomDimensions = select(
+			MODULES_ANALYTICS_4
+		).hasCustomDimensions( requiredCustomDimensions );
+
+		return ! hasCustomDimensions;
+	} );
+
+	const hasAnalytics4EditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE )
+	);
+
 	const saveError = useSelect( ( select ) => {
 		if ( haveSettingsChanged && selectedMetrics?.length < 2 ) {
 			return {
@@ -97,13 +119,11 @@ export default function Footer( { savedMetrics } ) {
 			]
 		);
 	} );
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
-	);
 
-	const { saveKeyMetricsSettings } = useDispatch( CORE_USER );
+	const { saveKeyMetricsSettings, setPermissionScopeError } =
+		useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const [ finalButtonText, setFinalButtonText ] = useState( null );
 	const [ wasSaved, setWasSaved ] = useState( false );
@@ -121,6 +141,29 @@ export default function Footer( { savedMetrics } ) {
 		if ( ! error ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 			trackEvent( trackingCategory, 'metrics_sidebar_save' );
+			if ( newsKeyMetricsEnabled ) {
+				if ( hasMissingCustomDimensions ) {
+					setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+						autoSubmit: true,
+					} );
+
+					if ( ! hasAnalytics4EditScope ) {
+						setPermissionScopeError( {
+							code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+							message: __(
+								'Additional permissions are required to create new Analytics custom dimensions.',
+								'google-site-kit'
+							),
+							data: {
+								status: 403,
+								scopes: [ ANALYTICS_EDIT_SCOPE ],
+								skipModal: true,
+							},
+						} );
+					}
+				}
+			}
+
 			// lock the button label while panel is closing
 			setFinalButtonText( currentButtonText );
 			setWasSaved( true );
@@ -129,19 +172,19 @@ export default function Footer( { savedMetrics } ) {
 		saveKeyMetricsSettings,
 		selectedMetrics,
 		setValue,
-		currentButtonText,
 		trackingCategory,
+		newsKeyMetricsEnabled,
+		currentButtonText,
+		hasMissingCustomDimensions,
+		setValues,
+		hasAnalytics4EditScope,
+		setPermissionScopeError,
 	] );
 
 	const onCancelClick = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
 	}, [ setValue, trackingCategory ] );
-
-	const onSettingsClick = useCallback(
-		() => navigateTo( `${ settingsURL }#/admin-settings` ),
-		[ navigateTo, settingsURL ]
-	);
 
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
@@ -174,42 +217,36 @@ export default function Footer( { savedMetrics } ) {
 					noPrefix={ selectedMetrics?.length < 2 }
 				/>
 			) }
-			<div className="googlesitekit-km-selection-panel-footer__actions">
-				<SpinnerButton
-					onClick={ onSaveClick }
-					isSaving={ isSavingSettings }
-					disabled={
-						selectedMetrics?.length < 2 ||
-						selectedMetrics?.length > 4 ||
-						isSavingSettings ||
-						( ! isOpen && wasSaved )
-					}
-				>
-					{ finalButtonText || currentButtonText }
-				</SpinnerButton>
-				<Link onClick={ onCancelClick } disabled={ isSavingSettings }>
-					{ __( 'Cancel', 'google-site-kit' ) }
-				</Link>
+			<div className="googlesitekit-km-selection-panel-footer__content">
+				<p className="googlesitekit-km-selection-panel-footer__metric-count">
+					{ sprintf(
+						/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
+						__( '%1$d of %2$d selected', 'google-site-kit' ),
+						selectedMetrics?.length || 0,
+						4
+					) }
+				</p>
+				<div className="googlesitekit-km-selection-panel-footer__actions">
+					<Link
+						onClick={ onCancelClick }
+						disabled={ isSavingSettings }
+					>
+						{ __( 'Cancel', 'google-site-kit' ) }
+					</Link>
+					<SpinnerButton
+						onClick={ onSaveClick }
+						isSaving={ isSavingSettings }
+						disabled={
+							selectedMetrics?.length < 2 ||
+							selectedMetrics?.length > 4 ||
+							isSavingSettings ||
+							( ! isOpen && wasSaved )
+						}
+					>
+						{ finalButtonText || currentButtonText }
+					</SpinnerButton>
+				</div>
 			</div>
-			<p className="googlesitekit-km-selection-panel-footer__note">
-				{ createInterpolateElement(
-					__(
-						'Set your personalized goals or <br />deactivate this widget in <link><strong>Settings</strong></link>',
-						'google-site-kit'
-					),
-					{
-						br: <br />,
-						link: (
-							<Link
-								secondary
-								onClick={ onSettingsClick }
-								disabled={ isSavingSettings }
-							/>
-						),
-						strong: <strong />,
-					}
-				) }
-			</p>
 		</footer>
 	);
 }

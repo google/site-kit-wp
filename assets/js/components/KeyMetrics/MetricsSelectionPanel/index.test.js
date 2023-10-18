@@ -36,12 +36,15 @@ import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 
 describe( 'MetricsSelectionPanel', () => {
 	let registry;
@@ -60,42 +63,6 @@ describe( 'MetricsSelectionPanel', () => {
 		registry
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-	} );
-
-	describe( 'Header', () => {
-		it( 'should show the number of selected metrics', () => {
-			provideKeyMetrics( registry, {
-				widgetSlugs: [
-					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					KM_ANALYTICS_LOYAL_VISITORS,
-				],
-			} );
-
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			provideKeyMetricsWidgetRegistrations( registry, {
-				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
-				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
-					modules: [ 'analytics-4' ],
-				},
-			} );
-
-			render( <MetricsSelectionPanel />, { registry } );
-
-			expect(
-				document.querySelector(
-					'.googlesitekit-km-selection-panel-header'
-				)
-			).toHaveTextContent( '2 of 4 metrics selected' );
-		} );
 	} );
 
 	describe( 'Metrics', () => {
@@ -346,6 +313,97 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 	} );
 
+	describe( 'Notice', () => {
+		beforeEach( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_LOYAL_VISITORS,
+				],
+			} );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				availableCustomDimensions: [],
+			} );
+		} );
+
+		it( 'should display appropriate notice when a metric requires custom dimensions and does not have edit scope', async () => {
+			const { container, getByText, findByLabelText } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+					features: [ 'newsKeyMetrics' ],
+				}
+			);
+
+			// Verify that the message is not displayed by default.
+			expect( container ).not.toHaveTextContent(
+				'The metrics you selected require more data tracking. You will be directed to update your Analytics property after saving your selection.'
+			);
+
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				getByText(
+					/The metrics you selected require more data tracking. You will be directed to update your Analytics property after saving your selection./i
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should display appropriate message when a metric requires custom dimensions and has edit scope', async () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: EDIT_SCOPE,
+			} );
+
+			const { container, getByText, findByLabelText } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+					features: [ 'newsKeyMetrics' ],
+				}
+			);
+
+			// Verify that the message is not displayed by default.
+			expect( container ).not.toHaveTextContent(
+				'The metrics you selected require more data tracking. We will update your Analytics property after saving your selection.'
+			);
+
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				getByText(
+					/The metrics you selected require more data tracking. We will update your Analytics property after saving your selection./i
+				)
+			).toBeInTheDocument();
+		} );
+	} );
+
 	describe( 'Footer', () => {
 		beforeEach( () => {
 			provideKeyMetrics( registry );
@@ -363,6 +421,9 @@ describe( 'MetricsSelectionPanel', () => {
 					modules: [ 'search-console' ],
 				},
 				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -445,6 +506,23 @@ describe( 'MetricsSelectionPanel', () => {
 					} )
 				).toBeInTheDocument();
 			} );
+		} );
+
+		it( 'should show the number of selected metrics', () => {
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_LOYAL_VISITORS,
+				],
+			} );
+
+			render( <MetricsSelectionPanel />, { registry } );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer__metric-count'
+				)
+			).toHaveTextContent( '2 of 4 selected' );
 		} );
 	} );
 } );

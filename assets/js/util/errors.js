@@ -32,6 +32,7 @@ export const ERROR_REASON_INSUFFICIENT_PERMISSIONS = 'insufficientPermissions';
 export const ERROR_REASON_FORBIDDEN = 'forbidden';
 export const ERROR_INTERNAL_SERVER_ERROR = 'internal_server_error';
 export const ERROR_INVALID_JSON = 'invalid_json';
+export const ERROR_REASON_BAD_REQUEST = 'bad_request';
 
 /**
  * Checks if the provided object is an instance of WP_Error class.

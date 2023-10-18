@@ -72,7 +72,7 @@ function MostEngagingPagesWidget( props ) {
 
 	const averagePageViews =
 		Math.round(
-			pageViewsReport?.totals?.[ 0 ]?.metricValues[ 0 ].value /
+			pageViewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value /
 				pageViewsReport?.rowCount
 		) || 0;
 

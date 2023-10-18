@@ -29,10 +29,11 @@ import {
 } from '../../../../../tests/js/utils';
 import {
 	CORE_USER,
-	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../../googlesitekit/datastore/user/constants';
 import { enabledFeatures } from '../../../features';
+import { provideCustomDimensionError } from '../utils/custom-dimensions';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
 	let registry;
@@ -132,24 +133,12 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 			} );
 		} );
 
-		describe( 'syncAvailableCustomDimensions', () => {
-			it( 'requires a valid propertyID to be passed', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.syncAvailableCustomDimensions();
-				} ).toThrow( 'A valid GA4 propertyID is required.' );
+		describe( 'fetchSyncAvailableCustomDimensions', () => {
+			it( 'fetches and returns custom dimensions', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
 
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.syncAvailableCustomDimensions(
-							'not-valid-property-id'
-						);
-				} ).toThrow( 'A valid GA4 propertyID is required.' );
-			} );
-
-			it( 'fetches and returns custom dimensions for a valid propertyID', async () => {
 				fetchMock.postOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
@@ -162,20 +151,13 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				const { response } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.syncAvailableCustomDimensions( propertyID );
+					.fetchSyncAvailableCustomDimensions();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-					),
-					{
-						body: {
-							data: {
-								propertyID,
-							},
-						},
-					}
+					)
 				);
 				expect( response ).toEqual( customDimensionNames );
 			} );
@@ -188,8 +170,8 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 			const keyMetricsSettings = {
 				widgetSlugs: [
-					KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-					KM_ANALYTICS_PAGES_PER_VISIT,
+					KM_ANALYTICS_POPULAR_AUTHORS,
+					KM_ANALYTICS_TOP_CATEGORIES,
 				],
 				isWidgetHidden: false,
 			};
@@ -361,6 +343,18 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 
 		describe( 'hasCustomDimensions', () => {
+			it( 'returns undefined when available custom dimensions have not loaded', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				const hasCustomDimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasCustomDimensions( [ 'googlesitekit_post_author' ] );
+
+				expect( hasCustomDimensions ).toBe( undefined );
+			} );
+
 			it( 'returns false when available custom dimensions are null or not set', () => {
 				provideUserAuthentication( registry, { authenticated: false } );
 				registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -417,6 +411,35 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					.hasCustomDimensions( [ 'dimension1', 'dimension3' ] );
 
 				expect( hasCustomDimensions ).toBe( false );
+			} );
+		} );
+
+		describe( 'getCustomDimensionCreationError', () => {
+			it( 'gets error set in the datastore for the provided custom dimension', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				const error = {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: 'test-error-reason',
+					},
+				};
+
+				provideCustomDimensionError( registry, {
+					customDimension: 'googlesitekit_post_categories',
+					error,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getCreateCustomDimensionError(
+							'googlesitekit_post_categories'
+						)
+				).toEqual( error );
 			} );
 		} );
 	} );
