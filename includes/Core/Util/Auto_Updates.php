@@ -143,7 +143,17 @@ class Auto_Updates {
 		);
 
 		$plugin_updates = get_site_transient( 'update_plugins' );
-		$transient_data = isset( $plugin_updates->response[ GOOGLESITEKIT_PLUGIN_BASENAME ] ) ? $plugin_updates->response[ GOOGLESITEKIT_PLUGIN_BASENAME ] : $plugin_updates->no_update[ GOOGLESITEKIT_PLUGIN_BASENAME ];
+
+		$transient_data = array();
+
+		if ( isset( $plugin_updates->noupdate[ GOOGLESITEKIT_PLUGIN_BASENAME ] ) ) {
+			$transient_data = $plugin_updates->noupdate[ GOOGLESITEKIT_PLUGIN_BASENAME ];
+		}
+
+		if ( isset( $plugin_updates->response[ GOOGLESITEKIT_PLUGIN_BASENAME ] ) ) {
+			$transient_data = $plugin_updates->response[ GOOGLESITEKIT_PLUGIN_BASENAME ];
+		}
+
 		return array_merge( $sitekit_update_data, (array) $transient_data );
 	}
 
