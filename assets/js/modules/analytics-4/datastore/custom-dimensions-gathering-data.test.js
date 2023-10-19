@@ -36,7 +36,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 	let registry;
 	let store;
 
-	const parameterName = 'googlesitekit_post_author';
+	const customDimension = 'googlesitekit_post_author';
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -50,34 +50,36 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveIsCustomDimensionGatheringData()
-				).toThrow( 'parameterName must be a string' );
+				).toThrow( 'customDimension must be a string' );
 			} );
 
 			it( 'requires a boolean for the gathering data state to receive', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveIsCustomDimensionGatheringData( parameterName )
+						.receiveIsCustomDimensionGatheringData(
+							customDimension
+						)
 				).toThrow( 'gatheringData must be a boolean' );
 			} );
 
 			it( 'receives a `true` gathering data state', () => {
 				expect(
 					store.getState().customDimensionsGatheringData[
-						parameterName
+						customDimension
 					]
 				).toBeUndefined();
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsCustomDimensionGatheringData(
-						parameterName,
+						customDimension,
 						true
 					);
 
 				expect(
 					store.getState().customDimensionsGatheringData[
-						parameterName
+						customDimension
 					]
 				).toBe( true );
 			} );
@@ -85,20 +87,20 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			it( 'receives a `false` gathering data state', () => {
 				expect(
 					store.getState().customDimensionsGatheringData[
-						parameterName
+						customDimension
 					]
 				).toBeUndefined();
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsCustomDimensionGatheringData(
-						parameterName,
+						customDimension,
 						false
 					);
 
 				expect(
 					store.getState().customDimensionsGatheringData[
-						parameterName
+						customDimension
 					]
 				).toBe( false );
 			} );
@@ -113,7 +115,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 		const dataAvailabilityReportWithData = {
 			dimensionHeaders: [
 				{
-					name: `customEvent:${ parameterName }`,
+					name: `customEvent:${ customDimension }`,
 				},
 			],
 			rows: [
@@ -163,7 +165,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 		const dataAvailabilityReportWithNoSetValues = {
 			dimensionHeaders: [
 				{
-					name: `customEvent:${ parameterName }`,
+					name: `customEvent:${ customDimension }`,
 				},
 			],
 			rows: [
@@ -203,7 +205,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			global._googlesitekitModulesData = {
 				'analytics-4': {
 					customDimensionsDataAvailable: {
-						[ parameterName ]: dataAvailable,
+						[ customDimension ]: dataAvailable,
 					},
 				},
 			};
@@ -224,7 +226,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				authenticated: true,
 				propertyID: defaultPropertyID,
 				property: defaultProperty,
-				availableCustomDimensions: [ parameterName ],
+				availableCustomDimensions: [ customDimension ],
 				report: dataAvailabilityReportWithData,
 			};
 
@@ -265,7 +267,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				const reportArgs = {
 					startDate: createDate,
 					endDate: referenceDate,
-					dimensions: [ `customEvent:${ parameterName }` ],
+					dimensions: [ `customEvent:${ customDimension }` ],
 				};
 
 				if ( report ) {
@@ -293,7 +295,9 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.selectCustomDimensionDataAvailability( parameterName )
+						.selectCustomDimensionDataAvailability(
+							customDimension
+						)
 				).toBe( true );
 			} );
 
@@ -416,7 +420,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 						registry
 							.select( MODULES_ANALYTICS_4 )
 							.selectCustomDimensionDataAvailability(
-								parameterName
+								customDimension
 							)
 					).toBe( expectedValue );
 
@@ -432,7 +436,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionDataAvailableOnLoad( parameterName )
+						.isCustomDimensionDataAvailableOnLoad( customDimension )
 				).toBe( false );
 			} );
 
@@ -442,7 +446,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionDataAvailableOnLoad( parameterName )
+						.isCustomDimensionDataAvailableOnLoad( customDimension )
 				).toBe( false );
 			} );
 
@@ -452,7 +456,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionDataAvailableOnLoad( parameterName )
+						.isCustomDimensionDataAvailableOnLoad( customDimension )
 				).toBe( true );
 			} );
 		} );
@@ -468,7 +472,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBeUndefined();
 
 				muteFetch( customDimensionDataAvailableEndpoint );
@@ -480,14 +484,14 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsCustomDimensionGatheringData(
-						parameterName,
+						customDimension,
 						true
 					);
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBe( true );
 			} );
 
@@ -497,18 +501,18 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).isCustomDimensionGatheringData( parameterName );
+				).isCustomDimensionGatheringData( customDimension );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBe( false );
 			} );
 
@@ -524,13 +528,13 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).isCustomDimensionGatheringData( parameterName );
+				).isCustomDimensionGatheringData( customDimension );
 
 				expect( fetchMock ).toHaveFetched(
 					customDimensionDataAvailableEndpoint
@@ -540,7 +544,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBe( false );
 			} );
 
@@ -555,20 +559,20 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).isCustomDimensionGatheringData( parameterName );
+				).isCustomDimensionGatheringData( customDimension );
 
 				expect( fetchMock ).not.toHaveFetched();
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBe( true );
 			} );
 
@@ -587,20 +591,20 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).isCustomDimensionGatheringData( parameterName );
+				).isCustomDimensionGatheringData( customDimension );
 
 				expect( fetchMock ).not.toHaveFetched();
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( parameterName )
+						.isCustomDimensionGatheringData( customDimension )
 				).toBe( true );
 			} );
 		} );

@@ -430,7 +430,6 @@ export default function withCustomDimensions( options = {} ) {
 				}
 
 				if ( isGatheringData ) {
-					// TODO: Flag that there's no need for the separate ZeroDataState-like component as it won't be reused and it's just a simple message.
 					return (
 						<MetricTileTable
 							infoTooltip={ tileInfoTooltip }

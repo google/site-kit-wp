@@ -2958,7 +2958,7 @@ class Analytics_4Test extends TestCase {
 		$response = $this->analytics->set_data(
 			'custom-dimension-data-available',
 			array(
-				'parameterName' => 'googlesitekit_post_author',
+				'customDimension' => 'googlesitekit_post_author',
 			)
 		);
 
@@ -3007,7 +3007,7 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->set_data(
 			'custom-dimension-data-available',
 			array(
-				'parameterName' => 'googlesitekit_post_author',
+				'customDimension' => 'googlesitekit_post_author',
 			)
 		);
 
@@ -3074,7 +3074,7 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->set_data(
 			'custom-dimension-data-available',
 			array(
-				'parameterName' => 'googlesitekit_post_author',
+				'customDimension' => 'googlesitekit_post_author',
 			)
 		);
 

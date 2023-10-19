@@ -43,15 +43,15 @@ const WAIT_FOR_CUSTOM_DIMENSION_DATA_AVAILABILITY_STATE =
 
 const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 	baseName: 'saveCustomDimensionDataAvailableState',
-	controlCallback: ( { parameterName } ) =>
+	controlCallback: ( { customDimension } ) =>
 		API.set( 'modules', 'analytics-4', 'custom-dimension-data-available', {
-			parameterName,
+			customDimension,
 		} ),
-	argsToParams: ( parameterName ) => ( { parameterName } ),
-	validateParams: ( { parameterName } ) => {
+	argsToParams: ( customDimension ) => ( { customDimension } ),
+	validateParams: ( { customDimension } ) => {
 		invariant(
-			'string' === typeof parameterName,
-			'parameterName must be a string.'
+			'string' === typeof customDimension,
+			'customDimension must be a string.'
 		);
 	},
 } );
@@ -75,8 +75,8 @@ const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 const baseInitialState = {
 	customDimensionsGatheringData: Object.keys(
 		CUSTOM_DIMENSION_DEFINITIONS
-	).reduce( ( initialStateSlice, parameterName ) => {
-		initialStateSlice[ parameterName ] = undefined;
+	).reduce( ( initialStateSlice, customDimension ) => {
+		initialStateSlice[ customDimension ] = undefined;
 		return initialStateSlice;
 	}, {} ),
 
@@ -92,14 +92,14 @@ const baseActions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {string}  parameterName Custom dimension parameter name.
-	 * @param {boolean} gatheringData Gathering data.
+	 * @param {string}  customDimension Custom dimension slug.
+	 * @param {boolean} gatheringData   Gathering data.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveIsCustomDimensionGatheringData( parameterName, gatheringData ) {
+	receiveIsCustomDimensionGatheringData( customDimension, gatheringData ) {
 		invariant(
-			'string' === typeof parameterName,
-			'parameterName must be a string.'
+			'string' === typeof customDimension,
+			'customDimension must be a string.'
 		);
 		invariant(
 			'boolean' === typeof gatheringData,
@@ -108,7 +108,7 @@ const baseActions = {
 
 		return {
 			payload: {
-				parameterName,
+				customDimension,
 				gatheringData,
 			},
 			type: RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA,
@@ -124,17 +124,17 @@ const baseActions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {string}  parameterName       Custom dimension parameter name.
+	 * @param {string}  customDimension     Custom dimension slug.
 	 * @param {boolean} dataAvailableOnLoad Data availability on load.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveIsCustomDimensionDataAvailableOnLoad(
-		parameterName,
+		customDimension,
 		dataAvailableOnLoad
 	) {
 		invariant(
-			'string' === typeof parameterName,
-			'parameterName must be a string.'
+			'string' === typeof customDimension,
+			'customDimension must be a string.'
 		);
 		invariant(
 			'boolean' === typeof dataAvailableOnLoad,
@@ -143,7 +143,7 @@ const baseActions = {
 
 		return {
 			payload: {
-				parameterName,
+				customDimension,
 				dataAvailableOnLoad,
 			},
 			type: RECEIVE_CUSTOM_DIMENSION_DATA_AVAILABLE_ON_LOAD,
@@ -155,12 +155,12 @@ const baseControls = {
 	[ WAIT_FOR_CUSTOM_DIMENSION_DATA_AVAILABILITY_STATE ]:
 		createRegistryControl(
 			( registry ) =>
-				( { payload: { parameterName } } ) => {
+				( { payload: { customDimension } } ) => {
 					const dataAvailabityDetermined = () =>
 						registry
 							.select( MODULES_ANALYTICS_4 )
 							.selectCustomDimensionDataAvailability(
-								parameterName
+								customDimension
 							) !== undefined;
 
 					if ( dataAvailabityDetermined() ) {
@@ -182,18 +182,18 @@ const baseControls = {
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA: {
-			const { parameterName, gatheringData } = payload;
+			const { customDimension, gatheringData } = payload;
 
-			state.customDimensionsGatheringData[ parameterName ] =
+			state.customDimensionsGatheringData[ customDimension ] =
 				gatheringData;
 
 			break;
 		}
 
 		case RECEIVE_CUSTOM_DIMENSION_DATA_AVAILABLE_ON_LOAD: {
-			const { parameterName, dataAvailableOnLoad } = payload;
+			const { customDimension, dataAvailableOnLoad } = payload;
 
-			state.customDimensionsDataAvailableOnLoad[ parameterName ] =
+			state.customDimensionsDataAvailableOnLoad[ customDimension ] =
 				dataAvailableOnLoad;
 
 			break;
@@ -206,26 +206,26 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 } );
 
 const baseResolvers = {
-	*isCustomDimensionGatheringData( parameterName ) {
+	*isCustomDimensionGatheringData( customDimension ) {
 		const registry = yield Data.commonActions.getRegistry();
 
 		// If the gatheringData flag is already set, return early.
 		if (
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.isCustomDimensionGatheringData( parameterName ) !== undefined
+				.isCustomDimensionGatheringData( customDimension ) !== undefined
 		) {
 			return;
 		}
 
 		const dataAvailableOnLoad = registry
 			.select( MODULES_ANALYTICS_4 )
-			.isCustomDimensionDataAvailableOnLoad( parameterName );
+			.isCustomDimensionDataAvailableOnLoad( customDimension );
 
 		// If dataAvailableOnLoad is true, set gatheringData to false and do nothing else.
 		if ( dataAvailableOnLoad ) {
 			yield baseActions.receiveIsCustomDimensionGatheringData(
-				parameterName,
+				customDimension,
 				false
 			);
 			return;
@@ -233,23 +233,23 @@ const baseResolvers = {
 
 		yield {
 			payload: {
-				parameterName,
+				customDimension,
 			},
 			type: WAIT_FOR_CUSTOM_DIMENSION_DATA_AVAILABILITY_STATE,
 		};
 
 		const dataAvailability = registry
 			.select( MODULES_ANALYTICS_4 )
-			.selectCustomDimensionDataAvailability( parameterName );
+			.selectCustomDimensionDataAvailability( customDimension );
 
 		yield baseActions.receiveIsCustomDimensionGatheringData(
-			parameterName,
+			customDimension,
 			! dataAvailability
 		);
 
 		if ( dataAvailability ) {
 			yield fetchSaveCustomDimensionDataAvailableStateStore.actions.fetchSaveCustomDimensionDataAvailableState(
-				parameterName
+				customDimension
 			);
 		}
 	},
@@ -261,17 +261,17 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state         Data store's state.
-	 * @param {string} parameterName Custom dimension parameter name.
+	 * @param {Object} state           Data store's state.
+	 * @param {string} customDimension Custom dimension slug.
 	 * @return {boolean|undefined|null} Returns TRUE if data is available, otherwise FALSE.
 	 *                                  If the request is still being resolved, returns undefined.
 	 *                                  If the data availability can not be determined, returns null.
 	 */
 	selectCustomDimensionDataAvailability: createRegistrySelector(
-		( select ) => ( state, parameterName ) => {
+		( select ) => ( state, customDimension ) => {
 			if (
 				! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-					parameterName
+					customDimension
 				)
 			) {
 				return false;
@@ -306,7 +306,7 @@ const baseSelectors = {
 			const reportArgs = {
 				startDate,
 				endDate,
-				dimensions: [ `customEvent:${ parameterName }` ],
+				dimensions: [ `customEvent:${ customDimension }` ],
 			};
 
 			// We may legitimately want to return early before using `report` if the report is not resolved or results in an error.
@@ -349,12 +349,14 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state         Data store's state.
-	 * @param {string} parameterName Custom dimension parameter name.
+	 * @param {Object} state           Data store's state.
+	 * @param {string} customDimension Custom dimension slug.
 	 * @return {boolean} Returns TRUE if data is available on load, otherwise FALSE.
 	 */
-	isCustomDimensionDataAvailableOnLoad( state, parameterName ) {
-		return !! state.customDimensionsDataAvailableOnLoad?.[ parameterName ];
+	isCustomDimensionDataAvailableOnLoad( state, customDimension ) {
+		return !! state.customDimensionsDataAvailableOnLoad?.[
+			customDimension
+		];
 	},
 
 	/**
@@ -363,12 +365,12 @@ const baseSelectors = {
 	 * @todo Review the name of this selector to a less confusing one.
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state         Data store's state.
-	 * @param {string} parameterName Custom dimension parameter name.
+	 * @param {Object} state           Data store's state.
+	 * @param {string} customDimension Custom dimension slug.
 	 * @return {boolean|undefined} Returns TRUE if gathering data, otherwise FALSE. If the request is still being resolved, returns undefined.
 	 */
-	isCustomDimensionGatheringData( state, parameterName ) {
-		return state.customDimensionsGatheringData[ parameterName ];
+	isCustomDimensionGatheringData( state, customDimension ) {
+		return state.customDimensionsGatheringData[ customDimension ];
 	},
 };
 

@@ -21,14 +21,14 @@ use Google\Site_Kit\Core\Storage\Transients;
  */
 class Custom_Dimensions_Data_Available {
 
-	// TODO: Flag that I've used parameterName over customDimensionName etc throughout.
+	// TODO: Flag that I've used customDimension over customDimensionName etc throughout.
 	/**
-	 * List of valid custom dimension parameter names.
+	 * List of valid custom dimension s;ugs.
 	 *
 	 * @since n.e.x.t
 	 * @var array
 	 */
-	const CUSTOM_DIMENSION_PARAMETER_NAMES = array(
+	const CUSTOM_DIMENSION_SLUGS = array(
 		'googlesitekit_post_date',
 		'googlesitekit_post_author',
 		'googlesitekit_post_categories',
@@ -59,11 +59,11 @@ class Custom_Dimensions_Data_Available {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $parameter_name Custom dimension parameter name.
+	 * @param string $custom_dimension Custom dimension slug.
 	 * @return string Data available transient name.
 	 */
-	protected function get_data_available_transient_name( $parameter_name ) {
-		return "googlesitekit_custom_dimension_{$parameter_name}_data_available";
+	protected function get_data_available_transient_name( $custom_dimension ) {
+		return "googlesitekit_custom_dimension_{$custom_dimension}_data_available";
 	}
 
 	/**
@@ -75,9 +75,9 @@ class Custom_Dimensions_Data_Available {
 	 */
 	public function get_data_availability() {
 		return array_reduce(
-			self::CUSTOM_DIMENSION_PARAMETER_NAMES,
-			function ( $data_availability, $parameter_name ) {
-				$data_availability[ $parameter_name ] = $this->is_data_available( $parameter_name );
+			self::CUSTOM_DIMENSION_SLUGS,
+			function ( $data_availability, $custom_dimension ) {
+				$data_availability[ $custom_dimension ] = $this->is_data_available( $custom_dimension );
 				return $data_availability;
 			},
 			array()
@@ -89,11 +89,11 @@ class Custom_Dimensions_Data_Available {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $parameter_name Custom dimension parameter name.
+	 * @param string $custom_dimension Custom dimension slug.
 	 * @return bool True if data is available, false otherwise.
 	 */
-	protected function is_data_available( $parameter_name ) {
-		return (bool) $this->transients->get( $this->get_data_available_transient_name( $parameter_name ) );
+	protected function is_data_available( $custom_dimension ) {
+		return (bool) $this->transients->get( $this->get_data_available_transient_name( $custom_dimension ) );
 	}
 
 	/**
@@ -101,11 +101,11 @@ class Custom_Dimensions_Data_Available {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $parameter_name Custom dimension parameter name.
+	 * @param string $custom_dimension Custom dimension slug.
 	 * @return bool True on success, false otherwise.
 	 */
-	public function set_data_available( $parameter_name ) {
-		return $this->transients->set( $this->get_data_available_transient_name( $parameter_name ), true );
+	public function set_data_available( $custom_dimension ) {
+		return $this->transients->set( $this->get_data_available_transient_name( $custom_dimension ), true );
 	}
 
 	/**
@@ -114,8 +114,8 @@ class Custom_Dimensions_Data_Available {
 	 * @since n.e.x.t
 	 */
 	public function reset_data_available() {
-		foreach ( self::CUSTOM_DIMENSION_PARAMETER_NAMES as $parameter_name ) {
-			$this->transients->delete( $this->get_data_available_transient_name( $parameter_name ) );
+		foreach ( self::CUSTOM_DIMENSION_SLUGS as $custom_dimension ) {
+			$this->transients->delete( $this->get_data_available_transient_name( $custom_dimension ) );
 		}
 	}
 
@@ -124,10 +124,10 @@ class Custom_Dimensions_Data_Available {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $parameter_name Custom dimension parameter name.
+	 * @param string $custom_dimension Custom dimension slug.
 	 * @return bool True if valid, false otherwise.
 	 */
-	public function is_valid_custom_dimension( $parameter_name ) {
-		return in_array( $parameter_name, self::CUSTOM_DIMENSION_PARAMETER_NAMES, true );
+	public function is_valid_custom_dimension( $custom_dimension ) {
+		return in_array( $custom_dimension, self::CUSTOM_DIMENSION_SLUGS, true );
 	}
 }

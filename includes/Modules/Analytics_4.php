@@ -955,25 +955,25 @@ final class Analytics_4 extends Module
 					->properties_customDimensions // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->listPropertiesCustomDimensions( self::normalize_property_id( $settings['propertyID'] ) );
 			case 'POST:custom-dimension-data-available':
-				if ( ! isset( $data['parameterName'] ) ) {
+				if ( ! isset( $data['customDimension'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						__( 'Request parameter is empty: parameterName.', 'google-site-kit' ),
+						__( 'Request parameter is empty: customDimension.', 'google-site-kit' ),
 						array( 'status' => 400 )
 					);
 				}
 
-				if ( ! $this->custom_dimensions_data_available->is_valid_custom_dimension( $data['parameterName'] ) ) {
+				if ( ! $this->custom_dimensions_data_available->is_valid_custom_dimension( $data['customDimension'] ) ) {
 					return new WP_Error(
-						'invalid_custom_dimension_name',
-						/* translators: %s: Invalid custom dimension name */
-						sprintf( __( 'Invalid custom dimension name: %s.', 'google-site-kit' ), $data['parameterName'] ),
+						'invalid_custom_dimension_slug',
+						/* translators: %s: Invalid custom dimension slug */
+						sprintf( __( 'Invalid custom dimension slug: %s.', 'google-site-kit' ), $data['customDimension'] ),
 						array( 'status' => 400 )
 					);
 				}
 
 				return function() use ( $data ) {
-					return $this->custom_dimensions_data_available->set_data_available( $data['parameterName'] );
+					return $this->custom_dimensions_data_available->set_data_available( $data['customDimension'] );
 				};
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
