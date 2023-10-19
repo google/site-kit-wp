@@ -79,13 +79,13 @@ describe.skip( 'User Input Settings', () => {
 			await expect( page ).toClick( '#goals-help_better_rank' );
 		} );
 
+		await pageWait();
+
 		await step( 'go to preview page', async () => {
 			await expect( page ).toClick(
 				'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
 			);
 		} );
-
-		await pageWait();
 
 		await step(
 			'wait for settings submission',
@@ -97,6 +97,8 @@ describe.skip( 'User Input Settings', () => {
 				page.waitForNavigation(),
 			] )
 		);
+
+		await pageWait();
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
@@ -238,8 +240,14 @@ describe.skip( 'User Input Settings', () => {
 		// endpoint which sets the appropriate transients that will be prefetched only on the next page load.
 		await page.reload();
 
-		await page.waitForSelector(
-			'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
+		await step(
+			'click on key metrics navigation tab and scroll to the key metrics widget',
+			async () => {
+				await page.waitForSelector( '.googlesitekit-navigation' );
+				await expect( page ).toClick( '.mdc-chip', {
+					text: /key metrics/i,
+				} );
+			}
 		);
 
 		await step( 'click on CTA button and wait for navigation', async () => {
@@ -285,6 +293,8 @@ describe.skip( 'User Input Settings', () => {
 				page.waitForNavigation(),
 			] );
 		} );
+
+		await pageWait();
 
 		await fillInInputSettings();
 	} );

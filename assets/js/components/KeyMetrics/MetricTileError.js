@@ -17,50 +17,26 @@
  */
 
 /**
- * External dependencies
- */
-import { castArray } from 'lodash';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import CTA from '../../notifications/CTA';
-import ReportErrorActions from '../../ReportErrorActions';
-import GetHelpLink from './GetHelpLink';
-import { isInsufficientPermissionsError } from '../../../util/errors';
+import CTA from '../notifications/CTA';
+import InfoTooltip from './InfoTooltip';
 
 export default function MetricTileError( props ) {
-	const { error, headerText, moduleSlug } = props;
-	const hasInsufficientPermissionsError = castArray( error ).some(
-		isInsufficientPermissionsError
-	);
+	const { children, headerText, infoTooltip, title } = props;
 
 	return (
 		<div className="googlesitekit-km-widget-tile--error">
 			<CTA
-				title={
-					hasInsufficientPermissionsError
-						? __( 'Insufficient permissions', 'google-site-kit' )
-						: __( 'Data loading failed', 'google-site-kit' )
-				}
+				title={ title }
 				headerText={ headerText }
+				headerContent={
+					infoTooltip && <InfoTooltip title={ infoTooltip } />
+				}
 				description=""
 				error
 			>
-				<ReportErrorActions
-					moduleSlug={ moduleSlug }
-					error={ error }
-					GetHelpLink={
-						hasInsufficientPermissionsError
-							? GetHelpLink
-							: undefined
-					}
-				/>
+				{ children }
 			</CTA>
 		</div>
 	);

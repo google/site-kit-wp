@@ -49,7 +49,9 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use WP_Query;
 use WP_User;
+use ReflectionMethod;
 
 /**
  * @group Modules
@@ -2400,30 +2402,15 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
 	}
 
-	public function test_sync_custom_dimensions__required_params() {
-		$this->enable_feature( 'newsKeyMetrics' );
-		// Grant READONLY_SCOPE so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
-			)
-		);
-
-		$data = $this->analytics->set_data(
-			'sync-custom-dimensions',
-			array()
-		);
-
-		// Verify that the propertyID is required.
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
-	}
-
 	public function test_sync_custom_dimensions() {
 		$this->enable_feature( 'newsKeyMetrics' );
 		$property_id = 'sync-custom-dimension-property-id';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
@@ -2440,9 +2427,7 @@ class Analytics_4Test extends TestCase {
 
 		$response = $this->analytics->set_data(
 			'sync-custom-dimensions',
-			array(
-				'propertyID' => $property_id,
-			)
+			array()
 		);
 
 		$this->assertNotWPError( $response );
@@ -2836,6 +2821,65 @@ class Analytics_4Test extends TestCase {
 
 		// Ensure disabling tracking does not change if its already allowed.
 		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', true ) );
+	}
+
+	public function test_get_custom_dimensions_data() {
+		global $wp_query;
+
+		$settings = array(
+			'availableCustomDimensions' => array(
+				'googlesitekit_post_author',
+				'googlesitekit_post_type',
+				'googlesitekit_post_categories',
+				'googlesitekit_post_date',
+			),
+		);
+
+		$method = new ReflectionMethod( Analytics_4::class, 'get_custom_dimensions_data' );
+		$method->setAccessible( true );
+
+		// Returns an empty array if the current page type is not singular.
+		$wp_query = new WP_Query();
+		$data     = $method->invoke( $this->analytics );
+		$this->assertEmpty( $data );
+
+		// Change the current page to be singular.
+		$category1_id = $this->factory()->category->create();
+		$category2_id = $this->factory()->category->create();
+		$category3_id = $this->factory()->category->create();
+
+		$post_type = 'test-post-type';
+		$post_id   = $this->factory()->post->create( array( 'post_type' => $post_type ) );
+		wp_set_post_categories( $post_id, array( $category1_id, $category3_id ) );
+
+		$wp_query->is_singular    = true;
+		$wp_query->queried_object = get_post( $post_id );
+
+		$hook = function( $post_types ) use ( $post_type ) {
+			return array_merge( $post_types, array( $post_type ) );
+		};
+
+		// Returns an empty array if no custom dimensions are added to settings.
+		$data = $method->invoke( $this->analytics );
+		$this->assertEmpty( $data );
+
+		// Returns only post type if the queried object is not in the allowed post types list.
+		$this->analytics->get_settings()->merge( $settings );
+		$data = $method->invoke( $this->analytics );
+		$this->assertEquals( array( 'googlesitekit_post_type' => $post_type ), $data );
+
+		// Returns correct data when all conditions are met.
+		add_filter( 'custom_dimension_valid_post_types', $hook );
+		$data = $method->invoke( $this->analytics );
+		$this->assertEquals(
+			array(
+				'googlesitekit_post_author'     => $wp_query->queried_object->post_author,
+				'googlesitekit_post_type'       => $post_type,
+				'googlesitekit_post_date'       => get_the_date( 'Ymd', $wp_query->queried_object ),
+				'googlesitekit_post_categories' => $category1_id . ',' . $category3_id,
+			),
+			$data
+		);
 	}
 
 	/**

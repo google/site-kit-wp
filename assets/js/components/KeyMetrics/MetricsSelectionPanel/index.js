@@ -39,6 +39,7 @@ import Footer from './Footer';
 import Metrics from './Metrics';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
+import Notice from './Notice';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
@@ -85,6 +86,7 @@ export default function MetricsSelectionPanel() {
 		>
 			<Header />
 			<Metrics savedMetrics={ savedViewableMetrics } />
+			<Notice />
 			<Footer savedMetrics={ savedViewableMetrics } />
 		</SideSheet>
 	);

@@ -32,9 +32,11 @@ import {
 	createTestRegistry,
 	provideModules,
 	act,
+	provideUserAuthentication,
 } from '../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
 
 describe( 'SettingsModule', () => {
 	const SettingsModuleWithWrapper = ( { slug = 'analytics' } ) => (
@@ -64,6 +66,7 @@ describe( 'SettingsModule', () => {
 				slug: 'analytics',
 				active: true,
 				connected: true,
+				storeName: MODULES_ANALYTICS,
 				SettingsEditComponent: () => (
 					<div data-testid="edit-component">edit</div>
 				),
@@ -86,6 +89,7 @@ describe( 'SettingsModule', () => {
 				active: true,
 				// Intentionally not connected here with both settings components for tests below.
 				connected: false,
+				storeName: MODULES_TAGMANAGER,
 				SettingsEditComponent: () => (
 					<div data-testid="edit-component">edit</div>
 				),
@@ -94,7 +98,9 @@ describe( 'SettingsModule', () => {
 				),
 			},
 		] );
+		provideUserAuthentication( registry );
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 	} );
 
 	it( 'should display SettingsViewComponent when on module view route', () => {
@@ -226,7 +232,7 @@ describe( 'SettingsModule', () => {
 		} );
 
 		expect(
-			queryByRole( 'button', { name: /confirm changes/i } )
+			queryByRole( 'button', { name: /save/i } )
 		).toBeInTheDocument();
 		expect(
 			queryByRole( 'button', { name: /close/i } )
@@ -252,7 +258,7 @@ describe( 'SettingsModule', () => {
 		);
 
 		expect(
-			queryByRole( 'button', { name: /confirm changes/i } )
+			queryByRole( 'button', { name: /save/i } )
 		).not.toBeInTheDocument();
 		expect(
 			queryByRole( 'button', { name: /close/i } )
