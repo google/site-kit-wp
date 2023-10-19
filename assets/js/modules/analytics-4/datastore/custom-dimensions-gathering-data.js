@@ -257,7 +257,7 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Determines whether data is available for the module.
+	 * Determines whether data is available for the custom dimension.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -345,7 +345,7 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Checks if data is available on load.
+	 * Checks if data is available on load for the custom dimension.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -360,7 +360,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Determines whether the module is still gathering data or not.
+	 * Determines whether the custom dimension is still gathering data or not.
 	 *
 	 * @todo Review the name of this selector to a less confusing one.
 	 * @since n.e.x.t
