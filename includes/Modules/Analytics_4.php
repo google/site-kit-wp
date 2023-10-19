@@ -165,8 +165,6 @@ final class Analytics_4 extends Module
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 
-					// TODO: Flag that we're resetting when the measurement ID changes rather than property ID as per the IB, this seems appropriate to
-					// be consistent with the existing data available state reset logic.
 					if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
 						$this->custom_dimensions_data_available->reset_data_available();
 					}
@@ -299,6 +297,10 @@ final class Analytics_4 extends Module
 	public function on_deactivation() {
 		$this->get_settings()->delete();
 		$this->reset_data_available();
+
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$this->custom_dimensions_data_available->reset_data_available();
+		}
 	}
 
 	/**
@@ -431,16 +433,14 @@ final class Analytics_4 extends Module
 		}
 
 		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
-			$datapoints['POST:create-custom-dimension'] = array(
+			$datapoints['POST:create-custom-dimension']         = array(
 				'service'                => 'analyticsdata',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
 			);
-			$datapoints['POST:sync-custom-dimensions']  = array(
+			$datapoints['POST:sync-custom-dimensions']          = array(
 				'service' => 'analyticsadmin',
 			);
-			// TODO: Flag that I've not made the endpoint shareable, as the user needs to be authenticated in order to get the property creation date in order to determine
-			// data availability. Note that this also applies to the module-level GA4 gathering data logic.
 			$datapoints['POST:custom-dimension-data-available'] = array( 'service' => '' );
 		}
 
@@ -1668,11 +1668,12 @@ final class Analytics_4 extends Module
 	 * @return array Inline modules data.
 	 */
 	private function inline_custom_dimensions_data( $modules_data ) {
-		// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-		$modules_data['analytics-4'] = array(
-			// TODO: Do we need to check if this module is active/connected?
-			'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
-		);
+		if ( $this->is_connected() ) {
+			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
+			$modules_data['analytics-4'] = array(
+				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
+			);
+		}
 
 		return $modules_data;
 	}

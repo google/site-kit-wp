@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
+use Cassandra\Type\Custom;
 use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -23,10 +24,12 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
@@ -2887,9 +2890,30 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_inline_custom_dimension_data_initial_state() {
+	public function test_inline_custom_dimension_data_initial_state__module_not_connected() {
 		$this->enable_feature( 'newsKeyMetrics' );
 		$this->analytics->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data );
+	}
+
+	public function test_inline_custom_dimension_data_initial_state__module_connected() {
+		$this->enable_feature( 'newsKeyMetrics' );
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
@@ -2914,6 +2938,18 @@ class Analytics_4Test extends TestCase {
 		do_action( 'wp_login', $user->user_login, $user );
 
 		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
 
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->authentication->get_oauth_client()->get_required_scopes()
@@ -2952,14 +2988,20 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->register();
 
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->authentication->get_oauth_client()->get_required_scopes()
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
 		);
 
-		$this->analytics->get_settings()->merge(
-			array(
-				'measurementID' => 'A1B2C3D4E5',
-			)
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
 
 		$this->analytics->set_data(
@@ -3001,6 +3043,65 @@ class Analytics_4Test extends TestCase {
 				),
 			),
 			$inline_modules_data['analytics-4']
+		);
+	}
+
+	public function test_custom_dimension_data_available_reset_on_deactivation() {
+		$this->enable_feature( 'newsKeyMetrics' );
+
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$this->analytics->set_data(
+			'custom-dimension-data-available',
+			array(
+				'parameterName' => 'googlesitekit_post_author',
+			)
+		);
+
+		// In this test, as the inline data won't be available when the module is deactivated,
+		// we use a local instance of Custom_Dimensions_Data_Available to verify the state.
+		$custom_dimensions_data_available = new Custom_Dimensions_Data_Available( new Transients( $this->context ) );
+
+		$this->assertEquals(
+			array(
+				'googlesitekit_post_author'     => true,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
+			),
+			$custom_dimensions_data_available->get_data_availability()
+		);
+
+		$this->analytics->on_deactivation();
+
+		$this->assertEquals(
+			array(
+				'googlesitekit_post_author'     => false,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
+			),
+			$custom_dimensions_data_available->get_data_availability()
 		);
 	}
 

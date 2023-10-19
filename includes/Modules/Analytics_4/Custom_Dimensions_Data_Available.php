@@ -84,7 +84,6 @@ class Custom_Dimensions_Data_Available {
 		);
 	}
 
-	// TODO: This might not need to be public.
 	/**
 	 * Checks whether the data is available for the custom dimension.
 	 *
@@ -93,7 +92,7 @@ class Custom_Dimensions_Data_Available {
 	 * @param string $parameter_name Custom dimension parameter name.
 	 * @return bool True if data is available, false otherwise.
 	 */
-	public function is_data_available( $parameter_name ) {
+	protected function is_data_available( $parameter_name ) {
 		return (bool) $this->transients->get( $this->get_data_available_transient_name( $parameter_name ) );
 	}
 
@@ -109,7 +108,6 @@ class Custom_Dimensions_Data_Available {
 		return $this->transients->set( $this->get_data_available_transient_name( $parameter_name ), true );
 	}
 
-	// TODO: Flag variation from IB.
 	/**
 	 * Resets the data available state for all custom dimensions.
 	 *
