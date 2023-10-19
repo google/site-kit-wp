@@ -362,7 +362,6 @@ const baseSelectors = {
 	/**
 	 * Determines whether the custom dimension is still gathering data or not.
 	 *
-	 * @todo Review the name of this selector to a less confusing one.
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state           Data store's state.
