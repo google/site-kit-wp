@@ -140,7 +140,27 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			kind: 'analyticsData#runReport',
 		};
 
-		const dataAvailabilityReportWithoutData = {
+		const dataAvailabilityReportWithNoRows = {
+			kind: 'analyticsData#runReport',
+			rowCount: null,
+			dimensionHeaders: [
+				{
+					name: 'customEvent:googlesitekit_post_date',
+				},
+			],
+			totals: [ {} ],
+			maximums: [ {} ],
+			minimums: [ {} ],
+			metadata: {
+				currencyCode: 'USD',
+				dataLossFromOtherRow: null,
+				emptyReason: null,
+				subjectToThresholding: null,
+				timeZone: 'Europe/London',
+			},
+		};
+
+		const dataAvailabilityReportWithNoSetValues = {
 			dimensionHeaders: [
 				{
 					name: `customEvent:${ parameterName }`,
@@ -371,10 +391,19 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				],
 				[
 					false,
-					'data is not available',
+					'the report contains no rows',
 					() => {
 						setupCustomDimensionDataAvailability( {
-							report: dataAvailabilityReportWithoutData,
+							report: dataAvailabilityReportWithNoRows,
+						} );
+					},
+				],
+				[
+					false,
+					'the report contains no set values',
+					() => {
+						setupCustomDimensionDataAvailability( {
+							report: dataAvailabilityReportWithNoSetValues,
 						} );
 					},
 				],

@@ -333,6 +333,10 @@ const baseSelectors = {
 				return null;
 			}
 
+			if ( ! report?.rows?.length ) {
+				return false;
+			}
+
 			// If the only dimension value is '(not set)', then there is no data. See https://support.google.com/analytics/answer/13504892.
 			const isZeroReport =
 				report.rowCount === 1 &&
