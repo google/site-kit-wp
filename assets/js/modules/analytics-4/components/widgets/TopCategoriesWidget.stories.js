@@ -359,11 +359,9 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webDataStreamID );
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsCustomDimensionGatheringData(
@@ -371,7 +369,6 @@ export default {
 							.requiredCustomDimensions?.[ 0 ],
 						false
 					);
-
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
 				provideKeyMetrics( registry );
