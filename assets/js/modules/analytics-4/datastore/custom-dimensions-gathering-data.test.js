@@ -21,8 +21,8 @@
  */
 import { properties } from './__fixtures__';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { getPreviousDate, stringToDate } from '../../../util';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { getPreviousDate, stringToDate } from '../../../util';
 
 let {
 	createTestRegistry,
