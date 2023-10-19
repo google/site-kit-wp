@@ -743,7 +743,7 @@ final class Analytics_4 extends Module
 				if ( empty( $data['metrics'] ) && empty( $data['dimensions'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name `metrics`, 2: Missing parameter name `dimensions` */
 						sprintf( __( 'Request parameter is empty: at least one of %1$s or %2$s must be provided.', 'google-site-kit' ), 'metrics', 'dimensions' ),
 						array( 'status' => 400 )
 					);
