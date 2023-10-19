@@ -147,7 +147,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			rowCount: null,
 			dimensionHeaders: [
 				{
-					name: 'customEvent:googlesitekit_post_date',
+					name: `customEvent:${ customDimension }`,
 				},
 			],
 			totals: [ {} ],
