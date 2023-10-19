@@ -86,7 +86,6 @@ const baseInitialState = {
 };
 
 const baseActions = {
-	// TODO: Flag that I've changed the names to ...CustomDimensionGatheringData for consistency.
 	/**
 	 * Receives gathering data state for a custom dimension.
 	 *
@@ -116,7 +115,6 @@ const baseActions = {
 		};
 	},
 
-	// TODO: Remove this if it's not required.
 	/**
 	 * Receives data available on load state for a custom dimension.
 	 *

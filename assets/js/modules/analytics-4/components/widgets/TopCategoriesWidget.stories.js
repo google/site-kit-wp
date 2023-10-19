@@ -128,7 +128,6 @@ ZeroData.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ZeroData',
 };
 
-// TODO: Stories for the other widgets.
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
