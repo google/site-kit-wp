@@ -261,8 +261,23 @@ export default function withCustomDimensions( options = {} ) {
 				reportOptions,
 			] );
 
+			const hasInsufficientPermissionsError =
+				customDimensionsCreationErrors?.some(
+					isInsufficientPermissionsError
+				);
+
+			useEffect( () => {
+				if ( hasInsufficientPermissionsError ) {
+				}
+			}, [ hasInsufficientPermissionsError ] );
+
+			// Return early if the wrapped widget doesn't need custom dimensions.
+			if ( ! customDimensions ) {
+				return <WrappedComponent { ...props } />;
+			}
+
 			// Show loading state.
-			if ( !! customDimensions && loading ) {
+			if ( loading ) {
 				return (
 					<MetricTileWrapper
 						infoTooltip={ tileInfoTooltip }
@@ -274,122 +289,101 @@ export default function withCustomDimensions( options = {} ) {
 				);
 			}
 
-			// Show error states.
-			if ( !! customDimensions && ! loading ) {
-				if ( !! customDimensionsCreationErrors.length ) {
-					// Handle permissions error encountered while creating
-					// custom dimensions.
-					if (
-						customDimensionsCreationErrors.some(
-							isInsufficientPermissionsError
-						)
-					) {
-						return (
-							<MetricTileError
-								title={ __(
-									'Insufficient permissions',
+			// Handle permissions error encountered while creating
+			// custom dimensions.
+			if ( hasInsufficientPermissionsError ) {
+				return (
+					<MetricTileError
+						title={ __(
+							'Insufficient permissions',
+							'google-site-kit'
+						) }
+						{ ...commonErrorProps }
+					>
+						<div className="googlesitekit-report-error-actions">
+							<span className="googlesitekit-error-retry-text">
+								{ createInterpolateElement(
+									__(
+										'Permissions updated? <a>Retry</a>',
+										'google-site-kit'
+									),
+									{
+										a: (
+											<Link
+												onClick={
+													handleCreateCustomDimensions
+												}
+											/>
+										),
+									}
+								) }
+							</span>
+							<span className="googlesitekit-error-retry-text">
+								{ createInterpolateElement(
+									__(
+										'You’ll need to contact your administrator. <a>Learn more</a>',
+										'google-site-kit'
+									),
+									{
+										a: <Link href={ helpLink } external />,
+									}
+								) }
+							</span>
+						</div>
+					</MetricTileError>
+				);
+			}
+
+			if ( customDimensionsCreationErrors?.length > 0 ) {
+				// Handle generic errors encountered while creating
+				// custom dimensions.
+				return (
+					<MetricTileError
+						title={ __(
+							'Analytics update failed',
+							'google-site-kit'
+						) }
+						{ ...commonErrorProps }
+					>
+						<div className="googlesitekit-report-error-actions">
+							<Button onClick={ handleCreateCustomDimensions }>
+								{ __( 'Retry', 'google-site-kit' ) }
+							</Button>
+							<span className="googlesitekit-error-retry-text">
+								{ createInterpolateElement(
+									__(
+										'Retry didn’t work? <a>Learn more</a>',
+										'google-site-kit'
+									),
+									{
+										a: <Link href={ helpLink } external />,
+									}
+								) }
+							</span>
+						</div>
+					</MetricTileError>
+				);
+			}
+
+			if ( false === hasCustomDimensions ) {
+				return (
+					<MetricTileError
+						title={ __( 'No data to show', 'google-site-kit' ) }
+						{ ...commonErrorProps }
+					>
+						<div className="googlesitekit-report-error-actions">
+							<Button onClick={ handleCreateCustomDimensions }>
+								{ __( 'Update', 'google-site-kit' ) }
+							</Button>
+							<span className="googlesitekit-error-retry-text">
+								{ __(
+									'Update Analytics to track metric',
 									'google-site-kit'
 								) }
-								{ ...commonErrorProps }
-							>
-								<div className="googlesitekit-report-error-actions">
-									<span className="googlesitekit-error-retry-text">
-										{ createInterpolateElement(
-											__(
-												'Permissions updated? <a>Retry</a>',
-												'google-site-kit'
-											),
-											{
-												a: (
-													<Link
-														onClick={
-															handleCreateCustomDimensions
-														}
-													/>
-												),
-											}
-										) }
-									</span>
-									<span className="googlesitekit-error-retry-text">
-										{ createInterpolateElement(
-											__(
-												'You’ll need to contact your administrator. <a>Learn more</a>',
-												'google-site-kit'
-											),
-											{
-												a: (
-													<Link
-														href={ helpLink }
-														external
-													/>
-												),
-											}
-										) }
-									</span>
-								</div>
-							</MetricTileError>
-						);
-					}
-
-					// Handle generic errors encountered while creating
-					// custom dimensions.
-					return (
-						<MetricTileError
-							title={ __(
-								'Analytics update failed',
-								'google-site-kit'
-							) }
-							{ ...commonErrorProps }
-						>
-							<div className="googlesitekit-report-error-actions">
-								<Button
-									onClick={ handleCreateCustomDimensions }
-								>
-									{ __( 'Retry', 'google-site-kit' ) }
-								</Button>
-								<span className="googlesitekit-error-retry-text">
-									{ createInterpolateElement(
-										__(
-											'Retry didn’t work? <a>Learn more</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													href={ helpLink }
-													external
-												/>
-											),
-										}
-									) }
-								</span>
-							</div>
-						</MetricTileError>
-					);
-				}
-
-				if ( false === hasCustomDimensions ) {
-					return (
-						<MetricTileError
-							title={ __( 'No data to show', 'google-site-kit' ) }
-							{ ...commonErrorProps }
-						>
-							<div className="googlesitekit-report-error-actions">
-								<Button
-									onClick={ handleCreateCustomDimensions }
-								>
-									{ __( 'Update', 'google-site-kit' ) }
-								</Button>
-								<span className="googlesitekit-error-retry-text">
-									{ __(
-										'Update Analytics to track metric',
-										'google-site-kit'
-									) }
-								</span>
-							</div>
-						</MetricTileError>
-					);
-				}
+							</span>
+						</div>
+					</MetricTileError>
+				);
 			}
 
 			return <WrappedComponent { ...props } />;
