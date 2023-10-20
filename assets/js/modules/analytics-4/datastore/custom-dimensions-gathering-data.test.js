@@ -50,7 +50,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveIsCustomDimensionGatheringData()
-				).toThrow( 'customDimension must be a string' );
+				).toThrow( 'customDimension must be a non-empty string' );
 			} );
 
 			it( 'requires a boolean for the gathering data state to receive', () => {
