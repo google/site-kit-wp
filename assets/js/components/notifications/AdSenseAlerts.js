@@ -53,41 +53,41 @@ function AdSenseAlerts() {
 
 	return (
 		<Fragment>
-			{ notifications.map( ( notification ) => (
-				<BannerNotification
-					key={ notification.id }
-					id={ notification.id }
-					title={ notification.title || '' }
-					description={ notification.description || '' }
-					blockData={ notification.blockData || [] }
-					WinImageSVG={ () => <NotificationAlertSVG height="136" /> }
-					format={ notification.format || 'small' }
-					learnMoreURL={ notification.learnMoreURL || '' }
-					learnMoreDescription={
-						notification.learnMoreDescription || ''
-					}
-					learnMoreLabel={ notification.learnMoreLabel || '' }
-					ctaLink={ notification.ctaURL || '' }
-					ctaLabel={ notification.ctaLabel || '' }
-					ctaTarget={ notification.ctaTarget || '' }
-					type={ notification.severity || '' }
-					dismiss={
-						notification.dismiss ||
-						__( 'OK, Got it!', 'google-site-kit' )
-					}
-					isDismissible={ notification.isDismissable || true }
-					logo={ notification.logo || true }
-					module="adsense"
-					moduleName={ _x(
-						'AdSense',
-						'Service name',
-						'google-site-kit'
-					) }
-					pageIndex={ notification.pageIndex || '' }
-					dismissExpires={ notification.dismissExpires || 0 }
-					showOnce={ notification.showOnce || false }
-				/>
-			) ) }
+			{ notifications.map(
+				( {
+					id,
+					description,
+					format,
+					ctaURL,
+					ctaLabel,
+					ctaTarget,
+					severity,
+					isDismissable,
+				} ) => (
+					<BannerNotification
+						key={ id }
+						id={ id }
+						description={ description }
+						WinImageSVG={ NotificationAlertSVG }
+						format={ format || 'small' }
+						ctaLink={ ctaURL }
+						ctaLabel={ ctaLabel }
+						ctaTarget={ ctaTarget }
+						type={ severity }
+						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+						isDismissible={ isDismissable || true }
+						logo
+						module="adsense"
+						moduleName={ _x(
+							'AdSense',
+							'Service name',
+							'google-site-kit'
+						) }
+						dismissExpires={ 0 }
+						showOnce={ false }
+					/>
+				)
+			) }
 		</Fragment>
 	);
 }

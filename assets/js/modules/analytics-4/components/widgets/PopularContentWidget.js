@@ -31,25 +31,26 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../../../analytics/components/common';
-import { getFullURL, numFmt } from '../../../../util';
+import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function PopularContentWidget( props ) {
 	const { Widget } = props;
 
-	const siteURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getReferenceSiteURL()
-	);
+	const viewOnlyDashboard = useViewOnly();
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -89,7 +90,7 @@ function PopularContentWidget( props ) {
 			: undefined
 	);
 
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
@@ -105,11 +106,32 @@ function PopularContentWidget( props ) {
 			Component: ( { fieldValue } ) => {
 				const url = fieldValue;
 				const title = titles[ url ];
-				const permaLink = getFullURL( siteURL, url );
+				// Utilizing `useSelect` inside the component rather than
+				// returning its direct value to the `columns` array.
+				// This pattern ensures that the component re-renders correctly based on changes in state,
+				// preventing potential issues with stale or out-of-sync data.
+				// Note: This pattern is replicated in a few other spots within our codebase.
+				const serviceURL = useSelect( ( select ) => {
+					return ! viewOnlyDashboard
+						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+								'all-pages-and-screens',
+								{
+									filters: {
+										unifiedPagePathScreen: url,
+									},
+									dates,
+								}
+						  )
+						: null;
+				} );
+
+				if ( viewOnlyDashboard ) {
+					return <MetricTileTablePlainText content={ title } />;
+				}
 
 				return (
 					<Link
-						href={ permaLink }
+						href={ serviceURL }
 						title={ title }
 						external
 						hideExternalIndicator
@@ -140,6 +162,10 @@ function PopularContentWidget( props ) {
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Pages your visitors read the most',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

@@ -33,6 +33,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '../../../util';
+import { negateDefined } from '../../../util/negate';
 
 const { createRegistrySelector } = Data;
 
@@ -47,6 +48,7 @@ function getSiteInfoProperty( propName ) {
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
 const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
+const SET_KEY_METRICS_SETUP_COMPLETED_BY = 'SET_KEY_METRICS_SETUP_COMPLETED_BY';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -106,6 +108,26 @@ export const actions = {
 			type: SET_SITE_KIT_AUTO_UPDATES_ENABLED,
 		};
 	},
+
+	/**
+	 * Sets the `setKeyMetricsSetupCompletedBy` value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {number} keyMetricsSetupCompletedBy Positive integer if key metrics setup is completed, otherwise 0.
+	 * @return {Object} Redux-style action.
+	 */
+	setKeyMetricsSetupCompletedBy( keyMetricsSetupCompletedBy ) {
+		invariant(
+			typeof keyMetricsSetupCompletedBy === 'number',
+			'keyMetricsSetupCompletedBy must be a number.'
+		);
+
+		return {
+			payload: { keyMetricsSetupCompletedBy },
+			type: SET_KEY_METRICS_SETUP_COMPLETED_BY,
+		};
+	},
 };
 
 export const controls = {};
@@ -140,6 +162,7 @@ export const reducer = ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productBasePaths,
+				keyMetricsSetupCompletedBy,
 			} = payload.siteInfo;
 
 			return {
@@ -171,6 +194,7 @@ export const reducer = ( state, { payload, type } ) => {
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
 					productBasePaths,
+					keyMetricsSetupCompletedBy,
 				},
 			};
 		}
@@ -189,6 +213,16 @@ export const reducer = ( state, { payload, type } ) => {
 				siteInfo: {
 					...state.siteInfo,
 					siteKitAutoUpdatesEnabled,
+				},
+			};
+
+		case SET_KEY_METRICS_SETUP_COMPLETED_BY:
+			const { keyMetricsSetupCompletedBy } = payload;
+			return {
+				...state,
+				siteInfo: {
+					...state.siteInfo,
+					keyMetricsSetupCompletedBy,
 				},
 			};
 
@@ -237,6 +271,7 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productBasePaths,
+			keyMetricsSetupCompletedBy,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -273,6 +308,7 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productBasePaths,
+			keyMetricsSetupCompletedBy,
 		} );
 	},
 };
@@ -735,6 +771,17 @@ export const selectors = {
 	getPluginBasename: getSiteInfoProperty( 'pluginBasename' ),
 
 	/**
+	 * Get the user ID of the user who setup Key Metrics widget if present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {number} `ID` of the user who did initial setup of the Key Metrics widget, if setup was done, otherwise `0`.
+	 */
+	getKeyMetricsSetupCompletedBy: getSiteInfoProperty(
+		'keyMetricsSetupCompletedBy'
+	),
+
+	/**
 	 * Determines whether the current WordPress site has the minimum required version.
 	 * Currently, the minimum required version is 5.2.
 	 *
@@ -771,6 +818,23 @@ export const selectors = {
 	 * @return {Array.<string>} The list of product base paths.
 	 */
 	getProductBasePaths: getSiteInfoProperty( 'productBasePaths' ),
+
+	/**
+	 * Checks if the Key Metrics widget has been setup either if at least one user
+	 * has answered the User Input questionnaire or picked their own metrics.
+	 *
+	 * @since 1.108.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if the Key Metrics widget has been setup, otherwise `false`.
+	 */
+	isKeyMetricsSetupCompleted: ( state ) => {
+		// Here we double-negate the value of the setup completed by state
+		// in order to cast it to a boolean, but only if it's not undefined.
+		return negateDefined(
+			negateDefined( selectors.getKeyMetricsSetupCompletedBy( state ) )
+		);
+	},
 };
 
 export default {

@@ -27,6 +27,16 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 import { enableFeature, setupSiteKit } from '../../utils';
 
 describe( 'screens', () => {
+	describe( 'googlesitekit-splash', () => {
+		it( 'exists with the expected page title', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+
+			await expect( page ).toMatchElement( 'title', {
+				text: /Site Kit by Google Dashboard\b/i,
+			} );
+		} );
+	} );
+
 	describe( 'googlesitekit-user-input', () => {
 		it( 'exists with the expected page title', async () => {
 			await enableFeature( 'userInput' );
@@ -46,8 +56,6 @@ describe( 'screens', () => {
 
 	describe( 'googlesitekit-ad-blocking-recovery', () => {
 		it( 'exists with the expected page title', async () => {
-			await enableFeature( 'adBlockerDetection' );
-
 			await setupSiteKit();
 
 			await visitAdminPage(

@@ -40,7 +40,6 @@ import {
 	FORM_SETUP,
 	EDIT_SCOPE,
 	SETUP_FLOW_MODE_GA4_LEGACY,
-	DASHBOARD_VIEW_GA4,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
@@ -86,8 +85,7 @@ export default function SetupForm( { finishSetup } ) {
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { setDashboardView, submitChanges } =
-		useDispatch( MODULES_ANALYTICS );
+	const { submitChanges } = useDispatch( MODULES_ANALYTICS );
 
 	const submitForm = useCallback(
 		async ( event ) => {
@@ -95,15 +93,6 @@ export default function SetupForm( { finishSetup } ) {
 			// Disable autoSubmit unconditionally to prevent
 			// automatic invocation more than once.
 			setValues( FORM_SETUP, { autoSubmit: false } );
-
-			// Automatically switch sites going through the new GA4
-			// setup flow to the GA4 dashboard view.
-			if (
-				ga4ReportingEnabled &&
-				setupFlowMode === SETUP_FLOW_MODE_GA4
-			) {
-				setDashboardView( DASHBOARD_VIEW_GA4 );
-			}
 
 			const { error } = await submitChanges();
 
@@ -115,14 +104,7 @@ export default function SetupForm( { finishSetup } ) {
 				finishSetup();
 			}
 		},
-		[
-			finishSetup,
-			ga4ReportingEnabled,
-			setDashboardView,
-			setValues,
-			setupFlowMode,
-			submitChanges,
-		]
+		[ finishSetup, setValues, submitChanges ]
 	);
 
 	const isTagManagerAvailable = useSelect( ( select ) =>

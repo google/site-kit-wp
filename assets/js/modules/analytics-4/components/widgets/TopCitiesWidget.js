@@ -87,7 +87,7 @@ function TopCitiesWidget( { Widget } ) {
 
 	const { rows = [], totals = [] } = topCitiesReport || {};
 
-	const totalUsers = totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
+	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 	const columns = [
 		{
@@ -121,6 +121,10 @@ function TopCitiesWidget( { Widget } ) {
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'The cities where most of your visitors came from',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

@@ -80,11 +80,21 @@ function TopTrafficSourceWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReport( trafficSourceReportOptions )
 	);
 
-	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			trafficSourceReportOptions,
-		] )
-	);
+	const error = useSelect( ( select ) => {
+		const trafficSourceReportErrors = select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ trafficSourceReportOptions ] );
+
+		const totalUsersReportErrors = select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ totalUsersReportOptions ] );
+
+		if ( trafficSourceReportErrors && totalUsersReportErrors ) {
+			return [ trafficSourceReportErrors, totalUsersReportErrors ];
+		}
+
+		return trafficSourceReportErrors || totalUsersReportErrors || undefined;
+	} );
 
 	const loading = useSelect(
 		( select ) =>
@@ -152,7 +162,7 @@ function TopTrafficSourceWidget( { Widget } ) {
 	return (
 		<MetricTileText
 			Widget={ Widget }
-			title={ __( 'Top Traffic Source', 'google-site-kit' ) }
+			title={ __( 'Top traffic source', 'google-site-kit' ) }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
 			subText={
@@ -168,6 +178,10 @@ function TopTrafficSourceWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

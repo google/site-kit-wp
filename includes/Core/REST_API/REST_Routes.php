@@ -66,7 +66,7 @@ final class REST_Routes {
 						// arguments.
 
 						$unset_vars = ( $wp->request && stripos( $wp->request, trailingslashit( rest_get_url_prefix() ) . self::REST_ROOT ) !== false ) // Check regular permalinks.
-							|| ( empty( $wp->request ) && stripos( $this->context->input()->filter( INPUT_GET, 'rest_route' ), self::REST_ROOT ) !== false ); // Check plain permalinks.
+							|| ( empty( $wp->request ) && stripos( $this->context->input()->filter( INPUT_GET, 'rest_route' ) || '', self::REST_ROOT ) !== false ); // Check plain permalinks.
 
 						if ( $unset_vars ) {
 							// List of variable names to remove from public query variables list.

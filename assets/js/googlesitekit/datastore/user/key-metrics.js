@@ -18,7 +18,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isEmpty, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -29,10 +29,14 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
@@ -41,6 +45,7 @@ import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
+import { isFeatureEnabled } from '../../../features';
 
 const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
@@ -133,6 +138,14 @@ const baseActions = {
 		if ( error ) {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
 			yield receiveError( error, 'saveKeyMetricsSettings', [] );
+		} else if ( isEmpty( settings ) || settings.widgetSlugs ) {
+			// Update the `keyMetricsSetupCompletedBy` value to mark setup completed.
+			// This will be handled automatically on the back end.
+			registry
+				.dispatch( CORE_SITE )
+				.setKeyMetricsSetupCompletedBy(
+					registry.select( CORE_USER ).getID()
+				);
 		}
 
 		return { response, error };
@@ -182,7 +195,9 @@ const baseSelectors = {
 	 * @return {Array<string>|undefined} An array of key metric slugs, or undefined while loading.
 	 */
 	getKeyMetrics: createRegistrySelector( ( select ) => () => {
-		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
+		const { getAnswerBasedMetrics, getUserPickedMetrics } =
+			select( CORE_USER );
+		const userPickedMetrics = getUserPickedMetrics();
 
 		if ( userPickedMetrics === undefined ) {
 			return undefined;
@@ -192,7 +207,28 @@ const baseSelectors = {
 			return userPickedMetrics;
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics();
+		const answerBasedMetrics = getAnswerBasedMetrics();
+
+		if ( answerBasedMetrics === undefined ) {
+			return undefined;
+		}
+
+		if ( answerBasedMetrics.length ) {
+			return answerBasedMetrics;
+		}
+
+		const isKeyMetricsSetupCompleted =
+			select( CORE_SITE ).isKeyMetricsSetupCompleted();
+
+		if ( isKeyMetricsSetupCompleted ) {
+			return [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			];
+		}
+		return [];
 	} ),
 
 	/**
@@ -218,13 +254,31 @@ const baseSelectors = {
 
 		switch ( purpose ) {
 			case 'publish_blog':
-			case 'publish_news':
 				return [
 					KM_ANALYTICS_LOYAL_VISITORS,
 					KM_ANALYTICS_NEW_VISITORS,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 				];
+
+			case 'publish_news':
+				const newsKeyMetricsEnabled =
+					isFeatureEnabled( 'newsKeyMetrics' );
+
+				return newsKeyMetricsEnabled
+					? [
+							KM_ANALYTICS_PAGES_PER_VISIT,
+							KM_ANALYTICS_VISIT_LENGTH,
+							KM_ANALYTICS_VISITS_PER_VISITOR,
+							KM_ANALYTICS_MOST_ENGAGING_PAGES,
+					  ]
+					: [
+							KM_ANALYTICS_LOYAL_VISITORS,
+							KM_ANALYTICS_NEW_VISITORS,
+							KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+							KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					  ];
+
 			case 'monetize_content':
 				return [
 					KM_ANALYTICS_POPULAR_CONTENT,
@@ -232,6 +286,7 @@ const baseSelectors = {
 					KM_ANALYTICS_NEW_VISITORS,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				];
+
 			case 'sell_products_or_service':
 				return [
 					hasProductPostType()
@@ -368,13 +423,13 @@ const baseSelectors = {
 			return widget.modules.every( ( slug ) => {
 				const module = getModule( slug );
 
-				if ( ! module || ! module.connected ) {
+				if ( ! module ) {
 					return false;
 				}
 
 				if (
 					! isAuthenticated &&
-					module.shareable &&
+					module?.shareable &&
 					! canViewSharedModule( slug )
 				) {
 					return false;

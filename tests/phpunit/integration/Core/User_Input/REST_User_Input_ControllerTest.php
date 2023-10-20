@@ -11,7 +11,9 @@
 namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Input\REST_User_Input_Controller;
 use Google\Site_Kit\Core\User_Input\User_Input;
@@ -45,18 +47,27 @@ class REST_User_Input_ControllerTest extends TestCase {
 	 */
 	private $user_options;
 
+	/**
+	 * Key_Metrics_Setup_Completed_By instance.
+	 *
+	 * @var Key_Metrics_Setup_Completed_By
+	 */
+	private $key_metrics_setup_completed_by;
+
 	public function set_up() {
 		parent::set_up();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->user_options = new User_Options( $context );
-		$this->user_input   = new User_Input( $context );
-		$this->controller   = new REST_User_Input_Controller(
+		$context                              = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options                   = new User_Options( $context );
+		$this->user_input                     = new User_Input( $context );
+		$this->key_metrics_setup_completed_by = new Key_Metrics_Setup_Completed_By( new Options( $context ) );
+		$this->controller                     = new REST_User_Input_Controller(
 			$this->user_input,
-			new Survey_Queue( $this->user_options )
+			new Survey_Queue( $this->user_options ),
+			$this->key_metrics_setup_completed_by
 		);
 
 		$this->user_input->register();
@@ -154,6 +165,9 @@ class REST_User_Input_ControllerTest extends TestCase {
 			)
 		);
 
+		// Ensure KM setup is not completed yet to test below.
+		$this->assertFalse( $this->key_metrics_setup_completed_by->get() );
+
 		$this->assertEqualSets(
 			array(
 				'purpose'       => array(
@@ -177,5 +191,8 @@ class REST_User_Input_ControllerTest extends TestCase {
 			array(),
 			$this->user_options->get( Survey_Queue::OPTION )
 		);
+
+		// Verify KM setup is marked as completed.
+		$this->assertEquals( get_current_user_id(), $this->key_metrics_setup_completed_by->get() );
 	}
 }

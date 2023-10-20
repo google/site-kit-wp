@@ -41,14 +41,14 @@ import { createGatheringDataStore } from '../../../googlesitekit/modules/create-
 const { createRegistrySelector } = Data;
 
 /**
- * Returns report args for the zero data report.
+ * Returns report args for a sample report.
  *
  * @since 1.107.0
  *
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
  */
-const getZeroDataReportArgs = ( select ) => {
+const getSampleReportArgs = ( select ) => {
 	const url = select( CORE_SITE ).getCurrentEntityURL();
 	const { compareStartDate: startDate, endDate } = select(
 		CORE_USER
@@ -118,7 +118,7 @@ const gatheringDataStore = createGatheringDataStore( 'search-console', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
-		const reportArgs = getZeroDataReportArgs( select );
+		const reportArgs = getSampleReportArgs( select );
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const report = select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs );
@@ -174,15 +174,13 @@ const baseSelectors = {
 	 *
 	 * @since 1.15.0
 	 *
-	 * @param {Object}         state                       Data store's state.
-	 * @param {Object}         options                     Options for generating the report.
-	 * @param {string}         options.startDate           Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate             Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.dateRange           Required, alternatively to startDate and endDate. A date range string such as 'last-28-days'.
-	 * @param {boolean}        [options.compareDateRanges] Optional. Only relevant with dateRange. Default false.
-	 * @param {Array.<string>} [options.dimensions]        Optional. List of {@link https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension|dimensions} to group results by. Default an empty array.
-	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
-	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         state                Data store's state.
+	 * @param {Object}         options              Options for generating the report.
+	 * @param {string}         options.startDate    Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate      Required. End date to query report data for as YYYY-mm-dd.
+	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension|dimensions} to group results by. Default an empty array.
+	 * @param {string}         [options.url]        Optional. URL to get a report for only this URL. Default an empty string.
+	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
 	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
 	 */
 	getReport( state, options = {} ) {
@@ -211,7 +209,7 @@ const baseSelectors = {
 			return true;
 		}
 
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return

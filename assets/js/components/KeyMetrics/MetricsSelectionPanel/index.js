@@ -37,9 +37,13 @@ import SideSheet from '../../SideSheet';
 import Header from './Header';
 import Footer from './Footer';
 import Metrics from './Metrics';
+import useViewContext from '../../../hooks/useViewContext';
+import { trackEvent } from '../../../util';
+import Notice from './Notice';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
+	const viewContext = useViewContext();
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
@@ -62,7 +66,8 @@ export default function MetricsSelectionPanel() {
 		setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
 		} );
-	}, [ savedViewableMetrics, setValues ] );
+		trackEvent( `${ viewContext }_kmw-sidebar`, 'metrics_sidebar_view' );
+	}, [ savedViewableMetrics, setValues, viewContext ] );
 
 	const sideSheetCloseFn = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
@@ -74,9 +79,14 @@ export default function MetricsSelectionPanel() {
 			isOpen={ isOpen }
 			onOpen={ onSideSheetOpen }
 			closeFn={ sideSheetCloseFn }
+			focusTrapOptions={ {
+				initialFocus:
+					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-selection-box input',
+			} }
 		>
 			<Header />
 			<Metrics savedMetrics={ savedViewableMetrics } />
+			<Notice />
 			<Footer savedMetrics={ savedViewableMetrics } />
 		</SideSheet>
 	);

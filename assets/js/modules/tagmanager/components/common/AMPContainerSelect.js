@@ -59,9 +59,6 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 		return select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
 	} );
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
-	const isSecondaryAMP = useSelect( ( select ) =>
-		select( CORE_SITE ).isSecondaryAMP()
-	);
 
 	const { setAMPContainerID, setInternalAMPContainerID } =
 		useDispatch( MODULES_TAGMANAGER );
@@ -95,9 +92,7 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 		return null;
 	}
 
-	const label = isSecondaryAMP
-		? __( 'AMP Container', 'google-site-kit' )
-		: __( 'Container', 'google-site-kit' );
+	const label = __( 'AMP Container', 'google-site-kit' );
 
 	if ( hasModuleAccess === false ) {
 		return (

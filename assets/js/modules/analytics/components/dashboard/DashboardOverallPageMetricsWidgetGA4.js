@@ -187,7 +187,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	if ( error ) {
 		return (
 			<Widget Footer={ Footer }>
-				<WidgetReportError moduleSlug="analytics" error={ error } />
+				<WidgetReportError moduleSlug="analytics-4" error={ error } />
 			</Widget>
 		);
 	}

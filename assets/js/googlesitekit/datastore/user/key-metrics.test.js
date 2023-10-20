@@ -24,6 +24,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -33,12 +34,18 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
+import { CORE_SITE } from '../site/constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -262,6 +269,23 @@ describe( 'core/user key metrics', () => {
 				}
 			);
 
+			it( 'should return the correct metrics for the publish_news purpose when the newsKeyMetrics feature is enabled', () => {
+				enabledFeatures.add( 'newsKeyMetrics' );
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: { values: [ 'publish_news' ] },
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getAnswerBasedMetrics()
+				).toEqual( [
+					KM_ANALYTICS_PAGES_PER_VISIT,
+					KM_ANALYTICS_VISIT_LENGTH,
+					KM_ANALYTICS_VISITS_PER_VISITOR,
+					KM_ANALYTICS_MOST_ENGAGING_PAGES,
+				] );
+				enabledFeatures.delete( 'newsKeyMetrics' );
+			} );
+
 			it( 'should return the correct metrics for the sell_products_or_service purposes when the site has a product post type', () => {
 				provideSiteInfo( registry, {
 					postTypes: [ { slug: 'product', label: 'Product' } ],
@@ -295,7 +319,9 @@ describe( 'core/user key metrics', () => {
 		} );
 
 		describe( 'saveKeyMetricsSettings', () => {
+			const userID = 123;
 			beforeEach( async () => {
+				provideUserInfo( registry, { id: userID } );
 				await registry
 					.dispatch( CORE_USER )
 					.setKeyMetricsSetting( settingID, settingValue );
@@ -385,6 +411,73 @@ describe( 'core/user key metrics', () => {
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should mark key metrics setup as completed by current user', async () => {
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				expect(
+					registry.select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+				).toBe( 0 );
+
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+				).toBe( userID );
+			} );
+
+			it( 'should not set the keyMetricsSetupCompleted site info setting to true if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( coreKeyMetricsEndpointRegExp, {
+					body: response,
+					status: 500,
+				} );
+
+				// Verify the setting is initially false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
+
+				// Verify the setting is still false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should not set the keyMetricsSetupCompleted site info setting to true if only `isWidgetHidden` is changed', async () => {
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				// Verify the setting is initially false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				await registry
+					.dispatch( CORE_USER )
+					.saveKeyMetricsSettings( { isWidgetHidden: true } );
+
+				// Verify the setting is still false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				expect( console ).not.toHaveErrored();
 			} );
 		} );
 	} );
@@ -561,7 +654,7 @@ describe( 'core/user key metrics', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return false if a module that the widget depends on is not connected', () => {
+			it( 'should return true if a module that the widget depends on is not connected', () => {
 				provideUserAuthentication( registry );
 
 				provideModules( registry, [
@@ -582,7 +675,7 @@ describe( 'core/user key metrics', () => {
 					registry
 						.select( CORE_USER )
 						.isKeyMetricAvailable( 'metricA' )
-				).toBe( false );
+				).toBe( true );
 			} );
 
 			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', () => {

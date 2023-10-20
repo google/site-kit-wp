@@ -81,15 +81,17 @@ export const actions = {
 	 *
 	 * @since 1.9.0
 	 * @since 1.107.0 Extended to support an optional CTA component.
+	 * @since 1.110.0 Extended to support an optional filterActiveWidgets function.
 	 *
-	 * @param {string}      slug                Widget Area's slug.
-	 * @param {Object}      settings            Widget Area's settings.
-	 * @param {string}      settings.title      Title for this widget area.
-	 * @param {string}      [settings.subtitle] Optional. Subtitle for this widget area.
-	 * @param {WPComponent} [settings.Icon]     Optional. React component to render icon for this widget area.
-	 * @param {string}      [settings.style]    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
-	 * @param {number}      [settings.priority] Optional. Priority for this widget area. Default: 10.
-	 * @param {WPComponent} [settings.CTA]      React component used as CTA appearing beside the subtitle.
+	 * @param {string}      slug                           Widget Area's slug.
+	 * @param {Object}      settings                       Widget Area's settings.
+	 * @param {string}      settings.title                 Title for this widget area.
+	 * @param {string}      [settings.subtitle]            Optional. Subtitle for this widget area.
+	 * @param {WPComponent} [settings.Icon]                Optional. React component to render icon for this widget area.
+	 * @param {string}      [settings.style]               Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
+	 * @param {number}      [settings.priority]            Optional. Priority for this widget area. Default: 10.
+	 * @param {WPComponent} [settings.CTA]                 React component used as CTA appearing beside the subtitle.
+	 * @param {Function}    [settings.filterActiveWidgets] Optional. Function used to filter active widgets.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidgetArea(
@@ -101,6 +103,7 @@ export const actions = {
 			subtitle,
 			Icon,
 			CTA,
+			filterActiveWidgets,
 		} = {}
 	) {
 		invariant( slug, 'slug is required.' );
@@ -113,7 +116,15 @@ export const actions = {
 		return {
 			payload: {
 				slug,
-				settings: { priority, style, title, subtitle, Icon, CTA },
+				settings: {
+					priority,
+					style,
+					title,
+					subtitle,
+					Icon,
+					CTA,
+					filterActiveWidgets,
+				},
 			},
 			type: REGISTER_WIDGET_AREA,
 		};
@@ -174,6 +185,7 @@ export const selectors = {
 	 *
 	 * @since 1.47.0
 	 * @since 1.77.0 Add options.modules parameter.
+	 * @since 1.110.0 Introduced filterActiveWidgets support to allow custom filtering of active widgets.
 	 *
 	 * @param {Object}         state             Data store's state.
 	 * @param {string}         slug              Widget area's slug.
@@ -191,11 +203,24 @@ export const selectors = {
 
 				const { modules } = options;
 
-				return select( CORE_WIDGETS )
-					.getWidgets( widgetAreaSlug, { modules } )
-					.some( ( widget ) =>
-						select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+				const widgetArea =
+					select( CORE_WIDGETS ).getWidgetArea( widgetAreaSlug );
+
+				let areaWidgets = select( CORE_WIDGETS ).getWidgets(
+					widgetAreaSlug,
+					{ modules }
+				);
+
+				if ( widgetArea.filterActiveWidgets ) {
+					areaWidgets = widgetArea.filterActiveWidgets(
+						select,
+						areaWidgets
 					);
+				}
+
+				return areaWidgets.some( ( widget ) =>
+					select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+				);
 			}
 	),
 

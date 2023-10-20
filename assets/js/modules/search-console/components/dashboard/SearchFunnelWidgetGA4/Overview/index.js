@@ -122,11 +122,6 @@ export default function Overview( props ) {
 		select( CORE_USER ).isAuthenticated()
 	);
 
-	const conversionsRateLearnMoreURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/9267568',
-		} )
-	);
 	const engagementRateLearnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/12195621',
@@ -287,16 +282,6 @@ export default function Overview( props ) {
 						datapoint: ga4ConversionsDatapoint,
 						change: ga4ConversionsChange,
 						isGatheringData: isGA4GatheringData,
-						badge: (
-							<NewBadge
-								tooltipTitle={ __(
-									'Conversions is a new Google Analytics 4 metric replacing the Goals metric.',
-									'google-site-kit'
-								) }
-								learnMoreLink={ conversionsRateLearnMoreURL }
-								onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
-							/>
-						),
 					},
 			  ]
 			: [] ),

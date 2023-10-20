@@ -41,7 +41,6 @@ import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics from '../../assets/js/modules/analytics';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
-import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
@@ -74,7 +73,6 @@ const allCoreModules = [
 	modulesAdSense,
 	modulesAnalytics,
 	modulesAnalytics4,
-	modulesOptimize,
 	modulesPageSpeedInsights,
 	modulesSearchConsole,
 	modulesTagManager,
@@ -249,7 +247,8 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 				label: 'Media',
 			},
 		],
-		productBasePaths: [ '/product/' ],
+		productBasePaths: [ '^/product/' ],
+		keyMetricsSetupCompletedBy: 0,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {

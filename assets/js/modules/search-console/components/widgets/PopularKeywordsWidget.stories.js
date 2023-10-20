@@ -19,6 +19,7 @@
  */
 import {
 	provideKeyMetrics,
+	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
@@ -27,6 +28,12 @@ import PopularKeywordsWidget from './PopularKeywordsWidget';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import { provideSearchConsoleMockReport } from '../../util/data-mock';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../googlesitekit/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -39,9 +46,13 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
 	PopularKeywordsWidget
 );
 
-const Template = ( { setupRegistry, ...args } ) => (
+const Template = ( { setupRegistry, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
+			<WidgetWithComponentProps { ...args } />
+		</ViewContextProvider>
 	</WithRegistrySetup>
 );
 
@@ -54,6 +65,19 @@ Ready.args = {
 };
 Ready.scenario = {
 	label: 'Key Metrics/PopularKeywordsWidget/Ready',
+	delay: 250,
+};
+
+export const ReadyViewOnly = Template.bind( {} );
+ReadyViewOnly.storyName = 'Ready View Only';
+ReadyViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		provideSearchConsoleMockReport( registry, reportOptions );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+ReadyViewOnly.scenario = {
+	label: 'Key Metrics/PopularKeywordsWidget/ReadyViewOnly',
 	delay: 250,
 };
 
@@ -115,6 +139,41 @@ Error.scenario = {
 	delay: 250,
 };
 
+export const InsufficientPermissions = Template.bind( {} );
+InsufficientPermissions.storyName = 'Insufficient Permissions';
+InsufficientPermissions.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const errorObject = {
+			code: 403,
+			message: 'Test error message. ',
+			data: {
+				status: 403,
+				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			},
+			selectorData: {
+				storeName: 'modules/search-console',
+				name: 'getReport',
+				args: [ reportOptions ],
+			},
+		};
+
+		dispatch( MODULES_SEARCH_CONSOLE ).receiveError(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_SEARCH_CONSOLE ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+
+InsufficientPermissions.scenario = {
+	label: 'KeyMetrics/PopularKeywords/InsufficientPermissions',
+	delay: 250,
+};
+
 export default {
 	title: 'Key Metrics/PopularKeywordsWidget',
 	decorators: [
@@ -128,12 +187,13 @@ export default {
 					},
 				] );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				provideModuleRegistrations( registry );
+
 				registry
 					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveGetSettings( {
-						propertyID: 'http://example.com/',
-					} );
+					.setPropertyID( 'https://example.com' );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
 				provideKeyMetrics( registry );
 

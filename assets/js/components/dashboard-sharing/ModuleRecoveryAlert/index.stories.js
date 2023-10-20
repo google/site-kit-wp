@@ -262,10 +262,7 @@ export default {
 			provideModuleRegistrations( registry );
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ [ 'dashboardSharing' ] }
-				>
+				<WithTestRegistry registry={ registry }>
 					<Story />
 				</WithTestRegistry>
 			);

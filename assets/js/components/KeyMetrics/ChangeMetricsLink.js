@@ -31,25 +31,36 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
+import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
 const { useSelect, useDispatch } = Data;
 
 export default function ChangeMetricsLink() {
 	const keyMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetrics()
 	);
+	const viewContext = useViewContext();
 
 	const { setValue } = useDispatch( CORE_UI );
 
 	const openMetricsSelectionPanel = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+		trackEvent( `${ viewContext }_kmw`, 'change_metrics' );
+	}, [ setValue, viewContext ] );
 
-	if ( ! Array.isArray( keyMetrics ) || ! keyMetrics?.length > 0 ) {
+	const renderChangeMetricLink =
+		Array.isArray( keyMetrics ) || keyMetrics?.length > 0;
+
+	useChangeMetricsFeatureTourEffect( renderChangeMetricLink );
+
+	if ( ! renderChangeMetricLink ) {
 		return null;
 	}
 
 	return (
 		<Link
+			secondary
 			className="googlesitekit-km-change-metrics-cta"
 			onClick={ openMetricsSelectionPanel }
 		>

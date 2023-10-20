@@ -32,13 +32,15 @@ import {
 	PropertySelect as GA4PropertySelect,
 	WebDataStreamSelect as GA4WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
+import SetupEnhancedMeasurementSwitch from '../../../analytics-4/components/setup/SetupEnhancedMeasurementSwitch';
 import { AccountSelect } from '../common';
-import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
-import EnableUniversalAnalytics from '../common/EnableUniversalAnalytics';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
+	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
+
 	const accounts =
 		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
 		[];
@@ -78,10 +80,7 @@ export default function SetupFormGA4() {
 			</div>
 
 			{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
-
-			<EnableUniversalAnalytics>
-				<SetupUseSnippetSwitchUA />
-			</EnableUniversalAnalytics>
+			{ enhancedMeasurementEnabled && <SetupEnhancedMeasurementSwitch /> }
 		</Fragment>
 	);
 }

@@ -38,6 +38,7 @@ const ROUTER_LINK = 'ROUTER_LINK';
 const Link = forwardRef( ( props, ref ) => {
 	const {
 		'aria-label': ariaLabelProp,
+		secondary = false,
 		arrow = false,
 		back = false,
 		caps = false,
@@ -144,6 +145,7 @@ const Link = forwardRef( ( props, ref ) => {
 		<LinkComponent
 			aria-label={ ariaLabel }
 			className={ classnames( 'googlesitekit-cta-link', className, {
+				'googlesitekit-cta-link--secondary': secondary,
 				'googlesitekit-cta-link--arrow': arrow,
 				'googlesitekit-cta-link--external':
 					external && ! hideExternalIndicator,

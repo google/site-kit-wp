@@ -39,7 +39,10 @@ import { generateDateRangeArgs } from '../../util';
 import { numFmt } from '../../../../util';
 import Link from '../../../../components/Link';
 import useViewOnly from '../../../../hooks/useViewOnly';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../common';
 
 const { useSelect, useInViewSelect } = Data;
@@ -69,7 +72,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		] )
 	);
 
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
 				'getReport',
@@ -95,6 +98,10 @@ export default function PopularKeywordsWidget( { Widget } ) {
 						  )
 						: null;
 				} );
+
+				if ( viewOnlyDashboard ) {
+					return <MetricTileTablePlainText content={ fieldValue } />;
+				}
 
 				return (
 					<Link
@@ -136,6 +143,10 @@ export default function PopularKeywordsWidget( { Widget } ) {
 			limit={ 3 }
 			error={ error }
 			moduleSlug="search-console"
+			infoTooltip={ __(
+				'The top search queries for your site by highest clickthrough rate',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

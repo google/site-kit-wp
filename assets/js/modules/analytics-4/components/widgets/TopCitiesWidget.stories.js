@@ -23,6 +23,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import {
 	provideKeyMetrics,
+	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
@@ -30,6 +31,8 @@ import { getAnalytics4MockResponse } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopCitiesWidget from './TopCitiesWidget';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -47,8 +50,9 @@ const reportOptions = {
 	limit: 3,
 };
 
-const WidgetWithComponentProps =
-	withWidgetComponentProps( 'test' )( TopCitiesWidget );
+const WidgetWithComponentProps = withWidgetComponentProps(
+	'kmAnalyticsTopCities'
+)( TopCitiesWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -61,21 +65,19 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		const report = getAnalytics4MockResponse( reportOptions );
-		// Calculate sum of metricValues for all rows
+		// Calculate sum of metricValues for all rows to get the total count
+		// visits from all cities in the report.
 		const rowsSum = report.rows.reduce( ( total, row ) => {
 			return total + Number( row.metricValues[ 0 ].value );
 		}, 0 );
 
-		// Generate totalValueForAllCities that is higher than the sum
+		// Generate totalValueForAllCities that is higher than the sum since
+		// the total visits from all cities include those not in the report.
 		const totalValueForAllCities = rowsSum * 2;
 
-		// Adjust totals field in the mock response
-		report.totals = [
-			{
-				dimensionValues: [ { value: 'RESERVED_TOTAL' } ],
-				metricValues: [ { value: totalValueForAllCities.toString() } ],
-			},
-		];
+		// Adjust totals field in the mock response.
+		report.totals[ 0 ].metricValues[ 0 ].value =
+			totalValueForAllCities.toString();
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
 			options: reportOptions,
 		} );
@@ -142,7 +144,42 @@ Error.args = {
 	},
 };
 Error.scenario = {
-	label: 'KeyMetrics/TopCities/Error',
+	label: 'KeyMetrics/TopCitiesWidget/Error',
+	delay: 250,
+};
+
+export const InsufficientPermissions = Template.bind( {} );
+InsufficientPermissions.storyName = 'Insufficient Permissions';
+InsufficientPermissions.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const errorObject = {
+			code: 403,
+			message: 'Test error message. ',
+			data: {
+				status: 403,
+				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			},
+			selectorData: {
+				storeName: 'modules/analytics-4',
+				name: 'getReport',
+				args: [ reportOptions ],
+			},
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+
+InsufficientPermissions.scenario = {
+	label: 'KeyMetrics/TopCitiesWidget/InsufficientPermissions',
 	delay: 250,
 };
 
@@ -158,6 +195,24 @@ export default {
 						connected: true,
 					},
 				] );
+
+				provideModuleRegistrations( registry );
+
+				const [ accountID, propertyID, webDataStreamID ] = [
+					'12345',
+					'34567',
+					'56789',
+				];
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setWebDataStreamID( webDataStreamID );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 

@@ -31,18 +31,13 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-
+import BannerNotification from '../../../../../components/notifications/BannerNotification';
 const { useSelect } = Data;
 
-export default function ReminderBannerNoAccess( {
-	title,
-	description,
-	descriptionIcon,
-	dismissExpires,
-	onDismiss,
-} ) {
+export default function ReminderBannerNoAccess( props ) {
+	const { title, description, dismissExpires, onDismiss } = props;
+
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
@@ -51,7 +46,7 @@ export default function ReminderBannerNoAccess( {
 		? `<strong>${ module.owner.login }</strong>`
 		: __( 'Another admin', 'google-site-kit' );
 
-	description = (
+	const extendedDescription = (
 		<p>
 			{ createInterpolateElement(
 				sprintf(
@@ -76,8 +71,7 @@ export default function ReminderBannerNoAccess( {
 			id="ga4-activation-banner"
 			className="googlesitekit-ga4-reminder-banner"
 			title={ title }
-			description={ description }
-			descriptionIcon={ descriptionIcon }
+			description={ extendedDescription }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ dismissExpires }
 			onDismiss={ onDismiss }
@@ -88,7 +82,6 @@ export default function ReminderBannerNoAccess( {
 ReminderBannerNoAccess.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
-	descriptionIcon: PropTypes.node,
 	dismissExpires: PropTypes.number,
 	onDismiss: PropTypes.func,
 };

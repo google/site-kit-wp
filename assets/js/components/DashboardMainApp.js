@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 import { useMount } from 'react-use';
 
 /**
@@ -49,7 +49,6 @@ import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
-import DashboardViewIndicator from './DashboardViewIndicator';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
 	ANCHOR_ID_CONTENT,
@@ -62,15 +61,39 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
-const { useSelect } = Data;
+import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import {
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '../modules/analytics-4/datastore/constants';
+import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const userInputEnabled = useFeature( 'userInput' );
+	const newsKeyMetricsEnabled = useFeature( 'newsKeyMetrics' );
 	const viewOnlyDashboard = useViewOnly();
+
+	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
+		select( CORE_SITE ).isKeyMetricsSetupCompleted()
+	);
+
+	const hasAnalyticsEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_CUSTOM_DIMENSIONS_CREATE,
+			'autoSubmit'
+		)
+	);
+
+	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	useMount( () => {
 		if ( ! viewOnlyDashboard ) {
@@ -78,6 +101,25 @@ export default function DashboardMainApp() {
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
 		}
 	} );
+
+	useEffect( () => {
+		if (
+			newsKeyMetricsEnabled &&
+			isKeyMetricsSetupCompleted &&
+			hasAnalyticsEditScope &&
+			autoSubmit
+		) {
+			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, { autoSubmit: false } );
+			createCustomDimensions();
+		}
+	}, [
+		autoSubmit,
+		createCustomDimensions,
+		hasAnalyticsEditScope,
+		isKeyMetricsSetupCompleted,
+		newsKeyMetricsEnabled,
+		setValues,
+	] );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -152,12 +194,9 @@ export default function DashboardMainApp() {
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ dashboardSharingEnabled && ! viewOnlyDashboard && (
-					<DashboardSharingSettingsButton />
-				) }
+				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			{ ga4ReportingEnabled && <DashboardViewIndicator /> }
 			{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally

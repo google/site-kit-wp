@@ -24,9 +24,12 @@
 	}
 
 	.googlesitekit-stepper__step {
-		display: flex;
 		gap: 10px;
 		margin: 0;
+
+		@media (min-width: $bp-tablet) {
+			display: flex;
+		}
 	}
 
 	.googlesitekit-stepper__step-progress {
@@ -61,11 +64,16 @@
 
 	.googlesitekit-stepper__step-progress-line {
 		background-color: $c-surfaces-surface-2;
+		display: none;
 		flex: 1;
 		height: 100%;
 		margin: 5px auto;
 		min-height: 30px;
 		width: 1px;
+
+		@media (min-width: $bp-tablet) {
+			display: block;
+		}
 	}
 
 	.googlesitekit-stepper__step-title {
@@ -74,9 +82,13 @@
 		display: flex;
 		font-family: $f-primary;
 		font-size: $fs-title-md;
+		font-weight: $fw-medium;
 		height: 24px;
 		line-height: $lh-title-md;
-		margin: 0;
+
+		@media (min-width: $bp-tablet) {
+			margin: 0;
+		}
 	}
 
 	.googlesitekit-stepper__step-title--upcoming {

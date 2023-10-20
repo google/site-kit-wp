@@ -67,7 +67,7 @@ function LoyalVisitorsWidget( { Widget } ) {
 		] )
 	);
 
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
@@ -105,7 +105,7 @@ function LoyalVisitorsWidget( { Widget } ) {
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'Loyal visitors', 'google-site-kit' ) }
+			title={ __( 'Returning visitors', 'google-site-kit' ) }
 			metricValue={ currentPercentage }
 			metricValueFormat={ format }
 			subText={ sprintf(
@@ -118,6 +118,10 @@ function LoyalVisitorsWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Portion of your site’s visitors that returned at least once in this timeframe',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

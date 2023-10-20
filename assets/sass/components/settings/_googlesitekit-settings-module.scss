@@ -183,10 +183,6 @@
 			}
 		}
 
-		.googlesitekit-settings-module__meta-item--dashboard-view {
-			margin-bottom: 6px;
-		}
-
 		.googlesitekit-settings-module__meta-item--data-only {
 			align-items: flex-end;
 			display: flex;
@@ -339,6 +335,13 @@
 
 		.googlesitekit-settings-module__header--open::after {
 			transform: translateY(-50%) rotate(180deg);
+		}
+	}
+
+	.googlesitekit-settings-module--active {
+
+		.googlesitekit-overlay {
+			background: rgba($c-surfaces-surface-2, 0.75);
 		}
 	}
 

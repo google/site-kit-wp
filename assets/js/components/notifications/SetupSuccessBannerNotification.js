@@ -27,10 +27,10 @@ import { removeQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getQueryParameter } from '../../util';
+import useQueryArg from '../../hooks/useQueryArg';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
-import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
+import { ANCHOR_ID_SPEED } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -38,12 +38,17 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
+import { getContextScrollTop } from '../../util/scroll';
 import useViewContext from '../../hooks/useViewContext';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
+import Link from '../Link';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
-	const slug = getQueryParameter( 'slug' );
-	const notification = getQueryParameter( 'notification' );
+	const [ slug ] = useQueryArg( 'slug' );
+	const [ notification ] = useQueryArg( 'notification' );
+
+	const breakpoint = useBreakpoint();
 	const viewContext = useViewContext();
 
 	const modules = useSelect( ( select ) =>
@@ -194,26 +199,29 @@ function SetupSuccessBannerNotification() {
 				}
 			}
 
-			const anchor = {
-				link: '',
-				label: '',
-			};
-
 			if ( 'pagespeed-insights' === slug ) {
-				anchor.link = '#speed';
-				anchor.label = __(
-					'Jump to the bottom of the dashboard to see how fast your home page is',
-					'google-site-kit'
-				);
-			}
+				const anchorLink = `#${ ANCHOR_ID_SPEED }`;
+				const onJumpLinkClick = ( event ) => {
+					event.preventDefault();
 
-			if (
-				! (
-					winData.description ||
-					winData.learnMore.label ||
-					anchor.label
-				)
-			) {
+					global.history.replaceState( {}, '', anchorLink );
+					global.scrollTo( {
+						top: getContextScrollTop( anchorLink, breakpoint ),
+						behavior: 'smooth',
+					} );
+				};
+
+				winData.description = (
+					<p className="googlesitekit-publisher-win__link">
+						<Link href={ anchorLink } onClick={ onJumpLinkClick }>
+							{ __(
+								'Jump to the bottom of the dashboard to see how fast your home page is',
+								'google-site-kit'
+							) }
+						</Link>
+					</p>
+				);
+			} else if ( ! winData.description && ! winData.learnMore.label ) {
 				winData.description = __(
 					'Connect more services to see more stats.',
 					'google-site-kit'
@@ -249,14 +257,12 @@ function SetupSuccessBannerNotification() {
 						learnMoreDescription={ winData.learnMore.description }
 						learnMoreURL={ winData.learnMore.url }
 						learnMoreTarget={ winData.learnMore.target }
-						anchorLink={ anchor.link }
-						anchorLinkLabel={ anchor.label }
 					/>
 				</Fragment>
 			);
 
-		case 'user_input_success':
-			return <UserInputSuccessBannerNotification />;
+		default:
+			return null;
 	}
 }
 

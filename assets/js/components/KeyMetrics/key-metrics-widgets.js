@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
@@ -34,10 +35,58 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+	CORE_USER,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_POPULAR_AUTHORS,
 } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { isFeatureEnabled } from '../../features';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
-export const KEY_METRICS_WIDGETS = {
+/**
+ * Determines whether to display a widget that requires custom dimensions in the key
+ * metrics selection panel.
+ *
+ * All widgets are displayed in authenticated dashboard. However, in view only dashboard,
+ * widgets that require custom dimensions will only be displayed if the required custom
+ * dimensions are available in the shared property.
+ *
+ * This function is attached to the widget object that requires the custom dimensions and
+ * has the `requiredCustomDimensions` property.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select              Data store select function.
+ * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @return {boolean} Whether to display the widget.
+ */
+function shouldDisplayWidgetWithCustomDimensions(
+	select,
+	isViewOnlyDashboard
+) {
+	if ( ! isFeatureEnabled( 'newsKeyMetrics' ) ) {
+		return false;
+	}
+
+	if ( ! isViewOnlyDashboard ) {
+		return true;
+	}
+
+	return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+		// This property is available to the widget object that requires the
+		// custom dimensions, where the function is attached.
+		this.requiredCustomDimensions
+	);
+}
+
+const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
 		title: __( 'Loyal visitors', 'google-site-kit' ),
 		description: __(
@@ -46,7 +95,7 @@ export const KEY_METRICS_WIDGETS = {
 		),
 	},
 	[ KM_ANALYTICS_NEW_VISITORS ]: {
-		title: __( 'Audience growth', 'google-site-kit' ),
+		title: __( 'New visitors', 'google-site-kit' ),
 		description: __(
 			'How many new visitors you got and how the overall audience changed',
 			'google-site-kit'
@@ -67,35 +116,39 @@ export const KEY_METRICS_WIDGETS = {
 		),
 	},
 	[ KM_ANALYTICS_POPULAR_CONTENT ]: {
-		title: __( 'Most popular content', 'google-site-kit' ),
+		title: __( 'Most popular content by pageviews', 'google-site-kit' ),
 		description: __(
 			'Pages that brought in the most visitors',
 			'google-site-kit'
 		),
 	},
 	[ KM_ANALYTICS_POPULAR_PRODUCTS ]: {
-		title: __( 'Most popular products', 'google-site-kit' ),
+		title: __( 'Most popular products by pageviews', 'google-site-kit' ),
 		description: __(
 			'Products that brought in the most visitors',
 			'google-site-kit'
 		),
+		displayInList: ( select ) =>
+			select( CORE_USER ).isKeyMetricActive(
+				KM_ANALYTICS_POPULAR_PRODUCTS
+			) || select( CORE_SITE ).getProductBasePaths()?.length > 0,
 	},
 	[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-		title: __( 'How people find your site', 'google-site-kit' ),
+		title: __( 'Top performing keywords', 'google-site-kit' ),
 		description: __(
 			'What people searched for before they came to your site',
 			'google-site-kit'
 		),
 	},
 	[ KM_ANALYTICS_TOP_CITIES ]: {
-		title: __( 'Top cities by traffic', 'google-site-kit' ),
+		title: __( 'Top cities driving traffic', 'google-site-kit' ),
 		description: __(
 			'Which cities you get the most visitors from',
 			'google-site-kit'
 		),
 	},
 	[ KM_ANALYTICS_TOP_COUNTRIES ]: {
-		title: __( 'Top countries by traffic', 'google-site-kit' ),
+		title: __( 'Top countries driving traffic', 'google-site-kit' ),
 		description: __(
 			'Which countries you get the most visitors from',
 			'google-site-kit'
@@ -108,4 +161,80 @@ export const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 	},
+	[ KM_ANALYTICS_VISITS_PER_VISITOR ]: {
+		title: __( 'Visits per visitor', 'google-site-kit' ),
+		description: __(
+			'Average number of sessions per site visitor',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
+		title: __( 'Least engaging pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
+		title: __( 'Pages per visit', 'google-site-kit' ),
+		description: __(
+			'Number of pages visitors viewed per session on average',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_VISIT_LENGTH ]: {
+		title: __( 'Visit length', 'google-site-kit' ),
+		description: __(
+			'Average duration of engaged visits',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ]: {
+		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
+		description: __(
+			'Pages that attracted the most returning visitors',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
+		title: __( 'Most engaging pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the highest engagement rate',
+			'google-site-kit'
+		),
+		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
+	},
+	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
+		title: __( 'Top recent trending pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the most pageviews published in the last 3 days',
+			'google-site-kit'
+		),
+		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
+	},
+	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
+		title: __( 'Top categories by pageviews', 'google-site-kit' ),
+		description: __(
+			'Categories that your site visitors viewed the most',
+			'google-site-kit'
+		),
+		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
+	},
+	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
+		title: __( 'Most popular authors by pageviews', 'google-site-kit' ),
+		description: __(
+			'Authors whose posts got the most visits',
+			'google-site-kit'
+		),
+		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
+	},
 };
+
+export { KEY_METRICS_WIDGETS };

@@ -22,7 +22,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
@@ -133,6 +132,14 @@ final class Modules {
 	private $rest_controller;
 
 	/**
+	 * REST_Dashboard_Sharing_Controller instance.
+	 *
+	 * @since 1.109.0
+	 * @var REST_Dashboard_Sharing_Controller
+	 */
+	private $dashboard_sharing_controller;
+
+	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -142,7 +149,6 @@ final class Modules {
 		Site_Verification::MODULE_SLUG  => Site_Verification::class,
 		Search_Console::MODULE_SLUG     => Search_Console::class,
 		Analytics::MODULE_SLUG          => Analytics::class,
-		Optimize::MODULE_SLUG           => Optimize::class,
 		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
 		AdSense::MODULE_SLUG            => AdSense::class,
 		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
@@ -175,7 +181,8 @@ final class Modules {
 
 		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
-		$this->rest_controller = new REST_Modules_Controller( $this );
+		$this->rest_controller              = new REST_Modules_Controller( $this );
+		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
 	}
 
 	/**
@@ -217,10 +224,7 @@ final class Modules {
 
 		$this->rest_controller->register();
 		$this->sharing_settings->register();
-
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			( new REST_Dashboard_Sharing_Controller( $this ) )->register();
-		}
+		$this->dashboard_sharing_controller->register();
 
 		add_filter(
 			'googlesitekit_assets',

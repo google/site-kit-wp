@@ -183,17 +183,13 @@ class Debug_Data {
 			'verification_status'  => $this->get_verification_status_field(),
 			'connected_user_count' => $this->get_connected_user_count_field(),
 			'active_modules'       => $this->get_active_modules_field(),
-			'recoverable_modules'  => null,
+			'recoverable_modules'  => $this->get_recoverable_modules_field(),
 			'required_scopes'      => $this->get_required_scopes_field(),
 			'capabilities'         => $this->get_capabilities_field(),
 			'enabled_features'     => $this->get_feature_fields(),
 		);
 
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$fields['recoverable_modules'] = $this->get_recoverable_modules_field();
-
-			$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
-		}
+		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
 
 		$fields = array_filter(
 			array_merge(

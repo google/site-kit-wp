@@ -67,7 +67,7 @@ function NewVisitorsWidget( { Widget } ) {
 		] )
 	);
 
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
@@ -104,6 +104,10 @@ function NewVisitorsWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
+			infoTooltip={ __(
+				'Portion of visitors who visited your site for the first time in this timeframe',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

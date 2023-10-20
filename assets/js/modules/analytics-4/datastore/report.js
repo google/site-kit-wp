@@ -43,6 +43,7 @@ import {
 	isValidDimensionFilters,
 	isValidDimensions,
 	isValidMetrics,
+	isValidMetricFilters,
 	isValidOrders,
 	isZeroReport,
 } from '../utils';
@@ -50,14 +51,14 @@ import { createGatheringDataStore } from '../../../googlesitekit/modules/create-
 const { createRegistrySelector } = Data;
 
 /**
- * Returns report args for the zero data report.
+ * Returns report args for a sample report.
  *
  * @since 1.107.0
  *
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
  */
-const getZeroDataReportArgs = ( select ) => {
+const getSampleReportArgs = ( select ) => {
 	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} );
@@ -109,8 +110,13 @@ const fetchGetReportStore = createFetchStore( {
 			'Either date range or start/end dates must be provided for Analytics 4 report.'
 		);
 
-		const { metrics, dimensions, dimensionFilters, orderby } =
-			normalizeReportOptions( options );
+		const {
+			metrics,
+			dimensions,
+			dimensionFilters,
+			metricFilters,
+			orderby,
+		} = normalizeReportOptions( options );
 
 		invariant(
 			metrics.length,
@@ -135,6 +141,13 @@ const fetchGetReportStore = createFetchStore( {
 			);
 		}
 
+		if ( metricFilters ) {
+			invariant(
+				isValidMetricFilters( metricFilters ),
+				'metricFilters for an Analytics 4 report must be a map of metric names as keys and filter value(s) as numeric fields, depending on the filterType.'
+			);
+		}
+
 		if ( orderby ) {
 			invariant(
 				isValidOrders( orderby ),
@@ -153,7 +166,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
 
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		const hasResolvedReport = select(
 			MODULES_ANALYTICS_4
@@ -235,16 +248,18 @@ const baseSelectors = {
 	 * Gets an Analytics report for the given options.
 	 *
 	 * @since 1.94.0
+	 * @since 1.111.0 Add metricFilters to the options list, to reflect added support for the metric filters.
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
-	 * @param {string}         options.startDate          Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate            Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.startDate          Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate            Required. End date to query report data for as YYYY-mm-dd.
 	 * @param {Array.<string>} options.metrics            Required. List of metrics to query.
 	 * @param {string}         [options.compareStartDate] Optional. Start date to compare report data for as YYYY-mm-dd.
 	 * @param {string}         [options.compareEndDate]   Optional. End date to compare report data for as YYYY-mm-dd.
 	 * @param {Array.<string>} [options.dimensions]       Optional. List of dimensions to group results by. Default an empty array.
 	 * @param {Object}         [options.dimensionFilters] Optional. Map of dimension filters for filtering options on a dimension. Default an empty object.
+	 * @param {Object}         [options.metricFilters]    Optional. Map of metric filters for filtering options on a metric. Default an empty object.
 	 * @param {Array.<Object>} [options.orderby]          Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
 	 * @param {string}         [options.url]              Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]            Optional. Maximum number of entries to return. Default 1000.
@@ -362,7 +377,7 @@ const baseSelectors = {
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const args = getZeroDataReportArgs( select );
+		const args = getSampleReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return

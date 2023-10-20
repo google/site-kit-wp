@@ -28,6 +28,7 @@ import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import fetchMock from 'fetch-mock';
+import { enabledFeatures } from '../../../features';
 
 describe( 'core/user authentication', () => {
 	const capabilities = {
@@ -36,7 +37,6 @@ describe( 'core/user authentication', () => {
 			googlesitekit_manage_options: true,
 			'googlesitekit_read_shared_module_data::["site-verification"]': false,
 			'googlesitekit_read_shared_module_data::["tagmanager"]': false,
-			'googlesitekit_read_shared_module_data::["optimize"]': false,
 			'googlesitekit_read_shared_module_data::["adsense"]': false,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["search-console"]': false,
@@ -53,7 +53,6 @@ describe( 'core/user authentication', () => {
 			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
 			'googlesitekit_read_shared_module_data::["site-verification"]': false,
 			'googlesitekit_read_shared_module_data::["tagmanager"]': false,
-			'googlesitekit_read_shared_module_data::["optimize"]': false,
 			'googlesitekit_read_shared_module_data::["adsense"]': false,
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["analytics"]': true,
@@ -103,7 +102,6 @@ describe( 'core/user authentication', () => {
 					googlesitekit_manage_options: true,
 					'googlesitekit_read_shared_module_data::["site-verification"]': true,
 					'googlesitekit_read_shared_module_data::["tagmanager"]': true,
-					'googlesitekit_read_shared_module_data::["optimize"]': false,
 					'googlesitekit_read_shared_module_data::["adsense"]': false,
 					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 					'googlesitekit_read_shared_module_data::["search-console"]': false,
@@ -283,6 +281,23 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'getViewableModules', () => {
+			const connectedModules = [
+				{
+					slug: 'analytics',
+					name: 'Analytics',
+					active: true,
+					connected: true,
+					shareable: true,
+				},
+				{
+					slug: 'analytics-4',
+					name: 'Analytics-4',
+					active: true,
+					connected: true,
+					shareable: true,
+				},
+			];
+
 			it( 'should return undefined if modules are not loaded', async () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
@@ -361,8 +376,66 @@ describe( 'core/user authentication', () => {
 					'search-console',
 					'analytics',
 					'pagespeed-insights',
+				] );
+			} );
+
+			it( 'should not include `analytics` module if the dashboardView is GA4', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities(
+						capabilitiesWithPermission.permissions
+					);
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [ ...FIXTURES, ...connectedModules ] );
+
+				const viewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( viewableModules ).toEqual( [
+					'search-console',
+					'pagespeed-insights',
 					'analytics-4',
 				] );
+
+				expect( viewableModules ).not.toContain( 'analytics' );
+
+				enabledFeatures.delete( 'ga4Reporting' );
+			} );
+
+			it( 'should not include `analytics-4` module if the dashboardView is UA', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities(
+						capabilitiesWithPermission.permissions
+					);
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					...FIXTURES,
+					// Omit GA4 from the connected modules, only connecting Analytics
+					// (UA).
+					//
+					// This is the only way to force the Dashboard View to be UA.
+					connectedModules[ 0 ],
+				] );
+
+				const viewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( viewableModules ).toEqual( [
+					'search-console',
+					'pagespeed-insights',
+					'analytics',
+				] );
+
+				expect( viewableModules ).not.toContain( 'analytics-4' );
+
+				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 		} );
 
@@ -480,6 +553,40 @@ describe( 'core/user authentication', () => {
 					.canViewSharedModule( 'search-console' );
 
 				expect( canViewSharedModule ).toBe( true );
+			} );
+
+			it( 'should treat `analytics` as `analytics-4` when the dashboard view is GA4', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					...capabilitiesWithPermission.permissions,
+					// Set the `analytics` permission to `false` to help verify that the
+					// `analytics` module is treated as `analytics-4` when the dashboard
+					// view is GA4.
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+				} );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						shareable: true,
+					},
+					{
+						slug: 'analytics-4',
+						name: 'Analytics-4',
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+				] );
+
+				const canViewSharedAnalytics = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'analytics' );
+
+				expect( canViewSharedAnalytics ).toBe( true );
+
+				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 		} );
 	} );

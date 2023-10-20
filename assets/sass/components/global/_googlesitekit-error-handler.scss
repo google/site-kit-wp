@@ -30,13 +30,5 @@
 				gap: $grid-gap-desktop;
 			}
 		}
-
-		.googlesitekit-error-handler__error-actions {
-			align-items: flex-start;
-			display: flex;
-			flex-direction: column;
-			gap: $grid-gap-phone;
-			margin-block-start: $grid-gap-phone;
-		}
 	}
 }

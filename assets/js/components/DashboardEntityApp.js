@@ -59,15 +59,11 @@ import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import ScrollEffect from './ScrollEffect';
 import EntityBannerNotifications from './notifications/EntityBannerNotifications';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
-import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
-import DashboardViewIndicator from './DashboardViewIndicator';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -214,12 +210,9 @@ function DashboardEntityApp() {
 			<Header subHeader={ <EntityBannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ dashboardSharingEnabled && ! viewOnlyDashboard && (
-					<DashboardSharingSettingsButton />
-				) }
+				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			{ ga4ReportingEnabled && <DashboardViewIndicator /> }
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }

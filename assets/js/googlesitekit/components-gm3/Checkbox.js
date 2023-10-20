@@ -58,6 +58,7 @@ export default function Checkbox( {
 	onKeyDown,
 	loading,
 	alignLeft,
+	description,
 } ) {
 	const ref = useRef( null );
 
@@ -120,9 +121,23 @@ export default function Checkbox( {
 					onKeyDown={ onKeyDown }
 				/>
 			) }
-			<label id={ labelID } htmlFor={ id }>
-				{ children }
-			</label>
+
+			{ ! description && (
+				<label id={ labelID } htmlFor={ id }>
+					{ children }
+				</label>
+			) }
+
+			{ description && (
+				<div className="googlesitekit-component-gm3_checkbox__content">
+					<label id={ labelID } htmlFor={ id }>
+						{ children }
+					</label>
+					<div className="googlesitekit-component-gm3_checkbox__description">
+						{ description }
+					</div>
+				</div>
+			) }
 		</div>
 	);
 }
@@ -139,6 +154,7 @@ Checkbox.propTypes = {
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	loading: PropTypes.bool,
 	alignLeft: PropTypes.bool,
+	description: PropTypes.node,
 };
 
 Checkbox.defaultProps = {
@@ -148,4 +164,5 @@ Checkbox.defaultProps = {
 	onKeyDown: null,
 	loading: false,
 	alignLeft: false,
+	description: '',
 };

@@ -47,7 +47,11 @@ import Link from './Link';
 
 const { useSelect, useDispatch } = Data;
 
-export default function ReportErrorActions( { moduleSlug, error } ) {
+export default function ReportErrorActions( {
+	moduleSlug,
+	error,
+	GetHelpLink,
+} ) {
 	const isViewOnly = useViewOnly();
 	const storeName = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
@@ -131,9 +135,15 @@ export default function ReportErrorActions( { moduleSlug, error } ) {
 					</span>
 				</Fragment>
 			) : (
-				<Link href={ errorTroubleshootingLinkURL } external>
-					{ __( 'Get help', 'google-site-kit' ) }
-				</Link>
+				<div>
+					{ typeof GetHelpLink === 'function' ? (
+						<GetHelpLink linkURL={ errorTroubleshootingLinkURL } />
+					) : (
+						<Link href={ errorTroubleshootingLinkURL } external>
+							{ __( 'Get help', 'google-site-kit' ) }
+						</Link>
+					) }
+				</div>
 			) }
 		</div>
 	);
@@ -145,4 +155,5 @@ ReportErrorActions.propTypes = {
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
 	] ).isRequired,
+	GetHelpLink: PropTypes.elementType,
 };

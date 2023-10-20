@@ -38,23 +38,18 @@ import WidgetRecoverableModules from './WidgetRecoverableModules';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
 import useViewOnly from '../../../hooks/useViewOnly';
-import { useFeature } from '../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
 const WidgetRenderer = ( { slug, OverrideComponent } ) => {
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-
 	const widget = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidget( slug )
 	);
 	const widgetComponentProps = getWidgetComponentProps( slug );
 	const { Widget, WidgetNull } = widgetComponentProps;
 
-	const recoverableModules = useSelect(
-		( select ) =>
-			dashboardSharingEnabled &&
-			select( CORE_MODULES ).getRecoverableModules()
+	const recoverableModules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getRecoverableModules()
 	);
 
 	const viewOnly = useViewOnly();

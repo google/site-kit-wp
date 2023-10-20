@@ -35,7 +35,10 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+} from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -43,15 +46,21 @@ import {
 } from '../../datastore/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
-import { MetricTileTable } from '../../../../components/KeyMetrics';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function PopularProductsWidget( props ) {
 	const { Widget, WidgetNull } = props;
+
+	const viewOnlyDashboard = useViewOnly();
 
 	const productBasePaths = useSelect( ( select ) =>
 		select( CORE_SITE ).getProductBasePaths()
@@ -84,11 +93,11 @@ function PopularProductsWidget( props ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pageTitle', 'pagePath' ],
+		dimensions: [ 'pagePath' ],
 		dimensionFilters: {
 			pagePath: {
 				filterType: 'stringFilter',
-				matchType: 'BEGINS_WITH',
+				matchType: 'PARTIAL_REGEXP',
 				value: productBasePaths,
 			},
 		},
@@ -102,7 +111,13 @@ function PopularProductsWidget( props ) {
 		limit: 3,
 	};
 
-	const showWidget = productBasePaths?.length > 0;
+	const isPopularProductsWidgetActive = useSelect( ( select ) =>
+		select( CORE_USER ).isKeyMetricActive( KM_ANALYTICS_POPULAR_PRODUCTS )
+	);
+
+	const siteHasProductBasePaths = productBasePaths?.length > 0;
+
+	const showWidget = isPopularProductsWidgetActive || siteHasProductBasePaths;
 
 	const report = useInViewSelect( ( select ) =>
 		showWidget
@@ -116,37 +131,63 @@ function PopularProductsWidget( props ) {
 		] )
 	);
 
-	const loading = useInViewSelect( ( select ) =>
+	const titles = useInViewSelect( ( select ) =>
+		! error && report
+			? select( MODULES_ANALYTICS_4 ).getPageTitles(
+					report,
+					reportOptions
+			  )
+			: undefined
+	);
+
+	const loading = useSelect( ( select ) =>
 		showWidget
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
 					[ reportOptions ]
-			  )
+			  ) || titles === undefined
 			: undefined
 	);
 
 	const { rows = [] } = report || {};
 
-	const columns = useSelect( ( select ) => [
+	const columns = [
 		{
-			field: 'dimensionValues',
+			field: 'dimensionValues.0.value',
 			Component: ( { fieldValue } ) => {
-				const [ title, url ] = fieldValue;
-				const serviceURL = select(
-					MODULES_ANALYTICS_4
-				).getServiceReportURL( 'all-pages-and-screens', {
-					filters: { unifiedPagePathScreen: url.value },
-					dates,
+				const url = fieldValue;
+				const title = titles[ url ];
+				// Utilizing `useSelect` inside the component rather than
+				// returning its direct value to the `columns` array.
+				// This pattern ensures that the component re-renders correctly based on changes in state,
+				// preventing potential issues with stale or out-of-sync data.
+				// Note: This pattern is replicated in a few other spots within our codebase.
+				const serviceURL = useSelect( ( select ) => {
+					return ! viewOnlyDashboard
+						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+								'all-pages-and-screens',
+								{
+									filters: {
+										unifiedPagePathScreen: url,
+									},
+									dates,
+								}
+						  )
+						: null;
 				} );
+
+				if ( viewOnlyDashboard ) {
+					return <MetricTileTablePlainText content={ title } />;
+				}
 
 				return (
 					<Link
 						href={ serviceURL }
-						title={ title.value }
+						title={ title }
 						external
 						hideExternalIndicator
 					>
-						{ title.value }
+						{ title }
 					</Link>
 				);
 			},
@@ -157,7 +198,7 @@ function PopularProductsWidget( props ) {
 				<strong>{ numFmt( fieldValue ) }</strong>
 			),
 		},
-	] );
+	];
 
 	if ( ! showWidget ) {
 		return <WidgetNull />;
@@ -165,13 +206,25 @@ function PopularProductsWidget( props ) {
 
 	const infoTooltip = createInterpolateElement(
 		__(
-			'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
+			'Products on your site which visitors viewed the most. Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
 			'google-site-kit'
 		),
 		{
 			a: <Link onClick={ openMetricsSelectionPanel } />,
 		}
 	);
+
+	let zeroStateMessage = __(
+		'Analytics doesn’t have data for your site’s products yet',
+		'google-site-kit'
+	);
+
+	if ( ! siteHasProductBasePaths && isPopularProductsWidgetActive ) {
+		zeroStateMessage = __(
+			'No product posts currently detected on your site. This metric applies only to sites with product posts.',
+			'google-site-kit'
+		);
+	}
 
 	return (
 		<MetricTileTable
@@ -184,12 +237,7 @@ function PopularProductsWidget( props ) {
 			rows={ rows }
 			columns={ columns }
 			infoTooltip={ showTooltip ? infoTooltip : null }
-			ZeroState={ () =>
-				__(
-					'Analytics doesn’t have data for your site’s products yet',
-					'google-site-kit'
-				)
-			}
+			ZeroState={ () => zeroStateMessage }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>

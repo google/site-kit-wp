@@ -31,12 +31,15 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\AdBlockingRecoveryTag;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\ListAlertsResponse;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use ReflectionMethod;
 use WP_REST_Request;
 
 /**
  * @group Modules
+ * @group AdSense
  */
 class AdSenseTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
@@ -336,7 +339,7 @@ class AdSenseTest extends TestCase {
 		);
 	}
 
-	public function test_get_data__sync_ad_blocking_recovery_tags() {
+	public function test_set_data__sync_ad_blocking_recovery_tags() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
@@ -375,6 +378,92 @@ class AdSenseTest extends TestCase {
 
 		// Assert that the tags are available in database after fetching.
 		$this->assertOptionExists( Ad_Blocking_Recovery_Tag::OPTION );
+	}
+
+	public function test_get_data__notifications() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$adsense->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$adsense->get_client(),
+			function() {
+				$mock_alert_severe = new Alert();
+				$mock_alert_severe->setSeverity( 'SEVERE' );
+
+				$mock_alert_warning = new Alert();
+				$mock_alert_warning->setSeverity( 'WARNING' );
+
+				$response = new ListAlertsResponse();
+				$response->setAlerts( array( $mock_alert_severe, $mock_alert_warning ) );
+
+				return new Response( 200, array(), json_encode( $response ) );
+			}
+		);
+
+		// Should return empty array when account ID is not available in settings.
+		$response = $adsense->get_data( 'notifications' );
+		$this->assertCount( 0, $response );
+
+		// Should return an array of `adsense-notification` with `SEVERE` severity when account ID is available.
+		$adsense->get_settings()->merge( array( 'accountID' => 'pub-1234567890' ) );
+
+		$response = $adsense->get_data( 'notifications' );
+		$this->assertNotWPError( $response );
+		$this->assertCount( 1, $response );
+	}
+
+	public function test_get_data__alerts() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$adsense->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$adsense->get_client(),
+			function() {
+				$mock_alert_severe = new Alert();
+				$mock_alert_severe->setSeverity( 'SEVERE' );
+
+				$mock_alert_warning = new Alert();
+				$mock_alert_warning->setSeverity( 'WARNING' );
+
+				$response = new ListAlertsResponse();
+				$response->setAlerts( array( $mock_alert_severe, $mock_alert_warning ) );
+
+				return new Response( 200, array(), json_encode( $response ) );
+			}
+		);
+
+		// Should return WP Error when account ID is not provided.
+		$response = $adsense->get_data( 'alerts' );
+		$this->assertWPError( $response );
+
+		// Should return an array of alerts when account ID is provided.
+		$response = $adsense->get_data( 'alerts', array( 'accountID' => 'pub-1234567890' ) );
+		$this->assertNotWPError( $response );
+		$this->assertCount( 2, $response );
+		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert', $response[0] );
+		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert', $response[1] );
 	}
 
 	public function test_is_connected() {
@@ -555,25 +644,6 @@ class AdSenseTest extends TestCase {
 	}
 
 	public function test_get_debug_fields() {
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertEqualSets(
-			array(
-				'adsense_account_id',
-				'adsense_client_id',
-				'adsense_account_status',
-				'adsense_site_status',
-				'adsense_use_snippet',
-				'adsense_web_stories_adunit_id',
-				'adsense_setup_completed_timestamp',
-			),
-			array_keys( $adsense->get_debug_fields() )
-		);
-	}
-
-	public function test_get_debug_fields__adBlockerDetection() {
-		$this->enable_feature( 'adBlockerDetection' );
-
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(

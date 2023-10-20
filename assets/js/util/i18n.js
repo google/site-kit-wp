@@ -58,6 +58,58 @@ const durationFormat = ( durationInSeconds, options = {} ) => {
 };
 
 /**
+ * Converts seconds to a display ready string indicating
+ * the number of hours, minutes and seconds that have elapsed
+ * in ISO format - HH:mm:ss.
+ *
+ * If the duration is less than an hour, the HH part of the string
+ * is truncated.
+ * For example, passing 65 returns '01:05'.
+ * Passing 5400 returns '01:30:00'.
+ *
+ * @since 1.111.0
+ * @private
+ *
+ * @param {number} durationInSeconds The number of seconds.
+ * @return {string} Human readable string indicating time elapsed.
+ */
+const durationISOFormat = ( durationInSeconds ) => {
+	let { hours, minutes, seconds } = parseDuration( durationInSeconds );
+
+	seconds = ( '0' + seconds ).slice( -2 );
+	minutes = ( '0' + minutes ).slice( -2 );
+	hours = ( '0' + hours ).slice( -2 );
+
+	return hours === '00'
+		? `${ minutes }:${ seconds }`
+		: `${ hours }:${ minutes }:${ seconds }`;
+};
+
+/**
+ * Parses the duration in seconds into hours, minutes and seconds.
+ *
+ * @since 1.111.0
+ * @private
+ *
+ * @param {number} durationInSeconds The number of seconds.
+ * @return {Object} Number of hours, minutes and seconds equivalent
+ * to the given duration in seconds.
+ */
+const parseDuration = ( durationInSeconds ) => {
+	durationInSeconds = parseInt( durationInSeconds, 10 );
+
+	if ( Number.isNaN( durationInSeconds ) ) {
+		durationInSeconds = 0;
+	}
+
+	const hours = Math.floor( durationInSeconds / 60 / 60 );
+	const minutes = Math.floor( ( durationInSeconds / 60 ) % 60 );
+	const seconds = Math.floor( durationInSeconds % 60 );
+
+	return { hours, minutes, seconds };
+};
+
+/**
  * Creates duration formatting utilities.
  *
  * Not intended to be used directly.
@@ -71,15 +123,7 @@ const durationFormat = ( durationInSeconds, options = {} ) => {
  * @return {Object} Formatting functions.
  */
 export const createDurationFormat = ( durationInSeconds, options = {} ) => {
-	durationInSeconds = parseInt( durationInSeconds, 10 );
-
-	if ( Number.isNaN( durationInSeconds ) ) {
-		durationInSeconds = 0;
-	}
-
-	const hours = Math.floor( durationInSeconds / 60 / 60 );
-	const minutes = Math.floor( ( durationInSeconds / 60 ) % 60 );
-	const seconds = Math.floor( durationInSeconds % 60 );
+	const { hours, minutes, seconds } = parseDuration( durationInSeconds );
 
 	return {
 		hours,
@@ -315,6 +359,10 @@ export function numFmt( number, options = {} ) {
 
 	if ( 'duration' === style ) {
 		return durationFormat( number, formatOptions );
+	}
+
+	if ( 'durationISO' === style ) {
+		return durationISOFormat( number );
 	}
 
 	return numberFormat( number, formatOptions );

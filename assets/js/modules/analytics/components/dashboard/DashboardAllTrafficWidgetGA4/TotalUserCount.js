@@ -84,7 +84,7 @@ export default function TotalUserCount( props ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <ReportError moduleSlug="analytics-4" error={ error } />;
 	}
 
 	const { totals } = report || {};
@@ -108,18 +108,18 @@ export default function TotalUserCount( props ) {
 		<div className="googlesitekit-widget--analyticsAllTraffic__totalcount googlesitekit-data-block">
 			<h3 className="googlesitekit-subheading-1 googlesitekit-data-block__title">
 				{ ! dimensionValue && (
-					<span>{ __( 'All Users', 'google-site-kit' ) } </span>
+					<span>{ __( 'All Visitors', 'google-site-kit' ) } </span>
 				) }
 				{ dimensionValue && (
 					<Fragment>
 						{ dimensionValue && (
 							<Link onClick={ showAllUsers }>
-								{ __( 'All Users', 'google-site-kit' ) }
+								{ __( 'All Visitors', 'google-site-kit' ) }
 							</Link>
 						) }
 						{ ! dimensionValue && (
 							<span>
-								{ __( 'All Users', 'google-site-kit' ) }
+								{ __( 'All Visitors', 'google-site-kit' ) }
 							</span>
 						) }
 						<Icon

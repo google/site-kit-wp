@@ -16,11 +16,9 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
@@ -48,7 +46,6 @@ class ModulesTest extends TestCase {
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
-				'optimize'           => 'Google\\Site_Kit\\Modules\\Optimize',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
@@ -82,7 +79,7 @@ class ModulesTest extends TestCase {
 		);
 
 		// Analytics is no longer present due to the filter above.
-		// Analytics-4 and Optimize are no longer present due to their dependency on Analytics.
+		// Analytics-4 is no longer present due to their dependency on Analytics.
 		$this->assertEqualSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
@@ -183,8 +180,8 @@ class ModulesTest extends TestCase {
 	public function test_get_module_dependencies() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertArrayHasKey( 'optimize', $modules->get_available_modules() );
-		$dependencies = $modules->get_module_dependencies( 'optimize' );
+		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
+		$dependencies = $modules->get_module_dependencies( 'analytics-4' );
 
 		$this->assertContains( 'analytics', $dependencies );
 	}
@@ -224,7 +221,7 @@ class ModulesTest extends TestCase {
 		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
 		$dependants = $modules->get_module_dependants( 'analytics' );
 
-		$this->assertContains( 'optimize', $dependants );
+		$this->assertContains( 'analytics-4', $dependants );
 	}
 
 	public function test_get_module_dependants_exception() {
@@ -471,7 +468,6 @@ class ModulesTest extends TestCase {
 			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
-			Optimize::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 		);
 
@@ -581,15 +577,12 @@ class ModulesTest extends TestCase {
 			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
-			Optimize::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 		);
 	}
 
 	public function test_get_shareable_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->enable_feature( 'dashboardSharing' );
 
 		$shareable_modules = array_map( 'get_class', $modules->get_shareable_modules() );
 
@@ -639,8 +632,6 @@ class ModulesTest extends TestCase {
 	public function test_get_shared_ownership_modules() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
-		$this->enable_feature( 'dashboardSharing' );
-
 		// Check shared ownership for modules activated by default.
 		$modules = new Modules( $context );
 		$this->assertEqualSetsWithIndex(
@@ -669,7 +660,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_is_module_recoverable() {
-		$this->enable_feature( 'dashboardSharing' );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$modules = new Modules( $context );
 
@@ -717,7 +707,6 @@ class ModulesTest extends TestCase {
 	}
 
 	private function setup_all_admin_module_ownership_change() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -888,7 +877,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_non_all_admin_module_ownership_change() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -928,7 +916,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_non_all_admin_module_ownership_change_shared_roles() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -971,7 +958,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_non_all_admin_module_ownership_change_management() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -1014,8 +1000,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_shareable_modules_owners() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		// Activate modules.
@@ -1061,8 +1045,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_shared_ownership_module_default_settings() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
 		remove_all_filters( 'default_option_' . Module_Sharing_Settings::OPTION );
 
@@ -1084,8 +1066,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_delete_dashboard_sharing_settings() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$modules          = new Modules( $context );
 		$sharing_settings = $modules->get_module_sharing_settings();
@@ -1164,8 +1144,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_is_module_shareable() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		// Deactivate all non-default modules.

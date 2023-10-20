@@ -47,27 +47,54 @@ export const KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT =
 	'kmAnalyticsAdSenseTopEarningContent';
 export const KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE =
 	'kmAnalyticsEngagedTrafficSource';
+export const KM_ANALYTICS_LEAST_ENGAGING_PAGES =
+	'kmAnalyticsLeastEngagingPages';
 export const KM_ANALYTICS_LOYAL_VISITORS = 'kmAnalyticsLoyalVisitors';
 export const KM_ANALYTICS_NEW_VISITORS = 'kmAnalyticsNewVisitors';
+export const KM_ANALYTICS_POPULAR_AUTHORS = 'kmAnalyticsPopularAuthors';
 export const KM_ANALYTICS_POPULAR_CONTENT = 'kmAnalyticsPopularContent';
 export const KM_ANALYTICS_POPULAR_PRODUCTS = 'kmAnalyticsPopularProducts';
 export const KM_ANALYTICS_TOP_CITIES = 'kmAnalyticsTopCities';
 export const KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE =
 	'kmAnalyticsTopConvertingTrafficSource';
 export const KM_ANALYTICS_TOP_COUNTRIES = 'kmAnalyticsTopCountries';
+export const KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES =
+	'kmAnalyticsTopRecentTrendingPages';
 export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE = 'kmAnalyticsTopTrafficSource';
+export const KM_ANALYTICS_PAGES_PER_VISIT = 'kmAnalyticsPagesPerVisit';
+export const KM_ANALYTICS_VISIT_LENGTH = 'kmAnalyticsVisitLength';
+export const KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES =
+	'kmAnalyticsTopReturningVisitorPages';
 export const KM_SEARCH_CONSOLE_POPULAR_KEYWORDS =
 	'kmSearchConsolePopularKeywords';
+export const KM_ANALYTICS_VISITS_PER_VISITOR = 'kmAnalyticsVisitsPerVisitor';
+export const KM_ANALYTICS_MOST_ENGAGING_PAGES = 'kmAnalyticsMostEngagingPages';
+export const KM_ANALYTICS_TOP_CATEGORIES = 'kmAnalyticsTopCategories';
 
 export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_COUNTRIES,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_VISIT_LENGTH,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+	KM_ANALYTICS_TOP_CATEGORIES,
+];
+
+export const allKeyMetricsTileWidgets = [
+	...keyMetricsGA4Widgets,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 ];

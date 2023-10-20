@@ -26,78 +26,41 @@ import PropTypes from 'prop-types';
  */
 import ChangeBadge from '../ChangeBadge';
 import { expandNumFmtOptions } from '../../util';
-import { Fragment } from 'react';
-import MetricTileError from './MetricTileError';
-import MetricTileLoader from './MetricTileLoader';
+import MetricTileWrapper from './MetricTileWrapper';
 
 export default function MetricTileText( {
-	Widget,
-	loading,
-	title,
 	metricValue,
 	metricValueFormat,
 	subText,
 	previousValue,
 	currentValue,
-	error,
-	moduleSlug,
+	...props
 } ) {
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
-	if ( error ) {
-		return (
-			<MetricTileError
-				moduleSlug={ moduleSlug }
-				error={ error }
-				headerText={ title }
-			/>
-		);
-	}
-
 	return (
-		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text">
-				<h3 className="googlesitekit-km-widget-tile__title">
-					{ title }
-				</h3>
-				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && <MetricTileLoader /> }
-					{ ! loading && (
-						<Fragment>
-							<div className="googlesitekit-km-widget-tile__metric">
-								{ metricValue }
-							</div>
-							<p className="googlesitekit-km-widget-tile__subtext">
-								{ subText }
-							</p>
-							<div className="googlesitekit-km-widget-tile__metric-change-container">
-								<ChangeBadge
-									previousValue={ previousValue }
-									currentValue={ currentValue }
-									isAbsolute={
-										formatOptions?.style === 'percent'
-									}
-								/>
-							</div>
-						</Fragment>
-					) }
-				</div>
+		<MetricTileWrapper
+			className="googlesitekit-km-widget-tile--text"
+			{ ...props }
+		>
+			<div className="googlesitekit-km-widget-tile__metric">
+				{ metricValue }
 			</div>
-		</Widget>
+			<p className="googlesitekit-km-widget-tile__subtext">{ subText }</p>
+			<div className="googlesitekit-km-widget-tile__metric-change-container">
+				<ChangeBadge
+					previousValue={ previousValue }
+					currentValue={ currentValue }
+					isAbsolute={ formatOptions?.style === 'percent' }
+				/>
+			</div>
+		</MetricTileWrapper>
 	);
 }
 
 MetricTileText.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	loading: PropTypes.bool,
-	title: PropTypes.string,
 	metricValue: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
 	subtext: PropTypes.string,
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,
-	error: PropTypes.oneOfType( [
-		PropTypes.arrayOf( PropTypes.object ),
-		PropTypes.object,
-	] ),
-	moduleSlug: PropTypes.string.isRequired,
 };
