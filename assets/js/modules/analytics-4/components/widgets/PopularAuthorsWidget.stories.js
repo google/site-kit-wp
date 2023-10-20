@@ -73,14 +73,6 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		provideAnalytics4MockReport( registry, reportOptions );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
-			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ],
-			],
-		} );
 	},
 };
 Ready.parameters = {
@@ -97,13 +89,6 @@ Loading.args = {
 		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
 			reportOptions,
 		] );
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
-			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ],
-			],
-		} );
 	},
 };
 
@@ -117,13 +102,6 @@ ZeroData.args = {
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
-		} );
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
-			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ],
-			],
 		} );
 	},
 };
@@ -157,7 +135,12 @@ GatheringData.scenario = {
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
-	setupRegistry: () => {},
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [],
+		} );
+	},
 };
 ErrorMissingCustomDimensions.parameters = {
 	features: [ 'newsKeyMetrics' ],
@@ -175,8 +158,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 			},
 		};
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
@@ -202,8 +183,6 @@ ErrorCustomDimensionsGeneric.args = {
 				reason: 'test-error-reason',
 			},
 		};
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
@@ -232,6 +211,12 @@ export default {
 				] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID: '12345',
+					availableCustomDimensions:
+						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+							.requiredCustomDimensions,
+				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
