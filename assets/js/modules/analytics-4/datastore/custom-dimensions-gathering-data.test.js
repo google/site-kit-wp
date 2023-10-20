@@ -27,7 +27,6 @@ import { getPreviousDate, stringToDate } from '../../../util';
 let {
 	createTestRegistry,
 	untilResolved,
-	waitForDefaultTimeouts,
 	provideUserAuthentication,
 	muteFetch,
 } = require( '../../../../../tests/js/utils' );
@@ -111,6 +110,10 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 		const defaultProperty = properties[ 0 ];
 		const defaultPropertyID = defaultProperty._id;
 		const accountID = '100';
+
+		const customDimensionDataAvailableEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/custom-dimension-data-available'
+		);
 
 		const dataAvailabilityReportWithData = {
 			dimensionHeaders: [
@@ -213,7 +216,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			( {
 				createTestRegistry,
 				untilResolved,
-				waitForDefaultTimeouts,
 				provideUserAuthentication,
 				muteFetch,
 			} = require( '../../../../../tests/js/utils' ) );
@@ -289,22 +291,33 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			}
 		}
 
-		describe( 'selectCustomDimensionDataAvailability', () => {
-			it( 'should return TRUE if data is available', () => {
+		describe( 'checkCustomDimensionDataAvailability', () => {
+			it( 'should set gathering data to be FALSE and dispatch a fetch request to save it when data is available', async () => {
 				setupCustomDimensionDataAvailability();
+
+				fetchMock.postOnce( customDimensionDataAvailableEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.checkCustomDimensionDataAvailability( customDimension );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.selectCustomDimensionDataAvailability(
-							customDimension
-						)
-				).toBe( true );
+						.isCustomDimensionGatheringData( customDimension )
+				).toBe( false );
+
+				expect( fetchMock ).toHaveFetched(
+					customDimensionDataAvailableEndpoint
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
 			it.each( [
 				[
-					false,
 					'the custom dimension is not available',
 					() => {
 						setupCustomDimensionDataAvailability( {
@@ -313,22 +326,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					},
 				],
 				[
-					undefined,
-					'authentication is not resolved',
-					() => {
-						setupCustomDimensionDataAvailability( {
-							authenticated: undefined,
-						} );
-
-						muteFetch(
-							new RegExp(
-								'^/google-site-kit/v1/core/user/data/authentication'
-							)
-						);
-					},
-				],
-				[
-					false,
 					'the user is not authenticated',
 					() => {
 						setupCustomDimensionDataAvailability( {
@@ -337,8 +334,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					},
 				],
 				[
-					undefined,
-					'the property ID is not defined',
+					'the property ID is not set',
 					() => {
 						setupCustomDimensionDataAvailability( {
 							propertyID: undefined,
@@ -346,37 +342,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					},
 				],
 				[
-					undefined,
-					'the property is not resolved',
-					() => {
-						setupCustomDimensionDataAvailability( {
-							property: undefined,
-						} );
-
-						muteFetch(
-							new RegExp(
-								'^/google-site-kit/v1/modules/analytics-4/data/property'
-							)
-						);
-					},
-				],
-				[
-					undefined,
-					'the report is not resolved',
-					() => {
-						setupCustomDimensionDataAvailability( {
-							report: undefined,
-						} );
-
-						muteFetch(
-							new RegExp(
-								'^/google-site-kit/v1/modules/analytics-4/data/report'
-							)
-						);
-					},
-				],
-				[
-					null,
 					'the report returns an error',
 					() => {
 						setupCustomDimensionDataAvailability( {
@@ -395,7 +360,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					},
 				],
 				[
-					false,
 					'the report contains no rows',
 					() => {
 						setupCustomDimensionDataAvailability( {
@@ -404,7 +368,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					},
 				],
 				[
-					false,
 					'the report contains no set values',
 					() => {
 						setupCustomDimensionDataAvailability( {
@@ -413,28 +376,26 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					},
 				],
 			] )(
-				'should return %s if %s',
-				async ( expectedValue, _, setupTest ) => {
+				'should set gathering data to be TRUE and not dispatch a fetch request to save it when %s',
+				async ( _, setupTest ) => {
 					setupTest();
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.checkCustomDimensionDataAvailability(
+							customDimension
+						);
 
 					expect(
 						registry
 							.select( MODULES_ANALYTICS_4 )
-							.selectCustomDimensionDataAvailability(
-								customDimension
-							)
-					).toBe( expectedValue );
-
-					await waitForDefaultTimeouts();
+							.isCustomDimensionGatheringData( customDimension )
+					).toBe( true );
 				}
 			);
 		} );
 
 		describe( 'isCustomDimensionGatheringData', () => {
-			const customDimensionDataAvailableEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/custom-dimension-data-available'
-			);
-
 			it( 'should return undefined if it is not resolved yet', async () => {
 				setupCustomDimensionDataAvailability();
 
@@ -446,7 +407,10 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 
 				muteFetch( customDimensionDataAvailableEndpoint );
 
-				await waitForDefaultTimeouts();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).isCustomDimensionGatheringData( customDimension );
 			} );
 
 			it( 'should return the value of gathering data if it is set and do nothing else', async () => {
@@ -485,7 +449,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				).toBe( false );
 			} );
 
-			it( 'should set gathering data state and dispatch a fetch request to save it when selectCustomDimensionDataAvailability returns TRUE', async () => {
+			it( 'should set gathering data state and dispatch a fetch request to save it when the data availability check finds data', async () => {
 				setupRegistryWithDataAvailabilityOnLoad( false );
 				setupCustomDimensionDataAvailability();
 
@@ -517,44 +481,10 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				).toBe( false );
 			} );
 
-			it( 'should set gathering data state and do nothing else when selectCustomDimensionDataAvailability returns FALSE', async () => {
+			it( 'should set gathering data state and do nothing else when the data availability check does not find data', async () => {
 				setupRegistryWithDataAvailabilityOnLoad( false );
-				// `selectCustomDimensionDataAvailability()` returns FALSE when the custom dimension is not available, as verified in
-				// the relevant test case for `selectCustomDimensionDataAvailability()` above.
 				setupCustomDimensionDataAvailability( {
 					availableCustomDimensions: [],
-				} );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( customDimension )
-				).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).isCustomDimensionGatheringData( customDimension );
-
-				expect( fetchMock ).not.toHaveFetched();
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData( customDimension )
-				).toBe( true );
-			} );
-
-			it( 'should set gathering data state to TRUE when selectCustomDimensionDataAvailability returns NULL', async () => {
-				setupRegistryWithDataAvailabilityOnLoad( false );
-				// `selectCustomDimensionDataAvailability()` returns NULL when the report returns an error, as verified in
-				// the relevant test case for `selectCustomDimensionDataAvailability()` above.
-				setupCustomDimensionDataAvailability( {
-					reportError: {
-						code: 'test_error',
-						message: 'Error message.',
-						data: {},
-					},
 				} );
 
 				expect(

@@ -32,12 +32,10 @@ import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { getDateString } from '../../../util';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 
-const { createRegistryControl, createRegistrySelector } = Data;
+const { createRegistrySelector } = Data;
 
 const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
 	'RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA';
-const WAIT_FOR_CUSTOM_DIMENSION_DATA_AVAILABILITY_STATE =
-	'WAIT_FOR_CUSTOM_DIMENSION_DATA_AVAILABILITY_STATE';
 
 const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 	baseName: 'saveCustomDimensionDataAvailableState',
@@ -106,35 +104,110 @@ const baseActions = {
 			type: RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA,
 		};
 	},
+
+	/**
+	 * Checks whether data is available for the custom dimension.
+	 *
+	 * If data is available, saves the data available state to the server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} customDimension Custom dimension slug.
+	 */
+	*checkCustomDimensionDataAvailability( customDimension ) {
+		const { select, __experimentalResolveSelect } =
+			yield Data.commonActions.getRegistry();
+
+		if (
+			! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				customDimension
+			)
+		) {
+			yield baseActions.receiveIsCustomDimensionGatheringData(
+				customDimension,
+				true
+			);
+			return;
+		}
+
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_USER ).getAuthentication()
+		);
+
+		if ( ! select( CORE_USER ).isAuthenticated() ) {
+			yield baseActions.receiveIsCustomDimensionGatheringData(
+				customDimension,
+				true
+			);
+			return;
+		}
+
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( ! propertyID ) {
+			yield baseActions.receiveIsCustomDimensionGatheringData(
+				customDimension,
+				true
+			);
+			return;
+		}
+
+		const property = yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty(
+				propertyID
+			)
+		);
+
+		const startDate = getDateString( new Date( property.createTime ) );
+
+		const endDate = select( CORE_USER ).getReferenceDate();
+
+		const reportArgs = {
+			startDate,
+			endDate,
+			dimensions: [ `customEvent:${ customDimension }` ],
+			limit: 2,
+		};
+
+		// We may legitimately want to return early before using `report` if the report is not resolved or results in an error.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getReport(
+				reportArgs
+			)
+		);
+
+		const hasReportError = !! select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ reportArgs ] );
+
+		// If there is an error, return `null` since we don't know if there is data or not.
+		const isGatheringData =
+			hasReportError ||
+			! report?.rows?.length ||
+			// If the only dimension value is '(not set)', then there is no data. See https://support.google.com/analytics/answer/13504892.
+			( report.rowCount === 1 &&
+				report.rows[ 0 ].dimensionValues?.[ 0 ]?.value ===
+					'(not set)' );
+
+		yield baseActions.receiveIsCustomDimensionGatheringData(
+			customDimension,
+			isGatheringData
+		);
+
+		if ( ! isGatheringData ) {
+			yield fetchSaveCustomDimensionDataAvailableStateStore.actions.fetchSaveCustomDimensionDataAvailableState(
+				customDimension
+			);
+		}
+	},
 };
 
-const baseControls = {
-	[ WAIT_FOR_CUSTOM_DIMENSION_DATA_AVAILABILITY_STATE ]:
-		createRegistryControl(
-			( registry ) =>
-				( { payload: { customDimension } } ) => {
-					const dataAvailabityDetermined = () =>
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.selectCustomDimensionDataAvailability(
-								customDimension
-							) !== undefined;
-
-					if ( dataAvailabityDetermined() ) {
-						return true;
-					}
-
-					return new Promise( ( resolve ) => {
-						const unsubscribe = registry.subscribe( () => {
-							if ( dataAvailabityDetermined() ) {
-								unsubscribe();
-								resolve( true );
-							}
-						} );
-					} );
-				}
-		),
-};
+const baseControls = {};
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
@@ -179,120 +252,13 @@ const baseResolvers = {
 			return;
 		}
 
-		yield {
-			payload: {
-				customDimension,
-			},
-			type: WAIT_FOR_CUSTOM_DIMENSION_DATA_AVAILABILITY_STATE,
-		};
-
-		const dataAvailability = registry
-			.select( MODULES_ANALYTICS_4 )
-			.selectCustomDimensionDataAvailability( customDimension );
-
-		yield baseActions.receiveIsCustomDimensionGatheringData(
-			customDimension,
-			! dataAvailability
+		yield baseActions.checkCustomDimensionDataAvailability(
+			customDimension
 		);
-
-		if ( dataAvailability ) {
-			yield fetchSaveCustomDimensionDataAvailableStateStore.actions.fetchSaveCustomDimensionDataAvailableState(
-				customDimension
-			);
-		}
 	},
 };
 
 const baseSelectors = {
-	/**
-	 * Determines whether data is available for the custom dimension.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state           Data store's state.
-	 * @param {string} customDimension Custom dimension slug.
-	 * @return {boolean|undefined|null} Returns TRUE if data is available, otherwise FALSE.
-	 *                                  If the request is still being resolved, returns undefined.
-	 *                                  If the data availability can not be determined, returns null.
-	 */
-	selectCustomDimensionDataAvailability: createRegistrySelector(
-		( select ) => ( state, customDimension ) => {
-			if (
-				! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-					customDimension
-				)
-			) {
-				return false;
-			}
-
-			const isAuthenticated = select( CORE_USER ).isAuthenticated();
-
-			if ( isAuthenticated === undefined ) {
-				return undefined;
-			}
-			if ( ! isAuthenticated ) {
-				return false;
-			}
-
-			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-			if ( propertyID === undefined ) {
-				return undefined;
-			}
-
-			const property =
-				select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
-
-			if ( property === undefined ) {
-				return undefined;
-			}
-
-			const startDate = getDateString( new Date( property.createTime ) );
-
-			const endDate = select( CORE_USER ).getReferenceDate();
-
-			const reportArgs = {
-				startDate,
-				endDate,
-				dimensions: [ `customEvent:${ customDimension }` ],
-				limit: 2,
-			};
-
-			// We may legitimately want to return early before using `report` if the report is not resolved or results in an error.
-			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-			const report =
-				select( MODULES_ANALYTICS_4 ).getReport( reportArgs );
-
-			const hasResolvedReport = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportArgs ] );
-
-			if ( ! hasResolvedReport ) {
-				return undefined;
-			}
-
-			const hasReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportArgs ] );
-
-			// If there is an error, return `null` since we don't know if there is data or not.
-			if ( hasReportError ) {
-				return null;
-			}
-
-			if ( ! report?.rows?.length ) {
-				return false;
-			}
-
-			// If the only dimension value is '(not set)', then there is no data. See https://support.google.com/analytics/answer/13504892.
-			const isZeroReport =
-				report.rowCount === 1 &&
-				report.rows[ 0 ].dimensionValues?.[ 0 ]?.value === '(not set)';
-
-			return ! isZeroReport;
-		}
-	),
-
 	/**
 	 * Determines whether the custom dimension is still gathering data or not.
 	 *
