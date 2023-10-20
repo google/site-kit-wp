@@ -740,11 +740,11 @@ final class Analytics_4 extends Module
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:report':
-				if ( empty( $data['metrics'] ) && empty( $data['dimensions'] ) ) {
+				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name `metrics`, 2: Missing parameter name `dimensions` */
-						sprintf( __( 'Request parameter is empty: at least one of %1$s or %2$s must be provided.', 'google-site-kit' ), 'metrics', 'dimensions' ),
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
 						array( 'status' => 400 )
 					);
 				}

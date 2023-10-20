@@ -119,8 +119,8 @@ const fetchGetReportStore = createFetchStore( {
 		} = normalizeReportOptions( options );
 
 		invariant(
-			metrics?.length || dimensions?.length,
-			'Requests must specify at least one metric or dimension for an Analytics 4 report.'
+			metrics.length,
+			'Requests must specify at least one metric for an Analytics 4 report.'
 		);
 		invariant(
 			isValidMetrics( metrics ),
