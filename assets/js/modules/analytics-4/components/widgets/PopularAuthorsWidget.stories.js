@@ -113,14 +113,6 @@ export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
-			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ],
-			],
-		} );
-
 		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
 			KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
 				.requiredCustomDimensions?.[ 0 ],
