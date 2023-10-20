@@ -75,10 +75,10 @@ const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 const baseInitialState = {
 	customDimensionsGatheringData: Object.keys(
 		CUSTOM_DIMENSION_DEFINITIONS
-	).reduce( ( initialStateSlice, customDimension ) => {
-		initialStateSlice[ customDimension ] = undefined;
-		return initialStateSlice;
-	}, {} ),
+	).reduce( ( initialStateSlice, customDimension ) => ( {
+		...initialStateSlice,
+		[ customDimension ]: undefined,
+	} ), {} ),
 
 	customDimensionsDataAvailableOnLoad:
 		global._googlesitekitModulesData?.[ 'analytics-4' ]
