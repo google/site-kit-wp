@@ -211,25 +211,13 @@ export default function withCustomDimensions( options = {} ) {
 					return null;
 				}
 
-				const { isCustomDimensionGatheringData } =
-					select( MODULES_ANALYTICS_4 );
-
-				// Return undefined if any of the custom dimensions' gathering data state is undefined,
-				// or true if any of the custom dimensions' gathering data state is true.
-				for ( const gatheringDataState of [ undefined, true ] ) {
-					if (
-						customDimensions?.some(
-							( dimension ) =>
-								isCustomDimensionGatheringData( dimension ) ===
-								gatheringDataState
-						)
-					) {
-						return gatheringDataState;
-					}
+				if ( ! customDimensions ) {
+					return false;
 				}
 
-				// Otherwise, all custom dimensions' gathering data state is false.
-				return false;
+				return select(
+					MODULES_ANALYTICS_4
+				).areCustomDimensionsGatheringData( customDimensions );
 			} );
 
 			const commonErrorProps = {

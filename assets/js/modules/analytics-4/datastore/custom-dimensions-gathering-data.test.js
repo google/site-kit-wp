@@ -577,5 +577,81 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				).toBe( true );
 			} );
 		} );
+
+		describe( 'areCustomDimensionGatheringData', () => {
+			it( 'should return FALSE if none of the given custom dimensions are gathering data', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						'googlesitekit_post_author',
+						false
+					);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						'googlesitekit_post_date',
+						false
+					);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.areCustomDimensionsGatheringData( [
+							'googlesitekit_post_author',
+							'googlesitekit_post_date',
+						] )
+				).toBe( false );
+			} );
+
+			it( 'should return TRUE if at least one of the given custom dimensions is gathering data', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						'googlesitekit_post_author',
+						false
+					);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						'googlesitekit_post_date',
+						true
+					);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.areCustomDimensionsGatheringData( [
+							'googlesitekit_post_author',
+							'googlesitekit_post_date',
+						] )
+				).toBe( true );
+			} );
+
+			it( 'should return undefined if at least one of the given custom dimensions are not resolved yet', () => {
+				// Include both a `true` and `false` gathering data state to show that `undefined` takes precedence over both.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						'googlesitekit_post_author',
+						false
+					);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						'googlesitekit_post_date',
+						true
+					);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.areCustomDimensionsGatheringData( [
+							'googlesitekit_post_author',
+							'googlesitekit_post_date',
+							'googlesitekit_post_categories',
+						] )
+				).toBeUndefined();
+			} );
+		} );
 	} );
 } );

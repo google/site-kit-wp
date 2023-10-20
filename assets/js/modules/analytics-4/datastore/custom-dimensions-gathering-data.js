@@ -305,6 +305,40 @@ const baseSelectors = {
 	isCustomDimensionGatheringData( state, customDimension ) {
 		return state.customDimensionsGatheringData[ customDimension ];
 	},
+
+	/**
+	 * Determines whether any of the provided custom dimensions are still gathering data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}        state            Data store's state.
+	 * @param {Array<string>} customDimensions Array of custom dimension slugs.
+	 * @return {boolean|undefined} Returns TRUE if any of the provided custom dimensions are gathering data, otherwise FALSE.
+	 * 														 If any of the corresponding state is still being resolved, returns undefined.
+	 */
+	areCustomDimensionsGatheringData: createRegistrySelector(
+		( select ) => ( state, customDimensions ) => {
+			const { isCustomDimensionGatheringData } =
+				select( MODULES_ANALYTICS_4 );
+
+			// Return undefined if any of the custom dimensions' gathering data state is undefined,
+			// or true if any of the custom dimensions' gathering data state is true.
+			for ( const gatheringDataState of [ undefined, true ] ) {
+				if (
+					customDimensions.some(
+						( dimension ) =>
+							isCustomDimensionGatheringData( dimension ) ===
+							gatheringDataState
+					)
+				) {
+					return gatheringDataState;
+				}
+			}
+
+			// Otherwise, all custom dimensions' gathering data state is false.
+			return false;
+		}
+	),
 };
 
 const store = Data.combineStores(
