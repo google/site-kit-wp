@@ -268,6 +268,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					startDate: createDate,
 					endDate: referenceDate,
 					dimensions: [ `customEvent:${ customDimension }` ],
+					limit: 2,
 				};
 
 				if ( report ) {

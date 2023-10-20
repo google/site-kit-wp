@@ -255,6 +255,7 @@ const baseSelectors = {
 				startDate,
 				endDate,
 				dimensions: [ `customEvent:${ customDimension }` ],
+				limit: 2,
 			};
 
 			// We may legitimately want to return early before using `report` if the report is not resolved or results in an error.
