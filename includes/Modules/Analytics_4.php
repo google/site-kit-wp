@@ -958,7 +958,8 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['customDimension'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						__( 'Request parameter is empty: customDimension.', 'google-site-kit' ),
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'customDimension' ),
 						array( 'status' => 400 )
 					);
 				}
