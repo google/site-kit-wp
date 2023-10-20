@@ -184,7 +184,6 @@ const baseActions = {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ reportArgs ] );
 
-		// If there is an error, return `null` since we don't know if there is data or not.
 		const isGatheringData =
 			hasReportError ||
 			! report?.rows?.length ||
