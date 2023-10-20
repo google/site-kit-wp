@@ -1,13 +1,23 @@
 #!/usr/bin/env node
+/* eslint-disable sitekit/acronym-case */
 /* eslint-disable no-console */
-const { GraphQLClient, gql } = require('graphql-request')
 
-const checkIssueHasRelease = async () => {
-  const client = new GraphQLClient('https://api.zenhub.com/public/graphql');
+function graphQlFetch(query, variables) {
+  return fetch('https://api.zenhub.com/public/graphql', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.ZENHUB_GQL_API_TOKEN}`,
+      },
+      body: new Blob([JSON.stringify({ query, variables })], {
+        type: 'application/json',
+      }),
+    }).then((res) => res.json());
+}
 
-  const query = gql`
-    query($repositoryGhId: Int!, $issueNumber: Int!){
-      issueByInfo(repositoryGhId: $repositoryGhId, issueNumber: $issueNumber) {
+async function checkIssueHasRelease({ repositoryGhId, prNumber }) {
+  const query = `
+    query($repositoryGhId: Int!, $prNumber: Int!){
+      issueByInfo(repositoryGhId: $repositoryGhId, issueNumber: $prNumber) {
         connections {
           nodes {
             number
@@ -23,36 +33,47 @@ const checkIssueHasRelease = async () => {
   `;
 
   try {
-    const response = await client.request(query, {
-      // eslint-disable-next-line sitekit/acronym-case
-      repositoryGhId: parseInt(process.env.GITHUB_REPOSITORY_ID, 10),
-      issueNumber: parseInt(process.env.PULL_REQUEST_NUMBER, 10)
-    }, {
-      authorization: `Bearer ${process.env.ZENHUB_GQL_API_TOKEN}`
+    const response = await graphQlFetch(query, {
+      repositoryGhId: parseInt(repositoryGhId, 10),
+      prNumber: parseInt(prNumber, 10),
     });
+    const { data, errors } = response;
 
-    if (response?.issueByInfo?.connections?.nodes?.[0]?.releases?.nodes?.[0]?.title?.length > 0) {
-      console.log(`Issue in release ${response.issueByInfo.connections.nodes[0].releases.nodes[0].title}. 👍`);
+    if (errors) {
+      console.error(`Error: ${errors[0].message}. ⚠️`);
+
+      process.exit(1);
+    }
+
+    const [ connectedIssue ] = data.issueByInfo?.connections?.nodes || [];
+
+    if (! connectedIssue) {
+      console.error('❌ Pull Request is missing a connected issue.\n');
+
+      process.exit(1);
+    }
+
+    const connectedRelease = connectedIssue?.releases?.nodes?.[0];
+
+    if (connectedRelease) {
+      console.log(`✅ Connected issue #${connectedIssue.number} is in release ${connectedRelease.title}. 👍`);
 
       process.exit(0);
     }
 
-    console.error('Issue is missing a ZenHub release label. ❌\n');
+    console.error(`❌ Connected issue #${connectedIssue.number} is missing a Zenhub release.\n`);
 
-    console.error(`Please label this issue before merging: https://github.com/google/site-kit-wp/issues/${response.issueByInfo.connections.nodes[0].number}`);
+    console.error(`Please assign a release to this issue before merging: https://github.com/google/site-kit-wp/issues/${connectedIssue.number}`);
 
     process.exit(1);
-  } catch (errorResponse) {
-    if (errorResponse?.response?.errors?.[0].message) {
-      console.error(`Error: ${errorResponse.response.errors[0].message}. ⚠️`);
-    } else if (errorResponse?.response?.error) {
-      console.error(`Error: ${errorResponse.response.error.replace('.\n', '')}. ⚠️`);
-    } else {
-      console.error('Error: Unknown error. ⚠️');
-    }
+  } catch (error) {
+    console.error('Error: Unknown error. ⚠️', error);
 
     process.exit(1);
   }
 }
 
-checkIssueHasRelease();
+checkIssueHasRelease({
+  repositoryGhId: process.env.GITHUB_REPOSITORY_ID,
+  prNumber: process.env.PULL_REQUEST_NUMBER,
+});
