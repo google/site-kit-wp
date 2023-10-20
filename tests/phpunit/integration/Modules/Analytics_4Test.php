@@ -1680,7 +1680,7 @@ class Analytics_4Test extends TestCase {
 
 		$data = $this->analytics->get_data( 'report', array() );
 
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: at least one of metrics or dimensions must be provided.', $data );
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: metrics.', $data );
 		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
 	}
