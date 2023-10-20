@@ -50,7 +50,7 @@ const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 	argsToParams: ( customDimension ) => ( { customDimension } ),
 	validateParams: ( { customDimension } ) => {
 		invariant(
-			'string' === typeof customDimension,
+			'string' === typeof customDimension && customDimension.length > 0,
 			'customDimension must be a string.'
 		);
 	},
