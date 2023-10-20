@@ -170,6 +170,7 @@ const baseActions = {
 			startDate,
 			endDate,
 			dimensions: [ `customEvent:${ customDimension }` ],
+			metrics: [ { name: 'eventCount' } ],
 			limit: 2,
 		};
 

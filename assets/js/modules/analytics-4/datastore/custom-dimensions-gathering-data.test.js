@@ -121,6 +121,12 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					name: `customEvent:${ customDimension }`,
 				},
 			],
+			metricHeaders: [
+				{
+					name: 'eventCount',
+					type: 'TYPE_INTEGER',
+				},
+			],
 			rows: [
 				{
 					dimensionValues: [
@@ -128,11 +134,21 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 							value: '(not set)',
 						},
 					],
+					metricValues: [
+						{
+							value: '123',
+						},
+					],
 				},
 				{
 					dimensionValues: [
 						{
 							value: '123',
+						},
+					],
+					metricValues: [
+						{
+							value: '456',
 						},
 					],
 				},
@@ -153,6 +169,12 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					name: `customEvent:${ customDimension }`,
 				},
 			],
+			metricHeaders: [
+				{
+					name: 'eventCount',
+					type: 'TYPE_INTEGER',
+				},
+			],
 			totals: [ {} ],
 			maximums: [ {} ],
 			minimums: [ {} ],
@@ -171,11 +193,22 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					name: `customEvent:${ customDimension }`,
 				},
 			],
+			metricHeaders: [
+				{
+					name: 'eventCount',
+					type: 'TYPE_INTEGER',
+				},
+			],
 			rows: [
 				{
 					dimensionValues: [
 						{
 							value: '(not set)',
+						},
+					],
+					metricValues: [
+						{
+							value: '123',
 						},
 					],
 				},
@@ -270,6 +303,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					startDate: createDate,
 					endDate: referenceDate,
 					dimensions: [ `customEvent:${ customDimension }` ],
+					metrics: [ { name: 'eventCount' } ],
 					limit: 2,
 				};
 
