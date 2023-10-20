@@ -174,8 +174,6 @@ const baseActions = {
 			limit: 2,
 		};
 
-		// We may legitimately want to return early before using `report` if the report results in an error.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const report = yield Data.commonActions.await(
 			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getReport(
 				reportArgs
