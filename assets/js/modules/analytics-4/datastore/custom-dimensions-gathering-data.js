@@ -36,8 +36,6 @@ const { createRegistryControl, createRegistrySelector } = Data;
 
 const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
 	'RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA';
-const RECEIVE_CUSTOM_DIMENSION_DATA_AVAILABLE_ON_LOAD =
-	'RECEIVE_CUSTOM_DIMENSION_DATA_AVAILABLE_ON_LOAD';
 const WAIT_FOR_CUSTOM_DIMENSION_DATA_AVAILABILITY_STATE =
 	'WAIT_FOR_CUSTOM_DIMENSION_DATA_AVAILABILITY_STATE';
 
@@ -65,11 +63,6 @@ const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
  *     googlesitekit_post_author: undefined,
  *     // etc.
  *   },
- *   customDimensionsDataAvailableOnLoad: {
- *     googlesitekit_post_date: false,
- *     googlesitekit_post_author: true,
- *     // etc.
- *   }
  * }
  */
 const baseInitialState = {
@@ -82,10 +75,6 @@ const baseInitialState = {
 		} ),
 		{}
 	),
-
-	customDimensionsDataAvailableOnLoad:
-		global._googlesitekitModulesData?.[ 'analytics-4' ]
-			?.customDimensionsDataAvailable,
 };
 
 const baseActions = {
@@ -115,41 +104,6 @@ const baseActions = {
 				gatheringData,
 			},
 			type: RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA,
-		};
-	},
-
-	/**
-	 * Receives data available on load state for a custom dimension.
-	 *
-	 * This action was added to easily manipulate the state for
-	 * JS tests and Storybook / VRT scenarios.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {string}  customDimension     Custom dimension slug.
-	 * @param {boolean} dataAvailableOnLoad Data availability on load.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveIsCustomDimensionDataAvailableOnLoad(
-		customDimension,
-		dataAvailableOnLoad
-	) {
-		invariant(
-			'string' === typeof customDimension && customDimension.length > 0,
-			'customDimension must be a non-empty string.'
-		);
-		invariant(
-			'boolean' === typeof dataAvailableOnLoad,
-			'dataAvailableOnLoad must be a boolean.'
-		);
-
-		return {
-			payload: {
-				customDimension,
-				dataAvailableOnLoad,
-			},
-			type: RECEIVE_CUSTOM_DIMENSION_DATA_AVAILABLE_ON_LOAD,
 		};
 	},
 };
@@ -193,15 +147,6 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 			break;
 		}
 
-		case RECEIVE_CUSTOM_DIMENSION_DATA_AVAILABLE_ON_LOAD: {
-			const { customDimension, dataAvailableOnLoad } = payload;
-
-			state.customDimensionsDataAvailableOnLoad[ customDimension ] =
-				dataAvailableOnLoad;
-
-			break;
-		}
-
 		default: {
 			break;
 		}
@@ -221,9 +166,9 @@ const baseResolvers = {
 			return;
 		}
 
-		const dataAvailableOnLoad = registry
-			.select( MODULES_ANALYTICS_4 )
-			.isCustomDimensionDataAvailableOnLoad( customDimension );
+		const dataAvailableOnLoad =
+			global._googlesitekitModulesData?.[ 'analytics-4' ]
+				?.customDimensionsDataAvailable?.[ customDimension ];
 
 		// If dataAvailableOnLoad is true, set gatheringData to false and do nothing else.
 		if ( dataAvailableOnLoad ) {
@@ -346,21 +291,6 @@ const baseSelectors = {
 			return ! isZeroReport;
 		}
 	),
-
-	/**
-	 * Checks if data is available on load for the custom dimension.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state           Data store's state.
-	 * @param {string} customDimension Custom dimension slug.
-	 * @return {boolean} Returns TRUE if data is available on load, otherwise FALSE.
-	 */
-	isCustomDimensionDataAvailableOnLoad( state, customDimension ) {
-		return !! state.customDimensionsDataAvailableOnLoad?.[
-			customDimension
-		];
-	},
 
 	/**
 	 * Determines whether the custom dimension is still gathering data or not.

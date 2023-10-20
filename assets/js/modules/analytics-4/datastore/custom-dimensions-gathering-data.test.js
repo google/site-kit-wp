@@ -429,38 +429,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			);
 		} );
 
-		describe( 'isCustomDimensionDataAvailableOnLoad', () => {
-			it( 'should return FALSE if data availability is not present on load', () => {
-				setupRegistryWithDataAvailabilityOnLoad( undefined );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionDataAvailableOnLoad( customDimension )
-				).toBe( false );
-			} );
-
-			it( 'should return FALSE if data availability is FALSE on load', () => {
-				setupRegistryWithDataAvailabilityOnLoad( false );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionDataAvailableOnLoad( customDimension )
-				).toBe( false );
-			} );
-
-			it( 'should return TRUE if data availability is TRUE on load', () => {
-				setupRegistryWithDataAvailabilityOnLoad( true );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionDataAvailableOnLoad( customDimension )
-				).toBe( true );
-			} );
-		} );
-
 		describe( 'isCustomDimensionGatheringData', () => {
 			const customDimensionDataAvailableEndpoint = new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/custom-dimension-data-available'
