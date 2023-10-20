@@ -51,7 +51,7 @@ const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 	validateParams: ( { customDimension } ) => {
 		invariant(
 			'string' === typeof customDimension && customDimension.length > 0,
-			'customDimension must be a string.'
+			'customDimension must be a non-empty string.'
 		);
 	},
 } );
@@ -98,8 +98,8 @@ const baseActions = {
 	 */
 	receiveIsCustomDimensionGatheringData( customDimension, gatheringData ) {
 		invariant(
-			'string' === typeof customDimension,
-			'customDimension must be a string.'
+			'string' === typeof customDimension && customDimension.length > 0,
+			'customDimension must be a non-empty string.'
 		);
 		invariant(
 			'boolean' === typeof gatheringData,
@@ -133,8 +133,8 @@ const baseActions = {
 		dataAvailableOnLoad
 	) {
 		invariant(
-			'string' === typeof customDimension,
-			'customDimension must be a string.'
+			'string' === typeof customDimension && customDimension.length > 0,
+			'customDimension must be a non-empty string.'
 		);
 		invariant(
 			'boolean' === typeof dataAvailableOnLoad,
