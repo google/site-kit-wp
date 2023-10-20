@@ -27,7 +27,6 @@ import { isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import customDimensionsGatheringDataStore from './custom-dimensions-gathering-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
@@ -319,7 +318,6 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchCreateCustomDimensionStore,
 	fetchSyncAvailableCustomDimensionsStore,
-	customDimensionsGatheringDataStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
