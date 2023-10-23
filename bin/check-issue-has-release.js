@@ -2,16 +2,22 @@
 /* eslint-disable sitekit/acronym-case */
 /* eslint-disable no-console */
 
-function graphQlFetch(query, variables) {
-  return fetch('https://api.zenhub.com/public/graphql', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.ZENHUB_GQL_API_TOKEN}`,
-      },
-      body: new Blob([JSON.stringify({ query, variables })], {
-        type: 'application/json',
-      }),
-    }).then((res) => res.json());
+async function graphQlFetch(query, variables) {
+  const response = fetch('https://api.zenhub.com/public/graphql', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.ZENHUB_GQL_API_TOKEN}`,
+    },
+    body: new Blob([JSON.stringify({ query, variables })], {
+      type: 'application/json',
+    }),
+  });
+    
+  if (!response.ok) {
+    throw new Error( 'ZenHub API request failed.' );
+  }
+  
+  return response.json();
 }
 
 async function checkIssueHasRelease({ repositoryGhId, prNumber }) {
