@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
@@ -40,7 +41,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
-export default function InsufficientPermissionsTileError( props ) {
+export default function AnalyticsUpdateError( props ) {
 	const { onRetry, error, infoTooltip, headerText } = props;
 
 	const viewContext = useViewContext();
@@ -50,40 +51,28 @@ export default function InsufficientPermissionsTileError( props ) {
 	);
 
 	useEffect( () => {
-		trackEvent( `${ viewContext }_kmw`, 'insufficient_permissions_error' );
+		trackEvent( `${ viewContext }_kmw`, 'analytics_update_error' );
 	}, [ viewContext ] );
 
 	const retry = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_kmw`,
-			'insufficient_permissions_error_retry'
-		);
-
+		trackEvent( `${ viewContext }_kmw`, 'analytics_update_error_retry' );
 		onRetry?.();
 	}, [ onRetry, viewContext ] );
 
 	return (
 		<MetricTileError
-			title={ __( 'Insufficient permissions', 'google-site-kit' ) }
+			title={ __( 'Analytics update failed', 'google-site-kit' ) }
 			headerText={ headerText }
 			infoTooltip={ infoTooltip }
 		>
 			<div className="googlesitekit-report-error-actions">
+				<Button onClick={ retry }>
+					{ __( 'Retry', 'google-site-kit' ) }
+				</Button>
 				<span className="googlesitekit-error-retry-text">
 					{ createInterpolateElement(
 						__(
-							'Permissions updated? <a>Retry</a>',
-							'google-site-kit'
-						),
-						{
-							a: <Link onClick={ retry } />,
-						}
-					) }
-				</span>
-				<span className="googlesitekit-error-retry-text">
-					{ createInterpolateElement(
-						__(
-							'You’ll need to contact your administrator. <a>Learn more</a>',
+							'Retry didn’t work? <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
@@ -96,7 +85,7 @@ export default function InsufficientPermissionsTileError( props ) {
 	);
 }
 
-InsufficientPermissionsTileError.propTypes = {
+AnalyticsUpdateError.propTypes = {
 	error: PropTypes.shape( {} ).isRequired,
 	onRetry: PropTypes.func.isRequired,
 	headerText: PropTypes.string,

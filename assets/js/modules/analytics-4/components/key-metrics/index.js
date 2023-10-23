@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { default as AnalyticsUpdateTileError } from './AnalyticsUpdateTileError';
-export { default as InsufficientPermissionsTileError } from './InsufficientPermissionsTileError';
+export { default as AnalyticsUpdateError } from './AnalyticsUpdateError';
+export { default as CustomDimensionsMissingError } from './CustomDimensionsMissingError';
+export { default as InsufficientPermissionsError } from './InsufficientPermissionsError';

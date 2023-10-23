@@ -30,7 +30,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
@@ -41,7 +40,6 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
-import MetricTileError from '../../../components/KeyMetrics/MetricTileError';
 import MetricTileWrapper from '../../../components/KeyMetrics/MetricTileWrapper';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
@@ -49,8 +47,9 @@ import {
 } from '../../../util/errors';
 import { isInvalidCustomDimensionError } from './custom-dimensions';
 import {
-	AnalyticsUpdateTileError,
-	InsufficientPermissionsTileError,
+	AnalyticsUpdateError,
+	CustomDimensionsMissingError,
+	InsufficientPermissionsError,
 } from '../components/key-metrics';
 const { useSelect, useDispatch } = Data;
 
@@ -276,44 +275,28 @@ export default function withCustomDimensions( options = {} ) {
 				// Handle permissions error encountered while creating
 				// custom dimensions.
 				return (
-					<InsufficientPermissionsTileError
+					<InsufficientPermissionsError
 						{ ...commonErrorProps }
 						error={ insufficientPermissionsError }
 						onRetry={ handleCreateCustomDimensions }
 					/>
 				);
-			}
-
-			if ( customDimensionsCreationErrors?.length > 0 ) {
+			} else if ( customDimensionsCreationErrors?.length > 0 ) {
 				// Handle generic errors encountered while creating
 				// custom dimensions.
 				return (
-					<AnalyticsUpdateTileError
+					<AnalyticsUpdateError
 						{ ...commonErrorProps }
 						error={ customDimensionsCreationErrors[ 0 ] }
 						onRetry={ handleCreateCustomDimensions }
 					/>
 				);
-			}
-
-			if ( false === hasCustomDimensions ) {
+			} else if ( false === hasCustomDimensions ) {
 				return (
-					<MetricTileError
-						title={ __( 'No data to show', 'google-site-kit' ) }
+					<CustomDimensionsMissingError
 						{ ...commonErrorProps }
-					>
-						<div className="googlesitekit-report-error-actions">
-							<Button onClick={ handleCreateCustomDimensions }>
-								{ __( 'Update', 'google-site-kit' ) }
-							</Button>
-							<span className="googlesitekit-error-retry-text">
-								{ __(
-									'Update Analytics to track metric',
-									'google-site-kit'
-								) }
-							</span>
-						</div>
-					</MetricTileError>
+						onRetry={ handleCreateCustomDimensions }
+					/>
 				);
 			}
 
