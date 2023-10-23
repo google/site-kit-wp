@@ -55,6 +55,7 @@ import {
 	isInsufficientPermissionsError,
 } from '../../../util/errors';
 import { isInvalidCustomDimensionError } from './custom-dimensions';
+import { InsufficientPermissionsTileError } from '../components/key-metrics';
 const { useSelect, useDispatch } = Data;
 
 export default function withCustomDimensions( options = {} ) {
@@ -261,16 +262,6 @@ export default function withCustomDimensions( options = {} ) {
 				reportOptions,
 			] );
 
-			const hasInsufficientPermissionsError =
-				customDimensionsCreationErrors?.some(
-					isInsufficientPermissionsError
-				);
-
-			useEffect( () => {
-				if ( hasInsufficientPermissionsError ) {
-				}
-			}, [ hasInsufficientPermissionsError ] );
-
 			// Return early if the wrapped widget doesn't need custom dimensions.
 			if ( ! customDimensions ) {
 				return <WrappedComponent { ...props } />;
@@ -291,46 +282,17 @@ export default function withCustomDimensions( options = {} ) {
 
 			// Handle permissions error encountered while creating
 			// custom dimensions.
-			if ( hasInsufficientPermissionsError ) {
+			const insufficientPermissionsError =
+				customDimensionsCreationErrors?.find(
+					isInsufficientPermissionsError
+				);
+			if ( insufficientPermissionsError ) {
 				return (
-					<MetricTileError
-						title={ __(
-							'Insufficient permissions',
-							'google-site-kit'
-						) }
+					<InsufficientPermissionsTileError
 						{ ...commonErrorProps }
-					>
-						<div className="googlesitekit-report-error-actions">
-							<span className="googlesitekit-error-retry-text">
-								{ createInterpolateElement(
-									__(
-										'Permissions updated? <a>Retry</a>',
-										'google-site-kit'
-									),
-									{
-										a: (
-											<Link
-												onClick={
-													handleCreateCustomDimensions
-												}
-											/>
-										),
-									}
-								) }
-							</span>
-							<span className="googlesitekit-error-retry-text">
-								{ createInterpolateElement(
-									__(
-										'You’ll need to contact your administrator. <a>Learn more</a>',
-										'google-site-kit'
-									),
-									{
-										a: <Link href={ helpLink } external />,
-									}
-								) }
-							</span>
-						</div>
-					</MetricTileError>
+						error={ insufficientPermissionsError }
+						onRetry={ handleCreateCustomDimensions }
+					/>
 				);
 			}
 
