@@ -16,7 +16,7 @@ function graphQlFetch(query, variables) {
 
 async function checkIssueHasRelease({ repositoryGhId, prNumber }) {
   const query = `
-    query($repositoryGhId: Int!, $prNumber: Int!){
+    query($repositoryGhId: Int!, $prNumber: Int!) {
       issueByInfo(repositoryGhId: $repositoryGhId, issueNumber: $prNumber) {
         connections {
           nodes {
