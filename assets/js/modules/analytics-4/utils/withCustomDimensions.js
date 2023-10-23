@@ -24,12 +24,7 @@ import { isFunction } from 'lodash';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	useCallback,
-	useEffect,
-	useMemo,
-} from '@wordpress/element';
+import { useCallback, useEffect, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,7 +34,6 @@ import { Button } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../analytics/datastore/constants';
 import {
@@ -47,7 +41,6 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
-import Link from '../../../components/Link';
 import MetricTileError from '../../../components/KeyMetrics/MetricTileError';
 import MetricTileWrapper from '../../../components/KeyMetrics/MetricTileWrapper';
 import {
@@ -55,7 +48,10 @@ import {
 	isInsufficientPermissionsError,
 } from '../../../util/errors';
 import { isInvalidCustomDimensionError } from './custom-dimensions';
-import { InsufficientPermissionsTileError } from '../components/key-metrics';
+import {
+	AnalyticsUpdateTileError,
+	InsufficientPermissionsTileError,
+} from '../components/key-metrics';
 const { useSelect, useDispatch } = Data;
 
 export default function withCustomDimensions( options = {} ) {
@@ -131,15 +127,6 @@ export default function withCustomDimensions( options = {} ) {
 
 				return errors;
 			} );
-			const helpLink = useSelect(
-				( select ) =>
-					!! customDimensionsCreationErrors.length &&
-					select( CORE_SITE ).getErrorTroubleshootingLinkURL(
-						customDimensionsCreationErrors.find(
-							isInsufficientPermissionsError
-						) || customDimensionsCreationErrors[ 0 ]
-					)
-			);
 			const hasAnalyticsEditScope = useSelect(
 				( select ) =>
 					!! customDimensions &&
@@ -280,13 +267,14 @@ export default function withCustomDimensions( options = {} ) {
 				);
 			}
 
-			// Handle permissions error encountered while creating
-			// custom dimensions.
 			const insufficientPermissionsError =
 				customDimensionsCreationErrors?.find(
 					isInsufficientPermissionsError
 				);
+
 			if ( insufficientPermissionsError ) {
+				// Handle permissions error encountered while creating
+				// custom dimensions.
 				return (
 					<InsufficientPermissionsTileError
 						{ ...commonErrorProps }
@@ -300,30 +288,11 @@ export default function withCustomDimensions( options = {} ) {
 				// Handle generic errors encountered while creating
 				// custom dimensions.
 				return (
-					<MetricTileError
-						title={ __(
-							'Analytics update failed',
-							'google-site-kit'
-						) }
+					<AnalyticsUpdateTileError
 						{ ...commonErrorProps }
-					>
-						<div className="googlesitekit-report-error-actions">
-							<Button onClick={ handleCreateCustomDimensions }>
-								{ __( 'Retry', 'google-site-kit' ) }
-							</Button>
-							<span className="googlesitekit-error-retry-text">
-								{ createInterpolateElement(
-									__(
-										'Retry didn’t work? <a>Learn more</a>',
-										'google-site-kit'
-									),
-									{
-										a: <Link href={ helpLink } external />,
-									}
-								) }
-							</span>
-						</div>
-					</MetricTileError>
+						error={ customDimensionsCreationErrors[ 0 ] }
+						onRetry={ handleCreateCustomDimensions }
+					/>
 				);
 			}
 

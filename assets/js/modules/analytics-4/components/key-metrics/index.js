@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export { default as AnalyticsUpdateTileError } from './AnalyticsUpdateTileError';
 export { default as InsufficientPermissionsTileError } from './InsufficientPermissionsTileError';
