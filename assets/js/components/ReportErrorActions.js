@@ -47,11 +47,9 @@ import Link from './Link';
 
 const { useSelect, useDispatch } = Data;
 
-export default function ReportErrorActions( {
-	moduleSlug,
-	error,
-	GetHelpLink,
-} ) {
+export default function ReportErrorActions( props ) {
+	const { moduleSlug, error, GetHelpLink, onRetry } = props;
+
 	const isViewOnly = useViewOnly();
 	const storeName = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
@@ -98,7 +96,9 @@ export default function ReportErrorActions( {
 				selectorData.args
 			);
 		} );
-	}, [ dispatch, retryableErrors ] );
+
+		onRetry?.();
+	}, [ dispatch, retryableErrors, onRetry ] );
 
 	const showRequestAccessURL =
 		requestAccessURL && hasInsufficientPermissionsError && ! isViewOnly;
@@ -156,4 +156,5 @@ ReportErrorActions.propTypes = {
 		PropTypes.object,
 	] ).isRequired,
 	GetHelpLink: PropTypes.elementType,
+	onRetry: PropTypes.func,
 };
