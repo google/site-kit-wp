@@ -21,9 +21,8 @@ use Google\Site_Kit\Core\Storage\Transients;
  */
 class Custom_Dimensions_Data_Available {
 
-	// TODO: Flag that I've used customDimension over customDimensionName etc throughout.
 	/**
-	 * List of valid custom dimension s;ugs.
+	 * List of valid custom dimension slugs.
 	 *
 	 * @since n.e.x.t
 	 * @var array
