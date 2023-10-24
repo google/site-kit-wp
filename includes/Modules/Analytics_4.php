@@ -11,8 +11,11 @@
 namespace Google\Site_Kit\Modules;
 
 use Exception;
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
@@ -35,6 +38,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -46,6 +51,7 @@ use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
+use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
@@ -104,6 +110,36 @@ final class Analytics_4 extends Module
 	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
 
 	/**
+	 * Custom_Dimensions_Data_Available instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Custom_Dimensions_Data_Available
+	 */
+	protected $custom_dimensions_data_available;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.30.0
@@ -128,6 +164,10 @@ final class Analytics_4 extends Module
 			function( $old_value, $new_value ) {
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
+
+					if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+						$this->custom_dimensions_data_available->reset_data_available();
+					}
 				}
 			},
 			10,
@@ -148,6 +188,8 @@ final class Analytics_4 extends Module
 				10,
 				2
 			);
+
+			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 		}
 
 		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
@@ -255,6 +297,10 @@ final class Analytics_4 extends Module
 	public function on_deactivation() {
 		$this->get_settings()->delete();
 		$this->reset_data_available();
+
+		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+			$this->custom_dimensions_data_available->reset_data_available();
+		}
 	}
 
 	/**
@@ -387,14 +433,15 @@ final class Analytics_4 extends Module
 		}
 
 		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
-			$datapoints['POST:create-custom-dimension'] = array(
+			$datapoints['POST:create-custom-dimension']         = array(
 				'service'                => 'analyticsdata',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
 			);
-			$datapoints['POST:sync-custom-dimensions']  = array(
+			$datapoints['POST:sync-custom-dimensions']          = array(
 				'service' => 'analyticsadmin',
 			);
+			$datapoints['POST:custom-dimension-data-available'] = array( 'service' => '' );
 		}
 
 		return $datapoints;
@@ -907,6 +954,28 @@ final class Analytics_4 extends Module
 				return $analyticsadmin
 					->properties_customDimensions // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->listPropertiesCustomDimensions( self::normalize_property_id( $settings['propertyID'] ) );
+			case 'POST:custom-dimension-data-available':
+				if ( ! isset( $data['customDimension'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'customDimension' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! $this->custom_dimensions_data_available->is_valid_custom_dimension( $data['customDimension'] ) ) {
+					return new WP_Error(
+						'invalid_custom_dimension_slug',
+						/* translators: %s: Invalid custom dimension slug */
+						sprintf( __( 'Invalid custom dimension slug: %s.', 'google-site-kit' ), $data['customDimension'] ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return function() use ( $data ) {
+					return $this->custom_dimensions_data_available->set_data_available( $data['customDimension'] );
+				};
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -1589,6 +1658,25 @@ final class Analytics_4 extends Module
 		$settings = $this->get_settings()->get();
 
 		return $settings['measurementID'];
+	}
+
+	/**
+	 * Populates custom dimension data to pass to JS via _googlesitekitModulesData.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	private function inline_custom_dimensions_data( $modules_data ) {
+		if ( $this->is_connected() ) {
+			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
+			$modules_data['analytics-4'] = array(
+				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
+			);
+		}
+
+		return $modules_data;
 	}
 
 	/**

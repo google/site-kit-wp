@@ -17,8 +17,10 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '../datastore/constants';
-import { possibleCustomDimensions } from '../datastore/custom-dimensions';
+import {
+	CUSTOM_DIMENSION_DEFINITIONS,
+	MODULES_ANALYTICS_4,
+} from '../datastore/constants';
 
 /**
  * Provides custom dimension error data to the given registry.
@@ -36,7 +38,10 @@ export const provideCustomDimensionError = (
 ) => {
 	const propertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 
-	const options = [ propertyID, possibleCustomDimensions[ customDimension ] ];
+	const options = [
+		propertyID,
+		CUSTOM_DIMENSION_DEFINITIONS[ customDimension ],
+	];
 
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
