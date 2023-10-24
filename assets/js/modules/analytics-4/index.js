@@ -75,7 +75,7 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
-	if ( isFeatureEnabled( 'userInput' ) ) {
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
 		/*
 		 * Key metrics widgets.
 		 */

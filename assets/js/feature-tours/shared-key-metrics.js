@@ -39,7 +39,7 @@ const sharedKeyMetrics = {
 		VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	],
 	gaEventCategory: ( viewContext ) => `${ viewContext }_shared_key-metrics`,
-	checkRequirements: () => isFeatureEnabled( 'userInput' ),
+	checkRequirements: () => isFeatureEnabled( 'keyMetrics' ),
 	steps: [
 		{
 			target: '.googlesitekit-km-change-metrics-cta',
