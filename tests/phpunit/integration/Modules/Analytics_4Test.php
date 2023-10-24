@@ -1663,7 +1663,7 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
-	public function test_report__no_metrics_or_dimensions( $access_token ) {
+	public function test_report__no_metrics( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
 		$property_id = '123456789';
