@@ -49,7 +49,7 @@ export default function ReportMetric( {
 	isUnavailable,
 } ) {
 	// Normalize the category case.
-	category = category.toLowerCase();
+	category = category?.toLowerCase();
 
 	return (
 		<tr
@@ -88,7 +88,13 @@ export default function ReportMetric( {
 			</td>
 
 			<td
-				className={ `googlesitekit-pagespeed-report-metric-value googlesitekit-pagespeed-report-metric--${ category }` }
+				className={ classnames(
+					'googlesitekit-pagespeed-report-metric-value',
+					{
+						[ `googlesitekit-pagespeed-report-metric--${ category }` ]:
+							!! category,
+					}
+				) }
 			>
 				<div className="googlesitekit-pagespeed-report-metric-value-container">
 					<div className="googlesitekit-pagespeed-report-metric-value__display-value">
@@ -138,7 +144,7 @@ ReportMetric.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	displayValue: PropTypes.string.isRequired,
-	category: PropTypes.string.isRequired,
+	category: PropTypes.string,
 	experimental: PropTypes.bool,
 	isLast: PropTypes.bool,
 	isHidden: PropTypes.bool,
