@@ -1,5 +1,5 @@
 /**
- * MetricTileError component.
+ * InfoTooltip styles.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,28 +16,21 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import CTA from '../notifications/CTA';
-import InfoTooltip from '../InfoTooltip';
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content {
+	border-radius: $br-xs;
+	font-family: $f-primary;
+	font-size: $fs-body-sm;
+	font-weight: $fw-normal;
+	letter-spacing: $ls-xs;
+	line-height: $lh-body-sm;
+	max-width: 160px;
+	padding: 12px;
 
-export default function MetricTileError( props ) {
-	const { children, headerText, infoTooltip, title } = props;
-
-	return (
-		<div className="googlesitekit-km-widget-tile--error">
-			<CTA
-				title={ title }
-				headerText={ headerText }
-				headerContent={
-					infoTooltip && <InfoTooltip title={ infoTooltip } />
-				}
-				description=""
-				error
-			>
-				{ children }
-			</CTA>
-		</div>
-	);
+	> button {
+		background: none;
+		border: none;
+		color: $c-surfaces-inverse-on-surface;
+		padding-right: 0;
+		text-decoration: underline;
+	}
 }
