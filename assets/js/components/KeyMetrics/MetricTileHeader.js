@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import InfoTooltip from './InfoTooltip';
+import InfoTooltip from '../InfoTooltip';
 
 export default function MetricTileHeader( { title, infoTooltip } ) {
 	return (
