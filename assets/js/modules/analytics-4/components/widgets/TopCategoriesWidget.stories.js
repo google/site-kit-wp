@@ -128,6 +128,29 @@ ZeroData.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ZeroData',
 };
 
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+			],
+		} );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
+			KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+				.requiredCustomDimensions?.[ 0 ],
+			true
+		);
+	},
+};
+GatheringData.scenario = {
+	label: 'KeyMetrics/TopCategoriesWidget/GatheringData',
+};
+
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
@@ -335,7 +358,16 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webDataStreamID );
-
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+							.requiredCustomDimensions?.[ 0 ],
+						false
+					);
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
 				provideKeyMetrics( registry );

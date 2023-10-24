@@ -109,6 +109,21 @@ ZeroData.scenario = {
 	label: 'KeyMetrics/PopularAuthorsWidget/ZeroData',
 };
 
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
+			KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+				.requiredCustomDimensions?.[ 0 ],
+			true
+		);
+	},
+};
+GatheringData.scenario = {
+	label: 'KeyMetrics/PopularAuthorsWidget/GatheringData',
+};
+
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
@@ -194,6 +209,16 @@ export default {
 						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
 							.requiredCustomDimensions,
 				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+							.requiredCustomDimensions?.[ 0 ],
+						false
+					);
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
