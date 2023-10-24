@@ -137,6 +137,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							lcpSeconds
 						) }
 						category={ largestContentfulPaint.category }
+						isUnavailable={ ! largestContentfulPaint }
 					/>
 					<ReportMetric
 						title={ _x(
@@ -150,6 +151,7 @@ export default function FieldReportMetrics( { data, error } ) {
 						) }
 						displayValue={ cls }
 						category={ cumulativeLayoutShift.category }
+						isUnavailable={ ! cumulativeLayoutShift }
 					/>
 					<ReportMetric
 						title={ _x(
@@ -167,6 +169,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							firstInputDelay.percentile
 						) }
 						category={ firstInputDelay.category }
+						isUnavailable={ ! firstInputDelay }
 					/>
 					<ReportMetric
 						title={ _x(
@@ -187,6 +190,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							interactionToNextPaint?.category || CATEGORY_AVERAGE
 						}
 						isLast
+						isUnavailable={ ! interactionToNextPaint }
 					/>
 				</tbody>
 			</table>
