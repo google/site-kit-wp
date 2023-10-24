@@ -118,6 +118,10 @@ const baseActions = {
 		const { select, __experimentalResolveSelect } =
 			yield Data.commonActions.getRegistry();
 
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
+
 		if (
 			! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
 				customDimension
@@ -141,10 +145,6 @@ const baseActions = {
 			);
 			return;
 		}
-
-		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
-		);
 
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
