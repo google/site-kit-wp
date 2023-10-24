@@ -168,6 +168,37 @@ export default function Footer( props ) {
 		);
 	}, [ slug, viewContext ] );
 
+	// Check if the resolution for the specified selector has finished.
+	// This allows us to determine if the data needed by the module is still being loaded.
+	// The primary reason for this loading check is to disable the submit button
+	// while the necessary data for the settings is still being loaded, preventing
+	// premature interactions by the user.
+	const isLoading = useSelect( ( select ) => {
+		const resolutionMapping = {
+			analytics: 'getAccounts',
+			tagmanager: 'getAccounts',
+			'search-console': 'getMatchedProperties',
+		};
+		const resolutionSelector = resolutionMapping[ slug ];
+
+		if ( ! module || ! resolutionSelector ) {
+			return false;
+		}
+
+		return ! select( module.storeName ).hasFinishedResolution(
+			resolutionSelector
+		);
+	} );
+
+	let buttonText = __( 'Save', 'google-site-kit' );
+
+	if ( canSubmitChanges ) {
+		buttonText = __( 'Apply changes', 'google-site-kit' );
+	}
+	if ( isSaving ) {
+		buttonText = __( 'Saving…', 'google-site-kit' );
+	}
+
 	if ( ! module ) {
 		return null;
 	}
@@ -181,13 +212,11 @@ export default function Footer( props ) {
 			<Fragment>
 				{ hasSettings && moduleConnected ? (
 					<SpinnerButton
-						disabled={ isSaving || ! canSubmitChanges }
+						disabled={ isSaving || isLoading }
 						onClick={ handleConfirm }
 						isSaving={ isSaving }
 					>
-						{ isSaving
-							? __( 'Saving…', 'google-site-kit' )
-							: __( 'Confirm Changes', 'google-site-kit' ) }
+						{ buttonText }
 					</SpinnerButton>
 				) : (
 					<Button onClick={ handleClose }>

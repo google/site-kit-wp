@@ -282,6 +282,9 @@ class Request extends Report {
 				'pageTitle',
 				'sessionDefaultChannelGroup',
 				'sessionDefaultChannelGrouping',
+				'customEvent:googlesitekit_post_author',
+				'customEvent:googlesitekit_post_categories',
+				'customEvent:googlesitekit_post_date',
 			)
 		);
 
@@ -380,6 +383,11 @@ class Request extends Report {
 			$filter_class = String_Filter::class;
 		} elseif ( 'inListFilter' === $filter_type ) {
 			$filter_class = In_List_Filter::class;
+			// Ensure that the 'inListFilter' is provided a flat array of values.
+			// Extract the actual values from the 'value' key if present.
+			if ( isset( $dimension_value['value'] ) ) {
+				$dimension_value = $dimension_value['value'];
+			}
 		} else {
 			return null;
 		}

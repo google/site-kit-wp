@@ -2406,30 +2406,15 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
 	}
 
-	public function test_sync_custom_dimensions__required_params() {
-		$this->enable_feature( 'newsKeyMetrics' );
-		// Grant READONLY_SCOPE so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
-			)
-		);
-
-		$data = $this->analytics->set_data(
-			'sync-custom-dimensions',
-			array()
-		);
-
-		// Verify that the propertyID is required.
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
-	}
-
 	public function test_sync_custom_dimensions() {
 		$this->enable_feature( 'newsKeyMetrics' );
 		$property_id = 'sync-custom-dimension-property-id';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
@@ -2446,9 +2431,7 @@ class Analytics_4Test extends TestCase {
 
 		$response = $this->analytics->set_data(
 			'sync-custom-dimensions',
-			array(
-				'propertyID' => $property_id,
-			)
+			array()
 		);
 
 		$this->assertNotWPError( $response );
@@ -2859,6 +2842,12 @@ class Analytics_4Test extends TestCase {
 		$method = new ReflectionMethod( Analytics_4::class, 'get_custom_dimensions_data' );
 		$method->setAccessible( true );
 
+		// Returns an empty array if the current page type is not singular.
+		$wp_query = new WP_Query();
+		$data     = $method->invoke( $this->analytics );
+		$this->assertEmpty( $data );
+
+		// Change the current page to be singular.
 		$category1_id = $this->factory()->category->create();
 		$category2_id = $this->factory()->category->create();
 		$category3_id = $this->factory()->category->create();
@@ -2867,7 +2856,6 @@ class Analytics_4Test extends TestCase {
 		$post_id   = $this->factory()->post->create( array( 'post_type' => $post_type ) );
 		wp_set_post_categories( $post_id, array( $category1_id, $category3_id ) );
 
-		$wp_query                 = new WP_Query();
 		$wp_query->is_singular    = true;
 		$wp_query->queried_object = get_post( $post_id );
 
@@ -2878,13 +2866,11 @@ class Analytics_4Test extends TestCase {
 		// Returns an empty array if no custom dimensions are added to settings.
 		$data = $method->invoke( $this->analytics );
 		$this->assertEmpty( $data );
-		$this->assertTrue( ! did_action( 'custom_dimension_valid_post_types' ) );
 
-		// Returns an empty array if the queried object is not in the allowed post types list.
+		// Returns only post type if the queried object is not in the allowed post types list.
 		$this->analytics->get_settings()->merge( $settings );
 		$data = $method->invoke( $this->analytics );
-		$this->assertEmpty( $data );
-		$this->assertTrue( ! did_action( 'custom_dimension_valid_post_types' ) );
+		$this->assertEquals( array( 'googlesitekit_post_type' => $post_type ), $data );
 
 		// Returns correct data when all conditions are met.
 		add_filter( 'custom_dimension_valid_post_types', $hook );

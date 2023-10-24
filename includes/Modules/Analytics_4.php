@@ -893,12 +893,12 @@ final class Analytics_4 extends Module
 						$custom_dimension
 					);
 			case 'POST:sync-custom-dimensions':
-				if ( ! isset( $data['propertyID'] ) ) {
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
+						'missing_required_setting',
+						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
 					);
 				}
 
@@ -906,7 +906,7 @@ final class Analytics_4 extends Module
 
 				return $analyticsadmin
 					->properties_customDimensions // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					->listPropertiesCustomDimensions( self::normalize_property_id( $data['propertyID'] ) );
+					->listPropertiesCustomDimensions( self::normalize_property_id( $settings['propertyID'] ) );
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -1301,6 +1301,10 @@ final class Analytics_4 extends Module
 	 * @return array An associated array of custom dimensions data.
 	 */
 	private function get_custom_dimensions_data() {
+		if ( ! is_singular() ) {
+			return array();
+		}
+
 		$settings = $this->get_settings()->get();
 		if ( empty( $settings['availableCustomDimensions'] ) ) {
 			return array();
@@ -1314,27 +1318,27 @@ final class Analytics_4 extends Module
 		 * @param array $allowed_post_types The array of allowed post types.
 		 */
 		$allowed_post_types = apply_filters( 'custom_dimension_valid_post_types', array( 'post' ) );
-		if ( ! is_singular( $allowed_post_types ) ) {
-			return array();
-		}
 
 		$data = array();
 		$post = get_queried_object();
 
-		foreach ( $settings['availableCustomDimensions'] as $custom_dimension ) {
-			switch ( $custom_dimension ) {
-				case 'googlesitekit_post_type':
-					$data[ $custom_dimension ] = $post->post_type;
-					break;
-				case 'googlesitekit_post_author':
-					$data[ $custom_dimension ] = $post->post_author;
-					break;
-				case 'googlesitekit_post_categories':
-					$data[ $custom_dimension ] = implode( ',', wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) ) );
-					break;
-				case 'googlesitekit_post_date':
-					$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );
-					break;
+		if ( in_array( 'googlesitekit_post_type', $settings['availableCustomDimensions'], true ) ) {
+			$data['googlesitekit_post_type'] = $post->post_type;
+		}
+
+		if ( is_singular( $allowed_post_types ) ) {
+			foreach ( $settings['availableCustomDimensions'] as $custom_dimension ) {
+				switch ( $custom_dimension ) {
+					case 'googlesitekit_post_author':
+						$data[ $custom_dimension ] = $post->post_author;
+						break;
+					case 'googlesitekit_post_categories':
+						$data[ $custom_dimension ] = implode( ',', wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) ) );
+						break;
+					case 'googlesitekit_post_date':
+						$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );
+						break;
+				}
 			}
 		}
 

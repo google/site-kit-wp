@@ -20,36 +20,40 @@
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import {
-	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
-	KEY_METRICS_SELECTED,
-	KEY_METRICS_SELECTION_FORM,
-} from '../constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import Link from '../../Link';
 import CloseIcon from '../../../../svg/icons/close.svg';
 const { useSelect, useDispatch } = Data;
 
 export default function Header() {
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
+	const settingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingKeyMetricsSettings()
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onCloseClick = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 	}, [ setValue ] );
+
+	const onSettingsClick = useCallback(
+		() => navigateTo( `${ settingsURL }#/admin-settings` ),
+		[ navigateTo, settingsURL ]
+	);
 
 	return (
 		<header className="googlesitekit-km-selection-panel-header">
@@ -64,16 +68,18 @@ export default function Header() {
 			</div>
 			<p>
 				{ createInterpolateElement(
-					sprintf(
-						/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
-						__(
-							'<strong>%1$d of %2$d</strong> metrics selected',
-							'google-site-kit'
-						),
-						selectedMetrics?.length || 0,
-						4
+					__(
+						'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
+						'google-site-kit'
 					),
 					{
+						link: (
+							<Link
+								secondary
+								onClick={ onSettingsClick }
+								disabled={ isSavingSettings }
+							/>
+						),
 						strong: <strong />,
 					}
 				) }
