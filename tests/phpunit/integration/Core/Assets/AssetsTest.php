@@ -228,13 +228,13 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_base_data__product_base_paths__no_permalink_structure() {
-		$this->enable_feature( 'userInput' );
+		$this->enable_feature( 'keyMetrics' );
 		$data = $this->get_inline_base_data();
 		$this->assertTrue( empty( $data['productBasePaths'] ) );
 	}
 
 	public function test_base_data__product_base_paths__empty() {
-		$this->enable_feature( 'userInput' );
+		$this->enable_feature( 'keyMetrics' );
 		$this->set_permalink_structure( '/%postname%/' );
 
 		$data = $this->get_inline_base_data();
@@ -242,7 +242,7 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_base_data__product_base_paths__hidden_post_type() {
-		$this->enable_feature( 'userInput' );
+		$this->enable_feature( 'keyMetrics' );
 		$this->set_permalink_structure( '/%postname%/' );
 
 		register_post_type( 'product', array( 'public' => false ) );
@@ -255,7 +255,7 @@ class AssetsTest extends TestCase {
 	 * @dataProvider data_product_base_paths
 	 */
 	public function test_base_data__product_base_paths( $args, $expected ) {
-		$this->enable_feature( 'userInput' );
+		$this->enable_feature( 'keyMetrics' );
 		$this->set_permalink_structure( '/%postname%/' );
 		register_post_type( 'product', $args['post_type_args'] );
 
