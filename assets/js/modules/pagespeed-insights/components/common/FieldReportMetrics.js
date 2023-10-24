@@ -64,9 +64,10 @@ export default function FieldReportMetrics( { data, error } ) {
 	}
 
 	if (
-		! largestContentfulPaint ||
-		! cumulativeLayoutShift ||
-		! firstInputDelay
+		! largestContentfulPaint &&
+		! cumulativeLayoutShift &&
+		! firstInputDelay &&
+		! interactionToNextPaint
 	) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable">
