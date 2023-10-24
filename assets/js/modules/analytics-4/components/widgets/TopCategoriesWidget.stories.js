@@ -224,7 +224,7 @@ ErrorMissingCustomDimensions.args = {
 	},
 };
 ErrorMissingCustomDimensions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 ErrorMissingCustomDimensions.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ErrorMissingCustomDimensions',
@@ -261,7 +261,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 	},
 };
 ErrorCustomDimensionsInsufficientPermissions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 ErrorCustomDimensionsInsufficientPermissions.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsInsufficientPermissions',
@@ -298,7 +298,7 @@ ErrorCustomDimensionsGeneric.args = {
 	},
 };
 ErrorCustomDimensionsGeneric.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 ErrorCustomDimensionsGeneric.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsGeneric',

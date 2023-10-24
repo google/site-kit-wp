@@ -223,7 +223,7 @@ export const registerWidgets = ( widgets ) => {
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
 
-		if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
+		if ( isFeatureEnabled( 'keyMetrics' ) ) {
 			widgets.registerWidget(
 				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 				{
@@ -242,7 +242,7 @@ export const registerWidgets = ( widgets ) => {
 		}
 	}
 
-	if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
 		/*
 		 * News Key metrics widgets.
 		 */
