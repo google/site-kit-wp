@@ -165,7 +165,7 @@ final class Analytics_4 extends Module
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 
-					if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+					if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 						$this->custom_dimensions_data_available->reset_data_available();
 					}
 				}
@@ -298,7 +298,7 @@ final class Analytics_4 extends Module
 		$this->get_settings()->delete();
 		$this->reset_data_available();
 
-		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			$this->custom_dimensions_data_available->reset_data_available();
 		}
 	}

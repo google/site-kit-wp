@@ -2891,7 +2891,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_inline_custom_dimension_data_initial_state__module_not_connected() {
-		$this->enable_feature( 'newsKeyMetrics' );
+		$this->enable_feature( 'keyMetrics' );
 		$this->analytics->register();
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
@@ -2900,7 +2900,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_inline_custom_dimension_data_initial_state__module_connected() {
-		$this->enable_feature( 'newsKeyMetrics' );
+		$this->enable_feature( 'keyMetrics' );
 		$this->analytics->register();
 
 		// Ensure the module is connected.
@@ -2931,7 +2931,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_set_custom_dimension_data_available() {
-		$this->enable_feature( 'newsKeyMetrics' );
+		$this->enable_feature( 'keyMetrics' );
 
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
@@ -2980,7 +2980,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_custom_dimension_data_available_reset_on_measurement_id_change() {
-		$this->enable_feature( 'newsKeyMetrics' );
+		$this->enable_feature( 'keyMetrics' );
 
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
@@ -3047,7 +3047,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_custom_dimension_data_available_reset_on_deactivation() {
-		$this->enable_feature( 'newsKeyMetrics' );
+		$this->enable_feature( 'keyMetrics' );
 
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
