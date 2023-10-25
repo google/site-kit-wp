@@ -182,6 +182,10 @@ const KEY_METRICS_WIDGETS = {
 			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
+			'google-site-kit'
+		),
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
