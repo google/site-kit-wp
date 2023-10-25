@@ -112,7 +112,7 @@ export async function submitChanges( { select, dispatch } ) {
 			ENHANCED_MEASUREMENT_ENABLED
 		);
 
-		if ( isEnhancedMeasurementEnabled !== undefined ) {
+		if ( isEnhancedMeasurementEnabled ) {
 			await dispatch(
 				MODULES_ANALYTICS_4
 			).setEnhancedMeasurementStreamEnabled(
