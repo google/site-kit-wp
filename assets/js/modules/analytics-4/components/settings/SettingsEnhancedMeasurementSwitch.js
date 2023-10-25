@@ -95,6 +95,26 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		);
 	} );
 
+	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
+		if ( isLoadingProperties || isLoadingWebDataStreams ) {
+			return undefined;
+		}
+
+		if (
+			! isValidPropertyID( propertyID ) ||
+			! isValidWebDataStreamID( webDataStreamID )
+		) {
+			return null;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).isEnhancedMeasurementStreamAlreadyEnabled(
+			propertyID,
+			webDataStreamID
+		);
+	} );
+
 	const isLoading = useSelect( ( select ) => {
 		if (
 			! isValidPropertySelection( propertyID ) ||
@@ -173,6 +193,9 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		<EnhancedMeasurementSwitch
 			disabled={ ! hasAnalytics4Access }
 			loading={ isLoading }
+			isEnhancedMeasurementAlreadyEnabled={
+				isEnhancedMeasurementAlreadyEnabled
+			}
 			onClick={ () => {
 				if (
 					! isValidPropertyID( propertyID ) ||
