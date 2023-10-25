@@ -45,5 +45,8 @@ require $_test_root . '/includes/functions.php';
 // Ensure all features are disabled when bootstrapping the plugin.
 tests_add_filter( 'googlesitekit_is_feature_enabled', '__return_false', 0 );
 
+// Include the time mock functions.
+require_once TESTS_PLUGIN_DIR . '/tests/phpunit/includes/global-time-override.php';
+
 // Start up the WP testing environment.
 require $_test_root . '/includes/bootstrap.php';
