@@ -104,11 +104,19 @@ const KEY_METRICS_WIDGETS = {
 			'How many new visitors you got and how the overall audience changed',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'Portion of visitors who visited your site for the first time in this timeframe',
+			'google-site-kit'
+		),
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE ]: {
 		title: __( 'Top traffic source', 'google-site-kit' ),
 		description: __(
 			'Channel which brought in the most visitors to your site',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
 			'google-site-kit'
 		),
 	},
@@ -129,6 +137,10 @@ const KEY_METRICS_WIDGETS = {
 			'Pages that brought in the most visitors',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'Pages your visitors read the most',
+			'google-site-kit'
+		),
 	},
 	[ KM_ANALYTICS_POPULAR_PRODUCTS ]: {
 		title: __( 'Most popular products by pageviews', 'google-site-kit' ),
@@ -147,11 +159,19 @@ const KEY_METRICS_WIDGETS = {
 			'What people searched for before they came to your site',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'The top search queries for your site by highest clickthrough rate',
+			'google-site-kit'
+		),
 	},
 	[ KM_ANALYTICS_TOP_CITIES ]: {
 		title: __( 'Top cities driving traffic', 'google-site-kit' ),
 		description: __(
 			'Which cities you get the most visitors from',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'The cities where most of your visitors came from',
 			'google-site-kit'
 		),
 	},
@@ -161,6 +181,10 @@ const KEY_METRICS_WIDGETS = {
 			'Which countries you get the most visitors from',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'The countries where most of your visitors came from',
+			'google-site-kit'
+		),
 	},
 	[ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ]: {
 		title: __( 'Top converting traffic source', 'google-site-kit' ),
@@ -168,10 +192,18 @@ const KEY_METRICS_WIDGETS = {
 			'Channel which brought in the most visits that resulted in conversions',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions',
+			'google-site-kit'
+		),
 	},
 	[ KM_ANALYTICS_VISITS_PER_VISITOR ]: {
 		title: __( 'Visits per visitor', 'google-site-kit' ),
 		description: __(
+			'Average number of sessions per site visitor',
+			'google-site-kit'
+		),
+		infoTooltip: __(
 			'Average number of sessions per site visitor',
 			'google-site-kit'
 		),
@@ -194,11 +226,19 @@ const KEY_METRICS_WIDGETS = {
 			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'Number of pages visitors viewed per session on average',
+			'google-site-kit'
+		),
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_VISIT_LENGTH ]: {
 		title: __( 'Visit length', 'google-site-kit' ),
 		description: __(
+			'Average duration of engaged visits',
+			'google-site-kit'
+		),
+		infoTooltip: __(
 			'Average duration of engaged visits',
 			'google-site-kit'
 		),
@@ -210,6 +250,10 @@ const KEY_METRICS_WIDGETS = {
 			'Pages that attracted the most returning visitors',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'Pages that attracted the most returning visitors',
+			'google-site-kit'
+		),
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
@@ -218,11 +262,19 @@ const KEY_METRICS_WIDGETS = {
 			'Pages with the highest engagement rate',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'Pages with the highest engagement rate',
+			'google-site-kit'
+		),
 		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
 		title: __( 'Top recent trending pages', 'google-site-kit' ),
 		description: __(
+			'Pages with the most pageviews published in the last 3 days',
+			'google-site-kit'
+		),
+		infoTooltip: __(
 			'Pages with the most pageviews published in the last 3 days',
 			'google-site-kit'
 		),
@@ -235,12 +287,20 @@ const KEY_METRICS_WIDGETS = {
 			'Categories that your site visitors viewed the most',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'Categories that your site visitors viewed the most',
+			'google-site-kit'
+		),
 		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
 		title: __( 'Most popular authors by pageviews', 'google-site-kit' ),
 		description: __(
+			'Authors whose posts got the most visits',
+			'google-site-kit'
+		),
+		infoTooltip: __(
 			'Authors whose posts got the most visits',
 			'google-site-kit'
 		),

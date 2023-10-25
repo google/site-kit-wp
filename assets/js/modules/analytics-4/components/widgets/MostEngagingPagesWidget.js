@@ -25,13 +25,15 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -216,17 +218,13 @@ function MostEngagingPagesWidget( props ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'Most engaging pages', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_MOST_ENGAGING_PAGES }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Pages with the highest engagement rate',
-				'google-site-kit'
-			) }
 		/>
 	);
 }
