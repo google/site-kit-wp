@@ -2877,7 +2877,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( array( 'googlesitekit_post_type' => $post_type ), $data );
 
 		// Returns correct data when all conditions are met.
-		add_filter( 'custom_dimension_valid_post_types', $hook );
+		add_filter( 'googlesitekit_custom_dimension_valid_post_types', $hook );
 		$data = $method->invoke( $this->analytics );
 		$this->assertEquals(
 			array(
