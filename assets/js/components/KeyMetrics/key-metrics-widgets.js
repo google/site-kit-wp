@@ -88,7 +88,7 @@ function shouldDisplayWidgetWithCustomDimensions(
 
 const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
-		title: __( 'Loyal visitors', 'google-site-kit' ),
+		title: __( 'Returning visitors', 'google-site-kit' ),
 		description: __(
 			'Portion of people who visited your site more than once',
 			'google-site-kit'

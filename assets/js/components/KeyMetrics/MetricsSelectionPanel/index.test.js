@@ -92,7 +92,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).toHaveTextContent( 'Loyal visitors' );
+			).toHaveTextContent( 'Returning visitors' );
 
 			expect(
 				document.querySelector(
@@ -302,7 +302,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).not.toHaveTextContent( 'Loyal visitors' );
+			).not.toHaveTextContent( 'Returning visitors' );
 
 			// Verify that a metric dependent on Search Console is listed.
 			expect(
@@ -497,7 +497,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 				// Uncheck one of the selected metrics to trigger
 				// the button label change.
-				const checkbox = await findByLabelText( 'Loyal visitors' );
+				const checkbox = await findByLabelText( 'Returning visitors' );
 				fireEvent.click( checkbox );
 
 				expect(
