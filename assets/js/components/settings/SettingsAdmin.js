@@ -38,11 +38,11 @@ import SettingsPlugin from './SettingsPlugin';
 const { useSelect } = Data;
 
 export default function SettingsAdmin() {
-	const userInputEnabled = useFeature( 'userInput' );
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 
 	const showKeyMetricsSettings = useSelect(
 		( select ) =>
-			userInputEnabled &&
+			keyMetricsEnabled &&
 			select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) &&
 			select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false &&
 			select( MODULES_ANALYTICS_4 ).isGatheringData() === false

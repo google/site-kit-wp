@@ -249,7 +249,7 @@ export function registerDefaults( widgetsAPI ) {
 		CONTEXT_ENTITY_DASHBOARD_MONETIZATION
 	);
 
-	if ( isFeatureEnabled( 'userInput' ) ) {
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
 		widgetsAPI.registerWidget(
 			'keyMetricsSetupCTA',
 			{
