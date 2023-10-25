@@ -430,6 +430,36 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Checks if the `streamEnabled` setting is enabled for a given web data stream within the saved settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} propertyID      The GA4 property ID to check.
+	 * @param {string} webDataStreamID The GA4 web data stream ID to check.
+	 * @return {boolean}               True if `streamEnabled` is on, otherwise false; `undefined` if not loaded.
+	 */
+	isEnhancedMeasurementStreamAlreadyEnabled: createRegistrySelector(
+		( select ) => ( state, propertyID, webDataStreamID ) => {
+			const { savedSettings } =
+				state.enhancedMeasurement[ propertyID ]?.[ webDataStreamID ] ||
+				{};
+
+			// If the saved settings are not loaded yet, call the `getEnhancedMeasurementSettings` selector
+			// to invoke its resolver and load the saved settings.
+			if ( savedSettings === undefined ) {
+				select( MODULES_ANALYTICS_4 ).getEnhancedMeasurementSettings(
+					propertyID,
+					webDataStreamID
+				);
+				return undefined;
+			}
+
+			return !! savedSettings.streamEnabled;
+		}
+	),
+
+	/**
 	 * Checks if the settings have changed compared to the saved settings for a given web data stream.
 	 *
 	 * @since 1.110.0
