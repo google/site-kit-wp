@@ -58,6 +58,8 @@ class TestCase extends WP_UnitTestCase {
 	public function set_up() {
 		parent::set_up();
 
+		MockableTime::set_mocked_time( '2023-10-01', true );
+
 		// At this point all hooks are isolated between tests.
 
 		/**
