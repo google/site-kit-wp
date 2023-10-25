@@ -1386,7 +1386,7 @@ final class Analytics_4 extends Module
 		 *
 		 * @param array $allowed_post_types The array of allowed post types.
 		 */
-		$allowed_post_types = apply_filters( 'custom_dimension_valid_post_types', array( 'post' ) );
+		$allowed_post_types = apply_filters( 'googlesitekit_custom_dimension_valid_post_types', array( 'post' ) );
 
 		$data = array();
 		$post = get_queried_object();
@@ -1402,7 +1402,8 @@ final class Analytics_4 extends Module
 						$data[ $custom_dimension ] = $post->post_author;
 						break;
 					case 'googlesitekit_post_categories':
-						$data[ $custom_dimension ] = implode( ',', wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) ) );
+						$cats                      = wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) );
+						$data[ $custom_dimension ] = ! is_wp_error( $cats ) ? implode( ',', $cats ) : '';
 						break;
 					case 'googlesitekit_post_date':
 						$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );
