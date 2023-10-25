@@ -24,7 +24,7 @@ import EnhancedMeasurementSwitch from './EnhancedMeasurementSwitch';
 
 describe( 'EnhancedMeasurementSwitch', () => {
 	it( 'should render correctly in the default state', () => {
-		const { container, getByLabelText } = render(
+		const { container, getByLabelText, queryByText } = render(
 			<EnhancedMeasurementSwitch />
 		);
 
@@ -33,6 +33,12 @@ describe( 'EnhancedMeasurementSwitch', () => {
 		expect(
 			getByLabelText( 'Enable enhanced measurement' )
 		).toBeInTheDocument();
+
+		expect(
+			queryByText(
+				/Enhanced measurement is enabled for this web data stream./i
+			)
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should render correctly in the loading state', () => {
@@ -55,6 +61,24 @@ describe( 'EnhancedMeasurementSwitch', () => {
 		expect(
 			getByLabelText( 'Enable enhanced measurement' )
 		).toBeDisabled();
+	} );
+
+	it( 'should render correctly in the already enabled state', () => {
+		const { container, queryByLabelText, getByText } = render(
+			<EnhancedMeasurementSwitch isEnhancedMeasurementAlreadyEnabled />
+		);
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			getByText(
+				'Enhanced measurement is enabled for this web data stream.'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			queryByLabelText( /Enable enhanced measurement/i )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should toggle the switch on click', () => {
