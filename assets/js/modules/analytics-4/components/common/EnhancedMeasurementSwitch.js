@@ -48,6 +48,7 @@ export default function EnhancedMeasurementSwitch( {
 	disabled = false,
 	loading = false,
 	formName = ENHANCED_MEASUREMENT_FORM,
+	isEnhancedMeasurementAlreadyEnabled = false,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( formName, ENHANCED_MEASUREMENT_ENABLED )
@@ -86,7 +87,10 @@ export default function EnhancedMeasurementSwitch( {
 					className="googlesitekit-analytics-enable-enhanced-measurement__progress"
 				/>
 			) }
-			{ ! loading && (
+			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
+				<p>Enhanced measurement is enabled for this web data stream.</p>
+			) }
+			{ ! loading && ! isEnhancedMeasurementAlreadyEnabled && (
 				<Switch
 					label={ __(
 						'Enable enhanced measurement',
@@ -122,4 +126,5 @@ EnhancedMeasurementSwitch.propTypes = {
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
 	loading: PropTypes.bool,
+	isEnhancedMeasurementAlreadyEnabled: PropTypes.bool,
 };
