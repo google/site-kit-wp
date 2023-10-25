@@ -31,7 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_LOYAL_VISITORS,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -105,7 +108,7 @@ function LoyalVisitorsWidget( { Widget } ) {
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'Returning visitors', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_LOYAL_VISITORS }
 			metricValue={ currentPercentage }
 			metricValueFormat={ format }
 			subText={ sprintf(
@@ -118,10 +121,6 @@ function LoyalVisitorsWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Portion of your site’s visitors that returned at least once in this timeframe',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

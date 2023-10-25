@@ -93,6 +93,10 @@ const KEY_METRICS_WIDGETS = {
 			'Portion of people who visited your site more than once',
 			'google-site-kit'
 		),
+		infoTooltip: __(
+			'Portion of your site’s visitors that returned at least once in this timeframe',
+			'google-site-kit'
+		),
 	},
 	[ KM_ANALYTICS_NEW_VISITORS ]: {
 		title: __( 'New visitors', 'google-site-kit' ),
@@ -112,6 +116,10 @@ const KEY_METRICS_WIDGETS = {
 		title: __( 'Most engaged traffic source', 'google-site-kit' ),
 		description: __(
 			'Visitors coming via this channel spent the most time on your site',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site',
 			'google-site-kit'
 		),
 	},
