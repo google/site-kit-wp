@@ -1,5 +1,5 @@
 /**
- * LoyalVisitorsWidget component.
+ * ReturningVisitorsWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -46,7 +46,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 const { useSelect, useInViewSelect } = Data;
 
-function LoyalVisitorsWidget( { Widget } ) {
+function ReturningVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -125,11 +125,11 @@ function LoyalVisitorsWidget( { Widget } ) {
 	);
 }
 
-LoyalVisitorsWidget.propTypes = {
+ReturningVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( {
 	moduleName: 'analytics-4',
 	FallbackComponent: ConnectGA4CTATileWidget,
-} )( LoyalVisitorsWidget );
+} )( ReturningVisitorsWidget );

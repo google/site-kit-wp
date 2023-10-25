@@ -22,11 +22,11 @@
 import {
 	EngagedTrafficSourceWidget,
 	LeastEngagingPagesWidget,
-	LoyalVisitorsWidget,
 	MostEngagingPagesWidget,
 	NewVisitorsWidget,
 	PopularContentWidget,
 	PopularProductsWidget,
+	ReturningVisitorsWidget,
 	TopCitiesWidget,
 	TopCountriesWidget,
 	TopTrafficSourceWidget,
@@ -82,7 +82,7 @@ export const registerWidgets = ( widgets ) => {
 		widgets.registerWidget(
 			KM_ANALYTICS_LOYAL_VISITORS,
 			{
-				Component: LoyalVisitorsWidget,
+				Component: ReturningVisitorsWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 1,
 				wrapWidget: false,

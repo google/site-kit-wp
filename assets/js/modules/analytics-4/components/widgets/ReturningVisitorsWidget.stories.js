@@ -26,7 +26,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import LoyalVisitorsWidget from './LoyalVisitorsWidget';
+import ReturningVisitorsWidget from './ReturningVisitorsWidget';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -50,7 +50,7 @@ const reportOptions = {
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'kmAnalyticsLoyalVisitors'
-)( LoyalVisitorsWidget );
+)( ReturningVisitorsWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -66,7 +66,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/LoyalVisitors/Ready',
+	label: 'KeyMetrics/ReturningVisitors/Ready',
 	delay: 250,
 };
 
@@ -94,7 +94,7 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'KeyMetrics/LoyalVisitors/ZeroData',
+	label: 'KeyMetrics/ReturningVisitors/ZeroData',
 	delay: 250,
 };
 
@@ -128,7 +128,7 @@ Error.args = {
 	},
 };
 Error.scenario = {
-	label: 'KeyMetrics/LoyalVisitors/Error',
+	label: 'KeyMetrics/ReturningVisitors/Error',
 	delay: 250,
 };
 
@@ -163,12 +163,12 @@ InsufficientPermissions.args = {
 };
 
 InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/LoyalVisitors/InsufficientPermissions',
+	label: 'KeyMetrics/ReturningVisitors/InsufficientPermissions',
 	delay: 250,
 };
 
 export default {
-	title: 'Key Metrics/LoyalVisitors',
+	title: 'Key Metrics/ReturningVisitors',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
