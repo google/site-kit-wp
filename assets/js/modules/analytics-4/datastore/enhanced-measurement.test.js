@@ -470,6 +470,84 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 			} );
 		} );
 
+		describe( 'isEnhancedMeasurementStreamAlreadyEnabled', () => {
+			it( 'should return the correct `streamEnabled` state from the saved settings', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettingsMock,
+						{ propertyID, webDataStreamID }
+					);
+
+				let streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamEnabled ).toBe( true );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						{
+							...enhancedMeasurementSettingsMock,
+							streamEnabled: false,
+						},
+						{ propertyID, webDataStreamID }
+					);
+
+				streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamEnabled ).toBe( false );
+			} );
+
+			it( 'should return `undefined` if the settings are not loaded', async () => {
+				fetchMock.get( enhancedMeasurementSettingsEndpoint, {
+					body: enhancedMeasurementSettingsMock,
+					status: 200,
+				} );
+
+				const streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamEnabled ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+			} );
+
+			it( 'should return `false` if the settings are loaded but the `streamEnabled` property is not present', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						{},
+						{ propertyID, webDataStreamID }
+					);
+
+				const streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamEnabled ).toBe( false );
+			} );
+		} );
+
 		describe( 'haveEnhancedMeasurementSettingsChanged', () => {
 			it( 'should compare settings and savedSettings and return the correct value', () => {
 				const savedSettings = {
