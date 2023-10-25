@@ -24,13 +24,17 @@ import {
 	createTestRegistry,
 	provideKeyMetrics,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../utils/data-mock';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
+	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
 } from '../../../../googlesitekit/datastore/user/constants';
+import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import TopCategoriesWidget from './TopCategoriesWidget';
 
 describe( 'TopCategoriesWidget', () => {
@@ -40,6 +44,23 @@ describe( 'TopCategoriesWidget', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsCustomDimensionGatheringData(
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions?.[ 0 ],
+				false
+			);
+
+		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -68,7 +89,10 @@ describe( 'TopCategoriesWidget', () => {
 		} );
 
 		const { container, waitForRegistry } = render(
-			<TopCategoriesWidget Widget={ Widget } />,
+			<TopCategoriesWidget
+				widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
+				Widget={ Widget }
+			/>,
 			{ registry }
 		);
 		await waitForRegistry();

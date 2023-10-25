@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { Tooltip } from 'googlesitekit-components';
-import InfoIcon from '../../../svg/icons/info-green.svg';
+import InfoIcon from '../../svg/icons/info-green.svg';
 
 export default function InfoTooltip( { title } ) {
 	if ( ! title ) {
@@ -34,7 +34,8 @@ export default function InfoTooltip( { title } ) {
 
 	return (
 		<Tooltip
-			tooltipClassName="googlesitekit-km-widget-tile-title__tooltip"
+			className="googlesitekit-info-tooltip"
+			tooltipClassName="googlesitekit-info-tooltip__content"
 			title={ title }
 			placement="top"
 			enterTouchDelay={ 0 }
