@@ -1,13 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enhanced measurement is already enabled for the web data stream 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <p>
+      Enhanced measurement is enabled for this web data stream.
+    </p>
+    <p>
+      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
 exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch disabled when hasAnalytics4Access is false 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
   >
     <div
-      aria-checked="true"
-      class="mdc-switch mdc-switch--checked mdc-switch--disabled"
+      aria-checked="false"
+      class="mdc-switch mdc-switch--disabled"
       role="switch"
       tabindex="0"
     >
@@ -247,7 +271,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
 </div>
 `;
 
-exports[`SettingsEnhancedMeasurementSwitch should render with the switch defaulting to the on position when enhanced measurement is enabled for the web data stream 1`] = `
+exports[`SettingsEnhancedMeasurementSwitch should render with the switch defaulting to the on position when enhanced measurement is disabled for the web data stream 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
