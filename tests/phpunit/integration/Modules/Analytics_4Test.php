@@ -35,6 +35,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\MockableTime;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
@@ -1418,8 +1419,8 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals(
 			array(
 				array(
-					'startDate' => $this->days_ago_date_string( 28 ),
-					'endDate'   => $this->days_ago_date_string( 1 ),
+					'startDate' => MockableTime::days_ago( 28 ),
+					'endDate'   => MockableTime::days_ago( 1 ),
 				),
 			),
 			$request_params['dateRanges']
@@ -2446,16 +2447,6 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
 		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
-	}
-
-	/**
-	 * Returns a date string for the given number of days ago.
-	 *
-	 * @param int $days_ago The number of days ago.
-	 * @return string The date string, formatted as YYYY-MM-DD.
-	 */
-	protected function days_ago_date_string( $days_ago ) {
-		return gmdate( 'Y-m-d', strtotime( $days_ago . ' days ago' ) );
 	}
 
 	/**
