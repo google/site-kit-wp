@@ -41,6 +41,7 @@ import {
 } from '../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 import MetricTileWrapper from '../../../components/KeyMetrics/MetricTileWrapper';
+import MetricTileTable from '../../../components/KeyMetrics/MetricTileTable';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	isInsufficientPermissionsError,
@@ -318,6 +319,23 @@ export default function withCustomDimensions( options = {} ) {
 					<CustomDimensionsMissingError
 						{ ...commonErrorProps }
 						onRetry={ handleCreateCustomDimensions }
+					/>
+				);
+			}
+
+			if ( isGatheringData ) {
+				return (
+					<MetricTileTable
+						infoTooltip={ tileInfoTooltip }
+						moduleSlug="analytics-4"
+						title={ tileTitle }
+						Widget={ Widget }
+						ZeroState={ () =>
+							__(
+								'Setup successful: Analytics is gathering data for this metric',
+								'google-site-kit'
+							)
+						}
 					/>
 				);
 			}
