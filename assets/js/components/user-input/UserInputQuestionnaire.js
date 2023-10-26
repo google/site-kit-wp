@@ -119,9 +119,8 @@ export default function UserInputQuestionnaire() {
 
 	const submitChanges = useCallback( async () => {
 		const eventAction = 'summary_submit';
-		let eventLabel;
 
-		trackEvent( gaEventCategory, eventAction, eventLabel );
+		trackEvent( gaEventCategory, eventAction );
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
