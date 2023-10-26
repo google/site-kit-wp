@@ -32,7 +32,7 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
@@ -81,7 +81,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -121,7 +121,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -157,7 +157,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4', 'search-console' ],
 				},
 			} );
@@ -175,7 +175,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 		it( 'should disable unchecked metrics when four metrics are checked', () => {
 			const metrics = [
-				KM_ANALYTICS_LOYAL_VISITORS,
+				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -222,7 +222,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 		it( 'should order pre-saved metrics to the top', () => {
 			const metrics = [
-				KM_ANALYTICS_LOYAL_VISITORS,
+				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
@@ -281,7 +281,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -327,7 +327,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
@@ -338,7 +338,7 @@ describe( 'MetricsSelectionPanel', () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
 				],
 			} );
 
@@ -420,7 +420,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
@@ -458,7 +458,7 @@ describe( 'MetricsSelectionPanel', () => {
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_RETURNING_VISITORS,
 					],
 				} );
 
@@ -477,7 +477,7 @@ describe( 'MetricsSelectionPanel', () => {
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_RETURNING_VISITORS,
 					],
 				} );
 
@@ -512,7 +512,7 @@ describe( 'MetricsSelectionPanel', () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
 				],
 			} );
 

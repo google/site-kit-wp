@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -82,7 +82,7 @@ function shouldDisplayWidgetWithCustomDimensions(
 }
 
 const KEY_METRICS_WIDGETS = {
-	[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+	[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 		title: __( 'Returning visitors', 'google-site-kit' ),
 		description: __(
 			'Portion of people who visited your site more than once',

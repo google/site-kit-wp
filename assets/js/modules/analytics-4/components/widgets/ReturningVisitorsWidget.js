@@ -33,7 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import {
 	CORE_USER,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -108,7 +108,7 @@ function ReturningVisitorsWidget( { Widget } ) {
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			widgetSlug={ KM_ANALYTICS_LOYAL_VISITORS }
+			widgetSlug={ KM_ANALYTICS_RETURNING_VISITORS }
 			metricValue={ currentPercentage }
 			metricValueFormat={ format }
 			subText={ sprintf(

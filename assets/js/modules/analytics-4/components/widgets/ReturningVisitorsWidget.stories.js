@@ -49,7 +49,7 @@ const reportOptions = {
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'kmAnalyticsLoyalVisitors'
+	'kmAnalyticsReturningVisitors'
 )( ReturningVisitorsWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (

@@ -46,7 +46,7 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -80,7 +80,7 @@ export const registerWidgets = ( widgets ) => {
 		 * Key metrics widgets.
 		 */
 		widgets.registerWidget(
-			KM_ANALYTICS_LOYAL_VISITORS,
+			KM_ANALYTICS_RETURNING_VISITORS,
 			{
 				Component: ReturningVisitorsWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
@@ -89,7 +89,7 @@ export const registerWidgets = ( widgets ) => {
 				modules: [ 'analytics-4' ],
 				isActive: ( select ) =>
 					select( CORE_USER ).isKeyMetricActive(
-						KM_ANALYTICS_LOYAL_VISITORS
+						KM_ANALYTICS_RETURNING_VISITORS
 					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
