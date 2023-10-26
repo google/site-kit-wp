@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,6 +34,7 @@ import PencilIcon from '../../../svg/icons/pencil-alt.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
+import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
 const { useSelect, useDispatch } = Data;
 
 export default function ChangeMetricsLink() {
@@ -59,13 +60,16 @@ export default function ChangeMetricsLink() {
 	}
 
 	return (
-		<Link
-			secondary
-			className="googlesitekit-km-change-metrics-cta"
-			onClick={ openMetricsSelectionPanel }
-		>
-			<PencilIcon width={ 22 } height={ 22 } />
-			{ __( 'Change Metrics', 'google-site-kit' ) }
-		</Link>
+		<Fragment>
+			<Link
+				secondary
+				className="googlesitekit-km-change-metrics-cta"
+				onClick={ openMetricsSelectionPanel }
+			>
+				<PencilIcon width={ 22 } height={ 22 } />
+				{ __( 'Change Metrics', 'google-site-kit' ) }
+			</Link>
+			<SetupCompletedSurveyTrigger />
+		</Fragment>
 	);
 }
