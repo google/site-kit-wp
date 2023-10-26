@@ -165,7 +165,7 @@ final class Analytics_4 extends Module
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 
-					if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+					if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 						$this->custom_dimensions_data_available->reset_data_available();
 					}
 				}
@@ -175,7 +175,7 @@ final class Analytics_4 extends Module
 		);
 
 		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
-		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			add_filter(
 				'pre_update_option_googlesitekit_analytics-4_settings',
 				function ( $new_value, $old_value ) {
@@ -298,7 +298,7 @@ final class Analytics_4 extends Module
 		$this->get_settings()->delete();
 		$this->reset_data_available();
 
-		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			$this->custom_dimensions_data_available->reset_data_available();
 		}
 	}
@@ -351,7 +351,7 @@ final class Analytics_4 extends Module
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			$debug_fields['analytics_4_available_custom_dimensions'] = array(
 				'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
 				'value' => empty( $settings['availableCustomDimensions'] ) ? __( 'None', 'google-site-kit' ) : implode( ',', $settings['availableCustomDimensions'] ),
@@ -432,7 +432,7 @@ final class Analytics_4 extends Module
 			);
 		}
 
-		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			$datapoints['POST:create-custom-dimension']         = array(
 				'service'                => 'analyticsdata',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
@@ -1352,7 +1352,7 @@ final class Analytics_4 extends Module
 		$ua_settings = ( new Analytics_Settings( $this->options ) )->get();
 		$tag->set_ads_conversion_id( $ua_settings['adsConversionID'] );
 
-		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			$custom_dimensions_data = $this->get_custom_dimensions_data();
 			if ( ! empty( $custom_dimensions_data ) && $tag instanceof Tag_Interface ) {
 				$tag->set_custom_dimensions( $custom_dimensions_data );
@@ -1386,7 +1386,7 @@ final class Analytics_4 extends Module
 		 *
 		 * @param array $allowed_post_types The array of allowed post types.
 		 */
-		$allowed_post_types = apply_filters( 'custom_dimension_valid_post_types', array( 'post' ) );
+		$allowed_post_types = apply_filters( 'googlesitekit_custom_dimension_valid_post_types', array( 'post' ) );
 
 		$data = array();
 		$post = get_queried_object();
@@ -1402,7 +1402,8 @@ final class Analytics_4 extends Module
 						$data[ $custom_dimension ] = $post->post_author;
 						break;
 					case 'googlesitekit_post_categories':
-						$data[ $custom_dimension ] = implode( ',', wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) ) );
+						$cats                      = wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) );
+						$data[ $custom_dimension ] = ! is_wp_error( $cats ) ? implode( ',', $cats ) : '';
 						break;
 					case 'googlesitekit_post_date':
 						$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );

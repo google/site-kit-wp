@@ -76,7 +76,7 @@ Ready.args = {
 	},
 };
 Ready.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 Ready.scenario = {
 	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
@@ -135,7 +135,7 @@ ErrorMissingCustomDimensions.args = {
 	},
 };
 ErrorMissingCustomDimensions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
@@ -160,7 +160,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 	},
 };
 ErrorCustomDimensionsInsufficientPermissions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
@@ -185,7 +185,7 @@ ErrorCustomDimensionsGeneric.args = {
 	},
 };
 ErrorCustomDimensionsGeneric.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export default {

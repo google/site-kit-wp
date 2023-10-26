@@ -165,7 +165,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 		describe( 'createCustomDimensions', () => {
 			beforeEach( () => {
-				enabledFeatures.add( 'newsKeyMetrics' );
+				enabledFeatures.add( 'keyMetrics' );
 			} );
 
 			const keyMetricsSettings = {

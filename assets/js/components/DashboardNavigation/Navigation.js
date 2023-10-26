@@ -99,10 +99,11 @@ export default function Navigation() {
 		return select( CORE_USER ).getViewableModules();
 	} );
 
-	const userInputEnabled = useFeature( 'userInput' );
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
+
 	const isKeyMetricsWidgetHidden = useSelect(
 		( select ) =>
-			userInputEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+			keyMetricsEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
 	const widgetContextOptions = {
@@ -111,7 +112,7 @@ export default function Navigation() {
 
 	const showKeyMetrics = useSelect( ( select ) => {
 		if (
-			! userInputEnabled ||
+			! keyMetricsEnabled ||
 			dashboardType !== DASHBOARD_TYPE_MAIN ||
 			isKeyMetricsWidgetHidden === true
 		) {
