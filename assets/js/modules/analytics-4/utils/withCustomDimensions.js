@@ -49,6 +49,7 @@ import {
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 import Link from '../../../components/Link';
 import MetricTileError from '../../../components/KeyMetrics/MetricTileError';
+import MetricTileTable from '../../../components/KeyMetrics/MetricTileTable';
 import MetricTileWrapper from '../../../components/KeyMetrics/MetricTileWrapper';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
@@ -197,6 +198,28 @@ export default function withCustomDimensions( options = {} ) {
 				isNavigatingToOAuthURL ||
 				hasCustomDimensions === undefined;
 
+			const isGatheringData = useSelect( ( select ) => {
+				const isGA4GatheringData =
+					select( MODULES_ANALYTICS_4 ).isGatheringData();
+
+				if ( isGA4GatheringData !== false ) {
+					return isGA4GatheringData;
+				}
+
+				if ( loading || ! hasCustomDimensions ) {
+					// Custom dimension gathering data is not applicable if we're still loading or there are no custom dimensions.
+					return null;
+				}
+
+				if ( ! customDimensions ) {
+					return false;
+				}
+
+				return select(
+					MODULES_ANALYTICS_4
+				).areCustomDimensionsGatheringData( customDimensions );
+			} );
+
 			const commonErrorProps = {
 				headerText: tileTitle,
 				infoTooltip: tileInfoTooltip,
@@ -262,7 +285,10 @@ export default function withCustomDimensions( options = {} ) {
 			] );
 
 			// Show loading state.
-			if ( !! customDimensions && loading ) {
+			if (
+				!! customDimensions &&
+				( loading || isGatheringData === undefined )
+			) {
 				return (
 					<MetricTileWrapper
 						infoTooltip={ tileInfoTooltip }
@@ -388,6 +414,23 @@ export default function withCustomDimensions( options = {} ) {
 								</span>
 							</div>
 						</MetricTileError>
+					);
+				}
+
+				if ( isGatheringData ) {
+					return (
+						<MetricTileTable
+							infoTooltip={ tileInfoTooltip }
+							moduleSlug="analytics-4"
+							title={ tileTitle }
+							Widget={ Widget }
+							ZeroState={ () =>
+								__(
+									'Setup successful: Analytics is gathering data for this metric',
+									'google-site-kit'
+								)
+							}
+						/>
 					);
 				}
 			}

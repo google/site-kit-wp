@@ -93,7 +93,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array An array of keys for view-only settings.
 	 */
 	public function get_view_only_keys() {
-		if ( Feature_Flags::enabled( 'newsKeyMetrics' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			return array( 'availableCustomDimensions' );
 		}
 
@@ -154,7 +154,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					}
 				}
 
-				if ( Feature_Flags::enabled( 'newsKeyMetrics' ) && isset( $option['availableCustomDimensions'] ) ) {
+				if ( Feature_Flags::enabled( 'keyMetrics' ) && isset( $option['availableCustomDimensions'] ) ) {
 					if ( is_array( $option['availableCustomDimensions'] ) ) {
 						$valid_dimensions = array_filter(
 							$option['availableCustomDimensions'],

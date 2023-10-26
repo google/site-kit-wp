@@ -20,7 +20,7 @@ exports[`TopConvertingTrafficSourceWidget renders correctly with the expected me
             Top converting traffic source
           </h3>
           <span
-            class=""
+            class="googlesitekit-info-tooltip"
             title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
           >
             <svg />

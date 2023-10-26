@@ -181,6 +181,37 @@ NoRecommendations.args = {
 	},
 };
 
+export const PartialFieldData = Template.bind( {} );
+PartialFieldData.storyName = 'Partial Field Data Available';
+PartialFieldData.args = {
+	setupRegistry: ( registry ) => {
+		const { dispatch } = registry;
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedMobilePartialFieldData,
+			{
+				url,
+				strategy: STRATEGY_MOBILE,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_MOBILE,
+		] );
+
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedDesktopPartialFieldData,
+			{
+				url,
+				strategy: STRATEGY_DESKTOP,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_DESKTOP,
+		] );
+	},
+};
+
 export const FieldDataUnavailable = Template.bind( {} );
 FieldDataUnavailable.storyName = 'Field Data Unavailable';
 FieldDataUnavailable.args = {
