@@ -53,8 +53,6 @@ export default function UserInputQuestionnaire() {
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
 	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] =
 		useState( false );
-	const [ redirectURL ] = useQueryArg( 'redirect_url' );
-	const [ single ] = useQueryArg( 'single', false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -101,9 +99,7 @@ export default function UserInputQuestionnaire() {
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 	} = getUserInputAnswers();
 
-	const isSettings = single === 'settings';
-
-	const next = useCallback( () => {
+	const nextCallback = useCallback( () => {
 		trackEvent(
 			gaEventCategory,
 			'question_advance',
@@ -112,7 +108,7 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex, gaEventCategory, setActiveSlug ] );
 
-	const back = useCallback( () => {
+	const backCallback = useCallback( () => {
 		trackEvent(
 			gaEventCategory,
 			'question_return',
@@ -122,30 +118,17 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlugIndex, gaEventCategory, setActiveSlug ] );
 
 	const submitChanges = useCallback( async () => {
-		let eventAction = 'summary_submit';
+		const eventAction = 'summary_submit';
 		let eventLabel;
-
-		if ( isSettings ) {
-			eventAction = 'question_update';
-			eventLabel = steps[ activeSlugIndex ];
-		}
 
 		trackEvent( gaEventCategory, eventAction, eventLabel );
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			const url = new URL( redirectURL || dashboardURL );
+			const url = new URL( dashboardURL );
 			navigateTo( url.toString() );
 		}
-	}, [
-		isSettings,
-		gaEventCategory,
-		saveUserInputSettings,
-		activeSlugIndex,
-		redirectURL,
-		dashboardURL,
-		navigateTo,
-	] );
+	}, [ gaEventCategory, saveUserInputSettings, dashboardURL, navigateTo ] );
 
 	useEffect( () => {
 		if ( ! shouldScrollToActiveQuestion ) {
@@ -157,18 +140,6 @@ export default function UserInputQuestionnaire() {
 			?.querySelector( '.googlesitekit-user-input__header' )
 			?.scrollIntoView( { behavior: 'smooth' } );
 	}, [ activeSlug, shouldScrollToActiveQuestion ] );
-
-	// Update the callbacks and labels for the questions if the user is editing a *single question*.
-	let backCallback = back;
-	let nextCallback = next;
-	let nextLabel;
-
-	if ( single === 'settings' ) {
-		backCallback = undefined;
-		// When the user is editing a single question from the settings screen, submit changes and send them back to the settings pages when they click Submit.
-		nextCallback = submitChanges;
-		nextLabel = __( 'Submit', 'google-site-kit' );
-	}
 
 	const settingsProgress = (
 		<ProgressBar
@@ -200,7 +171,6 @@ export default function UserInputQuestionnaire() {
 						'google-site-kit'
 					) }
 					next={ nextCallback }
-					nextLabel={ nextLabel }
 					error={ error }
 				>
 					<UserInputSelectOptions
@@ -231,7 +201,6 @@ export default function UserInputQuestionnaire() {
 						'google-site-kit'
 					) }
 					next={ nextCallback }
-					nextLabel={ nextLabel }
 					back={ backCallback }
 					error={ error }
 				>
@@ -263,7 +232,6 @@ export default function UserInputQuestionnaire() {
 						'google-site-kit'
 					) }
 					next={ nextCallback }
-					nextLabel={ nextLabel }
 					back={ backCallback }
 					error={ error }
 				>
