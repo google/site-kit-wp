@@ -31,7 +31,8 @@ import { Cell, Grid, Row } from '../../material-components';
 import GhostCardsSVG from './GhostCards';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
-import { trackEvent } from '../../util';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
 export default function KeyMetricsCTAContent( {
 	className,
@@ -100,6 +101,12 @@ export default function KeyMetricsCTAContent( {
 					) }
 				</Row>
 			</Grid>
+			{ inView && (
+				<SurveyViewTrigger
+					triggerID="view_kmw_setup_cta"
+					ttl={ DAY_IN_SECONDS }
+				/>
+			) }
 		</section>
 	);
 }
