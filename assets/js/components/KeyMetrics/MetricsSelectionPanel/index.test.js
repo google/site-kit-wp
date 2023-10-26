@@ -352,7 +352,7 @@ describe( 'MetricsSelectionPanel', () => {
 				<MetricsSelectionPanel />,
 				{
 					registry,
-					features: [ 'newsKeyMetrics' ],
+					features: [ 'keyMetrics' ],
 				}
 			);
 
@@ -382,7 +382,7 @@ describe( 'MetricsSelectionPanel', () => {
 				<MetricsSelectionPanel />,
 				{
 					registry,
-					features: [ 'newsKeyMetrics' ],
+					features: [ 'keyMetrics' ],
 				}
 			);
 

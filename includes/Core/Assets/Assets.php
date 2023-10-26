@@ -1072,7 +1072,7 @@ final class Assets {
 	 * @return array The array of product base paths.
 	 */
 	private function get_product_base_paths() {
-		if ( ! Feature_Flags::enabled( 'userInput' ) ) {
+		if ( ! Feature_Flags::enabled( 'keyMetrics' ) ) {
 			return array();
 		}
 

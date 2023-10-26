@@ -20,7 +20,7 @@ exports[`TopCountriesWidget renders correctly with the expected metrics 1`] = `
             Top countries driving traffic
           </h3>
           <span
-            class=""
+            class="googlesitekit-info-tooltip"
             title="The countries where most of your visitors came from"
           >
             <svg />

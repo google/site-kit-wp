@@ -114,7 +114,7 @@ export const registerWidgets = ( widgets ) => {
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
 
-	if ( isFeatureEnabled( 'userInput' ) ) {
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
 		/*
 		 * Key metrics widgets.
 		 */

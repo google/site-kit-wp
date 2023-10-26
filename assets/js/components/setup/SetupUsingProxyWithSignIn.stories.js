@@ -65,7 +65,7 @@ StartUserInput.args = {
 	},
 };
 StartUserInput.parameters = {
-	features: [ 'userInput' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const StartUserInputError = Template.bind( {} );
@@ -86,7 +86,7 @@ StartUserInputError.args = {
 	},
 };
 StartUserInputError.parameters = {
-	features: [ 'userInput' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const DisconnectedURLMismatch = Template.bind( {} );
@@ -119,7 +119,7 @@ DisconnectedURLMismatchUserInput.args = {
 	},
 };
 DisconnectedURLMismatchUserInput.parameters = {
-	features: [ 'userInput' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const AnalyticsActive = Template.bind( {} );

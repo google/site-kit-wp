@@ -184,6 +184,28 @@ export default function withCustomDimensions( options = {} ) {
 				isNavigatingToOAuthURL ||
 				hasCustomDimensions === undefined;
 
+			const isGatheringData = useSelect( ( select ) => {
+				const isGA4GatheringData =
+					select( MODULES_ANALYTICS_4 ).isGatheringData();
+
+				if ( isGA4GatheringData !== false ) {
+					return isGA4GatheringData;
+				}
+
+				if ( loading || ! hasCustomDimensions ) {
+					// Custom dimension gathering data is not applicable if we're still loading or there are no custom dimensions.
+					return null;
+				}
+
+				if ( ! customDimensions ) {
+					return false;
+				}
+
+				return select(
+					MODULES_ANALYTICS_4
+				).areCustomDimensionsGatheringData( customDimensions );
+			} );
+
 			const commonErrorProps = {
 				headerText: tileTitle,
 				infoTooltip: tileInfoTooltip,
@@ -254,7 +276,7 @@ export default function withCustomDimensions( options = {} ) {
 			}
 
 			// Show loading state.
-			if ( loading ) {
+			if ( loading || isGatheringData === undefined ) {
 				return (
 					<MetricTileWrapper
 						infoTooltip={ tileInfoTooltip }

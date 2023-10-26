@@ -57,7 +57,7 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { savedMetrics } ) {
-	const newsKeyMetricsEnabled = useFeature( 'newsKeyMetrics' );
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 	const viewContext = useViewContext();
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -87,7 +87,7 @@ export default function Footer( { savedMetrics } ) {
 	} );
 
 	const hasMissingCustomDimensions = useSelect( ( select ) => {
-		if ( ! newsKeyMetricsEnabled || ! requiredCustomDimensions?.length ) {
+		if ( ! keyMetricsEnabled || ! requiredCustomDimensions?.length ) {
 			return false;
 		}
 
@@ -141,7 +141,7 @@ export default function Footer( { savedMetrics } ) {
 		if ( ! error ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 			trackEvent( trackingCategory, 'metrics_sidebar_save' );
-			if ( newsKeyMetricsEnabled ) {
+			if ( keyMetricsEnabled ) {
 				if ( hasMissingCustomDimensions ) {
 					setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 						autoSubmit: true,
@@ -173,7 +173,7 @@ export default function Footer( { savedMetrics } ) {
 		selectedMetrics,
 		setValue,
 		trackingCategory,
-		newsKeyMetricsEnabled,
+		keyMetricsEnabled,
 		currentButtonText,
 		hasMissingCustomDimensions,
 		setValues,
