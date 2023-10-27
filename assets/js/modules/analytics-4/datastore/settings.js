@@ -112,6 +112,7 @@ export async function submitChanges( { select, dispatch } ) {
 			ENHANCED_MEASUREMENT_ENABLED
 		);
 
+		// Only make the API request to enable the EM setting not to disable it.
 		if ( isEnhancedMeasurementEnabled ) {
 			await dispatch(
 				MODULES_ANALYTICS_4
