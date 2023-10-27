@@ -22,7 +22,6 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useEffect, useRef, useState } from '@wordpress/element';
-import { useIntersection } from 'react-use';
 
 /**
  * Internal dependencies
@@ -33,6 +32,7 @@ import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
+import { useInView } from '../../hooks/useInView';
 
 export default function KeyMetricsCTAContent( {
 	className,
@@ -44,13 +44,9 @@ export default function KeyMetricsCTAContent( {
 	const trackingRef = useRef();
 	const breakpoint = useBreakpoint();
 	const viewContext = useViewContext();
+	const inView = useInView();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
-
-	const intersectionEntry = useIntersection( trackingRef, {
-		threshold: 0.25,
-	} );
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
-	const inView = !! intersectionEntry?.intersectionRatio;
 	useEffect( () => {
 		if ( inView && ! hasBeenInView && ga4Connected ) {
 			trackEvent(
