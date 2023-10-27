@@ -36,7 +36,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 import MetricTileError from '../../../../components/KeyMetrics/MetricTileError';
-import { trackEvent } from '../../../../util';
+import { trackEvent, trackEventOnce } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
@@ -50,7 +50,10 @@ export default function InsufficientPermissionsError( props ) {
 	);
 
 	useEffect( () => {
-		trackEvent( `${ viewContext }_kmw`, 'insufficient_permissions_error' );
+		trackEventOnce(
+			`${ viewContext }_kmw`,
+			'insufficient_permissions_error'
+		);
 	}, [ viewContext ] );
 
 	const retry = useCallback( () => {

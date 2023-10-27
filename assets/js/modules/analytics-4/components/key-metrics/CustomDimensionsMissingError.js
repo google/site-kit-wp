@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import MetricTileError from '../../../../components/KeyMetrics/MetricTileError';
-import { trackEvent } from '../../../../util';
+import { trackEvent, trackEventOnce } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
 export default function CustomDimensionsMissingError( props ) {
@@ -39,7 +39,10 @@ export default function CustomDimensionsMissingError( props ) {
 	const viewContext = useViewContext();
 
 	useEffect( () => {
-		trackEvent( `${ viewContext }_kmw`, 'custom_dimension_missing_error' );
+		trackEventOnce(
+			`${ viewContext }_kmw`,
+			'custom_dimension_missing_error'
+		);
 	}, [ viewContext ] );
 
 	const retry = useCallback( () => {
