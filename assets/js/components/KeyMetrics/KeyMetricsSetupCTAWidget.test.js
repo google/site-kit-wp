@@ -35,8 +35,10 @@ import {
 	provideUserAuthentication,
 	getAnalytics4HasZeroDataReportOptions,
 	fireEvent,
+	waitFor,
 } from '../../../../tests/js/test-utils';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
+import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
@@ -198,6 +200,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does render the CTA when SC and GA4 are both connected', async () => {
+		mockSurveyEndpoints( registry );
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -244,6 +248,19 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		expect( button ).toHaveAttribute(
 			'href',
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
+		);
+
+		// Should also trigger a survey view.
+		const surveyTriggerEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/survey-trigger'
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_kmw_setup_cta' },
+				},
+			} )
 		);
 	} );
 
@@ -299,6 +316,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				status: 200,
 			}
 		);
+
+		mockSurveyEndpoints( registry );
 
 		await registry
 			.dispatch( CORE_USER )
