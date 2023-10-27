@@ -21,11 +21,16 @@ import {
 	fireEvent,
 	freezeFetch,
 	provideKeyMetrics,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserInfo,
 	render,
+	waitFor,
 } from '../../../../tests/js/test-utils';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
+import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 
 describe( 'ChangeMetricsLink', () => {
 	let registry;
@@ -90,5 +95,28 @@ describe( 'ChangeMetricsLink', () => {
 				.select( CORE_UI )
 				.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 		).toBe( true );
+	} );
+
+	it( 'should trigger a survey when the key metrics setup is compleyed by current user', async () => {
+		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
+		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 42 } );
+		provideUserInfo( registry, { id: 42 } );
+		provideUserAuthentication( registry );
+		mockSurveyEndpoints( registry );
+
+		render( <ChangeMetricsLink />, { registry } );
+
+		// Should also trigger a survey view.
+		const surveyTriggerEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/survey-trigger'
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_kmw_setup_completed' },
+				},
+			} )
+		);
 	} );
 } );
