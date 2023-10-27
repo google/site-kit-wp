@@ -39,6 +39,7 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import SetupBanner from './SetupBanner';
+import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
 
 describe( 'SetupBanner', () => {
 	const propertyID = '1000';
@@ -125,27 +126,7 @@ describe( 'SetupBanner', () => {
 	} );
 
 	it( 'should render correctly when the user does not have the edit scope granted', () => {
-		const surveyTriggerEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/survey-trigger'
-		);
-		const surveyTimeoutEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/survey-timeout'
-		);
-
-		fetchMock.postOnce( surveyTriggerEndpoint, {
-			status: 200,
-			body: {},
-		} );
-
-		fetchMock.getOnce( surveyTimeoutEndpoint, {
-			status: 200,
-			body: {},
-		} );
-
-		fetchMock.postOnce( surveyTimeoutEndpoint, {
-			status: 200,
-			body: {},
-		} );
+		mockSurveyEndpoints();
 
 		provideSiteInfo( registry, {
 			usingProxy: true,

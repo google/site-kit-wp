@@ -30,7 +30,10 @@ import {
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
-import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../tests/js/mock-survey-endpoints';
 
 describe( 'ChangeMetricsLink', () => {
 	let registry;
@@ -102,14 +105,9 @@ describe( 'ChangeMetricsLink', () => {
 		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 42 } );
 		provideUserInfo( registry, { id: 42 } );
 		provideUserAuthentication( registry );
-		mockSurveyEndpoints( registry );
+		mockSurveyEndpoints();
 
 		render( <ChangeMetricsLink />, { registry } );
-
-		// Should also trigger a survey view.
-		const surveyTriggerEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/survey-trigger'
-		);
 
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {

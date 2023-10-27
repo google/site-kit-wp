@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../tests/js/mock-survey-endpoints';
 import { render, waitFor } from '../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -36,7 +39,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 	} );
 
 	it( 'should trigger a survey when the Key Metrics Setup CTA is in view', async () => {
-		mockSurveyEndpoints( registry );
+		mockSurveyEndpoints();
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
 
@@ -51,10 +54,6 @@ describe( 'SettingsCardKeyMetrics', () => {
 		render( <SettingsCardKeyMetrics />, {
 			registry,
 		} );
-
-		const surveyTriggerEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/survey-trigger'
-		);
 
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {

@@ -38,7 +38,10 @@ import {
 	waitFor,
 } from '../../../../tests/js/test-utils';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
-import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../tests/js/mock-survey-endpoints';
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
@@ -200,7 +203,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does render the CTA when SC and GA4 are both connected', async () => {
-		mockSurveyEndpoints( registry );
+		mockSurveyEndpoints();
 
 		await registry
 			.dispatch( CORE_USER )
@@ -251,10 +254,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		);
 
 		// Should also trigger a survey view.
-		const surveyTriggerEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/survey-trigger'
-		);
-
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 				body: {
@@ -317,7 +316,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			}
 		);
 
-		mockSurveyEndpoints( registry );
+		mockSurveyEndpoints();
 
 		await registry
 			.dispatch( CORE_USER )
