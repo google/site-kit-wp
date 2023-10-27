@@ -203,6 +203,13 @@ const baseResolvers = {
 	*getAvailableCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
 
+		// Wait for settings to be loaded before proceeding.
+		yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getSettings()
+		);
+
 		const availableCustomDimensions = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAvailableCustomDimensions();
