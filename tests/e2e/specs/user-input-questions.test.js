@@ -191,7 +191,7 @@ describe( 'User Input Settings', () => {
 	} );
 
 	beforeEach( async () => {
-		await enableFeature( 'userInput' );
+		await enableFeature( 'keyMetrics' );
 		await enableFeature( 'ga4Reporting' );
 		await activatePlugins(
 			'e2e-tests-proxy-setup',

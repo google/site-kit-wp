@@ -20,7 +20,7 @@ exports[`TopCategoriesWidget renders correctly with the expected metrics 1`] = `
             Top categories by pageviews
           </h3>
           <span
-            class=""
+            class="googlesitekit-info-tooltip"
             title="Categories that your site visitors viewed the most"
           >
             <svg />

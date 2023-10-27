@@ -45,7 +45,6 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
-import { enabledFeatures } from '../../../features';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -221,10 +220,10 @@ describe( 'core/user key metrics', () => {
 				[
 					'publish_news',
 					[
-						KM_ANALYTICS_LOYAL_VISITORS,
-						KM_ANALYTICS_NEW_VISITORS,
-						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_ANALYTICS_PAGES_PER_VISIT,
+						KM_ANALYTICS_VISIT_LENGTH,
+						KM_ANALYTICS_VISITS_PER_VISITOR,
+						KM_ANALYTICS_MOST_ENGAGING_PAGES,
 					],
 				],
 				[
@@ -268,23 +267,6 @@ describe( 'core/user key metrics', () => {
 					).toEqual( expectedMetrics );
 				}
 			);
-
-			it( 'should return the correct metrics for the publish_news purpose when the newsKeyMetrics feature is enabled', () => {
-				enabledFeatures.add( 'newsKeyMetrics' );
-				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
-					purpose: { values: [ 'publish_news' ] },
-				} );
-
-				expect(
-					registry.select( CORE_USER ).getAnswerBasedMetrics()
-				).toEqual( [
-					KM_ANALYTICS_PAGES_PER_VISIT,
-					KM_ANALYTICS_VISIT_LENGTH,
-					KM_ANALYTICS_VISITS_PER_VISITOR,
-					KM_ANALYTICS_MOST_ENGAGING_PAGES,
-				] );
-				enabledFeatures.delete( 'newsKeyMetrics' );
-			} );
 
 			it( 'should return the correct metrics for the sell_products_or_service purposes when the site has a product post type', () => {
 				provideSiteInfo( registry, {

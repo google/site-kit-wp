@@ -35,7 +35,7 @@ import { useFeature } from '../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function Notice() {
-	const newsKeyMetricsEnabled = useFeature( 'newsKeyMetrics' );
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -50,21 +50,27 @@ export default function Notice() {
 	} );
 
 	const hasMissingCustomDimensions = useSelect( ( select ) => {
-		if ( ! newsKeyMetricsEnabled || ! requiredCustomDimensions?.length ) {
+		if ( ! keyMetricsEnabled || ! requiredCustomDimensions?.length ) {
 			return false;
 		}
 
-		const hasCustomDimensions = select(
-			MODULES_ANALYTICS_4
-		).hasCustomDimensions( requiredCustomDimensions );
-
-		return ! hasCustomDimensions;
+		return ! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+			requiredCustomDimensions
+		);
 	} );
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE )
 	);
 
-	if ( ! hasMissingCustomDimensions ) {
+	// This is called here to ensure that the list of available custom dimensions is
+	// synced and loaded, preventing flickers of the notice.
+	useSelect( ( select ) => {
+		if ( keyMetricsEnabled ) {
+			select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
+		}
+	} );
+
+	if ( hasMissingCustomDimensions === false ) {
 		return null;
 	}
 

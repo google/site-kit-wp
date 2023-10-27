@@ -40,7 +40,7 @@ Default.scenario = {
 	delay: 250,
 };
 Default.parameters = {
-	features: [ 'userInput' ],
+	features: [ 'keyMetrics' ],
 };
 
 export default {

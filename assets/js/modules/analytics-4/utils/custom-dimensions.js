@@ -17,8 +17,10 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '../datastore/constants';
-import { possibleCustomDimensions } from '../datastore/custom-dimensions';
+import {
+	CUSTOM_DIMENSION_DEFINITIONS,
+	MODULES_ANALYTICS_4,
+} from '../datastore/constants';
 
 /**
  * Provides custom dimension error data to the given registry.
@@ -36,9 +38,27 @@ export const provideCustomDimensionError = (
 ) => {
 	const propertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 
-	const options = [ propertyID, possibleCustomDimensions[ customDimension ] ];
+	const options = [
+		propertyID,
+		CUSTOM_DIMENSION_DEFINITIONS[ customDimension ],
+	];
 
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveError( error, 'createCustomDimension', options );
 };
+
+/**
+ * Checks whether the given error is an invalid custom dimension error.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error Error object instance.
+ * @return {boolean} `true` if it is an invalid custom dimension error, otherwise `false`.
+ */
+export function isInvalidCustomDimensionError( error ) {
+	return (
+		error?.code === 400 &&
+		error?.message?.includes( 'is not a valid dimension' )
+	);
+}

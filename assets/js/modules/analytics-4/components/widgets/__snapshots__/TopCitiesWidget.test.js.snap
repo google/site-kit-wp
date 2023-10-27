@@ -20,7 +20,7 @@ exports[`TopCitiesWidget renders correctly with the expected metrics 1`] = `
             Top cities driving traffic
           </h3>
           <span
-            class=""
+            class="googlesitekit-info-tooltip"
             title="The cities where most of your visitors came from"
           >
             <svg />

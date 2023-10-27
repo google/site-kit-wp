@@ -86,7 +86,7 @@ class REST_User_Input_Controller {
 			}
 		);
 
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			add_filter(
 				'googlesitekit_apifetch_preload_paths',
 				function ( $paths ) {
