@@ -96,7 +96,11 @@ export default function SettingsEnhancedMeasurementSwitch( {
 	} );
 
 	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
-		if ( isLoadingProperties || isLoadingWebDataStreams ) {
+		if (
+			isLoadingProperties ||
+			isLoadingWebDataStreams ||
+			isEnhancedMeasurementStreamEnabled === undefined
+		) {
 			return undefined;
 		}
 
@@ -132,9 +136,15 @@ export default function SettingsEnhancedMeasurementSwitch( {
 			return false;
 		}
 
-		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getEnhancedMeasurementSettings',
-			[ propertyID, webDataStreamID ]
+		return (
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getEnhancedMeasurementSettings',
+				[ propertyID, webDataStreamID ]
+			) ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'isEnhancedMeasurementStreamAlreadyEnabled',
+				[ propertyID, webDataStreamID ]
+			)
 		);
 	} );
 
