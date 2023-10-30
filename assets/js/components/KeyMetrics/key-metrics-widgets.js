@@ -166,7 +166,7 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
 		title: __( 'Least engaging pages', 'google-site-kit' ),
 		description: __(
-			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
+			'Pages with the highest percentage of visitors that left without engagement with your site',
 			'google-site-kit'
 		),
 	},
