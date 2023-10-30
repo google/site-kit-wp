@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`SetupEnhancedMeasurementSwitch should not render the switch when accountID is not selected yet 1`] = `<div />`;
+
 exports[`SetupEnhancedMeasurementSwitch should not render the switch when enhanced measurement is already enabled 1`] = `
 <div>
   <div
