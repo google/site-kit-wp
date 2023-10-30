@@ -48,9 +48,7 @@ export default function UserInputQuestionWrapper( props ) {
 		title,
 		description,
 		next,
-		nextLabel,
 		back,
-		backLabel,
 		error,
 	} = props;
 
@@ -88,7 +86,7 @@ export default function UserInputQuestionWrapper( props ) {
 							onClick={ next }
 							disabled={ hasErrorForAnswer( values ) }
 						>
-							{ nextLabel || __( 'Next', 'google-site-kit' ) }
+							{ __( 'Next', 'google-site-kit' ) }
 						</Button>
 					) }
 					{ back && (
@@ -96,7 +94,7 @@ export default function UserInputQuestionWrapper( props ) {
 							className="googlesitekit-user-input__buttons--back"
 							onClick={ back }
 						>
-							{ backLabel || __( 'Back', 'google-site-kit' ) }
+							{ __( 'Back', 'google-site-kit' ) }
 						</Link>
 					) }
 				</div>
@@ -115,8 +113,6 @@ UserInputQuestionWrapper.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.string,
 	next: PropTypes.func,
-	nextLabel: PropTypes.string,
 	back: PropTypes.func,
-	backLabel: PropTypes.string,
 	error: PropTypes.object,
 };
