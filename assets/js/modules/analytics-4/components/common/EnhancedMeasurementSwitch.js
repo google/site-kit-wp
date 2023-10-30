@@ -126,7 +126,7 @@ export default function EnhancedMeasurementSwitch( {
 			<p>
 				{ createInterpolateElement(
 					__(
-						'Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. <a>Learn more</a>',
+						'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{

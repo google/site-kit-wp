@@ -9,7 +9,7 @@ exports[`SetupEnhancedMeasurementSwitch should not render the switch when enhanc
       Enhanced measurement is enabled for this web data stream.
     </p>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -63,7 +63,7 @@ exports[`SetupEnhancedMeasurementSwitch should render with the switch defaulting
       Enable enhanced measurement
     </label>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
