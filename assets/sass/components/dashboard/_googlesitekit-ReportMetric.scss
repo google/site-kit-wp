@@ -18,6 +18,10 @@
 
 .googlesitekit-pagespeed-report-metric {
 
+	.googlesitekit-pagespeed-report-metric-value {
+		min-width: 100px;
+	}
+
 	.googlesitekit-pagespeed-report-metric-value-container {
 
 		align-items: flex-end;
@@ -27,6 +31,7 @@
 		justify-content: center;
 		letter-spacing: $ls-s;
 		line-height: $lh-body-md;
+		margin-left: $grid-gap-phone;
 		text-align: right;
 	}
 
