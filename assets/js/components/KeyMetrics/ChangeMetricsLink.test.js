@@ -56,10 +56,6 @@ describe( 'ChangeMetricsLink', () => {
 	it( 'should not render if no key metrics are selected', () => {
 		provideKeyMetrics( registry, { widgetSlugs: [] } );
 
-		registry
-			.dispatch( 'core/user' )
-			.setUserInputSetting( 'purpose', [ 'test-purpose' ] );
-
 		const { queryByRole } = render( <ChangeMetricsLink />, { registry } );
 
 		const button = queryByRole( 'button' );
