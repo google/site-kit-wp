@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -93,6 +93,7 @@ export default function UserInputPreviewGroup( {
 			setValues( {
 				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
 			} );
+			editButtonRef.current?.focus?.();
 		} else {
 			trackEvent( gaEventCategory, 'question_edit', slug );
 			setValues( {
@@ -107,6 +108,8 @@ export default function UserInputPreviewGroup( {
 	);
 
 	const answerHasError = hasErrorForAnswer( values );
+
+	const editButtonRef = useRef();
 
 	const submitChanges = useCallback( async () => {
 		if ( answerHasError ) {
@@ -174,6 +177,7 @@ export default function UserInputPreviewGroup( {
 				<Link
 					secondary
 					onClick={ handleOnEditClick }
+					ref={ editButtonRef }
 					disabled={
 						isScreenLoading ||
 						( !! currentlyEditingSlug && ! isEditing )
