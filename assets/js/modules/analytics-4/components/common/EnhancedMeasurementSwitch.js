@@ -107,7 +107,9 @@ export default function EnhancedMeasurementSwitch( {
 				/>
 			) }
 			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
-				<p>Enhanced measurement is enabled for this web data stream.</p>
+				<p className="googlesitekit-margin-top-0">
+					Enhanced measurement is enabled for this web data stream.
+				</p>
 			) }
 			{ ! loading && ! isEnhancedMeasurementAlreadyEnabled && (
 				<Switch
