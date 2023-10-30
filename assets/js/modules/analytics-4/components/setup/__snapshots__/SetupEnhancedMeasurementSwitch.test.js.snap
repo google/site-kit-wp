@@ -5,7 +5,9 @@ exports[`SetupEnhancedMeasurementSwitch should not render the switch when enhanc
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
   >
-    <p>
+    <p
+      class="googlesitekit-margin-top-0"
+    >
       Enhanced measurement is enabled for this web data stream.
     </p>
     <p>

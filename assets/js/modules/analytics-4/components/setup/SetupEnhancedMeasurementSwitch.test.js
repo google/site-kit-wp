@@ -100,7 +100,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 			);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getEnhancedMeasurementSettings', [
+			.finishResolution( 'isEnhancedMeasurementStreamAlreadyEnabled', [
 				propertyID,
 				webDataStreamID,
 			] );
@@ -273,10 +273,10 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getEnhancedMeasurementSettings', [
-						'2001',
-						webDataStreamID,
-					] );
+					.finishResolution(
+						'isEnhancedMeasurementStreamAlreadyEnabled',
+						[ '2001', webDataStreamID ]
+					);
 			},
 		],
 		[
@@ -301,10 +301,10 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getEnhancedMeasurementSettings', [
-						propertyID,
-						'3001',
-					] );
+					.finishResolution(
+						'isEnhancedMeasurementStreamAlreadyEnabled',
+						[ propertyID, '3001' ]
+					);
 			},
 		],
 	] )( 'when the %s', ( _, changeSetting ) => {
