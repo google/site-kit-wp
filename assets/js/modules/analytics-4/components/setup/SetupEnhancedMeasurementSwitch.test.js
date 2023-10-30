@@ -106,6 +106,33 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 			] );
 	} );
 
+	it( 'should not render the switch when accountID is not selected yet', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetEnhancedMeasurementSettings(
+				{
+					...enhancedMeasurementSettingsMock,
+					streamEnabled: false,
+				},
+				{ propertyID, webDataStreamID }
+			);
+
+		registry.dispatch( MODULES_ANALYTICS ).setAccountID( null );
+
+		const { container, queryByLabelText } = render(
+			<SetupEnhancedMeasurementSwitch />,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			queryByLabelText( 'Enable enhanced measurement' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'should not render the switch when enhanced measurement is already enabled', () => {
 		const { container, queryByLabelText, getByText } = render(
 			<SetupEnhancedMeasurementSwitch />,
