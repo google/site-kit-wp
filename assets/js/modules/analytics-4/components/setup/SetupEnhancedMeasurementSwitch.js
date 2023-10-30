@@ -106,7 +106,7 @@ export default function SetupEnhancedMeasurementSwitch() {
 		}
 
 		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getEnhancedMeasurementSettings',
+			'isEnhancedMeasurementStreamAlreadyEnabled',
 			[ propertyID, webDataStreamID ]
 		);
 	} );
