@@ -111,7 +111,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			] );
 	} );
 
-	it( 'should render with the switch defaulting to the on position when enhanced measurement is disabled for the web data stream', async () => {
+	it( 'should render with the switch defaulting to the on position when enhanced measurement is enabled for the web data stream', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setEnhancedMeasurementStreamEnabled(
@@ -178,7 +178,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 		expect( container ).toMatchSnapshot();
 
 		expect(
-			queryByLabelText( /Enable enhanced measurement/i )
+			queryByLabelText( 'Enable enhanced measurement' )
 		).not.toBeInTheDocument();
 
 		expect(

@@ -117,7 +117,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 		expect( container ).toMatchSnapshot();
 
 		expect(
-			queryByLabelText( /Enable enhanced measurement/i )
+			queryByLabelText( 'Enable enhanced measurement' )
 		).not.toBeInTheDocument();
 
 		expect(
@@ -153,7 +153,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 
 		expect(
 			queryByText(
-				/Enhanced measurement is enabled for this web data stream./i
+				'Enhanced measurement is enabled for this web data stream.'
 			)
 		).not.toBeInTheDocument();
 	} );
