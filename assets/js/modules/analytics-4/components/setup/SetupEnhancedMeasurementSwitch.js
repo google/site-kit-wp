@@ -41,6 +41,7 @@ import {
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from '../../utils/validation';
+import { isValidAccountID } from '../../../analytics/util';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupEnhancedMeasurementSwitch() {
@@ -56,17 +57,17 @@ export default function SetupEnhancedMeasurementSwitch() {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
-	const isLoadingProperties = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
+	const isLoadingProperties = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
 			hasModuleAccess: true,
-		} );
-	} );
+		} )
+	);
 
-	const isLoadingWebDataStreams = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
+	const isLoadingWebDataStreams = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
 			hasModuleAccess: true,
-		} );
-	} );
+		} )
+	);
 
 	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
 		if ( isLoadingProperties || isLoadingWebDataStreams ) {
@@ -135,6 +136,10 @@ export default function SetupEnhancedMeasurementSwitch() {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
 		} );
 	}, [ accountID, propertyID, webDataStreamID, setValues ] );
+
+	if ( ! isValidAccountID( accountID ) ) {
+		return null;
+	}
 
 	return (
 		<EnhancedMeasurementSwitch
