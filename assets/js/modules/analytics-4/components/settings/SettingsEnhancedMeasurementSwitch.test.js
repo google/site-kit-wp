@@ -109,6 +109,12 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				propertyID,
 				webDataStreamID,
 			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'isEnhancedMeasurementStreamAlreadyEnabled', [
+				propertyID,
+				webDataStreamID,
+			] );
 	} );
 
 	it( 'should render with the switch defaulting to the on position when enhanced measurement is enabled for the web data stream', async () => {
