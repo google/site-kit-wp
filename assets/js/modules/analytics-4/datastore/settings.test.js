@@ -370,6 +370,20 @@ describe( 'modules/analytics-4 settings', () => {
 					expect( fetchMock ).toHaveFetchedTimes( 0 );
 				} );
 
+				it( 'should not save the enhanced measurement settings if the form value is `false`', async () => {
+					registry
+						.dispatch( CORE_FORMS )
+						.setValues( ENHANCED_MEASUREMENT_FORM, {
+							[ ENHANCED_MEASUREMENT_ENABLED ]: false,
+						} );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.submitChanges();
+
+					expect( fetchMock ).toHaveFetchedTimes( 0 );
+				} );
+
 				it( 'should not save the enhanced measurement settings if the setting has not been changed', async () => {
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )

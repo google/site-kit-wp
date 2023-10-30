@@ -33,26 +33,112 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
+import * as fixtures from '../../../analytics/datastore/__fixtures__';
+import * as ga4Fixtures from '../../datastore/__fixtures__';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 
 describe( 'SetupEnhancedMeasurementSwitch', () => {
 	let registry;
 
+	const { accounts } = fixtures.accountsPropertiesProfiles;
+	const { properties, webDataStreams } = ga4Fixtures;
+	const accountID = accounts[ 0 ].id;
+	const propertyID = properties[ 0 ]._id;
+	const webDataStreamID = webDataStreams[ 0 ]._id;
+
+	const enhancedMeasurementSettingsMock = {
+		fileDownloadsEnabled: null,
+		name: `properties/${ propertyID }/dataStreams/${ webDataStreamID }/enhancedMeasurementSettings`,
+		outboundClicksEnabled: null,
+		pageChangesEnabled: null,
+		scrollsEnabled: null,
+		searchQueryParameter: 'q,s,search,query,keyword',
+		siteSearchEnabled: null,
+		streamEnabled: true,
+		uriQueryParameter: null,
+		videoEngagementEnabled: null,
+	};
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-			accountID: '1000',
+			accountID,
 		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			propertyID: '2000',
-			webDataStreamID: '3000',
+			propertyID,
+			webDataStreamID,
 		} );
+
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.finishResolution( 'getAccounts', [] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperties( properties, { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getProperties', [ accountID ] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreams( webDataStreams, {
+				propertyID,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getWebDataStreams', [ propertyID ] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetEnhancedMeasurementSettings(
+				enhancedMeasurementSettingsMock,
+				{ propertyID, webDataStreamID }
+			);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'isEnhancedMeasurementStreamAlreadyEnabled', [
+				propertyID,
+				webDataStreamID,
+			] );
 	} );
 
-	it( 'should render with the switch defaulting to the on position', () => {
-		const { container, getByLabelText } = render(
+	it( 'should not render the switch when enhanced measurement is already enabled', () => {
+		const { container, queryByLabelText, getByText } = render(
+			<SetupEnhancedMeasurementSwitch />,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			queryByLabelText( 'Enable enhanced measurement' )
+		).not.toBeInTheDocument();
+
+		expect(
+			getByText(
+				'Enhanced measurement is enabled for this web data stream.'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render with the switch defaulting to the on position when enhanced measurement is not already enabled', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetEnhancedMeasurementSettings(
+				{
+					...enhancedMeasurementSettingsMock,
+					streamEnabled: false,
+				},
+				{ propertyID, webDataStreamID }
+			);
+
+		const { container, getByLabelText, queryByText } = render(
 			<SetupEnhancedMeasurementSwitch />,
 			{
 				registry,
@@ -64,6 +150,12 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 		const switchControl = getByLabelText( 'Enable enhanced measurement' );
 
 		expect( switchControl ).toBeChecked();
+
+		expect(
+			queryByText(
+				'Enhanced measurement is enabled for this web data stream.'
+			)
+		).not.toBeInTheDocument();
 	} );
 
 	it.each( [
@@ -81,6 +173,15 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 				.setValues( ENHANCED_MEASUREMENT_FORM, {
 					[ ENHANCED_MEASUREMENT_ENABLED ]: false,
 				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetEnhancedMeasurementSettings(
+					{
+						...enhancedMeasurementSettingsMock,
+						streamEnabled: false,
+					},
+					{ propertyID, webDataStreamID }
+				);
 
 			const { getByLabelText } = render(
 				<SetupEnhancedMeasurementSwitch />,
@@ -98,6 +199,16 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 	);
 
 	it( 'should toggle the switch on click', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetEnhancedMeasurementSettings(
+				{
+					...enhancedMeasurementSettingsMock,
+					streamEnabled: false,
+				},
+				{ propertyID, webDataStreamID }
+			);
+
 		const { getByLabelText } = render( <SetupEnhancedMeasurementSwitch />, {
 			registry,
 		} );
@@ -118,6 +229,21 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					accountID: '1001',
 				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( properties, { accountID: '1001' } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getProperties', [ '1001' ] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						{
+							...enhancedMeasurementSettingsMock,
+							streamEnabled: false,
+						},
+						{ propertyID, webDataStreamID }
+					);
 			},
 		],
 		[
@@ -126,6 +252,31 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: '2001',
 				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( webDataStreams, {
+						propertyID: '2001',
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreams', [ '2001' ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						{
+							...enhancedMeasurementSettingsMock,
+							streamEnabled: false,
+						},
+						{ propertyID: '2001', webDataStreamID }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution(
+						'isEnhancedMeasurementStreamAlreadyEnabled',
+						[ '2001', webDataStreamID ]
+					);
 			},
 		],
 		[
@@ -134,10 +285,52 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					webDataStreamID: '3001',
 				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreams', [ '3001' ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						{
+							...enhancedMeasurementSettingsMock,
+							streamEnabled: false,
+						},
+						{ propertyID, webDataStreamID: '3001' }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution(
+						'isEnhancedMeasurementStreamAlreadyEnabled',
+						[ propertyID, '3001' ]
+					);
 			},
 		],
 	] )( 'when the %s', ( _, changeSetting ) => {
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetEnhancedMeasurementSettings(
+					{
+						...enhancedMeasurementSettingsMock,
+						streamEnabled: false,
+					},
+					{ propertyID, webDataStreamID }
+				);
+		} );
+
 		it( 'should revert the switch from off to on', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetEnhancedMeasurementSettings(
+					{
+						...enhancedMeasurementSettingsMock,
+						streamEnabled: false,
+					},
+					{ propertyID, webDataStreamID }
+				);
+
 			const { getByLabelText } = render(
 				<SetupEnhancedMeasurementSwitch />,
 				{
@@ -173,6 +366,38 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 			expect( switchControl ).toBeChecked();
 
 			act( changeSetting );
+
+			expect( switchControl ).toBeChecked();
+		} );
+
+		it( 'should toggle the switch to on from the already enabled state', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetEnhancedMeasurementSettings(
+					{
+						...enhancedMeasurementSettingsMock,
+					},
+					{ propertyID, webDataStreamID }
+				);
+
+			const { getByLabelText, getByText } = render(
+				<SetupEnhancedMeasurementSwitch />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				getByText(
+					'Enhanced measurement is enabled for this web data stream.'
+				)
+			).toBeInTheDocument();
+
+			act( changeSetting );
+
+			const switchControl = getByLabelText(
+				'Enable enhanced measurement'
+			);
 
 			expect( switchControl ).toBeChecked();
 		} );

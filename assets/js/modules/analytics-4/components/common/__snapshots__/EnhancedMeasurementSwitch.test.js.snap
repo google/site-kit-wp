@@ -1,5 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`EnhancedMeasurementSwitch should render correctly in the already enabled state 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <p
+      class="googlesitekit-margin-top-0"
+    >
+      Enhanced measurement is enabled for this web data stream.
+    </p>
+    <p>
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
 exports[`EnhancedMeasurementSwitch should render correctly in the default state 1`] = `
 <div>
   <div
@@ -39,7 +65,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the default state 
       Enable enhanced measurement
     </label>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -94,7 +120,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the disabled state
       Enable enhanced measurement
     </label>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -140,7 +166,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the loading state 
       </div>
     </div>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"

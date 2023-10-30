@@ -31,8 +31,16 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
 import EnhancedMeasurementSwitch from '../common/EnhancedMeasurementSwitch';
+import {
+	isValidPropertyID,
+	isValidPropertySelection,
+	isValidWebDataStreamID,
+	isValidWebDataStreamSelection,
+} from '../../utils/validation';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupEnhancedMeasurementSwitch() {
@@ -47,6 +55,61 @@ export default function SetupEnhancedMeasurementSwitch() {
 	const webDataStreamID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
+
+	const isLoadingProperties = useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
+			hasModuleAccess: true,
+		} );
+	} );
+
+	const isLoadingWebDataStreams = useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
+			hasModuleAccess: true,
+		} );
+	} );
+
+	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
+		if ( isLoadingProperties || isLoadingWebDataStreams ) {
+			return undefined;
+		}
+
+		if (
+			! isValidPropertyID( propertyID ) ||
+			! isValidWebDataStreamID( webDataStreamID )
+		) {
+			return null;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).isEnhancedMeasurementStreamAlreadyEnabled(
+			propertyID,
+			webDataStreamID
+		);
+	} );
+
+	const isLoading = useSelect( ( select ) => {
+		if (
+			! isValidPropertySelection( propertyID ) ||
+			! isValidWebDataStreamSelection( webDataStreamID ) ||
+			isLoadingProperties ||
+			isLoadingWebDataStreams
+		) {
+			return true;
+		}
+
+		if (
+			propertyID === PROPERTY_CREATE ||
+			webDataStreamID === WEBDATASTREAM_CREATE
+		) {
+			return false;
+		}
+
+		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'isEnhancedMeasurementStreamAlreadyEnabled',
+			[ propertyID, webDataStreamID ]
+		);
+	} );
 
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -73,5 +136,12 @@ export default function SetupEnhancedMeasurementSwitch() {
 		} );
 	}, [ accountID, propertyID, webDataStreamID, setValues ] );
 
-	return <EnhancedMeasurementSwitch />;
+	return (
+		<EnhancedMeasurementSwitch
+			loading={ isLoading }
+			isEnhancedMeasurementAlreadyEnabled={
+				isEnhancedMeasurementAlreadyEnabled
+			}
+		/>
+	);
 }

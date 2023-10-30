@@ -50,6 +50,7 @@ export default function EnhancedMeasurementSwitch( {
 	disabled = false,
 	loading = false,
 	formName = ENHANCED_MEASUREMENT_FORM,
+	isEnhancedMeasurementAlreadyEnabled = false,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( formName, ENHANCED_MEASUREMENT_ENABLED )
@@ -105,7 +106,12 @@ export default function EnhancedMeasurementSwitch( {
 					className="googlesitekit-analytics-enable-enhanced-measurement__progress"
 				/>
 			) }
-			{ ! loading && (
+			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
+				<p className="googlesitekit-margin-top-0">
+					Enhanced measurement is enabled for this web data stream.
+				</p>
+			) }
+			{ ! loading && ! isEnhancedMeasurementAlreadyEnabled && (
 				<Switch
 					label={ __(
 						'Enable enhanced measurement',
@@ -120,7 +126,7 @@ export default function EnhancedMeasurementSwitch( {
 			<p>
 				{ createInterpolateElement(
 					__(
-						'Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. <a>Learn more</a>',
+						'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{
@@ -141,4 +147,5 @@ EnhancedMeasurementSwitch.propTypes = {
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
 	loading: PropTypes.bool,
+	isEnhancedMeasurementAlreadyEnabled: PropTypes.bool,
 };

@@ -1,13 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enhanced measurement is already enabled for the web data stream 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <p
+      class="googlesitekit-margin-top-0"
+    >
+      Enhanced measurement is enabled for this web data stream.
+    </p>
+    <p>
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
 exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch disabled when hasAnalytics4Access is false 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
   >
     <div
-      aria-checked="true"
-      class="mdc-switch mdc-switch--checked mdc-switch--disabled"
+      aria-checked="false"
+      class="mdc-switch mdc-switch--disabled"
       role="switch"
       tabindex="0"
     >
@@ -40,7 +66,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       Enable enhanced measurement
     </label>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -86,7 +112,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       </div>
     </div>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -132,7 +158,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       </div>
     </div>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -178,7 +204,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       </div>
     </div>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -232,7 +258,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
       Enable enhanced measurement
     </label>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -286,7 +312,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
       Enable enhanced measurement
     </label>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -340,7 +366,7 @@ exports[`SettingsEnhancedMeasurementSwitch when propertyID is property_create sh
       Enable enhanced measurement
     </label>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -394,7 +420,7 @@ exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream
       Enable enhanced measurement
     </label>
     <p>
-      Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
