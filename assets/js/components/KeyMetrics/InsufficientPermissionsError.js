@@ -33,20 +33,22 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
-import MetricTileError from '../../../../components/KeyMetrics/MetricTileError';
-import { trackEvent, trackEventOnce } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Link from '../Link';
+import MetricTileError from './MetricTileError';
+import { trackEvent, trackEventOnce } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function InsufficientPermissionsError( props ) {
-	const { onRetry, error, infoTooltip, headerText } = props;
+	const { moduleSlug, onRetry, infoTooltip, headerText } = props;
 
 	const viewContext = useViewContext();
 
 	const helpLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getErrorTroubleshootingLinkURL( error )
+		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+			code: `${ moduleSlug }_insufficient_permissions`,
+		} )
 	);
 
 	useEffect( () => {
@@ -99,7 +101,7 @@ export default function InsufficientPermissionsError( props ) {
 }
 
 InsufficientPermissionsError.propTypes = {
-	error: PropTypes.shape( {} ).isRequired,
+	moduleSlug: PropTypes.string.isRequired,
 	onRetry: PropTypes.func.isRequired,
 	headerText: PropTypes.string,
 	infoTooltip: PropTypes.string,

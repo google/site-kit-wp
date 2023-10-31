@@ -40,8 +40,11 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
-import MetricTileWrapper from '../../../components/KeyMetrics/MetricTileWrapper';
-import MetricTileTable from '../../../components/KeyMetrics/MetricTileTable';
+import {
+	InsufficientPermissionsError,
+	MetricTileTable,
+	MetricTileWrapper,
+} from '../../../components/KeyMetrics';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	isInsufficientPermissionsError,
@@ -50,8 +53,8 @@ import { isInvalidCustomDimensionError } from './custom-dimensions';
 import {
 	AnalyticsUpdateError,
 	CustomDimensionsMissingError,
-	InsufficientPermissionsError,
 } from '../components/key-metrics';
+
 const { useSelect, useDispatch } = Data;
 
 export default function withCustomDimensions( options = {} ) {
@@ -301,18 +304,17 @@ export default function withCustomDimensions( options = {} ) {
 				);
 			}
 
-			const insufficientPermissionsError =
-				customDimensionsCreationErrors?.find(
+			if (
+				customDimensionsCreationErrors?.some(
 					isInsufficientPermissionsError
-				);
-
-			if ( insufficientPermissionsError ) {
+				)
+			) {
 				// Handle permissions error encountered while creating
 				// custom dimensions.
 				return (
 					<InsufficientPermissionsError
 						{ ...commonErrorProps }
-						error={ insufficientPermissionsError }
+						moduleSlug="analytics-4"
 						onRetry={ handleCreateCustomDimensions }
 					/>
 				);
