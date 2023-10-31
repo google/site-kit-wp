@@ -301,18 +301,17 @@ export default function withCustomDimensions( options = {} ) {
 				);
 			}
 
-			const insufficientPermissionsError =
-				customDimensionsCreationErrors?.find(
+			if (
+				customDimensionsCreationErrors?.some(
 					isInsufficientPermissionsError
-				);
-
-			if ( insufficientPermissionsError ) {
+				)
+			) {
 				// Handle permissions error encountered while creating
 				// custom dimensions.
 				return (
 					<InsufficientPermissionsError
 						{ ...commonErrorProps }
-						error={ insufficientPermissionsError }
+						moduleSlug="analytics-4"
 						onRetry={ handleCreateCustomDimensions }
 					/>
 				);
