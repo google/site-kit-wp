@@ -98,15 +98,27 @@ export default function withCustomDimensions( options = {} ) {
 						customDimensions
 					)
 			);
-			const isCreatingCustomDimensions = useSelect(
-				( select ) =>
+			const isAutoCreatingCustomDimensions = useSelect( ( select ) =>
+				select( CORE_FORMS ).getValue(
+					FORM_CUSTOM_DIMENSIONS_CREATE,
+					'isAutoCreatingCustomDimensions'
+				)
+			);
+
+			const isCreatingCustomDimensions = useSelect( ( select ) => {
+				if ( isAutoCreatingCustomDimensions ) {
+					return true;
+				}
+
+				return (
 					!! customDimensions &&
 					customDimensions.some( ( dimension ) =>
 						select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
 							dimension
 						)
 					)
-			);
+				);
+			} );
 			const customDimensionsCreationErrors = useSelect( ( select ) => {
 				if ( ! customDimensions ) {
 					return [];
