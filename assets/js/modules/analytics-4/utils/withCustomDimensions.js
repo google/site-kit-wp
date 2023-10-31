@@ -109,6 +109,7 @@ export default function withCustomDimensions( options = {} ) {
 				if ( isAutoCreatingCustomDimensions ) {
 					return true;
 				}
+
 				return (
 					!! customDimensions &&
 					customDimensions.some( ( dimension ) =>
