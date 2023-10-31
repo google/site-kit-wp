@@ -1,7 +1,7 @@
 {
 	"dimensionHeaders": [
-		{ "name": { "name": "date" } },
-		{ "name": { "name": "sessionDefaultChannelGrouping" } },
+		{ "name": "date" },
+		{ "name": "sessionDefaultChannelGrouping" },
 		{ "name": "dateRange" }
 	],
 	"metricHeaders": [

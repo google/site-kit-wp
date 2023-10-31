@@ -25,4 +25,19 @@
 	.googlesitekit-analytics-enable-enhanced-measurement__progress {
 		margin: 0 0 21px;
 	}
+
+	.googlesitekit-enhanced-measurement-setup-banner,
+	.googlesitekit-enhanced-measurement-success-banner {
+		svg {
+			max-height: 175px;
+		}
+	}
+
+	.googlesitekit-enhanced-measurement-setup-banner__footer-notice {
+		color: $c-boulder;
+		font-size: 14px;
+		letter-spacing: 0.25px;
+		line-height: 1.5;
+		margin: 1em 0 0.5em;
+	}
 }

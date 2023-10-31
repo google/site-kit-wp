@@ -20,7 +20,7 @@ exports[`TopTrafficSourceWidget renders correctly with the expected metrics 1`] 
             Top traffic source
           </h3>
           <span
-            class=""
+            class="googlesitekit-info-tooltip"
             title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
           >
             <svg />
@@ -63,11 +63,21 @@ exports[`TopTrafficSourceWidget retries both reports when an error is encountere
     <div
       class="googlesitekit-cta googlesitekit-cta--error"
     >
-      <h2
-        class="googlesitekit-cta__header_text"
+      <div
+        class="googlesitekit-cta__header"
       >
-        Top traffic source
-      </h2>
+        <h2
+          class="googlesitekit-cta__header_text"
+        >
+          Top traffic source
+        </h2>
+        <span
+          class="googlesitekit-info-tooltip"
+          title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
+        >
+          <svg />
+        </span>
+      </div>
       <h3
         class="googlesitekit-cta__title"
       >
@@ -130,7 +140,7 @@ exports[`TopTrafficSourceWidget retries both reports when an error is encountere
             Top traffic source
           </h3>
           <span
-            class=""
+            class="googlesitekit-info-tooltip"
             title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
           >
             <svg />

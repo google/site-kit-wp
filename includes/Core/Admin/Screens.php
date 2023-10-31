@@ -462,7 +462,7 @@ final class Screens {
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			$screens[] = new Screen(
 				self::PREFIX . 'user-input',
 				array(

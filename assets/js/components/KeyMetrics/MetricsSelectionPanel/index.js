@@ -39,6 +39,7 @@ import Footer from './Footer';
 import Metrics from './Metrics';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
+import Notice from './Notice';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
@@ -69,8 +70,10 @@ export default function MetricsSelectionPanel() {
 	}, [ savedViewableMetrics, setValues, viewContext ] );
 
 	const sideSheetCloseFn = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
+		if ( isOpen ) {
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+		}
+	}, [ setValue, isOpen ] );
 
 	return (
 		<SideSheet
@@ -80,11 +83,12 @@ export default function MetricsSelectionPanel() {
 			closeFn={ sideSheetCloseFn }
 			focusTrapOptions={ {
 				initialFocus:
-					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-accordion__header',
+					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-selection-box input',
 			} }
 		>
 			<Header />
 			<Metrics savedMetrics={ savedViewableMetrics } />
+			<Notice />
 			<Footer savedMetrics={ savedViewableMetrics } />
 		</SideSheet>
 	);

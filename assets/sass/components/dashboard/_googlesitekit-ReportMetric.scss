@@ -57,15 +57,30 @@
 }
 
 .googlesitekit-pagespeed-report-metric__title {
+	align-items: center;
 	color: $c-surfaces-on-surface;
+	column-gap: $grid-gap-phone / 2;
+	display: flex;
 	font-family: $f-secondary;
 	font-size: $fs-title-md;
 	font-weight: $fw-bold;
 	letter-spacing: 0.1px;
 	line-height: $lh-title-md;
+
+	.googlesitekit-info-tooltip {
+		display: inline-flex;
+	}
 }
 
 .googlesitekit-pagespeed-report-metric__badge {
 	margin-left: 6px;
 	vertical-align: bottom;
+}
+
+.googlesitekit-pagespeed-report__row--unavailable {
+	.googlesitekit-pagespeed-report-metric__title,
+	.googlesitekit-pagespeed-report-metric__description,
+	.googlesitekit-pagespeed-report-metric-value {
+		color: $c-jumbo;
+	}
 }

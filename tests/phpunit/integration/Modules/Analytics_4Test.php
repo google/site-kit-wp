@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
+use Cassandra\Type\Custom;
 use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -23,10 +24,12 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
@@ -44,11 +47,14 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListCustomDimensionsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use WP_Query;
 use WP_User;
+use ReflectionMethod;
 
 /**
  * @group Modules
@@ -290,16 +296,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => '',
-				'webDataStreamID'         => '',
-				'measurementID'           => '',
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => '',
-				'googleTagAccountID'      => '',
-				'googleTagContainerID'    => '',
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => '',
+				'webDataStreamID'           => '',
+				'measurementID'             => '',
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => '',
+				'googleTagAccountID'        => '',
+				'googleTagContainerID'      => '',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -308,16 +315,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => $property_id,
-				'webDataStreamID'         => $webdatastream_id,
-				'measurementID'           => $measurement_id,
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => 'GT-123',
-				'googleTagAccountID'      => $google_tag_account_id,
-				'googleTagContainerID'    => $google_tag_container_id,
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => $property_id,
+				'webDataStreamID'           => $webdatastream_id,
+				'measurementID'             => $measurement_id,
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => 'GT-123',
+				'googleTagAccountID'        => $google_tag_account_id,
+				'googleTagContainerID'      => $google_tag_container_id,
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -423,16 +431,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => '',
-				'webDataStreamID'         => '',
-				'measurementID'           => '',
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => '',
-				'googleTagAccountID'      => '',
-				'googleTagContainerID'    => '',
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => '',
+				'webDataStreamID'           => '',
+				'measurementID'             => '',
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => '',
+				'googleTagAccountID'        => '',
+				'googleTagContainerID'      => '',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -536,16 +545,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => '',
-				'webDataStreamID'         => '',
-				'measurementID'           => '',
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => '',
-				'googleTagAccountID'      => '',
-				'googleTagContainerID'    => '',
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => '',
+				'webDataStreamID'           => '',
+				'measurementID'             => '',
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => '',
+				'googleTagAccountID'        => '',
+				'googleTagContainerID'      => '',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -556,16 +566,17 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'               => $account_id,
-				'propertyID'              => $property_id,
-				'webDataStreamID'         => $webdatastream_id,
-				'measurementID'           => $measurement_id,
-				'ownerID'                 => 0,
-				'useSnippet'              => true,
-				'googleTagID'             => '',
-				'googleTagAccountID'      => '',
-				'googleTagContainerID'    => '',
-				'googleTagLastSyncedAtMs' => 0,
+				'accountID'                 => $account_id,
+				'propertyID'                => $property_id,
+				'webDataStreamID'           => $webdatastream_id,
+				'measurementID'             => $measurement_id,
+				'ownerID'                   => 0,
+				'useSnippet'                => true,
+				'googleTagID'               => '',
+				'googleTagAccountID'        => '',
+				'googleTagContainerID'      => '',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -847,6 +858,60 @@ class Analytics_4Test extends TestCase {
 		$this->assertFalse( $this->analytics->is_data_available() );
 	}
 
+	public function test_available_custom_dimensions_reset_on_property_id_change() {
+		$this->enable_feature( 'keyMetrics' );
+		// Given: Analytics 4 is registered with a specific propertyID.
+		$this->analytics->register();
+		$this->analytics->get_settings()->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'availableCustomDimensions' => array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ),
+			)
+		);
+
+		// Assert that the availableCustomDimensions are set correctly before the change.
+		$initial_settings = $this->analytics->get_settings()->get();
+		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $initial_settings['availableCustomDimensions'] );
+
+		// When: The propertyID is changed.
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '7654321',
+			)
+		);
+
+		// Then: The availableCustomDimensions should be reset to null.
+		$settings = $this->analytics->get_settings()->get();
+		$this->assertNull( $settings['availableCustomDimensions'] );
+	}
+
+	public function test_only_googlesitekit_prefixed_dimensions_are_retained() {
+		$this->enable_feature( 'keyMetrics' );
+		// Given: Analytics 4 is registered with a mixture of valid and invalid custom dimensions.
+		$this->analytics->register();
+		$this->analytics->get_settings()->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'availableCustomDimensions' => array(
+					'googlesitekit_dimension1',
+					'invalid_dimension',
+					'googlesitekit_dimension2',
+					'another_invalid_dimension',
+				),
+			)
+		);
+
+		// When: The settings are fetched after merging.
+		$current_settings = $this->analytics->get_settings()->get();
+
+		// Then: Only the dimensions with the 'googlesitekit_' prefix should be retained.
+		$this->assertEquals(
+			array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ),
+			$current_settings['availableCustomDimensions']
+		);
+	}
+
+
 	public function test_on_activation() {
 		$dismissed_items = new Dismissed_Items( $this->user_options );
 
@@ -903,7 +968,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_datapoints__news_key_metrics() {
-		$this->enable_feature( 'newsKeyMetrics' );
+		$this->enable_feature( 'keyMetrics' );
 		$this->assertEqualSets(
 			array(
 				'account-summaries',
@@ -922,8 +987,32 @@ class Analytics_4Test extends TestCase {
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
+				'sync-custom-dimensions',
+				'custom-dimension-data-available',
 			),
 			$this->analytics->get_datapoints()
+		);
+	}
+
+	public function test_get_debug_fields__keyMetrics_disabled() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertNotContains(
+			'analytics_4_available_custom_dimensions',
+			array_keys( $analytics->get_debug_fields() )
+		);
+	}
+
+	public function test_get_debug_fields__keyMetrics_enabled() {
+		$this->enable_feature( 'keyMetrics' );
+
+		// Given: Analytics 4 is registered with a specific propertyID.
+		$this->analytics->register();
+		$this->analytics->get_settings()->register();
+
+		$this->assertContains(
+			'analytics_4_available_custom_dimensions',
+			array_keys( $this->analytics->get_debug_fields() )
 		);
 	}
 
@@ -2157,7 +2246,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_custom_dimension__required_params() {
-		$this->enable_feature( 'newsKeyMetrics' );
+		$this->enable_feature( 'keyMetrics' );
 		$property_id = '123456789';
 
 		FakeHttp::fake_google_http_handler(
@@ -2264,7 +2353,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_custom_dimension() {
-		$this->enable_feature( 'newsKeyMetrics' );
+		$this->enable_feature( 'keyMetrics' );
 		$property_id = '123456789';
 
 		FakeHttp::fake_google_http_handler(
@@ -2311,6 +2400,48 @@ class Analytics_4Test extends TestCase {
 		foreach ( $custom_dimension as $key => $value ) {
 			$this->assertEquals( $value, $response_array[ $key ] );
 		}
+
+		// Verify the request URL and params were correctly generated.
+		$this->assertCount( 1, $this->request_handler_calls );
+
+		$request_url = $this->request_handler_calls[0]['url'];
+
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
+		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
+	}
+
+	public function test_sync_custom_dimensions() {
+		$this->enable_feature( 'keyMetrics' );
+		$property_id = 'sync-custom-dimension-property-id';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_sync_custom_dimensions_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::READONLY_SCOPE
+			)
+		);
+
+		$response = $this->analytics->set_data(
+			'sync-custom-dimensions',
+			array()
+		);
+
+		$this->assertNotWPError( $response );
+
+		// Verify the response is an array of custom dimension names.
+		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $response );
 
 		// Verify the request URL and params were correctly generated.
 		$this->assertCount( 1, $this->request_handler_calls );
@@ -2437,6 +2568,65 @@ class Analytics_4Test extends TestCase {
 						200,
 						array(),
 						json_encode( $custom_dimension )
+					);
+
+				default:
+					return new Response( 200 );
+			}
+		};
+	}
+
+	/**
+	 * Creates a fake HTTP handler with call tracking for sync custom dimensions.
+	 *
+	 * @param string $property_id The GA4 property ID to use.
+	 * @return Closure The fake HTTP client.
+	 */
+	protected function create_sync_custom_dimensions_fake_http_handler( $property_id ) {
+		$this->request_handler_calls = array();
+
+		return function ( Request $request ) use ( $property_id ) {
+			$url    = parse_url( $request->getUri() );
+			$params = json_decode( (string) $request->getBody(), true );
+
+			$this->request_handler_calls[] = array(
+				'url'    => $url,
+				'params' => $params,
+			);
+
+			if (
+				! in_array(
+					$url['host'],
+					array( 'analyticsdata.googleapis.com', 'analyticsadmin.googleapis.com' ),
+					true
+				)
+			) {
+				return new Response( 200 );
+			}
+
+			switch ( $url['path'] ) {
+				case "/v1beta/properties/$property_id/customDimensions":
+					$custom_dimension1 = new GoogleAnalyticsAdminV1betaCustomDimension();
+					$custom_dimension1->setParameterName( 'googlesitekit_dimension1' );
+					$custom_dimension1->setDisplayName( 'Test Custom Dimension' );
+					$custom_dimension1->setDescription( 'Test Custom Dimension Description' );
+					$custom_dimension1->setScope( 'EVENT' );
+					$custom_dimension1->setDisallowAdsPersonalization( false );
+
+					$custom_dimension2 = new GoogleAnalyticsAdminV1betaCustomDimension();
+					$custom_dimension2->setParameterName( 'googlesitekit_dimension2' );
+					$custom_dimension2->setDisplayName( 'Test Custom Dimension 2' );
+					$custom_dimension2->setDescription( 'Test Custom Dimension Description 2' );
+					$custom_dimension2->setScope( 'EVENT' );
+					$custom_dimension2->setDisallowAdsPersonalization( false );
+
+					$custom_dimensions = new GoogleAnalyticsAdminV1betaListCustomDimensionsResponse();
+					$custom_dimensions->setCustomDimensions( array( $custom_dimension1, $custom_dimension2 ) );
+
+					return new Response(
+						200,
+						array(),
+						json_encode( $custom_dimensions )
 					);
 
 				default:
@@ -2639,6 +2829,280 @@ class Analytics_4Test extends TestCase {
 
 		// Ensure disabling tracking does not change if its already allowed.
 		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', true ) );
+	}
+
+	public function test_get_custom_dimensions_data() {
+		global $wp_query;
+
+		$settings = array(
+			'availableCustomDimensions' => array(
+				'googlesitekit_post_author',
+				'googlesitekit_post_type',
+				'googlesitekit_post_categories',
+				'googlesitekit_post_date',
+			),
+		);
+
+		$method = new ReflectionMethod( Analytics_4::class, 'get_custom_dimensions_data' );
+		$method->setAccessible( true );
+
+		// Returns an empty array if the current page type is not singular.
+		$wp_query = new WP_Query();
+		$data     = $method->invoke( $this->analytics );
+		$this->assertEmpty( $data );
+
+		// Change the current page to be singular.
+		$category1_id = $this->factory()->category->create();
+		$category2_id = $this->factory()->category->create();
+		$category3_id = $this->factory()->category->create();
+
+		$post_type = 'test-post-type';
+		$post_id   = $this->factory()->post->create( array( 'post_type' => $post_type ) );
+		wp_set_post_categories( $post_id, array( $category1_id, $category3_id ) );
+
+		$wp_query->is_singular    = true;
+		$wp_query->queried_object = get_post( $post_id );
+
+		$hook = function( $post_types ) use ( $post_type ) {
+			return array_merge( $post_types, array( $post_type ) );
+		};
+
+		// Returns an empty array if no custom dimensions are added to settings.
+		$data = $method->invoke( $this->analytics );
+		$this->assertEmpty( $data );
+
+		// Returns only post type if the queried object is not in the allowed post types list.
+		$this->analytics->get_settings()->merge( $settings );
+		$data = $method->invoke( $this->analytics );
+		$this->assertEquals( array( 'googlesitekit_post_type' => $post_type ), $data );
+
+		// Returns correct data when all conditions are met.
+		add_filter( 'googlesitekit_custom_dimension_valid_post_types', $hook );
+		$data = $method->invoke( $this->analytics );
+		$this->assertEquals(
+			array(
+				'googlesitekit_post_author'     => $wp_query->queried_object->post_author,
+				'googlesitekit_post_type'       => $post_type,
+				'googlesitekit_post_date'       => get_the_date( 'Ymd', $wp_query->queried_object ),
+				'googlesitekit_post_categories' => $category1_id . ',' . $category3_id,
+			),
+			$data
+		);
+	}
+
+	public function test_inline_custom_dimension_data_initial_state__module_not_connected() {
+		$this->enable_feature( 'keyMetrics' );
+		$this->analytics->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data );
+	}
+
+	public function test_inline_custom_dimension_data_initial_state__module_connected() {
+		$this->enable_feature( 'keyMetrics' );
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'customDimensionsDataAvailable' => array(
+					'googlesitekit_post_author'     => false,
+					'googlesitekit_post_type'       => false,
+					'googlesitekit_post_date'       => false,
+					'googlesitekit_post_categories' => false,
+				),
+			),
+			$inline_modules_data['analytics-4']
+		);
+	}
+
+	public function test_set_custom_dimension_data_available() {
+		$this->enable_feature( 'keyMetrics' );
+
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$response = $this->analytics->set_data(
+			'custom-dimension-data-available',
+			array(
+				'customDimension' => 'googlesitekit_post_author',
+			)
+		);
+
+		$this->assertEquals( true, $response );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'customDimensionsDataAvailable' => array(
+					'googlesitekit_post_author'     => true,
+					'googlesitekit_post_type'       => false,
+					'googlesitekit_post_date'       => false,
+					'googlesitekit_post_categories' => false,
+				),
+			),
+			$inline_modules_data['analytics-4']
+		);
+	}
+
+	public function test_custom_dimension_data_available_reset_on_measurement_id_change() {
+		$this->enable_feature( 'keyMetrics' );
+
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$this->analytics->set_data(
+			'custom-dimension-data-available',
+			array(
+				'customDimension' => 'googlesitekit_post_author',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'customDimensionsDataAvailable' => array(
+					'googlesitekit_post_author'     => true,
+					'googlesitekit_post_type'       => false,
+					'googlesitekit_post_date'       => false,
+					'googlesitekit_post_categories' => false,
+				),
+			),
+			$inline_modules_data['analytics-4']
+		);
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'measurementID' => 'F6G7H8I9J0',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'customDimensionsDataAvailable' => array(
+					'googlesitekit_post_author'     => false,
+					'googlesitekit_post_type'       => false,
+					'googlesitekit_post_date'       => false,
+					'googlesitekit_post_categories' => false,
+				),
+			),
+			$inline_modules_data['analytics-4']
+		);
+	}
+
+	public function test_custom_dimension_data_available_reset_on_deactivation() {
+		$this->enable_feature( 'keyMetrics' );
+
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$this->analytics->set_data(
+			'custom-dimension-data-available',
+			array(
+				'customDimension' => 'googlesitekit_post_author',
+			)
+		);
+
+		// In this test, as the inline data won't be available when the module is deactivated,
+		// we use a local instance of Custom_Dimensions_Data_Available to verify the state.
+		$custom_dimensions_data_available = new Custom_Dimensions_Data_Available( new Transients( $this->context ) );
+
+		$this->assertEquals(
+			array(
+				'googlesitekit_post_author'     => true,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
+			),
+			$custom_dimensions_data_available->get_data_availability()
+		);
+
+		$this->analytics->on_deactivation();
+
+		$this->assertEquals(
+			array(
+				'googlesitekit_post_author'     => false,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
+			),
+			$custom_dimensions_data_available->get_data_availability()
+		);
 	}
 
 	/**

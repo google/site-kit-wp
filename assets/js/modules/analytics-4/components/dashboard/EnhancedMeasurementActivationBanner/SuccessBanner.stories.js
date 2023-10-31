@@ -1,5 +1,5 @@
 /**
- * GetHelpLink component.
+ * EnhancedMeasurementActivationBanner > SuccessBanner Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -17,35 +17,18 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
- * WordPress dependencies
- */
-import { createInterpolateElement } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import Link from '../../Link';
+import SuccessBanner from './SuccessBanner';
 
-export default function GetHelpLink( { linkURL } ) {
-	return createInterpolateElement(
-		/* translators: %s: get help text. */
-		__( 'Trouble getting access? <HelpLink />', 'google-site-kit' ),
-		{
-			HelpLink: (
-				<Link href={ linkURL } external>
-					{ __( 'Get help', 'google-site-kit' ) }
-				</Link>
-			),
-		}
-	);
-}
+const Template = ( args ) => <SuccessBanner { ...args } />;
 
-GetHelpLink.propTypes = {
-	linkURL: PropTypes.string.isRequired,
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SuccessBanner/Default',
+};
+
+export default {
+	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SuccessBanner',
 };

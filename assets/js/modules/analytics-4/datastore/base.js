@@ -54,6 +54,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'googleTagAccountID',
 		'googleTagContainerID',
 		'googleTagLastSyncedAtMs',
+		'availableCustomDimensions',
 	],
 	submitChanges,
 	rollbackChanges,

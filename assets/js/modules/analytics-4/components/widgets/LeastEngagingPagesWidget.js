@@ -116,7 +116,7 @@ function LeastEngagingPagesWidget( props ) {
 		] )
 	);
 
-	const report = useSelect( ( select ) => {
+	const report = useInViewSelect( ( select ) => {
 		if ( ! loadedPageViewsReport ) {
 			return undefined;
 		}
@@ -226,7 +226,7 @@ function LeastEngagingPagesWidget( props ) {
 			error={ error }
 			moduleSlug="analytics-4"
 			infoTooltip={ __(
-				'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
+				'Percentage of visitors that left without engagement with your site',
 				'google-site-kit'
 			) }
 		/>

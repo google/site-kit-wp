@@ -23,6 +23,7 @@ import {
 	EngagedTrafficSourceWidget,
 	LeastEngagingPagesWidget,
 	LoyalVisitorsWidget,
+	MostEngagingPagesWidget,
 	NewVisitorsWidget,
 	PopularContentWidget,
 	PopularProductsWidget,
@@ -34,6 +35,9 @@ import {
 	VisitLengthWidget,
 	TopReturningVisitorPages,
 	VisitsPerVisitorWidget,
+	TopRecentTrendingPagesWidget,
+	TopCategoriesWidget,
+	PopularAuthorsWidget,
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
@@ -43,13 +47,17 @@ import {
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_COUNTRIES,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_VISIT_LENGTH,
@@ -67,7 +75,7 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
-	if ( isFeatureEnabled( 'userInput' ) ) {
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
 		/*
 		 * Key metrics widgets.
 		 */
@@ -215,7 +223,7 @@ export const registerWidgets = ( widgets ) => {
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
 
-		if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
+		if ( isFeatureEnabled( 'keyMetrics' ) ) {
 			widgets.registerWidget(
 				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 				{
@@ -234,7 +242,7 @@ export const registerWidgets = ( widgets ) => {
 		}
 	}
 
-	if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
 		/*
 		 * News Key metrics widgets.
 		 */
@@ -297,6 +305,70 @@ export const registerWidgets = ( widgets ) => {
 				isActive: ( select ) =>
 					select( CORE_USER ).isKeyMetricActive(
 						KM_ANALYTICS_VISITS_PER_VISITOR
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			{
+				Component: MostEngagingPagesWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_MOST_ENGAGING_PAGES
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+			{
+				Component: TopRecentTrendingPagesWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_TOP_CATEGORIES,
+			{
+				Component: TopCategoriesWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_TOP_CATEGORIES
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgets.registerWidget(
+			KM_ANALYTICS_POPULAR_AUTHORS,
+			{
+				Component: PopularAuthorsWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_POPULAR_AUTHORS
 					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]

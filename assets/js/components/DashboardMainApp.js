@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { useMount } from 'react-use';
 
 /**
@@ -61,13 +61,39 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
-const { useSelect } = Data;
+import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import {
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '../modules/analytics-4/datastore/constants';
+import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
-	const userInputEnabled = useFeature( 'userInput' );
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
+
 	const viewOnlyDashboard = useViewOnly();
+
+	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
+		select( CORE_SITE ).isKeyMetricsSetupCompleted()
+	);
+
+	const hasAnalyticsEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_CUSTOM_DIMENSIONS_CREATE,
+			'autoSubmit'
+		)
+	);
+
+	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	useMount( () => {
 		if ( ! viewOnlyDashboard ) {
@@ -75,6 +101,36 @@ export default function DashboardMainApp() {
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
 		}
 	} );
+
+	const createDimensionsAndUpdateForm = useCallback( async () => {
+		await createCustomDimensions();
+		setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+			isAutoCreatingCustomDimensions: false,
+		} );
+	}, [ createCustomDimensions, setValues ] );
+
+	useEffect( () => {
+		if (
+			keyMetricsEnabled &&
+			isKeyMetricsSetupCompleted &&
+			hasAnalyticsEditScope &&
+			autoSubmit
+		) {
+			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				autoSubmit: false,
+				isAutoCreatingCustomDimensions: true,
+			} );
+			createDimensionsAndUpdateForm();
+		}
+	}, [
+		autoSubmit,
+		createCustomDimensions,
+		hasAnalyticsEditScope,
+		isKeyMetricsSetupCompleted,
+		keyMetricsEnabled,
+		setValues,
+		createDimensionsAndUpdateForm,
+	] );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -125,7 +181,7 @@ export default function DashboardMainApp() {
 
 	const isKeyMetricsWidgetHidden = useSelect(
 		( select ) =>
-			userInputEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+			keyMetricsEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
 	let lastWidgetAnchor = null;
@@ -155,14 +211,14 @@ export default function DashboardMainApp() {
 			{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally
-				render when `userInputEnabled` is false.
+				render when `keyMetricsEnabled` is false.
 
-				The userInputEnabled check can be removed once the User Input feature is fully launched
+				The keyMetricsEnabled check can be removed once the User Input feature is fully launched
 				and we remove this feature flag.
 
 				See: https://github.com/google/site-kit-wp/pull/6630#discussion_r1127229162
 			*/ }
-			{ userInputEnabled && isKeyMetricsWidgetHidden !== true && (
+			{ keyMetricsEnabled && isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
 					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
@@ -212,7 +268,7 @@ export default function DashboardMainApp() {
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
-			{ userInputEnabled && <MetricsSelectionPanel /> }
+			{ keyMetricsEnabled && <MetricsSelectionPanel /> }
 		</Fragment>
 	);
 }

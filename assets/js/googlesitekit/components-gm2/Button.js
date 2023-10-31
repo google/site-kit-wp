@@ -52,6 +52,7 @@ const Button = forwardRef(
 			customizedTooltip,
 			tooltip,
 			inverse,
+			tooltipEnterDelayInMS = 100,
 			...extraProps
 		},
 		ref
@@ -120,7 +121,12 @@ const Button = forwardRef(
 			( icon && tooltipTitle && children === undefined )
 		) {
 			return (
-				<Tooltip title={ tooltipTitle }>{ ButtonComponent }</Tooltip>
+				<Tooltip
+					title={ tooltipTitle }
+					enterDelay={ tooltipEnterDelayInMS }
+				>
+					{ ButtonComponent }
+				</Tooltip>
 			);
 		}
 

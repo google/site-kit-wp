@@ -70,7 +70,7 @@ class User_InputTest extends TestCase {
 	}
 
 	public function test_get_answers() {
-		$this->enable_feature( 'userInput' );
+		$this->enable_feature( 'keyMetrics' );
 		$this->user_input->register();
 		// If settings are not set, it returns empty default values.
 		$this->assertEquals(
@@ -169,7 +169,7 @@ class User_InputTest extends TestCase {
 	}
 
 	public function test_set_answers() {
-		$this->enable_feature( 'userInput' );
+		$this->enable_feature( 'keyMetrics' );
 		$this->user_input->register();
 		$response = $this->user_input->set_answers(
 			array(
