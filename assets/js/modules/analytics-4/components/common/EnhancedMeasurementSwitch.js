@@ -103,7 +103,7 @@ export default function EnhancedMeasurementSwitch( {
 			{ loading && (
 				<ProgressBar
 					small
-					className="googlesitekit-analytics-enable-enhanced-measurement__progress"
+					className="googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit"
 				/>
 			) }
 			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
