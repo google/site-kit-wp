@@ -11,7 +11,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the already enable
       Enhanced measurement is enabled for this web data stream.
     </p>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -65,7 +65,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the default state 
       Enable enhanced measurement
     </label>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -120,7 +120,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the disabled state
       Enable enhanced measurement
     </label>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -141,7 +141,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the loading state 
     class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
   >
     <div
-      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
     >
       <div
@@ -166,7 +166,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the loading state 
       </div>
     </div>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"

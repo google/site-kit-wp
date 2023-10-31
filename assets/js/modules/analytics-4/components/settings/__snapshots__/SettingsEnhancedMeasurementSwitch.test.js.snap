@@ -11,7 +11,7 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
       Enhanced measurement is enabled for this web data stream.
     </p>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -66,7 +66,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       Enable enhanced measurement
     </label>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -87,7 +87,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
     class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
   >
     <div
-      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
     >
       <div
@@ -112,7 +112,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       </div>
     </div>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -133,7 +133,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
     class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
   >
     <div
-      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced---settings-edit mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
     >
       <div
@@ -158,7 +158,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       </div>
     </div>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -179,7 +179,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
     class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
   >
     <div
-      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
     >
       <div
@@ -204,7 +204,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       </div>
     </div>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -258,7 +258,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
       Enable enhanced measurement
     </label>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -312,7 +312,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
       Enable enhanced measurement
     </label>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -366,7 +366,7 @@ exports[`SettingsEnhancedMeasurementSwitch when propertyID is property_create sh
       Enable enhanced measurement
     </label>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
@@ -420,7 +420,7 @@ exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream
       Enable enhanced measurement
     </label>
     <p>
-      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
       <a
         aria-label="Learn more (opens in a new tab)"
         class="googlesitekit-cta-link googlesitekit-cta-link--external"
