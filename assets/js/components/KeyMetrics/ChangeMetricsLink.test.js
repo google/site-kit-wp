@@ -32,6 +32,7 @@ import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
 import {
 	mockSurveyEndpoints,
+	surveyTimeoutEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
 
@@ -100,14 +101,52 @@ describe( 'ChangeMetricsLink', () => {
 		).toBe( true );
 	} );
 
-	it( 'should trigger a survey when the key metrics setup is completed by current user', async () => {
+	it( 'should trigger a survey when viewed', async () => {
 		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
-		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 42 } );
-		provideUserInfo( registry, { id: 42 } );
+		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
 		provideUserAuthentication( registry );
 		mockSurveyEndpoints();
 
 		render( <ChangeMetricsLink />, { registry } );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_kmw' },
+				},
+			} )
+		);
+	} );
+
+	it( 'should trigger two surveys when the key metrics setup is completed by current user', async () => {
+		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
+		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
+		provideUserInfo( registry, { id: 1 } );
+		provideUserAuthentication( registry );
+		fetchMock.post( surveyTriggerEndpoint, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.post( surveyTimeoutEndpoint, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.getOnce( surveyTimeoutEndpoint, {
+			status: 200,
+			body: {},
+		} );
+
+		render( <ChangeMetricsLink />, { registry } );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_kmw' },
+				},
+			} )
+		);
 
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
