@@ -51,8 +51,8 @@ final class Options implements Options_Interface {
 	 * @return bool True if value set, false otherwise.
 	 */
 	public function has( $option ) {
-		// Call without getting the value to ensure 'notoptions' cache is fresh for the option.
-		$this->get( $option );
+		// Call for option to ensure 'notoptions' cache is fresh for the option.
+		$value = $this->get( $option );
 
 		if ( $this->context->is_network_mode() ) {
 			$network_id = get_current_network_id();
@@ -61,11 +61,13 @@ final class Options implements Options_Interface {
 			$notoptions = wp_cache_get( 'notoptions', 'options' );
 		}
 
-		// If `notoptions` cache is not available, query the database.
-		// This happens in `wp-activate` in multisite environments.
+		// Check for `notoptions` cache. If unavailable, query the database.
+		// This is particularly happening when `WP_INSTALLING` is true,
+		// which includes `wp-activate.php` in multisite setups and certain
+		// other multisite-related functions.
 		// See: https://github.com/google/site-kit-wp/issues/7653.
 		if ( false === $notoptions ) {
-			return (bool) $this->get( $option );
+			return (bool) $value;
 		}
 
 		return ! isset( $notoptions[ $option ] );
