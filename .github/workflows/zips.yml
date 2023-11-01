@@ -59,7 +59,7 @@ on:
       - ready_for_review
 
 concurrency:
-  group: zips-${{ github.ref }}
+  group: zips-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
