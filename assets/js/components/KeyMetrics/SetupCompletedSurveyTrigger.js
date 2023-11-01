@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -40,17 +45,19 @@ export default function SetupCompletedSurveyTrigger() {
 		select( CORE_USER ).getID()
 	);
 
-	if (
-		! isKeyMetricsSetupCompleted ||
-		isKeyMetricsSetupCompletedBy !== currentUserID
-	) {
+	if ( ! isKeyMetricsSetupCompleted ) {
 		return null;
 	}
 
 	return (
-		<SurveyViewTrigger
-			triggerID="view_kmw_setup_completed"
-			ttl={ DAY_IN_SECONDS }
-		/>
+		<Fragment>
+			<SurveyViewTrigger triggerID="view_kmw" ttl={ DAY_IN_SECONDS } />
+			{ isKeyMetricsSetupCompletedBy === currentUserID && (
+				<SurveyViewTrigger
+					triggerID="view_kmw_setup_completed"
+					ttl={ DAY_IN_SECONDS }
+				/>
+			) }
+		</Fragment>
 	);
 }
