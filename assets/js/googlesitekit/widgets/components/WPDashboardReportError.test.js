@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { provideModules, render } from '../../../../tests/js/test-utils';
+import { provideModules, render } from '../../../../../tests/js/test-utils';
 import WPDashboardReportError from './WPDashboardReportError';
 
 describe( 'WPDashboardReportError', () => {

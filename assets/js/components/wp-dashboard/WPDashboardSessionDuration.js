@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -34,10 +39,9 @@ import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
-import WPDashboardReportError from './WPDashboardReportError';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardSessionDuration = () => {
+const WPDashboardSessionDuration = ( { WidgetReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -80,9 +84,7 @@ const WPDashboardSessionDuration = () => {
 	}
 
 	if ( error ) {
-		return (
-			<WPDashboardReportError moduleSlug="analytics" error={ error } />
-		);
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	const { totals } = data[ 0 ].data;
@@ -110,6 +112,10 @@ const WPDashboardSessionDuration = () => {
 			{ ...gatheringDataProps }
 		/>
 	);
+};
+
+WPDashboardSessionDuration.propTypes = {
+	WidgetReportError: PropTypes.func,
 };
 
 export default WPDashboardSessionDuration;

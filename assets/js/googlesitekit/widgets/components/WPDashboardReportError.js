@@ -31,8 +31,8 @@ import { useInstanceId } from '@wordpress/compose';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import ReportError from '../ReportError';
+import { CORE_UI } from '../../datastore/ui/constants';
+import ReportError from '../../../components/ReportError';
 
 const { useSelect, useDispatch } = Data;
 

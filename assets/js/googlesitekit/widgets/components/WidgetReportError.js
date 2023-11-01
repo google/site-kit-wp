@@ -25,9 +25,17 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import ReportError from '../../../components/ReportError';
+import useViewContext from '../../../hooks/useViewContext';
+import { VIEW_CONTEXT_WP_DASHBOARD } from '../../constants';
+import WPDashboardReportError from './WPDashboardReportError';
 
 // eslint-disable-next-line no-unused-vars
 export default function WidgetReportError( { widgetSlug, ...props } ) {
+	const viewContext = useViewContext();
+
+	if ( viewContext === VIEW_CONTEXT_WP_DASHBOARD ) {
+		return <WPDashboardReportError { ...props } />;
+	}
 	return <ReportError { ...props } />;
 }
 

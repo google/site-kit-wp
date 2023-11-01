@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { cloneDeep } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -41,10 +42,9 @@ import TableOverflowContainer from '../../components/TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-import WPDashboardReportError from './WPDashboardReportError';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardPopularPages() {
+export default function WPDashboardPopularPages( { WidgetReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -103,9 +103,7 @@ export default function WPDashboardPopularPages() {
 	}
 
 	if ( error ) {
-		return (
-			<WPDashboardReportError moduleSlug="analytics" error={ error } />
-		);
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.
@@ -136,6 +134,10 @@ export default function WPDashboardPopularPages() {
 		</div>
 	);
 }
+
+WPDashboardPopularPages.propTypes = {
+	WidgetReportError: PropTypes.elementType.isRequired,
+};
 
 const tableColumns = [
 	{
