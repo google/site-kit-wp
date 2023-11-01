@@ -105,6 +105,7 @@ export default function Metrics( { savedMetrics } ) {
 						title={ title }
 						description={ description }
 						disconnectedModules={ disconnectedModules }
+						savedMetrics={ savedMetrics }
 					/>
 				);
 			} ) }
