@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Core\Storage;
 
-use Google\Site_Kit\Core\Util\Build_Mode;
-
 /**
  * Class responsible for encrypting and decrypting data.
  *
