@@ -61,9 +61,9 @@ final class Options implements Options_Interface {
 			$notoptions = wp_cache_get( 'notoptions', 'options' );
 		}
 
-		// If notoptions cache is not available yet, which is so far
-		// happening only on wp-activate in multisite env,
-		// query the database for value. See https://github.com/google/site-kit-wp/issues/7653.
+		// If `notoptions` cache is not available, query the database.
+		// This happens in `wp-activate` in multisite environments.
+		// See: https://github.com/google/site-kit-wp/issues/7653.
 		if ( false === $notoptions ) {
 			return (bool) $this->get( $option );
 		}

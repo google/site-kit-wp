@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Storage;
 
+use Google\Site_Kit\Core\Util\Build_Mode;
+
 /**
  * Class responsible for encrypting and decrypting data.
  *
@@ -81,6 +83,7 @@ final class Data_Encryption {
 	 *
 	 * @param string $raw_value Value to decrypt.
 	 * @return string|bool Decrypted value, or false on failure.
+	 * @throws \Exception If the value fails to decode.
 	 */
 	public function decrypt( $raw_value ) {
 		if ( ! extension_loaded( 'openssl' ) || ! is_string( $raw_value ) ) {
@@ -90,6 +93,16 @@ final class Data_Encryption {
 		$decoded_value = base64_decode( $raw_value, true );
 
 		if ( false === $decoded_value ) {
+			if ( 'development' === Build_Mode::get_mode() ) {
+				throw new \Exception(
+					sprintf(
+						/* translators: %s: raw value */
+						__( 'Failed to decode base64 value. Raw value: %s', 'google-site-kit' ),
+						$raw_value
+					)
+				);
+			}
+
 			return $raw_value;
 		}
 

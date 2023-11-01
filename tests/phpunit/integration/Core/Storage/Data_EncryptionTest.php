@@ -54,13 +54,13 @@ class Data_EncryptionTest extends TestCase {
 
 		$this->assertEquals( 'test-value', $decrypted_value );
 
-		// Test with non string value, it should return original array
+		// Test with non string value, it should return the original value.
 		$array_value     = array( 'key' => 'value' );
 		$decrypted_value = $encryption->decrypt( $array_value );
 
 		$this->assertEquals( $array_value, $decrypted_value );
 
-		// Test with string value, it should not decrypt it, but return original value
+		// Non-encrypted strings should be returned unmodified, without errors.
 		$string_value    = 'test-value';
 		$decrypted_value = $encryption->decrypt( $string_value );
 
