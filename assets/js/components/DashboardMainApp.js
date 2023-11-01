@@ -62,6 +62,7 @@ import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
 import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
@@ -79,6 +80,10 @@ export default function DashboardMainApp() {
 
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
+	);
+
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
 	const hasAnalyticsEditScope = useSelect( ( select ) =>
@@ -113,6 +118,7 @@ export default function DashboardMainApp() {
 		if (
 			keyMetricsEnabled &&
 			isKeyMetricsSetupCompleted &&
+			isGA4Connected &&
 			hasAnalyticsEditScope &&
 			autoSubmit
 		) {
@@ -128,6 +134,7 @@ export default function DashboardMainApp() {
 		hasAnalyticsEditScope,
 		isKeyMetricsSetupCompleted,
 		keyMetricsEnabled,
+		isGA4Connected,
 		setValues,
 		createDimensionsAndUpdateForm,
 	] );
