@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
@@ -42,6 +47,11 @@ import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
+
+jest.mock( 'react-use' );
+mockUseIntersection.mockImplementation( () => ( {
+	intersectionRatio: 1,
+} ) );
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
