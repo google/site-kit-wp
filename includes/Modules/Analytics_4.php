@@ -1183,6 +1183,22 @@ final class Analytics_4 extends Module
 					)
 				);
 
+				// Reset the data available state for custom dimensions that are no longer available.
+				$missing_custom_dimensions_with_data_available = array_diff(
+					array_keys(
+						array_filter(
+							$this->custom_dimensions_data_available->get_data_availability()
+						)
+					),
+					$matching_dimensions
+				);
+
+				if ( count( $missing_custom_dimensions_with_data_available ) > 0 ) {
+					$this->custom_dimensions_data_available->reset_data_available(
+						$missing_custom_dimensions_with_data_available
+					);
+				}
+
 				return $matching_dimensions;
 		}
 
