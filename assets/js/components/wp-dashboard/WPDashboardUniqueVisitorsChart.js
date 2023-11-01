@@ -172,5 +172,5 @@ export default function WPDashboardUniqueVisitorsChart( {
 }
 
 WPDashboardUniqueVisitorsChart.propTypes = {
-	WidgetReportError: PropTypes.func,
+	WidgetReportError: PropTypes.elementType.isRequired,
 };

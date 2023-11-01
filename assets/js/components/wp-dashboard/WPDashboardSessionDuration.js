@@ -115,7 +115,7 @@ const WPDashboardSessionDuration = ( { WidgetReportError } ) => {
 };
 
 WPDashboardSessionDuration.propTypes = {
-	WidgetReportError: PropTypes.func,
+	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
 export default WPDashboardSessionDuration;

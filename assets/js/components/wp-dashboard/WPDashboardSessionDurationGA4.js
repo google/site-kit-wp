@@ -119,7 +119,7 @@ const WPDashboardSessionDurationGA4 = ( { WidgetReportError } ) => {
 };
 
 WPDashboardSessionDurationGA4.propTypes = {
-	WidgetReportError: PropTypes.func,
+	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
 export default WPDashboardSessionDurationGA4;
