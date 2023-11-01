@@ -210,7 +210,9 @@ final class Tag_Manager extends Module
 		// Remove any leading or trailing whitespace.
 		$name = trim( $name );
 		// Must not start with an underscore.
-		$name = ltrim( $name, '_' );
+		if ( ! empty( $name ) ) {
+			$name = ltrim( $name, '_' );
+		}
 		// Decode entities for special characters so that they are stripped properly.
 		$name = wp_specialchars_decode( $name, ENT_QUOTES );
 		// Convert accents to basic characters to prevent them from being stripped.
