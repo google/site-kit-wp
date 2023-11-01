@@ -30,12 +30,12 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import { useInView } from '../../hooks/useInView';
 import SettingsKeyMetrics from './SettingsKeyMetrics';
 import UserInputPreview from '../user-input/UserInputPreview';
 import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import Link from '../Link';
-import { useInView } from '../../hooks/useInView';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
 const { useSelect } = Data;

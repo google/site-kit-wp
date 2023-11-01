@@ -31,10 +31,10 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
+import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
-import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
 const { useSelect, useDispatch } = Data;
 
 export default function ChangeMetricsLink() {

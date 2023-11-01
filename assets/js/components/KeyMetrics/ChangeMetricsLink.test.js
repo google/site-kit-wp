@@ -27,14 +27,14 @@ import {
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import ChangeMetricsLink from './ChangeMetricsLink';
 import {
 	mockSurveyEndpoints,
 	surveyTimeoutEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import ChangeMetricsLink from './ChangeMetricsLink';
 
 describe( 'ChangeMetricsLink', () => {
 	let registry;

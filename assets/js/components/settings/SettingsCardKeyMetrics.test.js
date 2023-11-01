@@ -35,7 +35,6 @@ describe( 'SettingsCardKeyMetrics', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// provideSiteInfo( registry, { homeURL: 'http://example.com' } );
 	} );
 
 	it( 'should trigger a survey when the Key Metrics Setup CTA is in view', async () => {

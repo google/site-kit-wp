@@ -28,10 +28,10 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  */
 import { Cell, Grid, Row } from '../../material-components';
 import GhostCardsSVG from './GhostCards';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
-import useViewContext from '../../hooks/useViewContext';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 import { useInView } from '../../hooks/useInView';
 
 export default function KeyMetricsCTAContent( {

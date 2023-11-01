@@ -31,6 +31,7 @@ import {
 	provideSiteInfo,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
+import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import {
 	EDIT_SCOPE,
@@ -39,7 +40,6 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import SetupBanner from './SetupBanner';
-import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
 
 describe( 'SetupBanner', () => {
 	const propertyID = '1000';

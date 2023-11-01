@@ -26,9 +26,9 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
-import { DAY_IN_SECONDS } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { DAY_IN_SECONDS } from '../../util';
+import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
 const { useSelect } = Data;
 

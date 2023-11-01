@@ -28,8 +28,8 @@ import {
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { CORE_USER } from './constants';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
+import { CORE_USER } from './constants';
 
 describe( 'core/user user-input-settings', () => {
 	let registry;
