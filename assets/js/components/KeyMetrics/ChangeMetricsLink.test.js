@@ -100,7 +100,7 @@ describe( 'ChangeMetricsLink', () => {
 		).toBe( true );
 	} );
 
-	it( 'should trigger a survey when the key metrics setup is compleyed by current user', async () => {
+	it( 'should trigger a survey when the key metrics setup is completed by current user', async () => {
 		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
 		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 42 } );
 		provideUserInfo( registry, { id: 42 } );
