@@ -220,6 +220,50 @@ describe( 'MetricsSelectionPanel', () => {
 			).toBeDisabled();
 		} );
 
+		it( 'should disable metrics that depend on a disconnected analytics-4 module', () => {
+			provideKeyMetrics( registry );
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: false,
+					connected: false,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+
+			// Set only the Search Console metric as selected to verify the limit of 4 metrics is not reached.
+			provideKeyMetrics( registry, {
+				widgetSlugs: [ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ],
+			} );
+
+			const { getByRole } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			// Verify that the metric dependent on a disconnected analytics-4 is disabled.
+			expect(
+				getByRole( 'checkbox', {
+					name: /Loyal visitors/i,
+				} )
+			).toBeDisabled();
+
+			// Verify that the metric not dependent on a disconnected analytics-4 is enabled.
+			expect(
+				getByRole( 'checkbox', {
+					name: /Top performing keywords/i,
+				} )
+			).not.toBeDisabled();
+		} );
+
 		it( 'should order pre-saved metrics to the top', () => {
 			const metrics = [
 				KM_ANALYTICS_LOYAL_VISITORS,
