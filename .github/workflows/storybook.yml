@@ -46,7 +46,7 @@ on:
       - ready_for_review
 
 concurrency:
-  group: storybook-${{ github.event_name }}-${{ github.ref }}
+  group: storybook-${{ github.event_name }}-${{ github.ref || 'unknown-ref' }}
   cancel-in-progress: true
 
 jobs:
