@@ -387,6 +387,24 @@ const baseResolvers = {
 			);
 		}
 	},
+
+	*isEnhancedMeasurementStreamAlreadyEnabled( propertyID, webDataStreamID ) {
+		const registry = yield Data.commonActions.getRegistry();
+		// Only fetch enhanced measurement settings if the `streamEnabled` setting is not already in the store.
+		const isEnhancedMeasurementStreamEnabled = registry
+			.select( MODULES_ANALYTICS_4 )
+			.isEnhancedMeasurementStreamAlreadyEnabled(
+				propertyID,
+				webDataStreamID
+			);
+
+		if ( isEnhancedMeasurementStreamEnabled === undefined ) {
+			yield fetchGetEnhancedMeasurementSettingsStore.actions.fetchGetEnhancedMeasurementSettings(
+				propertyID,
+				webDataStreamID
+			);
+		}
+	},
 };
 
 const baseSelectors = {
@@ -428,6 +446,31 @@ const baseSelectors = {
 			return !! settings.streamEnabled;
 		}
 	),
+
+	/**
+	 * Checks if the `streamEnabled` setting is enabled for a given web data stream within the saved settings.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} propertyID      The GA4 property ID to check.
+	 * @param {string} webDataStreamID The GA4 web data stream ID to check.
+	 * @return {boolean}               True if `streamEnabled` is on, otherwise false; `undefined` if not loaded.
+	 */
+	isEnhancedMeasurementStreamAlreadyEnabled(
+		state,
+		propertyID,
+		webDataStreamID
+	) {
+		const { savedSettings } =
+			state.enhancedMeasurement[ propertyID ]?.[ webDataStreamID ] || {};
+
+		if ( savedSettings === undefined ) {
+			return undefined;
+		}
+
+		return !! savedSettings.streamEnabled;
+	},
 
 	/**
 	 * Checks if the settings have changed compared to the saved settings for a given web data stream.

@@ -112,7 +112,8 @@ export async function submitChanges( { select, dispatch } ) {
 			ENHANCED_MEASUREMENT_ENABLED
 		);
 
-		if ( isEnhancedMeasurementEnabled !== undefined ) {
+		// Only make the API request to enable the Enhanced Measurement setting, not to disable it.
+		if ( isEnhancedMeasurementEnabled ) {
 			await dispatch(
 				MODULES_ANALYTICS_4
 			).setEnhancedMeasurementStreamEnabled(

@@ -21,6 +21,7 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -40,7 +41,8 @@ import {
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 } from '../../datastore/constants';
 import SupportLink from '../../../../components/SupportLink';
-import { useMount } from 'react-use';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function EnhancedMeasurementSwitch( {
@@ -48,19 +50,37 @@ export default function EnhancedMeasurementSwitch( {
 	disabled = false,
 	loading = false,
 	formName = ENHANCED_MEASUREMENT_FORM,
+	isEnhancedMeasurementAlreadyEnabled = false,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( formName, ENHANCED_MEASUREMENT_ENABLED )
 	);
 
+	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const handleClick = useCallback( () => {
 		setValues( formName, {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: ! isEnhancedMeasurementEnabled,
 		} );
+
+		trackEvent(
+			`${ viewContext }_analytics`,
+			// If the current status of enhanced measurement is enabled,
+			// then it means that we disabled it, otherwise enabled it.
+			isEnhancedMeasurementEnabled
+				? 'deactivate_enhanced_measurement'
+				: 'activate_enhanced_measurement'
+		);
+
 		onClick?.();
-	}, [ formName, isEnhancedMeasurementEnabled, onClick, setValues ] );
+	}, [
+		formName,
+		isEnhancedMeasurementEnabled,
+		onClick,
+		setValues,
+		viewContext,
+	] );
 
 	useMount( () => {
 		// Ensure the Enhanced Measurement activation banner won't be shown if we've updated the setting
@@ -83,10 +103,15 @@ export default function EnhancedMeasurementSwitch( {
 			{ loading && (
 				<ProgressBar
 					small
-					className="googlesitekit-analytics-enable-enhanced-measurement__progress"
+					className="googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit"
 				/>
 			) }
-			{ ! loading && (
+			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
+				<p className="googlesitekit-margin-top-0">
+					Enhanced measurement is enabled for this web data stream
+				</p>
+			) }
+			{ ! loading && ! isEnhancedMeasurementAlreadyEnabled && (
 				<Switch
 					label={ __(
 						'Enable enhanced measurement',
@@ -101,7 +126,7 @@ export default function EnhancedMeasurementSwitch( {
 			<p>
 				{ createInterpolateElement(
 					__(
-						'Automatically measure interactions with your content (e.g. file downloads, form completions, video views). No extra code required. <a>Learn more</a>',
+						'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{
@@ -122,4 +147,5 @@ EnhancedMeasurementSwitch.propTypes = {
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
 	loading: PropTypes.bool,
+	isEnhancedMeasurementAlreadyEnabled: PropTypes.bool,
 };

@@ -64,9 +64,10 @@ export default function FieldReportMetrics( { data, error } ) {
 	}
 
 	if (
-		! largestContentfulPaint ||
-		! cumulativeLayoutShift ||
-		! firstInputDelay
+		! largestContentfulPaint &&
+		! cumulativeLayoutShift &&
+		! firstInputDelay &&
+		! interactionToNextPaint
 	) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable">
@@ -87,10 +88,10 @@ export default function FieldReportMetrics( { data, error } ) {
 
 	// Convert milliseconds to seconds with 1 fraction digit.
 	const lcpSeconds = (
-		Math.round( largestContentfulPaint.percentile / 100 ) / 10
+		Math.round( largestContentfulPaint?.percentile / 100 ) / 10
 	).toFixed( 1 );
 	// Convert 2 digit score to a decimal between 0 and 1, with 2 fraction digits.
-	const cls = ( cumulativeLayoutShift.percentile / 100 ).toFixed( 2 );
+	const cls = ( cumulativeLayoutShift?.percentile / 100 ).toFixed( 2 );
 
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
@@ -135,7 +136,8 @@ export default function FieldReportMetrics( { data, error } ) {
 							_x( '%s s', 'duration', 'google-site-kit' ),
 							lcpSeconds
 						) }
-						category={ largestContentfulPaint.category }
+						category={ largestContentfulPaint?.category }
+						isUnavailable={ ! largestContentfulPaint }
 					/>
 					<ReportMetric
 						title={ _x(
@@ -148,7 +150,8 @@ export default function FieldReportMetrics( { data, error } ) {
 							'google-site-kit'
 						) }
 						displayValue={ cls }
-						category={ cumulativeLayoutShift.category }
+						category={ cumulativeLayoutShift?.category }
+						isUnavailable={ ! cumulativeLayoutShift }
 					/>
 					<ReportMetric
 						title={ _x(
@@ -163,9 +166,10 @@ export default function FieldReportMetrics( { data, error } ) {
 						displayValue={ sprintf(
 							/* translators: %s: number of milliseconds */
 							_x( '%s ms', 'duration', 'google-site-kit' ),
-							firstInputDelay.percentile
+							firstInputDelay?.percentile
 						) }
-						category={ firstInputDelay.category }
+						category={ firstInputDelay?.category }
+						isUnavailable={ ! firstInputDelay }
 					/>
 					<ReportMetric
 						title={ _x(
@@ -186,6 +190,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							interactionToNextPaint?.category || CATEGORY_AVERAGE
 						}
 						isLast
+						isUnavailable={ ! interactionToNextPaint }
 					/>
 				</tbody>
 			</table>

@@ -198,7 +198,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Adds an inline script to configure provided tag including configuration options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param string $tag_id The tag ID to add config for.
 	 * @param array  $gtag_opt The gtag configuration.
@@ -214,7 +214,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Gets the tag config as used in the gtag data vars.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @return array Tag configuration.
 	 */

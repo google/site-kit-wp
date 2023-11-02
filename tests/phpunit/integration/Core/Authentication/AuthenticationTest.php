@@ -852,7 +852,7 @@ class AuthenticationTest extends TestCase {
 				$proxy_server_requests[] = $args;
 
 				$data = array(
-					'userInput'       => array( 'enabled' => true ),
+					'keyMetrics'      => array( 'enabled' => true ),
 					'test.featureOne' => array( 'enabled' => true ),
 					'test.featureTwo' => array( 'enabled' => false ),
 				);
@@ -949,7 +949,7 @@ class AuthenticationTest extends TestCase {
 
 		$this->fake_proxy_site_connection();
 		$test_features = array(
-			'userInput'       => array( 'enabled' => true ),
+			'keyMetrics'      => array( 'enabled' => true ),
 			'test.featureOne' => array( 'enabled' => true ),
 			'test.featureTwo' => array( 'enabled' => false ),
 		);

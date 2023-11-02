@@ -68,7 +68,7 @@ export default function CreateConversionCTA() {
 			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
 					{ __(
-						'Set up conversion events to track how well your site fulfils your business objectives.',
+						'Set up conversion events to track how well your site fulfills your business objectives.',
 						'google-site-kit'
 					) }
 				</p>

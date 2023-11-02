@@ -76,7 +76,7 @@ Ready.args = {
 	},
 };
 Ready.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 Ready.scenario = {
 	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
@@ -109,6 +109,21 @@ ZeroData.scenario = {
 	label: 'KeyMetrics/PopularAuthorsWidget/ZeroData',
 };
 
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
+			KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+				.requiredCustomDimensions?.[ 0 ],
+			true
+		);
+	},
+};
+GatheringData.scenario = {
+	label: 'KeyMetrics/PopularAuthorsWidget/GatheringData',
+};
+
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
@@ -120,7 +135,7 @@ ErrorMissingCustomDimensions.args = {
 	},
 };
 ErrorMissingCustomDimensions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
@@ -145,7 +160,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 	},
 };
 ErrorCustomDimensionsInsufficientPermissions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
@@ -170,7 +185,7 @@ ErrorCustomDimensionsGeneric.args = {
 	},
 };
 ErrorCustomDimensionsGeneric.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export default {
@@ -194,6 +209,16 @@ export default {
 						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
 							.requiredCustomDimensions,
 				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+							.requiredCustomDimensions?.[ 0 ],
+						false
+					);
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );

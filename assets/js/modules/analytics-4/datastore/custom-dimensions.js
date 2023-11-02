@@ -23,18 +23,13 @@ import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -42,42 +37,6 @@ import {
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 
 const { createRegistrySelector } = Data;
-
-export const possibleCustomDimensions = {
-	googlesitekit_post_date: {
-		parameterName: 'googlesitekit_post_date',
-		displayName: __( 'WordPress Post Creation Date', 'google-site-kit' ),
-		description: __(
-			'Date of which this post was published',
-			'google-site-kit'
-		),
-		scope: 'EVENT',
-	},
-	googlesitekit_post_author: {
-		parameterName: 'googlesitekit_post_author',
-		displayName: __( 'WordPress Post Author', 'google-site-kit' ),
-		description: __(
-			'User ID of the author for this post',
-			'google-site-kit'
-		),
-		scope: 'EVENT',
-	},
-	googlesitekit_post_categories: {
-		parameterName: 'googlesitekit_post_categories',
-		displayName: __( 'WordPress Post Categories', 'google-site-kit' ),
-		description: __(
-			'Comma-separated list of category IDs assigned to this post',
-			'google-site-kit'
-		),
-		scope: 'EVENT',
-	},
-	googlesitekit_post_type: {
-		parameterName: 'googlesitekit_post_type',
-		displayName: __( 'WordPress Post Type', 'google-site-kit' ),
-		description: __( 'Content type for this post', 'google-site-kit' ),
-		scope: 'EVENT',
-	},
-};
 
 const customDimensionFields = [
 	'parameterName',
@@ -143,7 +102,7 @@ const baseActions = {
 	/**
 	 * Creates custom dimensions and syncs them in the settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 */
 	*createCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
@@ -205,7 +164,7 @@ const baseActions = {
 
 		// Create missing custom dimensions.
 		for ( const dimension of missingCustomDimensions ) {
-			const dimensionData = possibleCustomDimensions[ dimension ];
+			const dimensionData = CUSTOM_DIMENSION_DEFINITIONS[ dimension ];
 			if ( dimensionData ) {
 				yield fetchCreateCustomDimensionStore.actions.fetchCreateCustomDimension(
 					propertyID,
@@ -244,6 +203,13 @@ const baseResolvers = {
 	*getAvailableCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
 
+		// Wait for settings to be loaded before proceeding.
+		yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getSettings()
+		);
+
 		const availableCustomDimensions = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAvailableCustomDimensions();
@@ -274,7 +240,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the provided custom dimensions are available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object}               state            Data store's state.
 	 * @param {string|Array<string>} customDimensions Custom dimensions to check.
@@ -307,7 +273,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the provided custom dimension is being created.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} customDimension Custom dimensions to check.
@@ -322,7 +288,7 @@ const baseSelectors = {
 	/**
 	 * Returns the error if encountered while creating the provided custom dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} customDimension Custom dimension to obtain creation error for.
@@ -334,7 +300,7 @@ const baseSelectors = {
 
 			return select( MODULES_ANALYTICS_4 ).getErrorForAction(
 				'createCustomDimension',
-				[ propertyID, possibleCustomDimensions[ customDimension ] ]
+				[ propertyID, CUSTOM_DIMENSION_DEFINITIONS[ customDimension ] ]
 			);
 		}
 	),
@@ -342,7 +308,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the available custom dimensions are being synced.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the available custom dimensions are being synced, otherwise FALSE.

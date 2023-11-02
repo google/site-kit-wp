@@ -35,10 +35,13 @@ import {
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { useFeature } from '../../../../hooks/useFeature';
+import SettingsEnhancedMeasurementView from '../../../analytics-4/components/settings/SettingsEnhancedMeasurementView';
 const { useSelect } = Data;
 
 export default function GA4SettingsView() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
+
 	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
@@ -157,6 +160,10 @@ export default function GA4SettingsView() {
 					</p>
 				</div>
 			</div>
+
+			{ enhancedMeasurementEnabled && (
+				<SettingsEnhancedMeasurementView />
+			) }
 		</Fragment>
 	);
 }

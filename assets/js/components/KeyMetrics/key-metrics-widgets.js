@@ -47,7 +47,6 @@ import {
 	KM_ANALYTICS_POPULAR_AUTHORS,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { isFeatureEnabled } from '../../features';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 /**
@@ -61,7 +60,7 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
  * This function is attached to the widget object that requires the custom dimensions and
  * has the `requiredCustomDimensions` property.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Function} select              Data store select function.
  * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
@@ -71,10 +70,6 @@ function shouldDisplayWidgetWithCustomDimensions(
 	select,
 	isViewOnlyDashboard
 ) {
-	if ( ! isFeatureEnabled( 'newsKeyMetrics' ) ) {
-		return false;
-	}
-
 	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
@@ -171,10 +166,9 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
 		title: __( 'Least engaging pages', 'google-site-kit' ),
 		description: __(
-			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
+			'Pages with the highest percentage of visitors that left without engagement with your site',
 			'google-site-kit'
 		),
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
 		title: __( 'Pages per visit', 'google-site-kit' ),
@@ -182,7 +176,6 @@ const KEY_METRICS_WIDGETS = {
 			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_VISIT_LENGTH ]: {
 		title: __( 'Visit length', 'google-site-kit' ),
@@ -190,7 +183,6 @@ const KEY_METRICS_WIDGETS = {
 			'Average duration of engaged visits',
 			'google-site-kit'
 		),
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ]: {
 		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
@@ -198,7 +190,6 @@ const KEY_METRICS_WIDGETS = {
 			'Pages that attracted the most returning visitors',
 			'google-site-kit'
 		),
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
 		title: __( 'Most engaging pages', 'google-site-kit' ),
@@ -206,7 +197,6 @@ const KEY_METRICS_WIDGETS = {
 			'Pages with the highest engagement rate',
 			'google-site-kit'
 		),
-		displayInList: () => isFeatureEnabled( 'newsKeyMetrics' ),
 	},
 	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
 		title: __( 'Top recent trending pages', 'google-site-kit' ),

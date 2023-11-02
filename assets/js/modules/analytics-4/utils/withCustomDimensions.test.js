@@ -25,6 +25,7 @@ import {
 import { provideCustomDimensionError } from '../utils/custom-dimensions';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
 import withCustomDimensions from './withCustomDimensions';
 
 describe( 'withCustomDimensions', () => {
@@ -39,6 +40,12 @@ describe( 'withCustomDimensions', () => {
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsCustomDimensionGatheringData( customDimension, false );
 	} );
 
 	it( 'renders appropriate error if required custom dimensions are not available', () => {
@@ -106,6 +113,48 @@ describe( 'withCustomDimensions', () => {
 		} );
 
 		expect( container ).toHaveTextContent( 'Analytics update failed' );
+	} );
+
+	it( 'renders gathering data state if GA4 is gathering data', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '123456789',
+			availableCustomDimensions: [ customDimension ],
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+
+		const WidgetWithComponentProps = withWidgetComponentProps(
+			'widget-slug'
+		)( WithCustomDimensionsComponent );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Setup successful: Analytics is gathering data for this metric'
+		);
+	} );
+
+	it( 'renders gathering data state if the custom dimension is gathering data', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '123456789',
+			availableCustomDimensions: [ customDimension ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsCustomDimensionGatheringData( customDimension, true );
+
+		const WidgetWithComponentProps = withWidgetComponentProps(
+			'widget-slug'
+		)( WithCustomDimensionsComponent );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Setup successful: Analytics is gathering data for this metric'
+		);
 	} );
 
 	it( 'renders report correctly if there are no errors', () => {

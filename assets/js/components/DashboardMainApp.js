@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { useMount } from 'react-use';
 
 /**
@@ -73,8 +73,8 @@ const { useSelect, useDispatch } = Data;
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
-	const userInputEnabled = useFeature( 'userInput' );
-	const newsKeyMetricsEnabled = useFeature( 'newsKeyMetrics' );
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
+
 	const viewOnlyDashboard = useViewOnly();
 
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
@@ -102,23 +102,34 @@ export default function DashboardMainApp() {
 		}
 	} );
 
+	const createDimensionsAndUpdateForm = useCallback( async () => {
+		await createCustomDimensions();
+		setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+			isAutoCreatingCustomDimensions: false,
+		} );
+	}, [ createCustomDimensions, setValues ] );
+
 	useEffect( () => {
 		if (
-			newsKeyMetricsEnabled &&
+			keyMetricsEnabled &&
 			isKeyMetricsSetupCompleted &&
 			hasAnalyticsEditScope &&
 			autoSubmit
 		) {
-			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, { autoSubmit: false } );
-			createCustomDimensions();
+			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				autoSubmit: false,
+				isAutoCreatingCustomDimensions: true,
+			} );
+			createDimensionsAndUpdateForm();
 		}
 	}, [
 		autoSubmit,
 		createCustomDimensions,
 		hasAnalyticsEditScope,
 		isKeyMetricsSetupCompleted,
-		newsKeyMetricsEnabled,
+		keyMetricsEnabled,
 		setValues,
+		createDimensionsAndUpdateForm,
 	] );
 
 	const viewableModules = useSelect( ( select ) => {
@@ -170,7 +181,7 @@ export default function DashboardMainApp() {
 
 	const isKeyMetricsWidgetHidden = useSelect(
 		( select ) =>
-			userInputEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+			keyMetricsEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
 	let lastWidgetAnchor = null;
@@ -200,14 +211,14 @@ export default function DashboardMainApp() {
 			{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally
-				render when `userInputEnabled` is false.
+				render when `keyMetricsEnabled` is false.
 
-				The userInputEnabled check can be removed once the User Input feature is fully launched
+				The keyMetricsEnabled check can be removed once the User Input feature is fully launched
 				and we remove this feature flag.
 
 				See: https://github.com/google/site-kit-wp/pull/6630#discussion_r1127229162
 			*/ }
-			{ userInputEnabled && isKeyMetricsWidgetHidden !== true && (
+			{ keyMetricsEnabled && isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
 					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
@@ -257,7 +268,7 @@ export default function DashboardMainApp() {
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
-			{ userInputEnabled && <MetricsSelectionPanel /> }
+			{ keyMetricsEnabled && <MetricsSelectionPanel /> }
 		</Fragment>
 	);
 }

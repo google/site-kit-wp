@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,10 +31,13 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
-
+import useViewContext from '../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../util';
 const { useDispatch, useSelect } = Data;
 
 export default function SuccessBanner() {
+	const viewContext = useViewContext();
+
 	const documentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/9216061',
@@ -41,6 +45,24 @@ export default function SuccessBanner() {
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
+
+	const handleDismiss = useCallback( () => {
+		dismissItem(
+			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+		);
+
+		trackEvent(
+			`${ viewContext }_enhanced-measurement-success`,
+			'confirm_notification'
+		);
+	}, [ viewContext, dismissItem ] );
+
+	useEffect( () => {
+		trackEvent(
+			`${ viewContext }_enhanced-measurement-success`,
+			'view_notification'
+		);
+	}, [ viewContext ] );
 
 	return (
 		<BannerNotification
@@ -55,11 +77,7 @@ export default function SuccessBanner() {
 				'google-site-kit'
 			) }
 			dismiss={ __( 'OK, Got it', 'google-site-kit' ) }
-			onDismiss={ () => {
-				dismissItem(
-					ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
-				);
-			} }
+			onDismiss={ handleDismiss }
 			WinImageSVG={ () => <SuccessGreenSVG /> }
 			format="small"
 			type="win-success"

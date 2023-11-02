@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -44,21 +45,24 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
-import { DAY_IN_SECONDS, getTimeInSeconds } from '../../../../../util';
-import { SpinnerButton } from 'googlesitekit-components';
+import {
+	DAY_IN_SECONDS,
+	getTimeInSeconds,
+	trackEvent,
+} from '../../../../../util';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
 import ErrorNotice from '../../../../../components/ErrorNotice';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
+import useViewContext from '../../../../../hooks/useViewContext';
 
 const { useDispatch, useSelect } = Data;
 
-export default function SetupBanner( {
-	isDismissed,
-	onSubmitSuccess,
-	onDismiss,
-	children,
-} ) {
+export default function SetupBanner( props ) {
+	const { isDismissed, onSubmitSuccess, onDismiss, children } = props;
+
+	const viewContext = useViewContext();
+
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ isSaving, setIsSaving ] = useState( false );
 
@@ -77,7 +81,6 @@ export default function SetupBanner( {
 	);
 
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
-
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -102,7 +105,7 @@ export default function SetupBanner( {
 		onSubmitSuccess();
 	}, [ setValues, submitChanges, onSubmitSuccess ] );
 
-	const handleSubmitChanges = async () => {
+	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
 
 		if ( hasEditScope === false ) {
@@ -131,8 +134,42 @@ export default function SetupBanner( {
 			return;
 		}
 
+		trackEvent(
+			`${ viewContext }_enhanced-measurement-notification`,
+			'confirm_notification'
+		);
+
 		await commonSubmitChanges();
-	};
+	}, [
+		viewContext,
+		hasEditScope,
+		commonSubmitChanges,
+		setPermissionScopeError,
+		setValues,
+	] );
+
+	const handleDismiss = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_enhanced-measurement-notification`,
+			'dismiss_notification'
+		);
+
+		onDismiss?.();
+	}, [ onDismiss, viewContext ] );
+
+	const handleLearnMore = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_enhanced-measurement-notification`,
+			'click_learn_more_link'
+		);
+	}, [ viewContext ] );
+
+	useEffect( () => {
+		trackEvent(
+			`${ viewContext }_enhanced-measurement-notification`,
+			'view_notification'
+		);
+	}, [ viewContext ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
@@ -176,6 +213,7 @@ export default function SetupBanner( {
 			description={ description }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			learnMoreURL={ documentationURL }
+			onLearnMoreClick={ handleLearnMore }
 			ctaComponent={
 				<SpinnerButton
 					onClick={ handleSubmitChanges }
@@ -198,7 +236,7 @@ export default function SetupBanner( {
 			// Although the banner does handle its own dismiss state via a dismissable item, we still need to
 			// provide a value here to ensure BannerNotification's own dismiss state is expired.
 			dismissExpires={ getTimeInSeconds( 'month' ) }
-			onDismiss={ onDismiss }
+			onDismiss={ handleDismiss }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
 			{ ! isDismissed && (

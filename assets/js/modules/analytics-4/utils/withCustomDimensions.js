@@ -24,22 +24,15 @@ import { isFunction } from 'lodash';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	useCallback,
-	useEffect,
-	useMemo,
-} from '@wordpress/element';
+import { useCallback, useEffect, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../analytics/datastore/constants';
 import {
@@ -47,14 +40,21 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
-import Link from '../../../components/Link';
-import MetricTileError from '../../../components/KeyMetrics/MetricTileError';
-import MetricTileWrapper from '../../../components/KeyMetrics/MetricTileWrapper';
+import {
+	InsufficientPermissionsError,
+	MetricTileTable,
+	MetricTileWrapper,
+} from '../../../components/KeyMetrics';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	isInsufficientPermissionsError,
 } from '../../../util/errors';
 import { isInvalidCustomDimensionError } from './custom-dimensions';
+import {
+	AnalyticsUpdateError,
+	CustomDimensionsMissingError,
+} from '../components/key-metrics';
+
 const { useSelect, useDispatch } = Data;
 
 export default function withCustomDimensions( options = {} ) {
@@ -101,15 +101,27 @@ export default function withCustomDimensions( options = {} ) {
 						customDimensions
 					)
 			);
-			const isCreatingCustomDimensions = useSelect(
-				( select ) =>
+			const isAutoCreatingCustomDimensions = useSelect( ( select ) =>
+				select( CORE_FORMS ).getValue(
+					FORM_CUSTOM_DIMENSIONS_CREATE,
+					'isAutoCreatingCustomDimensions'
+				)
+			);
+
+			const isCreatingCustomDimensions = useSelect( ( select ) => {
+				if ( isAutoCreatingCustomDimensions ) {
+					return true;
+				}
+
+				return (
 					!! customDimensions &&
 					customDimensions.some( ( dimension ) =>
 						select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
 							dimension
 						)
 					)
-			);
+				);
+			} );
 			const customDimensionsCreationErrors = useSelect( ( select ) => {
 				if ( ! customDimensions ) {
 					return [];
@@ -130,15 +142,6 @@ export default function withCustomDimensions( options = {} ) {
 
 				return errors;
 			} );
-			const helpLink = useSelect(
-				( select ) =>
-					!! customDimensionsCreationErrors.length &&
-					select( CORE_SITE ).getErrorTroubleshootingLinkURL(
-						customDimensionsCreationErrors.find(
-							isInsufficientPermissionsError
-						) || customDimensionsCreationErrors[ 0 ]
-					)
-			);
 			const hasAnalyticsEditScope = useSelect(
 				( select ) =>
 					!! customDimensions &&
@@ -196,6 +199,28 @@ export default function withCustomDimensions( options = {} ) {
 				isSyncingAvailableCustomDimensions ||
 				isNavigatingToOAuthURL ||
 				hasCustomDimensions === undefined;
+
+			const isGatheringData = useSelect( ( select ) => {
+				const isGA4GatheringData =
+					select( MODULES_ANALYTICS_4 ).isGatheringData();
+
+				if ( isGA4GatheringData !== false ) {
+					return isGA4GatheringData;
+				}
+
+				if ( loading || ! hasCustomDimensions ) {
+					// Custom dimension gathering data is not applicable if we're still loading or there are no custom dimensions.
+					return null;
+				}
+
+				if ( ! customDimensions ) {
+					return false;
+				}
+
+				return select(
+					MODULES_ANALYTICS_4
+				).areCustomDimensionsGatheringData( customDimensions );
+			} );
 
 			const commonErrorProps = {
 				headerText: tileTitle,
@@ -261,8 +286,13 @@ export default function withCustomDimensions( options = {} ) {
 				reportOptions,
 			] );
 
+			// Return early if the wrapped widget doesn't need custom dimensions.
+			if ( ! customDimensions ) {
+				return <WrappedComponent { ...props } />;
+			}
+
 			// Show loading state.
-			if ( !! customDimensions && loading ) {
+			if ( loading || isGatheringData === undefined ) {
 				return (
 					<MetricTileWrapper
 						infoTooltip={ tileInfoTooltip }
@@ -274,122 +304,54 @@ export default function withCustomDimensions( options = {} ) {
 				);
 			}
 
-			// Show error states.
-			if ( !! customDimensions && ! loading ) {
-				if ( !! customDimensionsCreationErrors.length ) {
-					// Handle permissions error encountered while creating
-					// custom dimensions.
-					if (
-						customDimensionsCreationErrors.some(
-							isInsufficientPermissionsError
-						)
-					) {
-						return (
-							<MetricTileError
-								title={ __(
-									'Insufficient permissions',
-									'google-site-kit'
-								) }
-								{ ...commonErrorProps }
-							>
-								<div className="googlesitekit-report-error-actions">
-									<span className="googlesitekit-error-retry-text">
-										{ createInterpolateElement(
-											__(
-												'Permissions updated? <a>Retry</a>',
-												'google-site-kit'
-											),
-											{
-												a: (
-													<Link
-														onClick={
-															handleCreateCustomDimensions
-														}
-													/>
-												),
-											}
-										) }
-									</span>
-									<span className="googlesitekit-error-retry-text">
-										{ createInterpolateElement(
-											__(
-												'You’ll need to contact your administrator. <a>Learn more</a>',
-												'google-site-kit'
-											),
-											{
-												a: (
-													<Link
-														href={ helpLink }
-														external
-													/>
-												),
-											}
-										) }
-									</span>
-								</div>
-							</MetricTileError>
-						);
-					}
+			if (
+				customDimensionsCreationErrors?.some(
+					isInsufficientPermissionsError
+				)
+			) {
+				// Handle permissions error encountered while creating
+				// custom dimensions.
+				return (
+					<InsufficientPermissionsError
+						{ ...commonErrorProps }
+						moduleSlug="analytics-4"
+						onRetry={ handleCreateCustomDimensions }
+					/>
+				);
+			} else if ( customDimensionsCreationErrors?.length > 0 ) {
+				// Handle generic errors encountered while creating
+				// custom dimensions.
+				return (
+					<AnalyticsUpdateError
+						{ ...commonErrorProps }
+						error={ customDimensionsCreationErrors[ 0 ] }
+						onRetry={ handleCreateCustomDimensions }
+					/>
+				);
+			} else if ( false === hasCustomDimensions ) {
+				return (
+					<CustomDimensionsMissingError
+						{ ...commonErrorProps }
+						onRetry={ handleCreateCustomDimensions }
+					/>
+				);
+			}
 
-					// Handle generic errors encountered while creating
-					// custom dimensions.
-					return (
-						<MetricTileError
-							title={ __(
-								'Analytics update failed',
+			if ( isGatheringData ) {
+				return (
+					<MetricTileTable
+						infoTooltip={ tileInfoTooltip }
+						moduleSlug="analytics-4"
+						title={ tileTitle }
+						Widget={ Widget }
+						ZeroState={ () =>
+							__(
+								'Setup successful: Analytics is gathering data for this metric',
 								'google-site-kit'
-							) }
-							{ ...commonErrorProps }
-						>
-							<div className="googlesitekit-report-error-actions">
-								<Button
-									onClick={ handleCreateCustomDimensions }
-								>
-									{ __( 'Retry', 'google-site-kit' ) }
-								</Button>
-								<span className="googlesitekit-error-retry-text">
-									{ createInterpolateElement(
-										__(
-											'Retry didn’t work? <a>Learn more</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													href={ helpLink }
-													external
-												/>
-											),
-										}
-									) }
-								</span>
-							</div>
-						</MetricTileError>
-					);
-				}
-
-				if ( false === hasCustomDimensions ) {
-					return (
-						<MetricTileError
-							title={ __( 'No data to show', 'google-site-kit' ) }
-							{ ...commonErrorProps }
-						>
-							<div className="googlesitekit-report-error-actions">
-								<Button
-									onClick={ handleCreateCustomDimensions }
-								>
-									{ __( 'Update', 'google-site-kit' ) }
-								</Button>
-								<span className="googlesitekit-error-retry-text">
-									{ __(
-										'Update Analytics to track metric',
-										'google-site-kit'
-									) }
-								</span>
-							</div>
-						</MetricTileError>
-					);
-				}
+							)
+						}
+					/>
+				);
 			}
 
 			return <WrappedComponent { ...props } />;
