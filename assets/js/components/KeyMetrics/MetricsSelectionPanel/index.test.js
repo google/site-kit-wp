@@ -20,13 +20,22 @@
  * Internal dependencies
  */
 import MetricsSelectionPanel from '.';
-import { fireEvent, render } from '../../../../../tests/js/test-utils';
+import {
+	act,
+	fireEvent,
+	render,
+	// waitFor,
+} from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideKeyMetrics,
 	provideModules,
 	provideUserAuthentication,
+	// provideUserInfo,
+	subscribeUntil,
+	// waitForDefaultTimeouts,
+	// waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
@@ -35,6 +44,7 @@ import {
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
+	// KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
@@ -43,8 +53,12 @@ import {
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
 import { EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 
 describe( 'MetricsSelectionPanel', () => {
 	let registry;
@@ -240,7 +254,7 @@ describe( 'MetricsSelectionPanel', () => {
 				},
 			} );
 
-			// Set only the Search Console metric as selected to verify the limit of 4 metrics is not reached.
+			// Set only the Search Console metric as selected.
 			provideKeyMetrics( registry, {
 				widgetSlugs: [ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ],
 			} );
@@ -248,6 +262,13 @@ describe( 'MetricsSelectionPanel', () => {
 			const { getByRole } = render( <MetricsSelectionPanel />, {
 				registry,
 			} );
+
+			// Verify the limit of 4 metrics is not reached.
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer__metric-count'
+				)
+			).toHaveTextContent( '1 of 4 selected' );
 
 			// Verify that the metric dependent on a disconnected analytics-4 is disabled.
 			expect(
@@ -484,6 +505,86 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		describe( 'CTA', () => {
+			it( 'sets autoSubmit to true if GA4 connected and missing custom dimensions', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: EDIT_SCOPE,
+				} );
+
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/key-metrics'
+					),
+					{
+						body: {
+							widgetSlugs: [
+								KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+								KM_ANALYTICS_LOYAL_VISITORS,
+								KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+							],
+							isWidgetHidden: false,
+						},
+						status: 200,
+					}
+				);
+
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+					],
+				} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableCustomDimensions: [],
+				} );
+
+				const { getByRole } = render( <MetricsSelectionPanel />, {
+					registry,
+					features: [ 'keyMetrics' ],
+				} );
+
+				const submitButton = getByRole( 'button', {
+					name: /Save selection/i,
+				} );
+				// await act( async () => {
+				// 	fireEvent.click( submitButton );
+				// } );
+
+				// await waitFor( () => {
+				// 	const autoSubmit = registry
+				// 		.select( CORE_FORMS )
+				// 		.getValue(
+				// 			FORM_CUSTOM_DIMENSIONS_CREATE,
+				// 			'autoSubmit'
+				// 		);
+				// 	expect( autoSubmit ).toBe( true );
+				// } );
+
+				const isAutoSubmitTrue = () => {
+					const autoSubmit = registry
+						.select( CORE_FORMS )
+						.getValue(
+							FORM_CUSTOM_DIMENSIONS_CREATE,
+							'autoSubmit'
+						);
+					return autoSubmit === true;
+				};
+
+				// await waitForTimeouts( 50 );
+
+				await act( async () => {
+					fireEvent.click( submitButton );
+					// Wait for autoSubmit to become true.
+					await subscribeUntil( registry, isAutoSubmitTrue );
+				} );
+
+				const finalAutoSubmitValue = registry
+					.select( CORE_FORMS )
+					.getValue( FORM_CUSTOM_DIMENSIONS_CREATE, 'autoSubmit' );
+				expect( finalAutoSubmitValue ).toBe( true );
+			} );
+
 			it( "should have 'Save selection' label if there are no pre-saved key metrics", () => {
 				provideKeyMetrics( registry );
 
