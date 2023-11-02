@@ -42,6 +42,7 @@ export default function MetricItem( {
 	title,
 	description,
 	disconnectedModules,
+	savedMetrics = [],
 } ) {
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -72,7 +73,9 @@ export default function MetricItem( {
 	);
 
 	const isMetricSelected = selectedMetrics?.includes( slug );
-	const isMetricDisabled = ! isMetricSelected && selectedMetrics?.length > 3;
+	const isMetricDisabled =
+		( ! isMetricSelected && selectedMetrics?.length > 3 ) ||
+		( ! savedMetrics.includes( slug ) && disconnectedModules.length > 0 );
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
@@ -112,4 +115,5 @@ MetricItem.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	disconnectedModules: PropTypes.array,
+	savedMetrics: PropTypes.array,
 };
