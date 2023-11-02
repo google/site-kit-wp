@@ -65,6 +65,7 @@ concurrency:
 env:
   GCS_BUCKET: site-kit-github-artifacts
   GCS_ROOT_PATH: builds
+  TEST: fake-env
 
 jobs:
   build-zips:
