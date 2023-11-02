@@ -72,6 +72,10 @@ export default function BannerNotifications() {
 		select( CORE_USER ).hasScope( GTM_SCOPE )
 	);
 
+	const hasMismatchedGoogleTagID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID()
+	);
+
 	const isGA4ModuleOwner = useSelect( ( select ) => {
 		// Bail early if we're in view-only dashboard or the GA4 module is not connected.
 		if ( viewOnly || ! ga4ModuleConnected ) {
@@ -115,7 +119,9 @@ export default function BannerNotifications() {
 			) }
 			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
 				<Fragment>
-					<GoogleTagIDMismatchNotification />
+					{ hasMismatchedGoogleTagID && (
+						<GoogleTagIDMismatchNotification />
+					) }
 					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }

@@ -49,7 +49,7 @@ class REST_User_Input_Controller {
 	/**
 	 * Key_Metrics_Setup_Completed_By instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 * @var Key_Metrics_Setup_Completed_By
 	 */
 	protected $key_metrics_setup_completed_by;

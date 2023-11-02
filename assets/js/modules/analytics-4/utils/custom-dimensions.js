@@ -25,7 +25,7 @@ import {
 /**
  * Provides custom dimension error data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Object} registry                The registry to set up.
  * @param {Object} options                 Error options.
@@ -51,7 +51,7 @@ export const provideCustomDimensionError = (
 /**
  * Checks whether the given error is an invalid custom dimension error.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Object} error Error object instance.
  * @return {boolean} `true` if it is an invalid custom dimension error, otherwise `false`.

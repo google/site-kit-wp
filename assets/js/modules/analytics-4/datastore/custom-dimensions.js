@@ -102,7 +102,7 @@ const baseActions = {
 	/**
 	 * Creates custom dimensions and syncs them in the settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 */
 	*createCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
@@ -240,7 +240,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the provided custom dimensions are available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object}               state            Data store's state.
 	 * @param {string|Array<string>} customDimensions Custom dimensions to check.
@@ -273,7 +273,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the provided custom dimension is being created.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} customDimension Custom dimensions to check.
@@ -288,7 +288,7 @@ const baseSelectors = {
 	/**
 	 * Returns the error if encountered while creating the provided custom dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} customDimension Custom dimension to obtain creation error for.
@@ -308,7 +308,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the available custom dimensions are being synced.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the available custom dimensions are being synced, otherwise FALSE.
