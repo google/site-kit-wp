@@ -41,7 +41,7 @@ import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardSessionDurationGA4 = ( { WidgetReportError } ) => {
+const WPDashboardSessionDurationGA4 = ( { WPDashboardReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
@@ -88,7 +88,9 @@ const WPDashboardSessionDurationGA4 = ( { WidgetReportError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics-4" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics-4" error={ error } />
+		);
 	}
 
 	const { totals } = analytics4Data;
@@ -119,7 +121,7 @@ const WPDashboardSessionDurationGA4 = ( { WidgetReportError } ) => {
 };
 
 WPDashboardSessionDurationGA4.propTypes = {
-	WidgetReportError: PropTypes.elementType.isRequired,
+	WPDashboardReportError: PropTypes.elementType.isRequired,
 };
 
 export default WPDashboardSessionDurationGA4;

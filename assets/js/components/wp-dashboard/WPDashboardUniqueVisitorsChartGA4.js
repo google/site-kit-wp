@@ -38,7 +38,7 @@ import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardUniqueVisitorsChartGA4( {
-	WidgetReportError,
+	WPDashboardReportError,
 } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
@@ -99,7 +99,9 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics-4" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics-4" error={ error } />
+		);
 	}
 
 	const googleChartData = extractAnalytics4DashboardData(
@@ -161,5 +163,5 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 }
 
 WPDashboardUniqueVisitorsChartGA4.propTypes = {
-	WidgetReportError: PropTypes.elementType.isRequired,
+	WPDashboardReportError: PropTypes.elementType.isRequired,
 };

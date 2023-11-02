@@ -44,7 +44,9 @@ import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardPopularPagesGA4( { WidgetReportError } ) {
+export default function WPDashboardPopularPagesGA4( {
+	WPDashboardReportError,
+} ) {
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -105,7 +107,9 @@ export default function WPDashboardPopularPagesGA4( { WidgetReportError } ) {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics-4" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics-4" error={ error } />
+		);
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.
@@ -158,5 +162,5 @@ export default function WPDashboardPopularPagesGA4( { WidgetReportError } ) {
 }
 
 WPDashboardPopularPagesGA4.propTypes = {
-	WidgetReportError: PropTypes.elementType.isRequired,
+	WPDashboardReportError: PropTypes.elementType.isRequired,
 };

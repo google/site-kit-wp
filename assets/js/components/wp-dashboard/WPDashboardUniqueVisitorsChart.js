@@ -43,7 +43,7 @@ import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardUniqueVisitorsChart( {
-	WidgetReportError,
+	WPDashboardReportError,
 } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -101,7 +101,9 @@ export default function WPDashboardUniqueVisitorsChart( {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics" error={ error } />
+		);
 	}
 
 	if ( ! isEmpty( data?.[ 0 ] ) ) {
@@ -172,5 +174,5 @@ export default function WPDashboardUniqueVisitorsChart( {
 }
 
 WPDashboardUniqueVisitorsChart.propTypes = {
-	WidgetReportError: PropTypes.elementType.isRequired,
+	WPDashboardReportError: PropTypes.elementType.isRequired,
 };

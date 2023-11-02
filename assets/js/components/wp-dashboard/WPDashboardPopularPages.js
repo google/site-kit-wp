@@ -44,7 +44,7 @@ import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardPopularPages( { WidgetReportError } ) {
+export default function WPDashboardPopularPages( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -103,7 +103,9 @@ export default function WPDashboardPopularPages( { WidgetReportError } ) {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics" error={ error } />
+		);
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.
@@ -136,7 +138,7 @@ export default function WPDashboardPopularPages( { WidgetReportError } ) {
 }
 
 WPDashboardPopularPages.propTypes = {
-	WidgetReportError: PropTypes.elementType.isRequired,
+	WPDashboardReportError: PropTypes.elementType.isRequired,
 };
 
 const tableColumns = [
