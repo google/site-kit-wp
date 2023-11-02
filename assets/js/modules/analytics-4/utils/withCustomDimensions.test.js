@@ -33,9 +33,9 @@ import {
 import { provideCustomDimensionError } from '../utils/custom-dimensions';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
 import withCustomDimensions from './withCustomDimensions';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'withCustomDimensions', () => {
 	let registry;
@@ -136,10 +136,13 @@ describe( 'withCustomDimensions', () => {
 			notification: 'custom_dimensions',
 		} );
 
-		expect(
-			registry.select( CORE_USER ).getPermissionScopeError()?.data
-				?.redirectURL
-		).toMatch( redirectURL );
+		const permissionScopeError = registry
+			.select( CORE_USER )
+			.getPermissionScopeError();
+
+		expect( permissionScopeError?.data?.redirectURL ).toMatch(
+			redirectURL
+		);
 	} );
 
 	it( 'renders appropriate error if creating custom dimensions failed due to a generic error', () => {
