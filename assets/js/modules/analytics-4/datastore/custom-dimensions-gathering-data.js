@@ -79,7 +79,7 @@ const baseActions = {
 	/**
 	 * Receives gathering data state for a custom dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 * @private
 	 *
 	 * @param {string}  customDimension Custom dimension slug.
@@ -110,7 +110,7 @@ const baseActions = {
 	 *
 	 * If data is available, saves the data available state to the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {string} customDimension Custom dimension slug.
 	 */
@@ -260,7 +260,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the custom dimension is still gathering data or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} customDimension Custom dimension slug.
@@ -273,7 +273,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether any of the provided custom dimensions are still gathering data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object}        state            Data store's state.
 	 * @param {Array<string>} customDimensions Array of custom dimension slugs.

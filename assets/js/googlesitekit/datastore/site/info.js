@@ -112,7 +112,7 @@ export const actions = {
 	/**
 	 * Sets the `setKeyMetricsSetupCompletedBy` value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {number} keyMetricsSetupCompletedBy Positive integer if key metrics setup is completed, otherwise 0.
 	 * @return {Object} Redux-style action.
@@ -773,7 +773,7 @@ export const selectors = {
 	/**
 	 * Get the user ID of the user who setup Key Metrics widget if present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @return {number} `ID` of the user who did initial setup of the Key Metrics widget, if setup was done, otherwise `0`.
 	 */

@@ -33,7 +33,7 @@ const { useSelect, useDispatch } = Data;
 /**
  * Triggers on demand tour for shared key metrics if all conditions are met.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {boolean} renderChangeMetricLink If metric link meets the conditions to render.
  */
