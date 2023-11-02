@@ -50,7 +50,7 @@ export default function ChangeMetricsLink() {
 	}, [ setValue, viewContext ] );
 
 	const renderChangeMetricLink =
-		Array.isArray( keyMetrics ) || keyMetrics?.length > 0;
+		Array.isArray( keyMetrics ) && keyMetrics?.length > 0;
 
 	useChangeMetricsFeatureTourEffect( renderChangeMetricLink );
 

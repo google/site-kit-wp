@@ -37,6 +37,14 @@ Disabled.scenario = {
 	label: 'Modules/Analytics4/Components/EnhancedMeasurementSwitch/Disabled',
 };
 
+export const StreamAlreadyEnabled = Template.bind( {} );
+StreamAlreadyEnabled.args = {
+	isEnhancedMeasurementAlreadyEnabled: true,
+};
+StreamAlreadyEnabled.scenario = {
+	label: 'Modules/Analytics4/Components/EnhancedMeasurementSwitch/StreamAlreadyEnabled',
+};
+
 export const Loading = Template.bind( {} );
 Loading.args = {
 	loading: true,

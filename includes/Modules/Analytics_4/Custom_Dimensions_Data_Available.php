@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 /**
  * Class for updating Analytics 4 custom dimension data availability state.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Custom_Dimensions_Data_Available {
 	/**
 	 * List of valid custom dimension slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 * @var array
 	 */
 	const CUSTOM_DIMENSION_SLUGS = array(
@@ -37,7 +37,7 @@ class Custom_Dimensions_Data_Available {
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 * @var Transients
 	 */
 	protected $transients;
@@ -45,7 +45,7 @@ class Custom_Dimensions_Data_Available {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param Transients $transients Transients instance.
 	 */
@@ -56,7 +56,7 @@ class Custom_Dimensions_Data_Available {
 	/**
 	 * Gets data available transient name for the custom dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param string $custom_dimension Custom dimension slug.
 	 * @return string Data available transient name.
@@ -68,7 +68,7 @@ class Custom_Dimensions_Data_Available {
 	/**
 	 * Gets data availability for all custom dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @return array Associative array of custom dimension names and their data availability state.
 	 */
@@ -86,7 +86,7 @@ class Custom_Dimensions_Data_Available {
 	/**
 	 * Checks whether the data is available for the custom dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param string $custom_dimension Custom dimension slug.
 	 * @return bool True if data is available, false otherwise.
@@ -98,7 +98,7 @@ class Custom_Dimensions_Data_Available {
 	/**
 	 * Sets the data available state for the custom dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param string $custom_dimension Custom dimension slug.
 	 * @return bool True on success, false otherwise.
@@ -110,7 +110,7 @@ class Custom_Dimensions_Data_Available {
 	/**
 	 * Resets the data available state for all custom dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 */
 	public function reset_data_available() {
 		foreach ( self::CUSTOM_DIMENSION_SLUGS as $custom_dimension ) {
@@ -121,7 +121,7 @@ class Custom_Dimensions_Data_Available {
 	/**
 	 * Checks whether the custom dimension is valid.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param string $custom_dimension Custom dimension slug.
 	 * @return bool True if valid, false otherwise.

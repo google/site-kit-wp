@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { useMount } from 'react-use';
 
 /**
@@ -102,6 +102,13 @@ export default function DashboardMainApp() {
 		}
 	} );
 
+	const createDimensionsAndUpdateForm = useCallback( async () => {
+		await createCustomDimensions();
+		setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+			isAutoCreatingCustomDimensions: false,
+		} );
+	}, [ createCustomDimensions, setValues ] );
+
 	useEffect( () => {
 		if (
 			keyMetricsEnabled &&
@@ -109,8 +116,11 @@ export default function DashboardMainApp() {
 			hasAnalyticsEditScope &&
 			autoSubmit
 		) {
-			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, { autoSubmit: false } );
-			createCustomDimensions();
+			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				autoSubmit: false,
+				isAutoCreatingCustomDimensions: true,
+			} );
+			createDimensionsAndUpdateForm();
 		}
 	}, [
 		autoSubmit,
@@ -119,6 +129,7 @@ export default function DashboardMainApp() {
 		isKeyMetricsSetupCompleted,
 		keyMetricsEnabled,
 		setValues,
+		createDimensionsAndUpdateForm,
 	] );
 
 	const viewableModules = useSelect( ( select ) => {

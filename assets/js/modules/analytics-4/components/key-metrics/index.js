@@ -1,7 +1,5 @@
 /**
- * GA4 settings components.
- *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +14,5 @@
  * limitations under the License.
  */
 
-export { default as SettingsEnhancedMeasurementSwitch } from './SettingsEnhancedMeasurementSwitch';
-export { default as SettingsEnhancedMeasurementView } from './SettingsEnhancedMeasurementView';
-export { default as SettingsUseSnippetSwitch } from './SettingsUseSnippetSwitch';
+export { default as AnalyticsUpdateError } from './AnalyticsUpdateError';
+export { default as CustomDimensionsMissingError } from './CustomDimensionsMissingError';

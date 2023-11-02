@@ -60,7 +60,7 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
  * This function is attached to the widget object that requires the custom dimensions and
  * has the `requiredCustomDimensions` property.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Function} select              Data store select function.
  * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
@@ -166,7 +166,7 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
 		title: __( 'Least engaging pages', 'google-site-kit' ),
 		description: __(
-			'Pages with the highest bounce rate (visitors who left without any meaningful engagement with your site)',
+			'Pages with the highest percentage of visitors that left without engagement with your site',
 			'google-site-kit'
 		),
 	},

@@ -167,6 +167,7 @@
 	}
 
 	.googlesitekit-pagespeed-report__row {
+		gap: $grid-gap-desktop;
 		justify-content: space-between;
 
 		.googlesitekit-error-text p {
