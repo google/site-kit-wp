@@ -23,7 +23,7 @@ import { provideModules, render } from '../../../../../tests/js/test-utils';
 import WPDashboardReportError from './WPDashboardReportError';
 
 describe( 'WPDashboardReportError', () => {
-	it( 'In case of multiple instances with same error, only one error should be rendered per module', () => {
+	it( 'should only render one error per module when there are multiple instances with same error', () => {
 		const error = {
 			code: 'test_error',
 			message: 'Test error message',
@@ -62,5 +62,7 @@ describe( 'WPDashboardReportError', () => {
 		expect(
 			container.querySelectorAll( '.googlesitekit-error-text' )
 		).toHaveLength( 2 );
+
+		expect( container ).toMatchSnapshot();
 	} );
 } );
