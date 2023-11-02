@@ -44,9 +44,7 @@ export default function WPDashboardReportError( { moduleSlug, error } ) {
 
 	const { setValue } = useDispatch( CORE_UI );
 
-	const errorMessage = Array.isArray( error )
-		? error[ 0 ].message
-		: error.message;
+	const errorMessage = error.message;
 
 	const selectInstanceID = useSelect( ( select ) =>
 		select( CORE_UI ).getValue(
@@ -78,8 +76,5 @@ export default function WPDashboardReportError( { moduleSlug, error } ) {
 
 WPDashboardReportError.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
-	error: PropTypes.oneOfType( [
-		PropTypes.arrayOf( PropTypes.object ),
-		PropTypes.object,
-	] ).isRequired,
+	error: PropTypes.object.isRequired,
 };
