@@ -450,7 +450,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the `streamEnabled` setting is enabled for a given web data stream within the saved settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} propertyID      The GA4 property ID to check.

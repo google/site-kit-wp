@@ -122,7 +122,7 @@ class Auto_Updates {
 	/**
 	 * Merges plugin update data in the site transient with some default plugin data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @return array Site Kit plugin update data.
 	 */

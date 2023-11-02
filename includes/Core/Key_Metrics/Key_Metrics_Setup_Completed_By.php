@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for handling the setup completion state of Key Metrics.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Key_Metrics_Setup_Completed_By extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @return string The type name.
 	 */
