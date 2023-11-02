@@ -119,7 +119,7 @@ export default function BannerNotifications() {
 			) }
 			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
 				<Fragment>
-					{ !! hasMismatchedGoogleTagID && (
+					{ hasMismatchedGoogleTagID && (
 						<GoogleTagIDMismatchNotification />
 					) }
 					<WebDataStreamNotAvailableNotification />
