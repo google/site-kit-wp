@@ -20,22 +20,15 @@
  * Internal dependencies
  */
 import MetricsSelectionPanel from '.';
-import {
-	act,
-	fireEvent,
-	render,
-	// waitFor,
-} from '../../../../../tests/js/test-utils';
+import { act, fireEvent, render } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideKeyMetrics,
 	provideModules,
 	provideUserAuthentication,
-	// provideUserInfo,
+	provideUserInfo,
 	subscribeUntil,
-	// waitForDefaultTimeouts,
-	// waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
@@ -44,7 +37,6 @@ import {
 	KM_ANALYTICS_LOYAL_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
-	// KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
@@ -505,27 +497,25 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		describe( 'CTA', () => {
-			it( 'sets autoSubmit to true if GA4 connected and missing custom dimensions', async () => {
+			it( 'should set autoSubmit to true if GA4 connected and missing custom dimensions', async () => {
+				fetchMock.reset();
+
 				provideUserAuthentication( registry, {
 					grantedScopes: EDIT_SCOPE,
 				} );
+				provideUserInfo( registry, { id: 1 } );
 
-				fetchMock.post(
-					new RegExp(
-						'^/google-site-kit/v1/core/user/data/key-metrics'
-					),
-					{
-						body: {
-							widgetSlugs: [
-								KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-								KM_ANALYTICS_LOYAL_VISITORS,
-								KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-							],
-							isWidgetHidden: false,
-						},
-						status: 200,
-					}
-				);
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [
+							KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+							KM_ANALYTICS_LOYAL_VISITORS,
+							KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+						],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
 
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
@@ -547,19 +537,6 @@ describe( 'MetricsSelectionPanel', () => {
 				const submitButton = getByRole( 'button', {
 					name: /Save selection/i,
 				} );
-				// await act( async () => {
-				// 	fireEvent.click( submitButton );
-				// } );
-
-				// await waitFor( () => {
-				// 	const autoSubmit = registry
-				// 		.select( CORE_FORMS )
-				// 		.getValue(
-				// 			FORM_CUSTOM_DIMENSIONS_CREATE,
-				// 			'autoSubmit'
-				// 		);
-				// 	expect( autoSubmit ).toBe( true );
-				// } );
 
 				const isAutoSubmitTrue = () => {
 					const autoSubmit = registry
@@ -570,8 +547,6 @@ describe( 'MetricsSelectionPanel', () => {
 						);
 					return autoSubmit === true;
 				};
-
-				// await waitForTimeouts( 50 );
 
 				await act( async () => {
 					fireEvent.click( submitButton );
