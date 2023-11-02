@@ -36,7 +36,7 @@ describe( 'EnhancedMeasurementSwitch', () => {
 
 		expect(
 			queryByText(
-				'Enhanced measurement is enabled for this web data stream.'
+				'Enhanced measurement is enabled for this web data stream'
 			)
 		).not.toBeInTheDocument();
 	} );
@@ -72,7 +72,7 @@ describe( 'EnhancedMeasurementSwitch', () => {
 
 		expect(
 			getByText(
-				'Enhanced measurement is enabled for this web data stream.'
+				'Enhanced measurement is enabled for this web data stream'
 			)
 		).toBeInTheDocument();
 

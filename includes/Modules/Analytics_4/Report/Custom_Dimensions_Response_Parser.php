@@ -16,7 +16,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse 
 /**
  * Class for swapping custom dimension IDs with their display names.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Custom_Dimensions_Response_Parser {
 	/**
 	 * Cache display name results.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 * @var array
 	 */
 	protected $cache_map = array(
@@ -40,7 +40,7 @@ class Custom_Dimensions_Response_Parser {
 	 * returned. If a user is found, the display name is cached when processing
 	 * the same response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param string|int $user_id User ID of the user to get the display name of.
 	 * @return string|int Display name of the user or their original ID if no name is found.
@@ -65,7 +65,7 @@ class Custom_Dimensions_Response_Parser {
 	 * If no category is found for a given ID, the original ID is preserved in
 	 * the returned string.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param string $category_ids_string Comma separated string list of IDs of categories to get names of.
 	 * @return string JSON encoded string of comma separated category names (or their original IDs if no name is found).
@@ -105,7 +105,7 @@ class Custom_Dimensions_Response_Parser {
 	/**
 	 * Swaps the IDs of any custom dimensions within the response with their respective display names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $response The response to swap values in.
 	 * @return void Swaps the IDs of custom dimensions within the given response instance.

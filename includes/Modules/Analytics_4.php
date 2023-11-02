@@ -112,7 +112,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Custom_Dimensions_Data_Available instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 * @var Custom_Dimensions_Data_Available
 	 */
 	protected $custom_dimensions_data_available;
@@ -120,7 +120,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
@@ -1365,7 +1365,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets custom dimensions data based on available custom dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @return array An associated array of custom dimensions data.
 	 */
@@ -1382,7 +1382,7 @@ final class Analytics_4 extends Module
 		/**
 		 * Filters the allowed post types for custom dimensions tracking.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.113.0
 		 *
 		 * @param array $allowed_post_types The array of allowed post types.
 		 */
@@ -1664,7 +1664,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Populates custom dimension data to pass to JS via _googlesitekitModulesData.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.

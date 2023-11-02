@@ -103,7 +103,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 /**
  * Parses dimension arguments, returns dimensions as an array of strings.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {string|Object|Array<string|Object>} dimensions A single dimension or an array of dimensions.
  * @return {Array<string>} Array of dimension names.

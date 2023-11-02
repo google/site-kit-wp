@@ -16,4 +16,3 @@
 
 export { default as AnalyticsUpdateError } from './AnalyticsUpdateError';
 export { default as CustomDimensionsMissingError } from './CustomDimensionsMissingError';
-export { default as InsufficientPermissionsError } from './InsufficientPermissionsError';
