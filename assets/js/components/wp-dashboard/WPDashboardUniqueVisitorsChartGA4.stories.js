@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import { widgetDecorators } from './common.stories';
 import {
 	setupAnalytics4MockReports,
@@ -29,9 +29,9 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardUniqueVisitorsChartGA4
-);
+const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
+	'widget-slug'
+)( WPDashboardUniqueVisitorsChartGA4 );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

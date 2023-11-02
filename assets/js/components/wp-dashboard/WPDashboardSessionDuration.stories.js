@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	setupAnalyticsGatheringData,
 	setupAnalyticsMockReports,
@@ -29,9 +29,9 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardSessionDuration
-);
+const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
+	'widget-slug'
+)( WPDashboardSessionDuration );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
