@@ -26,7 +26,8 @@
 		font-size: $fs-label-sm;
 		font-weight: 500;
 		letter-spacing: $ls-xs;
-		line-height: $lh-label-lg;
+		line-height: $lh-title-lg;
+		margin-top: 12px;
 		padding: 4px 8px;
 
 		&.googlesitekit-change-badge--negative {
