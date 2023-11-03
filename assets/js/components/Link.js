@@ -22,12 +22,14 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Link as RouterLink } from 'react-router-dom';
+import ExternalIcon from '../../svg/icons/external.svg';
 
 /**
  * WordPress dependencies
  */
 import { _x } from '@wordpress/i18n';
 import { forwardRef } from '@wordpress/element';
+import IconWrapper from './IconWrapper';
 
 const BUTTON = 'BUTTON';
 const BUTTON_DISABLED = 'BUTTON_DISABLED';
@@ -171,6 +173,11 @@ const Link = forwardRef( ( props, ref ) => {
 			{ ...otherProps }
 		>
 			{ children }
+			{ external && ! hideExternalIndicator && (
+				<IconWrapper left={ 5 }>
+					<ExternalIcon width={ 14 } height={ 14 } />
+				</IconWrapper>
+			) }
 		</LinkComponent>
 	);
 } );
