@@ -32,23 +32,12 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import useQueryArg from '../../hooks/useQueryArg';
+import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import BannerNotifications from './BannerNotifications';
 
-jest.mock( '../../hooks/useQueryArg' );
-
-// Set up mockImplementation for `useQueryArg` used in this component,
-// so we can set expected the query params
-function stubMockUseQueryArg( notification = '' ) {
-	useQueryArg.mockImplementation( ( queryArg ) => {
-		if ( 'notification' === queryArg && notification ) {
-			return [ notification ];
-		}
-		return [ undefined ];
-	} );
-}
-
 describe( 'BannerNotifications', () => {
+	mockLocation();
+
 	let registry;
 
 	beforeEach( () => {
@@ -77,10 +66,11 @@ describe( 'BannerNotifications', () => {
 		registry.dispatch( CORE_USER ).receiveNonces( [] );
 	} );
 
-	it( 'render `authentication_success` notification if `authentication_success` query param value is passed', async () => {
-		stubMockUseQueryArg( 'authentication_success' );
+	it( 'should render the `authentication_success` notification if the `authentication_success` query param value is passed', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?notification=authentication_success';
 
-		const { queryByText, waitForRegistry } = render(
+		const { getByText, waitForRegistry } = render(
 			<BannerNotifications />,
 			{
 				registry,
@@ -90,14 +80,15 @@ describe( 'BannerNotifications', () => {
 		await waitForRegistry();
 
 		expect(
-			queryByText( /congrats on completing the setup for/i )
+			getByText( /congrats on completing the setup for/i )
 		).toBeInTheDocument();
 	} );
 
-	it( 'does not render `setup complete` notification if `custom_dimensions` query arg value is passed', async () => {
-		// Add arbitrary value for `notification` to prevent server appending `authentication_success`
-		// on the redirect, so setup completed notification does not show
-		stubMockUseQueryArg( 'custom_dimensions' );
+	it( 'should not render the `setup complete` notification if the `custom_dimensions` query arg value is passed', async () => {
+		// Add arbitrary value for `notification` to prevent the server appending `authentication_success`
+		// on the redirect, so the setup completed notification does not show.
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?notification=custom_dimensions';
 
 		const { queryByText, waitForRegistry } = render(
 			<BannerNotifications />,
