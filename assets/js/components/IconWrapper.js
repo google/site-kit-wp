@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
 export default function IconWrapper( { children, left, right } ) {
 	return (
 		<span
@@ -29,3 +34,9 @@ export default function IconWrapper( { children, left, right } ) {
 		</span>
 	);
 }
+
+IconWrapper.propTypes = {
+	children: PropTypes.node.isRequired,
+	left: PropTypes.number,
+	right: PropTypes.number,
+};

@@ -113,19 +113,6 @@
 		}
 	}
 
-	&.googlesitekit-cta-link--back::before {
-		// This is the arrow-left icon, in the color ($c-content-secondary).
-		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%228%22%20height%3D%227%22%20viewBox%3D%220%200%208%207%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M6.722%203.96H1.573l2.25%202.25a.464.464%200%200%201-.325.79.459.459%200%200%201-.325-.135L.135%203.827a.459.459%200%200%201%200-.65L3.168.135a.46.46%200%201%201%20.65.65L1.573%203.039h5.15c.253%200%20.46.207.46.46a.462.462%200%200%201-.46.462z%22%20fill%3D%22%23108080%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
-		background-position: center center;
-		background-repeat: no-repeat;
-		background-size: 9px 9px;
-		content: "";
-		display: inline-block;
-		height: 9px;
-		margin-right: 5px;
-		width: 9px;
-	}
-
 	&.googlesitekit-cta-link--disabled {
 		color: $c-disabled;
 		cursor: default;
