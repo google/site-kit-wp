@@ -32,6 +32,8 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import ArrowIcon from '../../svg/icons/arrow.svg';
+import ArrowInverseIcon from '../../svg/icons/arrow-inverse.svg';
 import BackIcon from '../../svg/icons/back.svg';
 import ExternalIcon from '../../svg/icons/external.svg';
 import IconWrapper from './IconWrapper';
@@ -178,14 +180,22 @@ const Link = forwardRef( ( props, ref ) => {
 			{ ...otherProps }
 		>
 			{ back && (
-				<IconWrapper right={ 5 }>
+				<IconWrapper marginRight={ 5 }>
 					<BackIcon width={ 14 } height={ 14 } />
 				</IconWrapper>
 			) }
 			{ children }
 			{ external && ! hideExternalIndicator && (
-				<IconWrapper left={ 5 }>
+				<IconWrapper marginLeft={ 5 }>
 					<ExternalIcon width={ 14 } height={ 14 } />
+				</IconWrapper>
+			) }
+			{ arrow && (
+				<IconWrapper marginLeft={ 5 }>
+					{ ! inverse && <ArrowIcon width={ 14 } height={ 14 } /> }
+					{ inverse && (
+						<ArrowInverseIcon width={ 14 } height={ 14 } />
+					) }
 				</IconWrapper>
 			) }
 		</LinkComponent>
