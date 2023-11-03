@@ -121,14 +121,14 @@ describe( 'withCustomDimensions', () => {
 			error,
 		} );
 
-		const { queryByText, getByRole } = render(
+		const { getByText, getByRole } = render(
 			<WithCustomDimensionsComponent />,
 			{
 				registry,
 			}
 		);
 
-		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+		expect( getByText( /retry/i ) ).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 
