@@ -98,7 +98,7 @@ describe( 'withCustomDimensions', () => {
 		expect( container ).toHaveTextContent( 'Insufficient permissions' );
 	} );
 
-	it( 'sets the appropriate `redirectURL` in the persmission error object if creating custom dimensions failed due to the user not having `EDIT_SCOPE`', () => {
+	it( 'sets the appropriate `redirectURL` in the permission error object if creating custom dimensions failed due to the user not having `EDIT_SCOPE`', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '123456789',
 			availableCustomDimensions: [ customDimension ],
