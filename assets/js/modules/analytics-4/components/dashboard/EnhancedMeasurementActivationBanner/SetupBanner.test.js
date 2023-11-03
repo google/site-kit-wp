@@ -31,6 +31,7 @@ import {
 	provideSiteInfo,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
+import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import {
 	EDIT_SCOPE,
@@ -125,27 +126,7 @@ describe( 'SetupBanner', () => {
 	} );
 
 	it( 'should render correctly when the user does not have the edit scope granted', () => {
-		const surveyTriggerEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/survey-trigger'
-		);
-		const surveyTimeoutEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/survey-timeout'
-		);
-
-		fetchMock.postOnce( surveyTriggerEndpoint, {
-			status: 200,
-			body: {},
-		} );
-
-		fetchMock.getOnce( surveyTimeoutEndpoint, {
-			status: 200,
-			body: {},
-		} );
-
-		fetchMock.postOnce( surveyTimeoutEndpoint, {
-			status: 200,
-			body: {},
-		} );
+		mockSurveyEndpoints();
 
 		provideSiteInfo( registry, {
 			usingProxy: true,
