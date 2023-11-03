@@ -27,11 +27,10 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { getDateString } from '../../../util';
-import { isInvalidCustomDimensionError } from '../utils/custom-dimensions';
+import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -116,7 +115,7 @@ const baseActions = {
 	 * @param {string} customDimension Custom dimension slug.
 	 */
 	*checkCustomDimensionDataAvailability( customDimension ) {
-		const { select, __experimentalResolveSelect, dispatch } =
+		const { select, __experimentalResolveSelect } =
 			yield Data.commonActions.getRegistry();
 
 		yield Data.commonActions.await(
@@ -181,29 +180,12 @@ const baseActions = {
 			)
 		);
 
-		const reportError = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-			'getReport',
-			[ reportArgs ]
-		);
-
-		// Sync available custom dimensions.
-		if ( isInvalidCustomDimensionError( reportError ) ) {
-			dispatch( MODULES_ANALYTICS_4 ).clearError( 'getReport', [
-				reportArgs,
-			] );
-
-			dispatch( MODULES_ANALYTICS_4 )
-				.fetchSyncAvailableCustomDimensions()
-				.then( () => {
-					dispatch( MODULES_ANALYTICS_4 ).invalidateResolution(
-						'getReport',
-						[ reportArgs ]
-					);
-				} );
-		}
+		const hasReportError = !! select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ reportArgs ] );
 
 		const isGatheringData =
-			!! reportError ||
+			hasReportError ||
 			! report?.rows?.length ||
 			// If the only dimension value is '(not set)', then there is no data. See https://support.google.com/analytics/answer/13504892.
 			( report.rowCount === 1 &&
