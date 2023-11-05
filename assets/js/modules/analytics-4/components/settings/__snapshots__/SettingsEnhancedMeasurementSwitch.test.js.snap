@@ -14,12 +14,18 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
-        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        class="googlesitekit-cta-link"
         href="https://support.google.com/analytics/answer/9216061?hl=en-US"
         rel="noopener noreferrer"
         target="_blank"
       >
         Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
       </a>
     </p>
   </div>
@@ -69,12 +75,18 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
-        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        class="googlesitekit-cta-link"
         href="https://support.google.com/analytics/answer/9216061?hl=en-US"
         rel="noopener noreferrer"
         target="_blank"
       >
         Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
       </a>
     </p>
   </div>
@@ -115,12 +127,18 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
-        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        class="googlesitekit-cta-link"
         href="https://support.google.com/analytics/answer/9216061?hl=en-US"
         rel="noopener noreferrer"
         target="_blank"
       >
         Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
       </a>
     </p>
   </div>
@@ -161,12 +179,18 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
-        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        class="googlesitekit-cta-link"
         href="https://support.google.com/analytics/answer/9216061?hl=en-US"
         rel="noopener noreferrer"
         target="_blank"
       >
         Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
       </a>
     </p>
   </div>
@@ -207,12 +231,18 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
-        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        class="googlesitekit-cta-link"
         href="https://support.google.com/analytics/answer/9216061?hl=en-US"
         rel="noopener noreferrer"
         target="_blank"
       >
         Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
       </a>
     </p>
   </div>
@@ -261,12 +291,18 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
-        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        class="googlesitekit-cta-link"
         href="https://support.google.com/analytics/answer/9216061?hl=en-US"
         rel="noopener noreferrer"
         target="_blank"
       >
         Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
       </a>
     </p>
   </div>
@@ -315,12 +351,18 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
-        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        class="googlesitekit-cta-link"
         href="https://support.google.com/analytics/answer/9216061?hl=en-US"
         rel="noopener noreferrer"
         target="_blank"
       >
         Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
       </a>
     </p>
   </div>
@@ -369,12 +411,18 @@ exports[`SettingsEnhancedMeasurementSwitch when propertyID is property_create sh
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
-        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        class="googlesitekit-cta-link"
         href="https://support.google.com/analytics/answer/9216061?hl=en-US"
         rel="noopener noreferrer"
         target="_blank"
       >
         Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
       </a>
     </p>
   </div>
@@ -423,12 +471,18 @@ exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
-        class="googlesitekit-cta-link googlesitekit-cta-link--external"
+        class="googlesitekit-cta-link"
         href="https://support.google.com/analytics/answer/9216061?hl=en-US"
         rel="noopener noreferrer"
         target="_blank"
       >
         Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
       </a>
     </p>
   </div>

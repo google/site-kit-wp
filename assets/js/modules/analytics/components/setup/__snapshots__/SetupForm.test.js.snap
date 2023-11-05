@@ -307,12 +307,18 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Legacy
         >
           <a
             aria-label="Learn more (opens in a new tab)"
-            class="googlesitekit-cta-link googlesitekit-cta-link--external"
+            class="googlesitekit-cta-link"
             href="https://sitekit.withgoogle.com/support/?doc=ga4"
             rel="noopener noreferrer"
             target="_blank"
           >
             Learn more
+            <span
+              class="googlesitekit-icon-wrapper"
+              style="margin-left: 5px;"
+            >
+              <svg />
+            </span>
           </a>
         </div>
       </div>
@@ -624,12 +630,18 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 Transi
           >
             <a
               aria-label="Learn more (opens in a new tab)"
-              class="googlesitekit-cta-link googlesitekit-cta-link--external"
+              class="googlesitekit-cta-link"
               href="https://sitekit.withgoogle.com/support/?doc=ga4"
               rel="noopener noreferrer"
               target="_blank"
             >
               Learn more
+              <span
+                class="googlesitekit-icon-wrapper"
+                style="margin-left: 5px;"
+              >
+                <svg />
+              </span>
             </a>
           </div>
         </div>
@@ -851,12 +863,18 @@ exports[`SetupForm renders the form correctly when setup flow mode is UA 1`] = `
         >
           <a
             aria-label="Learn more (opens in a new tab)"
-            class="googlesitekit-cta-link googlesitekit-cta-link--external"
+            class="googlesitekit-cta-link"
             href="https://sitekit.withgoogle.com/support/?doc=ga4"
             rel="noopener noreferrer"
             target="_blank"
           >
             Learn more
+            <span
+              class="googlesitekit-icon-wrapper"
+              style="margin-left: 5px;"
+            >
+              <svg />
+            </span>
           </a>
         </div>
       </div>

@@ -97,11 +97,6 @@
 			background-color: $c-utility-error;
 			color: $c-utility-on-error;
 		}
-
-		.googlesitekit-cta-link--external {
-			// This is the external link icon, in the color #7a1e00 ($c-utility-on-error-container).
-			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M11%2011H2V2h3V0H2a2%202%200%200%200-2%202v9a2%202%200%200%200%202%202h9c1.1%200%202-.9%202-2V8h-2v3z%22%20fill%3D%22%237a1e00%22%20fill-rule%3D%22nonzero%22%2F%3E%3Cpath%20fill%3D%22%237a1e00%22%20d%3D%22M7%200h6v2H7zM11%202h2v4h-2z%22%2F%3E%3Cpath%20d%3D%22M11%202L5%208%22%20stroke%3D%22%237a1e00%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22square%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-		}
 	}
 
 	*:last-child {

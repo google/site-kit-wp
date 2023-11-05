@@ -31,12 +31,7 @@ storiesOf( 'Global', module ).add(
 	'Links',
 	() => {
 		return (
-			<div
-				style={ {
-					backgroundColor: '#fff',
-					padding: 16,
-				} }
-			>
+			<div>
 				<p>
 					<Link href="http://google.com">Default Link</Link>
 				</p>

@@ -156,8 +156,6 @@ const Link = forwardRef( ( props, ref ) => {
 			className={ classnames( 'googlesitekit-cta-link', className, {
 				'googlesitekit-cta-link--secondary': secondary,
 				'googlesitekit-cta-link--arrow': arrow,
-				'googlesitekit-cta-link--external':
-					external && ! hideExternalIndicator,
 				'googlesitekit-cta-link--inverse': inverse,
 				'googlesitekit-cta-link--back': back,
 				'googlesitekit-cta-link--small': small,

@@ -19,7 +19,7 @@
 .googlesitekit-cta-link {
 	color: $c-link;
 	cursor: pointer;
-	display: flex;
+	display: inline-flex;
 	font-family: inherit;
 	font-size: inherit;
 	font-weight: inherit;
@@ -71,7 +71,7 @@
 	}
 
 	&.googlesitekit-cta-link--standalone {
-		display: block;
+		display: flex;
 	}
 
 	&.googlesitekit-cta-link--inverse {
