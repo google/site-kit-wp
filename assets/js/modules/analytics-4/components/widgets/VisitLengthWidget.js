@@ -31,7 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_VISIT_LENGTH,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -97,7 +100,7 @@ function VisitLengthWidget( { Widget } ) {
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'Visit length', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_VISIT_LENGTH }
 			metricValue={ currentVisitLength }
 			metricValueFormat="s"
 			subText={ sprintf(
@@ -110,10 +113,6 @@ function VisitLengthWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Average duration of engaged visits',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

@@ -31,7 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -162,7 +165,7 @@ function TopTrafficSourceWidget( { Widget } ) {
 	return (
 		<MetricTileText
 			Widget={ Widget }
-			title={ __( 'Top traffic source', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_TOP_TRAFFIC_SOURCE }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
 			subText={
@@ -178,10 +181,6 @@ function TopTrafficSourceWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

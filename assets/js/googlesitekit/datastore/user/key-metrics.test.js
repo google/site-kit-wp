@@ -33,7 +33,7 @@ import { provideKeyMetricsWidgetRegistrations } from '../../../components/KeyMet
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -136,7 +136,7 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
 				).toMatchObject( [
-					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
 					KM_ANALYTICS_NEW_VISITORS,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -148,7 +148,7 @@ describe( 'core/user key metrics', () => {
 			it( 'should use the user-selected key metrics if the user has selected any widgets', async () => {
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: {
-						widgetSlugs: [ KM_ANALYTICS_LOYAL_VISITORS ],
+						widgetSlugs: [ KM_ANALYTICS_RETURNING_VISITORS ],
 						isWidgetHidden: false,
 					},
 					status: 200,
@@ -163,7 +163,7 @@ describe( 'core/user key metrics', () => {
 
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( [ KM_ANALYTICS_LOYAL_VISITORS ] );
+				).toMatchObject( [ KM_ANALYTICS_RETURNING_VISITORS ] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -211,7 +211,7 @@ describe( 'core/user key metrics', () => {
 				[
 					'publish_blog',
 					[
-						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_RETURNING_VISITORS,
 						KM_ANALYTICS_NEW_VISITORS,
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
