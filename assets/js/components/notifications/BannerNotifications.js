@@ -101,6 +101,9 @@ export default function BannerNotifications() {
 
 	return (
 		<Fragment>
+			{ adSenseModuleActive && <AdSenseAlerts /> }
+			<ModuleRecoveryAlert />
+			<ActivationBanner />
 			{ 'authentication_success' === notification && (
 				<SetupSuccessBannerNotification />
 			) }
@@ -109,11 +112,9 @@ export default function BannerNotifications() {
 			) }
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			<ModuleRecoveryAlert />
 			{ ga4ReportingEnabled &&
 				analyticsModuleConnected &&
 				ga4ModuleConnected && <SwitchedToGA4Banner /> }
-			<ActivationBanner />
 			{ enhancedMeasurementEnabled && (
 				<EnhancedMeasurementActivationBanner />
 			) }
@@ -126,7 +127,6 @@ export default function BannerNotifications() {
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />
-			{ adSenseModuleActive && <AdSenseAlerts /> }
 		</Fragment>
 	);
 }
