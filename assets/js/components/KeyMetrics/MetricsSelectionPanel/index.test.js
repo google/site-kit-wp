@@ -265,7 +265,7 @@ describe( 'MetricsSelectionPanel', () => {
 			// Verify that the metric dependent on a disconnected analytics-4 is disabled.
 			expect(
 				getByRole( 'checkbox', {
-					name: /Loyal visitors/i,
+					name: /Returning visitors/i,
 				} )
 			).toBeDisabled();
 
