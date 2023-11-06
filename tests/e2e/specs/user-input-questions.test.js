@@ -103,7 +103,7 @@ describe.skip( 'User Input Settings', () => {
 		await step(
 			'wait for a Key Metric tile to successfully appear',
 			page.waitForSelector(
-				'.googlesitekit-widget--kmAnalyticsLoyalVisitors'
+				'.googlesitekit-widget--kmAnalyticsReturningVisitors'
 			)
 		);
 	}
@@ -191,7 +191,7 @@ describe.skip( 'User Input Settings', () => {
 	} );
 
 	beforeEach( async () => {
-		await enableFeature( 'userInput' );
+		await enableFeature( 'keyMetrics' );
 		await activatePlugins(
 			'e2e-tests-proxy-setup',
 			'e2e-tests-oauth-callback-plugin'

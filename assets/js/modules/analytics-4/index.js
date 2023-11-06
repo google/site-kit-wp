@@ -22,11 +22,11 @@
 import {
 	EngagedTrafficSourceWidget,
 	LeastEngagingPagesWidget,
-	LoyalVisitorsWidget,
 	MostEngagingPagesWidget,
 	NewVisitorsWidget,
 	PopularContentWidget,
 	PopularProductsWidget,
+	ReturningVisitorsWidget,
 	TopCitiesWidget,
 	TopCountriesWidget,
 	TopTrafficSourceWidget,
@@ -46,7 +46,7 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -75,21 +75,21 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
-	if ( isFeatureEnabled( 'userInput' ) ) {
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
 		/*
 		 * Key metrics widgets.
 		 */
 		widgets.registerWidget(
-			KM_ANALYTICS_LOYAL_VISITORS,
+			KM_ANALYTICS_RETURNING_VISITORS,
 			{
-				Component: LoyalVisitorsWidget,
+				Component: ReturningVisitorsWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 1,
 				wrapWidget: false,
 				modules: [ 'analytics-4' ],
 				isActive: ( select ) =>
 					select( CORE_USER ).isKeyMetricActive(
-						KM_ANALYTICS_LOYAL_VISITORS
+						KM_ANALYTICS_RETURNING_VISITORS
 					),
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
@@ -223,7 +223,7 @@ export const registerWidgets = ( widgets ) => {
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
 
-		if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
+		if ( isFeatureEnabled( 'keyMetrics' ) ) {
 			widgets.registerWidget(
 				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 				{
@@ -242,7 +242,7 @@ export const registerWidgets = ( widgets ) => {
 		}
 	}
 
-	if ( isFeatureEnabled( 'newsKeyMetrics' ) ) {
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
 		/*
 		 * News Key metrics widgets.
 		 */

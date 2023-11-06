@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { compose } from '@wordpress/compose';
 
 /**
@@ -43,7 +42,10 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import withCustomDimensions from '../../utils/withCustomDimensions';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+} from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect, useInViewSelect } = Data;
 
 /**
@@ -52,7 +54,7 @@ const { useSelect, useInViewSelect } = Data;
  * Utilizing the current date, the function calculates the dates
  * for the previous day, two days ago, and three days ago.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Function} select Registry select.
  * @return {Object} An object containing the dates for yesterday,
@@ -76,7 +78,7 @@ export const getDates = ( select ) => {
  * Returns the date range (eg. the `startDate` and `endDate`) for this widget's
  * reporting options.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Function} select Registry select.
  * @return {Object} An object containing the `startDate` and `endDate` for a
@@ -102,7 +104,7 @@ export const getDateRange = ( select ) => {
  * the component and the higher-order-component (`withCustomDimensions`)
  * can use it.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Function} select Registry select.
  * @return {Object} The report options containing dimensions, filters,
@@ -227,17 +229,13 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'Top recent trending pages', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Pages with the most pageviews published in the last 3 days',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

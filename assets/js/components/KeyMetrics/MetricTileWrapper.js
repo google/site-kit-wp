@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,24 +39,40 @@ import MetricTileError from './MetricTileError';
 import MetricTileHeader from './MetricTileHeader';
 import ReportErrorActions from '../ReportErrorActions';
 import { isInsufficientPermissionsError } from '../../util/errors';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
-export default function MetricTileWrapper( {
-	className,
-	children,
-	error,
-	loading,
-	moduleSlug,
-	Widget,
-	widgetSlug,
-	title = KEY_METRICS_WIDGETS[ widgetSlug ]?.title,
-	infoTooltip = KEY_METRICS_WIDGETS[ widgetSlug ]?.infoTooltip ||
-		KEY_METRICS_WIDGETS[ widgetSlug ]?.description,
-} ) {
+export default function MetricTileWrapper( props ) {
+	const {
+		className,
+		children,
+		error,
+		loading,
+		moduleSlug,
+		Widget,
+		widgetSlug,
+		title = KEY_METRICS_WIDGETS[ widgetSlug ]?.title,
+		infoTooltip = KEY_METRICS_WIDGETS[ widgetSlug ]?.infoTooltip ||
+			KEY_METRICS_WIDGETS[ widgetSlug ]?.description,
+	} = props;
+
+	const viewContext = useViewContext();
+
+	const hasInsufficientPermissionsReportError = error
+		? castArray( error ).some( isInsufficientPermissionsError )
+		: false;
+
+	const trackRetryEvent = useCallback( () => {
+		trackEvent( `${ viewContext }_kmw`, 'data_loading_error_retry' );
+	}, [ viewContext ] );
+
+	useEffect( () => {
+		if ( !! error ) {
+			trackEvent( `${ viewContext }_kmw`, 'data_loading_error' );
+		}
+	}, [ viewContext, error ] );
+
 	if ( error ) {
-		const hasInsufficientPermissionsReportError = castArray( error ).some(
-			isInsufficientPermissionsError
-		);
-
 		return (
 			<MetricTileError
 				title={
@@ -69,6 +86,7 @@ export default function MetricTileWrapper( {
 				<ReportErrorActions
 					moduleSlug={ moduleSlug }
 					error={ error }
+					onRetry={ trackRetryEvent }
 					GetHelpLink={
 						hasInsufficientPermissionsReportError
 							? GetHelpLink
@@ -87,7 +105,11 @@ export default function MetricTileWrapper( {
 					className
 				) }
 			>
-				<MetricTileHeader title={ title } infoTooltip={ infoTooltip } />
+				<MetricTileHeader
+					title={ title }
+					infoTooltip={ infoTooltip }
+					loading={ loading }
+				/>
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <MetricTileLoader /> }
 					{ ! loading && children }

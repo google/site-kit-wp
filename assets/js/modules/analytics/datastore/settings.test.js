@@ -595,6 +595,22 @@ describe( 'modules/analytics settings', () => {
 						);
 					} );
 
+					it( 'should not save the enhanced measurement settings if the form value is `false`', async () => {
+						registry
+							.dispatch( CORE_FORMS )
+							.setValues( ENHANCED_MEASUREMENT_FORM, {
+								[ ENHANCED_MEASUREMENT_ENABLED ]: false,
+							} );
+
+						await registry
+							.dispatch( MODULES_ANALYTICS )
+							.submitChanges();
+
+						expect( fetchMock ).not.toHaveFetched(
+							enhancedMeasurementSettingsEndpoint
+						);
+					} );
+
 					it( 'should not save the enhanced measurement settings if the setting has not been changed', async () => {
 						registry
 							.dispatch( MODULES_ANALYTICS_4 )

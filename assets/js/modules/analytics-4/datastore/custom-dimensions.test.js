@@ -165,7 +165,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 		describe( 'createCustomDimensions', () => {
 			beforeEach( () => {
-				enabledFeatures.add( 'newsKeyMetrics' );
+				enabledFeatures.add( 'keyMetrics' );
 			} );
 
 			const keyMetricsSettings = {
@@ -263,6 +263,17 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableCustomDimensions()
 				).toEqual( customDimensionNames );
+
+				// Verify that the created custom dimensions are in a gathering data state.
+				customDimensionNames.forEach( ( customDimensionName ) => {
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isCustomDimensionGatheringData(
+								customDimensionName
+							)
+					).toBe( true );
+				} );
 			} );
 		} );
 	} );

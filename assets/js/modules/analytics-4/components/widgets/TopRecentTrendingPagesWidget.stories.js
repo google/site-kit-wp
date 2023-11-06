@@ -95,7 +95,7 @@ Ready.args = {
 	},
 };
 Ready.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 Ready.scenario = {
 	label: 'KeyMetrics/TopRecentTrendingPagesWidget/Ready',
@@ -119,7 +119,7 @@ Loading.args = {
 	},
 };
 Loading.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 Loading.scenario = {
 	label: 'KeyMetrics/TopRecentTrendingPagesWidget/Loading',
@@ -147,6 +147,28 @@ ZeroData.args = {
 };
 ZeroData.scenario = {
 	label: 'KeyMetrics/TopRecentTrendingPagesWidget/ZeroData',
+};
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [
+				...KM_WIDGET_DEF.requiredCustomDimensions,
+			],
+		} );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
+			KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
+				.requiredCustomDimensions?.[ 0 ],
+			true
+		);
+	},
+};
+GatheringData.scenario = {
+	label: 'KeyMetrics/TopRecentTrendingPagesWidget/GatheringData',
 };
 
 export const Error = Template.bind( {} );
@@ -202,7 +224,7 @@ ErrorMissingCustomDimensions.args = {
 	},
 };
 ErrorMissingCustomDimensions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
@@ -232,7 +254,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 	},
 };
 ErrorCustomDimensionsInsufficientPermissions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
@@ -262,7 +284,7 @@ ErrorCustomDimensionsGeneric.args = {
 	},
 };
 ErrorCustomDimensionsGeneric.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export default {
@@ -271,6 +293,18 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						KEY_METRICS_WIDGETS[
+							KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
+						].requiredCustomDimensions?.[ 0 ],
+						false
+					);
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',

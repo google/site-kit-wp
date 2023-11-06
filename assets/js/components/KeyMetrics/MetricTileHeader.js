@@ -24,13 +24,20 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import InfoTooltip from './InfoTooltip';
+import InfoTooltip from '../InfoTooltip';
+import VisuallyHidden from '../VisuallyHidden';
 
-export default function MetricTileHeader( { title, infoTooltip } ) {
+export default function MetricTileHeader( { title, infoTooltip, loading } ) {
 	return (
 		<div className="googlesitekit-km-widget-tile__title-container">
 			<h3 className="googlesitekit-km-widget-tile__title">{ title }</h3>
-			<InfoTooltip title={ infoTooltip } />
+			{ loading ? (
+				<VisuallyHidden>
+					<InfoTooltip title={ infoTooltip } />
+				</VisuallyHidden>
+			) : (
+				<InfoTooltip title={ infoTooltip } />
+			) }
 		</div>
 	);
 }
@@ -38,4 +45,5 @@ export default function MetricTileHeader( { title, infoTooltip } ) {
 MetricTileHeader.propTypes = {
 	title: PropTypes.string,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
+	loading: PropTypes.bool,
 };

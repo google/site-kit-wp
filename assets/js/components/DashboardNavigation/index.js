@@ -37,9 +37,10 @@ export default function DashboardNavigation() {
 		return select( CORE_USER ).getViewableModules();
 	} );
 
-	const userInputEnabled = useFeature( 'userInput' );
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
+
 	const keyMetrics = useSelect(
-		( select ) => userInputEnabled && select( CORE_USER ).getKeyMetrics()
+		( select ) => keyMetricsEnabled && select( CORE_USER ).getKeyMetrics()
 	);
 
 	// The Navigation component relies on the resolution of the above selectors to check if individual

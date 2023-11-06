@@ -83,19 +83,23 @@ final class Data_Encryption {
 	 * @return string|bool Decrypted value, or false on failure.
 	 */
 	public function decrypt( $raw_value ) {
-		if ( ! extension_loaded( 'openssl' ) ) {
+		if ( ! extension_loaded( 'openssl' ) || ! is_string( $raw_value ) ) {
 			return $raw_value;
 		}
 
-		$raw_value = base64_decode( $raw_value, true );
+		$decoded_value = base64_decode( $raw_value, true );
+
+		if ( false === $decoded_value ) {
+			return $raw_value;
+		}
 
 		$method = 'aes-256-ctr';
 		$ivlen  = openssl_cipher_iv_length( $method );
-		$iv     = substr( $raw_value, 0, $ivlen );
+		$iv     = substr( $decoded_value, 0, $ivlen );
 
-		$raw_value = substr( $raw_value, $ivlen );
+		$decoded_value = substr( $decoded_value, $ivlen );
 
-		$value = openssl_decrypt( $raw_value, $method, $this->key, 0, $iv );
+		$value = openssl_decrypt( $decoded_value, $method, $this->key, 0, $iv );
 		if ( ! $value || substr( $value, - strlen( $this->salt ) ) !== $this->salt ) {
 			return false;
 		}

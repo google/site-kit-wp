@@ -27,7 +27,7 @@ class Web_Tag extends Analytics_Web_Tag implements Tag_Interface {
 	/**
 	 * Custom dimensions data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 * @var array
 	 */
 	private $custom_dimensions;
@@ -35,7 +35,7 @@ class Web_Tag extends Analytics_Web_Tag implements Tag_Interface {
 	/**
 	 * Sets custom dimensions data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param string $custom_dimensions Custom dimensions data.
 	 */
@@ -77,7 +77,7 @@ class Web_Tag extends Analytics_Web_Tag implements Tag_Interface {
 	/**
 	 * Gets the tag config as used in the gtag data vars.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @return array Tag configuration.
 	 */

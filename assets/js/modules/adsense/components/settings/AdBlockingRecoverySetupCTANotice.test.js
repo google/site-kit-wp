@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import { mockSurveyEndpoints } from '../../../../../../tests/js/mock-survey-endpoints';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../../tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -230,10 +233,6 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 		render( <AdBlockingRecoverySetupCTANotice />, {
 			registry,
 		} );
-
-		const surveyTriggerEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/survey-trigger'
-		);
 
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {

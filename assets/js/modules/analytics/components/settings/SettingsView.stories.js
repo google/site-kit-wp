@@ -69,6 +69,9 @@ function Template( { setupRegistry = () => {}, ...args } ) {
 
 export const WithGA4MeasurementID = Template.bind( null );
 WithGA4MeasurementID.storyName = 'Settings with GA4 Measurement ID';
+WithGA4MeasurementID.parameters = {
+	features: [ 'enhancedMeasurement' ],
+};
 
 export const WithGA4Snippet = Template.bind( null );
 WithGA4Snippet.storyName = 'Settings with GA4 Snippet inserted';
@@ -78,6 +81,9 @@ WithGA4Snippet.args = {
 			useSnippet: true,
 		} );
 	},
+};
+WithGA4Snippet.parameters = {
+	features: [ 'enhancedMeasurement' ],
 };
 
 export const PostGA4AutoSwitch = Template.bind( null );

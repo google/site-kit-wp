@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Util;
 
+use stdClass;
+
 /**
  * Utility class for auto-updates settings.
  *
@@ -101,8 +103,10 @@ class Auto_Updates {
 		}
 
 		$sitekit_plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$sitekit_update_data = self::get_sitekit_update_data();
+		$item                = (object) array_merge( $sitekit_plugin_data, $sitekit_update_data );
 
-		$is_auto_update_forced_for_sitekit = wp_is_auto_update_forced_for_item( 'plugin', null, (object) $sitekit_plugin_data );
+		$is_auto_update_forced_for_sitekit = wp_is_auto_update_forced_for_item( 'plugin', null, $item );
 
 		if ( true === $is_auto_update_forced_for_sitekit ) {
 			return self::AUTO_UPDATE_FORCED_ENABLED;
@@ -114,4 +118,43 @@ class Auto_Updates {
 
 		return self::AUTO_UPDATE_NOT_FORCED;
 	}
+
+	/**
+	 * Merges plugin update data in the site transient with some default plugin data.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @return array Site Kit plugin update data.
+	 */
+	protected static function get_sitekit_update_data() {
+		$sitekit_update_data = array(
+			'id'            => 'w.org/plugins/' . dirname( GOOGLESITEKIT_PLUGIN_BASENAME ),
+			'slug'          => dirname( GOOGLESITEKIT_PLUGIN_BASENAME ),
+			'plugin'        => GOOGLESITEKIT_PLUGIN_BASENAME,
+			'new_version'   => '',
+			'url'           => '',
+			'package'       => '',
+			'icons'         => array(),
+			'banners'       => array(),
+			'banners_rtl'   => array(),
+			'tested'        => '',
+			'requires_php'  => GOOGLESITEKIT_PHP_MINIMUM,
+			'compatibility' => new stdClass(),
+		);
+
+		$plugin_updates = get_site_transient( 'update_plugins' );
+
+		$transient_data = array();
+
+		if ( isset( $plugin_updates->noupdate[ GOOGLESITEKIT_PLUGIN_BASENAME ] ) ) {
+			$transient_data = $plugin_updates->noupdate[ GOOGLESITEKIT_PLUGIN_BASENAME ];
+		}
+
+		if ( isset( $plugin_updates->response[ GOOGLESITEKIT_PLUGIN_BASENAME ] ) ) {
+			$transient_data = $plugin_updates->response[ GOOGLESITEKIT_PLUGIN_BASENAME ];
+		}
+
+		return array_merge( $sitekit_update_data, (array) $transient_data );
+	}
+
 }

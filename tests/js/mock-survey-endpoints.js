@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
+export const surveyTriggerEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/survey-trigger'
+);
+
+export const surveyEventEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/survey-event'
+);
+
+export const surveyTimeoutEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/survey-timeout'
+);
+
+export const surveyTimeoutsEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/survey-timeouts'
+);
+
 /**
  * Mocks the survey endpoints.
  *
  * @since 1.111.1
  */
 export const mockSurveyEndpoints = () => {
-	const surveyTriggerEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-trigger'
-	);
-	const surveyTimeoutEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-timeout'
-	);
-
 	fetchMock.postOnce( surveyTriggerEndpoint, {
 		status: 200,
 		body: {},

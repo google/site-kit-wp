@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -45,7 +45,6 @@ import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
-import { isFeatureEnabled } from '../../../features';
 
 const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
@@ -255,30 +254,19 @@ const baseSelectors = {
 		switch ( purpose ) {
 			case 'publish_blog':
 				return [
-					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
 					KM_ANALYTICS_NEW_VISITORS,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 				];
 
 			case 'publish_news':
-				const newsKeyMetricsEnabled =
-					isFeatureEnabled( 'newsKeyMetrics' );
-
-				return newsKeyMetricsEnabled
-					? [
-							KM_ANALYTICS_PAGES_PER_VISIT,
-							KM_ANALYTICS_VISIT_LENGTH,
-							KM_ANALYTICS_VISITS_PER_VISITOR,
-							KM_ANALYTICS_MOST_ENGAGING_PAGES,
-					  ]
-					: [
-							KM_ANALYTICS_LOYAL_VISITORS,
-							KM_ANALYTICS_NEW_VISITORS,
-							KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-							KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-					  ];
-
+				return [
+					KM_ANALYTICS_PAGES_PER_VISIT,
+					KM_ANALYTICS_VISIT_LENGTH,
+					KM_ANALYTICS_VISITS_PER_VISITOR,
+					KM_ANALYTICS_MOST_ENGAGING_PAGES,
+				];
 			case 'monetize_content':
 				return [
 					KM_ANALYTICS_POPULAR_CONTENT,

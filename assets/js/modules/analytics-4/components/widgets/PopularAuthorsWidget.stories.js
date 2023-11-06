@@ -73,18 +73,10 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		provideAnalytics4MockReport( registry, reportOptions );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
-			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ],
-			],
-		} );
 	},
 };
 Ready.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 Ready.scenario = {
 	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
@@ -97,13 +89,6 @@ Loading.args = {
 		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
 			reportOptions,
 		] );
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
-			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ],
-			],
-		} );
 	},
 };
 
@@ -118,26 +103,39 @@ ZeroData.args = {
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
 		} );
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
-			availableCustomDimensions: [
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ],
-			],
-		} );
 	},
 };
 ZeroData.scenario = {
 	label: 'KeyMetrics/PopularAuthorsWidget/ZeroData',
 };
 
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
+			KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+				.requiredCustomDimensions?.[ 0 ],
+			true
+		);
+	},
+};
+GatheringData.scenario = {
+	label: 'KeyMetrics/PopularAuthorsWidget/GatheringData',
+};
+
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
-	setupRegistry: () => {},
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [],
+		} );
+	},
 };
 ErrorMissingCustomDimensions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
@@ -153,8 +151,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
-
 		provideCustomDimensionError( registry, {
 			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
@@ -164,7 +160,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 	},
 };
 ErrorCustomDimensionsInsufficientPermissions.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
@@ -180,8 +176,6 @@ ErrorCustomDimensionsGeneric.args = {
 			},
 		};
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '123456789' );
-
 		provideCustomDimensionError( registry, {
 			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
@@ -191,7 +185,7 @@ ErrorCustomDimensionsGeneric.args = {
 	},
 };
 ErrorCustomDimensionsGeneric.parameters = {
-	features: [ 'newsKeyMetrics' ],
+	features: [ 'keyMetrics' ],
 };
 
 export default {
@@ -209,6 +203,22 @@ export default {
 				] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID: '12345',
+					availableCustomDimensions:
+						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+							.requiredCustomDimensions,
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+							.requiredCustomDimensions?.[ 0 ],
+						false
+					);
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );

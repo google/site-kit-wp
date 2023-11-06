@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -38,7 +43,7 @@ import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardClicks = ( { WidgetReportError } ) => {
+const WPDashboardClicks = ( { WPDashboardReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -80,7 +85,10 @@ const WPDashboardClicks = ( { WidgetReportError } ) => {
 
 	if ( error ) {
 		return (
-			<WidgetReportError moduleSlug="search-console" error={ error } />
+			<WPDashboardReportError
+				moduleSlug="search-console"
+				error={ error }
+			/>
 		);
 	}
 
@@ -106,6 +114,10 @@ const WPDashboardClicks = ( { WidgetReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
+};
+
+WPDashboardClicks.propTypes = {
+	WPDashboardReportError: PropTypes.elementType.isRequired,
 };
 
 export default WPDashboardClicks;
