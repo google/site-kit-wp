@@ -90,9 +90,6 @@ final class Data_Encryption {
 		$decoded_value = base64_decode( $raw_value, true );
 
 		if ( false === $decoded_value ) {
-			// phpcs:ignore
-			error_log( "Failed to decode base64 value. Raw value: $raw_value" );
-
 			return $raw_value;
 		}
 
