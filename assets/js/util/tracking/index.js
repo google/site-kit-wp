@@ -52,6 +52,7 @@ const {
 	isTrackingEnabled,
 	initializeSnippet,
 	trackEvent,
+	trackEventOnce,
 } = createTracking( initialConfig );
 
 /**
@@ -80,4 +81,5 @@ export {
 	isTrackingEnabled,
 	toggleTracking,
 	trackEvent,
+	trackEventOnce,
 };

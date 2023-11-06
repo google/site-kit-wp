@@ -21,9 +21,11 @@
  */
 import {
 	createTestRegistry,
+	freezeFetch,
 	muteFetch,
 	unsubscribeFromAll,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { enabledFeatures } from '../../../features';
@@ -462,6 +464,132 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				const streamEnabled = registry
 					.select( MODULES_ANALYTICS_4 )
 					.isEnhancedMeasurementStreamEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamEnabled ).toBe( false );
+			} );
+		} );
+
+		describe( 'isEnhancedMeasurementStreamAlreadyEnabled', () => {
+			it( 'should use a resolver to make a network request if data is not available', async () => {
+				fetchMock.get( enhancedMeasurementSettingsEndpoint, {
+					body: enhancedMeasurementSettingsMock,
+					status: 200,
+				} );
+
+				const initialStreamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( initialStreamEnabled ).toBeUndefined();
+
+				const finalStreamEnabled = await registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( finalStreamEnabled ).toEqual( true );
+			} );
+
+			it( 'should not make a network request if the `streamEnabled` state is already present', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettingsMock,
+						{ propertyID, webDataStreamID }
+					);
+
+				const streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					);
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).isEnhancedMeasurementStreamAlreadyEnabled(
+					propertyID,
+					webDataStreamID
+				);
+
+				expect( fetchMock ).not.toHaveFetched(
+					enhancedMeasurementSettingsEndpoint
+				);
+				expect( streamEnabled ).toEqual( true );
+			} );
+
+			it( 'should return the correct `streamEnabled` state from the saved settings', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettingsMock,
+						{ propertyID, webDataStreamID }
+					);
+
+				let streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamEnabled ).toBe( true );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						{
+							...enhancedMeasurementSettingsMock,
+							streamEnabled: false,
+						},
+						{ propertyID, webDataStreamID }
+					);
+
+				streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( streamEnabled ).toBe( false );
+			} );
+
+			it( 'should return `undefined` if the saved settings are not loaded', async () => {
+				freezeFetch( enhancedMeasurementSettingsEndpoint );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isEnhancedMeasurementStreamAlreadyEnabled(
+							propertyID,
+							webDataStreamID
+						)
+				).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return `false` if the settings are loaded but the `streamEnabled` property is not present', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						{},
+						{ propertyID, webDataStreamID }
+					);
+
+				const streamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamAlreadyEnabled(
 						propertyID,
 						webDataStreamID
 					);

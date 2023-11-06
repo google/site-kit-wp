@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -36,7 +41,7 @@ import DataBlock from '../DataBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardUniqueVisitorsGA4 = ( { WidgetReportError } ) => {
+const WPDashboardUniqueVisitorsGA4 = ( { WPDashboardReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
@@ -77,7 +82,9 @@ const WPDashboardUniqueVisitorsGA4 = ( { WidgetReportError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics-4" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics-4" error={ error } />
+		);
 	}
 
 	const totalUsers = data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
@@ -98,6 +105,10 @@ const WPDashboardUniqueVisitorsGA4 = ( { WidgetReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
+};
+
+WPDashboardUniqueVisitorsGA4.propTypes = {
+	WPDashboardReportError: PropTypes.elementType.isRequired,
 };
 
 export default WPDashboardUniqueVisitorsGA4;

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	setupAnalyticsGatheringData,
 	setupAnalyticsMockReports,
@@ -30,9 +30,9 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { freezeFetch } from '../../../../tests/js/utils';
 import WPDashboardUniqueVisitorsChart from './WPDashboardUniqueVisitorsChart';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardUniqueVisitorsChart
-);
+const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
+	'widget-slug'
+)( WPDashboardUniqueVisitorsChart );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 /**
  * Interface for an Analytics 4 tag.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Tag_Interface {
 	/**
 	 * Sets custom dimensions data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param string $custom_dimensions Custom dimensions data.
 	 */

@@ -70,8 +70,10 @@ export default function MetricsSelectionPanel() {
 	}, [ savedViewableMetrics, setValues, viewContext ] );
 
 	const sideSheetCloseFn = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
+		if ( isOpen ) {
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+		}
+	}, [ setValue, isOpen ] );
 
 	return (
 		<SideSheet

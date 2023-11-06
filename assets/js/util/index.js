@@ -24,8 +24,8 @@ import { unescape } from 'lodash';
 /**
  * Internal dependencies
  */
-import { trackEvent } from './tracking';
-export { trackEvent };
+import { trackEvent, trackEventOnce } from './tracking';
+export { trackEvent, trackEventOnce };
 export * from './sanitize';
 export * from './stringify';
 export * from './storage';

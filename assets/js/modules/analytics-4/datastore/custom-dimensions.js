@@ -102,7 +102,7 @@ const baseActions = {
 	/**
 	 * Creates custom dimensions and syncs them in the settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 */
 	*createCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
@@ -166,10 +166,22 @@ const baseActions = {
 		for ( const dimension of missingCustomDimensions ) {
 			const dimensionData = CUSTOM_DIMENSION_DEFINITIONS[ dimension ];
 			if ( dimensionData ) {
-				yield fetchCreateCustomDimensionStore.actions.fetchCreateCustomDimension(
-					propertyID,
-					dimensionData
-				);
+				const { error } =
+					yield fetchCreateCustomDimensionStore.actions.fetchCreateCustomDimension(
+						propertyID,
+						dimensionData
+					);
+
+				// If the custom dimension was created successfully, mark it as gathering
+				// data immediately so that it doesn't cause unnecessary report requests.
+				if ( ! error ) {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveIsCustomDimensionGatheringData(
+							dimension,
+							true
+						);
+				}
 			}
 		}
 
@@ -203,6 +215,13 @@ const baseResolvers = {
 	*getAvailableCustomDimensions() {
 		const registry = yield Data.commonActions.getRegistry();
 
+		// Wait for settings to be loaded before proceeding.
+		yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getSettings()
+		);
+
 		const availableCustomDimensions = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAvailableCustomDimensions();
@@ -233,7 +252,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the provided custom dimensions are available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object}               state            Data store's state.
 	 * @param {string|Array<string>} customDimensions Custom dimensions to check.
@@ -266,7 +285,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the provided custom dimension is being created.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} customDimension Custom dimensions to check.
@@ -281,7 +300,7 @@ const baseSelectors = {
 	/**
 	 * Returns the error if encountered while creating the provided custom dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} customDimension Custom dimension to obtain creation error for.
@@ -301,7 +320,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the available custom dimensions are being synced.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.113.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the available custom dimensions are being synced, otherwise FALSE.

@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState, useMemo } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -35,6 +36,7 @@ import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
@@ -102,6 +104,10 @@ export default function Footer( { savedMetrics } ) {
 		select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE )
 	);
 
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+
 	const saveError = useSelect( ( select ) => {
 		if ( haveSettingsChanged && selectedMetrics?.length < 2 ) {
 			return {
@@ -141,13 +147,22 @@ export default function Footer( { savedMetrics } ) {
 		if ( ! error ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 			trackEvent( trackingCategory, 'metrics_sidebar_save' );
-			if ( keyMetricsEnabled ) {
+			if ( keyMetricsEnabled && isGA4Connected ) {
 				if ( hasMissingCustomDimensions ) {
 					setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 						autoSubmit: true,
 					} );
 
 					if ( ! hasAnalytics4EditScope ) {
+						// The `custom_dimensions` query value is arbitrary and serves two purposes:
+						// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
+						// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
+						const redirectURL = addQueryArgs(
+							global.location.href,
+							{
+								notification: 'custom_dimensions',
+							}
+						);
 						setPermissionScopeError( {
 							code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 							message: __(
@@ -158,6 +173,7 @@ export default function Footer( { savedMetrics } ) {
 								status: 403,
 								scopes: [ ANALYTICS_EDIT_SCOPE ],
 								skipModal: true,
+								redirectURL,
 							},
 						} );
 					}
@@ -174,6 +190,7 @@ export default function Footer( { savedMetrics } ) {
 		setValue,
 		trackingCategory,
 		keyMetricsEnabled,
+		isGA4Connected,
 		currentButtonText,
 		hasMissingCustomDimensions,
 		setValues,

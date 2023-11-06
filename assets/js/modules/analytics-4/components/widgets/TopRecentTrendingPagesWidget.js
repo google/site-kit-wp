@@ -54,7 +54,7 @@ const { useSelect, useInViewSelect } = Data;
  * Utilizing the current date, the function calculates the dates
  * for the previous day, two days ago, and three days ago.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Function} select Registry select.
  * @return {Object} An object containing the dates for yesterday,
@@ -78,7 +78,7 @@ export const getDates = ( select ) => {
  * Returns the date range (eg. the `startDate` and `endDate`) for this widget's
  * reporting options.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Function} select Registry select.
  * @return {Object} An object containing the `startDate` and `endDate` for a
@@ -104,7 +104,7 @@ export const getDateRange = ( select ) => {
  * the component and the higher-order-component (`withCustomDimensions`)
  * can use it.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Function} select Registry select.
  * @return {Object} The report options containing dimensions, filters,

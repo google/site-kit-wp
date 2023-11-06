@@ -102,7 +102,7 @@ function VisitLengthWidget( { Widget } ) {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_VISIT_LENGTH }
 			metricValue={ currentVisitLength }
-			metricValueFormat={ { style: 'durationISO' } }
+			metricValueFormat="s"
 			subText={ sprintf(
 				/* translators: %s: Number of total page views. */
 				__( '%s total visits', 'google-site-kit' ),
