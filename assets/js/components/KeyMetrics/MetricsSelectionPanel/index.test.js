@@ -72,7 +72,7 @@ describe( 'MetricsSelectionPanel', () => {
 	} );
 
 	describe( 'Metrics', () => {
-		it( 'should list metrics regardless of modules being connected or not', async () => {
+		it( 'should list metrics regardless of modules being connected or not', () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
@@ -92,11 +92,7 @@ describe( 'MetricsSelectionPanel', () => {
 				},
 			} );
 
-			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
-				registry,
-			} );
-
-			await waitForRegistry();
+			render( <MetricsSelectionPanel />, { registry } );
 
 			expect(
 				document.querySelector(
@@ -409,13 +405,13 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should display appropriate notice when a metric requires custom dimensions and does not have edit scope', async () => {
-			const { container, getByText, findByLabelText, waitForRegistry } =
-				render( <MetricsSelectionPanel />, {
+			const { container, getByText, findByLabelText } = render(
+				<MetricsSelectionPanel />,
+				{
 					registry,
 					features: [ 'keyMetrics' ],
-				} );
-
-			await waitForRegistry();
+				}
+			);
 
 			// Verify that the message is not displayed by default.
 			expect( container ).not.toHaveTextContent(
@@ -439,13 +435,13 @@ describe( 'MetricsSelectionPanel', () => {
 				grantedScopes: EDIT_SCOPE,
 			} );
 
-			const { container, getByText, findByLabelText, waitForRegistry } =
-				render( <MetricsSelectionPanel />, {
+			const { container, getByText, findByLabelText } = render(
+				<MetricsSelectionPanel />,
+				{
 					registry,
 					features: [ 'keyMetrics' ],
-				} );
-
-			await waitForRegistry();
+				}
+			);
 
 			// Verify that the message is not displayed by default.
 			expect( container ).not.toHaveTextContent(
@@ -533,15 +529,10 @@ describe( 'MetricsSelectionPanel', () => {
 					availableCustomDimensions: [],
 				} );
 
-				const { getByRole, waitForRegistry } = render(
-					<MetricsSelectionPanel />,
-					{
-						registry,
-						features: [ 'keyMetrics' ],
-					}
-				);
-
-				await waitForRegistry();
+				const { getByRole } = render( <MetricsSelectionPanel />, {
+					registry,
+					features: [ 'keyMetrics' ],
+				} );
 
 				const submitButton = getByRole( 'button', {
 					name: /Save selection/i,
@@ -610,14 +601,12 @@ describe( 'MetricsSelectionPanel', () => {
 					],
 				} );
 
-				const { getByRole, findByLabelText, waitForRegistry } = render(
+				const { getByRole, findByLabelText } = render(
 					<MetricsSelectionPanel />,
 					{
 						registry,
 					}
 				);
-
-				await waitForRegistry();
 
 				// Button should be unchanged with pre-saved metrics.
 				expect(
