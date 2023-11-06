@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState, useMemo } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -128,12 +129,19 @@ export default function Footer( { savedMetrics } ) {
 		);
 	} );
 
-	const OAuthURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectURL( {
+	const OAuthURL = useSelect( ( select ) => {
+		// The `custom_dimensions` query value is arbitrary and serves two purposes:
+		// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
+		// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
+		const redirectURL = addQueryArgs( global.location.href, {
+			notification: 'custom_dimensions',
+		} );
+
+		return select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ ANALYTICS_EDIT_SCOPE ],
-			redirectURL: global.location.href,
-		} )
-	);
+			redirectURL,
+		} );
+	} );
 
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
 		if ( ! OAuthURL ) {
