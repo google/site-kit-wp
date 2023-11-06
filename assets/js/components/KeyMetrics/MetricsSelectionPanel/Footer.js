@@ -35,6 +35,7 @@ import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
@@ -125,6 +126,19 @@ export default function Footer( { savedMetrics } ) {
 		);
 	} );
 
+	const isNavigatingToOAuthURL = useSelect( ( select ) => {
+		const OAuthURL = select( CORE_USER ).getConnectURL( {
+			additionalScopes: [ ANALYTICS_EDIT_SCOPE ],
+			redirectURL: global.location.href,
+		} );
+
+		if ( ! OAuthURL ) {
+			return false;
+		}
+
+		return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
+	} );
+
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
@@ -144,8 +158,8 @@ export default function Footer( { savedMetrics } ) {
 		} );
 
 		if ( ! error ) {
-			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 			trackEvent( trackingCategory, 'metrics_sidebar_save' );
+
 			if ( keyMetricsEnabled && isGA4Connected ) {
 				if ( hasMissingCustomDimensions ) {
 					setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
@@ -163,11 +177,16 @@ export default function Footer( { savedMetrics } ) {
 								status: 403,
 								scopes: [ ANALYTICS_EDIT_SCOPE ],
 								skipModal: true,
+								skipStoreSnapshot: true, // Do not snapshot stores so that the panel isn't reopened after the user returns from the OAuth flow.
 							},
 						} );
+
+						return;
 					}
 				}
 			}
+
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 
 			// lock the button label while panel is closing
 			setFinalButtonText( currentButtonText );
@@ -235,18 +254,19 @@ export default function Footer( { savedMetrics } ) {
 				<div className="googlesitekit-km-selection-panel-footer__actions">
 					<Link
 						onClick={ onCancelClick }
-						disabled={ isSavingSettings }
+						disabled={ isSavingSettings || isNavigatingToOAuthURL }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
 					<SpinnerButton
 						onClick={ onSaveClick }
-						isSaving={ isSavingSettings }
+						isSaving={ isSavingSettings || isNavigatingToOAuthURL }
 						disabled={
 							selectedMetrics?.length < 2 ||
 							selectedMetrics?.length > 4 ||
 							isSavingSettings ||
-							( ! isOpen && wasSaved )
+							( ! isOpen && wasSaved ) ||
+							isNavigatingToOAuthURL
 						}
 					>
 						{ finalButtonText || currentButtonText }
