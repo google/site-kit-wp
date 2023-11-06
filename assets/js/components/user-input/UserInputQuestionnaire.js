@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -51,8 +51,6 @@ const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
-	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] =
-		useState( false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -126,17 +124,6 @@ export default function UserInputQuestionnaire() {
 			navigateTo( url.toString() );
 		}
 	}, [ gaEventCategory, saveUserInputSettings, dashboardURL, navigateTo ] );
-
-	useEffect( () => {
-		if ( ! shouldScrollToActiveQuestion ) {
-			setShouldScrollToActiveQuestion( true );
-			return;
-		}
-
-		global.document
-			?.querySelector( '.googlesitekit-user-input__header' )
-			?.scrollIntoView( { behavior: 'smooth' } );
-	}, [ activeSlug, shouldScrollToActiveQuestion ] );
 
 	const settingsProgress = (
 		<ProgressBar
