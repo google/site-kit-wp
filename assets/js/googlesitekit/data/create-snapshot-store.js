@@ -220,3 +220,23 @@ export const restoreAllSnapshots = ( registry = Data ) => {
 		} )
 	);
 };
+
+/**
+ * Creates snapshot of provided store.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {string}           storeName The name of the store to snapshot in the cache.
+ * @param {wp.data.registry} registry  Optional. Registry object to inspect for stores that support state restoration. Defaults to `googlesitekit.data`.
+ * @return {boolean|undefined} True if snapshot was created. False if not. Undefined if store with snapshot was not found.
+ */
+export const snapshotStore = ( storeName, registry = Data ) => {
+	const store = getStoresWithSnapshots( registry )?.[ storeName ];
+
+	if ( ! store ) {
+		return undefined;
+	}
+
+	return store.getActions().createSnapshot();
+};
