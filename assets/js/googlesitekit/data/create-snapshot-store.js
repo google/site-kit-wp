@@ -170,9 +170,17 @@ export const createSnapshotStore = ( storeName ) => {
  * @return {Object} The snapshot store object.
  */
 export const getStoresWithSnapshots = ( registry = Data ) => {
-	return Object.values( registry.stores ).filter( ( store ) => {
-		return Object.keys( store.getActions() ).includes( 'restoreSnapshot' );
-	} );
+	return Object.keys( registry.stores ).reduce( ( acc, storeName ) => {
+		if (
+			Object.keys( registry.stores[ storeName ].getActions() ).includes(
+				'restoreSnapshot'
+			)
+		) {
+			return { ...acc, [ storeName ]: registry.stores[ storeName ] };
+		}
+
+		return acc;
+	}, {} );
 };
 
 /**
@@ -186,7 +194,7 @@ export const getStoresWithSnapshots = ( registry = Data ) => {
  */
 export const snapshotAllStores = ( registry = Data ) => {
 	return Promise.all(
-		getStoresWithSnapshots( registry ).map( ( store ) => {
+		Object.values( getStoresWithSnapshots( registry ) ).map( ( store ) => {
 			return store.getActions().createSnapshot();
 		} )
 	);
@@ -207,7 +215,7 @@ export const snapshotAllStores = ( registry = Data ) => {
  */
 export const restoreAllSnapshots = ( registry = Data ) => {
 	return Promise.all(
-		getStoresWithSnapshots( registry ).map( ( store ) => {
+		Object.values( getStoresWithSnapshots( registry ) ).map( ( store ) => {
 			return store.getActions().restoreSnapshot();
 		} )
 	);
