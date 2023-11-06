@@ -50,19 +50,18 @@ import {
 } from '../../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import Link from '../../Link';
 import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 import { useFeature } from '../../../hooks/useFeature';
-import { snapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
-const { useSelect, useDispatch, useRegistry } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function Footer( { savedMetrics } ) {
 	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 	const viewContext = useViewContext();
-	const registry = useRegistry();
 
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -129,21 +128,19 @@ export default function Footer( { savedMetrics } ) {
 		);
 	} );
 
-	const OAuthURL = useSelect( ( select ) => {
-		// The `custom_dimensions` query value is arbitrary and serves two purposes:
-		// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
-		// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
-		const redirectURL = addQueryArgs( global.location.href, {
-			notification: 'custom_dimensions',
-		} );
-
-		return select( CORE_USER ).getConnectURL( {
-			additionalScopes: [ ANALYTICS_EDIT_SCOPE ],
-			redirectURL,
-		} );
+	// The `custom_dimensions` query value is arbitrary and serves two purposes:
+	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
+	// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
+	const redirectURL = addQueryArgs( global.location.href, {
+		notification: 'custom_dimensions',
 	} );
 
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
+		const OAuthURL = select( CORE_USER ).getConnectURL( {
+			additionalScopes: [ ANALYTICS_EDIT_SCOPE ],
+			redirectURL,
+		} );
+
 		if ( ! OAuthURL ) {
 			return false;
 		}
@@ -151,10 +148,10 @@ export default function Footer( { savedMetrics } ) {
 		return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
 	} );
 
-	const { saveKeyMetricsSettings } = useDispatch( CORE_USER );
+	const { saveKeyMetricsSettings, setPermissionScopeError } =
+		useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const [ finalButtonText, setFinalButtonText ] = useState( null );
 	const [ wasSaved, setWasSaved ] = useState( false );
@@ -178,9 +175,21 @@ export default function Footer( { savedMetrics } ) {
 						autoSubmit: true,
 					} );
 
-					if ( ! hasAnalytics4EditScope && OAuthURL ) {
-						snapshotStore( CORE_FORMS, registry );
-						navigateTo( OAuthURL );
+					if ( ! hasAnalytics4EditScope ) {
+						setPermissionScopeError( {
+							code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+							message: __(
+								'Additional permissions are required to create new Analytics custom dimensions.',
+								'google-site-kit'
+							),
+							data: {
+								status: 403,
+								scopes: [ ANALYTICS_EDIT_SCOPE ],
+								skipModal: true,
+								redirectURL,
+								storeToSnapshot: CORE_FORMS,
+							},
+						} );
 						return;
 					}
 				}
@@ -203,9 +212,8 @@ export default function Footer( { savedMetrics } ) {
 		hasMissingCustomDimensions,
 		setValues,
 		hasAnalytics4EditScope,
-		OAuthURL,
-		navigateTo,
-		registry,
+		setPermissionScopeError,
+		redirectURL,
 	] );
 
 	const onCancelClick = useCallback( () => {
