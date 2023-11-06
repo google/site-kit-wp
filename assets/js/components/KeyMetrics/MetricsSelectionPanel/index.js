@@ -37,9 +37,9 @@ import SideSheet from '../../SideSheet';
 import Header from './Header';
 import Footer from './Footer';
 import Metrics from './Metrics';
+import Notice from './Notice';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
-import Notice from './Notice';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {

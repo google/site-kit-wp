@@ -43,12 +43,6 @@ import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 } from '../constants';
-import Link from '../../Link';
-import ErrorNotice from '../../ErrorNotice';
-import { safelySort } from './utils';
-import useViewContext from '../../../hooks/useViewContext';
-import { trackEvent } from '../../../util';
-import { useFeature } from '../../../hooks/useFeature';
 import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
@@ -56,6 +50,12 @@ import {
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
+import Link from '../../Link';
+import ErrorNotice from '../../ErrorNotice';
+import { safelySort } from './utils';
+import useViewContext from '../../../hooks/useViewContext';
+import { trackEvent } from '../../../util';
+import { useFeature } from '../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { savedMetrics } ) {
