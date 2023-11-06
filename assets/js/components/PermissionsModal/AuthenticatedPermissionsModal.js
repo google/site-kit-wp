@@ -29,7 +29,10 @@ import Data from 'googlesitekit-data';
 import ModalDialog from '../ModalDialog';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
+import {
+	snapshotAllStores,
+	snapshotStore,
+} from '../../googlesitekit/data/create-snapshot-store';
 import Portal from '../Portal';
 const { useSelect, useDispatch, useRegistry } = Data;
 
@@ -59,9 +62,14 @@ const AuthenticatedPermissionsModal = () => {
 	const onConfirm = useCallback( async () => {
 		// If we have a datastores to snapshot before navigating away to the
 		// authorization page, do that first.
-		await snapshotAllStores( registry );
+		if ( permissionsError?.data?.storeToSnapshot ) {
+			snapshotStore( permissionsError?.data?.storeToSnapshot, registry );
+		} else {
+			await snapshotAllStores( registry );
+		}
+
 		navigateTo( connectURL );
-	}, [ registry, connectURL, navigateTo ] );
+	}, [ permissionsError, navigateTo, connectURL, registry ] );
 
 	useEffect( () => {
 		// If error has flag to skip the modal, redirect to the authorization
