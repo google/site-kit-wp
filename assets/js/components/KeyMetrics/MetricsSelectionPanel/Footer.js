@@ -228,21 +228,22 @@ export default function Footer( { savedMetrics } ) {
 
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
-			{ saveError && (
-				<ErrorNotice
-					error={ saveError }
-					noPrefix={ selectedMetrics?.length < 2 }
-				/>
-			) }
 			<div className="googlesitekit-km-selection-panel-footer__content">
-				<p className="googlesitekit-km-selection-panel-footer__metric-count">
-					{ sprintf(
-						/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
-						__( '%1$d of %2$d selected', 'google-site-kit' ),
-						selectedMetrics?.length || 0,
-						4
-					) }
-				</p>
+				{ ! saveError ? (
+					<p className="googlesitekit-km-selection-panel-footer__metric-count">
+						{ sprintf(
+							/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
+							__( '%1$d of %2$d selected', 'google-site-kit' ),
+							selectedMetrics?.length || 0,
+							4
+						) }
+					</p>
+				) : (
+					<ErrorNotice
+						error={ saveError }
+						noPrefix={ selectedMetrics?.length < 2 }
+					/>
+				) }
 				<div className="googlesitekit-km-selection-panel-footer__actions">
 					<Link
 						onClick={ onCancelClick }
