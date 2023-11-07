@@ -39,12 +39,15 @@ import {
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	PERMISSION_MANAGE_OPTIONS,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -95,6 +98,13 @@ describe( 'core/user key metrics', () => {
 		const settingValue = 'test-value';
 
 		describe( 'getKeyMetrics', () => {
+			beforeEach( () => {
+				provideUserAuthentication( registry );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					[ PERMISSION_MANAGE_OPTIONS ]: true,
+				} );
+			} );
+
 			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: {
@@ -304,6 +314,10 @@ describe( 'core/user key metrics', () => {
 			const userID = 123;
 			beforeEach( async () => {
 				provideUserInfo( registry, { id: userID } );
+				provideUserAuthentication( registry );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					[ PERMISSION_MANAGE_OPTIONS ]: true,
+				} );
 				await registry
 					.dispatch( CORE_USER )
 					.setKeyMetricsSetting( settingID, settingValue );
@@ -467,6 +481,11 @@ describe( 'core/user key metrics', () => {
 	describe( 'selectors', () => {
 		describe( 'getKeyMetricsSettings', () => {
 			it( 'should fetch user key metrics settings from the API if none exist', async () => {
+				provideUserAuthentication( registry );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					[ PERMISSION_MANAGE_OPTIONS ]: true,
+				} );
+
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: coreKeyMetricsExpectedResponse,
 					status: 200,
@@ -508,6 +527,11 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it( 'should not make a network request if settings exist', async () => {
+				provideUserAuthentication( registry );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					[ PERMISSION_MANAGE_OPTIONS ]: true,
+				} );
+
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetKeyMetricsSettings(
@@ -525,9 +549,66 @@ describe( 'core/user key metrics', () => {
 					coreKeyMetricsEndpointRegExp
 				);
 			} );
+
+			it( 'should return the filtered widget slugs that do not require custom dimensions when the user is in a view-only dashboard', () => {
+				// Set up state to simulate view-only mode
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: null,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_PAGES_PER_VISIT,
+						KM_ANALYTICS_TOP_CATEGORIES,
+					],
+					isWidgetHidden: false,
+				} );
+
+				const keyMetricsSettings = registry
+					.select( CORE_USER )
+					.getKeyMetricsSettings();
+				expect( keyMetricsSettings.widgetSlugs ).toEqual( [
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_PAGES_PER_VISIT,
+				] );
+			} );
+
+			it( 'should return an empty array if only one widget slug is present when the user is in a view-only dashboard', () => {
+				// Set up state to simulate view-only mode
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: null,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_CATEGORIES,
+					],
+					isWidgetHidden: false,
+				} );
+
+				const keyMetricsSettings = registry
+					.select( CORE_USER )
+					.getKeyMetricsSettings();
+				expect( keyMetricsSettings.widgetSlugs ).toEqual( [] );
+			} );
 		} );
 
 		describe( 'getUserPickedMetrics', () => {
+			beforeEach( () => {
+				provideUserAuthentication( registry );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					[ PERMISSION_MANAGE_OPTIONS ]: true,
+				} );
+			} );
+
 			it( 'should return undefined while settings are loading', async () => {
 				freezeFetch( coreKeyMetricsEndpointRegExp );
 
@@ -574,6 +655,13 @@ describe( 'core/user key metrics', () => {
 		} );
 
 		describe( 'isKeyMetricsWidgetHidden', () => {
+			beforeEach( () => {
+				provideUserAuthentication( registry );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					[ PERMISSION_MANAGE_OPTIONS ]: true,
+				} );
+			} );
+
 			it( 'should return undefined while settings are loading', async () => {
 				freezeFetch( coreKeyMetricsEndpointRegExp );
 
