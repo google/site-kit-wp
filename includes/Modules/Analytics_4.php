@@ -1405,11 +1405,9 @@ final class Analytics_4 extends Module
 						$categories = get_the_category( $post->ID );
 
 						if ( ! empty( $categories ) ) {
-							$get_category_ids = function( $category ) {
-								return $category->term_id;
-							};
+							$category_ids = wp_list_pluck( $categories, 'term_id' );
 
-							$data[ $custom_dimension ] = implode( ',', array_map( $get_category_ids, $categories ) );
+							$data[ $custom_dimension ] = implode( ',', $category_ids );
 						}
 
 						break;
