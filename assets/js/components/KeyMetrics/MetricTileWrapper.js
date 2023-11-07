@@ -105,7 +105,11 @@ export default function MetricTileWrapper( props ) {
 					className
 				) }
 			>
-				<MetricTileHeader title={ title } infoTooltip={ infoTooltip } />
+				<MetricTileHeader
+					title={ title }
+					infoTooltip={ infoTooltip }
+					loading={ loading }
+				/>
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <MetricTileLoader /> }
 					{ ! loading && children }
