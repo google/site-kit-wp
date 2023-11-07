@@ -282,32 +282,3 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
 
 	return analyticsSettings.canUseSnippet;
 } );
-
-/**
- * Gets the value of dashboardView from the Analytics settings.
- *
- * @since 1.98.0
- * @since 1.107.0 Hardwire to `true` after the GA4 auto-switch date, if GA4 is connected.
- *
- * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
- */
-export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
-	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
-
-	if ( ! ga4ReportingEnabled ) {
-		return false;
-	}
-
-	const ga4ModuleConnected =
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-
-	if ( ga4ModuleConnected === undefined ) {
-		return undefined;
-	}
-
-	if ( ! ga4ModuleConnected ) {
-		return false;
-	}
-
-	return true;
-} );

@@ -31,17 +31,12 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
-import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
-import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
-import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
-import WPDashboardUniqueVisitorsChart from './WPDashboardUniqueVisitorsChart';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 const { useSelect } = Data;
@@ -61,21 +56,6 @@ const WPDashboardImpressionsWidget = withWPDashboardWidgetComponentProps(
 const WPDashboardClicksWidget =
 	withWPDashboardWidgetComponentProps( WIDGET_CLICKS )( WPDashboardClicks );
 
-// Analytics Widgets.
-const WPDashboardUniqueVisitorsWidget = withWPDashboardWidgetComponentProps(
-	WIDGET_VISITORS
-)( WPDashboardUniqueVisitors );
-const WPDashboardSessionDurationWidget = withWPDashboardWidgetComponentProps(
-	WIDGET_SESSION_DURATION
-)( WPDashboardSessionDuration );
-const WPDashboardPopularPagesWidget = withWPDashboardWidgetComponentProps(
-	WIDGET_POPULAR_PAGES
-)( WPDashboardPopularPages );
-const WPDashboardUniqueVisitorsChartWidget =
-	withWPDashboardWidgetComponentProps( WIDGET_VISITORS_CHART )(
-		WPDashboardUniqueVisitorsChart
-	);
-
 // Analytics 4 Widgets.
 const WPDashboardUniqueVisitorsGA4Widget = withWPDashboardWidgetComponentProps(
 	WIDGET_VISITORS
@@ -92,9 +72,6 @@ const WPDashboardUniqueVisitorsChartGA4Widget =
 	);
 
 export default function WPDashboardWidgets() {
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
-	);
 	const analyticsModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
@@ -121,20 +98,10 @@ export default function WPDashboardWidgets() {
 				}
 			) }
 		>
-			{ analyticsModuleActiveAndConnected &&
-				isGA4DashboardView === false && (
-					<Fragment>
-						<WPDashboardUniqueVisitorsWidget />
-						<WPDashboardSessionDurationWidget />
-					</Fragment>
-				) }
-
-			{ isGA4DashboardView && (
-				<Fragment>
-					<WPDashboardUniqueVisitorsGA4Widget />
-					<WPDashboardSessionDurationGA4Widget />
-				</Fragment>
-			) }
+			<Fragment>
+				<WPDashboardUniqueVisitorsGA4Widget />
+				<WPDashboardSessionDurationGA4Widget />
+			</Fragment>
 
 			<WPDashboardImpressionsWidget />
 			<WPDashboardClicksWidget />
@@ -145,20 +112,10 @@ export default function WPDashboardWidgets() {
 				</div>
 			) }
 
-			{ analyticsModuleActiveAndConnected &&
-				isGA4DashboardView === false && (
-					<Fragment>
-						<WPDashboardUniqueVisitorsChartWidget />
-						<WPDashboardPopularPagesWidget />
-					</Fragment>
-				) }
-
-			{ isGA4DashboardView && (
-				<Fragment>
-					<WPDashboardUniqueVisitorsChartGA4Widget />
-					<WPDashboardPopularPagesGA4Widget />
-				</Fragment>
-			) }
+			<Fragment>
+				<WPDashboardUniqueVisitorsChartGA4Widget />
+				<WPDashboardPopularPagesGA4Widget />
+			</Fragment>
 		</div>
 	);
 }
