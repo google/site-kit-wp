@@ -63,7 +63,7 @@ const AuthenticatedPermissionsModal = () => {
 		// If we have a datastores to snapshot before navigating away to the
 		// authorization page, do that first.
 		if ( permissionsError?.data?.storeToSnapshot ) {
-			snapshotStore( permissionsError?.data?.storeToSnapshot, registry );
+			snapshotStore( permissionsError.data.storeToSnapshot, registry );
 		} else {
 			await snapshotAllStores( registry );
 		}
