@@ -496,6 +496,34 @@ describe( 'MetricsSelectionPanel', () => {
 			).toBeDisabled();
 		} );
 
+		it( 'should display error message when less than two metrics are checked', async () => {
+			const { findByLabelText } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			// Select 1 key metric.
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer__content p'
+				).textContent
+			).toBe( 'Select at least 2 metrics' );
+
+			// Select 2 key metrics.
+			const checkbox2 = await findByLabelText( 'Loyal visitors' );
+			fireEvent.click( checkbox2 );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer__content p'
+				).textContent
+			).not.toBe( 'Select at least 2 metrics' );
+		} );
+
 		describe( 'CTA', () => {
 			it( 'should set autoSubmit to true if GA4 connected and missing custom dimensions', async () => {
 				fetchMock.reset();
