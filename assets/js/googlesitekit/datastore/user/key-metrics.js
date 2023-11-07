@@ -38,6 +38,7 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	PERMISSION_MANAGE_OPTIONS,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
@@ -45,6 +46,7 @@ import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
+import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 
 const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
@@ -358,9 +360,54 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings. Returns `undefined` if not loaded.
 	 */
-	getKeyMetricsSettings( state ) {
-		return state.keyMetricsSettings;
-	},
+	getKeyMetricsSettings: createRegistrySelector( ( select ) => ( state ) => {
+		const keyMetricsSettings = state.keyMetricsSettings;
+
+		const isAuthenticated = select( CORE_USER ).isAuthenticated();
+		const canManageOptions = select( CORE_USER ).hasCapability(
+			PERMISSION_MANAGE_OPTIONS
+		);
+
+		const isViewOnly = ! isAuthenticated && ! canManageOptions;
+
+		if ( ! keyMetricsSettings ) {
+			return undefined;
+		}
+
+		if ( isViewOnly ) {
+			// Filter out widget slugs that depend on unavailable custom dimensions.
+			const filteredWidgetSlugs = keyMetricsSettings.widgetSlugs.filter(
+				( slug ) => {
+					const widget = KEY_METRICS_WIDGETS[ slug ];
+
+					if ( ! widget ) {
+						return false;
+					}
+
+					if ( widget.displayInList ) {
+						return widget.displayInList( select, isViewOnly );
+					}
+
+					return true;
+				}
+			);
+
+			// If only one widget remains after filtering, return an empty array.
+			if ( filteredWidgetSlugs.length === 1 ) {
+				return {
+					...keyMetricsSettings,
+					widgetSlugs: [],
+				};
+			}
+
+			return {
+				...keyMetricsSettings,
+				widgetSlugs: filteredWidgetSlugs,
+			};
+		}
+
+		return keyMetricsSettings;
+	} ),
 
 	/**
 	 * Determines whether the key metrics settings are being saved or not.
