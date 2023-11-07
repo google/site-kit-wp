@@ -514,7 +514,9 @@ describe( 'MetricsSelectionPanel', () => {
 			).toBe( 'Select at least 2 metrics' );
 
 			// Select 2 key metrics.
-			const checkbox2 = await findByLabelText( 'Loyal visitors' );
+			const checkbox2 = await findByLabelText(
+				'Top performing keywords'
+			);
 			fireEvent.click( checkbox2 );
 
 			expect(
