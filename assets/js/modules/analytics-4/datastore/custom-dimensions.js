@@ -36,7 +36,7 @@ import {
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 
-const { createRegistrySelector } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
 
 const customDimensionFields = [
 	'parameterName',
@@ -92,11 +92,15 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 
 const baseInitialState = {
 	customDimensionsBeingCreated: [],
+	syncTimeoutID: undefined,
 };
 
 // Actions
 const SET_CUSTOM_DIMENSIONS_BEING_CREATED =
 	'SET_CUSTOM_DIMENSIONS_BEING_CREATED';
+const SCHEDULE_SYNC_AVAILABLE_CUSTOM_DIMENSIONS =
+	'SCHEDULE_SYNC_AVAILABLE_CUSTOM_DIMENSIONS';
+const SET_SYNC_TIMEOUT_ID = 'SET_SYNC_TIMEOUT_ID';
 
 const baseActions = {
 	/**
@@ -195,6 +199,49 @@ const baseActions = {
 			payload: { customDimensions: [] },
 		};
 	},
+
+	setSyncTimeoutID( syncTimeoutID ) {
+		return {
+			payload: { syncTimeoutID },
+			type: SET_SYNC_TIMEOUT_ID,
+		};
+	},
+
+	*scheduleSyncAvailableCustomDimensions() {
+		yield {
+			payload: {},
+			type: SCHEDULE_SYNC_AVAILABLE_CUSTOM_DIMENSIONS,
+		};
+	},
+};
+
+export const baseControls = {
+	[ SCHEDULE_SYNC_AVAILABLE_CUSTOM_DIMENSIONS ]: createRegistryControl(
+		( { select, dispatch } ) =>
+			() => {
+				const syncTimeoutID =
+					select( MODULES_ANALYTICS_4 ).getSyncTimeoutID();
+
+				if ( !! syncTimeoutID ) {
+					clearTimeout( syncTimeoutID );
+					dispatch( MODULES_ANALYTICS_4 ).setSyncTimeoutID(
+						undefined
+					);
+				}
+
+				const timeoutID = setTimeout( () => {
+					dispatch(
+						MODULES_ANALYTICS_4
+					).fetchSyncAvailableCustomDimensions();
+
+					dispatch( MODULES_ANALYTICS_4 ).setSyncTimeoutID(
+						undefined
+					);
+				}, 1000 );
+
+				dispatch( MODULES_ANALYTICS_4 ).setSyncTimeoutID( timeoutID );
+			}
+	),
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
@@ -203,6 +250,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				customDimensionsBeingCreated: payload.customDimensions,
+			};
+		}
+		case SET_SYNC_TIMEOUT_ID: {
+			return {
+				...state,
+				syncTimeoutID: payload.syncTimeoutID,
 			};
 		}
 		default: {
@@ -332,6 +385,10 @@ const baseSelectors = {
 			).isFetchingSyncAvailableCustomDimensions();
 		}
 	),
+
+	getSyncTimeoutID( state ) {
+		return state?.syncTimeoutID;
+	},
 };
 
 const store = Data.combineStores(
@@ -341,6 +398,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		actions: baseActions,
 		resolvers: baseResolvers,
+		controls: baseControls,
 		reducer: baseReducer,
 		selectors: baseSelectors,
 	}
