@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -75,10 +75,13 @@ export default function MetricsSelectionPanel() {
 		}
 	}, [ setValue, isOpen ] );
 
+	const [ isNavigatingToOAuthURL, setIsNavigatingToOAuthURL ] =
+		useState( false );
+
 	return (
 		<SideSheet
 			className="googlesitekit-km-selection-panel"
-			isOpen={ isOpen }
+			isOpen={ isOpen || isNavigatingToOAuthURL }
 			onOpen={ onSideSheetOpen }
 			closeFn={ sideSheetCloseFn }
 			focusTrapOptions={ {
@@ -89,7 +92,12 @@ export default function MetricsSelectionPanel() {
 			<Header />
 			<Metrics savedMetrics={ savedViewableMetrics } />
 			<Notice />
-			<Footer savedMetrics={ savedViewableMetrics } />
+			<Footer
+				savedMetrics={ savedViewableMetrics }
+				onNavigationToOAuthURL={ () => {
+					setIsNavigatingToOAuthURL( true );
+				} }
+			/>
 		</SideSheet>
 	);
 }
