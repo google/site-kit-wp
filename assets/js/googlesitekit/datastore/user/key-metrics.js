@@ -393,6 +393,8 @@ const baseSelectors = {
 			);
 
 			// If only one widget remains after filtering, return an empty array.
+			// This prevents hiding the widget area when only one widget is available.
+			// This triggers the `getKeyMetrics` selector to use the default widgets instead.
 			if ( filteredWidgetSlugs.length === 1 ) {
 				return {
 					...keyMetricsSettings,
