@@ -1,5 +1,5 @@
 /**
- * LoyalVisitorsWidget component.
+ * ReturningVisitorsWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -31,7 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_RETURNING_VISITORS,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -43,7 +46,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 const { useSelect, useInViewSelect } = Data;
 
-function LoyalVisitorsWidget( { Widget } ) {
+function ReturningVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -105,7 +108,7 @@ function LoyalVisitorsWidget( { Widget } ) {
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'Returning visitors', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_RETURNING_VISITORS }
 			metricValue={ currentPercentage }
 			metricValueFormat={ format }
 			subText={ sprintf(
@@ -118,19 +121,15 @@ function LoyalVisitorsWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Portion of your site’s visitors that returned at least once in this timeframe',
-				'google-site-kit'
-			) }
 		/>
 	);
 }
 
-LoyalVisitorsWidget.propTypes = {
+ReturningVisitorsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( {
 	moduleName: 'analytics-4',
 	FallbackComponent: ConnectGA4CTATileWidget,
-} )( LoyalVisitorsWidget );
+} )( ReturningVisitorsWidget );

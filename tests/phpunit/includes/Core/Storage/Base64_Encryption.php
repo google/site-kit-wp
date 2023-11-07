@@ -37,6 +37,10 @@ class Base64_Encryption {
 	 * @return bool|string
 	 */
 	public function decrypt( $value ) {
+		if ( ! is_string( $value ) ) {
+			return $value;
+		}
+
 		return base64_decode( $value );
 	}
 }

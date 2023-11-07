@@ -15,9 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
 
+/**
+ * Internal dependencies
+ */
 import {
 	createTestRegistry,
+	fireEvent,
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
@@ -25,6 +33,7 @@ import {
 import { provideCustomDimensionError } from '../utils/custom-dimensions';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
 import withCustomDimensions from './withCustomDimensions';
 
@@ -87,6 +96,51 @@ describe( 'withCustomDimensions', () => {
 		} );
 
 		expect( container ).toHaveTextContent( 'Insufficient permissions' );
+	} );
+
+	it( 'sets the appropriate `redirectURL` in the permission error object if creating custom dimensions failed due to the user not having `EDIT_SCOPE`', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '123456789',
+			availableCustomDimensions: [ customDimension ],
+		} );
+
+		provideUserAuthentication( registry, {
+			grantedScopes: [],
+		} );
+
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			},
+		};
+
+		provideCustomDimensionError( registry, {
+			customDimension,
+			error,
+		} );
+
+		const { getByText, getByRole } = render(
+			<WithCustomDimensionsComponent />,
+			{
+				registry,
+			}
+		);
+
+		expect( getByText( /retry/i ) ).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+
+		const redirectURL = addQueryArgs( global.location.href, {
+			notification: 'custom_dimensions',
+		} );
+
+		const permissionScopeError = registry
+			.select( CORE_USER )
+			.getPermissionScopeError();
+
+		expect( permissionScopeError.data.redirectURL ).toMatch( redirectURL );
 	} );
 
 	it( 'renders appropriate error if creating custom dimensions failed due to a generic error', () => {

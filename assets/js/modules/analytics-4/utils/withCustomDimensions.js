@@ -25,6 +25,7 @@ import { isFunction } from 'lodash';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useMemo } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -154,10 +155,16 @@ export default function withCustomDimensions( options = {} ) {
 						MODULES_ANALYTICS_4
 					).isSyncingAvailableCustomDimensions()
 			);
+			// The `custom_dimensions` query value is arbitrary and serves two purposes:
+			// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
+			// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
+			const redirectURL = addQueryArgs( global.location.href, {
+				notification: 'custom_dimensions',
+			} );
 			const isNavigatingToOAuthURL = useSelect( ( select ) => {
 				const OAuthURL = select( CORE_USER ).getConnectURL( {
 					additionalScopes: [ ANALYTICS_EDIT_SCOPE ],
-					redirectURL: global.location.href,
+					redirectURL,
 				} );
 
 				if ( ! OAuthURL ) {
@@ -247,6 +254,7 @@ export default function withCustomDimensions( options = {} ) {
 							status: 403,
 							scopes: [ ANALYTICS_EDIT_SCOPE ],
 							skipModal: true,
+							redirectURL,
 						},
 					} );
 				}
@@ -255,6 +263,7 @@ export default function withCustomDimensions( options = {} ) {
 				loading,
 				setPermissionScopeError,
 				setValues,
+				redirectURL,
 			] );
 
 			// If the list of available custom dimensions is outdated, sync it.
