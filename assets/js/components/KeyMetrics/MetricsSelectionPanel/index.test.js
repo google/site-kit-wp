@@ -41,6 +41,7 @@ import {
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	PERMISSION_MANAGE_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
@@ -65,6 +66,10 @@ describe( 'MetricsSelectionPanel', () => {
 		freezeFetch( coreKeyMetricsEndpointRegExp );
 
 		provideUserAuthentication( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
 
 		registry
 			.dispatch( CORE_UI )
@@ -321,7 +326,7 @@ describe( 'MetricsSelectionPanel', () => {
 			).toHaveTextContent( 'Top converting traffic source' );
 		} );
 
-		it( 'should not list metrics dependent on modules that a view-only user does not have access to', () => {
+		it( 'should not list metrics dependent on modules that a view-only user does not have access to', async () => {
 			provideUserAuthentication( registry, { authenticated: false } );
 
 			provideKeyMetrics( registry );
@@ -333,6 +338,21 @@ describe( 'MetricsSelectionPanel', () => {
 					connected: true,
 				},
 			] );
+
+			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+				purpose: {
+					values: [ 'purpose1' ],
+					scope: 'site',
+				},
+				postFrequency: {
+					values: [ 'daily' ],
+					scope: 'user',
+				},
+				goals: {
+					values: [ 'goal1', 'goal2' ],
+					scope: 'user',
+				},
+			} );
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
@@ -349,10 +369,12 @@ describe( 'MetricsSelectionPanel', () => {
 				'googlesitekit_read_shared_module_data::["search-console"]': true,
 			} );
 
-			render( <MetricsSelectionPanel />, {
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			} );
+
+			await waitForRegistry();
 
 			// Verify that a metric dependent on GA4 isn't listed.
 			expect(
