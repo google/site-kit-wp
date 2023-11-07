@@ -68,9 +68,14 @@
 		}
 
 		.googlesitekit-km-widget-tile__subtext {
-			margin: -2px 0 1px;
+			font-size: $fs-label-sm;
+			font-weight: $fw-medium;
+			line-height: $lh-label-sm;
+			margin: -1px 0 1px;
 
 			@media (min-width: $bp-nonMobile) {
+				font-size: $fs-label-md;
+				font-weight: $fw-normal;
 				line-height: $lh-label-md;
 				margin: -4px 0 1px;
 			}
@@ -91,10 +96,16 @@
 		}
 
 		.googlesitekit-km-widget-tile__subtext {
+			font-size: $fs-label-sm;
+			font-weight: $fw-medium;
+			line-height: $lh-label-sm;
 			margin: 2px 0 0;
 
 			@media (min-width: $bp-nonMobile) {
-				margin: -1px 0 0;
+				font-size: $fs-label-md;
+				font-weight: $fw-normal;
+				line-height: $lh-label-md;
+				margin: 0;
 			}
 		}
 	}
