@@ -353,9 +353,13 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Gets key metrics settings.
+	 * Gets key metrics settings, taking into account whether the user has view-only access.
+	 * If the user has view-only access and the custom dimensions required by the selected widgets are unavailable,
+	 * the widget slugs will be removed from the settings. If only one widget remains after filtering, the widget slugs
+	 * will be an empty array to prevent hiding the widget area.
 	 *
 	 * @since 1.103.0
+	 * @since n.e.x.t Checks for view-only access and adjusts the `widgetSlugs` accordingly.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings. Returns `undefined` if not loaded.
