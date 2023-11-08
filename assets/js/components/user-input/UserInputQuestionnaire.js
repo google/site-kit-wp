@@ -97,6 +97,12 @@ export default function UserInputQuestionnaire() {
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 	} = getUserInputAnswers();
 
+	const scrollToQuestion = () => {
+		global.document
+			?.querySelector( '.googlesitekit-user-input__header' )
+			?.scrollIntoView( { behavior: 'smooth' } );
+	};
+
 	const nextCallback = useCallback( () => {
 		trackEvent(
 			gaEventCategory,
@@ -104,6 +110,7 @@ export default function UserInputQuestionnaire() {
 			steps[ activeSlugIndex ]
 		);
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
+		scrollToQuestion();
 	}, [ activeSlugIndex, gaEventCategory, setActiveSlug ] );
 
 	const backCallback = useCallback( () => {
@@ -113,6 +120,7 @@ export default function UserInputQuestionnaire() {
 			steps[ activeSlugIndex ]
 		);
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
+		scrollToQuestion();
 	}, [ activeSlugIndex, gaEventCategory, setActiveSlug ] );
 
 	const submitChanges = useCallback( async () => {
