@@ -107,7 +107,6 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		);
 	}
 
-	const displayProperties = properties;
 	return (
 		<Select
 			className="googlesitekit-analytics__select-property"
@@ -117,7 +116,7 @@ export default function PropertySelect( { hasModuleAccess } ) {
 			enhanced
 			outlined
 		>
-			{ displayProperties.map(
+			{ properties.map(
 				(
 					// eslint-disable-next-line sitekit/acronym-case
 					{ id, name, internalWebPropertyId },

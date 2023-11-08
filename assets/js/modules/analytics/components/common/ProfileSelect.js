@@ -113,8 +113,6 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 		);
 	}
 
-	const displayProfiles = profiles;
-
 	return (
 		<Select
 			className="googlesitekit-analytics__select-profile"
@@ -124,7 +122,7 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 			enhanced
 			outlined
 		>
-			{ displayProfiles.map( ( { id, name }, index ) => (
+			{ profiles.map( ( { id, name }, index ) => (
 				<Option key={ index } value={ id }>
 					{ name }
 				</Option>

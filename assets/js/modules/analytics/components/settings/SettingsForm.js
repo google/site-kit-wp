@@ -29,7 +29,6 @@ import { ProgressBar } from 'googlesitekit-components';
 import { AdsConversionIDTextField, TrackingExclusionSwitches } from '../common';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
@@ -50,27 +49,12 @@ export default function SettingsForm( {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const isTagManagerAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
-	);
-	const useTagManagerSnippet = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getUseSnippet()
-	);
-	const analyticsSinglePropertyID = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
+
 	const gtmContainersResolved = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
 
-	const showTrackingExclusion =
-		isGA4Connected ||
-		isUAConnected ||
-		( useTagManagerSnippet && analyticsSinglePropertyID );
+	const showTrackingExclusion = isGA4Connected || isUAConnected;
 
 	if ( ! gtmContainersResolved ) {
 		return <ProgressBar />;

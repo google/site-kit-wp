@@ -64,7 +64,7 @@ export default function OptionalSettingsView() {
 		useSnippet && ampMode !== 'primary' && isUAConnected;
 
 	const showAdsConversionIDSettings =
-		( canUseSnippet && isUAConnected && useSnippet ) || useGA4Snippet;
+		canUseSnippet && ( ( isUAConnected && useSnippet ) || useGA4Snippet );
 
 	return (
 		<Fragment>
