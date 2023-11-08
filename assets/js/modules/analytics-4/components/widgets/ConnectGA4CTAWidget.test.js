@@ -132,9 +132,9 @@ describe( 'ConnectGA4CTAWidget', () => {
 
 		expect(
 			container.querySelector( '.googlesitekit-publisher-win__title' )
-		).toHaveTextContent( 'Google Analytics is disconnected' );
+		).toHaveTextContent( 'Analytics is disconnected' );
 		const button = getByRole( 'button', {
-			name: /Connect Google Analytics/i,
+			name: /Connect Analytics/i,
 		} );
 		expect( button ).toBeInTheDocument();
 	} );
