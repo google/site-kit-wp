@@ -31,12 +31,9 @@ import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import { isValidPropertySelection, isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileSelect( { hasModuleAccess } ) {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -116,18 +113,6 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 		);
 	}
 
-	const displayProfiles =
-		ga4ReportingEnabled ||
-		profiles.some( ( profile ) => profile.id === PROFILE_CREATE )
-			? profiles
-			: [
-					...profiles,
-					{
-						id: PROFILE_CREATE,
-						name: __( 'Set up a new view', 'google-site-kit' ),
-					},
-			  ];
-
 	return (
 		<Select
 			className="googlesitekit-analytics__select-profile"
@@ -137,7 +122,7 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 			enhanced
 			outlined
 		>
-			{ displayProfiles.map( ( { id, name }, index ) => (
+			{ profiles.map( ( { id, name }, index ) => (
 				<Option key={ index } value={ id }>
 					{ name }
 				</Option>

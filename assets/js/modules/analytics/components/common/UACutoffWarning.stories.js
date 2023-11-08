@@ -30,18 +30,14 @@ const Template = () => <UACutoffWarning />;
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.parameters = {
-	features: [ 'ga4Reporting' ],
-};
+Default.parameters = {};
 Default.scenario = {
 	label: 'Modules/Analytics/Components/UACutoffWarning/Default',
 };
 
 export const PostGA4AutoSwitch = Template.bind( {} );
 PostGA4AutoSwitch.storyName = 'PostGA4AutoSwitch';
-PostGA4AutoSwitch.parameters = {
-	features: [ 'ga4Reporting' ],
-};
+PostGA4AutoSwitch.parameters = {};
 PostGA4AutoSwitch.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).setReferenceDate( GA4_AUTO_SWITCH_DATE );
