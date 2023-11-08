@@ -509,7 +509,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-footer__content p'
+					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
 				).textContent
 			).toBe( 'Select at least 2 metrics' );
 
@@ -521,9 +521,9 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-footer__content p'
-				).textContent
-			).not.toBe( 'Select at least 2 metrics' );
+					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
+				)
+			).not.toBeInTheDocument();
 		} );
 
 		describe( 'CTA', () => {
