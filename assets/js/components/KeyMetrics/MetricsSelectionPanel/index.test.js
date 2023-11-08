@@ -27,6 +27,7 @@ import {
 	provideKeyMetrics,
 	provideModules,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	provideUserInfo,
 	subscribeUntil,
 } from '../../../../../tests/js/utils';
@@ -41,7 +42,6 @@ import {
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	PERMISSION_MANAGE_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
@@ -66,10 +66,7 @@ describe( 'MetricsSelectionPanel', () => {
 		freezeFetch( coreKeyMetricsEndpointRegExp );
 
 		provideUserAuthentication( registry );
-
-		registry.dispatch( CORE_USER ).receiveGetCapabilities( {
-			[ PERMISSION_MANAGE_OPTIONS ]: true,
-		} );
+		provideUserCapabilities( registry );
 
 		registry
 			.dispatch( CORE_UI )
