@@ -31,6 +31,10 @@ import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from '../../../analytics-4/datastore/constants';
 
 const setupRegistry = ( registry ) => {
 	provideSiteInfo( registry, {
@@ -141,7 +145,7 @@ describe( 'AccountSelect', () => {
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
 	} );
 
-	it( 'should pre-select the property and profile IDs when changed', () => {
+	it( 'should reset the property and profile IDs when changed', () => {
 		jest.useFakeTimers();
 
 		fetchMock.getOnce(
@@ -195,6 +199,9 @@ describe( 'AccountSelect', () => {
 		const newPropertyID = registry
 			.select( MODULES_ANALYTICS )
 			.getPropertyID();
+		const newGA4PropertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
 		const newWebPropertyID = registry
 			.select( MODULES_ANALYTICS )
 			.getInternalWebPropertyID();
@@ -204,5 +211,6 @@ describe( 'AccountSelect', () => {
 		expect( newPropertyID ).toBe( '' );
 		expect( newWebPropertyID ).toBe( '' );
 		expect( newProfileID ).toBe( '' );
+		expect( newGA4PropertyID ).toBe( PROPERTY_CREATE );
 	} );
 } );

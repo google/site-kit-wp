@@ -89,7 +89,7 @@ describe( 'core/modules modules', () => {
 		},
 	];
 
-	const externalModules = [
+	const expectedRecoverableModules = [
 		{
 			slug: 'analytics-4',
 			name: 'Analytics-4',
@@ -2007,62 +2007,10 @@ describe( 'core/modules modules', () => {
 					.getRecoverableModules();
 
 				expect( recoverableModules ).toMatchObject(
-					convertArrayListToKeyedObjectMap( externalModules, 'slug' )
-				);
-			} );
-
-			it( 'should return analytics-4 instead of analytics in the GA4 dashboard view', async () => {
-				provideModuleRegistrations( registry );
-
-				fetchMock.getOnce(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
-					{
-						body: [ ...FIXTURES, ...allModules ],
-						status: 200,
-					}
-				);
-
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
-					),
-					{
-						body: {},
-						status: 200,
-					}
-				);
-
-				const initialRecoverableModules = registry
-					.select( CORE_MODULES )
-					.getRecoverableModules();
-				expect( initialRecoverableModules ).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					CORE_MODULES
-				).getRecoverableModules();
-
-				const recoverableModules = registry
-					.select( CORE_MODULES )
-					.getRecoverableModules();
-
-				const externalModulesWithoutAnalytics = externalModules.filter(
-					( module ) => module.slug !== 'analytics-4'
-				);
-
-				expect( recoverableModules ).toMatchObject(
 					convertArrayListToKeyedObjectMap(
-						externalModulesWithoutAnalytics,
+						expectedRecoverableModules,
 						'slug'
 					)
-				);
-
-				expect( Object.keys( recoverableModules ) ).toContain(
-					'analytics-4'
-				);
-
-				expect( Object.keys( recoverableModules ) ).not.toContain(
-					'analytics'
 				);
 			} );
 		} );

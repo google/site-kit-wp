@@ -55,8 +55,8 @@ describe( 'Analytics write scope requests', () => {
 						'https://sitekit.withgoogle.com/o/oauth2/auth'
 					)
 			) {
-				const reqURL = new URL( request.url() );
-				const scope = reqURL.searchParams.get( 'scope' );
+				const requestURL = new URL( request.url() );
+				const scope = requestURL.searchParams.get( 'scope' );
 				request.respond( {
 					status: 302,
 					headers: {

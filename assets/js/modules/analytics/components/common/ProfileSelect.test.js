@@ -25,7 +25,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import ProfileSelect from './ProfileSelect';
-import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { render, act } from '../../../../../../tests/js/test-utils';
 
@@ -119,29 +119,6 @@ describe( 'ProfileSelect', () => {
 		expect( listItems ).toHaveLength(
 			fixtures.propertiesProfiles.profiles.length
 		);
-		// UA is not sending data since July 2023, ga4 is default flow
-		// there should not be an option to create new view for UA
-		expect(
-			listItems.some(
-				( { dataset } ) => dataset.value === PROFILE_CREATE
-			)
-		).toBe( false );
-	} );
-
-	it( 'should not render an option to "Set up a new profile".', () => {
-		const { getAllByRole } = render( <ProfileSelect />, {
-			setupRegistry,
-		} );
-
-		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems ).toHaveLength(
-			fixtures.propertiesProfiles.profiles.length
-		);
-		expect(
-			listItems.some(
-				( { dataset } ) => dataset.value === PROFILE_CREATE
-			)
-		).toBe( false );
 	} );
 
 	it( 'should display profile options of an existing account when present, and not be disabled.', () => {

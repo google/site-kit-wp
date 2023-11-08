@@ -374,55 +374,12 @@ describe( 'modules/analytics accounts', () => {
 				).toBe( '' );
 			} );
 
-			it( 'should correctly select property and profile IDs', async () => {
+			it( 'should reset propertyID and profileID when selecting an account ID', async () => {
 				fetchMock.get(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
 					),
 					{ body: fixtures.propertiesProfiles, status: 200 }
-				);
-				fetchMock.getOnce(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
-					{ body: [] }
-				);
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/properties'
-					),
-					{ body: [] }
-				);
-
-				const accountID =
-					fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-
-				provideUserAuthentication( registry );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS )
-					.selectAccount( accountID );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getAccountID()
-				).toBe( accountID );
-				expect(
-					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe( '' );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.getInternalWebPropertyID()
-				).toBe( '' );
-				expect(
-					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( '' );
-			} );
-
-			it( 'should correctly select PROPERTY_CREATE and PROFILE_CREATE when account has no properties', async () => {
-				fetchMock.get(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
-					),
-					{ body: { properties: [], profiles: [] }, status: 200 }
 				);
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
@@ -513,7 +470,7 @@ describe( 'modules/analytics accounts', () => {
 					).toBe( ga4Fixtures.properties[ 0 ]._id );
 				} );
 
-				it( 'should select the correct UA property', async () => {
+				it( 'should reset the UA property', async () => {
 					provideSiteInfo( registry, {
 						referenceSiteURL:
 							/* eslint-disable sitekit/acronym-case */
@@ -854,10 +811,10 @@ describe( 'modules/analytics accounts', () => {
 					registry
 						.select( MODULES_ANALYTICS )
 						.getInternalWebPropertyID()
-				).toBeUndefined(); // eslint-disable-line sitekit/acronym-case
+				).toBeUndefined();
 				expect(
 					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBeUndefined(); // eslint-disable-line sitekit/acronym-case
+				).toBeUndefined();
 			} );
 		} );
 		describe( 'getAccounts - analytics-4', () => {

@@ -663,10 +663,7 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', async () => {
-				const settingsRegexp = new RegExp(
-					'^/google-site-kit/v1/modules/analytics/data/settings'
-				);
-				fetchMock.get( settingsRegexp, { body: {}, status: 200 } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 
 				provideUserAuthentication( registry, {
 					authenticated: false,

@@ -42,6 +42,7 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import * as fixtures from './__fixtures__';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
@@ -50,6 +51,9 @@ import * as ga4fixtures from '../../analytics-4/datastore/__fixtures__';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_CONVERSION_ID,
+	INVARIANT_INVALID_PROFILE_NAME,
+	INVARIANT_INVALID_PROFILE_SELECTION,
+	INVARIANT_INVALID_PROPERTY_SELECTION,
 } from './settings';
 import ga4ReportingTour from '../../../feature-tours/ga4-reporting';
 import { enabledFeatures } from '../../../features';
@@ -132,6 +136,255 @@ describe( 'modules/analytics settings', () => {
 					.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 			} );
 
+			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: PROPERTY_CREATE,
+				} );
+				const createdProperty = {
+					...fixtures.propertiesProfiles.properties[ 0 ],
+					id: 'UA-12345-1',
+					// eslint-disable-next-line sitekit/acronym-case
+					internalWebPropertyId: '123456789',
+				};
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
+					{ body: createdProperty, status: 200 }
+				);
+				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
+					const { data } = JSON.parse( opts.body );
+					// Return the same settings passed to the API.
+					return { body: data, status: 200 };
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ANALYTICS )
+					.submitChanges();
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
+					{ body: { data: { accountID: '12345' } } }
+				);
+
+				expect( result.error ).toBeFalsy();
+				expect(
+					registry.select( MODULES_ANALYTICS ).getPropertyID()
+				).toBe( createdProperty.id );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.getInternalWebPropertyID()
+					// eslint-disable-next-line sitekit/acronym-case
+				).toBe( createdProperty.internalWebPropertyId );
+			} );
+
+			it( 'handles an error if set while creating a property', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: PROPERTY_CREATE,
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
+					{ body: error, status: 500 }
+				);
+
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
+
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
+					{ body: { data: { accountID: '12345' } } }
+				);
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getPropertyID()
+				).toBe( PROPERTY_CREATE );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.getErrorForAction( 'submitChanges' )
+				).toEqual( error );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				const profileName = fixtures.createProfile.name;
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: 'UA-12345-1',
+					profileID: PROFILE_CREATE,
+				} );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					profileName,
+				} );
+				const createdProfile = {
+					...fixtures.propertiesProfiles.profiles[ 0 ],
+					id: '987654321',
+				};
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
+					{ body: createdProfile, status: 200 }
+				);
+				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
+					const { data } = JSON.parse( opts.body );
+					// Return the same settings passed to the API.
+					return { body: data, status: 200 };
+				} );
+
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
+
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
+					{
+						body: {
+							data: {
+								accountID: '12345',
+								propertyID: 'UA-12345-1',
+								profileName,
+							},
+						},
+					}
+				);
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getProfileID()
+				).toBe( createdProfile.id );
+			} );
+
+			it( 'handles an error if set while creating a profile', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				const profileName = fixtures.createProfile.name;
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: 'UA-12345-1',
+					profileID: PROFILE_CREATE,
+				} );
+
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					profileName,
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
+					{ body: error, status: 500 }
+				);
+
+				const result = await registry
+					.dispatch( MODULES_ANALYTICS )
+					.submitChanges();
+
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
+					{
+						body: {
+							data: {
+								accountID: '12345',
+								propertyID: 'UA-12345-1',
+								profileName,
+							},
+						},
+					}
+				);
+				expect( result.error ).toEqual( error );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getProfileID()
+				).toBe( PROFILE_CREATE );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.getErrorForAction( 'submitChanges' )
+				).toEqual( error );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'dispatches both createProperty and createProfile when selected', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				const profileName = fixtures.createProfile.name;
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: PROPERTY_CREATE,
+					profileID: PROFILE_CREATE,
+				} );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					profileName,
+				} );
+				const createdProperty = {
+					...fixtures.propertiesProfiles.properties[ 0 ],
+					id: 'UA-12345-1',
+				};
+				const createdProfile = {
+					...fixtures.propertiesProfiles.profiles[ 0 ],
+					id: '987654321',
+				};
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
+					{ body: createdProperty, status: 200 }
+				);
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
+					{ body: createdProfile, status: 200 }
+				);
+				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
+					const { data } = JSON.parse( opts.body );
+					// Return the same settings passed to the API.
+					return { body: data, status: 200 };
+				} );
+
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).getPropertyID()
+				).toBe( createdProperty.id );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getProfileID()
+				).toBe( createdProfile.id );
+			} );
+
 			it( 'dispatches saveSettings', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
@@ -196,7 +449,7 @@ describe( 'modules/analytics settings', () => {
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
 
-			it( 'does not dispatch createProperty', async () => {
+			it( 'does not dispatch createProperty when the `enableUA` form value is false', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					propertyID: PROPERTY_CREATE,
@@ -222,7 +475,7 @@ describe( 'modules/analytics settings', () => {
 				expect( result.error ).toBeFalsy();
 			} );
 
-			it( 'does not dispatch createProfile', async () => {
+			it( 'does not dispatch createProfile when the `enableUA` form value is false', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					profileID: PROFILE_CREATE,
@@ -244,7 +497,7 @@ describe( 'modules/analytics settings', () => {
 				);
 			} );
 
-			it( 'does not dispatch both createProperty and createProfile when selected', async () => {
+			it( 'does not dispatch both createProperty and createProfile when selected and when the `enableUA` form value is false', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					propertyID: PROPERTY_CREATE,
@@ -840,6 +1093,56 @@ describe( 'modules/analytics settings', () => {
 				).toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 			} );
 
+			it( 'requires a valid propertyID', () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setSettings( validSettings );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( tagWithPermission.propertyID );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+				).toBe( true );
+
+				registry.dispatch( MODULES_ANALYTICS ).setPropertyID( '0' );
+
+				expect( () =>
+					registry
+						.select( MODULES_ANALYTICS )
+						.__dangerousCanSubmitChanges()
+				).toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
+			} );
+
+			it( 'requires a valid profileID', () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setSettings( validSettings );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( tagWithPermission.propertyID );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
+				).toBe( true );
+
+				registry.dispatch( MODULES_ANALYTICS ).setProfileID( '0' );
+
+				expect( () =>
+					registry
+						.select( MODULES_ANALYTICS )
+						.__dangerousCanSubmitChanges()
+				).toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
+			} );
+
 			it( 'does not require a valid propertyID', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
@@ -855,7 +1158,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'does not require a valid profileID', () => {
+			it( 'does not require a valid profileID when the `enableUA` form value is false', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					profileID: null,
@@ -870,7 +1173,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'does not require a valid internalWebPropertyID', () => {
+			it( 'does not require a valid internalWebPropertyID when the `enableUA` form value is false', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					internalWebPropertyID: null,
@@ -974,7 +1277,54 @@ describe( 'modules/analytics settings', () => {
 				).toBeTruthy();
 			} );
 
-			it( 'does not require a valid profile name', () => {
+			it( 'should not support creating a new profile when the profile name is empty', () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( null );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setSettings( validSettings );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setProfileID( PROFILE_CREATE );
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { profileName: '' } );
+
+				expect( () =>
+					registry
+						.select( MODULES_ANALYTICS )
+						.__dangerousCanSubmitChanges()
+				).toThrow( INVARIANT_INVALID_PROFILE_NAME );
+			} );
+
+			it( 'should not support creating a new profile when the profile name is not set at all', () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( null );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setSettings( validSettings );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setProfileID( PROFILE_CREATE );
+
+				expect( () =>
+					registry
+						.select( MODULES_ANALYTICS )
+						.__dangerousCanSubmitChanges()
+				).toThrow( INVARIANT_INVALID_PROFILE_NAME );
+			} );
+
+			it( 'does not require a valid profile name when the `enableUA` form value is false', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
