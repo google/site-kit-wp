@@ -98,9 +98,14 @@ export default function UserInputQuestionnaire() {
 	} = getUserInputAnswers();
 
 	const scrollToQuestion = () => {
-		global.document
-			?.querySelector( '.googlesitekit-user-input__header' )
-			?.scrollIntoView( { behavior: 'smooth' } );
+		// Using a consistent 24px padding across all devices to slightly reduce the padding gap.
+		// The intention is to scroll to the top of the page, revealing the answer header
+		// without unintentionally causing a scroll down, as might happen if scrolling to a specific selector.
+		global.scrollTo( {
+			top: 24,
+			left: 0,
+			behavior: 'smooth',
+		} );
 	};
 
 	const nextCallback = useCallback( () => {
