@@ -26,11 +26,9 @@ import {
 	muteFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {
@@ -43,11 +41,8 @@ describe( 'SettingsCardKeyMetrics', () => {
 	it( 'should trigger a survey when the Key Metrics Setup CTA is in view', async () => {
 		mockSurveyEndpoints();
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
-
-		registry.dispatch( CORE_USER ).receiveGetCapabilities( {
-			[ PERMISSION_MANAGE_OPTIONS ]: true,
-		} );
 
 		muteFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
