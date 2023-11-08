@@ -56,6 +56,7 @@ import {
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { savedMetrics } ) {
@@ -226,10 +227,24 @@ export default function Footer( { savedMetrics } ) {
 		setPrevIsOpen( isOpen );
 	}, [ isOpen, prevIsOpen ] );
 
+	const breakpoint = useBreakpoint();
+	const showSelection =
+		! saveError || saveError?.code || BREAKPOINT_SMALL === breakpoint;
+	const showApiError =
+		saveError?.code || ( BREAKPOINT_SMALL === breakpoint && saveError );
+
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
+			{ showApiError && (
+				<ErrorNotice
+					error={ saveError }
+					noPrefix={
+						selectedMetrics?.length < 2 && ! saveError?.code
+					}
+				/>
+			) }
 			<div className="googlesitekit-km-selection-panel-footer__content">
-				{ ! saveError ? (
+				{ showSelection ? (
 					<p className="googlesitekit-km-selection-panel-footer__metric-count">
 						{ sprintf(
 							/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
