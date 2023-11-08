@@ -27,7 +27,10 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '../../googlesitekit/datastore/user/constants';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {
@@ -41,6 +44,10 @@ describe( 'SettingsCardKeyMetrics', () => {
 		mockSurveyEndpoints();
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
 
 		muteFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
