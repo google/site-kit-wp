@@ -2851,7 +2851,7 @@ class Analytics_4Test extends TestCase {
 		$data     = $method->invoke( $this->analytics );
 		$this->assertEmpty( $data );
 
-		// Ensure the `'googlesitekit_post_categories'` key is not present in
+		// Ensure the `'googlesitekit_post_categories'` key is not present
 		// if the page does not return categories or encounters an error
 		// retrieving categories.
 		$this->assertFalse( array_key_exists( 'googlesitekit_post_categories', $data ) );
