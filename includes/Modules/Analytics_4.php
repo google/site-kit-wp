@@ -1410,8 +1410,14 @@ final class Analytics_4 extends Module
 						$data[ $custom_dimension ] = $post->post_author;
 						break;
 					case 'googlesitekit_post_categories':
-						$cats                      = wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) );
-						$data[ $custom_dimension ] = ! is_wp_error( $cats ) ? implode( ',', $cats ) : '';
+						$categories = get_the_category( $post->ID );
+
+						if ( ! empty( $categories ) ) {
+							$category_ids = wp_list_pluck( $categories, 'term_id' );
+
+							$data[ $custom_dimension ] = implode( ',', $category_ids );
+						}
+
 						break;
 					case 'googlesitekit_post_date':
 						$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );
