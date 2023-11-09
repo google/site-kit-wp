@@ -540,7 +540,7 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it( 'should return the filtered widget slugs that do not require custom dimensions when the user is in a view-only dashboard', () => {
-				// Set up state to simulate view-only mode
+				// Set up state to simulate view-only mode.
 				provideUserAuthentication( registry, { authenticated: false } );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
@@ -566,7 +566,7 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it( 'should return an empty array if only one widget slug is present when the user is in a view-only dashboard', () => {
-				// Set up state to simulate view-only mode
+				// Set up state to simulate view-only mode.
 				provideUserAuthentication( registry, { authenticated: false } );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
