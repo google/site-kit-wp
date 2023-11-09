@@ -31,9 +31,13 @@ import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
 import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
 import InternalServerError from './InternalServerError';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+} from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import BannerNotification from './BannerNotification';
 const { useSelect } = Data;
 
@@ -49,9 +53,36 @@ export default function ErrorNotifications() {
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
 	);
-	const setupErrorRedoURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSetupErrorRedoURL()
+	const existingPermissionError = useSelect( ( select ) =>
+		select( CORE_USER ).getPermissionScopeError()
 	);
+	const persistedPermissionsError = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+			'permissionsError'
+		)
+	);
+	const setupErrorRedoURL = useSelect( ( select ) => {
+		if ( persistedPermissionsError?.data ) {
+			return select( CORE_USER ).getConnectURL( {
+				additionalScopes: persistedPermissionsError?.data?.scopes,
+				redirectURL:
+					persistedPermissionsError?.data?.redirectURL ||
+					global.location.href,
+			} );
+		}
+		if (
+			setupErrorCode === 'access_denied' &&
+			! persistedPermissionsError?.data &&
+			existingPermissionError
+		) {
+			// If `existingPermissionError` have data it implies it is not due to the `plugin setup`, and CTA
+			// should not render. This is explained in more detail in comment bellow in hidding the label part.
+			return null;
+		}
+
+		return select( CORE_SITE ).getSetupErrorRedoURL();
+	} );
 	const errorTroubleshootingLinkURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
 			code: setupErrorCode,
@@ -72,7 +103,18 @@ export default function ErrorNotifications() {
 
 	if ( setupErrorCode === 'access_denied' ) {
 		title = __( 'Permissions Error', 'google-site-kit' );
-		ctaLabel = __( 'Redo setup', 'google-site-kit' );
+		if ( persistedPermissionsError?.data ) {
+			ctaLabel = __( 'Grant permission', 'google-site-kit' );
+		} else if (
+			! persistedPermissionsError?.data &&
+			existingPermissionError
+		) {
+			// If there is `existingPermissionError` it implies that the 'access denied' error isn't shown
+			// because of the plugin setup. If the plugin setup permission had been denied,
+			// this would be empty. Therefore, no call-to-action should be displayed at this point,
+			// as it would only request the generic analytics read permission without resolving the actual issue.
+			ctaLabel = null;
+		}
 	}
 
 	return (
