@@ -74,7 +74,7 @@ export default function Notice() {
 	} );
 
 	const previousHasMissingCustomDimensions = usePrevious(
-		!! hasMissingCustomDimensions
+		hasMissingCustomDimensions
 	);
 	const noticeRef = useRef();
 
