@@ -112,12 +112,6 @@ exports[`TopTrafficSourceWidget retries both reports when an error is encountere
             target="_blank"
           >
             Get help
-            <span
-              class="googlesitekit-icon-wrapper"
-              style="margin-left: 5px;"
-            >
-              <svg />
-            </span>
           </a>
         </span>
       </div>
