@@ -27,15 +27,27 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+} from '../../googlesitekit/datastore/user/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 const { useSelect } = Data;
 
 export default function UnsatisfiedScopesAlertGTE() {
+	const persistedPermissionsError = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+			'permissionsError'
+		)
+	);
 	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ TAGMANAGER_READ_SCOPE ],
-			redirectURL: global.location.href,
+			redirectURL:
+				persistedPermissionsError?.data?.redirectURL ||
+				global.location.href,
 		} )
 	);
 

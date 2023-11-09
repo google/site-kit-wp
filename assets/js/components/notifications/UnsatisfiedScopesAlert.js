@@ -33,9 +33,13 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+} from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
@@ -76,13 +80,28 @@ export default function UnsatisfiedScopesAlert() {
 			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
 		)
 	);
+	const persistedPermissionsError = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+			'permissionsError'
+		)
+	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getUnsatisfiedScopes()
 	);
+
+	const connectURLData = {
+		redirectURL: global.location.href,
+	};
+	if ( persistedPermissionsError?.data ) {
+		connectURLData.additionalScopes =
+			persistedPermissionsError.data?.scopes;
+		connectURLData.redirectURL =
+			persistedPermissionsError.data?.redirectURL || global.location.href;
+	}
+
 	const connectURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectURL( {
-			redirectURL: global.location.href,
-		} )
+		select( CORE_USER ).getConnectURL( connectURLData )
 	);
 
 	const modules = useSelect( ( select ) =>
@@ -131,7 +150,10 @@ export default function UnsatisfiedScopesAlert() {
 		'Site Kit can’t access necessary data',
 		'google-site-kit'
 	);
-	const ctaLabel = __( 'Redo setup', 'google-site-kit' );
+	let ctaLabel = __( 'Redo setup', 'google-site-kit' );
+	if ( persistedPermissionsError?.data ) {
+		ctaLabel = __( 'Grant permission', 'google-site-kit' );
+	}
 
 	switch ( messageID ) {
 		case MESSAGE_MULTIPLE:
