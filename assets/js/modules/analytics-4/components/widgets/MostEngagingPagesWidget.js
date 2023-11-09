@@ -22,11 +22,6 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { createInterpolateElement } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -158,6 +153,12 @@ function MostEngagingPagesWidget( props ) {
 
 	const { rows = [] } = report || {};
 
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	};
+
 	const columns = [
 		{
 			field: 'dimensionValues.0.value',
@@ -201,17 +202,9 @@ function MostEngagingPagesWidget( props ) {
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) =>
-				createInterpolateElement( '<metricValue /> CTR', {
-					metricValue: (
-						<strong>
-							{ numFmt( fieldValue, {
-								style: 'percent',
-								maximumFractionDigits: 1,
-							} ) }
-						</strong>
-					),
-				} ),
+			Component: ( { fieldValue } ) => (
+				<strong>{ numFmt( fieldValue, format ) }</strong>
+			),
 		},
 	];
 
