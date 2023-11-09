@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { provideKeyMetrics } from '../../../../tests/js/utils';
+import {
+	provideKeyMetrics,
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import ChangeMetricsLink from './ChangeMetricsLink';
 
@@ -37,6 +41,8 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry );
+				provideUserCapabilities( registry );
 				provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
 			};
 
