@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -38,7 +43,7 @@ import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardImpressions = ( { WidgetReportError } ) => {
+const WPDashboardImpressions = ( { WPDashboardReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -80,7 +85,10 @@ const WPDashboardImpressions = ( { WidgetReportError } ) => {
 
 	if ( error ) {
 		return (
-			<WidgetReportError moduleSlug="search-console" error={ error } />
+			<WPDashboardReportError
+				moduleSlug="search-console"
+				error={ error }
+			/>
 		);
 	}
 
@@ -112,6 +120,10 @@ const WPDashboardImpressions = ( { WidgetReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
+};
+
+WPDashboardImpressions.propTypes = {
+	WPDashboardReportError: PropTypes.elementType.isRequired,
 };
 
 export default WPDashboardImpressions;

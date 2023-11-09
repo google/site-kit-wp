@@ -152,12 +152,9 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		>
 			<KeyMetricsCTAContent
 				className="googlesitekit-km-connect-ga4-cta"
-				title={ __(
-					'Google Analytics is disconnected',
-					'google-site-kit'
-				) }
+				title={ __( 'Analytics is disconnected', 'google-site-kit' ) }
 				description={ __(
-					'Metrics cannot be displayed without Google Analytics',
+					'Metrics cannot be displayed without Analytics',
 					'google-site-kit'
 				) }
 				actions={
@@ -166,7 +163,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 						isSaving={ inProgress }
 						disabled={ inProgress }
 					>
-						{ __( 'Connect Google Analytics', 'google-site-kit' ) }
+						{ __( 'Connect Analytics', 'google-site-kit' ) }
 					</SpinnerButton>
 				}
 			/>

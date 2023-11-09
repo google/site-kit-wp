@@ -44,5 +44,6 @@ export { testSiteNotification } from './test-site-notification';
 export { useRequestInterception } from './use-request-interception';
 export { useSharedRequestInterception } from './use-request-interception';
 export { wpApiFetch } from './wp-api-fetch';
+export * from './console';
 export * from './features';
 export * from './step-and-screenshot';

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { cloneDeep } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -43,9 +44,7 @@ import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardPopularPages( props ) {
-	const { WidgetReportError } = props;
-
+export default function WPDashboardPopularPages( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -104,7 +103,9 @@ export default function WPDashboardPopularPages( props ) {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics" error={ error } />
+		);
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.
@@ -135,6 +136,10 @@ export default function WPDashboardPopularPages( props ) {
 		</div>
 	);
 }
+
+WPDashboardPopularPages.propTypes = {
+	WPDashboardReportError: PropTypes.elementType.isRequired,
+};
 
 const tableColumns = [
 	{

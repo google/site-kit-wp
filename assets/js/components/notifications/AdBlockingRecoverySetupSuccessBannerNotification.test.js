@@ -33,6 +33,10 @@ import {
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../tests/js/mock-survey-endpoints';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
@@ -40,7 +44,6 @@ import {
 } from '../../modules/adsense/datastore/constants';
 import * as tracking from '../../util/tracking';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
-import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -99,7 +102,7 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 			}
 		);
 
-		mockSurveyEndpoints( registry );
+		mockSurveyEndpoints();
 
 		registry
 			.dispatch( MODULES_ADSENSE )
@@ -135,10 +138,6 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 		);
 
 		// The survey trigger endpoint should be called.
-		const surveyTriggerEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/survey-trigger'
-		);
-
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 				body: {

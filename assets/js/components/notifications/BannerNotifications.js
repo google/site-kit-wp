@@ -51,8 +51,6 @@ const { useSelect } = Data;
 
 export default function BannerNotifications() {
 	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-
 	const viewOnly = useViewOnly();
 
 	const isAuthenticated = useSelect( ( select ) =>
@@ -110,9 +108,9 @@ export default function BannerNotifications() {
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
 			<ModuleRecoveryAlert />
-			{ ga4ReportingEnabled &&
-				analyticsModuleConnected &&
-				ga4ModuleConnected && <SwitchedToGA4Banner /> }
+			{ analyticsModuleConnected && ga4ModuleConnected && (
+				<SwitchedToGA4Banner />
+			) }
 			<ActivationBanner />
 			{ enhancedMeasurementEnabled && (
 				<EnhancedMeasurementActivationBanner />

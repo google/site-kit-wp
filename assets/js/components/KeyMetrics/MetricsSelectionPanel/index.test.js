@@ -34,7 +34,7 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
@@ -45,11 +45,15 @@ import {
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
+import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import {
+	MODULES_ANALYTICS,
+	EDIT_SCOPE,
+} from '../../../modules/analytics/datastore/constants';
 import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
-import { EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 
 describe( 'MetricsSelectionPanel', () => {
@@ -87,7 +91,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -98,7 +102,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).toHaveTextContent( 'Loyal visitors' );
+			).toHaveTextContent( 'Returning visitors' );
 
 			expect(
 				document.querySelector(
@@ -127,7 +131,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -163,7 +167,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4', 'search-console' ],
 				},
 			} );
@@ -181,7 +185,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 		it( 'should disable unchecked metrics when four metrics are checked', () => {
 			const metrics = [
-				KM_ANALYTICS_LOYAL_VISITORS,
+				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -241,7 +245,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -265,7 +269,7 @@ describe( 'MetricsSelectionPanel', () => {
 			// Verify that the metric dependent on a disconnected analytics-4 is disabled.
 			expect(
 				getByRole( 'checkbox', {
-					name: /Loyal visitors/i,
+					name: /Returning visitors/i,
 				} )
 			).toBeDisabled();
 
@@ -279,7 +283,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 		it( 'should order pre-saved metrics to the top', () => {
 			const metrics = [
-				KM_ANALYTICS_LOYAL_VISITORS,
+				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
@@ -338,7 +342,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -348,6 +352,10 @@ describe( 'MetricsSelectionPanel', () => {
 				'googlesitekit_read_shared_module_data::["analytics-4"]': false,
 				'googlesitekit_read_shared_module_data::["search-console"]': true,
 			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( analytics4Fixtures.defaultSettings );
 
 			render( <MetricsSelectionPanel />, {
 				registry,
@@ -359,7 +367,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).not.toHaveTextContent( 'Loyal visitors' );
+			).not.toHaveTextContent( 'Returning visitors' );
 
 			// Verify that a metric dependent on Search Console is listed.
 			expect(
@@ -384,7 +392,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
@@ -395,7 +403,7 @@ describe( 'MetricsSelectionPanel', () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
 				],
 			} );
 
@@ -477,7 +485,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
@@ -509,7 +517,7 @@ describe( 'MetricsSelectionPanel', () => {
 					body: {
 						widgetSlugs: [
 							KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-							KM_ANALYTICS_LOYAL_VISITORS,
+							KM_ANALYTICS_RETURNING_VISITORS,
 							KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 						],
 						isWidgetHidden: false,
@@ -520,7 +528,7 @@ describe( 'MetricsSelectionPanel', () => {
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_RETURNING_VISITORS,
 						KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 					],
 				} );
@@ -578,7 +586,7 @@ describe( 'MetricsSelectionPanel', () => {
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_RETURNING_VISITORS,
 					],
 				} );
 
@@ -597,7 +605,7 @@ describe( 'MetricsSelectionPanel', () => {
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_RETURNING_VISITORS,
 					],
 				} );
 
@@ -617,7 +625,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 				// Uncheck one of the selected metrics to trigger
 				// the button label change.
-				const checkbox = await findByLabelText( 'Loyal visitors' );
+				const checkbox = await findByLabelText( 'Returning visitors' );
 				fireEvent.click( checkbox );
 
 				expect(
@@ -632,7 +640,7 @@ describe( 'MetricsSelectionPanel', () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
 				],
 			} );
 

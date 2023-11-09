@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WPDashboardReportError should only render one error per module when there are multiple instances with same error 1`] = `
+<div>
+  <div>
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      
+      <h3
+        class="googlesitekit-cta__title"
+      >
+        Data error in Search Console
+      </h3>
+      <div
+        class="googlesitekit-cta__description"
+      >
+        <div
+          class="googlesitekit-error-text"
+        >
+          <p>
+            Error: Test error message
+          </p>
+        </div>
+      </div>
+      
+      
+      <div
+        class="googlesitekit-report-error-actions"
+      >
+        <div>
+          <a
+            aria-label="Get help (opens in a new tab)"
+            class="googlesitekit-cta-link"
+            href="undefined?error_id=test_error"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Get help
+          </a>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      
+      <h3
+        class="googlesitekit-cta__title"
+      >
+        Data error in Analytics 4
+      </h3>
+      <div
+        class="googlesitekit-cta__description"
+      >
+        <div
+          class="googlesitekit-error-text"
+        >
+          <p>
+            Error: Test error message
+          </p>
+        </div>
+      </div>
+      
+      
+      <div
+        class="googlesitekit-report-error-actions"
+      >
+        <div>
+          <a
+            aria-label="Get help (opens in a new tab)"
+            class="googlesitekit-cta-link"
+            href="undefined?error_id=test_error"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Get help
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

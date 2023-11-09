@@ -21,7 +21,10 @@
  */
 import fetchMock from 'fetch-mock';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import { mockSurveyEndpoints } from '../../../../../../tests/js/mock-survey-endpoints';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../../tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -79,7 +82,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
-		mockSurveyEndpoints( registry );
+		mockSurveyEndpoints();
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
@@ -310,10 +313,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
-			);
-
-			const surveyTriggerEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/user/data/survey-trigger'
 			);
 
 			await waitFor( () =>
