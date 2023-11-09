@@ -113,9 +113,6 @@ AnalyticsActiveWithGA4Enabled.args = {
 		setupAnalytics4MockReports( registry );
 	},
 };
-AnalyticsActiveWithGA4Enabled.parameters = {
-	features: [ 'ga4Reporting' ],
-};
 
 export const Analytics4WidgetsLoading = Template.bind( {} );
 Analytics4WidgetsLoading.storyName = 'GA4 Widgets Loading';
@@ -139,9 +136,6 @@ Analytics4WidgetsLoading.args = {
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4Loading( registry );
 	},
-};
-Analytics4WidgetsLoading.parameters = {
-	features: [ 'ga4Reporting' ],
 };
 
 export const GatheringData = Template.bind( {} );

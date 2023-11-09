@@ -34,7 +34,7 @@ import { provideKeyMetricsWidgetRegistrations } from '../../../components/KeyMet
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -48,7 +48,9 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -145,7 +147,7 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
 				).toMatchObject( [
-					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
 					KM_ANALYTICS_NEW_VISITORS,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -157,7 +159,7 @@ describe( 'core/user key metrics', () => {
 			it( 'should use the user-selected key metrics if the user has selected any widgets', async () => {
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: {
-						widgetSlugs: [ KM_ANALYTICS_LOYAL_VISITORS ],
+						widgetSlugs: [ KM_ANALYTICS_RETURNING_VISITORS ],
 						isWidgetHidden: false,
 					},
 					status: 200,
@@ -172,7 +174,7 @@ describe( 'core/user key metrics', () => {
 
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( [ KM_ANALYTICS_LOYAL_VISITORS ] );
+				).toMatchObject( [ KM_ANALYTICS_RETURNING_VISITORS ] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -220,7 +222,7 @@ describe( 'core/user key metrics', () => {
 				[
 					'publish_blog',
 					[
-						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_RETURNING_VISITORS,
 						KM_ANALYTICS_NEW_VISITORS,
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -741,7 +743,9 @@ describe( 'core/user key metrics', () => {
 				).toBe( true );
 			} );
 
-			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', () => {
+			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', async () => {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+
 				provideUserAuthentication( registry, {
 					authenticated: false,
 				} );
@@ -769,9 +773,10 @@ describe( 'core/user key metrics', () => {
 						.select( CORE_USER )
 						.isKeyMetricAvailable( 'metricA' )
 				).toBe( false );
+				await waitForDefaultTimeouts();
 			} );
 
-			it( 'should return true if modules that the widget depends on are connected and accessible by a view-only user', () => {
+			it( 'should return true if modules that the widget depends on are connected and accessible by a view-only user', async () => {
 				provideUserAuthentication( registry );
 
 				provideModules( registry, [
@@ -792,6 +797,10 @@ describe( 'core/user key metrics', () => {
 					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
 				} );
 
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( analytics4Fixtures.defaultSettings );
+
 				expect(
 					registry
 						.select( CORE_USER )
@@ -805,6 +814,7 @@ describe( 'core/user key metrics', () => {
 						.select( CORE_USER )
 						.isKeyMetricAvailable( 'metricA' )
 				).toBe( true );
+				await waitForDefaultTimeouts();
 			} );
 		} );
 	} );

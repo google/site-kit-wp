@@ -121,8 +121,6 @@ class Analytics_4Test extends TestCase {
 		parent::set_up();
 		$this->request_handler_calls = array();
 
-		$this->enable_feature( 'ga4Reporting' );
-
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options        = new Options( $this->context );
 		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
@@ -1841,8 +1839,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__shared_metric_validation() {
-		$this->enable_feature( 'ga4Reporting' );
-
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -2850,6 +2846,11 @@ class Analytics_4Test extends TestCase {
 		$wp_query = new WP_Query();
 		$data     = $method->invoke( $this->analytics );
 		$this->assertEmpty( $data );
+
+		// Ensure the `'googlesitekit_post_categories'` key is not present
+		// if the page does not return categories or encounters an error
+		// retrieving categories.
+		$this->assertFalse( array_key_exists( 'googlesitekit_post_categories', $data ) );
 
 		// Change the current page to be singular.
 		$category1_id = $this->factory()->category->create();
