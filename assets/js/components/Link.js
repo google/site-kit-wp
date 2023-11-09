@@ -155,9 +155,7 @@ const Link = forwardRef( ( props, ref ) => {
 			aria-label={ ariaLabel }
 			className={ classnames( 'googlesitekit-cta-link', className, {
 				'googlesitekit-cta-link--secondary': secondary,
-				'googlesitekit-cta-link--arrow': arrow,
 				'googlesitekit-cta-link--inverse': inverse,
-				'googlesitekit-cta-link--back': back,
 				'googlesitekit-cta-link--small': small,
 				'googlesitekit-cta-link--caps': caps,
 				'googlesitekit-cta-link--danger': danger,

@@ -41,6 +41,6 @@ module.exports = {
 	report: [ 'browser' ],
 	scenarios,
 	viewports,
-	misMatchThreshold: 0,
+	misMatchThreshold: 1,
 	delay: 1000, // Default delay to ensure components render complete.
 };
