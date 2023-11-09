@@ -23,6 +23,7 @@ import {
 	provideKeyMetrics,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	provideUserInfo,
 	render,
 	waitFor,
@@ -51,6 +52,9 @@ describe( 'ChangeMetricsLink', () => {
 
 		freezeFetch( coreKeyMetricsEndpointRegExp );
 		freezeFetch( coreUserInputSettingsEndpointRegExp );
+
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 	} );
 
 	it( 'should not render if key metrics are undefined', () => {
@@ -104,7 +108,6 @@ describe( 'ChangeMetricsLink', () => {
 	it( 'should trigger a survey when viewed', async () => {
 		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
 		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
-		provideUserAuthentication( registry );
 		mockSurveyEndpoints();
 
 		render( <ChangeMetricsLink />, { registry } );
@@ -122,7 +125,6 @@ describe( 'ChangeMetricsLink', () => {
 		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
 		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
 		provideUserInfo( registry, { id: 1 } );
-		provideUserAuthentication( registry );
 		fetchMock.post( surveyTriggerEndpoint, {
 			status: 200,
 			body: {},
