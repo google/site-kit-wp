@@ -51,6 +51,7 @@ function NewBadge( {
 						href={ learnMoreLink }
 						onClick={ onLearnMoreClick }
 						external
+						hideExternalIndicator
 					>
 						{ __( 'Learn more', 'google-site-kit' ) }
 					</Link>

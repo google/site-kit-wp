@@ -126,6 +126,7 @@ export default function ReportErrorActions( props ) {
 									<Link
 										href={ errorTroubleshootingLinkURL }
 										external
+										hideExternalIndicator
 									>
 										{ __( 'Get help', 'google-site-kit' ) }
 									</Link>
@@ -139,7 +140,11 @@ export default function ReportErrorActions( props ) {
 					{ typeof GetHelpLink === 'function' ? (
 						<GetHelpLink linkURL={ errorTroubleshootingLinkURL } />
 					) : (
-						<Link href={ errorTroubleshootingLinkURL } external>
+						<Link
+							href={ errorTroubleshootingLinkURL }
+							external
+							hideExternalIndicator
+						>
 							{ __( 'Get help', 'google-site-kit' ) }
 						</Link>
 					) }

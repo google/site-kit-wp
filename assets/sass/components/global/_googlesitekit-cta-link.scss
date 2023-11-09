@@ -112,6 +112,7 @@
 button {
 	&.googlesitekit-cta-link {
 		color: $c-content-primary;
+		display: inline-block;
 
 		svg {
 			fill: currentColor;
