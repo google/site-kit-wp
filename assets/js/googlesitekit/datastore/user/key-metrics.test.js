@@ -24,7 +24,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	provideUserCapabilities,
 	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
@@ -45,7 +44,6 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	PERMISSION_MANAGE_OPTIONS,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
@@ -103,7 +101,6 @@ describe( 'core/user key metrics', () => {
 		describe( 'getKeyMetrics', () => {
 			beforeEach( () => {
 				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
 			} );
 
 			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
@@ -316,7 +313,6 @@ describe( 'core/user key metrics', () => {
 			beforeEach( async () => {
 				provideUserInfo( registry, { id: userID } );
 				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
 				await registry
 					.dispatch( CORE_USER )
 					.setKeyMetricsSetting( settingID, settingValue );
@@ -481,7 +477,6 @@ describe( 'core/user key metrics', () => {
 		describe( 'getKeyMetricsSettings', () => {
 			it( 'should fetch user key metrics settings from the API if none exist', async () => {
 				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
 
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: coreKeyMetricsExpectedResponse,
@@ -525,7 +520,6 @@ describe( 'core/user key metrics', () => {
 
 			it( 'should not make a network request if settings exist', async () => {
 				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
 
 				registry
 					.dispatch( CORE_USER )
@@ -548,9 +542,6 @@ describe( 'core/user key metrics', () => {
 			it( 'should return the filtered widget slugs that do not require custom dimensions when the user is in a view-only dashboard', () => {
 				// Set up state to simulate view-only mode
 				provideUserAuthentication( registry, { authenticated: false } );
-				provideUserCapabilities( registry, {
-					[ PERMISSION_MANAGE_OPTIONS ]: false,
-				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableCustomDimensions: null,
@@ -577,9 +568,6 @@ describe( 'core/user key metrics', () => {
 			it( 'should return an empty array if only one widget slug is present when the user is in a view-only dashboard', () => {
 				// Set up state to simulate view-only mode
 				provideUserAuthentication( registry, { authenticated: false } );
-				provideUserCapabilities( registry, {
-					[ PERMISSION_MANAGE_OPTIONS ]: false,
-				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableCustomDimensions: null,
@@ -603,7 +591,6 @@ describe( 'core/user key metrics', () => {
 		describe( 'getUserPickedMetrics', () => {
 			beforeEach( () => {
 				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
 			} );
 
 			it( 'should return undefined while settings are loading', async () => {
@@ -654,7 +641,6 @@ describe( 'core/user key metrics', () => {
 		describe( 'isKeyMetricsWidgetHidden', () => {
 			beforeEach( () => {
 				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
 			} );
 
 			it( 'should return undefined while settings are loading', async () => {

@@ -27,7 +27,6 @@ import {
 	provideKeyMetrics,
 	provideModules,
 	provideUserAuthentication,
-	provideUserCapabilities,
 	provideUserInfo,
 	subscribeUntil,
 } from '../../../../../tests/js/utils';
@@ -70,7 +69,6 @@ describe( 'MetricsSelectionPanel', () => {
 		freezeFetch( coreKeyMetricsEndpointRegExp );
 
 		provideUserAuthentication( registry );
-		provideUserCapabilities( registry );
 
 		registry
 			.dispatch( CORE_UI )

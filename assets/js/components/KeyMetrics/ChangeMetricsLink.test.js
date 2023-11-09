@@ -23,7 +23,6 @@ import {
 	provideKeyMetrics,
 	provideSiteInfo,
 	provideUserAuthentication,
-	provideUserCapabilities,
 	provideUserInfo,
 	render,
 	waitFor,
@@ -54,7 +53,6 @@ describe( 'ChangeMetricsLink', () => {
 		freezeFetch( coreUserInputSettingsEndpointRegExp );
 
 		provideUserAuthentication( registry );
-		provideUserCapabilities( registry );
 	} );
 
 	it( 'should not render if key metrics are undefined', () => {
