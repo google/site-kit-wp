@@ -73,6 +73,11 @@ describe( 'MetricsSelectionPanel', () => {
 		registry
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+		// jsdom does not support scrollIntoView which is used by the last metric item
+		// to prevent it from hiding underneath the Custom Dimensions warning notice.
+		// See: https://github.com/jsdom/jsdom/issues/1695.
+		Element.prototype.scrollIntoView = jest.fn();
 	} );
 
 	describe( 'Metrics', () => {
