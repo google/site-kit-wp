@@ -38,7 +38,6 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	PERMISSION_MANAGE_OPTIONS,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
@@ -367,16 +366,11 @@ const baseSelectors = {
 	getKeyMetricsSettings: createRegistrySelector( ( select ) => ( state ) => {
 		const keyMetricsSettings = state.keyMetricsSettings;
 
-		const isAuthenticated = select( CORE_USER ).isAuthenticated();
-		const canManageOptions = select( CORE_USER ).hasCapability(
-			PERMISSION_MANAGE_OPTIONS
-		);
-
-		const isViewOnly = ! isAuthenticated && ! canManageOptions;
-
 		if ( ! keyMetricsSettings ) {
 			return undefined;
 		}
+
+		const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 
 		if ( isViewOnly ) {
 			// Filter out widget slugs that depend on unavailable custom dimensions.
