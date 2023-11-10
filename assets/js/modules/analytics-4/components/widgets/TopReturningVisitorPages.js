@@ -22,15 +22,13 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -155,17 +153,13 @@ function TopReturningVisitorPages( props ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'Top pages by returning visitors', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Pages that attracted the most returning visitors',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

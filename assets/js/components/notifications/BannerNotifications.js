@@ -51,8 +51,6 @@ const { useSelect } = Data;
 
 export default function BannerNotifications() {
 	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-
 	const viewOnly = useViewOnly();
 
 	const isAuthenticated = useSelect( ( select ) =>
@@ -70,6 +68,10 @@ export default function BannerNotifications() {
 	);
 	const hasGTMScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( GTM_SCOPE )
+	);
+
+	const hasMismatchedGoogleTagID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID()
 	);
 
 	const isGA4ModuleOwner = useSelect( ( select ) => {
@@ -106,16 +108,18 @@ export default function BannerNotifications() {
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
 			<ModuleRecoveryAlert />
-			{ ga4ReportingEnabled &&
-				analyticsModuleConnected &&
-				ga4ModuleConnected && <SwitchedToGA4Banner /> }
+			{ analyticsModuleConnected && ga4ModuleConnected && (
+				<SwitchedToGA4Banner />
+			) }
 			<ActivationBanner />
 			{ enhancedMeasurementEnabled && (
 				<EnhancedMeasurementActivationBanner />
 			) }
 			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
 				<Fragment>
-					<GoogleTagIDMismatchNotification />
+					{ hasMismatchedGoogleTagID && (
+						<GoogleTagIDMismatchNotification />
+					) }
 					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }

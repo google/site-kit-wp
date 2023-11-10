@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -42,9 +42,9 @@ import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
 const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardUniqueVisitorsChart( props ) {
-	const { WidgetReportError } = props;
-
+export default function WPDashboardUniqueVisitorsChart( {
+	WPDashboardReportError,
+} ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -101,7 +101,9 @@ export default function WPDashboardUniqueVisitorsChart( props ) {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<WPDashboardReportError moduleSlug="analytics" error={ error } />
+		);
 	}
 
 	if ( ! isEmpty( data?.[ 0 ] ) ) {
@@ -172,5 +174,5 @@ export default function WPDashboardUniqueVisitorsChart( props ) {
 }
 
 WPDashboardUniqueVisitorsChart.propTypes = {
-	WidgetReportError: PropTypes.elementType.isRequired,
+	WPDashboardReportError: PropTypes.elementType.isRequired,
 };

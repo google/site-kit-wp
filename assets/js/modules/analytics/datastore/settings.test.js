@@ -36,13 +36,13 @@ import {
 	PROPERTY_CREATE,
 	PROFILE_CREATE,
 } from './constants';
-import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
 	provideModules,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import * as fixtures from './__fixtures__';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
@@ -50,13 +50,13 @@ import { INVARIANT_INVALID_WEBDATASTREAM_ID } from '../../analytics-4/datastore/
 import * as ga4fixtures from '../../analytics-4/datastore/__fixtures__';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,
+	INVARIANT_INVALID_CONVERSION_ID,
 	INVARIANT_INVALID_PROFILE_NAME,
 	INVARIANT_INVALID_PROFILE_SELECTION,
 	INVARIANT_INVALID_PROPERTY_SELECTION,
-	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
+import ga4ReportingTour from '../../../feature-tours/ga4-reporting';
 import { enabledFeatures } from '../../../features';
-import ga4Reporting from '../../../feature-tours/ga4-reporting';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -133,10 +133,14 @@ describe( 'modules/analytics settings', () => {
 			beforeEach( () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+					.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 			} );
 
 			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					accountID: '12345',
@@ -184,6 +188,10 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'handles an error if set while creating a property', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					accountID: '12345',
@@ -218,6 +226,10 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
 				const profileName = fixtures.createProfile.name;
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
@@ -267,6 +279,10 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'handles an error if set while creating a profile', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
 				const profileName = fixtures.createProfile.name;
 
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
@@ -318,6 +334,10 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'dispatches both createProperty and createProfile when selected', async () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
 				const profileName = fixtures.createProfile.name;
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
@@ -429,9 +449,7 @@ describe( 'modules/analytics settings', () => {
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
 
-			it( 'does not dispatch createProperty when the `ga4Reporting` feature flag is enabled', async () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not dispatch createProperty when the `enableUA` form value is false', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					propertyID: PROPERTY_CREATE,
@@ -457,9 +475,7 @@ describe( 'modules/analytics settings', () => {
 				expect( result.error ).toBeFalsy();
 			} );
 
-			it( 'does not dispatch createProfile when the `ga4Reporting` feature flag is enabled', async () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not dispatch createProfile when the `enableUA` form value is false', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					profileID: PROFILE_CREATE,
@@ -481,9 +497,7 @@ describe( 'modules/analytics settings', () => {
 				);
 			} );
 
-			it( 'does not dispatch both createProperty and createProfile when selected and when the `ga4Reporting` feature flag is enabled', async () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not dispatch both createProperty and createProfile when selected and when the `enableUA` form value is false', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					propertyID: PROPERTY_CREATE,
@@ -521,7 +535,7 @@ describe( 'modules/analytics settings', () => {
 				it( 'should not dismiss the ga4Reporting feature tour if it is already dismissed', async () => {
 					registry
 						.dispatch( CORE_USER )
-						.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+						.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 					registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 						...validSettings,
 					} );
@@ -533,7 +547,7 @@ describe( 'modules/analytics settings', () => {
 					expect(
 						registry
 							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
+							.isTourDismissed( ga4ReportingTour.slug )
 					).toBe( true );
 
 					await registry
@@ -543,7 +557,7 @@ describe( 'modules/analytics settings', () => {
 					expect(
 						registry
 							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
+							.isTourDismissed( ga4ReportingTour.slug )
 					).toBe( true );
 
 					expect( fetchMock ).not.toHaveFetched(
@@ -563,13 +577,13 @@ describe( 'modules/analytics settings', () => {
 						body: validSettings,
 					} );
 					fetchMock.postOnce( fetchDismissTourRegExp, {
-						body: [ ga4Reporting.slug ],
+						body: [ ga4ReportingTour.slug ],
 					} );
 
 					expect(
 						registry
 							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
+							.isTourDismissed( ga4ReportingTour.slug )
 					).toBe( false );
 
 					await registry
@@ -579,7 +593,7 @@ describe( 'modules/analytics settings', () => {
 					expect(
 						registry
 							.select( CORE_USER )
-							.isTourDismissed( ga4Reporting.slug )
+							.isTourDismissed( ga4ReportingTour.slug )
 					).toBe( true );
 				} );
 			} );
@@ -907,12 +921,16 @@ describe( 'modules/analytics settings', () => {
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'sets internal state while submitting changes', async () => {
+				const fetchDismissTourRegExp = new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismiss-tour'
+				);
+
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetSettings( validSettings );
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetDismissedTours( [ ga4Reporting.slug ] );
+					.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 				expect(
 					registry.select( MODULES_ANALYTICS ).haveSettingsChanged()
 				).toBe( false );
@@ -920,6 +938,10 @@ describe( 'modules/analytics settings', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS ).isDoingSubmitChanges()
 				).toBe( false );
+
+				fetchMock.postOnce( fetchDismissTourRegExp, {
+					body: [ ga4ReportingTour.slug ],
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
@@ -1073,6 +1095,10 @@ describe( 'modules/analytics settings', () => {
 
 			it( 'requires a valid propertyID', () => {
 				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setSettings( validSettings );
 				registry
@@ -1094,6 +1120,10 @@ describe( 'modules/analytics settings', () => {
 
 			it( 'requires a valid profileID', () => {
 				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry
 					.dispatch( MODULES_ANALYTICS )
 					.setSettings( validSettings );
 				registry
@@ -1113,9 +1143,7 @@ describe( 'modules/analytics settings', () => {
 				).toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
 			} );
 
-			it( 'does not require a valid propertyID when the `ga4Reporting` feature flag is enabled', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not require a valid propertyID', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					propertyID: null,
@@ -1130,9 +1158,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'does not require a valid profileID when the `ga4Reporting` feature flag is enabled', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not require a valid profileID when the `enableUA` form value is false', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					profileID: null,
@@ -1147,9 +1173,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'does not require a valid internalWebPropertyID when the `ga4Reporting` feature flag is enabled', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
+			it( 'does not require a valid internalWebPropertyID when the `enableUA` form value is false', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					internalWebPropertyID: null,
@@ -1255,6 +1279,10 @@ describe( 'modules/analytics settings', () => {
 
 			it( 'should not support creating a new profile when the profile name is empty', () => {
 				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
 				registry
@@ -1276,6 +1304,10 @@ describe( 'modules/analytics settings', () => {
 
 			it( 'should not support creating a new profile when the profile name is not set at all', () => {
 				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableUA: true } );
+
+				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
 				registry
@@ -1292,8 +1324,7 @@ describe( 'modules/analytics settings', () => {
 				).toThrow( INVARIANT_INVALID_PROFILE_NAME );
 			} );
 
-			it( 'does not require a valid profile name when the `ga4Reporting` feature flag is enabled', () => {
-				enabledFeatures.add( 'ga4Reporting' );
+			it( 'does not require a valid profile name when the `enableUA` form value is false', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );

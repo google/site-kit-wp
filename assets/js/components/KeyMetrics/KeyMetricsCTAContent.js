@@ -19,19 +19,28 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import PropTypes from 'prop-types';
 import { useIntersection } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 import { Cell, Grid, Row } from '../../material-components';
 import GhostCardsSVG from './GhostCards';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
-import useViewContext from '../../hooks/useViewContext';
-import { trackEvent } from '../../util';
+
+const { useDispatch, useSelect } = Data;
 
 export default function KeyMetricsCTAContent( {
 	className,
@@ -50,16 +59,36 @@ export default function KeyMetricsCTAContent( {
 	} );
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+
 	useEffect( () => {
-		if ( inView && ! hasBeenInView && ga4Connected ) {
-			trackEvent(
-				`${ viewContext }_kmw-cta-notification`,
-				'view_notification'
-			);
+		if ( inView && ! hasBeenInView ) {
+			if ( ga4Connected ) {
+				trackEvent(
+					`${ viewContext }_kmw-cta-notification`,
+					'view_notification'
+				);
+			}
+
+			if ( usingProxy ) {
+				triggerSurvey( 'view_kmw_setup_cta', { ttl: DAY_IN_SECONDS } );
+			}
 
 			setHasBeenInView( true );
 		}
-	}, [ inView, viewContext, ga4Connected, hasBeenInView ] );
+	}, [
+		inView,
+		viewContext,
+		ga4Connected,
+		hasBeenInView,
+		usingProxy,
+		triggerSurvey,
+	] );
 
 	return (
 		<section

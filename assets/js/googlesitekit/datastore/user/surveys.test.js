@@ -26,6 +26,12 @@ import {
 	muteFetch,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
+import {
+	surveyEventEndpoint,
+	surveyTimeoutEndpoint,
+	surveyTimeoutsEndpoint,
+	surveyTriggerEndpoint,
+} from '../../../../../tests/js/mock-survey-endpoints';
 
 describe( 'core/user surveys', () => {
 	let registry;
@@ -41,19 +47,6 @@ describe( 'core/user surveys', () => {
 			session_token: '1234',
 		},
 	};
-
-	const surveyTriggerEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-trigger'
-	);
-	const surveyEventEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-event'
-	);
-	const surveyTimeoutEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-timeout'
-	);
-	const surveyTimeoutsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-timeouts'
-	);
 
 	describe( 'actions', () => {
 		describe( 'setSurveyTimeout', () => {

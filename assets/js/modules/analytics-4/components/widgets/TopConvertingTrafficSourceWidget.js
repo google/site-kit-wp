@@ -30,7 +30,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -116,7 +119,7 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 	return (
 		<MetricTileText
 			Widget={ Widget }
-			title={ __( 'Top converting traffic source', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE }
 			metricValue={ topChannelGroup }
 			metricValueFormat={ format }
 			subText={ sprintf(
@@ -129,10 +132,6 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

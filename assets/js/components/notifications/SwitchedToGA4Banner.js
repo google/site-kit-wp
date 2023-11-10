@@ -38,7 +38,7 @@ import { UA_CUTOFF_DATE } from '../../modules/analytics/constants';
 import { stringToDate, trackEvent } from '../../util';
 import { isValidPropertyID } from '../../modules/analytics/util';
 import useViewContext from '../../hooks/useViewContext';
-import ga4Reporting from '../../feature-tours/ga4-reporting';
+import ga4ReportingTour from '../../feature-tours/ga4-reporting';
 import BannerNotification from './BannerNotification';
 const { useSelect, useDispatch } = Data;
 
@@ -59,7 +59,7 @@ export default function SwitchedToGA4Banner() {
 	);
 
 	const isTourDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isTourDismissed( ga4Reporting.slug )
+		select( CORE_USER ).isTourDismissed( ga4ReportingTour.slug )
 	);
 
 	const showGA4ReportingTour = useSelect( ( select ) => {
@@ -94,7 +94,7 @@ export default function SwitchedToGA4Banner() {
 	const handleDismissClick = () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
 
-		dismissTour( ga4Reporting.slug );
+		dismissTour( ga4ReportingTour.slug );
 	};
 
 	if (
