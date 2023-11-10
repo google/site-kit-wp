@@ -34,9 +34,10 @@ import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { elementsOverlap } from '../../../util/geometry';
+import whenActive from '../../../util/when-active';
 const { useSelect } = Data;
 
-export default function CustomDimensionsNotice() {
+function CustomDimensionsNotice() {
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -118,3 +119,7 @@ export default function CustomDimensionsNotice() {
 		</div>
 	);
 }
+
+export default whenActive( { moduleName: 'analytics-4' } )(
+	CustomDimensionsNotice
+);
