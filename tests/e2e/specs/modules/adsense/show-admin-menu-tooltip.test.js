@@ -39,7 +39,20 @@ describe( 'Site Kit dashboard post search', () => {
 		await deactivateUtilityPlugins();
 	} );
 
-	it( 'shows the admin menu when dismissing the AdSense Connect CTA and showing the tooltip while on a mobile viewport', async () => {
+	// This test is skipped as it will only run in interactive mode.
+	//
+	// Whenever this test is run in headless mode, the size of the admin
+	// menu is 0, which means that the menu is not visible. But in interactive
+	// mode and when using a browser, it works fine.
+	//
+	// We suspect this is caused by a bug in Puppeteer, but we haven't been
+	// able to find a solution/upgrade to a newer version because it requires
+	// a version of `node` above `14`.
+	//
+	// See: https://github.com/google/site-kit-wp/issues/7738
+	//
+	// eslint-disable-next-line jest/no-disabled-tests
+	it.skip( 'shows the admin menu when dismissing the AdSense Connect CTA and showing the tooltip while on a mobile viewport', async () => {
 		// This is a test to provide a safety net that will let us know if the hack introduced in #6924 stops working in a future WordPress release.
 
 		// Set the page to a mobile viewport, as the scenario we want to test is the case where the admin menu is initially hidden, and then shown in response to user interaction.
