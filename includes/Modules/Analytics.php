@@ -149,7 +149,7 @@ final class Analytics extends Module
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				if ( Feature_Flags::enabled( 'ga4Reporting' ) && ! $this->authentication->is_authenticated() ) {
+				if ( ! $this->authentication->is_authenticated() ) {
 					$settings = $this->get_settings()->get();
 				}
 
@@ -342,34 +342,6 @@ final class Analytics extends Module
 
 		$new_settings = array();
 
-		if ( ! Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			// UA-SPECIFIC Provisioning callback only.
-			$web_property_id = htmlspecialchars( $input->filter( INPUT_GET, 'webPropertyId' ) );
-			$profile_id      = htmlspecialchars( $input->filter( INPUT_GET, 'profileId' ) );
-
-			if ( ! $web_property_id || ! $profile_id ) {
-				// If ga4Reporting is not enabled and UA property or profile IDs are missing, something went wrong.
-				wp_safe_redirect(
-					$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
-				);
-				exit;
-			}
-
-			// Retrieve the internal web property id.
-			try {
-				$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $web_property_id );
-			} catch ( Exception $e ) {
-				wp_safe_redirect(
-					$this->context->admin_url( 'dashboard', array( 'error_code' => 'property_not_found' ) )
-				);
-				exit;
-			}
-
-			$new_settings['internalWebPropertyID'] = $web_property->getInternalWebPropertyId();
-			$new_settings['propertyID']            = $web_property_id;
-			$new_settings['profileID']             = $profile_id;
-		}
-
 		// At this point, account creation was successful.
 		$new_settings['accountID'] = $account_id;
 
@@ -432,11 +404,9 @@ final class Analytics extends Module
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			unset( $datapoints['POST:create-account-ticket'] );
-			unset( $datapoints['POST:create-profile'] );
-			unset( $datapoints['POST:create-property'] );
-		}
+		unset( $datapoints['POST:create-account-ticket'] );
+		unset( $datapoints['POST:create-profile'] );
+		unset( $datapoints['POST:create-property'] );
 
 		return $datapoints;
 	}

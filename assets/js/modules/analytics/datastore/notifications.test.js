@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import {
 	createTestRegistry,
 	provideSiteInfo,
+	provideModules,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS } from './constants';
@@ -40,6 +41,7 @@ describe( 'modules/analytics notifications', () => {
 		provideSiteInfo( registry, {
 			proxySupportLinkURL: 'https://test.com',
 		} );
+		provideModules( registry );
 	} );
 
 	afterEach( () => {

@@ -35,29 +35,20 @@ import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
-	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 	MODULES_ANALYTICS,
 	FORM_SETUP,
 	EDIT_SCOPE,
-	SETUP_FLOW_MODE_GA4_LEGACY,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
-import SetupFormGA4Legacy from './SetupFormGA4Legacy';
-import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { ExistingGTMPropertyNotice } from '../common';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const canSubmitUAChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitChanges()
 	);
@@ -107,14 +98,6 @@ export default function SetupForm( { finishSetup } ) {
 		[ finishSetup, setValues, submitChanges ]
 	);
 
-	const isTagManagerAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
-	);
-	const gtmAnalyticsPropertyID = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
 	const gtmContainersResolved = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
@@ -136,11 +119,6 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-analytics-setup__form"
 			onSubmit={ submitForm }
 		>
-			{ ! ga4ReportingEnabled && (
-				<ExistingGTMPropertyNotice
-					gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
-				/>
-			) }
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
@@ -151,20 +129,8 @@ export default function SetupForm( { finishSetup } ) {
 			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
-			{ setupFlowMode === SETUP_FLOW_MODE_GA4_LEGACY && (
-				<SetupFormGA4Legacy />
-			) }
-			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && (
-				<SetupFormGA4Transitional />
-			) }
 			<div className="googlesitekit-setup-module__action">
-				<Button
-					disabled={
-						ga4ReportingEnabled
-							? ! canSubmitGA4Changes
-							: ! canSubmitUAChanges
-					}
-				>
+				<Button disabled={ ! canSubmitGA4Changes }>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
 				</Button>
 			</div>

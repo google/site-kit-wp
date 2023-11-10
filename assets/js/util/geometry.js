@@ -1,5 +1,5 @@
 /**
- * Change badge styles.
+ * Geometry related utility functions.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,32 +16,27 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * Checks if one element overlaps another.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Element} element1 The first element.
+ * @param {Element} element2 The second element.
+ * @return {boolean} Returns if the first and second elements overlap each other.
+ */
+export const elementsOverlap = ( element1, element2 ) => {
+	const rect1 = element1.getBoundingClientRect();
+	const rect2 = element2.getBoundingClientRect();
 
-	.googlesitekit-change-badge {
-		background-color: $c-green-g-50;
-		border-radius: $br-lg;
-		color: $c-green-g-700;
-		font: $f-primary;
-		font-size: $fs-label-sm;
-		font-weight: 500;
-		letter-spacing: $ls-xs;
-		line-height: $lh-label-sm;
-		margin-top: 6px;
-		padding: 4px 8px;
-
-		@media (min-width: $bp-nonMobile) {
-			margin-top: 12px;
-		}
-
-		&.googlesitekit-change-badge--negative {
-			background-color: $c-red-r-50;
-			color: $c-red-r-700;
-		}
-
-		&.googlesitekit-change-badge--zero {
-			background-color: $c-neutral-n-50;
-			color: $c-neutral-n-700;
-		}
+	if (
+		rect1.bottom < rect2.top ||
+		rect2.bottom < rect1.top ||
+		rect1.right < rect2.left ||
+		rect2.right < rect1.left
+	) {
+		return false;
 	}
-}
+
+	return true;
+};

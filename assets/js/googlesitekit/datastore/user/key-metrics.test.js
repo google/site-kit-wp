@@ -45,6 +45,8 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
+import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -660,7 +662,9 @@ describe( 'core/user key metrics', () => {
 				).toBe( true );
 			} );
 
-			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', () => {
+			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', async () => {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+
 				provideUserAuthentication( registry, {
 					authenticated: false,
 				} );
@@ -688,9 +692,10 @@ describe( 'core/user key metrics', () => {
 						.select( CORE_USER )
 						.isKeyMetricAvailable( 'metricA' )
 				).toBe( false );
+				await waitForDefaultTimeouts();
 			} );
 
-			it( 'should return true if modules that the widget depends on are connected and accessible by a view-only user', () => {
+			it( 'should return true if modules that the widget depends on are connected and accessible by a view-only user', async () => {
 				provideUserAuthentication( registry );
 
 				provideModules( registry, [
@@ -711,6 +716,10 @@ describe( 'core/user key metrics', () => {
 					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
 				} );
 
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( analytics4Fixtures.defaultSettings );
+
 				expect(
 					registry
 						.select( CORE_USER )
@@ -724,6 +733,7 @@ describe( 'core/user key metrics', () => {
 						.select( CORE_USER )
 						.isKeyMetricAvailable( 'metricA' )
 				).toBe( true );
+				await waitForDefaultTimeouts();
 			} );
 		} );
 	} );
