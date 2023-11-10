@@ -60,7 +60,9 @@ export const PluginSetupError = Template.bind( {} );
 PluginSetupError.storyName = 'Plugin Setup Error - Redo the plugin setup';
 PluginSetupError.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
+		provideUserAuthentication( registry, {
+			authenticated: false,
+		} );
 
 		provideSiteInfo( registry, {
 			setupErrorRedoURL: '#',
@@ -71,6 +73,25 @@ PluginSetupError.args = {
 	},
 };
 PluginSetupError.scenario = {
+	label: 'Global/ErrorNotifications/PluginSetupError',
+};
+
+export const PermissionError = Template.bind( {} );
+PermissionError.storyName =
+	'Permission Error - No permission is temporary persisted';
+PermissionError.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+
+		provideSiteInfo( registry, {
+			setupErrorRedoURL: '#',
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+		} );
+	},
+};
+PermissionError.scenario = {
 	label: 'Global/ErrorNotifications/PluginSetupError',
 };
 
