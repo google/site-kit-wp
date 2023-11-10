@@ -258,7 +258,7 @@ export const baseControls = {
 					dispatch( MODULES_ANALYTICS_4 ).setSyncTimeoutID(
 						undefined
 					);
-				}, 1000 );
+				}, 2000 );
 
 				dispatch( MODULES_ANALYTICS_4 ).setSyncTimeoutID( timeoutID );
 			}
