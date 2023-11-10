@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { compose } from '@wordpress/compose';
 
 /**
@@ -43,7 +42,10 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import withCustomDimensions from '../../utils/withCustomDimensions';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+} from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect, useInViewSelect } = Data;
 
 /**
@@ -227,17 +229,13 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'Top recent trending pages', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Pages with the most pageviews published in the last 3 days',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

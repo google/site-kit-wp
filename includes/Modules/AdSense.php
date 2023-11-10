@@ -187,9 +187,7 @@ final class AdSense extends Module
 	public function on_deactivation() {
 		$this->get_settings()->delete();
 
-		if ( $this->ad_blocking_recovery_tag->has() ) {
-			$this->ad_blocking_recovery_tag->delete();
-		}
+		$this->ad_blocking_recovery_tag->delete();
 	}
 
 	/**

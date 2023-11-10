@@ -22,15 +22,13 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -218,17 +216,13 @@ function LeastEngagingPagesWidget( props ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'Least engaging pages', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_LEAST_ENGAGING_PAGES }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Percentage of visitors that left without engagement with your site',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

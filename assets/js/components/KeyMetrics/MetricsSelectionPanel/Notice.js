@@ -20,6 +20,8 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { usePrevious } from '@wordpress/compose';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,6 +34,7 @@ import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { useFeature } from '../../../hooks/useFeature';
+import { elementsOverlap } from '../../../util/geometry';
 const { useSelect } = Data;
 
 export default function Notice() {
@@ -70,6 +73,33 @@ export default function Notice() {
 		}
 	} );
 
+	const previousHasMissingCustomDimensions = usePrevious(
+		hasMissingCustomDimensions
+	);
+	const noticeRef = useRef();
+
+	// Scroll the metric item being overlapped by the notice that appears
+	// when the item selected (normally the last item in the panel) requires
+	// custom dimension permissions.
+	useEffect( () => {
+		if (
+			hasMissingCustomDimensions &&
+			previousHasMissingCustomDimensions === false
+		) {
+			const currentFocusedElement = document.activeElement;
+
+			if (
+				currentFocusedElement &&
+				currentFocusedElement.closest(
+					'.googlesitekit-km-selection-panel-metrics__metric-item'
+				) &&
+				elementsOverlap( noticeRef.current, currentFocusedElement )
+			) {
+				currentFocusedElement.scrollIntoView();
+			}
+		}
+	}, [ hasMissingCustomDimensions, previousHasMissingCustomDimensions ] );
+
 	if ( hasMissingCustomDimensions === false ) {
 		return null;
 	}
@@ -85,7 +115,10 @@ export default function Notice() {
 		  );
 
 	return (
-		<div className="googlesitekit-km-selection-panel-notice">
+		<div
+			className="googlesitekit-km-selection-panel-notice"
+			ref={ noticeRef }
+		>
 			<p>{ customDimensionMessage }</p>
 		</div>
 	);

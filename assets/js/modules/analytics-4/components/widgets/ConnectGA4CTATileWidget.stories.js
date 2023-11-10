@@ -23,6 +23,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
 	provideModuleRegistrations,
 	provideModules,
+	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
@@ -49,6 +50,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry );
 				provideUserCapabilities( registry );
 				provideModules( registry, [
 					{

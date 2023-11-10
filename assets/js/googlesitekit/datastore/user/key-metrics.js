@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -45,6 +45,7 @@ import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
+import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 
 const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
@@ -254,7 +255,7 @@ const baseSelectors = {
 		switch ( purpose ) {
 			case 'publish_blog':
 				return [
-					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
 					KM_ANALYTICS_NEW_VISITORS,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -351,16 +352,62 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Gets key metrics settings.
+	 * Gets key metrics settings, taking into account whether the user has view-only access.
+	 * If the user has view-only access and the custom dimensions required by the selected widgets are unavailable,
+	 * the widget slugs will be removed from the settings. If only one widget remains after filtering, the widget slugs
+	 * will be an empty array to prevent hiding the widget area.
 	 *
 	 * @since 1.103.0
+	 * @since n.e.x.t Checks for view-only access and adjusts the `widgetSlugs` accordingly.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings. Returns `undefined` if not loaded.
 	 */
-	getKeyMetricsSettings( state ) {
-		return state.keyMetricsSettings;
-	},
+	getKeyMetricsSettings: createRegistrySelector( ( select ) => ( state ) => {
+		const keyMetricsSettings = state.keyMetricsSettings;
+
+		if ( ! keyMetricsSettings ) {
+			return undefined;
+		}
+
+		const isViewOnly = ! select( CORE_USER ).isAuthenticated();
+
+		if ( isViewOnly ) {
+			// Filter out widget slugs that depend on unavailable custom dimensions.
+			const filteredWidgetSlugs = keyMetricsSettings.widgetSlugs.filter(
+				( slug ) => {
+					const widget = KEY_METRICS_WIDGETS[ slug ];
+
+					if ( ! widget ) {
+						return false;
+					}
+
+					if ( widget.displayInList ) {
+						return widget.displayInList( select, isViewOnly );
+					}
+
+					return true;
+				}
+			);
+
+			// If only one widget remains after filtering, return an empty array.
+			// This prevents hiding the widget area when only one widget is available.
+			// This triggers the `getKeyMetrics` selector to use the default widgets instead.
+			if ( filteredWidgetSlugs.length === 1 ) {
+				return {
+					...keyMetricsSettings,
+					widgetSlugs: [],
+				};
+			}
+
+			return {
+				...keyMetricsSettings,
+				widgetSlugs: filteredWidgetSlugs,
+			};
+		}
+
+		return keyMetricsSettings;
+	} ),
 
 	/**
 	 * Determines whether the key metrics settings are being saved or not.

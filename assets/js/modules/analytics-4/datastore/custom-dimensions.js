@@ -166,10 +166,22 @@ const baseActions = {
 		for ( const dimension of missingCustomDimensions ) {
 			const dimensionData = CUSTOM_DIMENSION_DEFINITIONS[ dimension ];
 			if ( dimensionData ) {
-				yield fetchCreateCustomDimensionStore.actions.fetchCreateCustomDimension(
-					propertyID,
-					dimensionData
-				);
+				const { error } =
+					yield fetchCreateCustomDimensionStore.actions.fetchCreateCustomDimension(
+						propertyID,
+						dimensionData
+					);
+
+				// If the custom dimension was created successfully, mark it as gathering
+				// data immediately so that it doesn't cause unnecessary report requests.
+				if ( ! error ) {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveIsCustomDimensionGatheringData(
+							dimension,
+							true
+						);
+				}
 			}
 		}
 

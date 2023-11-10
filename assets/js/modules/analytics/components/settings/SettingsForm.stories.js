@@ -96,9 +96,6 @@ WithoutUAToggleGA4Enabled.scenario = {
 	label: 'Modules/Analytics/Settings/SettingsEdit/WithoutUAToggleGA4Enabled',
 	delay: 250,
 };
-WithoutUAToggleGA4Enabled.parameters = {
-	features: [ 'ga4Reporting' ],
-};
 
 export const PropertyNotAvailable = Template.bind( null );
 PropertyNotAvailable.storyName =
@@ -372,8 +369,7 @@ WithEnhancedMeasurementToggle.args = {
 	hasAnalytics4Access: true,
 };
 WithEnhancedMeasurementToggle.parameters = {
-	// TODO: Ensure this usage of the `ga4Reporting` feature flag is removed in conjunction with #6856.
-	features: [ 'ga4Reporting', 'enhancedMeasurement' ],
+	features: [ 'enhancedMeasurement' ],
 };
 
 WithEnhancedMeasurementToggle.scenario = {
@@ -387,9 +383,7 @@ PostGA4AutoSwitch.args = {
 	hasAnalyticsAccess: true,
 	hasAnalytics4Access: true,
 };
-PostGA4AutoSwitch.parameters = {
-	features: [ 'ga4Reporting' ],
-};
+PostGA4AutoSwitch.parameters = {};
 PostGA4AutoSwitch.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {

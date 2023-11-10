@@ -22,7 +22,7 @@
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
 import {
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -66,7 +66,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 
 	it( 'should not render unless at least 3 analytics dependant metrics are chosen to be displayed', async () => {
 		const keyMetricWidgets = {
-			[ KM_ANALYTICS_LOYAL_VISITORS ]: { modules: [ 'analytics-4' ] },
+			[ KM_ANALYTICS_RETURNING_VISITORS ]: { modules: [ 'analytics-4' ] },
 			[ KM_ANALYTICS_NEW_VISITORS ]: { modules: [ 'analytics-4' ] },
 			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
 				modules: [ 'adsense' ],
@@ -100,7 +100,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 
 	it( 'should render if widget is not dismissed, user input is completed, GA4 is not connected, and at least 3 analytics dependant metrics are chosen to be displayed', async () => {
 		const keyMetricWidgets = [
-			KM_ANALYTICS_LOYAL_VISITORS,
+			KM_ANALYTICS_RETURNING_VISITORS,
 			KM_ANALYTICS_NEW_VISITORS,
 			KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 			KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -132,9 +132,9 @@ describe( 'ConnectGA4CTAWidget', () => {
 
 		expect(
 			container.querySelector( '.googlesitekit-publisher-win__title' )
-		).toHaveTextContent( 'Google Analytics is disconnected' );
+		).toHaveTextContent( 'Analytics is disconnected' );
 		const button = getByRole( 'button', {
-			name: /Connect Google Analytics/i,
+			name: /Connect Analytics/i,
 		} );
 		expect( button ).toBeInTheDocument();
 	} );

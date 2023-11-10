@@ -25,30 +25,19 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import {
-	AdsConversionIDTextField,
-	AnonymizeIPSwitch,
-	ExistingGTMPropertyNotice,
-	TrackingExclusionSwitches,
-} from '../common';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { AdsConversionIDTextField, TrackingExclusionSwitches } from '../common';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
-import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID, isValidPropertyID } from '../../util';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm( {
 	hasAnalyticsAccess,
 	hasAnalytics4Access,
 } ) {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -59,54 +48,12 @@ export default function SettingsForm( {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const useAnalyticsSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getUseSnippet()
-	);
-	const isTagManagerAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
-	);
-	const useTagManagerSnippet = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getUseSnippet()
-	);
-	const analyticsSinglePropertyID = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
-	const gtmContainersResolved = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
-	);
 
-	const showTrackingExclusion = ga4ReportingEnabled
-		? isGA4Connected || isUAConnected
-		: useAnalyticsSnippet ||
-		  ( useTagManagerSnippet && analyticsSinglePropertyID );
-
-	if ( ! gtmContainersResolved ) {
-		return <ProgressBar />;
-	}
+	const showTrackingExclusion = isGA4Connected || isUAConnected;
 
 	return (
 		<Fragment>
-			{ ! ga4ReportingEnabled && (
-				<Fragment>
-					<ExistingGTMPropertyNotice
-						gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
-					/>
-					<StoreErrorNotices
-						moduleSlug="analytics"
-						storeName={ MODULES_ANALYTICS }
-					/>
-				</Fragment>
-			) }
-
 			<SettingsUACutoffWarning />
-
-			{ ! ga4ReportingEnabled && (
-				<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
-			) }
 
 			<GA4SettingsControls
 				hasAnalyticsAccess={ hasAnalyticsAccess }
@@ -115,7 +62,6 @@ export default function SettingsForm( {
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
-					{ ! ga4ReportingEnabled && <AnonymizeIPSwitch /> }
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
 				</Fragment>
