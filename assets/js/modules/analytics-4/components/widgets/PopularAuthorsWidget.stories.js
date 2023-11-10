@@ -68,6 +68,8 @@ const reportOptions = {
 	limit: 3,
 };
 
+const propertyID = '12345';
+
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
@@ -129,7 +131,7 @@ ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [],
 		} );
 	},
@@ -204,11 +206,17 @@ export default {
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: '12345',
+					propertyID,
 					availableCustomDimensions:
 						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
 							.requiredCustomDimensions,
 				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+					{
+						createTime: '2014-10-02T15:01:23Z',
+					},
+					{ propertyID }
+				);
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
