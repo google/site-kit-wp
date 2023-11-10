@@ -56,14 +56,12 @@ import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
-import { useFeature } from '../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( {
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
 } ) {
-	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 	const viewContext = useViewContext();
 
 	const selectedMetrics = useSelect( ( select ) =>
@@ -94,7 +92,7 @@ export default function Footer( {
 	} );
 
 	const hasMissingCustomDimensions = useSelect( ( select ) => {
-		if ( ! keyMetricsEnabled || ! requiredCustomDimensions?.length ) {
+		if ( ! requiredCustomDimensions?.length ) {
 			return false;
 		}
 
@@ -176,11 +174,7 @@ export default function Footer( {
 		if ( ! error ) {
 			trackEvent( trackingCategory, 'metrics_sidebar_save' );
 
-			if (
-				keyMetricsEnabled &&
-				isGA4Connected &&
-				hasMissingCustomDimensions
-			) {
+			if ( isGA4Connected && hasMissingCustomDimensions ) {
 				setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 					autoSubmit: true,
 				} );
@@ -223,7 +217,6 @@ export default function Footer( {
 		saveKeyMetricsSettings,
 		selectedMetrics,
 		trackingCategory,
-		keyMetricsEnabled,
 		isGA4Connected,
 		hasMissingCustomDimensions,
 		isOpen,
