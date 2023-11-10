@@ -392,10 +392,13 @@ const baseSelectors = {
 	 * @return {boolean} TRUE if the available custom dimensions are being synced, otherwise FALSE.
 	 */
 	isSyncingAvailableCustomDimensions: createRegistrySelector(
-		( select ) => () => {
-			return select(
-				MODULES_ANALYTICS_4
-			).isFetchingSyncAvailableCustomDimensions();
+		( select ) => ( state ) => {
+			return (
+				select(
+					MODULES_ANALYTICS_4
+				).isFetchingSyncAvailableCustomDimensions() ||
+				!! state?.syncTimeoutID
+			);
 		}
 	),
 
