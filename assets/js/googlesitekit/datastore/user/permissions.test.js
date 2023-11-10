@@ -28,7 +28,6 @@ import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import fetchMock from 'fetch-mock';
-import { enabledFeatures } from '../../../features';
 
 describe( 'core/user authentication', () => {
 	const capabilities = {
@@ -380,8 +379,6 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'should not include `analytics` module if the dashboardView is GA4', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetCapabilities(
@@ -402,13 +399,9 @@ describe( 'core/user authentication', () => {
 				] );
 
 				expect( viewableModules ).not.toContain( 'analytics' );
-
-				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 
 			it( 'should not include `analytics-4` module if the dashboardView is UA', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetCapabilities(
@@ -434,8 +427,6 @@ describe( 'core/user authentication', () => {
 				] );
 
 				expect( viewableModules ).not.toContain( 'analytics-4' );
-
-				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 		} );
 
@@ -556,8 +547,6 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'should treat `analytics` as `analytics-4` when the dashboard view is GA4', () => {
-				enabledFeatures.add( 'ga4Reporting' );
-
 				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
 					...capabilitiesWithPermission.permissions,
 					// Set the `analytics` permission to `false` to help verify that the
@@ -585,8 +574,6 @@ describe( 'core/user authentication', () => {
 					.canViewSharedModule( 'analytics' );
 
 				expect( canViewSharedAnalytics ).toBe( true );
-
-				enabledFeatures.delete( 'ga4Reporting' );
 			} );
 		} );
 	} );

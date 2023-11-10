@@ -30,8 +30,8 @@ async function proceedToSetUpAnalytics() {
 }
 
 const existingTag = {
-	accountID: '999',
-	propertyID: 'UA-999-9',
+	accountID: '99999999',
+	propertyID: 'G-99999999',
 };
 
 describe( 'setting up the Analytics module with no existing account and with an existing tag', () => {

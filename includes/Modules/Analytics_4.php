@@ -192,13 +192,11 @@ final class Analytics_4 extends Module
 			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 		}
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			// Replicate Analytics settings for Analytics-4 if not set.
-			add_filter(
-				'option_' . Module_Sharing_Settings::OPTION,
-				$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
-			);
-		}
+		// Replicate Analytics settings for Analytics-4 if not set.
+		add_filter(
+			'option_' . Module_Sharing_Settings::OPTION,
+			$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
+		);
 
 		add_filter(
 			'googlesitekit_auth_scopes',
@@ -378,9 +376,6 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		// GA4 is only shareable if ga4Reporting is also enabled.
-		$shareable = Feature_Flags::enabled( 'ga4Reporting' );
-
 		$datapoints = array(
 			'GET:account-summaries'              => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                       => array( 'service' => 'analyticsadmin' ),
@@ -398,7 +393,7 @@ final class Analytics_4 extends Module
 			),
 			'GET:conversion-events'              => array(
 				'service'   => 'analyticsadmin',
-				'shareable' => $shareable,
+				'shareable' => true,
 			),
 			'POST:create-account-ticket'         => array(
 				'service'                => 'analyticsprovisioning',
@@ -423,6 +418,10 @@ final class Analytics_4 extends Module
 			),
 			'GET:properties'                     => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                       => array( 'service' => 'analyticsadmin' ),
+			'GET:report'                         => array(
+				'service'   => 'analyticsdata',
+				'shareable' => true,
+			),
 			'GET:webdatastreams'                 => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'           => array( 'service' => 'analyticsadmin' ),
 			'GET:enhanced-measurement-settings'  => array( 'service' => 'analyticsenhancedmeasurement' ),
@@ -432,13 +431,6 @@ final class Analytics_4 extends Module
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
 			),
 		);
-
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			$datapoints['GET:report'] = array(
-				'service'   => 'analyticsdata',
-				'shareable' => $shareable,
-			);
-		}
 
 		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			$datapoints['POST:create-custom-dimension']         = array(
@@ -1426,8 +1418,14 @@ final class Analytics_4 extends Module
 						$data[ $custom_dimension ] = $post->post_author;
 						break;
 					case 'googlesitekit_post_categories':
-						$cats                      = wp_get_post_categories( $post->ID, array( 'fields' => 'ids' ) );
-						$data[ $custom_dimension ] = ! is_wp_error( $cats ) ? implode( ',', $cats ) : '';
+						$categories = get_the_category( $post->ID );
+
+						if ( ! empty( $categories ) ) {
+							$category_ids = wp_list_pluck( $categories, 'term_id' );
+
+							$data[ $custom_dimension ] = implode( ',', $category_ids );
+						}
+
 						break;
 					case 'googlesitekit_post_date':
 						$data[ $custom_dimension ] = get_the_date( 'Ymd', $post );
@@ -1741,7 +1739,7 @@ final class Analytics_4 extends Module
 			return $allowed;
 		}
 
-		if ( Feature_Flags::enabled( 'ga4Reporting' ) && $this->get_settings()->get()['useSnippet'] ) {
+		if ( $this->get_settings()->get()['useSnippet'] ) {
 			return true;
 		}
 

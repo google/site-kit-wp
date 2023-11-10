@@ -675,7 +675,6 @@ final class Modules {
 		// Consider UA to be connected if GA4 is connected.
 		if (
 			Analytics::MODULE_SLUG === $slug &&
-			Feature_Flags::enabled( 'ga4Reporting' ) &&
 			! $module->is_connected() &&
 			$this->is_module_connected( Analytics_4::MODULE_SLUG )
 		) {

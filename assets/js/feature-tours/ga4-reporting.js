@@ -25,7 +25,6 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import SupportLink from '../components/SupportLink';
-import { isFeatureEnabled } from '../features';
 
 const noBorderStyles = {
 	border: '0',
@@ -44,9 +43,8 @@ const reportTableStyles = {
 const ga4Reporting = {
 	slug: 'ga4Reporting',
 	contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-	version: '1.999.0', // Change this version to the actual version when GA4 reporting is released to 100% of users.
+	version: 'n.e.x.t', // Change this version to the actual version when GA4 reporting is released to 100% of users.
 	gaEventCategory: ( viewContext ) => `${ viewContext }_ga4-metrics`,
-	checkRequirements: () => isFeatureEnabled( 'ga4Reporting' ),
 	steps: [
 		{
 			target: '.googlesitekit-data-block--conversions .googlesitekit-data-block__title, .googlesitekit-analytics-cta--setup-conversions',

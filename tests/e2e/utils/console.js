@@ -1,5 +1,5 @@
 /**
- * Change badge styles.
+ * E2E Console utils.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,32 +16,19 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
-
-	.googlesitekit-change-badge {
-		background-color: $c-green-g-50;
-		border-radius: $br-lg;
-		color: $c-green-g-700;
-		font: $f-primary;
-		font-size: $fs-label-sm;
-		font-weight: 500;
-		letter-spacing: $ls-xs;
-		line-height: $lh-label-sm;
-		margin-top: 6px;
-		padding: 4px 8px;
-
-		@media (min-width: $bp-nonMobile) {
-			margin-top: 12px;
-		}
-
-		&.googlesitekit-change-badge--negative {
-			background-color: $c-red-r-50;
-			color: $c-red-r-700;
-		}
-
-		&.googlesitekit-change-badge--zero {
-			background-color: $c-neutral-n-50;
-			color: $c-neutral-n-700;
-		}
+/**
+ * Ignores console.error messages from permission scope errors.
+ *
+ * This is preferrable to using `toHaveErrored` from `@wordpress/jest-console` as it will ignore ALL console errors.
+ */
+export function ignorePermissionScopeErrors() {
+	// eslint-disable-next-line no-console
+	if ( ! console.error.mock ) {
+		return;
 	}
+	// eslint-disable-next-line no-console
+	console.error.mock.calls = console.error.mock.calls.filter( ( call ) => {
+		const [ message ] = call;
+		return ! message.includes( 'need to grant Site Kit permission' );
+	} );
 }

@@ -50,7 +50,7 @@ import useViewOnly from '../../../../../../hooks/useViewOnly';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
-import ga4Reporting from '../../../../../../feature-tours/ga4-reporting';
+import ga4ReportingTour from '../../../../../../feature-tours/ga4-reporting';
 const { useSelect, useDispatch, useInViewSelect } = Data;
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
@@ -185,7 +185,7 @@ export default function Overview( props ) {
 			return;
 		}
 
-		triggerOnDemandTour( ga4Reporting );
+		triggerOnDemandTour( ga4ReportingTour );
 	}, [
 		showGA4,
 		dashboardType,

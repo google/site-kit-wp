@@ -45,11 +45,15 @@ import {
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
+import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import {
+	MODULES_ANALYTICS,
+	EDIT_SCOPE,
+} from '../../../modules/analytics/datastore/constants';
 import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
-import { EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 
 describe( 'MetricsSelectionPanel', () => {
@@ -69,6 +73,11 @@ describe( 'MetricsSelectionPanel', () => {
 		registry
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+		// jsdom does not support scrollIntoView which is used by the last metric item
+		// to prevent it from hiding underneath the Custom Dimensions warning notice.
+		// See: https://github.com/jsdom/jsdom/issues/1695.
+		Element.prototype.scrollIntoView = jest.fn();
 	} );
 
 	describe( 'Metrics', () => {
@@ -321,7 +330,7 @@ describe( 'MetricsSelectionPanel', () => {
 			).toHaveTextContent( 'Top converting traffic source' );
 		} );
 
-		it( 'should not list metrics dependent on modules that a view-only user does not have access to', () => {
+		it( 'should not list metrics dependent on modules that a view-only user does not have access to', async () => {
 			provideUserAuthentication( registry, { authenticated: false } );
 
 			provideKeyMetrics( registry );
@@ -333,6 +342,21 @@ describe( 'MetricsSelectionPanel', () => {
 					connected: true,
 				},
 			] );
+
+			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+				purpose: {
+					values: [ 'purpose1' ],
+					scope: 'site',
+				},
+				postFrequency: {
+					values: [ 'daily' ],
+					scope: 'user',
+				},
+				goals: {
+					values: [ 'goal1', 'goal2' ],
+					scope: 'user',
+				},
+			} );
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
@@ -349,10 +373,16 @@ describe( 'MetricsSelectionPanel', () => {
 				'googlesitekit_read_shared_module_data::["search-console"]': true,
 			} );
 
-			render( <MetricsSelectionPanel />, {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( analytics4Fixtures.defaultSettings );
+
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			} );
+
+			await waitForRegistry();
 
 			// Verify that a metric dependent on GA4 isn't listed.
 			expect(

@@ -19,21 +19,9 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 const ACCOUNT_ID_A = '100';
 const ACCOUNT_ID_B = '101';
 
-const PROPERTY_ID_X = 'UA-100-1';
-const PROPERTY_ID_Y = 'UA-101-1';
-const PROPERTY_ID_Z = 'UA-101-2';
-
-const INTERNAL_PROPERTY_ID_X = '200';
-const INTERNAL_PROPERTY_ID_Y = '201';
-const INTERNAL_PROPERTY_ID_Z = '202';
-
-const PROFILE_ID_X = '300';
-const PROFILE_ID_Y = '301';
-const PROFILE_ID_Z = '302';
-
-const GA4_PROPERTY_ID_X = '300';
-const GA4_PROPERTY_ID_Y = '301';
-const GA4_PROPERTY_ID_Z = '302';
+const GA4_PROPERTY_ID_X = '1000';
+const GA4_PROPERTY_ID_Y = '1001';
+const GA4_PROPERTY_ID_Z = '1002';
 
 const GA4_WEBDATASTREAM_ID_X = '400';
 const GA4_WEBDATASTREAM_ID_Y = '401';
@@ -61,33 +49,12 @@ function get_reference_url() {
 	return get_option( 'googlesitekit_e2e_reference_url' ) ?: home_url();
 }
 
-function get_internal_id_by_property( $property_id ) {
-	$map = array(
-		PROPERTY_ID_X => INTERNAL_PROPERTY_ID_X,
-		PROPERTY_ID_Y => INTERNAL_PROPERTY_ID_Y,
-		PROPERTY_ID_Z => INTERNAL_PROPERTY_ID_Z,
-	);
-
-	return isset( $map[ $property_id ] ) ? $map[ $property_id ] : null;
-}
-
 function filter_by_account_id( $items, $account_id ) {
 	return array_values(
 		array_filter(
 			$items,
 			function ( $item ) use ( $account_id ) {
 				return $item['accountId'] === $account_id;
-			}
-		)
-	);
-}
-
-function filter_by_property_id( $items, $property_id ) {
-	return array_values(
-		array_filter(
-			$items,
-			function ( $item ) use ( $property_id ) {
-				return get_internal_id_by_property( $property_id ) === $item['internalWebPropertyId'];
 			}
 		)
 	);
@@ -117,7 +84,7 @@ function filter_webdatastream_by_property_ids( $items, $property_ids ) {
 add_action(
 	'rest_api_init',
 	function () {
-		$accounts   = array(
+		$accounts = array(
 			array(
 				'id'          => ACCOUNT_ID_A,
 				'kind'        => 'analytics#account',
@@ -135,83 +102,37 @@ add_action(
 				),
 			),
 		);
-		$properties = array(
-			array(
-				'accountId'             => ACCOUNT_ID_A,
-				'id'                    => PROPERTY_ID_X,
-				'internalWebPropertyId' => INTERNAL_PROPERTY_ID_X,
-				'kind'                  => 'analytics#webproperty',
-				'level'                 => 'STANDARD',
-				'name'                  => 'Test Property X',
-				'websiteUrl'            => get_reference_url(),
-				'permissions'           => array(
-					'effective' => array( 'READ_AND_ANALYZE' ),
-				),
-			),
-			array(
-				'accountId'             => ACCOUNT_ID_B,
-				'id'                    => PROPERTY_ID_Y,
-				'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Y,
-				'kind'                  => 'analytics#webproperty',
-				'level'                 => 'STANDARD',
-				'name'                  => 'Test Property Y',
-				'websiteUrl'            => get_reference_url(),
-				'permissions'           => array(
-					'effective' => array( 'READ_AND_ANALYZE' ),
-				),
-			),
-			array(
-				'accountId'             => ACCOUNT_ID_B,
-				'id'                    => PROPERTY_ID_Z,
-				'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Z,
-				'kind'                  => 'analytics#webproperty',
-				'level'                 => 'STANDARD',
-				'name'                  => 'Test Property Z',
-				'websiteUrl'            => 'https://z.example.com',
-				'permissions'           => array(
-					'effective' => array( 'READ_AND_ANALYZE' ),
-				),
-			),
-		);
 
-		$profiles = array(
+		$account_summaries = array(
 			array(
-				'accountId'             => ACCOUNT_ID_A,
-				'id'                    => PROFILE_ID_X,
-				'kind'                  => 'analytics#profile',
-				'name'                  => 'Test Profile X',
-				'type'                  => 'WEB',
-				'webPropertyId'         => PROPERTY_ID_X,
-				'internalWebPropertyId' => INTERNAL_PROPERTY_ID_X,
-				'websiteUrl'            => get_reference_url(),
-				'permissions'           => array(
-					'effective' => array( 'READ_AND_ANALYZE' ),
+				'account'           => 'accounts/' . ACCOUNT_ID_A,
+				'displayName'       => 'Example Com',
+				'name'              => 'accountSummaries/' . ACCOUNT_ID_A,
+				'_id'               => ACCOUNT_ID_A,
+				'propertySummaries' => array(
+					array(
+						'displayName' => 'Example Property',
+						'property'    => 'properties/' . GA4_PROPERTY_ID_X,
+						'_id'         => GA4_PROPERTY_ID_X,
+					),
 				),
 			),
 			array(
-				'accountId'             => ACCOUNT_ID_B,
-				'id'                    => PROFILE_ID_Y,
-				'kind'                  => 'analytics#profile',
-				'name'                  => 'Test Profile Y',
-				'type'                  => 'WEB',
-				'webPropertyId'         => PROPERTY_ID_Y,
-				'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Y,
-				'websiteUrl'            => 'https://example.com',
-				'permissions'           => array(
-					'effective' => array( 'READ_AND_ANALYZE' ),
-				),
-			),
-			array(
-				'accountId'             => ACCOUNT_ID_B,
-				'id'                    => PROFILE_ID_Z,
-				'kind'                  => 'analytics#profile',
-				'name'                  => 'Test Profile Z',
-				'type'                  => 'WEB',
-				'webPropertyId'         => PROPERTY_ID_Z,
-				'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Z,
-				'websiteUrl'            => 'https://z.example.com',
-				'permissions'           => array(
-					'effective' => array( 'READ_AND_ANALYZE' ),
+				'account'           => 'accounts/' . ACCOUNT_ID_B,
+				'displayName'       => 'Example Net',
+				'name'              => 'accountSummaries/' . ACCOUNT_ID_B,
+				'_id'               => ACCOUNT_ID_B,
+				'propertySummaries' => array(
+					array(
+						'displayName' => 'Example Property',
+						'property'    => 'properties/' . GA4_PROPERTY_ID_Y,
+						'_id'         => GA4_PROPERTY_ID_Y,
+					),
+					array(
+						'displayName' => 'Example Property Z',
+						'property'    => 'properties/' . GA4_PROPERTY_ID_Z,
+						'_id'         => GA4_PROPERTY_ID_Z,
+					),
 				),
 			),
 		);
@@ -240,29 +161,37 @@ add_action(
 		$ga4_webdatastreams = array(
 			GA4_PROPERTY_ID_X => array(
 				array(
-					'webStreamData' => array(
-						'measurementId' => GA4_MEASUREMENT_ID_X,
-					),
 					'_id'           => GA4_WEBDATASTREAM_ID_X,
 					'_propertyID'   => GA4_PROPERTY_ID_X,
+					'name'          => 'properties/' . GA4_PROPERTY_ID_X . '/dataStreams/' . GA4_WEBDATASTREAM_ID_X,
+					'webStreamData' => array(
+						'measurementId' => GA4_MEASUREMENT_ID_X,
+						'defaultUri'    => get_reference_url(),
+					),
+					'displayName'   => 'Test GA4 WebDataStream',
 				),
 			),
 			GA4_PROPERTY_ID_Y => array(
 				array(
-					'webStreamData' => array(
-						'measurementId' => GA4_MEASUREMENT_ID_Y,
-					),
 					'_id'           => GA4_WEBDATASTREAM_ID_Y,
 					'_propertyID'   => GA4_PROPERTY_ID_Y,
+					'name'          => 'properties/' . GA4_PROPERTY_ID_Y . '/dataStreams/' . GA4_WEBDATASTREAM_ID_Y,
+					'webStreamData' => array(
+						'measurementId' => GA4_MEASUREMENT_ID_Y,
+						'defaultUri'    => get_reference_url(),
+					),
+					'displayName'   => 'Another WebDataStream',
 				),
 			),
 			GA4_PROPERTY_ID_Z => array(
 				array(
-					'webStreamData' => array(
-						'measurementId' => GA4_MEASUREMENT_ID_Z,
-					),
 					'_id'           => GA4_WEBDATASTREAM_ID_Z,
 					'_propertyID'   => GA4_PROPERTY_ID_Z,
+					'webStreamData' => array(
+						'measurementId' => GA4_MEASUREMENT_ID_Z,
+						'defaultUri'    => 'example.org',
+					),
+					'displayName'   => 'Third WebDataStream',
 				),
 			),
 		);
@@ -272,25 +201,27 @@ add_action(
 			'modules/analytics/data/accounts-properties-profiles',
 			array(
 				'methods'             => 'GET',
-				'callback'            => function () use ( $accounts, $properties, $profiles ) {
+				'callback'            => function () use ( $accounts ) {
 					$response = array(
 						'accounts'   => $accounts,
-						'properties' => filter_by_account_id( $properties, $accounts[0]['id'] ),
-						'profiles'   => filter_by_property_id( $profiles, $properties[0]['id'] ),
+						'properties' => array(),
+						'profiles'   => array(),
 					);
-
-					$matched_property = array_filter(
-						$properties,
-						function ( $property ) {
-							return home_url() === $property['websiteUrl'];
-						}
-					);
-
-					if ( $matched_property ) {
-						$response['matchedProperty'] = array_shift( $matched_property );
-					}
 
 					return $response;
+				},
+				'permission_callback' => '__return_true',
+			),
+			true
+		);
+
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/analytics-4/data/account-summaries',
+			array(
+				'methods'             => 'GET',
+				'callback'            => function () use ( $account_summaries ) {
+					return $account_summaries;
 				},
 				'permission_callback' => '__return_true',
 			),
@@ -303,12 +234,10 @@ add_action(
 			'modules/analytics/data/properties-profiles',
 			array(
 				'methods'             => 'GET',
-				'callback'            => function ( \WP_REST_Request $request ) use ( $properties, $profiles ) {
-					$filtered_properties = filter_by_account_id( $properties, $request->get_param( 'accountID' ) );
-
+				'callback'            => function () {
 					return array(
-						'properties' => $filtered_properties,
-						'profiles'   => filter_by_property_id( $profiles, $filtered_properties[0]['id'] ),
+						'properties' => array(),
+						'profiles'   => array(),
 					);
 				},
 				'permission_callback' => '__return_true',
@@ -322,10 +251,8 @@ add_action(
 			'modules/analytics/data/profiles',
 			array(
 				'methods'             => 'GET',
-				'callback'            => function ( \WP_REST_Request $request ) use ( $profiles ) {
-					$profiles = filter_by_property_id( $profiles, $request->get_param( 'propertyID' ) );
-
-					return $profiles;
+				'callback'            => function () {
+					return array();
 				},
 				'permission_callback' => '__return_true',
 			),
@@ -348,6 +275,27 @@ add_action(
 			true
 		);
 
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/analytics-4/data/property',
+			array(
+				'methods'             => 'GET',
+				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_properties ) {
+					$property_id = $request->get_param( 'propertyID' );
+
+					foreach ( $ga4_properties as $property ) {
+						if ( $property['_id'] === $property_id ) {
+							return $property;
+						}
+					}
+
+					return new \WP_Error( 'e2e:property_not_found', 'E2E: No property found' );
+				},
+				'permission_callback' => '__return_true',
+			),
+			true
+		);
+
 		// Called when switching properties for Analytics 4 to get the measurement ids.
 		register_rest_route(
 			REST_Routes::REST_ROOT,
@@ -356,6 +304,21 @@ add_action(
 				'methods'             => 'GET',
 				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_webdatastreams ) {
 					$webdatastreams = filter_webdatastream_by_property_ids( $ga4_webdatastreams, $request->get_param( 'propertyIDs' ) );
+
+					return $webdatastreams;
+				},
+				'permission_callback' => '__return_true',
+			),
+			true
+		);
+
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/analytics-4/data/webdatastreams',
+			array(
+				'methods'             => 'GET',
+				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_webdatastreams ) {
+					$webdatastreams = filter_webdatastream_by_property_ids( $ga4_webdatastreams, array( $request->get_param( 'propertyID' ) ) );
 
 					return $webdatastreams;
 				},

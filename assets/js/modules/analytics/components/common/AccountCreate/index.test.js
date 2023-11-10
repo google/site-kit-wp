@@ -87,7 +87,6 @@ describe( 'AccountCreate', () => {
 			<AccountCreate />,
 			{
 				registry,
-				features: [ 'ga4Reporting' ],
 			}
 		);
 
@@ -104,7 +103,6 @@ describe( 'AccountCreate', () => {
 			<AccountCreate />,
 			{
 				registry,
-				features: [ 'ga4Reporting' ],
 			}
 		);
 
@@ -125,7 +123,6 @@ describe( 'AccountCreate', () => {
 		beforeEach( () => {
 			( { getByRole, waitForRegistry } = render( <AccountCreate />, {
 				registry,
-				features: [ 'ga4Reporting' ],
 			} ) );
 
 			fetchMock.post(
