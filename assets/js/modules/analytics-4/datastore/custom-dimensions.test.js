@@ -276,6 +276,92 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				} );
 			} );
 		} );
+
+		describe( 'scheduleSyncAvailableCustomDimensions', () => {
+			it( 'schedules a sync request to run after two seconds', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.scheduleSyncAvailableCustomDimensions();
+
+				const WAIT_AFTER_DISPATCH = 2500;
+
+				// Wait for more than two seconds as the sync is run after two seconds.
+				await new Promise( ( resolve ) => {
+					setTimeout( resolve, WAIT_AFTER_DISPATCH );
+				} );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					)
+				);
+			} );
+
+			it( 'runs a sync request once even if the action is called multiple times when each call is made before the two second duration has elapsed', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				const DISPATCH_COUNT = 5;
+				const DISPATCH_INTERVAL = 500;
+				const WAIT_AFTER_DISPATCH = 2500;
+
+				// Dispatch action every 0.5 second.
+				const intervalID = setInterval(
+					() =>
+						registry
+							.dispatch( MODULES_ANALYTICS_4 )
+							.scheduleSyncAvailableCustomDimensions(),
+					DISPATCH_INTERVAL
+				);
+
+				// Stop dispatching after 2.5 seconds.
+				setTimeout( () => {
+					clearInterval( intervalID );
+				}, DISPATCH_COUNT * DISPATCH_INTERVAL );
+
+				// Wait for 5 seconds as the sync is run two seconds after
+				// the last dispatch.
+				await new Promise( ( resolve ) => {
+					setTimeout(
+						resolve,
+						DISPATCH_COUNT * DISPATCH_INTERVAL + WAIT_AFTER_DISPATCH
+					);
+				} );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					)
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
