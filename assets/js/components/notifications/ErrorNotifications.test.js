@@ -156,7 +156,9 @@ describe( 'ErrorNotifications', () => {
 	} );
 
 	it( 'does render the redo setup CTA if initial Site Kit setup auth is not granted', () => {
-		provideUserAuthentication( registry );
+		provideUserAuthentication( registry, {
+			authenticated: false,
+		} );
 		provideSiteInfo( registry, {
 			setupErrorRedoURL: '#',
 			setupErrorCode: 'access_denied',
@@ -175,20 +177,10 @@ describe( 'ErrorNotifications', () => {
 	it( 'does not render the redo setup CTA if it is not due to the interuption of plugin setup and no permission is temporary persissted', () => {
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry, {
-			setupErrorRedoURL: '#',
 			setupErrorCode: 'access_denied',
 			setupErrorMessage:
 				'Setup was interrupted because you did not grant the necessary permissions',
-		} );
-
-		registry.dispatch( CORE_USER ).setPermissionScopeError( {
-			status: 403,
-			message: 'Generic scope',
-			data: {
-				scopes: [
-					'https://www.googleapis.com/auth/analytics.readonly',
-				],
-			},
+			setupErrorRedoURL: '#',
 		} );
 
 		const { container } = render( <ErrorNotifications />, {
@@ -202,10 +194,11 @@ describe( 'ErrorNotifications', () => {
 	it( 'does render the grant permission CTA if additional permissions were not granted and permission is temporary persissted', () => {
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry, {
-			setupErrorRedoURL: '#',
+			isAuthenticated: true,
 			setupErrorCode: 'access_denied',
 			setupErrorMessage:
 				'Setup was interrupted because you did not grant the necessary permissions',
+			setupErrorRedoURL: '#',
 		} );
 
 		registry
