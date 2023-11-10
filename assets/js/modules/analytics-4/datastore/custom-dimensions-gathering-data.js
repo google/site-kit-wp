@@ -346,6 +346,50 @@ const baseSelectors = {
 			};
 		}
 	),
+
+	/**
+	 * Gets the errors for the data availability report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state            Data store's state.
+	 * @param {Array}  customDimensions Array of custom dimension slugs.
+	 * @return {Object} Returns an object of errors keyed by custom dimension slug.
+	 */
+	getDataAvailabilityReportErrors: createRegistrySelector(
+		( select ) => ( state, customDimensions ) => {
+			invariant( customDimensions, 'customDimensions is required.' );
+			invariant(
+				Array.isArray( customDimensions ),
+				'customDimensions must be an array.'
+			);
+
+			return customDimensions.reduce( ( errors, customDimension ) => {
+				const reportArgs =
+					select(
+						MODULES_ANALYTICS_4
+					).getDataAvailabilityReportOptions( customDimension );
+
+				if ( ! reportArgs ) {
+					return errors;
+				}
+
+				const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+					'getReport',
+					[ reportArgs ]
+				);
+
+				if ( error ) {
+					return {
+						...errors,
+						[ customDimension ]: error,
+					};
+				}
+
+				return errors;
+			}, {} );
+		}
+	),
 };
 
 const store = Data.combineStores(
