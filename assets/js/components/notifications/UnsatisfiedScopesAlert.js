@@ -80,7 +80,7 @@ export default function UnsatisfiedScopesAlert() {
 			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
 		)
 	);
-	const persistedPermissionsError = useSelect( ( select ) =>
+	const tempPersistedPermissionsError = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 			'permissionsError'
@@ -93,11 +93,12 @@ export default function UnsatisfiedScopesAlert() {
 	const connectURLData = {
 		redirectURL: global.location.href,
 	};
-	if ( persistedPermissionsError?.data ) {
+	if ( tempPersistedPermissionsError?.data ) {
 		connectURLData.additionalScopes =
-			persistedPermissionsError.data?.scopes;
+			tempPersistedPermissionsError.data?.scopes;
 		connectURLData.redirectURL =
-			persistedPermissionsError.data?.redirectURL || global.location.href;
+			tempPersistedPermissionsError.data?.redirectURL ||
+			global.location.href;
 	}
 
 	const connectURL = useSelect( ( select ) =>
@@ -151,7 +152,7 @@ export default function UnsatisfiedScopesAlert() {
 		'google-site-kit'
 	);
 	let ctaLabel = __( 'Redo setup', 'google-site-kit' );
-	if ( persistedPermissionsError?.data ) {
+	if ( tempPersistedPermissionsError?.data ) {
 		ctaLabel = __( 'Grant permission', 'google-site-kit' );
 	}
 

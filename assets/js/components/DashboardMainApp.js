@@ -106,14 +106,14 @@ export default function DashboardMainApp() {
 	const grantedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getGrantedScopes()
 	);
-	const persistedPermissionsError = useSelect( ( select ) =>
+	const tempPersistedPermissionsError = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 			'permissionsError'
 		)
 	);
 	const hasReceivedGrantedScopes =
-		persistedPermissionsError?.data?.scopes?.some( ( scope ) =>
+		tempPersistedPermissionsError?.data?.scopes?.some( ( scope ) =>
 			grantedScopes.includes( scope )
 		);
 

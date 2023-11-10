@@ -53,23 +53,23 @@ export default function ErrorNotifications() {
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
 	);
-	const persistedPermissionsError = useSelect( ( select ) =>
+	const tempPersistedPermissionsError = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 			'permissionsError'
 		)
 	);
 	const setupErrorRedoURL = useSelect( ( select ) => {
-		if ( persistedPermissionsError?.data ) {
+		if ( tempPersistedPermissionsError?.data ) {
 			return select( CORE_USER ).getConnectURL( {
-				additionalScopes: persistedPermissionsError?.data?.scopes,
+				additionalScopes: tempPersistedPermissionsError?.data?.scopes,
 				redirectURL:
-					persistedPermissionsError?.data?.redirectURL ||
+					tempPersistedPermissionsError?.data?.redirectURL ||
 					global.location.href,
 			} );
 		} else if (
 			setupErrorCode === 'access_denied' &&
-			! persistedPermissionsError?.data &&
+			! tempPersistedPermissionsError?.data &&
 			isAuthenticated
 		) {
 			return null;
@@ -98,9 +98,9 @@ export default function ErrorNotifications() {
 	if ( setupErrorCode === 'access_denied' ) {
 		title = __( 'Permissions Error', 'google-site-kit' );
 
-		if ( persistedPermissionsError?.data ) {
+		if ( tempPersistedPermissionsError?.data ) {
 			ctaLabel = __( 'Grant permission', 'google-site-kit' );
-		} else if ( ! persistedPermissionsError?.data && isAuthenticated ) {
+		} else if ( ! tempPersistedPermissionsError?.data && isAuthenticated ) {
 			ctaLabel = null;
 		}
 	}
