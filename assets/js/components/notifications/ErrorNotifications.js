@@ -53,9 +53,6 @@ export default function ErrorNotifications() {
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
 	);
-	const existingPermissionError = useSelect( ( select ) =>
-		select( CORE_USER ).getPermissionScopeError()
-	);
 	const persistedPermissionsError = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
@@ -70,14 +67,11 @@ export default function ErrorNotifications() {
 					persistedPermissionsError?.data?.redirectURL ||
 					global.location.href,
 			} );
-		}
-		if (
+		} else if (
 			setupErrorCode === 'access_denied' &&
 			! persistedPermissionsError?.data &&
-			existingPermissionError
+			isAuthenticated
 		) {
-			// If `existingPermissionError` have data it implies it is not due to the `plugin setup`, and CTA
-			// should not render. This is explained in more detail in comment bellow in hidding the label part.
 			return null;
 		}
 
@@ -103,16 +97,10 @@ export default function ErrorNotifications() {
 
 	if ( setupErrorCode === 'access_denied' ) {
 		title = __( 'Permissions Error', 'google-site-kit' );
+
 		if ( persistedPermissionsError?.data ) {
 			ctaLabel = __( 'Grant permission', 'google-site-kit' );
-		} else if (
-			! persistedPermissionsError?.data &&
-			existingPermissionError
-		) {
-			// If there is `existingPermissionError` it implies that the 'access denied' error isn't shown
-			// because of the plugin setup. If the plugin setup permission had been denied,
-			// this would be empty. Therefore, no call-to-action should be displayed at this point,
-			// as it would only request the generic analytics read permission without resolving the actual issue.
+		} else if ( ! persistedPermissionsError?.data && isAuthenticated ) {
 			ctaLabel = null;
 		}
 	}
