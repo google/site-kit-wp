@@ -21,6 +21,7 @@
  */
 import {
 	provideModules,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
@@ -36,6 +37,7 @@ describe( 'ConnectGA4CTATileWidget', () => {
 	it( 'should render the Connect GA4 CTA tile', () => {
 		const { container, getByText } = render( <WidgetWithComponentProps />, {
 			setupRegistry: ( registry ) => {
+				provideUserAuthentication( registry );
 				provideUserCapabilities( registry );
 				provideModules( registry );
 
