@@ -37,7 +37,7 @@ import { useFeature } from '../../../hooks/useFeature';
 import { elementsOverlap } from '../../../util/geometry';
 const { useSelect } = Data;
 
-export default function Notice() {
+export default function CustomDimensionsNotice() {
 	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 
 	const selectedMetrics = useSelect( ( select ) =>
