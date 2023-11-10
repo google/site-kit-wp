@@ -234,12 +234,20 @@ export const baseControls = {
 			() => {
 				const syncTimeoutID =
 					select( MODULES_ANALYTICS_4 ).getSyncTimeoutID();
+				const isSyncingAvailableCustomDimensions =
+					select(
+						MODULES_ANALYTICS_4
+					).isFetchingSyncAvailableCustomDimensions();
 
 				if ( !! syncTimeoutID ) {
 					clearTimeout( syncTimeoutID );
 					dispatch( MODULES_ANALYTICS_4 ).setSyncTimeoutID(
 						undefined
 					);
+				}
+
+				if ( isSyncingAvailableCustomDimensions ) {
+					return;
 				}
 
 				const timeoutID = setTimeout( async () => {
