@@ -57,6 +57,17 @@ function getReportOptions( select ) {
 	return {
 		...dates,
 		dimensions: [ 'customEvent:googlesitekit_post_categories' ],
+		dimensionFilter: {
+			notExpression: {
+				filter: {
+					fieldName: 'customEvent:googlesitekit_post_categories',
+					stringFilter: {
+						matchType: 'EXACT',
+						value: '(not set)',
+					},
+				},
+			},
+		},
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [
 			{
