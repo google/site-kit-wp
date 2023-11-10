@@ -193,14 +193,6 @@ export default function withCustomDimensions( options = {} ) {
 				);
 			} );
 
-			const {
-				clearError,
-				fetchSyncAvailableCustomDimensions,
-				invalidateResolution,
-			} = useDispatch( MODULES_ANALYTICS_4 );
-			const { setValues } = useDispatch( CORE_FORMS );
-			const { setPermissionScopeError } = useDispatch( CORE_USER );
-
 			const loading =
 				isCreatingCustomDimensions ||
 				isSyncingAvailableCustomDimensions ||
@@ -228,11 +220,57 @@ export default function withCustomDimensions( options = {} ) {
 					MODULES_ANALYTICS_4
 				).areCustomDimensionsGatheringData( customDimensions );
 			} );
+			const dataAvailabilityReportErrors = useSelect( ( select ) => {
+				if ( ! customDimensions ) {
+					return {};
+				}
 
-			const commonErrorProps = {
-				headerText: tileTitle,
-				infoTooltip: tileInfoTooltip,
-			};
+				return select(
+					MODULES_ANALYTICS_4
+				).getDataAvailabilityReportErrors( customDimensions );
+			} );
+
+			const hasInvalidCustomDimensionError =
+				( isGatheringData &&
+					Object.values( dataAvailabilityReportErrors ).some(
+						( error ) => isInvalidCustomDimensionError( error )
+					) ) ||
+				( ! isGatheringData &&
+					isInvalidCustomDimensionError( reportError ) );
+
+			const invalidCustomDimensionReportOptions = useSelect(
+				( select ) => {
+					if ( ! hasInvalidCustomDimensionError ) {
+						return [];
+					}
+
+					if ( isGatheringData ) {
+						const { getDataAvailabilityReportOptions } =
+							select( MODULES_ANALYTICS_4 );
+
+						return Object.keys( dataAvailabilityReportErrors )
+							.filter( ( dimension ) =>
+								isInvalidCustomDimensionError(
+									dataAvailabilityReportErrors[ dimension ]
+								)
+							)
+							.map( ( dimension ) =>
+								getDataAvailabilityReportOptions( dimension )
+							);
+					}
+
+					if ( isInvalidCustomDimensionError( reportError ) ) {
+						return [ reportOptions ];
+					}
+
+					return [];
+				}
+			);
+
+			const { clearError, scheduleSyncAvailableCustomDimensions } =
+				useDispatch( MODULES_ANALYTICS_4 );
+			const { setValues } = useDispatch( CORE_FORMS );
+			const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 			const handleCreateCustomDimensions = useCallback( () => {
 				if ( loading ) {
@@ -270,29 +308,31 @@ export default function withCustomDimensions( options = {} ) {
 			useEffect( () => {
 				if (
 					! customDimensions ||
-					! isInvalidCustomDimensionError( reportError ) ||
+					! hasInvalidCustomDimensionError ||
 					isSyncingAvailableCustomDimensions
 				) {
 					return;
 				}
 
-				// Clear report error so that the fetch sync action isn't
-				// triggered multiple times.
-				clearError( 'getReport', [ reportOptions ] );
+				scheduleSyncAvailableCustomDimensions();
 
-				// Sync available custom dimensions.
-				fetchSyncAvailableCustomDimensions().then( () => {
-					// Invalidate report request so that it is re-fetched.
-					invalidateResolution( 'getReport', [ reportOptions ] );
+				// Clear report errors so that the useEffect isn't
+				// triggered multiple times.
+				Promise.all(
+					invalidCustomDimensionReportOptions.map( ( args ) => {
+						return clearError( 'getReport', [ args ] );
+					} )
+				).finally( () => {
+					// Sync available custom dimensions.
+					scheduleSyncAvailableCustomDimensions();
 				} );
 			}, [
 				clearError,
 				customDimensions,
-				fetchSyncAvailableCustomDimensions,
-				invalidateResolution,
+				hasInvalidCustomDimensionError,
+				invalidCustomDimensionReportOptions,
 				isSyncingAvailableCustomDimensions,
-				reportError,
-				reportOptions,
+				scheduleSyncAvailableCustomDimensions,
 			] );
 
 			// Return early if the wrapped widget doesn't need custom dimensions.
@@ -312,6 +352,11 @@ export default function withCustomDimensions( options = {} ) {
 					/>
 				);
 			}
+
+			const commonErrorProps = {
+				headerText: tileTitle,
+				infoTooltip: tileInfoTooltip,
+			};
 
 			if (
 				customDimensionsCreationErrors?.some(
