@@ -35,6 +35,7 @@ import {
 	render,
 	unsubscribeFromAll,
 	waitFor,
+	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -542,6 +543,11 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				'mainDashboard_adsense-abr-cta-widget',
 				'click_learn_more_link'
 			);
+
+			// This improves stability, as sometimes the test would fail
+			// due to the `survey-timeouts` call losing the `fetchMock`
+			// context.
+			await waitForDefaultTimeouts();
 		} );
 	} );
 } );
