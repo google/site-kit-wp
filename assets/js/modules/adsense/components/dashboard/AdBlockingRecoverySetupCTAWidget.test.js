@@ -23,6 +23,7 @@ import fetchMock from 'fetch-mock';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	mockSurveyEndpoints,
+	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
 import {
@@ -516,6 +517,11 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should fire track event when "learn more" is clicked', async () => {
+			fetchMock.getOnce( surveyTimeoutsEndpoint, {
+				status: 200,
+				body: {},
+			} );
+
 			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
