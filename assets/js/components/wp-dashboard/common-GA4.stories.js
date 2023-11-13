@@ -22,14 +22,23 @@
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import {
+	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
 import { DAY_IN_SECONDS } from '../../util';
 import * as __fixtures__ from '../../modules/analytics-4/datastore/__fixtures__';
+import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
-const wpDashboardAnalytics4OptionSets = [
+const wpDashboardSearchConsoleOptions = {
+	startDate: '2020-12-03',
+	endDate: '2021-01-27',
+	dimensions: 'date',
+};
+
+export const wpDashboardAnalytics4OptionSets = [
 	// Mock options for mocking isGatheringData selector's response.
 	{
 		dimensions: [ 'date' ],
@@ -109,6 +118,42 @@ const wpDashboardAnalytics4OptionSets = [
 	},
 ];
 
+const pageTitlesReportOptions = {
+	startDate: '2020-12-31',
+	endDate: '2021-01-27',
+	dimensionFilters: {
+		pagePath: new Array( 3 )
+			.fill( '' )
+			.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+			.sort(),
+	},
+	dimensions: [ 'pagePath', 'pageTitle' ],
+	metrics: [ { name: 'screenPageViews' } ],
+	orderby: [
+		{
+			metric: { metricName: 'screenPageViews' },
+			desc: true,
+		},
+	],
+	limit: 25,
+};
+
+export const provideAnalytics4ReportTitles = ( registry ) => {
+	const pageTitlesReport = getAnalytics4MockResponse(
+		pageTitlesReportOptions,
+		// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+		// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+		// page paths to page titles.
+		{ dimensionCombinationStrategy: STRATEGY_ZIP }
+	);
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport( pageTitlesReport, {
+			options: pageTitlesReportOptions,
+		} );
+};
+
 export const setupAnalytics4MockReports = (
 	registry,
 	mockOptions = wpDashboardAnalytics4OptionSets
@@ -124,29 +169,42 @@ export const setupAnalytics4MockReports = (
 	} );
 };
 
-export const setupAnalytics4GatheringData = (
-	registry,
-	mockOptions = wpDashboardAnalytics4OptionSets
-) => {
+export const setupSearchConsoleMockReports = ( registry, data ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-	mockOptions.forEach( ( options ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			[
-				{
-					data: {
-						rows: [],
-						totals: [ { values: [] }, { values: [] } ],
-					},
-				},
-			],
-			{
-				options,
-			}
+	if ( data ) {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( data, {
+			options: wpDashboardSearchConsoleOptions,
+		} );
+	} else {
+		provideSearchConsoleMockReport(
+			registry,
+			wpDashboardSearchConsoleOptions
 		);
+	}
+};
 
-		setupAnalytics4Property( registry, 1.5 );
+export const setupSearchConsoleAnalytics4MockReports = ( registry ) => {
+	setupSearchConsoleMockReports( registry );
+	setupAnalytics4MockReports( registry );
+};
+
+export const setupSearchConsoleGatheringData = ( registry ) => {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+		options: wpDashboardSearchConsoleOptions,
 	} );
+};
+
+export const setupAnalytics4GatheringData = ( registry ) => {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+};
+
+export const setupSearchConsoleAnalytics4GatheringData = ( registry ) => {
+	setupSearchConsoleGatheringData( registry );
+	setupAnalytics4GatheringData( registry );
 };
 
 export function setupAnalytics4ZeroData(
