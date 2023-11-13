@@ -57,7 +57,6 @@ export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
 
 	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const viewContext = useViewContext();
 
@@ -128,9 +127,7 @@ export default function GA4SettingsControls( props ) {
 				isDisabled={ isDisabled }
 			/>
 			<div className="googlesitekit-setup-module__inputs">
-				{ ga4ReportingEnabled && (
-					<AccountSelect hasModuleAccess={ hasModuleAccess } />
-				) }
+				<AccountSelect hasModuleAccess={ hasModuleAccess } />
 				<PropertySelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }

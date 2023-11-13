@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -118,22 +117,14 @@ function PopularAuthorsWidget( props ) {
 
 	return (
 		<MetricTileTable
-			widgetSlug={ KM_ANALYTICS_POPULAR_AUTHORS }
 			Widget={ Widget }
-			title={ __(
-				'Most popular authors by pageviews',
-				'google-site-kit'
-			) }
+			widgetSlug={ KM_ANALYTICS_POPULAR_AUTHORS }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Authors whose posts got the most visits',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

@@ -103,7 +103,7 @@ describe( 'User Input Settings', () => {
 		await step(
 			'wait for a Key Metric tile to successfully appear',
 			page.waitForSelector(
-				'.googlesitekit-widget--kmAnalyticsLoyalVisitors'
+				'.googlesitekit-widget--kmAnalyticsReturningVisitors'
 			)
 		);
 	}
@@ -192,7 +192,6 @@ describe( 'User Input Settings', () => {
 
 	beforeEach( async () => {
 		await enableFeature( 'keyMetrics' );
-		await enableFeature( 'ga4Reporting' );
 		await activatePlugins(
 			'e2e-tests-proxy-setup',
 			'e2e-tests-oauth-callback-plugin'

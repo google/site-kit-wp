@@ -97,7 +97,7 @@ export default function UserInputQuestionInfo( {
 									'google-site-kit'
 							  )
 							: __(
-									'Your answers will apply to the entire WordPress site: any other admins with access to Site Kit can see them and edit them.',
+									'Your answer to this question will apply to all Site Kit users. Any other admins with access to Site Kit can see and edit this response.',
 									'google-site-kit'
 							  ) }
 					</p>

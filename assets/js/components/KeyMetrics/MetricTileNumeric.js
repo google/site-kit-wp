@@ -43,17 +43,17 @@ export default function MetricTileNumeric( {
 			className="googlesitekit-km-widget-tile--numeric"
 			{ ...props }
 		>
+			<div className="googlesitekit-km-widget-tile__metric">
+				{ numFmt( metricValue, formatOptions ) }
+			</div>
+			<p className="googlesitekit-km-widget-tile__subtext">{ subText }</p>
 			<div className="googlesitekit-km-widget-tile__metric-change-container">
-				<div className="googlesitekit-km-widget-tile__metric">
-					{ numFmt( metricValue, formatOptions ) }
-				</div>
 				<ChangeBadge
 					previousValue={ previousValue }
 					currentValue={ currentValue }
 					isAbsolute={ formatOptions?.style === 'percent' }
 				/>
 			</div>
-			<p className="googlesitekit-km-widget-tile__subtext">{ subText }</p>
 		</MetricTileWrapper>
 	);
 }

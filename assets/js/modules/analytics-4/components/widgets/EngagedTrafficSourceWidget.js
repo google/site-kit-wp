@@ -31,7 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -121,7 +124,7 @@ function EngagedTrafficSourceWidget( props ) {
 	return (
 		<MetricTileText
 			Widget={ Widget }
-			title={ __( 'Most engaged traffic source', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
 			subText={ sprintf(
@@ -135,10 +138,6 @@ function EngagedTrafficSourceWidget( props ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

@@ -30,6 +30,9 @@ class Encrypted_OptionsTest extends TestCase {
 
 		update_option( 'test-serialized-option', base64_encode( serialize( array( 'test-value' ) ) ) );
 		$this->assertEquals( array( 'test-value' ), $encrypted_options->get( 'test-serialized-option' ) );
+
+		update_option( 'test-unserialized-array-option', array( 'test-value' ) );
+		$this->assertEquals( array( 'test-value' ), $encrypted_options->get( 'test-unserialized-array-option' ) );
 	}
 
 	public function test_set() {
