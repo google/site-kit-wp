@@ -50,9 +50,14 @@ export default function SettingsCardKeyMetrics() {
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const loading = useSelect(
-		( select ) => select( CORE_USER ).getUserInputSettings() === undefined
-	);
+	const loading = useSelect( ( select ) => {
+		// Ensure that `getUserInputSettings()` is called here in order to trigger its resolver, which we
+		// want to track for the loading state. Invoking the selector here rather than relying on one of
+		// the child components to call it avoids a brief flicker of the loaded state.
+		select( CORE_USER ).getUserInputSettings();
+
+		return select( CORE_USER ).isResolving( 'getUserInputSettings', [] );
+	} );
 
 	const gaEventCategory = `${ viewContext }_kmw`;
 
