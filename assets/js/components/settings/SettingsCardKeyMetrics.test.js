@@ -43,6 +43,11 @@ describe( 'SettingsCardKeyMetrics', () => {
 		provideSiteInfo( registry );
 
 		muteFetch(
+			new RegExp(
+				'^/google-site-kit/v1/core/user/data/user-input-settings'
+			)
+		);
+		muteFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
 		);
 
