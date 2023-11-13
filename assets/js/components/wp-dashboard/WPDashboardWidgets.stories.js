@@ -29,19 +29,15 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
+import { widgetDecorators } from './common.stories';
 import {
-	setupSearchConsoleAnalyticsMockReports,
-	setupSearchConsoleMockReports,
-	setupSearchConsoleAnalyticsZeroData,
-	setupSearchConsoleAnalyticsGatheringData,
-	widgetDecorators,
-} from './common.stories';
-import {
-	setupAnalytics4GatheringData,
-	setupAnalytics4MockReports,
+	setupSearchConsoleAnalytics4MockReports,
+	setupSearchConsoleAnalytics4GatheringData,
 	setupAnalytics4ZeroData,
+	provideAnalytics4ReportTitles,
 } from './common-GA4.stories';
 import FeaturesProvider from '../FeaturesProvider';
+import { setupSearchConsoleAnalytics4ZeroData } from '../adminbar/common-GA4.stories';
 
 const Template = ( { setupRegistry, features = [] } ) => {
 	const enabledFeatures = new Set( features );
@@ -55,18 +51,12 @@ const Template = ( { setupRegistry, features = [] } ) => {
 	);
 };
 
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Ready';
-Ready.args = {
-	setupRegistry: setupSearchConsoleAnalyticsMockReports,
-};
-
 export const ReadyGA4 = Template.bind( {} );
-ReadyGA4.storyName = 'Ready - GA4';
+ReadyGA4.storyName = 'Ready';
 ReadyGA4.args = {
 	setupRegistry: ( registry ) => {
-		setupSearchConsoleAnalyticsMockReports( registry );
-		setupAnalytics4MockReports( registry );
+		provideAnalytics4ReportTitles( registry );
+		setupSearchConsoleAnalytics4MockReports( registry );
 	},
 };
 
@@ -87,7 +77,7 @@ ReadyWithActivateModuleCTA.args = {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
-		setupSearchConsoleMockReports( registry );
+		setupSearchConsoleAnalytics4MockReports( registry );
 	},
 };
 
@@ -108,7 +98,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
-		setupSearchConsoleMockReports( registry );
+		setupSearchConsoleAnalytics4MockReports( registry );
 	},
 };
 
@@ -133,36 +123,25 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 		provideUserCapabilities( registry );
 		provideModuleRegistrations( registry );
 		provideUserAuthentication( registry );
-		setupSearchConsoleMockReports( registry );
+		setupSearchConsoleAnalytics4MockReports( registry );
 	},
-};
-
-export const GatheringData = Template.bind( {} );
-GatheringData.storyName = 'Gathering Data';
-GatheringData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
 };
 
 export const GatheringDataGA4 = Template.bind( {} );
 GatheringDataGA4.storyName = 'Gathering Data - GA4';
 GatheringDataGA4.args = {
 	setupRegistry: ( registry ) => {
-		setupSearchConsoleAnalyticsGatheringData( registry );
-		setupAnalytics4GatheringData( registry );
+		provideUserAuthentication( registry );
+		setupSearchConsoleAnalytics4GatheringData( registry );
 	},
-};
-
-export const ZeroData = Template.bind( {} );
-ZeroData.storyName = 'Zero Data';
-ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
 };
 
 export const ZeroDataGA4 = Template.bind( {} );
 ZeroDataGA4.storyName = 'Zero Data - GA4';
 ZeroDataGA4.args = {
 	setupRegistry: ( registry ) => {
-		setupSearchConsoleAnalyticsZeroData( registry );
+		provideUserAuthentication( registry );
+		setupSearchConsoleAnalytics4ZeroData( registry );
 		setupAnalytics4ZeroData( registry );
 	},
 };
