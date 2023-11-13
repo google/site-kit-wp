@@ -98,10 +98,12 @@ export default function WPDashboardWidgets() {
 				}
 			) }
 		>
-			<Fragment>
-				<WPDashboardUniqueVisitorsGA4Widget />
-				<WPDashboardSessionDurationGA4Widget />
-			</Fragment>
+			{ analyticsModuleActiveAndConnected && (
+				<Fragment>
+					<WPDashboardUniqueVisitorsGA4Widget />
+					<WPDashboardSessionDurationGA4Widget />
+				</Fragment>
+			) }
 
 			<WPDashboardImpressionsWidget />
 			<WPDashboardClicksWidget />
@@ -112,10 +114,12 @@ export default function WPDashboardWidgets() {
 				</div>
 			) }
 
-			<Fragment>
-				<WPDashboardUniqueVisitorsChartGA4Widget />
-				<WPDashboardPopularPagesGA4Widget />
-			</Fragment>
+			{ analyticsModuleActiveAndConnected && (
+				<Fragment>
+					<WPDashboardUniqueVisitorsChartGA4Widget />
+					<WPDashboardPopularPagesGA4Widget />
+				</Fragment>
+			) }
 		</div>
 	);
 }
