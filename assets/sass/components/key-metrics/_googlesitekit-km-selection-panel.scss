@@ -91,6 +91,10 @@
 
 		.googlesitekit-error-text p {
 			margin: 0;
+
+			@media (max-width: $bp-xsmallOnly) {
+				margin: 1em 0;
+			}
 		}
 	}
 
@@ -101,6 +105,12 @@
 		flex-wrap: wrap;
 		justify-content: space-between;
 		margin-top: $grid-gap-desktop / 2;
+
+		@media (max-width: $bp-xsmallOnly) {
+			flex-direction: column;
+			margin-top: 0;
+			row-gap: 6px;
+		}
 	}
 
 	.googlesitekit-km-selection-panel-footer__metric-count {
