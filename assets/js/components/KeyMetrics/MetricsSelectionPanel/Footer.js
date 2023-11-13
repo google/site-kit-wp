@@ -36,6 +36,7 @@ import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
@@ -43,12 +44,6 @@ import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 } from '../constants';
-import Link from '../../Link';
-import ErrorNotice from '../../ErrorNotice';
-import { safelySort } from './utils';
-import useViewContext from '../../../hooks/useViewContext';
-import { trackEvent } from '../../../util';
-import { useFeature } from '../../../hooks/useFeature';
 import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
@@ -56,11 +51,21 @@ import {
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
+import Link from '../../Link';
+import ErrorNotice from '../../ErrorNotice';
+import { safelySort } from './utils';
+import useViewContext from '../../../hooks/useViewContext';
+import { trackEvent } from '../../../util';
+import { useFeature } from '../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
-export default function Footer( { savedMetrics } ) {
+export default function Footer( {
+	savedMetrics,
+	onNavigationToOAuthURL = () => {},
+} ) {
 	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 	const viewContext = useViewContext();
+
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -126,6 +131,30 @@ export default function Footer( { savedMetrics } ) {
 		);
 	} );
 
+	// The `custom_dimensions` query value is arbitrary and serves two purposes:
+	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
+	// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
+	const redirectURL = addQueryArgs( global.location.href, {
+		notification: 'custom_dimensions',
+	} );
+
+	const isNavigatingToOAuthURL = useSelect( ( select ) => {
+		const OAuthURL = select( CORE_USER ).getConnectURL( {
+			additionalScopes: [ ANALYTICS_EDIT_SCOPE ],
+			redirectURL,
+		} );
+
+		if ( ! OAuthURL ) {
+			return false;
+		}
+
+		return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
+	} );
+
+	const isOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
+	);
+
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
@@ -145,39 +174,45 @@ export default function Footer( { savedMetrics } ) {
 		} );
 
 		if ( ! error ) {
-			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 			trackEvent( trackingCategory, 'metrics_sidebar_save' );
-			if ( keyMetricsEnabled && isGA4Connected ) {
-				if ( hasMissingCustomDimensions ) {
-					setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-						autoSubmit: true,
-					} );
 
-					if ( ! hasAnalytics4EditScope ) {
-						// The `custom_dimensions` query value is arbitrary and serves two purposes:
-						// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
-						// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
-						const redirectURL = addQueryArgs(
-							global.location.href,
-							{
-								notification: 'custom_dimensions',
-							}
-						);
-						setPermissionScopeError( {
-							code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-							message: __(
-								'Additional permissions are required to create new Analytics custom dimensions.',
-								'google-site-kit'
-							),
-							data: {
-								status: 403,
-								scopes: [ ANALYTICS_EDIT_SCOPE ],
-								skipModal: true,
-								redirectURL,
-							},
-						} );
-					}
+			if (
+				keyMetricsEnabled &&
+				isGA4Connected &&
+				hasMissingCustomDimensions
+			) {
+				setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+					autoSubmit: true,
+				} );
+
+				if ( ! hasAnalytics4EditScope ) {
+					// Let parent component know that the user is navigating to OAuth URL
+					// so that the panel is kept open.
+					onNavigationToOAuthURL();
+
+					// Ensure the state is set, just in case the user navigates to the
+					// OAuth URL before the function is fully executed.
+					setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+
+					setPermissionScopeError( {
+						code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+						message: __(
+							'Additional permissions are required to create new Analytics custom dimensions.',
+							'google-site-kit'
+						),
+						data: {
+							status: 403,
+							scopes: [ ANALYTICS_EDIT_SCOPE ],
+							skipModal: true,
+							redirectURL,
+						},
+					} );
 				}
+			}
+
+			// If the state has not been set to `false` yet, set it now.
+			if ( isOpen ) {
+				setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 			}
 
 			// lock the button label while panel is closing
@@ -187,25 +222,24 @@ export default function Footer( { savedMetrics } ) {
 	}, [
 		saveKeyMetricsSettings,
 		selectedMetrics,
-		setValue,
 		trackingCategory,
 		keyMetricsEnabled,
 		isGA4Connected,
-		currentButtonText,
 		hasMissingCustomDimensions,
+		isOpen,
+		currentButtonText,
 		setValues,
 		hasAnalytics4EditScope,
+		onNavigationToOAuthURL,
+		setValue,
 		setPermissionScopeError,
+		redirectURL,
 	] );
 
 	const onCancelClick = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
 	}, [ setValue, trackingCategory ] );
-
-	const isOpen = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
-	);
 
 	const [ prevIsOpen, setPrevIsOpen ] = useState( null );
 
@@ -257,18 +291,19 @@ export default function Footer( { savedMetrics } ) {
 				<div className="googlesitekit-km-selection-panel-footer__actions">
 					<Link
 						onClick={ onCancelClick }
-						disabled={ isSavingSettings }
+						disabled={ isSavingSettings || isNavigatingToOAuthURL }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
 					<SpinnerButton
 						onClick={ onSaveClick }
-						isSaving={ isSavingSettings }
+						isSaving={ isSavingSettings || isNavigatingToOAuthURL }
 						disabled={
 							selectedMetrics?.length < 2 ||
 							selectedMetrics?.length > 4 ||
 							isSavingSettings ||
-							( ! isOpen && wasSaved )
+							( ! isOpen && wasSaved ) ||
+							isNavigatingToOAuthURL
 						}
 					>
 						{ finalButtonText || currentButtonText }
@@ -281,4 +316,5 @@ export default function Footer( { savedMetrics } ) {
 
 Footer.propTypes = {
 	savedMetrics: PropTypes.array,
+	onNavigationToOAuthURL: PropTypes.func,
 };

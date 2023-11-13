@@ -34,7 +34,6 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
 import useViewContext from '../../../../../hooks/useViewContext';
-import { useFeature } from '../../../../../hooks/useFeature';
 import { trackEvent } from '../../../../../util/tracking';
 
 const { useSelect } = Data;
@@ -47,19 +46,10 @@ export default function SuccessBanner() {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_ga4-success-notification`;
 
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-	let description;
-	if ( ga4ReportingEnabled ) {
-		description = __(
-			'Google Analytics 4 has started collecting data for your site. As soon there is enough data, you’ll be able to switch your Site Kit dashboard to show data from Google Analytics 4.',
-			'google-site-kit'
-		);
-	} else {
-		description = __(
-			'GA4 is collecting data for your site. You’ll only see Universal Analytics data on your dashboard for now.',
-			'google-site-kit'
-		);
-	}
+	const description = __(
+		'Google Analytics 4 has started collecting data for your site. As soon there is enough data, you’ll be able to switch your Site Kit dashboard to show data from Google Analytics 4.',
+		'google-site-kit'
+	);
 
 	useMount( () => {
 		trackEvent( eventCategory, 'view_notification' );

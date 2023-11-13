@@ -24,14 +24,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { compose } from '@wordpress/compose';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CATEGORIES,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -55,6 +57,15 @@ function getReportOptions( select ) {
 	return {
 		...dates,
 		dimensions: [ 'customEvent:googlesitekit_post_categories' ],
+		dimensionFilters: {
+			// Make sure that we select only rows without (not set) records.
+			'customEvent:googlesitekit_post_categories': {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: '(not set)',
+				notExpression: true,
+			},
+		},
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [
 			{
@@ -122,17 +133,13 @@ function TopCategoriesWidget( { Widget } ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'Top categories by pageviews', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Categories that your site visitors viewed the most',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

@@ -20,6 +20,4 @@ export { default as SetupForm } from './SetupForm';
 export { default as SetupMain } from './SetupMain';
 export { default as SetupFormUA } from './SetupFormUA';
 export { default as SetupFormGA4 } from './SetupFormGA4';
-export { default as SetupFormGA4Legacy } from './SetupFormGA4Legacy';
-export { default as SetupFormGA4Transitional } from './SetupFormGA4Transitional';
 export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';

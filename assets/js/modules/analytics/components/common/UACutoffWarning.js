@@ -51,14 +51,11 @@ import SettingsNotice, {
 	TYPE_WARNING,
 } from '../../../../components/SettingsNotice';
 import useViewContext from '../../../../hooks/useViewContext';
-import { useFeature } from '../../../../hooks/useFeature';
 import { snapshotAllStores } from '../../../../googlesitekit/data/create-snapshot-store';
 const { useDispatch, useSelect } = Data;
 
 export default function UACutoffWarning( { className } ) {
 	const viewContext = useViewContext();
-
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -85,7 +82,6 @@ export default function UACutoffWarning( { className } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const shouldDisplayWarning =
-		ga4ReportingEnabled &&
 		isAnalyticsConnected &&
 		! isGA4Connected &&
 		stringToDate( referenceDate ) >= stringToDate( UA_CUTOFF_DATE );
