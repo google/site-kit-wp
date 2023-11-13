@@ -29,7 +29,6 @@ import SiteKitLogoIcon from '../assets/svg/graphics/logo-sitekit.svg';
 import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import {
 	WithTestRegistry,
 	createTestRegistry,
@@ -41,9 +40,12 @@ import {
 	withActive,
 	withConnected,
 } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
-import { provideAnalyticsMockReport } from '../assets/js/modules/analytics/util/data-mock';
 import { provideSearchConsoleMockReport } from '../assets/js/modules/search-console/util/data-mock';
-import { wpDashboardAnalyticsOptionSets } from '../assets/js/components/wp-dashboard/common.stories';
+import {
+	setupAnalytics4MockReports,
+	wpDashboardAnalytics4OptionSets,
+} from '../assets/js/components/wp-dashboard/common-GA4.stories';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 
 const clicksOptions = {
 	startDate: '2020-12-31',
@@ -83,9 +85,7 @@ storiesOf( 'WordPress', module )
 				.receiveGetModules( withConnected( 'analytics' ) );
 			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-			wpDashboardAnalyticsOptionSets.forEach(
-				provideAnalyticsMockReport.bind( null, registry )
-			);
+			setupAnalytics4MockReports( registry );
 
 			// For <WPDashboardImpressions />
 			provideSearchConsoleMockReport( registry, impressionsArgs );
@@ -136,6 +136,8 @@ storiesOf( 'WordPress', module )
 			registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );
 			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
+			setupAnalytics4MockReports( registry );
+
 			// For <WPDashboardImpressions />
 			provideSearchConsoleMockReport( registry, impressionsArgs );
 			// For <WPDashboardClicks />
@@ -184,15 +186,15 @@ storiesOf( 'WordPress', module )
 		( args, { registry } ) => {
 			registry
 				.dispatch( CORE_MODULES )
-				.receiveGetModules( withActive( 'analytics' ) );
+				.receiveGetModules( withActive( 'analytics-4' ) );
 			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-			wpDashboardAnalyticsOptionSets.forEach( ( options ) => {
+			wpDashboardAnalytics4OptionSets.forEach( ( options ) => {
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetReport( [], { options } );
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getReport', [ options ] );
 			} );
 
