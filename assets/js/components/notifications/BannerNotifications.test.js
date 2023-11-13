@@ -33,7 +33,6 @@ import {
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import BannerNotifications from './BannerNotifications';
 import Header from '../Header';
@@ -57,19 +56,13 @@ describe( 'BannerNotifications', () => {
 	};
 
 	const activateAdsenseModule = () => {
-		muteFetch(
-			new RegExp( '^/google-site-kit/v1/modules/adsense/data/settings' ),
-			[]
-		);
-
-		const { ...modules } = registry.select( CORE_MODULES ).getModules();
-
-		modules.adsense.connected = true;
-		modules.adsense.active = true;
-
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules( Object.values( modules ) );
+		provideModules( registry, [
+			{
+				slug: 'adsense',
+				active: true,
+				connected: true,
+			},
+		] );
 
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {
 			accountID: 'pub-123456',
