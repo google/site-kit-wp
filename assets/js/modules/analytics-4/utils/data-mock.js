@@ -57,7 +57,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Direct',
 		'Organic Search',
 		'Paid Social',
-		'Organic Social',
+		'(other)',
 		'Email',
 		'Affiliates',
 		'Referral',
