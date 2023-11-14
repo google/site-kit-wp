@@ -51,6 +51,7 @@ import {
 	isInsufficientPermissionsError,
 } from '../../../util/errors';
 import { isInvalidCustomDimensionError } from './custom-dimensions';
+import useViewOnly from '../../../hooks/useViewOnly';
 import {
 	AnalyticsUpdateError,
 	CustomDimensionsMissingError,
@@ -68,6 +69,8 @@ export default function withCustomDimensions( options = {} ) {
 
 	return ( WrappedComponent ) => {
 		const WithCustomDimensionsComponent = ( props ) => {
+			const isViewOnly = useViewOnly();
+
 			const { Widget, widgetSlug } = props;
 			const {
 				description,
@@ -309,7 +312,8 @@ export default function withCustomDimensions( options = {} ) {
 				if (
 					! customDimensions ||
 					! hasInvalidCustomDimensionError ||
-					isSyncingAvailableCustomDimensions
+					isSyncingAvailableCustomDimensions ||
+					isViewOnly
 				) {
 					return;
 				}
@@ -332,6 +336,7 @@ export default function withCustomDimensions( options = {} ) {
 				hasInvalidCustomDimensionError,
 				invalidCustomDimensionReportOptions,
 				isSyncingAvailableCustomDimensions,
+				isViewOnly,
 				scheduleSyncAvailableCustomDimensions,
 			] );
 
