@@ -314,18 +314,18 @@ export default function withCustomDimensions( options = {} ) {
 					return;
 				}
 
-				scheduleSyncAvailableCustomDimensions();
+				( async () => {
+					// Clear report errors so that the useEffect isn't
+					// triggered multiple times.
+					await Promise.all(
+						invalidCustomDimensionReportOptions.map( ( args ) => {
+							return clearError( 'getReport', [ args ] );
+						} )
+					);
 
-				// Clear report errors so that the useEffect isn't
-				// triggered multiple times.
-				Promise.all(
-					invalidCustomDimensionReportOptions.map( ( args ) => {
-						return clearError( 'getReport', [ args ] );
-					} )
-				).finally( () => {
 					// Sync available custom dimensions.
 					scheduleSyncAvailableCustomDimensions();
-				} );
+				} )();
 			}, [
 				clearError,
 				customDimensions,
