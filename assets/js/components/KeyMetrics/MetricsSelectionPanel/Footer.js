@@ -113,23 +113,14 @@ export default function Footer( {
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
-	const saveError = useSelect( ( select ) => {
-		if ( haveSettingsChanged && selectedMetrics?.length < 2 ) {
-			return {
-				message: __( 'Select at least 2 metrics', 'google-site-kit' ),
-			};
-		}
-
-		return select( CORE_USER ).getErrorForAction(
-			'saveKeyMetricsSettings',
-			[
-				{
-					...keyMetricsSettings,
-					widgetSlugs: selectedMetrics,
-				},
-			]
-		);
-	} );
+	const APIError = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveKeyMetricsSettings', [
+			{
+				...keyMetricsSettings,
+				widgetSlugs: selectedMetrics,
+			},
+		] )
+	);
 
 	// The `custom_dimensions` query value is arbitrary and serves two purposes:
 	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
@@ -260,20 +251,21 @@ export default function Footer( {
 		setPrevIsOpen( isOpen );
 	}, [ isOpen, prevIsOpen ] );
 
-	const showSelection = ! saveError || saveError?.code;
-
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
-			{ saveError?.code && (
-				<ErrorNotice
-					error={ saveError }
-					noPrefix={
-						selectedMetrics?.length < 2 && ! saveError?.code
-					}
-				/>
-			) }
+			{ APIError && <ErrorNotice error={ APIError } /> }
 			<div className="googlesitekit-km-selection-panel-footer__content">
-				{ showSelection ? (
+				{ haveSettingsChanged && selectedMetrics?.length < 2 ? (
+					<ErrorNotice
+						error={ {
+							message: __(
+								'Select at least 2 metrics',
+								'google-site-kit'
+							),
+						} }
+						noPrefix={ selectedMetrics?.length < 2 }
+					/>
+				) : (
 					<p className="googlesitekit-km-selection-panel-footer__metric-count">
 						{ sprintf(
 							/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
@@ -282,11 +274,6 @@ export default function Footer( {
 							4
 						) }
 					</p>
-				) : (
-					<ErrorNotice
-						error={ saveError }
-						noPrefix={ selectedMetrics?.length < 2 }
-					/>
 				) }
 				<div className="googlesitekit-km-selection-panel-footer__actions">
 					<Link
