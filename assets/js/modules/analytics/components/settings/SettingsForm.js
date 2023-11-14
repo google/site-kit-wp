@@ -25,7 +25,6 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
 import { AdsConversionIDTextField, TrackingExclusionSwitches } from '../common';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
@@ -50,15 +49,7 @@ export default function SettingsForm( {
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
-	const gtmContainersResolved = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
-	);
-
 	const showTrackingExclusion = isGA4Connected || isUAConnected;
-
-	if ( ! gtmContainersResolved ) {
-		return <ProgressBar />;
-	}
 
 	return (
 		<Fragment>

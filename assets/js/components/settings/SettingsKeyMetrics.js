@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -29,10 +34,11 @@ import { Switch } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../material-components';
+import PreviewBlock from '../PreviewBlock';
 
 const { useSelect, useDispatch } = Data;
 
-export default function SettingsKeyMetrics() {
+export default function SettingsKeyMetrics( { loading = false } ) {
 	const keyMetricsWidgetHidden = useSelect( ( select ) =>
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
@@ -58,7 +64,19 @@ export default function SettingsKeyMetrics() {
 		setKeyMetricsSetting,
 	] );
 
-	if ( ! keyMetricsWidgetHidden === undefined || ! keyMetrics?.length ) {
+	if ( loading ) {
+		return (
+			<Grid>
+				<Row>
+					<Cell size={ 12 } className="googlesitekit-overflow-hidden">
+						<PreviewBlock width="260px" height="21.3px" />
+					</Cell>
+				</Row>
+			</Grid>
+		);
+	}
+
+	if ( keyMetricsWidgetHidden === undefined || ! keyMetrics?.length ) {
 		return null;
 	}
 
@@ -80,3 +98,7 @@ export default function SettingsKeyMetrics() {
 		</Grid>
 	);
 }
+
+SettingsKeyMetrics.propTypes = {
+	loading: PropTypes.bool,
+};
