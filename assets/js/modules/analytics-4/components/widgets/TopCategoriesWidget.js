@@ -110,7 +110,7 @@ function TopCategoriesWidget( { Widget } ) {
 
 				const categoriesList =
 					typeof categories?.value === 'string'
-						? categories?.value.split( '; ' )
+						? categories.value.split( '; ' )
 						: [];
 
 				const categoriesString = listFormat(
