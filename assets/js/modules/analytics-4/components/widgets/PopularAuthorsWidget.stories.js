@@ -54,8 +54,9 @@ const reportOptions = {
 	dimensionFilters: {
 		'customEvent:googlesitekit_post_author': {
 			filterType: 'stringFilter',
-			matchType: 'FULL_REGEXP',
-			value: '\\d+',
+			matchType: 'EXACT',
+			value: '(not set)',
+			notExpression: true,
 		},
 	},
 	metrics: [ { name: 'screenPageViews' } ],
