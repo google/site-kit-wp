@@ -65,7 +65,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ 'analytics-4' ],
-			isActive: true,
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -81,7 +80,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ 'analytics-4' ],
-			isActive: true,
 		},
 		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
 	);
@@ -94,7 +92,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 4,
 			wrapWidget: false,
 			modules: [ 'analytics-4' ],
-			isActive: true,
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);
