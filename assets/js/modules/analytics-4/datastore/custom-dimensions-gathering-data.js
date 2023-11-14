@@ -146,33 +146,19 @@ const baseActions = {
 			return;
 		}
 
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+		const reportArgs = yield Data.commonActions.await(
+			__experimentalResolveSelect(
+				MODULES_ANALYTICS_4
+			).getDataAvailabilityReportOptions( customDimension )
+		);
 
-		if ( ! propertyID ) {
+		if ( ! reportArgs ) {
 			yield baseActions.receiveIsCustomDimensionGatheringData(
 				customDimension,
 				true
 			);
 			return;
 		}
-
-		const property = yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty(
-				propertyID
-			)
-		);
-
-		const startDate = getDateString( new Date( property.createTime ) );
-
-		const endDate = select( CORE_USER ).getReferenceDate();
-
-		const reportArgs = {
-			startDate,
-			endDate,
-			dimensions: [ `customEvent:${ customDimension }` ],
-			metrics: [ { name: 'eventCount' } ],
-			limit: 2,
-		};
 
 		const report = yield Data.commonActions.await(
 			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getReport(
@@ -254,6 +240,23 @@ const baseResolvers = {
 			customDimension
 		);
 	},
+
+	*getDataAvailabilityReportOptions() {
+		const { __experimentalResolveSelect, select } =
+			yield Data.commonActions.getRegistry();
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( ! propertyID ) {
+			return;
+		}
+
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty(
+				propertyID
+			)
+		);
+	},
 };
 
 const baseSelectors = {
@@ -301,6 +304,90 @@ const baseSelectors = {
 
 			// Otherwise, all custom dimensions' gathering data state is false.
 			return false;
+		}
+	),
+
+	/**
+	 * Gets the options for the data availability report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} customDimension Custom dimension slug.
+	 * @return {Object|undefined} Returns the report options if the property is loaded, otherwise undefined.
+	 */
+	getDataAvailabilityReportOptions: createRegistrySelector(
+		( select ) => ( state, customDimension ) => {
+			invariant( customDimension, 'customDimension is required.' );
+
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+			if ( ! propertyID ) {
+				return undefined;
+			}
+
+			const property =
+				select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+
+			if ( property === undefined ) {
+				return undefined;
+			}
+
+			const startDate = getDateString( new Date( property.createTime ) );
+
+			const endDate = select( CORE_USER ).getReferenceDate();
+
+			return {
+				startDate,
+				endDate,
+				dimensions: [ `customEvent:${ customDimension }` ],
+				metrics: [ { name: 'eventCount' } ],
+				limit: 2,
+			};
+		}
+	),
+
+	/**
+	 * Gets the errors for the data availability report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state            Data store's state.
+	 * @param {Array}  customDimensions Array of custom dimension slugs.
+	 * @return {Object} Returns an object of errors keyed by custom dimension slug.
+	 */
+	getDataAvailabilityReportErrors: createRegistrySelector(
+		( select ) => ( state, customDimensions ) => {
+			invariant( customDimensions, 'customDimensions is required.' );
+			invariant(
+				Array.isArray( customDimensions ),
+				'customDimensions must be an array.'
+			);
+
+			const { getDataAvailabilityReportOptions, getErrorForSelector } =
+				select( MODULES_ANALYTICS_4 );
+
+			return customDimensions.reduce( ( errors, customDimension ) => {
+				const reportArgs =
+					getDataAvailabilityReportOptions( customDimension );
+
+				if ( ! reportArgs ) {
+					return errors;
+				}
+
+				const error = getErrorForSelector( 'getReport', [
+					reportArgs,
+				] );
+
+				if ( error ) {
+					return {
+						...errors,
+						[ customDimension ]: error,
+					};
+				}
+
+				return errors;
+			}, {} );
 		}
 	),
 };
