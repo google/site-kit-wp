@@ -1399,15 +1399,20 @@ final class Analytics_4 extends Module
 			foreach ( $settings['availableCustomDimensions'] as $custom_dimension ) {
 				switch ( $custom_dimension ) {
 					case 'googlesitekit_post_author':
-						$data[ $custom_dimension ] = $post->post_author;
+						$author = get_userdata( $post->post_author );
+
+						if ( $author ) {
+							$data[ $custom_dimension ] = $author->display_name ? $author->display_name : $author->user_login;
+						}
+
 						break;
 					case 'googlesitekit_post_categories':
 						$categories = get_the_category( $post->ID );
 
 						if ( ! empty( $categories ) ) {
-							$category_ids = wp_list_pluck( $categories, 'term_id' );
+							$category_names = wp_list_pluck( $categories, 'name' );
 
-							$data[ $custom_dimension ] = implode( ',', $category_ids );
+							$data[ $custom_dimension ] = implode( '; ', $category_names );
 						}
 
 						break;
