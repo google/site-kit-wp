@@ -78,7 +78,7 @@ PluginSetupError.scenario = {
 
 export const PermissionError = Template.bind( {} );
 PermissionError.storyName =
-	'Permission Error - No permission is temporary persisted';
+	'Permission Error - No permission is temporarily persisted';
 PermissionError.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );

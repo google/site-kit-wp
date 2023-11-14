@@ -62,7 +62,7 @@ const AuthenticatedPermissionsModal = () => {
 	}, [ clearPermissionScopeError ] );
 
 	const onConfirm = useCallback( async () => {
-		// Temporary store permissions error, so data like scopes and `redirectURL`
+		// Temporary store permissions error, so data like `scopes` and `redirectURL`
 		// can be used in `Permission error` notification.
 		setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
 			permissionsError,

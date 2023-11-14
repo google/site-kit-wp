@@ -80,7 +80,7 @@ export default function UnsatisfiedScopesAlert() {
 			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
 		)
 	);
-	const tempPersistedPermissionsError = useSelect( ( select ) =>
+	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 			'permissionsError'
@@ -90,16 +90,17 @@ export default function UnsatisfiedScopesAlert() {
 		select( CORE_USER ).getUnsatisfiedScopes()
 	);
 
-	const connectURLData = {
-		redirectURL: global.location.href,
-	};
-	if ( tempPersistedPermissionsError?.data ) {
-		connectURLData.additionalScopes =
-			tempPersistedPermissionsError.data?.scopes;
-		connectURLData.redirectURL =
-			tempPersistedPermissionsError.data?.redirectURL ||
-			global.location.href;
-	}
+	const connectURLData = temporaryPersistedPermissionsError?.data
+		? {
+				additionalScopes:
+					temporaryPersistedPermissionsError.data?.scopes,
+				redirectURL:
+					temporaryPersistedPermissionsError.data?.redirectURL ||
+					global.location.href,
+		  }
+		: {
+				redirectURL: global.location.href,
+		  };
 
 	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( connectURLData )
@@ -151,10 +152,9 @@ export default function UnsatisfiedScopesAlert() {
 		'Site Kit can’t access necessary data',
 		'google-site-kit'
 	);
-	let ctaLabel = __( 'Redo setup', 'google-site-kit' );
-	if ( tempPersistedPermissionsError?.data ) {
-		ctaLabel = __( 'Grant permission', 'google-site-kit' );
-	}
+	const ctaLabel = temporaryPersistedPermissionsError?.data
+		? __( 'Grant permission', 'google-site-kit' )
+		: __( 'Redo setup', 'google-site-kit' );
 
 	switch ( messageID ) {
 		case MESSAGE_MULTIPLE:

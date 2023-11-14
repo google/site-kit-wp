@@ -36,7 +36,7 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 const { useSelect } = Data;
 
 export default function UnsatisfiedScopesAlertGTE() {
-	const tempPersistedPermissionsError = useSelect( ( select ) =>
+	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 			'permissionsError'
@@ -46,7 +46,7 @@ export default function UnsatisfiedScopesAlertGTE() {
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ TAGMANAGER_READ_SCOPE ],
 			redirectURL:
-				tempPersistedPermissionsError?.data?.redirectURL ||
+				temporaryPersistedPermissionsError?.data?.redirectURL ||
 				global.location.href,
 		} )
 	);

@@ -155,7 +155,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'does render the redo setup CTA if initial Site Kit setup auth is not granted', () => {
+	it( 'does render the redo setup CTA if initial Site Kit setup authentication is not granted', () => {
 		provideUserAuthentication( registry, {
 			authenticated: false,
 		} );
@@ -174,7 +174,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toHaveTextContent( 'Redo the plugin setup' );
 	} );
 
-	it( 'does not render the redo setup CTA if it is not due to the interuption of plugin setup and no permission is temporary persissted', () => {
+	it( 'does not render the redo setup CTA if it is not due to the interuption of plugin setup and no permission is temporarily persisted', () => {
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry, {
 			setupErrorCode: 'access_denied',
@@ -191,7 +191,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).not.toHaveTextContent( 'Redo the plugin setup' );
 	} );
 
-	it( 'does render the grant permission CTA if additional permissions were not granted and permission is temporary persissted', () => {
+	it( 'does render the grant permission CTA if additional permissions were not granted and permission is temporarily persisted', () => {
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry, {
 			isAuthenticated: true,
