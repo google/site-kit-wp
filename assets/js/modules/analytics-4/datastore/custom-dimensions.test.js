@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { times } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -278,6 +283,10 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 
 		describe( 'scheduleSyncAvailableCustomDimensions', () => {
+			beforeEach( () => {
+				jest.useFakeTimers();
+			} );
+
 			it( 'schedules a sync request to run after two seconds', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
@@ -297,12 +306,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.scheduleSyncAvailableCustomDimensions();
 
-				const WAIT_AFTER_DISPATCH = 2500;
-
-				// Wait for more than two seconds as the sync is run after two seconds.
-				await new Promise( ( resolve ) => {
-					setTimeout( resolve, WAIT_AFTER_DISPATCH );
-				} );
+				jest.runAllTimers();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
@@ -312,7 +316,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				);
 			} );
 
-			it( 'runs a sync request once even if the action is called multiple times when each call is made before the two second duration has elapsed', async () => {
+			it( 'runs a sync request once even if the action is called multiple times when each call is made before the two second duration has elapsed', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 				} );
@@ -327,33 +331,16 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					}
 				);
 
-				const DISPATCH_COUNT = 5;
-				const DISPATCH_INTERVAL = 500;
-				const WAIT_AFTER_DISPATCH = 2500;
-
-				// Dispatch action every 0.5 second.
-				const intervalID = setInterval(
-					() =>
-						registry
-							.dispatch( MODULES_ANALYTICS_4 )
-							.scheduleSyncAvailableCustomDimensions(),
-					DISPATCH_INTERVAL
-				);
-
-				// Stop dispatching after 2.5 seconds.
-				setTimeout( () => {
-					clearInterval( intervalID );
-				}, DISPATCH_COUNT * DISPATCH_INTERVAL );
-
-				// Wait for 5 seconds as the sync is run two seconds after
-				// the last dispatch.
-				await new Promise( ( resolve ) => {
-					setTimeout(
-						resolve,
-						DISPATCH_COUNT * DISPATCH_INTERVAL + WAIT_AFTER_DISPATCH
-					);
+				// Dispatch action 5 times.
+				times( 5, () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.scheduleSyncAvailableCustomDimensions();
 				} );
 
+				jest.runAllTimers();
+
+				// Verify that it only fetched once.
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
