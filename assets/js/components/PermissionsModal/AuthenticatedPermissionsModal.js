@@ -27,8 +27,12 @@ import { useEffect, useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import ModalDialog from '../ModalDialog';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import {
+	CORE_USER,
+	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+} from '../../googlesitekit/datastore/user/constants';
 import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 import Portal from '../Portal';
 const { useSelect, useDispatch, useRegistry } = Data;
@@ -51,17 +55,23 @@ const AuthenticatedPermissionsModal = () => {
 
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const onCancel = useCallback( () => {
 		clearPermissionScopeError();
 	}, [ clearPermissionScopeError ] );
 
 	const onConfirm = useCallback( async () => {
+		// Temporary store permissions error, so data like `scopes` and `redirectURL`
+		// can be used in `Permission error` notification.
+		setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
+			permissionsError,
+		} );
 		// If we have a datastores to snapshot before navigating away to the
 		// authorization page, do that first.
 		await snapshotAllStores( registry );
 		navigateTo( connectURL );
-	}, [ registry, connectURL, navigateTo ] );
+	}, [ registry, connectURL, navigateTo, permissionsError, setValues ] );
 
 	useEffect( () => {
 		// If error has flag to skip the modal, redirect to the authorization
