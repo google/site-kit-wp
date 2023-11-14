@@ -1186,6 +1186,7 @@ final class Analytics_4 extends Module
 				// Reset the data available state for custom dimensions that are no longer available.
 				$missing_custom_dimensions_with_data_available = array_diff(
 					array_keys(
+						// Only compare against custom dimensions that have data available.
 						array_filter(
 							$this->custom_dimensions_data_available->get_data_availability()
 						)
