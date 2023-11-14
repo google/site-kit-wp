@@ -42,9 +42,6 @@ class Response extends Report {
 			return $response;
 		}
 
-		$custom_dimension_query = new Custom_Dimensions_Response_Parser();
-		$custom_dimension_query->swap_custom_dimension_ids_with_names( $response );
-
 		// Get report dimensions and return early if there is either more than one dimension or
 		// the only dimension is not "date".
 		$dimensions = $this->parse_dimensions( $data );
