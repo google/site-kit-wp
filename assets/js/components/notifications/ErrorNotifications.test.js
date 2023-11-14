@@ -174,7 +174,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toHaveTextContent( 'Redo the plugin setup' );
 	} );
 
-	it( 'does not render the redo setup CTA if it is not due to the interuption of plugin setup and no permission is temporarily persisted', () => {
+	it( 'does not render the redo setup CTA if it is not due to the interruption of plugin setup and no permission is temporarily persisted', () => {
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry, {
 			setupErrorCode: 'access_denied',
