@@ -108,14 +108,11 @@ function TopCategoriesWidget( { Widget } ) {
 			Component: ( { fieldValue } ) => {
 				const [ categories ] = fieldValue;
 
-				let categoriesList =
+				const categoriesList =
 					typeof categories?.value === 'string'
 						? categories?.value.split( '; ' )
 						: [];
 
-				if ( ! Array.isArray( categoriesList ) ) {
-					categoriesList = [];
-				}
 				const categoriesString = listFormat(
 					// All values _must_ be a string or format will throw an error.
 					categoriesList.map( String ),
