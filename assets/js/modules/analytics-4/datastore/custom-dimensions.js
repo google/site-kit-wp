@@ -232,35 +232,34 @@ export const baseControls = {
 	[ SCHEDULE_SYNC_AVAILABLE_CUSTOM_DIMENSIONS ]: createRegistryControl(
 		( { select, dispatch } ) =>
 			() => {
-				const syncTimeoutID =
-					select( MODULES_ANALYTICS_4 ).getSyncTimeoutID();
-				const isSyncingAvailableCustomDimensions =
-					select(
-						MODULES_ANALYTICS_4
-					).isFetchingSyncAvailableCustomDimensions();
+				const {
+					getSyncTimeoutID,
+					isFetchingSyncAvailableCustomDimensions,
+				} = select( MODULES_ANALYTICS_4 );
+
+				const { fetchSyncAvailableCustomDimensions, setSyncTimeoutID } =
+					dispatch( MODULES_ANALYTICS_4 );
+
+				const syncTimeoutID = getSyncTimeoutID();
+				const isSyncing = isFetchingSyncAvailableCustomDimensions();
 
 				if ( !! syncTimeoutID ) {
 					clearTimeout( syncTimeoutID );
-					dispatch( MODULES_ANALYTICS_4 ).setSyncTimeoutID(
-						undefined
-					);
+
+					setSyncTimeoutID( undefined );
 				}
 
-				if ( isSyncingAvailableCustomDimensions ) {
+				if ( isSyncing ) {
 					return;
 				}
 
 				const timeoutID = setTimeout( async () => {
-					await dispatch(
-						MODULES_ANALYTICS_4
-					).fetchSyncAvailableCustomDimensions();
+					await fetchSyncAvailableCustomDimensions();
 
-					dispatch( MODULES_ANALYTICS_4 ).setSyncTimeoutID(
-						undefined
-					);
+					setSyncTimeoutID( undefined );
 				}, 2000 );
 
-				dispatch( MODULES_ANALYTICS_4 ).setSyncTimeoutID( timeoutID );
+				setSyncTimeoutID( timeoutID );
 			}
 	),
 };
