@@ -158,7 +158,7 @@ describe( 'DashboardSharingSettings', () => {
 	} );
 
 	describe( 'Multi-Admin Environment', () => {
-		it( 'should render the sharing management column for a multi-admin environment', () => {
+		it( 'should render the sharing management column for a multi-admin environment', async () => {
 			provideModules( registry, modules );
 			provideModuleRegistrations( registry );
 			provideSiteConnection( registry, {
@@ -182,9 +182,14 @@ describe( 'DashboardSharingSettings', () => {
 				.dispatch( MODULES_SEARCH_CONSOLE )
 				.receiveGetSettings( { ownerID: 1 } );
 
-			const { container } = render( <DashboardSharingSettings />, {
-				registry,
-			} );
+			const { container, waitForRegistry } = render(
+				<DashboardSharingSettings />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
 
 			expect( container ).toHaveTextContent(
 				'Who can manage view access'
