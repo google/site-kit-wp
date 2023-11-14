@@ -98,6 +98,7 @@ export default function TourTooltip( {
 				<Button
 					className="googlesitekit-tooltip-close"
 					text
+					hideTooltipTitle
 					icon={ <CloseIcon width="14" height="14" /> }
 					{ ...closeProps }
 				/>
