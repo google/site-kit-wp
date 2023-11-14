@@ -364,20 +364,20 @@ const baseSelectors = {
 				'customDimensions must be an array.'
 			);
 
+			const { getDataAvailabilityReportOptions, getErrorForSelector } =
+				select( MODULES_ANALYTICS_4 );
+
 			return customDimensions.reduce( ( errors, customDimension ) => {
 				const reportArgs =
-					select(
-						MODULES_ANALYTICS_4
-					).getDataAvailabilityReportOptions( customDimension );
+					getDataAvailabilityReportOptions( customDimension );
 
 				if ( ! reportArgs ) {
 					return errors;
 				}
 
-				const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-					'getReport',
-					[ reportArgs ]
-				);
+				const error = getErrorForSelector( 'getReport', [
+					reportArgs,
+				] );
 
 				if ( error ) {
 					return {
