@@ -107,7 +107,12 @@ function TopCategoriesWidget( { Widget } ) {
 			field: 'dimensionValues',
 			Component: ( { fieldValue } ) => {
 				const [ categories ] = fieldValue;
-				let categoriesList = JSON.parse( categories.value );
+
+				let categoriesList =
+					typeof categories?.value === 'string'
+						? categories?.value.split( '; ' )
+						: [];
+
 				if ( ! Array.isArray( categoriesList ) ) {
 					categoriesList = [];
 				}
