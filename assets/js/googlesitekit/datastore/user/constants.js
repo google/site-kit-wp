@@ -23,6 +23,9 @@ export const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH =
 
 export const GLOBAL_SURVEYS_TIMEOUT_SLUG = '__global';
 
+export const FORM_TEMPORARY_PERSIST_PERMISSION_ERROR =
+	'temporary_persist_permission_error';
+
 // Permissions list.
 export const PERMISSION_AUTHENTICATE = 'googlesitekit_authenticate';
 export const PERMISSION_SETUP = 'googlesitekit_setup';
