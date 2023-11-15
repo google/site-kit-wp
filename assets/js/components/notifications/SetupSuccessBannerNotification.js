@@ -38,17 +38,15 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
-import { getContextScrollTop } from '../../util/scroll';
 import useViewContext from '../../hooks/useViewContext';
-import { useBreakpoint } from '../../hooks/useBreakpoint';
 import Link from '../Link';
+import { useScrollToContextArea } from '../../components/DashboardNavigation/DashboardNavigationContext';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const [ slug ] = useQueryArg( 'slug' );
 	const [ notification ] = useQueryArg( 'notification' );
 
-	const breakpoint = useBreakpoint();
 	const viewContext = useViewContext();
 
 	const modules = useSelect( ( select ) =>
@@ -153,6 +151,8 @@ function SetupSuccessBannerNotification() {
 		global.history.replaceState( null, '', modifiedURL );
 	}, [ viewContext ] );
 
+	const scrollToContextArea = useScrollToContextArea();
+
 	if ( modules === undefined ) {
 		return null;
 	}
@@ -204,11 +204,7 @@ function SetupSuccessBannerNotification() {
 				const onJumpLinkClick = ( event ) => {
 					event.preventDefault();
 
-					global.history.replaceState( {}, '', anchorLink );
-					global.scrollTo( {
-						top: getContextScrollTop( anchorLink, breakpoint ),
-						behavior: 'smooth',
-					} );
+					scrollToContextArea( ANCHOR_ID_SPEED );
 				};
 
 				winData.description = (

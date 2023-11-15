@@ -72,6 +72,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../modules/analytics-4/datastore/constants';
 import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
+import { DashboardNavigationProvider } from './DashboardNavigation/DashboardNavigationContext';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
@@ -231,14 +232,16 @@ export default function DashboardMainApp() {
 	return (
 		<Fragment>
 			<ScrollEffect />
-
-			<Header subHeader={ <BannerNotifications /> } showNavigation>
-				<EntitySearchInput />
-				<DateRangeSelector />
-				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu />
-			</Header>
-			{ /*
+			<DashboardNavigationProvider>
+				<Header subHeader={ <BannerNotifications /> } showNavigation>
+					<EntitySearchInput />
+					<DateRangeSelector />
+					{ ! viewOnlyDashboard && (
+						<DashboardSharingSettingsButton />
+					) }
+					<HelpMenu />
+				</Header>
+				{ /*
 				This isn't *strictly* required, but provides a safety net against
 				accidentally rendering the widget area if any child widgets accidentally
 				render when `keyMetricsEnabled` is false.
@@ -248,57 +251,58 @@ export default function DashboardMainApp() {
 
 				See: https://github.com/google/site-kit-wp/pull/6630#discussion_r1127229162
 			*/ }
-			{ keyMetricsEnabled && isKeyMetricsWidgetHidden !== true && (
+				{ keyMetricsEnabled && isKeyMetricsWidgetHidden !== true && (
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_KEY_METRICS }
+						slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+						className={ classnames( {
+							'googlesitekit-widget-context--last':
+								lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+						} ) }
+					/>
+				) }
 				<WidgetContextRenderer
-					id={ ANCHOR_ID_KEY_METRICS }
-					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+					id={ ANCHOR_ID_TRAFFIC }
+					slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
 					className={ classnames( {
 						'googlesitekit-widget-context--last':
-							lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
 					} ) }
 				/>
-			) }
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_TRAFFIC }
-				slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_CONTENT }
-				slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_CONTENT,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_SPEED }
-				slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_SPEED,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_MONETIZATION }
-				slug={ CONTEXT_MAIN_DASHBOARD_MONETIZATION }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
-				} ) }
-			/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_CONTENT }
+					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_CONTENT,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_SPEED }
+					slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_SPEED,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_MONETIZATION }
+					slug={ CONTEXT_MAIN_DASHBOARD_MONETIZATION }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
+					} ) }
+				/>
 
-			<SurveyViewTrigger
-				triggerID="view_dashboard"
-				ttl={ DAY_IN_SECONDS }
-			/>
+				<SurveyViewTrigger
+					triggerID="view_dashboard"
+					ttl={ DAY_IN_SECONDS }
+				/>
 
-			{ showSurveyPortal && <CurrentSurveyPortal /> }
+				{ showSurveyPortal && <CurrentSurveyPortal /> }
 
-			{ keyMetricsEnabled && <MetricsSelectionPanel /> }
+				{ keyMetricsEnabled && <MetricsSelectionPanel /> }
+			</DashboardNavigationProvider>
 		</Fragment>
 	);
 }
