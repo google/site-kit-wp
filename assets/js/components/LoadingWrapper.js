@@ -1,7 +1,7 @@
 /**
- * Overflow utility styles.
+ * LoadingWrapper component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,30 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-	.googlesitekit-overflow-auto {
-		overflow: auto;
+/**
+ * Internal dependencies
+ */
+import PreviewBlock from './PreviewBlock';
+
+export default function LoadingWrapper( {
+	loading,
+	children,
+	...previewBlockProps
+} ) {
+	if ( loading ) {
+		return <PreviewBlock { ...previewBlockProps } />;
 	}
 
-	.googlesitekit-overflow-hidden {
-		overflow: hidden;
-	}
+	return children;
 }
+
+LoadingWrapper.propTypes = {
+	loading: PropTypes.bool,
+	children: PropTypes.node,
+	...PreviewBlock.propTypes,
+};

@@ -43,6 +43,14 @@ const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
 	dimensions: [ 'customEvent:googlesitekit_post_categories' ],
+	dimensionFilters: {
+		'customEvent:googlesitekit_post_categories': {
+			filterType: 'stringFilter',
+			matchType: 'EXACT',
+			value: '(not set)',
+			notExpression: true,
+		},
+	},
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [
 		{
@@ -54,6 +62,8 @@ const reportOptions = {
 	],
 	limit: 3,
 };
+
+const propertyID = '12345';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_CATEGORIES
@@ -75,7 +85,7 @@ Ready.args = {
 			options: reportOptions,
 		} );
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ],
@@ -95,7 +105,7 @@ Loading.args = {
 			reportOptions,
 		] );
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ],
@@ -116,7 +126,7 @@ ZeroData.args = {
 			options: reportOptions,
 		} );
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ],
@@ -133,7 +143,7 @@ GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ],
@@ -180,7 +190,7 @@ Error.args = {
 		] );
 
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ],
@@ -222,7 +232,7 @@ InsufficientPermissions.args = {
 		] );
 
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ],
@@ -241,7 +251,7 @@ ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [],
 		} );
 	},
@@ -268,7 +278,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ],
@@ -305,7 +315,7 @@ ErrorCustomDimensionsGeneric.args = {
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions?.[ 0 ],
@@ -343,11 +353,7 @@ export default {
 
 				provideModuleRegistrations( registry );
 
-				const [ accountID, propertyID, webDataStreamID ] = [
-					'12345',
-					'34567',
-					'56789',
-				];
+				const [ accountID, webDataStreamID ] = [ '12345', '56789' ];
 
 				registry
 					.dispatch( MODULES_ANALYTICS )
@@ -358,6 +364,12 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webDataStreamID );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+					{
+						createTime: '2014-10-02T15:01:23Z',
+					},
+					{ propertyID }
+				);
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );

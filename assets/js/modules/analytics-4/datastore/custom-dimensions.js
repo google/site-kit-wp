@@ -37,7 +37,7 @@ import {
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
-const { createRegistrySelector } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
 
 const customDimensionFields = [
 	'parameterName',
@@ -93,11 +93,15 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 
 const baseInitialState = {
 	customDimensionsBeingCreated: [],
+	syncTimeoutID: undefined,
 };
 
 // Actions
 const SET_CUSTOM_DIMENSIONS_BEING_CREATED =
 	'SET_CUSTOM_DIMENSIONS_BEING_CREATED';
+const SCHEDULE_SYNC_AVAILABLE_CUSTOM_DIMENSIONS =
+	'SCHEDULE_SYNC_AVAILABLE_CUSTOM_DIMENSIONS';
+const SET_SYNC_TIMEOUT_ID = 'SET_SYNC_TIMEOUT_ID';
 
 const baseActions = {
 	/**
@@ -196,6 +200,69 @@ const baseActions = {
 			payload: { customDimensions: [] },
 		};
 	},
+
+	/**
+	 * Sets a schedule timeout ID for syncing available custom dimensions in state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {number} syncTimeoutID The timeout ID.
+	 * @return {Object} A redux-style action.
+	 */
+	setSyncTimeoutID( syncTimeoutID ) {
+		return {
+			payload: { syncTimeoutID },
+			type: SET_SYNC_TIMEOUT_ID,
+		};
+	},
+
+	/**
+	 * Schedules a sync of available custom dimensions in state.
+	 *
+	 * @since n.e.x.t
+	 */
+	*scheduleSyncAvailableCustomDimensions() {
+		yield {
+			payload: {},
+			type: SCHEDULE_SYNC_AVAILABLE_CUSTOM_DIMENSIONS,
+		};
+	},
+};
+
+export const baseControls = {
+	[ SCHEDULE_SYNC_AVAILABLE_CUSTOM_DIMENSIONS ]: createRegistryControl(
+		( { select, dispatch } ) =>
+			() => {
+				const {
+					getSyncTimeoutID,
+					isFetchingSyncAvailableCustomDimensions,
+				} = select( MODULES_ANALYTICS_4 );
+
+				const { fetchSyncAvailableCustomDimensions, setSyncTimeoutID } =
+					dispatch( MODULES_ANALYTICS_4 );
+
+				const syncTimeoutID = getSyncTimeoutID();
+				const isSyncing = isFetchingSyncAvailableCustomDimensions();
+
+				if ( !! syncTimeoutID ) {
+					clearTimeout( syncTimeoutID );
+
+					setSyncTimeoutID( undefined );
+				}
+
+				if ( isSyncing ) {
+					return;
+				}
+
+				const timeoutID = setTimeout( async () => {
+					await fetchSyncAvailableCustomDimensions();
+
+					setSyncTimeoutID( undefined );
+				}, 2000 );
+
+				setSyncTimeoutID( timeoutID );
+			}
+	),
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
@@ -204,6 +271,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				customDimensionsBeingCreated: payload.customDimensions,
+			};
+		}
+		case SET_SYNC_TIMEOUT_ID: {
+			return {
+				...state,
+				syncTimeoutID: payload.syncTimeoutID,
 			};
 		}
 		default: {
@@ -331,12 +404,27 @@ const baseSelectors = {
 	 * @return {boolean} TRUE if the available custom dimensions are being synced, otherwise FALSE.
 	 */
 	isSyncingAvailableCustomDimensions: createRegistrySelector(
-		( select ) => () => {
-			return select(
-				MODULES_ANALYTICS_4
-			).isFetchingSyncAvailableCustomDimensions();
+		( select ) => ( state ) => {
+			return (
+				select(
+					MODULES_ANALYTICS_4
+				).isFetchingSyncAvailableCustomDimensions() ||
+				!! state?.syncTimeoutID
+			);
 		}
 	),
+
+	/**
+	 * Gets the sync timeout ID from state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {number|undefined} The timeout ID. Undefined if unset.
+	 */
+	getSyncTimeoutID( state ) {
+		return state?.syncTimeoutID;
+	},
 };
 
 const store = Data.combineStores(
@@ -346,6 +434,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		actions: baseActions,
 		resolvers: baseResolvers,
+		controls: baseControls,
 		reducer: baseReducer,
 		selectors: baseSelectors,
 	}
