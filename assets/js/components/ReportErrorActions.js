@@ -135,7 +135,7 @@ export default function ReportErrorActions( props ) {
 					</span>
 				</Fragment>
 			) : (
-				<div>
+				<div className="googlesitekit-error-retry-text">
 					{ typeof GetHelpLink === 'function' ? (
 						<GetHelpLink linkURL={ errorTroubleshootingLinkURL } />
 					) : (
