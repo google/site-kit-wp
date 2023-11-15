@@ -58,11 +58,12 @@ function getPopularAuthorsWidgetReportOptions( select ) {
 		...dates,
 		dimensions: [ 'customEvent:googlesitekit_post_author' ],
 		dimensionFilters: {
-			// Make sure that we select only rows with non-empty values for the custom dimension.
+			// Make sure that we select only rows without (not set) records.
 			'customEvent:googlesitekit_post_author': {
 				filterType: 'stringFilter',
-				matchType: 'FULL_REGEXP',
-				value: '\\d+',
+				matchType: 'EXACT',
+				value: '(not set)',
+				notExpression: true,
 			},
 		},
 		metrics: [ { name: 'screenPageViews' } ],

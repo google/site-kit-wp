@@ -92,11 +92,11 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 	'customEvent:googlesitekit_post_author': ( i ) =>
 		i <= 12 ? `User ${ i }` : false,
 	'customEvent:googlesitekit_post_categories': [
-		JSON.stringify( [ 'Entertainment', 'Sports', 'Media' ] ),
-		JSON.stringify( [ 'Wealth' ] ),
-		JSON.stringify( [ 'Health' ] ),
-		JSON.stringify( [ 'Technology' ] ),
-		JSON.stringify( [ 'Business' ] ),
+		'Entertainment; Sports; Media',
+		'Wealth',
+		'Health',
+		'Technology',
+		'Business',
 	],
 };
 
