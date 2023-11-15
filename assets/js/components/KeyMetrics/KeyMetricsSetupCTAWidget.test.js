@@ -47,6 +47,8 @@ import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER } from '../../modules/analytics-4/constants';
 
 jest.mock( 'react-use' );
 mockUseIntersection.mockImplementation( () => ( {
@@ -394,5 +396,150 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		expect(
 			document.querySelector( '.googlesitekit-tour-tooltip' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should set the `HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER` state to true when the Key Metrics Setup CTA is rendered', async () => {
+		mockSurveyEndpoints();
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+
+		const { container, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+				features: [ 'keyMetrics' ],
+			}
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win__title' )
+		).toHaveTextContent(
+			'Get metrics and suggestions tailored to your specific site goals'
+		);
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER )
+		).toBe( true );
+	} );
+
+	it( 'should maintain `HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER` state as true upon dismissal of the Key Metrics Setup CTA', async () => {
+		fetchMock.postOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{
+				body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
+				status: 200,
+			}
+		);
+
+		mockSurveyEndpoints();
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+
+		const { container, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<KeyMetricsSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>
+			</div>,
+			{
+				registry,
+				features: [ 'keyMetrics' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win__title' )
+		).toHaveTextContent(
+			'Get metrics and suggestions tailored to your specific site goals'
+		);
+
+		// Verify the `HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER` state is set before clicking the dismiss button.
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER )
+		).toBe( true );
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				container.querySelectorAll(
+					'button.googlesitekit-cta-link'
+				)[ 1 ]
+			);
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win__title' )
+		).not.toBeInTheDocument();
+
+		expect(
+			document.querySelector( '.googlesitekit-tour-tooltip' )
+		).toBeInTheDocument();
+
+		// Verify the `HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER` state is maintained after clicking the dismiss button.
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER )
+		).toBe( true );
 	} );
 } );

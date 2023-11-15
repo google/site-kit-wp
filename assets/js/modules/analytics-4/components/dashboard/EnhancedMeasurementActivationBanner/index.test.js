@@ -33,8 +33,12 @@ import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/con
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
+import {
+	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+	HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER,
+} from '../../../constants';
 import EnhancedMeasurementActivationBanner from './index';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const propertyID = '1000';
@@ -102,6 +106,24 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			expect(
 				getByRole( 'button', { name: 'Enable now' } )
 			).toBeInTheDocument()
+		);
+	} );
+
+	it( 'should not render the setup banner when the key metrics setup CTA is displayed', async () => {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER, true );
+		const { queryByRole } = render(
+			<EnhancedMeasurementActivationBanner />,
+			{
+				registry,
+			}
+		);
+
+		await waitFor( () =>
+			expect(
+				queryByRole( 'button', { name: 'Enable now' } )
+			).not.toBeInTheDocument()
 		);
 	} );
 

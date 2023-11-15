@@ -26,7 +26,7 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -53,6 +53,7 @@ import {
 } from '../AdminMenuTooltip';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import { HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER } from '../../modules/analytics-4/constants';
 
 const { useDispatch, useSelect } = Data;
 
@@ -122,6 +123,21 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 			trackEvent( `${ viewContext }_kmw`, 'tooltip_view' );
 		}
 	} );
+
+	useEffect( () => {
+		if (
+			isDismissed === false &&
+			analyticsIsDataAvailableOnLoad &&
+			searchConsoleIsDataAvailableOnLoad
+		) {
+			setValue( HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER, true );
+		}
+	}, [
+		isDismissed,
+		analyticsIsDataAvailableOnLoad,
+		searchConsoleIsDataAvailableOnLoad,
+		setValue,
+	] );
 
 	if ( isTooltipVisible ) {
 		return (

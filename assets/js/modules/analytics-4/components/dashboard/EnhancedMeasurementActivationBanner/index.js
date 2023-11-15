@@ -34,6 +34,7 @@ import {
 	ACTIVATION_STEP_SUCCESS,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+	HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER,
 } from '../../../constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
@@ -46,6 +47,7 @@ import {
 	isValidPropertyID,
 	isValidWebDataStreamID,
 } from '../../../utils/validation';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 
 const { useSelect, useDispatch } = Data;
 
@@ -128,6 +130,12 @@ function EnhancedMeasurementActivationBanner() {
 		isEnhancedMeasurementStreamEnabled,
 	] );
 
+	const shouldHideBanner = useSelect( ( select ) =>
+		select( CORE_UI ).getValue(
+			HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER
+		)
+	);
+
 	if ( isTooltipVisible ) {
 		return (
 			<AdminMenuTooltip
@@ -147,7 +155,11 @@ function EnhancedMeasurementActivationBanner() {
 		);
 	}
 
-	if ( ! isEnhancedMeasurementInitiallyDisabled || isBannerDismissed ) {
+	if (
+		! isEnhancedMeasurementInitiallyDisabled ||
+		isBannerDismissed ||
+		shouldHideBanner
+	) {
 		return null;
 	}
 

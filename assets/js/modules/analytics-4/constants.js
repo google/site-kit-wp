@@ -29,6 +29,8 @@ export const ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY =
 	'enhanced-measurement-activation-banner-tooltip-state';
 export const ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY =
 	'enhanced-measurement-activation-banner-dismissed-item';
+export const HIDE_ENHANCED_MEASUREMENT_ACTIVATION_BANNER =
+	'hide-enhanced-measurement-activation-banner';
 
 export const REPORT_ARGS_SELECTED_METRIC_KEY = '_r.explorerCard..selmet';
 export const REPORT_ARGS_SELECTED_DIMENSION_KEY = '_r.explorerCard..seldim';
