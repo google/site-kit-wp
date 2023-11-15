@@ -229,13 +229,13 @@ function PopularProductsWidget( props ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __(
-				'Most popular products by pageviews',
-				'google-site-kit'
-			) }
+			widgetSlug={ KM_ANALYTICS_POPULAR_PRODUCTS }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
+			// Instead of sourcing the infoTooltip from KEY_METRICS_WIDGETS,
+			// this widget provides it directly to the MetricTileTable component.
+			// This is to accommodate a link behavior within the tooltip when the Metrics Selection Panel is open.
 			infoTooltip={ showTooltip ? infoTooltip : null }
 			ZeroState={ () => zeroStateMessage }
 			error={ error }

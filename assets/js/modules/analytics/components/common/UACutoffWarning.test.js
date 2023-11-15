@@ -114,7 +114,6 @@ describe( 'UACutoffWarning', () => {
 
 			const { container, getByText } = render( <UACutoffWarning />, {
 				registry,
-				features: [ 'ga4Reporting' ],
 			} );
 
 			expect( container ).toMatchSnapshot();
@@ -168,7 +167,6 @@ describe( 'UACutoffWarning', () => {
 
 			const { container } = render( <UACutoffWarning />, {
 				registry,
-				features: [ 'ga4Reporting' ],
 			} );
 
 			expect( container ).toBeEmptyDOMElement();
@@ -193,7 +191,6 @@ describe( 'UACutoffWarning', () => {
 
 		render( <UACutoffWarning />, {
 			registry,
-			features: [ 'ga4Reporting' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -221,7 +218,6 @@ describe( 'UACutoffWarning', () => {
 
 		const { getByRole, waitForRegistry } = render( <UACutoffWarning />, {
 			registry,
-			features: [ 'ga4Reporting' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -257,7 +253,6 @@ describe( 'UACutoffWarning', () => {
 
 		const { getByRole } = render( <UACutoffWarning />, {
 			registry,
-			features: [ 'ga4Reporting' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 

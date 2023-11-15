@@ -35,12 +35,10 @@ import Link from '../../../../components/Link';
 import SettingsNotice, {
 	TYPE_WARNING,
 } from '../../../../components/SettingsNotice';
-import { useFeature } from '../../../../hooks/useFeature';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function SettingsUACutoffWarning() {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const viewContext = useViewContext();
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
@@ -59,8 +57,7 @@ export default function SettingsUACutoffWarning() {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
 
-	const shouldDisplayWarning =
-		ga4ReportingEnabled && isAnalyticsConnected && ! isGA4Connected;
+	const shouldDisplayWarning = isAnalyticsConnected && ! isGA4Connected;
 
 	const eventCategory =
 		stringToDate( referenceDate ) < stringToDate( UA_CUTOFF_DATE )

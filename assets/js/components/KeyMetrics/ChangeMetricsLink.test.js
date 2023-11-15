@@ -21,8 +21,17 @@ import {
 	fireEvent,
 	freezeFetch,
 	provideKeyMetrics,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserInfo,
 	render,
+	waitFor,
 } from '../../../../tests/js/test-utils';
+import {
+	mockSurveyEndpoints,
+	surveyTimeoutEndpoint,
+	surveyTriggerEndpoint,
+} from '../../../../tests/js/mock-survey-endpoints';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
@@ -42,6 +51,8 @@ describe( 'ChangeMetricsLink', () => {
 
 		freezeFetch( coreKeyMetricsEndpointRegExp );
 		freezeFetch( coreUserInputSettingsEndpointRegExp );
+
+		provideUserAuthentication( registry );
 	} );
 
 	it( 'should not render if key metrics are undefined', () => {
@@ -90,5 +101,59 @@ describe( 'ChangeMetricsLink', () => {
 				.select( CORE_UI )
 				.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 		).toBe( true );
+	} );
+
+	it( 'should trigger a survey when viewed', async () => {
+		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
+		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
+		mockSurveyEndpoints();
+
+		render( <ChangeMetricsLink />, { registry } );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_kmw' },
+				},
+			} )
+		);
+	} );
+
+	it( 'should trigger two surveys when the key metrics setup is completed by current user', async () => {
+		provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
+		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
+		provideUserInfo( registry, { id: 1 } );
+		fetchMock.post( surveyTriggerEndpoint, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.post( surveyTimeoutEndpoint, {
+			status: 200,
+			body: {},
+		} );
+
+		fetchMock.getOnce( surveyTimeoutEndpoint, {
+			status: 200,
+			body: {},
+		} );
+
+		render( <ChangeMetricsLink />, { registry } );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_kmw' },
+				},
+			} )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_kmw_setup_completed' },
+				},
+			} )
+		);
 	} );
 } );

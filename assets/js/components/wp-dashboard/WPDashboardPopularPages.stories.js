@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	setupAnalyticsGatheringData,
 	setupAnalyticsMockReports,
@@ -27,9 +27,9 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardPopularPages
-);
+const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
+	'widget-slug'
+)( WPDashboardPopularPages );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

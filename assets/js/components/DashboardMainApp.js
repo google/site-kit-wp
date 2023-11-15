@@ -57,11 +57,15 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+} from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
 import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
@@ -81,6 +85,10 @@ export default function DashboardMainApp() {
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
 	);
 
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+
 	const hasAnalyticsEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
@@ -95,10 +103,30 @@ export default function DashboardMainApp() {
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setValues } = useDispatch( CORE_FORMS );
 
+	const grantedScopes = useSelect( ( select ) =>
+		select( CORE_USER ).getGrantedScopes()
+	);
+	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+			'permissionsError'
+		)
+	);
+	const hasReceivedGrantedScopes =
+		temporaryPersistedPermissionsError?.data?.scopes?.some( ( scope ) =>
+			grantedScopes.includes( scope )
+		);
+
 	useMount( () => {
 		if ( ! viewOnlyDashboard ) {
 			// Render the current survey portal in 5 seconds after the initial rendering.
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
+		}
+
+		if ( hasReceivedGrantedScopes ) {
+			setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
+				permissionsError: {},
+			} );
 		}
 	} );
 
@@ -113,6 +141,7 @@ export default function DashboardMainApp() {
 		if (
 			keyMetricsEnabled &&
 			isKeyMetricsSetupCompleted &&
+			isGA4Connected &&
 			hasAnalyticsEditScope &&
 			autoSubmit
 		) {
@@ -128,6 +157,7 @@ export default function DashboardMainApp() {
 		hasAnalyticsEditScope,
 		isKeyMetricsSetupCompleted,
 		keyMetricsEnabled,
+		isGA4Connected,
 		setValues,
 		createDimensionsAndUpdateForm,
 	] );

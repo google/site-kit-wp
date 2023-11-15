@@ -26,8 +26,13 @@
 		font-size: $fs-label-sm;
 		font-weight: 500;
 		letter-spacing: $ls-xs;
-		line-height: $lh-label-lg;
+		line-height: $lh-label-sm;
+		margin-top: 6px;
 		padding: 4px 8px;
+
+		@media (min-width: $bp-nonMobile) {
+			margin-top: 12px;
+		}
 
 		&.googlesitekit-change-badge--negative {
 			background-color: $c-red-r-50;

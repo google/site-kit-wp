@@ -109,14 +109,13 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 			</header>
 
 			<div className="googlesitekit-subheader" ref={ subHeaderRef }>
+				<ErrorNotifications />
 				{ subHeader }
 			</div>
 
 			{ showNavigation && <DashboardNavigation /> }
 
 			<EntityHeader />
-
-			<ErrorNotifications />
 		</Fragment>
 	);
 };

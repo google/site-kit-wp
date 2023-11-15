@@ -31,7 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_PAGES_PER_VISIT,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -105,7 +108,7 @@ function PagesPerVisitWidget( { Widget } ) {
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'Pages per visit', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_PAGES_PER_VISIT }
 			metricValue={ currentPagesPerVisit }
 			metricValueFormat={ format }
 			subText={ sprintf(
@@ -118,10 +121,6 @@ function PagesPerVisitWidget( { Widget } ) {
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
-			infoTooltip={ __(
-				'Number of pages visitors viewed per session on average',
-				'google-site-kit'
-			) }
 		/>
 	);
 }

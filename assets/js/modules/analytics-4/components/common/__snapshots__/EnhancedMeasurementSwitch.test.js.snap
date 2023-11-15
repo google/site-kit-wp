@@ -141,7 +141,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the loading state 
     class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
   >
     <div
-      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
     >
       <div

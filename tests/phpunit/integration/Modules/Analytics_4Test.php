@@ -121,8 +121,6 @@ class Analytics_4Test extends TestCase {
 		parent::set_up();
 		$this->request_handler_calls = array();
 
-		$this->enable_feature( 'ga4Reporting' );
-
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options        = new Options( $this->context );
 		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
@@ -1841,8 +1839,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__shared_metric_validation() {
-		$this->enable_feature( 'ga4Reporting' );
-
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -2851,10 +2847,14 @@ class Analytics_4Test extends TestCase {
 		$data     = $method->invoke( $this->analytics );
 		$this->assertEmpty( $data );
 
+		// Ensure the `'googlesitekit_post_categories'` key is not present
+		// if the page does not return categories or encounters an error
+		// retrieving categories.
+		$this->assertFalse( array_key_exists( 'googlesitekit_post_categories', $data ) );
+
 		// Change the current page to be singular.
-		$category1_id = $this->factory()->category->create();
-		$category2_id = $this->factory()->category->create();
-		$category3_id = $this->factory()->category->create();
+		$category1_id = $this->factory()->category->create( array( 'name' => 'Category 1' ) );
+		$category3_id = $this->factory()->category->create( array( 'name' => 'Category 3' ) );
 
 		$post_type = 'test-post-type';
 		$post_id   = $this->factory()->post->create( array( 'post_type' => $post_type ) );
@@ -2879,12 +2879,15 @@ class Analytics_4Test extends TestCase {
 		// Returns correct data when all conditions are met.
 		add_filter( 'googlesitekit_custom_dimension_valid_post_types', $hook );
 		$data = $method->invoke( $this->analytics );
+
+		$author = wp_get_current_user();
+
 		$this->assertEquals(
 			array(
-				'googlesitekit_post_author'     => $wp_query->queried_object->post_author,
+				'googlesitekit_post_author'     => $author->display_name,
 				'googlesitekit_post_type'       => $post_type,
 				'googlesitekit_post_date'       => get_the_date( 'Ymd', $wp_query->queried_object ),
-				'googlesitekit_post_categories' => $category1_id . ',' . $category3_id,
+				'googlesitekit_post_categories' => 'Category 1; Category 3',
 			),
 			$data
 		);

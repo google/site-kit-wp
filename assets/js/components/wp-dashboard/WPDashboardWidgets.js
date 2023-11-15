@@ -32,7 +32,7 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
@@ -55,39 +55,41 @@ const WIDGET_SESSION_DURATION = 'wpDashboardSessionDuration';
 const WIDGET_POPULAR_PAGES = 'wpDashboardPopularPages';
 
 // Search Console widgets.
-const WPDashboardImpressionsWidget = withWidgetComponentProps(
+const WPDashboardImpressionsWidget = withWPDashboardWidgetComponentProps(
 	WIDGET_IMPRESSIONS
 )( WPDashboardImpressions );
 const WPDashboardClicksWidget =
-	withWidgetComponentProps( WIDGET_CLICKS )( WPDashboardClicks );
+	withWPDashboardWidgetComponentProps( WIDGET_CLICKS )( WPDashboardClicks );
 
 // Analytics Widgets.
-const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps(
+const WPDashboardUniqueVisitorsWidget = withWPDashboardWidgetComponentProps(
 	WIDGET_VISITORS
 )( WPDashboardUniqueVisitors );
-const WPDashboardSessionDurationWidget = withWidgetComponentProps(
+const WPDashboardSessionDurationWidget = withWPDashboardWidgetComponentProps(
 	WIDGET_SESSION_DURATION
 )( WPDashboardSessionDuration );
-const WPDashboardPopularPagesWidget = withWidgetComponentProps(
+const WPDashboardPopularPagesWidget = withWPDashboardWidgetComponentProps(
 	WIDGET_POPULAR_PAGES
 )( WPDashboardPopularPages );
-const WPDashboardUniqueVisitorsChartWidget = withWidgetComponentProps(
-	WIDGET_VISITORS_CHART
-)( WPDashboardUniqueVisitorsChart );
+const WPDashboardUniqueVisitorsChartWidget =
+	withWPDashboardWidgetComponentProps( WIDGET_VISITORS_CHART )(
+		WPDashboardUniqueVisitorsChart
+	);
 
 // Analytics 4 Widgets.
-const WPDashboardUniqueVisitorsGA4Widget = withWidgetComponentProps(
+const WPDashboardUniqueVisitorsGA4Widget = withWPDashboardWidgetComponentProps(
 	WIDGET_VISITORS
 )( WPDashboardUniqueVisitorsGA4 );
-const WPDashboardSessionDurationGA4Widget = withWidgetComponentProps(
+const WPDashboardSessionDurationGA4Widget = withWPDashboardWidgetComponentProps(
 	WIDGET_SESSION_DURATION
 )( WPDashboardSessionDurationGA4 );
-const WPDashboardPopularPagesGA4Widget = withWidgetComponentProps(
+const WPDashboardPopularPagesGA4Widget = withWPDashboardWidgetComponentProps(
 	WIDGET_POPULAR_PAGES
 )( WPDashboardPopularPagesGA4 );
-const WPDashboardUniqueVisitorsChartGA4Widget = withWidgetComponentProps(
-	WIDGET_VISITORS_CHART
-)( WPDashboardUniqueVisitorsChartGA4 );
+const WPDashboardUniqueVisitorsChartGA4Widget =
+	withWPDashboardWidgetComponentProps( WIDGET_VISITORS_CHART )(
+		WPDashboardUniqueVisitorsChartGA4
+	);
 
 export default function WPDashboardWidgets() {
 	const isGA4DashboardView = useSelect( ( select ) =>

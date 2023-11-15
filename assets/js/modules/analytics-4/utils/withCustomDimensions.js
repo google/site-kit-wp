@@ -25,6 +25,7 @@ import { isFunction } from 'lodash';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useMemo } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -50,6 +51,7 @@ import {
 	isInsufficientPermissionsError,
 } from '../../../util/errors';
 import { isInvalidCustomDimensionError } from './custom-dimensions';
+import useViewOnly from '../../../hooks/useViewOnly';
 import {
 	AnalyticsUpdateError,
 	CustomDimensionsMissingError,
@@ -67,6 +69,8 @@ export default function withCustomDimensions( options = {} ) {
 
 	return ( WrappedComponent ) => {
 		const WithCustomDimensionsComponent = ( props ) => {
+			const isViewOnly = useViewOnly();
+
 			const { Widget, widgetSlug } = props;
 			const {
 				description,
@@ -154,10 +158,16 @@ export default function withCustomDimensions( options = {} ) {
 						MODULES_ANALYTICS_4
 					).isSyncingAvailableCustomDimensions()
 			);
+			// The `custom_dimensions` query value is arbitrary and serves two purposes:
+			// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
+			// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
+			const redirectURL = addQueryArgs( global.location.href, {
+				notification: 'custom_dimensions',
+			} );
 			const isNavigatingToOAuthURL = useSelect( ( select ) => {
 				const OAuthURL = select( CORE_USER ).getConnectURL( {
 					additionalScopes: [ ANALYTICS_EDIT_SCOPE ],
-					redirectURL: global.location.href,
+					redirectURL,
 				} );
 
 				if ( ! OAuthURL ) {
@@ -186,14 +196,6 @@ export default function withCustomDimensions( options = {} ) {
 				);
 			} );
 
-			const {
-				clearError,
-				fetchSyncAvailableCustomDimensions,
-				invalidateResolution,
-			} = useDispatch( MODULES_ANALYTICS_4 );
-			const { setValues } = useDispatch( CORE_FORMS );
-			const { setPermissionScopeError } = useDispatch( CORE_USER );
-
 			const loading =
 				isCreatingCustomDimensions ||
 				isSyncingAvailableCustomDimensions ||
@@ -221,11 +223,57 @@ export default function withCustomDimensions( options = {} ) {
 					MODULES_ANALYTICS_4
 				).areCustomDimensionsGatheringData( customDimensions );
 			} );
+			const dataAvailabilityReportErrors = useSelect( ( select ) => {
+				if ( ! customDimensions ) {
+					return {};
+				}
 
-			const commonErrorProps = {
-				headerText: tileTitle,
-				infoTooltip: tileInfoTooltip,
-			};
+				return select(
+					MODULES_ANALYTICS_4
+				).getDataAvailabilityReportErrors( customDimensions );
+			} );
+
+			const hasInvalidCustomDimensionError =
+				( isGatheringData &&
+					Object.values( dataAvailabilityReportErrors ).some(
+						( error ) => isInvalidCustomDimensionError( error )
+					) ) ||
+				( ! isGatheringData &&
+					isInvalidCustomDimensionError( reportError ) );
+
+			const invalidCustomDimensionReportOptions = useSelect(
+				( select ) => {
+					if ( ! hasInvalidCustomDimensionError ) {
+						return [];
+					}
+
+					if ( isGatheringData ) {
+						const { getDataAvailabilityReportOptions } =
+							select( MODULES_ANALYTICS_4 );
+
+						return Object.keys( dataAvailabilityReportErrors )
+							.filter( ( dimension ) =>
+								isInvalidCustomDimensionError(
+									dataAvailabilityReportErrors[ dimension ]
+								)
+							)
+							.map( ( dimension ) =>
+								getDataAvailabilityReportOptions( dimension )
+							);
+					}
+
+					if ( isInvalidCustomDimensionError( reportError ) ) {
+						return [ reportOptions ];
+					}
+
+					return [];
+				}
+			);
+
+			const { clearError, scheduleSyncAvailableCustomDimensions } =
+				useDispatch( MODULES_ANALYTICS_4 );
+			const { setValues } = useDispatch( CORE_FORMS );
+			const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 			const handleCreateCustomDimensions = useCallback( () => {
 				if ( loading ) {
@@ -247,6 +295,7 @@ export default function withCustomDimensions( options = {} ) {
 							status: 403,
 							scopes: [ ANALYTICS_EDIT_SCOPE ],
 							skipModal: true,
+							redirectURL,
 						},
 					} );
 				}
@@ -255,35 +304,40 @@ export default function withCustomDimensions( options = {} ) {
 				loading,
 				setPermissionScopeError,
 				setValues,
+				redirectURL,
 			] );
 
 			// If the list of available custom dimensions is outdated, sync it.
 			useEffect( () => {
 				if (
 					! customDimensions ||
-					! isInvalidCustomDimensionError( reportError ) ||
-					isSyncingAvailableCustomDimensions
+					! hasInvalidCustomDimensionError ||
+					isSyncingAvailableCustomDimensions ||
+					isViewOnly
 				) {
 					return;
 				}
 
-				// Clear report error so that the fetch sync action isn't
-				// triggered multiple times.
-				clearError( 'getReport', [ reportOptions ] );
+				( async () => {
+					// Clear report errors so that the useEffect isn't
+					// triggered multiple times.
+					await Promise.all(
+						invalidCustomDimensionReportOptions.map( ( args ) => {
+							return clearError( 'getReport', [ args ] );
+						} )
+					);
 
-				// Sync available custom dimensions.
-				fetchSyncAvailableCustomDimensions().then( () => {
-					// Invalidate report request so that it is re-fetched.
-					invalidateResolution( 'getReport', [ reportOptions ] );
-				} );
+					// Sync available custom dimensions.
+					scheduleSyncAvailableCustomDimensions();
+				} )();
 			}, [
 				clearError,
 				customDimensions,
-				fetchSyncAvailableCustomDimensions,
-				invalidateResolution,
+				hasInvalidCustomDimensionError,
+				invalidCustomDimensionReportOptions,
 				isSyncingAvailableCustomDimensions,
-				reportError,
-				reportOptions,
+				isViewOnly,
+				scheduleSyncAvailableCustomDimensions,
 			] );
 
 			// Return early if the wrapped widget doesn't need custom dimensions.
@@ -303,6 +357,11 @@ export default function withCustomDimensions( options = {} ) {
 					/>
 				);
 			}
+
+			const commonErrorProps = {
+				headerText: tileTitle,
+				infoTooltip: tileInfoTooltip,
+			};
 
 			if (
 				customDimensionsCreationErrors?.some(
