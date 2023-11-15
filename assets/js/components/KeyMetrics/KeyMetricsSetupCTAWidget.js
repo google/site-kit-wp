@@ -53,6 +53,7 @@ import {
 } from '../AdminMenuTooltip';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
 
 const { useDispatch, useSelect } = Data;
 
@@ -170,6 +171,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 				) }
 				actions={
 					<Fragment>
+						<KeyMetricsSetupCTARenderedEffect />
 						<Button
 							className="googlesitekit-key-metrics-cta-button"
 							href={ ctaLink }
