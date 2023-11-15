@@ -88,18 +88,9 @@
 			letter-spacing: $ls-xs;
 			line-height: $lh-label-sm;
 		}
-
-		.googlesitekit-error-text p {
-			margin: 0;
-
-			@media (max-width: $bp-xsmallOnly) {
-				margin: 1em 0;
-			}
-		}
 	}
 
 	.googlesitekit-km-selection-panel-footer__content {
-		margin-top: 0;
 
 		@media (min-width: $bp-tablet) {
 			align-items: center;
@@ -119,10 +110,7 @@
 		align-items: center;
 		column-gap: $grid-gap-desktop;
 		display: flex;
-
-		@media (max-width: $bp-xsmallOnly) {
-			justify-content: center;
-		}
+		justify-content: center;
 
 		.googlesitekit-cta-link {
 			color: $c-surfaces-on-surface-variant;

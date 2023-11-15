@@ -113,7 +113,7 @@ export default function Footer( {
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
-	const APIError = useSelect( ( select ) =>
+	const saveError = useSelect( ( select ) =>
 		select( CORE_USER ).getErrorForAction( 'saveKeyMetricsSettings', [
 			{
 				...keyMetricsSettings,
@@ -253,7 +253,7 @@ export default function Footer( {
 
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
-			{ APIError && <ErrorNotice error={ APIError } /> }
+			{ saveError && <ErrorNotice error={ saveError } /> }
 			<div className="googlesitekit-km-selection-panel-footer__content">
 				{ haveSettingsChanged && selectedMetrics?.length < 2 ? (
 					<ErrorNotice
