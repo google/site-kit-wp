@@ -58,7 +58,10 @@ module.exports = iterateJsdoc(
 		if ( ! hasSecondGroup ) {
 			if (
 				jsdocNode.value.match(
-					new RegExp( `@${ lastTagInFirstGroup }.*\\n\\s*\\*`, 'gm' )
+					new RegExp(
+						`@${ lastTagInFirstGroup }.*\\n\\s*\\*\\s*\\n`,
+						'gm'
+					)
 				)
 			) {
 				context.report( {
