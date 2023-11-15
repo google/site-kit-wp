@@ -25,6 +25,7 @@
 
 		@media (min-width: $bp-nonMobile) {
 			flex-direction: column;
+			min-height: 150px;
 			padding: 18px 24px;
 		}
 
@@ -175,6 +176,13 @@
 			background: $c-white;
 			border: 2px solid $c-utility-on-error-container;
 
+			padding: 14px;
+
+			@media (min-width: $bp-nonMobile) {
+				min-height: 150px;
+				padding: 16px 22px;
+			}
+
 			.googlesitekit-cta__header {
 				column-gap: $grid-gap-phone / 2;
 				display: flex;
@@ -200,20 +208,36 @@
 			// Required for correct order of button and text elements.
 			.googlesitekit-report-error-actions {
 				align-items: flex-start;
-				flex-direction: column-reverse;
+				flex-direction: row-reverse;
 				gap: 0;
 				overflow: hidden;
 
+				@media (min-width: $bp-nonMobile) {
+					flex-direction: column-reverse;
+				}
+
 				.googlesitekit-error-retry-text {
 					color: $c-neutral-n-900;
+					flex: 1;
 					margin: 0;
+					margin-right: 14px;
+
+					@media (min-width: $bp-nonMobile) {
+						margin-right: 0;
+					}
 				}
 
 				button:not(.googlesitekit-cta-link),
 				a.mdc-button {
+					align-self: flex-end;
 					font-weight: $fw-medium;
-					margin-top: 10px;
+					min-height: 32px;
 					padding: 6px 16px;
+
+					@media (min-width: $bp-nonMobile) {
+						align-self: flex-start;
+						margin-top: 10px;
+					}
 				}
 
 				.googlesitekit-cta-link {
