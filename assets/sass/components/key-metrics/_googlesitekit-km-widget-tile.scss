@@ -220,6 +220,11 @@
 					color: $c-neutral-n-900;
 					flex: 1;
 					margin: 0;
+					margin-right: 14px;
+
+					@media (min-width: $bp-nonMobile) {
+						margin-right: 0;
+					}
 				}
 
 				button:not(.googlesitekit-cta-link),
