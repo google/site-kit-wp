@@ -52,6 +52,7 @@ const Button = forwardRef(
 			customizedTooltip,
 			tooltip,
 			inverse,
+			hideTooltipTitle = false,
 			tooltipEnterDelayInMS = 100,
 			...extraProps
 		},
@@ -114,7 +115,9 @@ const Button = forwardRef(
 			</SemanticButton>
 		);
 
-		const tooltipTitle = title || customizedTooltip || ariaLabel;
+		const tooltipTitle = ! hideTooltipTitle
+			? title || customizedTooltip || ariaLabel
+			: null;
 
 		if (
 			( tooltip && tooltipTitle ) ||
@@ -150,6 +153,7 @@ Button.propTypes = {
 	customizedTooltip: PropTypes.element,
 	tooltip: PropTypes.bool,
 	inverse: PropTypes.bool,
+	hideTooltipTitle: PropTypes.bool,
 };
 
 Button.defaultProps = {

@@ -1183,6 +1183,23 @@ final class Analytics_4 extends Module
 					)
 				);
 
+				// Reset the data available state for custom dimensions that are no longer available.
+				$missing_custom_dimensions_with_data_available = array_diff(
+					array_keys(
+						// Only compare against custom dimensions that have data available.
+						array_filter(
+							$this->custom_dimensions_data_available->get_data_availability()
+						)
+					),
+					$matching_dimensions
+				);
+
+				if ( count( $missing_custom_dimensions_with_data_available ) > 0 ) {
+					$this->custom_dimensions_data_available->reset_data_available(
+						$missing_custom_dimensions_with_data_available
+					);
+				}
+
 				return $matching_dimensions;
 		}
 
@@ -1399,15 +1416,20 @@ final class Analytics_4 extends Module
 			foreach ( $settings['availableCustomDimensions'] as $custom_dimension ) {
 				switch ( $custom_dimension ) {
 					case 'googlesitekit_post_author':
-						$data[ $custom_dimension ] = $post->post_author;
+						$author = get_userdata( $post->post_author );
+
+						if ( $author ) {
+							$data[ $custom_dimension ] = $author->display_name ? $author->display_name : $author->user_login;
+						}
+
 						break;
 					case 'googlesitekit_post_categories':
 						$categories = get_the_category( $post->ID );
 
 						if ( ! empty( $categories ) ) {
-							$category_ids = wp_list_pluck( $categories, 'term_id' );
+							$category_names = wp_list_pluck( $categories, 'name' );
 
-							$data[ $custom_dimension ] = implode( ',', $category_ids );
+							$data[ $custom_dimension ] = implode( '; ', $category_names );
 						}
 
 						break;
