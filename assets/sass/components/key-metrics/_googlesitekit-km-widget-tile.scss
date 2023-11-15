@@ -224,10 +224,13 @@
 
 				button:not(.googlesitekit-cta-link),
 				a.mdc-button {
+					align-self: flex-end;
 					font-weight: $fw-medium;
+					min-height: 32px;
 					padding: 6px 16px;
 
 					@media (min-width: $bp-nonMobile) {
+						align-self: flex-start;
 						margin-top: 10px;
 					}
 				}
