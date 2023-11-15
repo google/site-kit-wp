@@ -13,6 +13,10 @@ export function useShowTooltip( tooltipStateKey ) {
 		select( CORE_SITE ).hasMinimumWordPressVersion( '6.2' )
 	);
 
+	const hasMinimumWordPress64 = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMinimumWordPressVersion( '6.4' )
+	);
+
 	return useCallback( async () => {
 		// Check if the WordPress admin menu is open, and if not, open it.
 		// The admin menu is hidden via responsive CSS. This is a simple and effective way to check if it's visible.
@@ -25,7 +29,7 @@ export function useShowTooltip( tooltipStateKey ) {
 			);
 
 			if ( adminMenuToggle ) {
-				adminMenuToggle.click();
+				adminMenuToggle.firstChild.click();
 
 				// On iOS, at least, this is necessary, without it the settings menu item
 				// is not scrolled into view when the Tooltip is shown.
@@ -47,9 +51,10 @@ export function useShowTooltip( tooltipStateKey ) {
 		}
 
 		// This is a hack to prevent the WordPress admin menu from auto-closing when the tooltip takes the focus.
-		// This is applicable for WordPress versions 6.2 and up.
+		// This is applicable for WordPress versions 6.2 and 6.3.
 		// See https://github.com/WordPress/wordpress-develop/commit/a9fc43e.
-		if ( hasMinimumWordPress62 ) {
+		// It's no longer needed from 6.4, see https://github.com/WordPress/wordpress-develop/commit/93cc3b17.
+		if ( hasMinimumWordPress62 && ! hasMinimumWordPress64 ) {
 			const originalHasFocus = document.hasFocus;
 			document.hasFocus = () => {
 				document.hasFocus = originalHasFocus;
@@ -62,5 +67,10 @@ export function useShowTooltip( tooltipStateKey ) {
 			rehideAdminMenu: ! isAdminMenuOpen,
 			rehideAdminSubMenu: isAdminSubMenuHidden,
 		} );
-	}, [ hasMinimumWordPress62, setValue, tooltipStateKey ] );
+	}, [
+		hasMinimumWordPress62,
+		hasMinimumWordPress64,
+		setValue,
+		tooltipStateKey,
+	] );
 }

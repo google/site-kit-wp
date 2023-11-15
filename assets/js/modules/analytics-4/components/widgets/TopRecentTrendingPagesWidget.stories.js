@@ -65,13 +65,15 @@ const Template = ( { setupRegistry, ...args } ) => (
 	</WithRegistrySetup>
 );
 
+const propertyID = '12345';
+
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		const { select, dispatch } = registry;
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
+			propertyID,
 			availableCustomDimensions: [
 				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
@@ -107,7 +109,7 @@ Loading.args = {
 	setupRegistry: ( { select, dispatch } ) => {
 		const reportOptions = getReportOptions( select );
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
@@ -138,7 +140,7 @@ ZeroData.args = {
 			options: reportOptions,
 		} );
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
@@ -154,7 +156,7 @@ GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
@@ -201,7 +203,7 @@ Error.args = {
 		] );
 
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
@@ -218,7 +220,7 @@ ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [],
 		} );
 	},
@@ -241,7 +243,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
@@ -271,7 +273,7 @@ ErrorCustomDimensionsGeneric.args = {
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '12345',
+			propertyID,
 			availableCustomDimensions: [
 				...KM_WIDGET_DEF.requiredCustomDimensions,
 			],
@@ -293,6 +295,12 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+					{
+						createTime: '2014-10-02T15:01:23Z',
+					},
+					{ propertyID }
+				);
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );

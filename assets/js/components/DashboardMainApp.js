@@ -57,7 +57,10 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+} from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
@@ -100,10 +103,30 @@ export default function DashboardMainApp() {
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setValues } = useDispatch( CORE_FORMS );
 
+	const grantedScopes = useSelect( ( select ) =>
+		select( CORE_USER ).getGrantedScopes()
+	);
+	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+			'permissionsError'
+		)
+	);
+	const hasReceivedGrantedScopes =
+		temporaryPersistedPermissionsError?.data?.scopes?.some( ( scope ) =>
+			grantedScopes.includes( scope )
+		);
+
 	useMount( () => {
 		if ( ! viewOnlyDashboard ) {
 			// Render the current survey portal in 5 seconds after the initial rendering.
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
+		}
+
+		if ( hasReceivedGrantedScopes ) {
+			setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
+				permissionsError: {},
+			} );
 		}
 	} );
 
