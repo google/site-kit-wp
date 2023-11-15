@@ -41,6 +41,7 @@ import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
 import EntityHeader from './EntityHeader';
 import ViewOnlyMenu from './ViewOnlyMenu';
+import SetupErrorNotification from './notifications/SetupErrorNotification';
 import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
@@ -110,6 +111,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 
 			<div className="googlesitekit-subheader" ref={ subHeaderRef }>
 				<ErrorNotifications />
+				<SetupErrorNotification />
 				{ subHeader }
 			</div>
 
