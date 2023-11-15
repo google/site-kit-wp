@@ -178,6 +178,13 @@
 			background: $c-white;
 			border: 2px solid $c-utility-on-error-container;
 
+			padding: 14px;
+
+			@media (min-width: $bp-nonMobile) {
+				min-height: 150px;
+				padding: 16px 22px;
+			}
+
 			.googlesitekit-cta__header {
 				column-gap: $grid-gap-phone / 2;
 				display: flex;
