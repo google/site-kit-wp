@@ -70,6 +70,15 @@ describe( 'MetricsSelectionPanel', () => {
 
 		provideUserAuthentication( registry );
 
+		registry.dispatch( CORE_USER ).receiveCapabilities( {
+			googlesitekit_manage_options: true,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: 1234567,
+			availableCustomDimensions: [],
+		} );
+
 		registry
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );

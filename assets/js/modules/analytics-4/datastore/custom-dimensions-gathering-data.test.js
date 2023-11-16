@@ -29,6 +29,7 @@ let {
 	untilResolved,
 	provideUserAuthentication,
 	muteFetch,
+	provideModules,
 } = require( '../../../../../tests/js/utils' );
 
 describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
@@ -225,6 +226,14 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 
 		beforeEach( () => {
 			previousSiteKitModulesData = global._googlesitekitModulesData;
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
 		} );
 
 		afterEach( () => {
@@ -277,6 +286,14 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			if ( authenticated !== undefined ) {
 				provideUserAuthentication( registry, { authenticated } );
 			}
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 				propertyID,
@@ -580,6 +597,13 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 						'googlesitekit_post_date',
 						true
 					);
+
+				provideUserAuthentication( registry );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					propertyID: defaultPropertyID,
+					availableCustomDimensions: [ customDimension ],
+				} );
 
 				expect(
 					registry

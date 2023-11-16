@@ -569,6 +569,8 @@ describe( 'core/user key metrics', () => {
 				// Set up state to simulate view-only mode.
 				provideUserAuthentication( registry, { authenticated: false } );
 
+				provideModules( registry );
+
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableCustomDimensions: null,
 				} );
@@ -591,6 +593,8 @@ describe( 'core/user key metrics', () => {
 		describe( 'getUserPickedMetrics', () => {
 			beforeEach( () => {
 				provideUserAuthentication( registry );
+
+				provideModules( registry );
 			} );
 
 			it( 'should return undefined while settings are loading', async () => {
