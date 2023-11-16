@@ -53,14 +53,14 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_0" }
 			],
 			"metricValues": [ { "value": "27" }, { "value": "55" } ]
 		},
 		{
 			"dimensionValues": [
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_1" }
 			],
 			"metricValues": [ { "value": "86" }, { "value": "32" } ]

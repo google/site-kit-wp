@@ -48,7 +48,7 @@ import Link from './Link';
 const { useSelect, useDispatch } = Data;
 
 export default function ReportErrorActions( props ) {
-	const { moduleSlug, error, GetHelpLink, onRetry } = props;
+	const { moduleSlug, error, GetHelpLink, onRetry, getHelpClassName } = props;
 
 	const isViewOnly = useViewOnly();
 	const storeName = useSelect( ( select ) =>
@@ -135,7 +135,7 @@ export default function ReportErrorActions( props ) {
 					</span>
 				</Fragment>
 			) : (
-				<div>
+				<div className={ getHelpClassName }>
 					{ typeof GetHelpLink === 'function' ? (
 						<GetHelpLink linkURL={ errorTroubleshootingLinkURL } />
 					) : (
@@ -157,4 +157,5 @@ ReportErrorActions.propTypes = {
 	] ).isRequired,
 	GetHelpLink: PropTypes.elementType,
 	onRetry: PropTypes.func,
+	getHelpClassName: PropTypes.string,
 };

@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.4
 Requires PHP:      5.6
-Stable tag:        1.113.0
+Stable tag:        1.114.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, tag-manager, site-kit
@@ -108,6 +108,44 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.114.0 =
+
+**Enhanced**
+
+* Prevent Enhanced Measurement banner from appearing when Key Metrics CTAs are visible. See [#7865](https://github.com/google/site-kit-wp/issues/7865).
+* Improve formatting of available Analytics custom dimensions in Site Health information. See [#7822](https://github.com/google/site-kit-wp/issues/7822).
+* Ensure custom dimension availability is refreshed when its data availability check errors. See [#7815](https://github.com/google/site-kit-wp/issues/7815).
+* Remove "CTR" suffic from "Most engaging pages" widget. See [#7793](https://github.com/google/site-kit-wp/issues/7793).
+* Move the Key Metric tile percentage badges to below the metrics. See [#7769](https://github.com/google/site-kit-wp/issues/7769).
+* Update the "Visit length" Key Metric widget tile to use a more readable format for the duration value. See [#7768](https://github.com/google/site-kit-wp/issues/7768).
+* Exclude `(not set)` rows from the "Top categories by pageviews" key metric tile. See [#7737](https://github.com/google/site-kit-wp/issues/7737).
+* Add happiness tracking surveys for the Key Metrics Widget feature. See [#7724](https://github.com/google/site-kit-wp/issues/7724).
+* Track author and category names rather than IDs for the relevant custom dimensions, and display as they are in their corresponding Key Metrics widgets. See [#7720](https://github.com/google/site-kit-wp/issues/7720).
+* Add Enhanced Measurement setting to Analytics in Site Kit admin settings. See [#7631](https://github.com/google/site-kit-wp/issues/7631).
+* Update the permission error shown when returning from the OAuth flow via an error or cancellation to handle more scenarios. See [#7597](https://github.com/google/site-kit-wp/issues/7597).
+* Improve behavior of Key Metrics "Connect Analytics" CTA. See [#7416](https://github.com/google/site-kit-wp/issues/7416).
+* Remove tooltip for the feature tour callout's Close button. See [#6943](https://github.com/google/site-kit-wp/issues/6943).
+* Improve logic for which banner is displayed in the header when multiple banners exist. See [#6634](https://github.com/google/site-kit-wp/issues/6634).
+* De-duplicate and fix the layout for errors in the WP Dashboard widget. See [#5615](https://github.com/google/site-kit-wp/issues/5615).
+
+**Fixed**
+
+* Avoid report errors immediately after creating a custom dimension. See [#7794](https://github.com/google/site-kit-wp/issues/7794).
+* Fix a bug that resulted in excessive API calls on Site Kit dashboard. See [#7788](https://github.com/google/site-kit-wp/issues/7788).
+* Fix bug that caused the "Edit" buttons in Key Metrics Admin Settings to render incorrectly. See [#7771](https://github.com/google/site-kit-wp/issues/7771).
+* Prevent the custom dimension creation notice from overlaying the bottom metric in the selection panel. See [#7765](https://github.com/google/site-kit-wp/issues/7765).
+* Minimize layout shifts in Key Metric tiles. See [#7763](https://github.com/google/site-kit-wp/issues/7763).
+* Avoid showing the default success notification when returning from the OAuth flow for custom dimension setup. See [#7758](https://github.com/google/site-kit-wp/issues/7758).
+* Hide tooltips in Key Metrics widget while data is loading. See [#7757](https://github.com/google/site-kit-wp/issues/7757).
+* Avoid tracking a blank category for the `googlesitekit_post_categories` custom dimension. See [#7755](https://github.com/google/site-kit-wp/issues/7755).
+* Fix bug that caused Key Metrics tiles for disconnected modules to still request OAuth scopes. See [#7754](https://github.com/google/site-kit-wp/issues/7754).
+* Improve the scrolling behavior of User Input questions. See [#7750](https://github.com/google/site-kit-wp/issues/7750).
+* Ensure focus is restored to the "Edit" action after a Key Metrics questionnaire preview group is closed. See [#7748](https://github.com/google/site-kit-wp/issues/7748).
+* Fixed the flickering issue when the user is saving custom dimension tiles that require redirecting to the OAuth screen. See [#7742](https://github.com/google/site-kit-wp/issues/7742).
+* Prevent view-only users from seeing Key Metric widget tiles that depend on unavailable custom dimensions. See [#7741](https://github.com/google/site-kit-wp/issues/7741).
+* Fix display of admin menu tooltip on WP 6.4+ in mobile viewports. See [#7738](https://github.com/google/site-kit-wp/issues/7738).
+* Fix bug that could cause an error when activating a new user on multisite when Site Kit isn't set up yet. See [#7653](https://github.com/google/site-kit-wp/issues/7653).
 
 = 1.113.0 =
 

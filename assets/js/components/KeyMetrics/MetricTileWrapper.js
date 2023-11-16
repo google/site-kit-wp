@@ -92,6 +92,7 @@ export default function MetricTileWrapper( props ) {
 							? GetHelpLink
 							: undefined
 					}
+					getHelpClassName="googlesitekit-error-retry-text"
 				/>
 			</MetricTileError>
 		);

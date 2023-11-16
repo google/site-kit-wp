@@ -515,7 +515,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should fire track event when "learn more" is clicked', async () => {
-			const { getByRole } = render(
+			const { getByRole, waitForRegistry } = render(
 				<div>
 					<div id="adminmenu">
 						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -532,6 +532,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
+
+			await waitForRegistry();
+
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
