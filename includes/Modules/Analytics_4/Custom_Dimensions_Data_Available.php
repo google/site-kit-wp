@@ -111,7 +111,7 @@ class Custom_Dimensions_Data_Available {
 	 * Resets the data available state for all custom dimensions.
 	 *
 	 * @since 1.113.0
-	 * @since n.e.x.t Added optional $custom_dimensions parameter.
+	 * @since 1.114.0 Added optional $custom_dimensions parameter.
 	 *
 	 * @param array $custom_dimensions Optional. List of custom dimension slugs to reset.
 	 */

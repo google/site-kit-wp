@@ -310,7 +310,7 @@ const baseSelectors = {
 	/**
 	 * Gets the options for the data availability report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.114.0
 	 *
 	 * @param {Object} state           Data store's state.
 	 * @param {string} customDimension Custom dimension slug.
@@ -350,7 +350,7 @@ const baseSelectors = {
 	/**
 	 * Gets the errors for the data availability report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.114.0
 	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Array}  customDimensions Array of custom dimension slugs.

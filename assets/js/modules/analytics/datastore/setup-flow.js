@@ -32,7 +32,7 @@ const baseSelectors = {
 	 * Gets the setup flow mode.
 	 *
 	 * @since 1.37.0
-	 * @since n.e.x.t Return only GA4 mode since removal of the `ga4Reporting` feature flag.
+	 * @since 1.114.0 Return only GA4 mode since removal of the `ga4Reporting` feature flag.
 	 *
 	 * @return {string} Setup flow mode.
 	 */

@@ -203,7 +203,7 @@ const baseActions = {
 	/**
 	 * Sets a schedule timeout ID for syncing available custom dimensions in state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.114.0
 	 *
 	 * @param {number} syncTimeoutID The timeout ID.
 	 * @return {Object} A redux-style action.
@@ -218,7 +218,7 @@ const baseActions = {
 	/**
 	 * Schedules a sync of available custom dimensions in state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.114.0
 	 */
 	*scheduleSyncAvailableCustomDimensions() {
 		yield {
@@ -412,7 +412,7 @@ const baseSelectors = {
 	/**
 	 * Gets the sync timeout ID from state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.114.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {number|undefined} The timeout ID. Undefined if unset.
