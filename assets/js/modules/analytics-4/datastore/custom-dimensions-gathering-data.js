@@ -115,11 +115,11 @@ const baseActions = {
 	 * @param {string} customDimension Custom dimension slug.
 	 */
 	*checkCustomDimensionDataAvailability( customDimension ) {
-		const { select, __experimentalResolveSelect } =
+		const { select, resolveSelect } =
 			yield Data.commonActions.getRegistry();
 
 		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
 		if (
@@ -135,7 +135,7 @@ const baseActions = {
 		}
 
 		yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_USER ).getAuthentication()
+			resolveSelect( CORE_USER ).getAuthentication()
 		);
 
 		if ( ! select( CORE_USER ).isAuthenticated() ) {
@@ -147,7 +147,7 @@ const baseActions = {
 		}
 
 		const reportArgs = yield Data.commonActions.await(
-			__experimentalResolveSelect(
+			resolveSelect(
 				MODULES_ANALYTICS_4
 			).getDataAvailabilityReportOptions( customDimension )
 		);
@@ -161,9 +161,7 @@ const baseActions = {
 		}
 
 		const report = yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getReport(
-				reportArgs
-			)
+			resolveSelect( MODULES_ANALYTICS_4 ).getReport( reportArgs )
 		);
 
 		const hasReportError = !! select(
@@ -242,7 +240,7 @@ const baseResolvers = {
 	},
 
 	*getDataAvailabilityReportOptions() {
-		const { __experimentalResolveSelect, select } =
+		const { resolveSelect, select } =
 			yield Data.commonActions.getRegistry();
 
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -252,9 +250,7 @@ const baseResolvers = {
 		}
 
 		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty(
-				propertyID
-			)
+			resolveSelect( MODULES_ANALYTICS_4 ).getProperty( propertyID )
 		);
 	},
 };

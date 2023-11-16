@@ -268,9 +268,7 @@ const baseActions = {
 	*findMatchedProperty() {
 		const registry = yield commonActions.getRegistry();
 		const accounts = yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-				.getAccountSummaries()
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries()
 		);
 
 		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
@@ -374,7 +372,7 @@ const baseActions = {
 			);
 			const webdatastreams = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getWebDataStreamsBatch( chunk )
 			);
 
@@ -390,9 +388,7 @@ const baseActions = {
 						) {
 							return yield commonActions.await(
 								registry
-									.__experimentalResolveSelect(
-										MODULES_ANALYTICS_4
-									)
+									.resolveSelect( MODULES_ANALYTICS_4 )
 									.getProperty( propertyID )
 							);
 						}
@@ -430,7 +426,7 @@ const baseActions = {
 			);
 			const webdatastreams = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getWebDataStreamsBatch( chunk )
 			);
 
@@ -443,9 +439,7 @@ const baseActions = {
 						) {
 							return yield commonActions.await(
 								registry
-									.__experimentalResolveSelect(
-										MODULES_ANALYTICS_4
-									)
+									.resolveSelect( MODULES_ANALYTICS_4 )
 									.getProperty( propertyID )
 							);
 						}
@@ -479,14 +473,14 @@ const baseActions = {
 	 * @param {string} measurementID Measurement ID.
 	 */
 	*updateSettingsForMeasurementID( measurementID ) {
-		const { select, dispatch, __experimentalResolveSelect } =
+		const { select, dispatch, resolveSelect } =
 			yield commonActions.getRegistry();
 
 		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( measurementID );
 
 		// Wait for authentication to be resolved to check scopes.
 		yield commonActions.await(
-			__experimentalResolveSelect( CORE_USER ).getAuthentication()
+			resolveSelect( CORE_USER ).getAuthentication()
 		);
 		if ( ! select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE ) ) {
 			return;
@@ -562,7 +556,7 @@ const baseActions = {
 	 * @since 1.95.0
 	 */
 	*syncGoogleTagSettings() {
-		const { select, dispatch, __experimentalResolveSelect } =
+		const { select, dispatch, resolveSelect } =
 			yield Data.commonActions.getRegistry();
 
 		const hasTagManagerReadScope = select( CORE_USER ).hasScope(
@@ -575,7 +569,7 @@ const baseActions = {
 
 		// Wait for modules to be available before selecting.
 		yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_MODULES ).getModules()
+			resolveSelect( CORE_MODULES ).getModules()
 		);
 
 		const { isModuleConnected } = select( CORE_MODULES );
@@ -586,7 +580,7 @@ const baseActions = {
 
 		// Wait for module settings to be available before selecting.
 		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
 		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
@@ -611,9 +605,9 @@ const baseActions = {
 
 		if ( !! googleTagID ) {
 			const googleTagContainer = yield Data.commonActions.await(
-				__experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getGoogleTagContainer( measurementID )
+				resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagContainer(
+					measurementID
+				)
 			);
 
 			if ( ! googleTagContainer ) {
@@ -634,16 +628,14 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_PROPERTIES ]: createRegistryControl(
-		( { __experimentalResolveSelect } ) => {
-			return async ( { payload } ) => {
-				const { accountID } = payload;
-				await __experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getProperties( accountID );
-			};
-		}
-	),
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( { resolveSelect } ) => {
+		return async ( { payload } ) => {
+			const { accountID } = payload;
+			await resolveSelect( MODULES_ANALYTICS_4 ).getProperties(
+				accountID
+			);
+		};
+	} ),
 };
 
 function baseReducer( state, { type, payload } ) {

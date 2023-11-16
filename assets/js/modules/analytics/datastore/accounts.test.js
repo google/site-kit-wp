@@ -873,9 +873,7 @@ describe( 'modules/analytics accounts', () => {
 
 			// instead is "property create"
 			it( 'should select correct GA4 property', async () => {
-				await registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS )
-					.getAccounts();
+				await registry.resolveSelect( MODULES_ANALYTICS ).getAccounts();
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
 				).toBe( ga4Fixtures.properties[ 0 ]._id );

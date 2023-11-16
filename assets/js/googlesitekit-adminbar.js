@@ -25,7 +25,7 @@ import { once } from 'lodash';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
+import { createRoot } from '@wordpress/element';
 
 /**
  * Internal dependencies.
@@ -42,11 +42,12 @@ const init = once( () => {
 	);
 
 	if ( renderTarget ) {
-		render(
+		const root = createRoot( renderTarget );
+
+		root.render(
 			<Root viewContext={ VIEW_CONTEXT_ADMIN_BAR }>
 				<AdminBarApp />
-			</Root>,
-			renderTarget
+			</Root>
 		);
 
 		trackEvent( VIEW_CONTEXT_ADMIN_BAR, 'view_urlsummary' );

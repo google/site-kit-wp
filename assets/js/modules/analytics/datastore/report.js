@@ -151,8 +151,8 @@ const fetchGetReportStore = createFetchStore( {
 
 const gatheringDataStore = createGatheringDataStore( 'analytics', {
 	storeName: MODULES_ANALYTICS,
-	dataAvailable:
-		global._googlesitekitModulesData?.[ 'data_available_analytics' ],
+	// eslint-disable-next-line camelcase
+	dataAvailable: global._googlesitekitModulesData?.data_available_analytics,
 	selectDataAvailability: createRegistrySelector( ( select ) => () => {
 		const args = getSampleReportArgs( select );
 

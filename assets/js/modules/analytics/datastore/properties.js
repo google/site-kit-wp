@@ -224,7 +224,7 @@ const baseActions = {
 				.getProfileID();
 			const profiles = yield Data.commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.resolveSelect( MODULES_ANALYTICS )
 					.getProfiles( accountID, propertyID )
 			);
 

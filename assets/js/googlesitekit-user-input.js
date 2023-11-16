@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
+import { createRoot } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,11 +36,12 @@ domReady( () => {
 	);
 
 	if ( renderTarget ) {
-		render(
+		const root = createRoot( renderTarget );
+
+		root.render(
 			<Root viewContext={ VIEW_CONTEXT_USER_INPUT }>
 				<UserInputApp />
-			</Root>,
-			renderTarget
+			</Root>
 		);
 	}
 } );

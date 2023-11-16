@@ -33,7 +33,9 @@ const WebpackBar = require( 'webpackbar' );
 const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
 const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CreateFileWebpack = require( 'create-file-webpack' );
-const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const {
+	WebpackManifestPlugin: ManifestPlugin,
+} = require( 'webpack-manifest-plugin' );
 const features = require( './feature-flags.json' );
 const formattedFeaturesToPHPArray = features
 	.map( ( feature ) => `'${ feature }'` )
@@ -146,8 +148,6 @@ return array(
 );
 `;
 
-const noAMDParserRule = { parser: { amd: false } };
-
 const siteKitExternals = {
 	'googlesitekit-api': [ 'googlesitekit', 'api' ],
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
@@ -173,7 +173,6 @@ const svgRule = {
 };
 
 const createRules = ( mode ) => [
-	noAMDParserRule,
 	svgRule,
 	{
 		test: /\.js$/,
@@ -190,7 +189,6 @@ const createRules = ( mode ) => [
 				},
 			},
 		],
-		...noAMDParserRule,
 	},
 	{
 		test: RegExp( 'node_modules/@material/web/.*.js' ),
@@ -206,7 +204,6 @@ const createRules = ( mode ) => [
 				},
 			},
 		],
-		...noAMDParserRule,
 	},
 ];
 
@@ -283,6 +280,7 @@ function* webpackConfig( env, argv ) {
 
 	// Build the settings js..
 	yield {
+		devtool: 'source-map',
 		entry: {
 			// New Modules (Post-JSR).
 			'googlesitekit-api': './assets/js/googlesitekit-api.js',
@@ -343,7 +341,7 @@ function* webpackConfig( env, argv ) {
 			// same webpage, there is a risk of conflicts of on-demand chunks in the global
 			// namespace.
 			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-			jsonpFunction: '__googlesitekit_webpackJsonp',
+			chunkLoadingGlobal: '__googlesitekit_webpackChunkLoader',
 		},
 		performance: {
 			maxEntrypointSize: 175000,
@@ -385,6 +383,7 @@ function* webpackConfig( env, argv ) {
 				'global.GOOGLESITEKIT_VERSION': JSON.stringify(
 					GOOGLESITEKIT_VERSION
 				),
+				global: 'window',
 			} ),
 			new ESLintPlugin( {
 				emitError: true,
@@ -436,6 +435,7 @@ function* webpackConfig( env, argv ) {
 
 	// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
 	yield {
+		devtool: 'source-map',
 		entry: {
 			'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 			// Analytics advanced tracking script to be injected in the frontend.
@@ -472,6 +472,7 @@ function* webpackConfig( env, argv ) {
 
 	// Build the main plugin admin css.
 	yield {
+		devtool: 'source-map',
 		entry: {
 			'googlesitekit-admin-css': './assets/sass/admin.scss',
 			'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
@@ -551,7 +552,6 @@ function testBundle( mode ) {
 
 module.exports = {
 	externals,
-	noAMDParserRule,
 	projectPath,
 	resolve,
 	siteKitExternals,

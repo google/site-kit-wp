@@ -114,15 +114,9 @@ const baseActions = {
 		// Wait for the necessary settings to be loaded before checking.
 		yield Data.commonActions.await(
 			Promise.all( [
-				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-					.getSettings(),
-				registry
-					.__experimentalResolveSelect( CORE_USER )
-					.getKeyMetricsSettings(),
-				registry
-					.__experimentalResolveSelect( CORE_USER )
-					.getUserInputSettings(),
+				registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				registry.resolveSelect( CORE_USER ).getKeyMetricsSettings(),
+				registry.resolveSelect( CORE_USER ).getUserInputSettings(),
 			] )
 		);
 
@@ -290,9 +284,7 @@ const baseResolvers = {
 
 		// Wait for settings to be loaded before proceeding.
 		yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-				.getSettings()
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
 		const availableCustomDimensions = registry
@@ -307,7 +299,7 @@ const baseResolvers = {
 
 		// Wait for permissions to be loaded before checking if the user can manage options.
 		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_USER ).getCapabilities()
+			registry.resolveSelect( CORE_USER ).getCapabilities()
 		);
 		const canManageOptions = registry
 			.select( CORE_USER )
