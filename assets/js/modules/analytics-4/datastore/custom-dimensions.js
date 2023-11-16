@@ -291,17 +291,17 @@ const baseResolvers = {
 			yield Data.commonActions.getRegistry();
 		const { isAuthenticated, hasCapability } = select( CORE_USER );
 
-		// Wait for settings to be loaded before proceeding.
-		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
-		);
-
 		const isGA4Connected =
 			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
 		if ( ! isGA4Connected ) {
 			return;
 		}
+
+		// Wait for settings to be loaded before proceeding.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
 
 		const availableCustomDimensions =
 			select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
