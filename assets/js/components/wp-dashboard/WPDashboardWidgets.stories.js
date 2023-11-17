@@ -35,6 +35,7 @@ import {
 	setupSearchConsoleAnalytics4GatheringData,
 	setupAnalytics4ZeroData,
 	provideAnalytics4ReportTitles,
+	setupSearchConsoleMockReports,
 } from './common-GA4.stories';
 import FeaturesProvider from '../FeaturesProvider';
 import { setupSearchConsoleAnalytics4ZeroData } from '../adminbar/common-GA4.stories';
@@ -77,7 +78,7 @@ ReadyWithActivateModuleCTA.args = {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
-		// setupSearchConsoleAnalytics4MockReports( registry );
+		setupSearchConsoleMockReports();
 	},
 };
 
@@ -98,7 +99,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
-		// setupSearchConsoleAnalytics4MockReports( registry );
+		setupSearchConsoleMockReports( registry );
 	},
 };
 
