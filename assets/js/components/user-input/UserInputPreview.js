@@ -31,7 +31,7 @@ import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -49,13 +49,20 @@ import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
+import LoadingWrapper from '../LoadingWrapper';
 import CancelUserInputButton from './CancelUserInputButton';
 import { Row, Cell } from '../../material-components';
 import { hasErrorForAnswer } from './util/validation';
 const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
-	const { goBack, submitChanges, error, settingsView = false } = props;
+	const {
+		goBack,
+		submitChanges,
+		error,
+		loading = false,
+		settingsView = false,
+	} = props;
 	const previewContainer = useRef();
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
@@ -109,10 +116,6 @@ export default function UserInputPreview( props ) {
 		}
 	}, [ page ] );
 
-	if ( undefined === settings ) {
-		return <ProgressBar />;
-	}
-
 	return (
 		<div
 			className={ classnames( 'googlesitekit-user-input__preview', {
@@ -128,13 +131,19 @@ export default function UserInputPreview( props ) {
 				) }
 				{ settingsView && (
 					<Row>
-						<Cell>
-							<p className="googlesitekit-settings-user-input__heading">
-								{ __(
-									'Edit your answers for more personalized metrics:',
-									'google-site-kit'
-								) }
-							</p>
+						<Cell className="googlesitekit-settings-user-input__heading-container">
+							<LoadingWrapper
+								loading={ loading }
+								width="275px"
+								height="16px"
+							>
+								<p className="googlesitekit-settings-user-input__heading">
+									{ __(
+										'Edit your answers for more personalized metrics:',
+										'google-site-kit'
+									) }
+								</p>
+							</LoadingWrapper>
 						</Cell>
 					</Row>
 				) }
@@ -146,6 +155,7 @@ export default function UserInputPreview( props ) {
 					) }
 					values={ settings?.purpose?.values || [] }
 					options={ USER_INPUT_ANSWERS_PURPOSE }
+					loading={ loading }
 					settingsView={ settingsView }
 				/>
 
@@ -157,6 +167,7 @@ export default function UserInputPreview( props ) {
 					) }
 					values={ settings?.postFrequency?.values || [] }
 					options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
+					loading={ loading }
 					settingsView={ settingsView }
 				/>
 
@@ -168,6 +179,7 @@ export default function UserInputPreview( props ) {
 					) }
 					values={ settings?.goals?.values || [] }
 					options={ USER_INPUT_ANSWERS_GOALS }
+					loading={ loading }
 					settingsView={ settingsView }
 				/>
 
@@ -213,5 +225,6 @@ UserInputPreview.propTypes = {
 	submitChanges: PropTypes.func,
 	goBack: PropTypes.func,
 	error: PropTypes.object,
+	loading: PropTypes.bool,
 	settingsView: PropTypes.bool,
 };

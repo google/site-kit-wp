@@ -97,7 +97,7 @@ export const withWidgetComponentProps = ( widgetSlug ) => {
 /**
  * Gets the props and passes them to the WP Dashboard widget's component through a HOC.
  *
- * @since n.e.x.t
+ * @since 1.114.0
  *
  * @param {string} widgetSlug The slug of the widget.
  * @return {Function} Enhancing function that adds the WP Dashboard specific

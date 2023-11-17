@@ -76,6 +76,14 @@ describe( 'TopCategoriesWidget', () => {
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
 			dimensions: [ 'customEvent:googlesitekit_post_categories' ],
+			dimensionFilters: {
+				'customEvent:googlesitekit_post_categories': {
+					filterType: 'stringFilter',
+					matchType: 'EXACT',
+					value: '(not set)',
+					notExpression: true,
+				},
+			},
 			metrics: [ { name: 'screenPageViews' } ],
 			orderby: [
 				{

@@ -23,8 +23,11 @@ import ErrorNotifications from './ErrorNotifications';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
+import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 function Template( { ...args } ) {
 	return <ErrorNotifications { ...args } />;
@@ -51,6 +54,77 @@ UnsatisfiedScopeGTESupport.args = {
 };
 UnsatisfiedScopeGTESupport.scenario = {
 	label: 'Global/ErrorNotifications/UnsatisfiedScopeGTESupport',
+};
+
+export const PluginSetupError = Template.bind( {} );
+PluginSetupError.storyName = 'Plugin Setup Error - Redo the plugin setup';
+PluginSetupError.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, {
+			authenticated: false,
+		} );
+
+		provideSiteInfo( registry, {
+			setupErrorRedoURL: '#',
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+		} );
+	},
+};
+PluginSetupError.scenario = {
+	label: 'Global/ErrorNotifications/PluginSetupError',
+};
+
+export const PermissionError = Template.bind( {} );
+PermissionError.storyName =
+	'Permission Error - No permission is temporarily persisted';
+PermissionError.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+
+		provideSiteInfo( registry, {
+			setupErrorRedoURL: '#',
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+		} );
+	},
+};
+PermissionError.scenario = {
+	label: 'Global/ErrorNotifications/PluginSetupError',
+};
+
+export const AdditionalScopeError = Template.bind( {} );
+AdditionalScopeError.storyName = 'Additional Scope Error - Grant Permission';
+AdditionalScopeError.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+
+		const permissionsError = {
+			status: 403,
+			message: 'Additional scope',
+			data: {
+				scopes: [ 'https://www.googleapis.com/auth/analytics.edit' ],
+			},
+		};
+
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
+				permissionsError,
+			} );
+
+		provideSiteInfo( registry, {
+			setupErrorRedoURL: '#',
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+		} );
+	},
+};
+AdditionalScopeError.scenario = {
+	label: 'Global/ErrorNotifications/AdditionalScopeError',
 };
 
 export default {

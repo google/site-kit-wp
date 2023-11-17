@@ -73,12 +73,12 @@ export default function UserDimensionsPieChart( props ) {
 
 	const otherSupportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/1009671',
+			path: '/analytics/answer/13331684',
 		} )
 	);
 	const notSetSupportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/2820717',
+			path: '/analytics/answer/13504892',
 		} )
 	);
 	const dimensionColor = useSelect( ( select ) =>

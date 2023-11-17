@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { times } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -274,6 +279,74 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 							)
 					).toBe( true );
 				} );
+			} );
+		} );
+
+		describe( 'scheduleSyncAvailableCustomDimensions', () => {
+			beforeEach( () => {
+				jest.useFakeTimers();
+			} );
+
+			it( 'schedules a sync request to run after two seconds', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.scheduleSyncAvailableCustomDimensions();
+
+				jest.runAllTimers();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					)
+				);
+			} );
+
+			it( 'runs a sync request once even if the action is called multiple times when each call is made before the two second duration has elapsed', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				// Dispatch action 5 times.
+				times( 5, () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.scheduleSyncAvailableCustomDimensions();
+				} );
+
+				jest.runAllTimers();
+
+				// Verify that it only fetched once.
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					)
+				);
 			} );
 		} );
 	} );

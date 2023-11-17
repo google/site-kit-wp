@@ -73,6 +73,11 @@ describe( 'MetricsSelectionPanel', () => {
 		registry
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+		// jsdom does not support scrollIntoView which is used by the last metric item
+		// to prevent it from hiding underneath the Custom Dimensions warning notice.
+		// See: https://github.com/jsdom/jsdom/issues/1695.
+		Element.prototype.scrollIntoView = jest.fn();
 	} );
 
 	describe( 'Metrics', () => {
@@ -325,7 +330,7 @@ describe( 'MetricsSelectionPanel', () => {
 			).toHaveTextContent( 'Top converting traffic source' );
 		} );
 
-		it( 'should not list metrics dependent on modules that a view-only user does not have access to', () => {
+		it( 'should not list metrics dependent on modules that a view-only user does not have access to', async () => {
 			provideUserAuthentication( registry, { authenticated: false } );
 
 			provideKeyMetrics( registry );
@@ -337,6 +342,21 @@ describe( 'MetricsSelectionPanel', () => {
 					connected: true,
 				},
 			] );
+
+			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+				purpose: {
+					values: [ 'purpose1' ],
+					scope: 'site',
+				},
+				postFrequency: {
+					values: [ 'daily' ],
+					scope: 'user',
+				},
+				goals: {
+					values: [ 'goal1', 'goal2' ],
+					scope: 'user',
+				},
+			} );
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
@@ -357,10 +377,12 @@ describe( 'MetricsSelectionPanel', () => {
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetSettings( analytics4Fixtures.defaultSettings );
 
-			render( <MetricsSelectionPanel />, {
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			} );
+
+			await waitForRegistry();
 
 			// Verify that a metric dependent on GA4 isn't listed.
 			expect(
@@ -502,6 +524,36 @@ describe( 'MetricsSelectionPanel', () => {
 					'.googlesitekit-km-selection-panel-footer .googlesitekit-button-icon--spinner'
 				)
 			).toBeDisabled();
+		} );
+
+		it( 'should display error message when less than two metrics are checked', async () => {
+			const { findByLabelText } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			// Select 1 key metric.
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
+				).textContent
+			).toBe( 'Select at least 2 metrics' );
+
+			// Select 2 key metrics.
+			const checkbox2 = await findByLabelText(
+				'Top performing keywords'
+			);
+			fireEvent.click( checkbox2 );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
+				)
+			).not.toBeInTheDocument();
 		} );
 
 		describe( 'CTA', () => {
