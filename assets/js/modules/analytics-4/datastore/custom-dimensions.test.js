@@ -391,7 +391,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
-			it( 'does not make a network request if the analytics-4 module is not connected', () => {
+			it( 'does not make a network request if the analytics-4 module is not connected', async () => {
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -411,6 +411,11 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableCustomDimensions()
 				).toBeNull();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAvailableCustomDimensions();
 
 				expect( fetchMock ).not.toHaveFetched();
 			} );
