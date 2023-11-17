@@ -63,6 +63,21 @@ function SetupSuccessBannerNotification() {
 	const isUsingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
+	const setupSuccessContent = useSelect( ( select ) => {
+		const storeName = modules?.[ slug ]?.storeName;
+
+		if ( ! storeName ) {
+			return null;
+		}
+
+		const { getSetupSuccessContent } = select( storeName );
+
+		if ( ! getSetupSuccessContent ) {
+			return null;
+		}
+
+		return getSetupSuccessContent();
+	} );
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
@@ -176,6 +191,12 @@ function SetupSuccessBannerNotification() {
 				winData.id = `${ winData.id }-${ slug }`;
 				winData.setupTitle = modules[ slug ].name;
 				winData.description = '';
+
+				if ( setupSuccessContent ) {
+					const { description, learnMore } = setupSuccessContent;
+					winData.description = description;
+					winData.learnMore = learnMore;
+				}
 			}
 
 			if ( 'pagespeed-insights' === slug ) {

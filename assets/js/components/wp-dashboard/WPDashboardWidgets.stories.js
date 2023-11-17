@@ -77,7 +77,7 @@ ReadyWithActivateModuleCTA.args = {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
-		setupSearchConsoleAnalytics4MockReports( registry );
+		// setupSearchConsoleAnalytics4MockReports( registry );
 	},
 };
 
@@ -98,7 +98,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
-		setupSearchConsoleAnalytics4MockReports( registry );
+		// setupSearchConsoleAnalytics4MockReports( registry );
 	},
 };
 
@@ -128,7 +128,7 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 };
 
 export const GatheringDataGA4 = Template.bind( {} );
-GatheringDataGA4.storyName = 'Gathering Data - GA4';
+GatheringDataGA4.storyName = 'Gathering Data';
 GatheringDataGA4.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
@@ -137,7 +137,7 @@ GatheringDataGA4.args = {
 };
 
 export const ZeroDataGA4 = Template.bind( {} );
-ZeroDataGA4.storyName = 'Zero Data - GA4';
+ZeroDataGA4.storyName = 'Zero Data';
 ZeroDataGA4.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
