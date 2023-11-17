@@ -33,13 +33,32 @@ let {
 } = require( '../../../../../tests/js/utils' );
 
 describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
+	const customDimension = 'googlesitekit_post_author';
+
+	function setupRegistry( registry ) {
+		provideUserAuthentication( registry );
+
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: [ customDimension ],
+		} );
+	}
+
 	let registry;
 	let store;
 
-	const customDimension = 'googlesitekit_post_author';
-
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		setupRegistry( registry );
+
 		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
 	} );
 
@@ -226,14 +245,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 
 		beforeEach( () => {
 			previousSiteKitModulesData = global._googlesitekitModulesData;
-
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
 		} );
 
 		afterEach( () => {
@@ -263,6 +274,8 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			} = require( '../../../../../tests/js/utils' ) );
 
 			registry = createTestRegistry();
+
+			setupRegistry( registry );
 		}
 
 		function setupCustomDimensionDataAvailability( options = {} ) {
@@ -287,15 +300,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				provideUserAuthentication( registry, { authenticated } );
 			}
 
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 				propertyID,
 				availableCustomDimensions,
 			} );
@@ -597,13 +602,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 						'googlesitekit_post_date',
 						true
 					);
-
-				provideUserAuthentication( registry );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					propertyID: defaultPropertyID,
-					availableCustomDimensions: [ customDimension ],
-				} );
 
 				expect(
 					registry
