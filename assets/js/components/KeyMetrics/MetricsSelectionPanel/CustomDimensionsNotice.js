@@ -33,13 +33,11 @@ import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/cons
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
-import { useFeature } from '../../../hooks/useFeature';
 import { elementsOverlap } from '../../../util/geometry';
+import whenActive from '../../../util/when-active';
 const { useSelect } = Data;
 
-export default function Notice() {
-	const keyMetricsEnabled = useFeature( 'keyMetrics' );
-
+function CustomDimensionsNotice() {
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -53,7 +51,7 @@ export default function Notice() {
 	} );
 
 	const hasMissingCustomDimensions = useSelect( ( select ) => {
-		if ( ! keyMetricsEnabled || ! requiredCustomDimensions?.length ) {
+		if ( ! requiredCustomDimensions?.length ) {
 			return false;
 		}
 
@@ -67,11 +65,9 @@ export default function Notice() {
 
 	// This is called here to ensure that the list of available custom dimensions is
 	// synced and loaded, preventing flickers of the notice.
-	useSelect( ( select ) => {
-		if ( keyMetricsEnabled ) {
-			select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
-		}
-	} );
+	useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
+	);
 
 	const previousHasMissingCustomDimensions = usePrevious(
 		hasMissingCustomDimensions
@@ -123,3 +119,7 @@ export default function Notice() {
 		</div>
 	);
 }
+
+export default whenActive( { moduleName: 'analytics-4' } )(
+	CustomDimensionsNotice
+);
