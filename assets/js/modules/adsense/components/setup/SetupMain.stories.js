@@ -1,5 +1,5 @@
 /**
- * SetupMainv2 Component Stories.
+ * SetupMain Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -20,16 +20,16 @@
  * Internal dependencies
  */
 import SetupMain from './SetupMain';
-import { Cell, Grid, Row } from '../../../../../material-components';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '../../../datastore/__fixtures__';
+import { Cell, Grid, Row } from '../../../../material-components';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import * as fixtures from '../../datastore/__fixtures__';
 import {
 	createTestRegistry,
 	WithTestRegistry,
 	provideModules,
 	provideSiteInfo,
-} from '../../../../../../../tests/js/utils';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+} from '../../../../../../tests/js/utils';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 
 const defaultSettings = {
 	accountID: '',

@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import {
 	createTestRegistry,
 	WithTestRegistry,
 	provideModules,
-} from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_ADDED } from '../../../util';
+} from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { ACCOUNT_STATUS_READY, SITE_STATUS_ADDED } from '../../util';
 
 const validSettings = {
 	accountID: 'pub-12345678',

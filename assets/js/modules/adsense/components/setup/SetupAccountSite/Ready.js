@@ -26,13 +26,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../../components/Root/ViewContextContext';
-import { trackEvent } from '../../../../../../util';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../../util';
 import {
 	BACKGROUND_SUBMIT_SUSPENDED,
 	MODULES_ADSENSE,
-} from '../../../../datastore/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+} from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
 const { useSelect, useDispatch } = Data;
 

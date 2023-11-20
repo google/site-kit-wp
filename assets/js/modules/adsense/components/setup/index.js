@@ -1,7 +1,7 @@
 /**
  * AdSense Setup components.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
  * limitations under the License.
  */
 
-export { default as AdBlockingRecoveryApp } from './AdBlockingRecoveryApp';
-export { default as SetupAccountApproved } from './SetupAccountApproved';
-export { default as SetupAccountCreate } from './SetupAccountCreate';
-export { default as SetupAccountDisapproved } from './SetupAccountDisapproved';
-export { default as SetupAccountNoClient } from './SetupAccountNoClient';
-export { default as SetupAccountPending } from './SetupAccountPending';
-export { default as SetupAccountSelect } from './SetupAccountSelect';
+export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
 export { default as SetupMain } from './SetupMain';
-export { default as SetupSiteAdd } from './SetupSiteAdd';
-export { default as SetupSiteAdded } from './SetupSiteAdded';
-export { default as v2 } from './v2/SetupMain';
+export { default as SetupAccount } from './SetupAccount';
+export { default as SetupCreateAccount } from './SetupCreateAccount';
+export { default as SetupSelectAccount } from './SetupSelectAccount';
+export { default as SetupAccountNoClient } from './SetupAccountNoClient';
+export { default as SetupAccountCreateSite } from './SetupAccountCreateSite';
+export { default as SetupAccountPendingTasks } from './SetupAccountPendingTasks';
+export { default as SetupAccountSite } from './SetupAccountSite';

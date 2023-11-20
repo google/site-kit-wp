@@ -28,7 +28,7 @@ import {
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
-import { SetupMain as SetupMainV2 } from './components/setup/v2';
+import { SetupMain as SetupMainV2 } from './components/setup';
 import {
 	SettingsEdit,
 	SettingsSetupIncomplete,

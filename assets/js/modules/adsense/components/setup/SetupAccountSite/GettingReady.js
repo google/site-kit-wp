@@ -26,9 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../../components/Root/ViewContextContext';
-import { trackEvent } from '../../../../../../util';
-import { MODULES_ADSENSE } from '../../../../datastore/constants';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../../util';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
 import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
 const { useSelect } = Data;
 

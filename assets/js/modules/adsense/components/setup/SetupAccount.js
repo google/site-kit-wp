@@ -36,7 +36,7 @@ import {
 	API_STATE_NEEDS_ATTENTION,
 	API_STATE_REQUIRES_REVIEW,
 	API_STATE_GETTING_READY,
-} from '../../../datastore/constants';
+} from '../../datastore/constants';
 import {
 	ACCOUNT_STATUS_NO_CLIENT,
 	ACCOUNT_STATUS_NEEDS_ATTENTION,
@@ -44,7 +44,7 @@ import {
 	ACCOUNT_STATUS_CLIENT_GETTING_READY,
 	ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW,
 	SITE_STATUS_NONE,
-} from '../../../util/status';
+} from '../../util/status';
 import SetupAccountSite from './SetupAccountSite';
 import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountCreateSite from './SetupAccountCreateSite';
