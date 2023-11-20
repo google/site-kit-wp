@@ -327,22 +327,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.finishResolution( 'getAlerts', [
-					fixtures.accounts[ 0 ]._id,
-				] );
-			registry.dispatch( MODULES_ADSENSE ).receiveError(
-				{
-					// Typically thrown when fetching alerts.
-					message: 'Account pending review.',
-					data: {
-						reason: 'accountPendingReview',
-					},
-				},
-				'getAlerts',
-				[ fixtures.accounts[ 0 ]._id ]
-			);
 			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
 				accountID: fixtures.accounts[ 0 ]._id,
 				clientID: fixtures.clients[ 0 ]._id,

@@ -228,21 +228,6 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 const baseResolvers = {
-	*getOriginalAccountStatus() {
-		const registry = yield commonActions.getRegistry();
-
-		// Do not do anything if original account status already known.
-		const existingOriginalAccountStatus = registry
-			.select( MODULES_ADSENSE )
-			.getOriginalAccountStatus();
-		if ( undefined !== existingOriginalAccountStatus ) {
-			return;
-		}
-
-		// Ensure settings are being fetched if not yet in progress.
-		registry.select( MODULES_ADSENSE ).getSettings();
-	},
-
 	*getOriginalUseSnippet() {
 		const registry = yield commonActions.getRegistry();
 

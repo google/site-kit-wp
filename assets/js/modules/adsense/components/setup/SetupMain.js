@@ -62,7 +62,6 @@ export default function SetupMain( { finishSetup } ) {
 	const {
 		clearError,
 		resetAccounts,
-		resetAlerts,
 		resetClients,
 		resetSites,
 		setAccountID,
@@ -231,17 +230,9 @@ export default function SetupMain( { finishSetup } ) {
 		clearError();
 		// Reset all data to force re-fetch.
 		resetAccounts();
-		resetAlerts();
 		resetClients();
 		resetSites();
-	}, [
-		accountStatus,
-		clearError,
-		resetAccounts,
-		resetAlerts,
-		resetClients,
-		resetSites,
-	] );
+	}, [ accountStatus, clearError, resetAccounts, resetClients, resetSites ] );
 
 	// Reset all fetched data when user re-focuses window.
 	useRefocus( reset, 15000 );

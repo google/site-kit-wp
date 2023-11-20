@@ -28,7 +28,7 @@ import {
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
-import { SetupMain as SetupMainV2 } from './components/setup';
+import { SetupMain } from './components/setup';
 import {
 	SettingsEdit,
 	SettingsSetupIncomplete,
@@ -64,7 +64,7 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
-		SetupComponent: SetupMainV2,
+		SetupComponent: SetupMain,
 		Icon: AdSenseIcon,
 		features: [
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),

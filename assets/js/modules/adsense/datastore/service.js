@@ -113,30 +113,6 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Returns the service URL to an AdSense account's site overview page.
-	 *
-	 * @since 1.14.0
-	 *
-	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
-	 */
-	getServiceAccountSiteURL: createRegistrySelector( ( select ) => () => {
-		const accountID = select( MODULES_ADSENSE ).getAccountID();
-		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
-
-		if ( accountID === undefined || siteURL === undefined ) {
-			return undefined;
-		}
-
-		const path = `${ accountID }/home`;
-		const query = {
-			source: 'site-kit',
-			url: parseDomain( siteURL ) || siteURL,
-		};
-
-		return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
-	} ),
-
-	/**
 	 * Returns the service URL to an AdSense account report.
 	 *
 	 * @since 1.27.0
