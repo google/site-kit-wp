@@ -33,7 +33,7 @@ import {
 	MODULES_ADSENSE,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
+import SetupAccountSiteUI from './SetupAccountSiteUI';
 const { useSelect, useDispatch } = Data;
 
 export default function Ready( { site, finishSetup } ) {

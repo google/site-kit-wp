@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../util';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
-import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
+import SetupAccountSiteUI from './SetupAccountSiteUI';
 const { useSelect } = Data;
 
 export default function RequiresReview() {

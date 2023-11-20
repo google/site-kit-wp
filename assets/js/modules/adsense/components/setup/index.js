@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as AdBlockingRecoveryApp } from './AdBlockingRecoveryApp';
 export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
 export { default as SetupMain } from './SetupMain';
 export { default as SetupAccount } from './SetupAccount';

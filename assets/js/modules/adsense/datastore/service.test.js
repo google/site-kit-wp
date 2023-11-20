@@ -115,52 +115,6 @@ describe( 'module/adsense service store', () => {
 			} );
 		} );
 
-		describe( 'getServiceAccountSiteURL', () => {
-			beforeEach( () => {
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( siteInfo );
-				registry.dispatch( MODULES_ADSENSE ).setSettings( settings );
-			} );
-
-			it( 'should return undefined if accountID is undefined', () => {
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.setSettings( { accountID: undefined } );
-
-				const url = registry
-					.select( MODULES_ADSENSE )
-					.getServiceAccountSiteURL();
-				expect( url ).toBeUndefined();
-			} );
-
-			it( 'should return undefined if referenceSiteURL is undefined', () => {
-				registry
-					.dispatch( CORE_SITE )
-					.receiveSiteInfo( { referenceSiteURL: undefined } );
-
-				const url = registry
-					.select( MODULES_ADSENSE )
-					.getServiceAccountSiteURL();
-				expect( url ).toBeUndefined();
-			} );
-
-			it( 'should construct the correct query params for the URL', () => {
-				const { host: referenceSiteURL } = new URL(
-					siteInfo.referenceSiteURL
-				);
-
-				const resultingURL = registry
-					.select( MODULES_ADSENSE )
-					.getServiceAccountSiteURL();
-
-				expect(
-					decodeServiceURL( resultingURL )
-				).toMatchQueryParameters( {
-					source: 'site-kit',
-					url: referenceSiteURL,
-				} );
-			} );
-		} );
-
 		describe( 'getServiceReportURL', () => {
 			beforeEach( () => {
 				registry.dispatch( MODULES_ADSENSE ).setSettings( settings );
