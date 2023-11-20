@@ -51,6 +51,11 @@ const valuesToTest = [
 		'ca-pub-1234567890',
 	],
 	[
+		'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890" crossorigin="anonymous"></script>',
+		adsenseTagMatchers,
+		'ca-pub-1234567890',
+	],
+	[
 		'<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" async data-ad-client="ca-pub-1234567890"></script>',
 		adsenseTagMatchers,
 		'ca-pub-1234567890',
