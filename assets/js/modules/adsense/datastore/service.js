@@ -28,7 +28,6 @@ import Data from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { isFeatureEnabled } from '../../../features';
 import { parseDomain } from '../util/url';
 
 const { createRegistrySelector } = Data;
@@ -108,12 +107,9 @@ export const selectors = {
 			return undefined;
 		}
 
-		const adsenseSetupV2Enabled = isFeatureEnabled( 'adsenseSetupV2' );
-
-		const path = adsenseSetupV2Enabled ? accountID : `${ accountID }/home`;
 		const query = { source: 'site-kit' };
 
-		return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
+		return select( MODULES_ADSENSE ).getServiceURL( { accountID, query } );
 	} ),
 
 	/**

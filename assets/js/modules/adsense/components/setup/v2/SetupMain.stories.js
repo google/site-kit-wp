@@ -281,10 +281,7 @@ export default {
 				.receiveIsAdBlockerActive( false );
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ [ 'adsenseSetupV2' ] }
-				>
+				<WithTestRegistry registry={ registry }>
 					<Story />
 				</WithTestRegistry>
 			);
