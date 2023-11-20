@@ -43,7 +43,7 @@ const reportTableStyles = {
 const ga4Reporting = {
 	slug: 'ga4Reporting',
 	contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-	version: 'n.e.x.t', // Change this version to the actual version when GA4 reporting is released to 100% of users.
+	version: '1.103.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_ga4-metrics`,
 	steps: [
 		{
