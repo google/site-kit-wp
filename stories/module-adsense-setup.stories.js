@@ -112,13 +112,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetAlerts( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-			} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -220,20 +213,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				],
 				{ accountID: fixtures.accountsMultiple[ 1 ]._id }
 			);
-			registry.dispatch( MODULES_ADSENSE ).receiveGetAlerts( [], {
-				accountID: fixtures.accountsMultiple[ 0 ]._id,
-			} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetAlerts( [], {
-				accountID: fixtures.accountsMultiple[ 1 ]._id,
-			} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accountsMultiple[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accountsMultiple[ 1 ]._id,
-				clientID: `ca-${ fixtures.accountsMultiple[ 1 ]._id }`,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -292,15 +271,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alertsGraylisted, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -327,10 +297,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -355,11 +321,6 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetClients( fixtures.clientsNoAFC, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alerts, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
 
@@ -391,15 +352,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alerts, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -431,15 +383,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alerts, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -471,15 +414,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alerts, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -506,15 +440,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alerts, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -543,15 +468,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alerts, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -580,15 +496,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alerts, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -615,15 +522,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
 				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alerts, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry.dispatch( MODULES_ADSENSE ).receiveGetURLChannels( [], {
-				accountID: fixtures.accounts[ 0 ]._id,
-				clientID: fixtures.clients[ 0 ]._id,
-			} );
 
 			return <Setup registry={ registry } />;
 		},
@@ -649,17 +547,6 @@ storiesOf( 'AdSense Module/Setup', module )
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetClients( fixtures.clients, {
 					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetAlerts( fixtures.alerts, {
-					accountID: fixtures.accounts[ 0 ]._id,
-				} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetURLChannels( fixtures.urlchannels, {
-					accountID: fixtures.accounts[ 0 ]._id,
-					clientID: fixtures.clients[ 0 ]._id,
 				} );
 
 			return <Setup registry={ registry } />;
