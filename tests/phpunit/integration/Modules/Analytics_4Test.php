@@ -305,6 +305,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => '',
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -324,6 +325,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => $google_tag_container_id,
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => '',
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -440,6 +442,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => '',
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -498,7 +501,8 @@ class Analytics_4Test extends TestCase {
 							array(),
 							json_encode(
 								array(
-									'name' => "properties/{$property_id}",
+									'name'       => "properties/{$property_id}",
+									'createTime' => '2022-09-09T09:18:05.968Z',
 								)
 							)
 						);
@@ -554,6 +558,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => '',
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -575,6 +580,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => '',
 			),
 			$options->get( Settings::OPTION )
 		);
