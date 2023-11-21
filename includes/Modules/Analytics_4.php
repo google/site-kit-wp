@@ -52,6 +52,7 @@ use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
@@ -148,6 +149,20 @@ final class Analytics_4 extends Module
 	public function register() {
 		$this->register_scopes_hook();
 
+		$synchronize_property = new Synchronize_Property(
+			$this,
+			$this->user_options,
+			$this->authentication
+		);
+		$synchronize_property->register();
+
+		add_action(
+			'init',
+			function() use ( $synchronize_property ) {
+				$synchronize_property->schedule_synchronize_property();
+			}
+		);
+
 		add_action(
 			'googlesitekit_analytics_handle_provisioning_callback',
 			$this->get_method_proxy( 'handle_provisioning_callback' ),
@@ -191,6 +206,21 @@ final class Analytics_4 extends Module
 
 			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 		}
+
+		// Check if property ID has changed and reset the value for `propertyCreateTime`.
+		// @TODO Merge it with same filter above once `keyMetrics` feature flag is removed.
+		add_filter(
+			'pre_update_option_googlesitekit_analytics-4_settings',
+			function ( $new_value, $old_value ) {
+				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
+					$new_value['propertyCreateTime'] = '';
+				}
+
+				return $new_value;
+			},
+			10,
+			2
+		);
 
 		// Replicate Analytics settings for Analytics-4 if not set.
 		add_filter(
@@ -571,7 +601,20 @@ final class Analytics_4 extends Module
 			return;
 		}
 
-		$this->get_settings()->merge( array( 'propertyID' => $property->_id ) );
+		$create_time    = isset( $property->createTime ) ? $property->createTime : ''; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$create_time_ms = '';
+		if ( $create_time ) {
+			$create_time = new \DateTime( $create_time, new \DateTimeZone( 'UTC' ) );
+			// Convert to Unix timestamp and then to milliseconds.
+			$create_time_ms = (int) ( $create_time->getTimestamp() * 1000 );
+		}
+
+		$this->get_settings()->merge(
+			array(
+				'propertyID'         => $property->_id,
+				'propertyCreateTime' => $create_time_ms,
+			)
+		);
 
 		$web_datastream = $this->create_webdatastream(
 			$property->_id,
