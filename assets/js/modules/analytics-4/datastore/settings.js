@@ -76,10 +76,13 @@ export async function submitChanges( { select, dispatch } ) {
 		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID(
 			WEBDATASTREAM_CREATE
 		);
+
 		await dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID(
 			''
 		);
 	}
+
+	setPropertyCreateTime( { propertyID, select, dispatch } );
 
 	let webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 	if (
@@ -220,5 +223,18 @@ export function validateCanSubmitChanges( select ) {
 			isValidWebDataStreamSelection( getWebDataStreamID() ),
 			INVARIANT_INVALID_WEBDATASTREAM_ID
 		);
+	}
+}
+
+function setPropertyCreateTime( { propertyID, select, dispatch } ) {
+	if ( propertyID && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+		const property =
+			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+
+		if ( property?.createTime ) {
+			dispatch( MODULES_ANALYTICS_4 ).setPropertyCreateTime(
+				property.createTime
+			);
+		}
 	}
 }
