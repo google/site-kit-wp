@@ -24,6 +24,7 @@ import {
 	createTestRegistry,
 	provideUserAuthentication,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
@@ -63,6 +64,9 @@ describe( 'modules/analytics-4 settings', () => {
 	const createWebDataStreamsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
 	);
+	const propertyEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/property'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -91,7 +95,7 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 			} );
 
-			it( 'should dispatch createProperty and createWebDataStream actions if the "set up a new property" option is chosen', async () => {
+			it( 'should dispatch createProperty and createWebDataStream actions and getPropertyCreateTime resolver if the "set up a new property" option is chosen', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: PROPERTY_CREATE,
 				} );
@@ -112,9 +116,21 @@ describe( 'modules/analytics-4 settings', () => {
 					return { body: data, status: 200 };
 				} );
 
+				fetchMock.get( propertyEndpoint, {
+					body: {},
+					status: 200,
+				} );
+
 				const result = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.submitChanges();
+
+				// getPropertyCreateTime resolver should invoke getProperty on settings change.
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getProperty( fixtures.createProperty._id );
+
 				expect( result.error ).toBeFalsy();
 
 				expect( fetchMock ).toHaveFetched( createPropertyEndpoint, {
@@ -130,6 +146,10 @@ describe( 'modules/analytics-4 settings', () => {
 						},
 					}
 				);
+
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID: fixtures.createProperty._id },
+				} );
 
 				const propertyID = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -173,7 +193,7 @@ describe( 'modules/analytics-4 settings', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'should dispatch createWebDataStream actions if webDataStreamID is invalid', async () => {
+			it( 'should dispatch createWebDataStream actions and getPropertyCreateTime resolver if webDataStreamID is invalid', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: fixtures.createProperty._id,
 					webDataStreamID: '',
@@ -190,6 +210,11 @@ describe( 'modules/analytics-4 settings', () => {
 					return { body: data, status: 200 };
 				} );
 
+				fetchMock.get( propertyEndpoint, {
+					body: {},
+					status: 200,
+				} );
+
 				const result = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.submitChanges();
@@ -203,6 +228,10 @@ describe( 'modules/analytics-4 settings', () => {
 						},
 					}
 				);
+
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID: fixtures.createProperty._id },
+				} );
 
 				const webDataStreamID = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -223,7 +252,18 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 500,
 				} );
 
+				fetchMock.get( propertyEndpoint, {
+					body: {},
+					status: 200,
+				} );
+
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+
+				// getPropertyCreateTime resolver should invoke getProperty on settings change.
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getProperty( fixtures.createProperty._id );
 
 				expect( fetchMock ).toHaveFetched(
 					createWebDataStreamsEndpoint,
@@ -233,6 +273,10 @@ describe( 'modules/analytics-4 settings', () => {
 						},
 					}
 				);
+
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID: fixtures.createProperty._id },
+				} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
@@ -366,8 +410,6 @@ describe( 'modules/analytics-4 settings', () => {
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
-
-					expect( fetchMock ).toHaveFetchedTimes( 0 );
 				} );
 
 				it( 'should not save the enhanced measurement settings if the form value is `false`', async () => {
@@ -380,8 +422,6 @@ describe( 'modules/analytics-4 settings', () => {
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
-
-					expect( fetchMock ).toHaveFetchedTimes( 0 );
 				} );
 
 				it( 'should not save the enhanced measurement settings if the setting has not been changed', async () => {
@@ -395,8 +435,6 @@ describe( 'modules/analytics-4 settings', () => {
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
-
-					expect( fetchMock ).toHaveFetchedTimes( 0 );
 				} );
 
 				it( 'should handle and return an error when saving enhanced measurement settings', async () => {
@@ -411,12 +449,19 @@ describe( 'modules/analytics-4 settings', () => {
 						status: 500,
 						body: errorObject,
 					} );
+					fetchMock.get( propertyEndpoint, {
+						body: {},
+						status: 200,
+					} );
 
 					const { error: responseError } = await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
 
-					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						enhancedMeasurementSettingsEndpoint
+					);
 					expect( responseError ).toEqual( errorObject );
 					expect(
 						registry
@@ -431,6 +476,11 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should dispatch saveSettings', async () => {
+				fetchMock.get( propertyEndpoint, {
+					body: {},
+					status: 200,
+				} );
+
 				const validSettings = {
 					propertyID: fixtures.createProperty._id,
 					webDataStreamID: fixtures.createWebDataStream._id,
@@ -446,6 +496,12 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+
+				// getPropertyCreateTime resolver should invoke getProperty on settings change.
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getProperty( fixtures.createProperty._id );
 
 				expect( fetchMock ).toHaveFetched( settingsEndpoint, {
 					body: { data: validSettings },

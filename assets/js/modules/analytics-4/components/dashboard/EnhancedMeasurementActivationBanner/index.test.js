@@ -28,6 +28,7 @@ import {
 	provideUserAuthentication,
 	fireEvent,
 	waitFor,
+	waitForElementToBeRemoved,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -35,6 +36,7 @@ import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import EnhancedMeasurementActivationBanner from './index';
+import { properties } from '../../../datastore/__fixtures__';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const propertyID = '1000';
@@ -76,9 +78,14 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			propertyID,
 			webDataStreamID,
 			ownerID: 1,
+			propertyCreateTime: 1662715085968,
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( properties[ 0 ], { propertyID } );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -113,7 +120,10 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			}
 		);
 
-		fireEvent.click( getByRole( 'button', { name: 'Enable now' } ) );
+		const enableNowButton = getByRole( 'button', { name: 'Enable now' } );
+		fireEvent.click( enableNowButton );
+
+		await waitForElementToBeRemoved( enableNowButton );
 
 		await waitForRegistry();
 

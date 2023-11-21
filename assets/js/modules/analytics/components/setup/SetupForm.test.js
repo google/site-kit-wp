@@ -259,6 +259,10 @@ describe( 'SetupForm', () => {
 			'/analytics-4/data/webdatastreams-batch'
 		);
 
+		const propertyEndpointRegexp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/property'
+		);
+
 		fetchMock.post( createPropertyRegexp, {
 			status: 200,
 			body: analytics4Fixtures.properties[ 0 ],
@@ -284,6 +288,11 @@ describe( 'SetupForm', () => {
 			body: [],
 		} );
 
+		fetchMock.get( propertyEndpointRegexp, {
+			status: 200,
+			body: {},
+		} );
+
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
@@ -306,6 +315,7 @@ describe( 'SetupForm', () => {
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyRegexp );
+		expect( fetchMock ).toHaveFetchedTimes( 1, propertyEndpointRegexp );
 		expect( fetchMock ).toHaveFetchedTimes( 1, createWebDataStreamRegexp );
 		expect( fetchMock ).toHaveFetchedTimes(
 			1,

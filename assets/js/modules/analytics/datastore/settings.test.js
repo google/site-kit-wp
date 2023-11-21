@@ -41,6 +41,7 @@ import {
 	provideModules,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
@@ -66,6 +67,9 @@ describe( 'modules/analytics settings', () => {
 	);
 	const ga4SettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
+	const propertyEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/property'
 	);
 
 	const validSettings = {
@@ -622,9 +626,10 @@ describe( 'modules/analytics settings', () => {
 				} );
 
 				it( 'should save analytics-4 settings as well', async () => {
+					const propertyID = '1000';
 					const ga4Settings = {
 						...ga4fixtures.defaultSettings,
-						propertyID: '1000',
+						propertyID,
 						webDataStreamID: '2000',
 					};
 
@@ -633,6 +638,10 @@ describe( 'modules/analytics settings', () => {
 					} );
 					fetchMock.postOnce( ga4SettingsEndpoint, {
 						body: ga4Settings,
+					} );
+					fetchMock.get( propertyEndpoint, {
+						body: {},
+						status: 200,
 					} );
 
 					registry
@@ -672,12 +681,22 @@ describe( 'modules/analytics settings', () => {
 							.select( MODULES_ANALYTICS_4 )
 							.haveSettingsChanged()
 					).toBe( false );
+
+					// getPropertyCreateTime resolver should invoke getProperty on settings change.
+					await untilResolved(
+						registry,
+						MODULES_ANALYTICS_4
+					).getProperty( propertyID );
+					expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+						query: { propertyID },
+					} );
 				} );
 
 				it( 'should surface analytics-4 errors if it fails', async () => {
+					const propertyID = '1000';
 					const ga4Settings = {
 						...ga4fixtures.defaultSettings,
-						propertyID: '1000',
+						propertyID,
 						webDataStreamID: '2000',
 					};
 
@@ -688,6 +707,10 @@ describe( 'modules/analytics settings', () => {
 					fetchMock.postOnce( ga4SettingsEndpoint, {
 						body: error,
 						status: 500,
+					} );
+					fetchMock.get( propertyEndpoint, {
+						body: {},
+						status: 200,
 					} );
 
 					registry
@@ -734,6 +757,15 @@ describe( 'modules/analytics settings', () => {
 							.getErrorForAction( 'submitChanges' )
 					).toEqual( error );
 					expect( console ).toHaveErrored();
+
+					// getPropertyCreateTime resolver should invoke getProperty on settings change.
+					await untilResolved(
+						registry,
+						MODULES_ANALYTICS_4
+					).getProperty( propertyID );
+					expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+						query: { propertyID },
+					} );
 				} );
 
 				describe( 'when enhanced measurement is enabled', () => {
@@ -804,10 +836,24 @@ describe( 'modules/analytics settings', () => {
 						);
 					} );
 
-					it( 'should save the enhanced measurement settings if the setting has been changed', async () => {
+					it( 'should save the enhanced measurement settings and retrieve new property create time if the setting has been changed', async () => {
+						fetchMock.get( propertyEndpoint, {
+							body: {},
+							status: 200,
+						} );
+
 						await registry
 							.dispatch( MODULES_ANALYTICS )
 							.submitChanges();
+
+						const newPropertyID = registry
+							.select( MODULES_ANALYTICS_4 )
+							.getPropertyID();
+
+						// getPropertyCreateTime resolver should invoke getProperty on settings change.
+						expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+							query: { propertyID: newPropertyID },
+						} );
 
 						expect( fetchMock ).toHaveFetched(
 							enhancedMeasurementSettingsEndpoint,
@@ -830,9 +876,20 @@ describe( 'modules/analytics settings', () => {
 									webDataStreamID
 								)
 						).toBe( false );
+
+						expect(
+							registry
+								.select( MODULES_ANALYTICS_4 )
+								.getPropertyCreateTime()
+						).not.toBeUndefined();
 					} );
 
 					it( 'should not save the enhanced measurement settings if the form value is not defined', async () => {
+						fetchMock.get( propertyEndpoint, {
+							body: {},
+							status: 200,
+						} );
+
 						registry
 							.dispatch( CORE_FORMS )
 							.setValues( ENHANCED_MEASUREMENT_FORM, {
@@ -843,12 +900,23 @@ describe( 'modules/analytics settings', () => {
 							.dispatch( MODULES_ANALYTICS )
 							.submitChanges();
 
+						// getPropertyCreateTime resolver should invoke getProperty on settings change.
+						await untilResolved(
+							registry,
+							MODULES_ANALYTICS_4
+						).getProperty( propertyID );
+
 						expect( fetchMock ).not.toHaveFetched(
 							enhancedMeasurementSettingsEndpoint
 						);
 					} );
 
-					it( 'should not save the enhanced measurement settings if the form value is `false`', async () => {
+					it( 'should not save the enhanced measurement settings if the form value is `false`, but get property time resolver should be called', async () => {
+						fetchMock.get( propertyEndpoint, {
+							body: {},
+							status: 200,
+						} );
+
 						registry
 							.dispatch( CORE_FORMS )
 							.setValues( ENHANCED_MEASUREMENT_FORM, {
@@ -859,12 +927,22 @@ describe( 'modules/analytics settings', () => {
 							.dispatch( MODULES_ANALYTICS )
 							.submitChanges();
 
+						await untilResolved(
+							registry,
+							MODULES_ANALYTICS_4
+						).getProperty( propertyID );
+
 						expect( fetchMock ).not.toHaveFetched(
 							enhancedMeasurementSettingsEndpoint
 						);
 					} );
 
-					it( 'should not save the enhanced measurement settings if the setting has not been changed', async () => {
+					it( 'should not save the enhanced measurement settings if the setting has not been changed, but should invoke get proeprty time resolver', async () => {
+						fetchMock.get( propertyEndpoint, {
+							body: {},
+							status: 200,
+						} );
+
 						registry
 							.dispatch( MODULES_ANALYTICS_4 )
 							.receiveGetEnhancedMeasurementSettings(
@@ -879,9 +957,11 @@ describe( 'modules/analytics settings', () => {
 						expect( fetchMock ).not.toHaveFetched(
 							enhancedMeasurementSettingsEndpoint
 						);
+
+						expect( fetchMock ).toHaveFetched( propertyEndpoint );
 					} );
 
-					it( 'should handle and return an error when saving enhanced measurement settings', async () => {
+					it( 'should handle and return an error when saving enhanced measurement settings and invoke get property time resolver', async () => {
 						const errorObject = {
 							code: 'internal_error',
 							message: 'Something wrong happened.',
@@ -889,6 +969,11 @@ describe( 'modules/analytics settings', () => {
 						};
 
 						fetchMock.reset();
+
+						fetchMock.get( propertyEndpoint, {
+							body: {},
+							status: 200,
+						} );
 						fetchMock.postOnce(
 							enhancedMeasurementSettingsEndpoint,
 							{
@@ -901,7 +986,14 @@ describe( 'modules/analytics settings', () => {
 							.dispatch( MODULES_ANALYTICS_4 )
 							.submitChanges();
 
-						expect( fetchMock ).toHaveFetchedTimes( 1 );
+						expect( fetchMock ).toHaveFetchedTimes(
+							1,
+							enhancedMeasurementSettingsEndpoint
+						);
+						expect( fetchMock ).toHaveFetchedTimes(
+							1,
+							propertyEndpoint
+						);
 						expect( responseError ).toEqual( errorObject );
 						expect(
 							registry

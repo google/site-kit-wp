@@ -39,6 +39,7 @@ import {
 } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
+import { properties } from '../../../datastore/__fixtures__';
 import SetupBanner from './SetupBanner';
 
 describe( 'SetupBanner', () => {
@@ -93,6 +94,10 @@ describe( 'SetupBanner', () => {
 				propertyID,
 				webDataStreamID,
 			} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( properties[ 0 ], { propertyID } );
 
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),

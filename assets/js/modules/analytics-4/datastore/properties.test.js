@@ -164,6 +164,7 @@ describe( 'modules/analytics-4 properties', () => {
 					propertyID: '12345',
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
+					propertyCreateTime: 1662715085968,
 				};
 
 				provideUserAuthentication( registry );
@@ -184,15 +185,28 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
 				).toBe( '' );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPropertyCreateTime()
+				).toBe( '' );
 			} );
 
-			it( 'should set property ID and the first web data stream when a matching web data stream is not found', async () => {
+			it( 'should set property ID, property create time and the first web data stream when a matching web data stream is not found', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
+					propertyCreateTime: new Date(
+						'2022-09-09T09:18:05.968Z'
+					).getTime(),
 				};
+
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
 
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.io',
@@ -223,15 +237,34 @@ describe( 'modules/analytics-4 properties', () => {
 					// eslint-disable-next-line sitekit/acronym-case
 					fixtures.webDataStreams[ 0 ].webStreamData.measurementId
 				);
+				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID },
+				} );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPropertyCreateTime()
+				).toBe(
+					new Date( fixtures.properties[ 0 ].createTime ).getTime()
+				);
 			} );
 
-			it( 'should set property ID, and reset datastream and measurement IDs when no web data streams are available', async () => {
+			it( 'should set property ID and property create time and reset datastream and measurement IDs when no web data streams are available', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
+					propertyCreateTime: new Date(
+						'2022-09-09T09:18:05.968Z'
+					).getTime(),
 				};
+
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
 
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.io',
@@ -260,15 +293,30 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
 				).toBe( '' );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPropertyCreateTime()
+				).toBe(
+					new Date( fixtures.properties[ 0 ].createTime ).getTime()
+				);
 			} );
 
-			it( 'should set property, datastream, and measurement IDs when web data stream is found', async () => {
+			it( 'should set property, property create time, datastream, and measurement IDs when web data stream is found', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
+					propertyCreateTime: new Date(
+						'2022-09-09T09:18:05.968Z'
+					).getTime(),
 				};
+
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
 
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
@@ -299,6 +347,13 @@ describe( 'modules/analytics-4 properties', () => {
 					// eslint-disable-next-line sitekit/acronym-case
 					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
 				);
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPropertyCreateTime()
+				).toBe(
+					new Date( fixtures.properties[ 0 ].createTime ).getTime()
+				);
 			} );
 
 			it( 'supports asynchronous webdatastream resolution', async () => {
@@ -307,6 +362,9 @@ describe( 'modules/analytics-4 properties', () => {
 					propertyID: '12345',
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
+					propertyCreateTime: new Date(
+						'2022-09-09T09:18:05.968Z'
+					).getTime(),
 				};
 				let resolveResponse;
 				const responsePromise = new Promise( ( resolve ) => {
@@ -318,6 +376,10 @@ describe( 'modules/analytics-4 properties', () => {
 					),
 					responsePromise
 				);
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
 
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
@@ -341,6 +403,11 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
 				).toBe( '' );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPropertyCreateTime()
+				).toBe( '' );
 
 				resolveResponse();
 				await promise;
@@ -361,6 +428,13 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe(
 					// eslint-disable-next-line sitekit/acronym-case
 					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
+				);
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPropertyCreateTime()
+				).toBe(
+					new Date( fixtures.properties[ 0 ].createTime ).getTime()
 				);
 			} );
 		} );
@@ -712,7 +786,6 @@ describe( 'modules/analytics-4 properties', () => {
 					.setIsWebDataStreamAvailable( false );
 
 				const updatedIsWebDataStreamAvailable = registry
-
 					.select( MODULES_ANALYTICS_4 )
 					.isWebDataStreamAvailable();
 
@@ -1305,6 +1378,186 @@ describe( 'modules/analytics-4 properties', () => {
 					.getProperty( propertyID );
 				expect( property ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getPropertyCreateTime', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
+
+				const propertyID = '12345';
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+
+				const initalPropertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( initalPropertyCreateTime ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID },
+				} );
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( propertyCreateTime ).toEqual(
+					new Date( fixtures.properties[ 0 ].createTime ).getTime()
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should reset propertyCreateTime setting when property ID is PROPERTY_CREATE', async () => {
+				provideUserAuthentication( registry );
+
+				fetchMock.get( propertyEndpoint, {
+					body: {},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectProperty( PROPERTY_CREATE );
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( propertyCreateTime ).toBe( '' );
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+			} );
+
+			it( 'should convert property time to unix timestamp when value is set', () => {
+				const createTimeInDateString = '2014-10-02T15:01:23Z';
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyCreateTime( createTimeInDateString );
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( propertyCreateTime ).toBe(
+					new Date( createTimeInDateString ).getTime()
+				);
+			} );
+
+			it( 'should reset create time when new property is created', async () => {
+				const accountID = fixtures.createProperty.parent;
+
+				fetchMock.post( createPropertyEndpoint, {
+					body: fixtures.createProperty,
+					status: 200,
+				} );
+
+				fetchMock.get( propertyEndpoint, {
+					body: {},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createProperty( accountID );
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( propertyCreateTime ).toBeUndefined();
+			} );
+
+			it( 'should reset create time when property is changed', async () => {
+				const propertyID = '1000';
+
+				const settings = {
+					propertyID: '12345',
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+					propertyCreateTime: 1662715085968,
+				};
+
+				provideUserAuthentication( registry );
+
+				fetchMock.get( propertyEndpoint, {
+					body: {},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectProperty( propertyID );
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+
+				expect( propertyCreateTime ).toBe( '' );
+
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID },
+				} );
+			} );
+
+			it( 'should not invoke getProperty resolver if property is already received', () => {
+				const propertyID = fixtures.properties[ 0 ]._id;
+
+				const settings = {
+					propertyID,
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+				};
+
+				fetchMock.get( propertyEndpoint, {
+					body: {},
+					status: 200,
+				} );
+
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( fixtures.properties[ 0 ], {
+						propertyID,
+					} );
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( propertyCreateTime ).toBeUndefined();
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
 			} );
 		} );
 
