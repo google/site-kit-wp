@@ -368,9 +368,6 @@ WithEnhancedMeasurementToggle.args = {
 	hasAnalyticsAccess: true,
 	hasAnalytics4Access: true,
 };
-WithEnhancedMeasurementToggle.parameters = {
-	features: [ 'enhancedMeasurement' ],
-};
 
 WithEnhancedMeasurementToggle.scenario = {
 	label: 'Modules/Analytics/Settings/SettingsEdit/WithEnhancedMeasurementToggle',
