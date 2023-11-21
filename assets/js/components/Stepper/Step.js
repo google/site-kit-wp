@@ -34,6 +34,7 @@ import { STEP_STATUS } from './constants';
 export default function Step( { children, title, stepStatus } ) {
 	const stepContentRef = useRef();
 
+	// Set height of the step-content div to the actual height of the content.
 	useEffect( () => {
 		if ( ! stepContentRef.current ) {
 			return;

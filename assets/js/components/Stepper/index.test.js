@@ -50,7 +50,7 @@ describe( 'Stepper', () => {
 				container.querySelector(
 					'.googlesitekit-stepper__step-content'
 				)
-			).not.toBeInTheDocument();
+			).not.toHaveClass( 'googlesitekit-stepper__step-content--active' );
 		}
 	);
 
@@ -73,7 +73,7 @@ describe( 'Stepper', () => {
 
 		expect(
 			container.querySelector( '.googlesitekit-stepper__step-content' )
-		).not.toBeInTheDocument();
+		).not.toHaveClass( 'googlesitekit-stepper__step-content--active' );
 	} );
 
 	it( 'should render the active step as active and display its content', () => {
@@ -97,13 +97,13 @@ describe( 'Stepper', () => {
 			container.querySelector(
 				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-content'
 			)
-		).toBeInTheDocument();
+		).toHaveClass( 'googlesitekit-stepper__step-content--active' );
 
 		expect(
 			container.querySelector(
 				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-content'
 			)
-		).not.toBeInTheDocument();
+		).not.toHaveClass( 'googlesitekit-stepper__step-content--active' );
 
 		rerender(
 			<Stepper activeStep={ 1 }>
@@ -119,7 +119,7 @@ describe( 'Stepper', () => {
 			container.querySelector(
 				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-content'
 			)
-		).not.toBeInTheDocument();
+		).not.toHaveClass( 'googlesitekit-stepper__step-content--active' );
 
 		expect(
 			container.querySelector(
@@ -131,6 +131,6 @@ describe( 'Stepper', () => {
 			container.querySelector(
 				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-content'
 			)
-		).toBeInTheDocument();
+		).toHaveClass( 'googlesitekit-stepper__step-content--active' );
 	} );
 } );
