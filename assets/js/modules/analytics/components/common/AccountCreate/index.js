@@ -52,6 +52,7 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
+import EnhancedMeasurementSwitch from '../../../../analytics-4/components/common/EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
 
 const { useDispatch, useSelect } = Data;
@@ -247,6 +248,10 @@ export default function AccountCreate() {
 				<CountrySelect />
 
 				<TimezoneSelect />
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs">
+				<EnhancedMeasurementSwitch formName={ FORM_ACCOUNT_CREATE } />
 			</div>
 
 			<p>
