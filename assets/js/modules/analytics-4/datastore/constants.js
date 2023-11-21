@@ -42,7 +42,7 @@ export const CUSTOM_DIMENSION_DEFINITIONS = {
 	googlesitekit_post_date: {
 		parameterName: 'googlesitekit_post_date',
 		displayName: 'WordPress Post Creation Date',
-		description: 'Created by Site Kit: Date when a post was created',
+		description: 'Created by Site Kit: Date when a post was published',
 		scope: 'EVENT',
 	},
 	googlesitekit_post_author: {
@@ -55,13 +55,13 @@ export const CUSTOM_DIMENSION_DEFINITIONS = {
 		parameterName: 'googlesitekit_post_categories',
 		displayName: 'WordPress Post Categories',
 		description:
-			'Created by Site Kit: Names of categories assigned to posts',
+			'Created by Site Kit: Names of categories assigned to a post',
 		scope: 'EVENT',
 	},
 	googlesitekit_post_type: {
 		parameterName: 'googlesitekit_post_type',
 		displayName: 'WordPress Post Type',
-		description: 'Created by Site Kit: Content type of posts',
+		description: 'Created by Site Kit: Content type of a post',
 		scope: 'EVENT',
 	},
 };
