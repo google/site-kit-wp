@@ -43,8 +43,8 @@ import ReportError from '../../../../../components/ReportError';
 import { stringToDate } from '../../../../../util/date-range/string-to-date';
 import { createZeroDataRow } from './utils';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
-import { getDateString } from '../../../../../util';
 import useViewOnly from '../../../../../hooks/useViewOnly';
+import { getDateString } from '../../../../../util';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
@@ -98,23 +98,13 @@ export default function UserCountGraph( props ) {
 		};
 	}, [] );
 
-	const property = useSelect( ( select ) => {
+	const propertyCreatedDate = useSelect( ( select ) => {
 		if ( isViewOnly ) {
 			return null;
 		}
 
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-		if ( ! propertyID ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+		return select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
 	} );
-
-	const propertyCreatedDate = property?.createTime
-		? getDateString( new Date( property.createTime ) )
-		: null;
 
 	if ( error ) {
 		return <ReportError moduleSlug="analytics-4" error={ error } />;
@@ -239,7 +229,9 @@ export default function UserCountGraph( props ) {
 					propertyCreatedDate
 						? [
 								{
-									date: propertyCreatedDate,
+									date: getDateString(
+										new Date( propertyCreatedDate )
+									),
 									text: __(
 										'Google Analytics 4 property created',
 										'google-site-kit'

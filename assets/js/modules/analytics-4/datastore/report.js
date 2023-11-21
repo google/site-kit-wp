@@ -198,23 +198,21 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 			return false;
 		}
 
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+		const propertyCreateTime =
+			select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
 
-		if ( propertyID === undefined ) {
+		if ( undefined === propertyCreateTime ) {
 			return undefined;
 		}
 
-		const property =
-			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
-
-		if ( property === undefined ) {
-			return undefined;
-		}
-
-		const createTime = new Date( property.createTime ).getTime();
+		// Backward compatibility to ensure time is received in unit timestamp, if
+		// old format is not updated yet.
+		const propertyCreateTimeMs = Number.isInteger( propertyCreateTime )
+			? propertyCreateTime
+			: new Date( propertyCreateTime ).getTime();
 
 		// If the property was created within the last three days and has no data, assume it's still gathering data.
-		if ( createTime > Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
+		if ( propertyCreateTimeMs > Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
 			return false;
 		}
 

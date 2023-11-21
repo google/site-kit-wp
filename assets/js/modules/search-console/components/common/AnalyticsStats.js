@@ -38,8 +38,8 @@ import GoogleChart from '../../../../components/GoogleChart';
 import { UA_CUTOFF_DATE } from '../../../analytics/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { getDateString } from '../../../../util';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import { getDateString } from '../../../../util';
 const { useSelect } = Data;
 
 /**
@@ -114,30 +114,20 @@ export default function AnalyticsStats( props ) {
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 
-	const property = useSelect( ( select ) => {
-		if ( isViewOnly || ! isGA4DashboardView ) {
+	const propertyCreatedDate = useSelect( ( select ) => {
+		if ( isViewOnly ) {
 			return null;
 		}
 
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-		if ( ! propertyID ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+		return select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
 	} );
-
-	const propertyCreatedDate = property?.createTime
-		? getDateString( new Date( property.createTime ) )
-		: null;
 
 	let dateMarkers = [];
 
-	if ( isGA4DashboardView && propertyCreatedDate ) {
+	if ( propertyCreatedDate ) {
 		dateMarkers = [
 			{
-				date: propertyCreatedDate,
+				date: getDateString( new Date( propertyCreatedDate ) ),
 				text: __(
 					'Google Analytics 4 property created',
 					'google-site-kit'

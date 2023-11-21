@@ -29,8 +29,8 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
-import { getDateString } from '../../../util';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
+import { getDateString } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -326,19 +326,17 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			const property =
-				select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+			const startDate =
+				select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
 
-			if ( property === undefined ) {
+			if ( ! startDate ) {
 				return undefined;
 			}
-
-			const startDate = getDateString( new Date( property.createTime ) );
 
 			const endDate = select( CORE_USER ).getReferenceDate();
 
 			return {
-				startDate,
+				startDate: getDateString( new Date( startDate ) ),
 				endDate,
 				dimensions: [ `customEvent:${ customDimension }` ],
 				metrics: [ { name: 'eventCount' } ],
