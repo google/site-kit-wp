@@ -37,7 +37,11 @@ import {
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
+import {
+	HOUR_IN_SECONDS,
+	convertDateStringToUNIXTimestamp,
+	normalizeURL,
+} from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
@@ -130,6 +134,11 @@ const fetchCreatePropertyStore = createFetchStore( {
 					property,
 				],
 			},
+			// Reset the `propertyCreateTime` so new value can be invoked.
+			settings: {
+				...state.settings,
+				propertyCreateTime: undefined,
+			},
 		};
 	},
 	argsToParams( accountID ) {
@@ -166,6 +175,7 @@ const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
+const SET_PROPERTY_CREATE_TIME = 'SET_PROPERTY_CREATE_TIME';
 
 const baseInitialState = {
 	properties: {},
@@ -192,6 +202,7 @@ const baseActions = {
 				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
 					accountID
 				);
+
 			return { response, error };
 		} )();
 	},
@@ -223,9 +234,26 @@ const baseActions = {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.updateSettingsForMeasurementID( '' );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyCreateTime( '' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
 				return;
+			}
+
+			if ( propertyID ) {
+				const property = yield Data.commonActions.await(
+					registry
+						.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+						.getProperty( propertyID )
+				);
+
+				if ( property?.createTime ) {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyCreateTime( property.createTime );
+				}
 			}
 
 			yield webDataStreamActions.waitForWebDataStreams( propertyID );
@@ -660,6 +688,20 @@ function baseReducer( state, { type, payload } ) {
 				...state,
 				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
 			};
+		case SET_PROPERTY_CREATE_TIME:
+			// Convert the date string to a unix timestamp in ms so it is in
+			// unified format across the app when data is invoked.
+			const unixTimestamp = convertDateStringToUNIXTimestamp(
+				payload.value
+			);
+
+			return {
+				...state,
+				settings: {
+					...state.settings,
+					propertyCreateTime: unixTimestamp,
+				},
+			};
 		default:
 			return state;
 	}
@@ -690,6 +732,38 @@ const baseResolvers = {
 		if ( property === undefined ) {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}
+	},
+	*getPropertyCreateTime() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		const propertyCreateTime = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyCreateTime();
+
+		if (
+			propertyCreateTime ||
+			propertyID === PROPERTY_CREATE ||
+			! propertyID
+		) {
+			return;
+		}
+
+		const property = yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getProperty( propertyID )
+		);
+
+		yield {
+			type: SET_PROPERTY_CREATE_TIME,
+			payload: {
+				value: property?.createTime,
+			},
+		};
 	},
 };
 
