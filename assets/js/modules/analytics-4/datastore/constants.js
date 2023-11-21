@@ -35,6 +35,9 @@ export const ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER =
 
 export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analytics4CustomDimensionsCreate';
 
+// Note: names and descriptions are not translated as these are not surfaced in Site Kit
+// and are also subject to hard limits on the length which would be unpredictable if translated.
+// See https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1beta/properties.customDimensions#CustomDimension
 export const CUSTOM_DIMENSION_DEFINITIONS = {
 	googlesitekit_post_date: {
 		parameterName: 'googlesitekit_post_date',
