@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Core\User_Input;
 
-use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -47,30 +47,30 @@ class REST_User_Input_Controller {
 	protected $survey_queue;
 
 	/**
-	 * Key_Metrics_Setup_Completed instance.
+	 * Key_Metrics_Setup_Completed_By instance.
 	 *
-	 * @since 1.108.0
-	 * @var Key_Metrics_Setup_Completed
+	 * @since 1.113.0
+	 * @var Key_Metrics_Setup_Completed_By
 	 */
-	protected $key_metrics_setup_completed;
+	protected $key_metrics_setup_completed_by;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.90.0
 	 *
-	 * @param User_Input                  $user_input                  User_Input instance.
-	 * @param Survey_Queue                $survey_queue                Survey_Queue instance.
-	 * @param Key_Metrics_Setup_Completed $key_metrics_setup_completed Key_Metrics_Setup_Completed instance.
+	 * @param User_Input                     $user_input                     User_Input instance.
+	 * @param Survey_Queue                   $survey_queue                   Survey_Queue instance.
+	 * @param Key_Metrics_Setup_Completed_By $key_metrics_setup_completed_by Key_Metrics_Setup_Completed_By instance.
 	 */
 	public function __construct(
 		User_Input $user_input,
 		Survey_Queue $survey_queue,
-		Key_Metrics_Setup_Completed $key_metrics_setup_completed
+		Key_Metrics_Setup_Completed_By $key_metrics_setup_completed_by
 	) {
-		$this->user_input                  = $user_input;
-		$this->survey_queue                = $survey_queue;
-		$this->key_metrics_setup_completed = $key_metrics_setup_completed;
+		$this->user_input                     = $user_input;
+		$this->survey_queue                   = $survey_queue;
+		$this->key_metrics_setup_completed_by = $key_metrics_setup_completed_by;
 	}
 
 	/**
@@ -86,7 +86,7 @@ class REST_User_Input_Controller {
 			}
 		);
 
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
+		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			add_filter(
 				'googlesitekit_apifetch_preload_paths',
 				function ( $paths ) {
@@ -152,7 +152,13 @@ class REST_User_Input_Controller {
 							$answers = $this->user_input->set_answers( $data['settings'] );
 
 							if ( ! empty( $answers['purpose']['values'] ) ) {
-								$this->key_metrics_setup_completed->set( true );
+								$key_metrics_setup_already_done_by_user = $this->key_metrics_setup_completed_by->get();
+
+								if ( empty( $key_metrics_setup_already_done_by_user ) ) {
+									$current_user_id = get_current_user_id();
+
+									$this->key_metrics_setup_completed_by->set( $current_user_id );
+								}
 							}
 
 							$response = rest_ensure_response( $answers );

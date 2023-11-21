@@ -108,7 +108,7 @@ export const selectors = {
 	/**
 	 * Gets an entity access URL on the service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.109.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string|undefined} The entity access URL to the service.

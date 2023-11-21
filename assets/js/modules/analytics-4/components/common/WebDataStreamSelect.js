@@ -75,38 +75,9 @@ export default function WebDataStreamSelect( props ) {
 			return false;
 		}
 
-		const loadedAccounts =
-			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
-
-		const loadedProperties =
-			hasModuleAccess !== false
-				? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getProperties',
-						[ accountID ]
-				  )
-				: true;
-
-		const loadedWebDataStreams =
-			isValidPropertyID( propertyID ) && hasModuleAccess !== false
-				? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getWebDataStreams',
-						[ propertyID ]
-				  )
-				: true;
-
-		const finishedSelectingAccount =
-			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() !== false;
-
-		const isMatchingAccountProperty =
-			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty();
-
-		return (
-			isMatchingAccountProperty ||
-			! loadedAccounts ||
-			! loadedProperties ||
-			! loadedWebDataStreams ||
-			! finishedSelectingAccount
-		);
+		return select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
+			hasModuleAccess,
+		} );
 	} );
 
 	const viewContext = useViewContext();

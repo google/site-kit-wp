@@ -33,6 +33,8 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
 import Link from '../Link';
+import GhostCardGreenSVG from './GhostCardGreenSVG';
+import GhostCardRedSVG from './GhostCardRedSVG';
 
 const { useSelect } = Data;
 
@@ -70,7 +72,7 @@ export default function ConnectModuleCTATile( { moduleSlug } ) {
 							module.name
 						) }
 					</p>
-					<Link href="#" onClick={ handleConnectModule }>
+					<Link secondary onClick={ handleConnectModule }>
 						{ sprintf(
 							/* translators: %s: module name */
 							__( 'Connect %s', 'google-site-kit' ),
@@ -78,6 +80,16 @@ export default function ConnectModuleCTATile( { moduleSlug } ) {
 						) }
 					</Link>
 				</div>
+			</div>
+
+			<div className="googlesitekit-km-connect-module-cta-tile__ghost-card">
+				<GhostCardGreenSVG />
+			</div>
+			<div className="googlesitekit-km-connect-module-cta-tile__ghost-card">
+				<GhostCardGreenSVG />
+			</div>
+			<div className="googlesitekit-km-connect-module-cta-tile__ghost-card">
+				<GhostCardRedSVG />
 			</div>
 		</div>
 	);

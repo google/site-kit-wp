@@ -30,7 +30,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
@@ -135,7 +138,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'Top performing keywords', 'google-site-kit' ) }
+			widgetSlug={ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }

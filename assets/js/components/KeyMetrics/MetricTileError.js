@@ -17,39 +17,27 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import CTA from '../notifications/CTA';
-import ReportErrorActions from '../ReportErrorActions';
-import { __ } from '@wordpress/i18n';
+import InfoTooltip from '../InfoTooltip';
 
 export default function MetricTileError( props ) {
-	const { error, headerText, moduleSlug } = props;
+	const { children, headerText, infoTooltip, title } = props;
 
 	return (
 		<div className="googlesitekit-km-widget-tile--error">
 			<CTA
-				title={ __( 'Data loading failed', 'google-site-kit' ) }
+				title={ title }
 				headerText={ headerText }
+				headerContent={
+					infoTooltip && <InfoTooltip title={ infoTooltip } />
+				}
 				description=""
 				error
 			>
-				<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
+				{ children }
 			</CTA>
 		</div>
 	);
 }
-
-MetricTileError.propTypes = {
-	error: PropTypes.oneOfType( [
-		PropTypes.arrayOf( PropTypes.object ),
-		PropTypes.object,
-	] ).isRequired,
-	headerText: PropTypes.string,
-	moduleSlug: PropTypes.string.isRequired,
-};

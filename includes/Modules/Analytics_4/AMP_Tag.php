@@ -20,9 +20,28 @@ use Google\Site_Kit\Modules\Analytics\AMP_Tag as Analytics_AMP_Tag;
  * @access private
  * @ignore
  */
-class AMP_Tag extends Analytics_AMP_Tag {
+class AMP_Tag extends Analytics_AMP_Tag implements Tag_Interface {
 
 	use Method_Proxy_Trait;
+
+	/**
+	 * Custom dimensions data.
+	 *
+	 * @since 1.113.0
+	 * @var array
+	 */
+	private $custom_dimensions;
+
+	/**
+	 * Sets custom dimensions data.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @param string $custom_dimensions Custom dimensions data.
+	 */
+	public function set_custom_dimensions( $custom_dimensions ) {
+		$this->custom_dimensions = $custom_dimensions;
+	}
 
 	/**
 	 * Registers tag hooks.
@@ -71,4 +90,25 @@ class AMP_Tag extends Analytics_AMP_Tag {
 
 		return $opt;
 	}
+
+	/**
+	 * Gets the tag config as used in the gtag data vars.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @return array Tag configuration.
+	 */
+	protected function get_tag_config() {
+		$config = parent::get_tag_config();
+
+		if ( ! empty( $this->custom_dimensions ) ) {
+			$config[ $this->tag_id ] = array_merge(
+				$config[ $this->tag_id ],
+				$this->custom_dimensions
+			);
+		}
+
+		return $config;
+	}
+
 }

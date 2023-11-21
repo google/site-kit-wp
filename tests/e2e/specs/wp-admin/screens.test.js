@@ -39,7 +39,7 @@ describe( 'screens', () => {
 
 	describe( 'googlesitekit-user-input', () => {
 		it( 'exists with the expected page title', async () => {
-			await enableFeature( 'userInput' );
+			await enableFeature( 'keyMetrics' );
 
 			await setupSiteKit();
 

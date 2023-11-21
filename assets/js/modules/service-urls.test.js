@@ -71,11 +71,6 @@ it( 'ensures all serviceURLs are properly constructed', () => {
 			'https://analytics.google.com/analytics/web/#/foo-path',
 			'https://analytics.google.com/analytics/web/?bar=baz#/foo-path',
 		],
-		'modules/optimize': [
-			'https://optimize.google.com/optimize/home/',
-			'https://optimize.google.com/optimize/home/#/foo-path',
-			'https://optimize.google.com/optimize/home/?bar=baz#/foo-path',
-		],
 		'modules/pagespeed-insights': [
 			'https://pagespeed.web.dev/',
 			'https://pagespeed.web.dev/foo-path',

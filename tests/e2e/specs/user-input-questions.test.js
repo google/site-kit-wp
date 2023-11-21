@@ -42,7 +42,11 @@ import {
 	setupAnalytics,
 	setupAnalytics4,
 } from '../utils';
-import { getAnalytics4MockResponse } from '../../../assets/js/modules/analytics-4/utils/data-mock';
+import {
+	STRATEGY_CARTESIAN,
+	STRATEGY_ZIP,
+	getAnalytics4MockResponse,
+} from '../../../assets/js/modules/analytics-4/utils/data-mock';
 import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
 
 describe( 'User Input Settings', () => {
@@ -75,13 +79,13 @@ describe( 'User Input Settings', () => {
 			await expect( page ).toClick( '#goals-help_better_rank' );
 		} );
 
+		await pageWait();
+
 		await step( 'go to preview page', async () => {
 			await expect( page ).toClick(
 				'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
 			);
 		} );
-
-		await pageWait();
 
 		await step(
 			'wait for settings submission',
@@ -94,10 +98,12 @@ describe( 'User Input Settings', () => {
 			] )
 		);
 
+		await pageWait();
+
 		await step(
 			'wait for a Key Metric tile to successfully appear',
 			page.waitForSelector(
-				'.googlesitekit-widget--kmAnalyticsLoyalVisitors'
+				'.googlesitekit-widget--kmAnalyticsReturningVisitors'
 			)
 		);
 	}
@@ -125,12 +131,29 @@ describe( 'User Input Settings', () => {
 					'/google-site-kit/v1/modules/analytics-4/data/report?'
 				)
 			) {
+				// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
+				const multiDimensionalObjectParams =
+					getMultiDimensionalObjectFromParams( paramsObject );
+
+				// At the time of writing, the report used in `getPageTitles()` is the only report that specifies an array of `pagePath` values in
+				// the `dimensionFilters` object.
+				const isPageTitlesReport = Array.isArray(
+					multiDimensionalObjectParams?.dimensionFilters?.pagePath
+				);
+
+				// Use the zip combination strategy for the page titles report to ensure a one-to-one mapping of page paths to page titles.
+				// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+				// page paths to page titles.
+				const dimensionCombinationStrategy = isPageTitlesReport
+					? STRATEGY_ZIP
+					: STRATEGY_CARTESIAN;
+
 				request.respond( {
 					status: 200,
 					body: JSON.stringify(
 						getAnalytics4MockResponse(
-							// Some of the keys are nested paths e.g. `metrics[0][name]`, so we need to convert the search params to a multi-dimensional object.
-							getMultiDimensionalObjectFromParams( paramsObject )
+							multiDimensionalObjectParams,
+							{ dimensionCombinationStrategy }
 						)
 					),
 				} );
@@ -145,6 +168,20 @@ describe( 'User Input Settings', () => {
 						getSearchConsoleMockResponse( paramsObject )
 					),
 				} );
+			} else if (
+				url.match(
+					'/google-site-kit/v1/modules/search-console/data/data-available'
+				)
+			) {
+				request.continue();
+			} else if (
+				url.match(
+					'/google-site-kit/v1/modules/analytics-4/data/data-available'
+				)
+			) {
+				request.continue();
+			} else if ( url.match( 'user/data/survey-timeout' ) ) {
+				request.respond( { status: 200 } );
 			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {
@@ -154,7 +191,7 @@ describe( 'User Input Settings', () => {
 	} );
 
 	beforeEach( async () => {
-		await enableFeature( 'userInput' );
+		await enableFeature( 'keyMetrics' );
 		await activatePlugins(
 			'e2e-tests-proxy-setup',
 			'e2e-tests-oauth-callback-plugin'
@@ -181,8 +218,36 @@ describe( 'User Input Settings', () => {
 			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
 		);
 
-		await page.waitForSelector(
-			'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
+		await Promise.all( [
+			page.waitForResponse( ( res ) =>
+				res
+					.url()
+					.match(
+						'/google-site-kit/v1/modules/search-console/data/data-available'
+					)
+			),
+			page.waitForResponse( ( res ) =>
+				res
+					.url()
+					.match(
+						'/google-site-kit/v1/modules/analytics-4/data/data-available'
+					)
+			),
+		] );
+
+		// On the first load of the dashboard, report requests made by the isGatheringData selector for SC and GA4
+		// will fetch some data since we intercept those requests providing mock report data. This the data-available
+		// endpoint which sets the appropriate transients that will be prefetched only on the next page load.
+		await page.reload();
+
+		await step(
+			'click on key metrics navigation tab and scroll to the key metrics widget',
+			async () => {
+				await page.waitForSelector( '.googlesitekit-navigation' );
+				await expect( page ).toClick( '.mdc-chip', {
+					text: /key metrics/i,
+				} );
+			}
 		);
 
 		await step( 'click on CTA button and wait for navigation', async () => {
@@ -228,6 +293,8 @@ describe( 'User Input Settings', () => {
 				page.waitForNavigation(),
 			] );
 		} );
+
+		await pageWait();
 
 		await fillInInputSettings();
 	} );

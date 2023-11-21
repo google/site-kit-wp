@@ -115,7 +115,6 @@
 	}
 
 	.googlesitekit-user-input__preview-group-title {
-		align-items: baseline;
 		display: flex;
 		flex-direction: column-reverse;
 		justify-content: space-between;
@@ -134,7 +133,6 @@
 
 		button {
 			align-items: center;
-			color: $c-content-secondary;
 			display: flex;
 			font-family: $f-secondary;
 			font-weight: $fw-medium;
@@ -144,10 +142,16 @@
 			&[disabled] {
 				color: $c-utility-outline;
 			}
-		}
 
-		svg {
-			transition: transform $t-default ease-out;
+			svg {
+				fill: none;
+				transition: transform $t-default ease-out;
+			}
+
+			&:hover,
+			&:focus {
+				svg { fill: none; }
+			}
 		}
 	}
 
@@ -155,8 +159,10 @@
 
 		.googlesitekit-user-input__preview-group-title {
 
-			svg {
-				transform: rotate(180deg);
+			button {
+				svg {
+					transform: rotate(180deg);
+				}
 			}
 		}
 	}

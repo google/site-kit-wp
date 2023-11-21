@@ -38,21 +38,22 @@ import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
 import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
+import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
-import OptimizeRemovalNotification from './OptimizeRemovalNotification';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
 
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
-
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
+	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 	const viewOnly = useViewOnly();
 
 	const isAuthenticated = useSelect( ( select ) =>
@@ -70,6 +71,15 @@ export default function BannerNotifications() {
 	);
 	const hasGTMScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( GTM_SCOPE )
+	);
+
+	const hasMismatchedGoogleTagID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID()
+	);
+	const keyMetricsSetupCTARendered = useSelect(
+		( select ) =>
+			keyMetricsEnabled &&
+			select( CORE_UI ).getValue( UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED )
 	);
 
 	const isGA4ModuleOwner = useSelect( ( select ) => {
@@ -97,6 +107,9 @@ export default function BannerNotifications() {
 
 	return (
 		<Fragment>
+			{ adSenseModuleActive && <AdSenseAlerts /> }
+			<ModuleRecoveryAlert />
+			<ActivationBanner />
 			{ 'authentication_success' === notification && (
 				<SetupSuccessBannerNotification />
 			) }
@@ -105,23 +118,21 @@ export default function BannerNotifications() {
 			) }
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			<ModuleRecoveryAlert />
-			{ ga4ReportingEnabled &&
-				analyticsModuleConnected &&
-				ga4ModuleConnected && <SwitchedToGA4Banner /> }
-			<ActivationBanner />
+			{ analyticsModuleConnected && ga4ModuleConnected && (
+				<SwitchedToGA4Banner />
+			) }
+			{ enhancedMeasurementEnabled && ! keyMetricsSetupCTARendered && (
+				<EnhancedMeasurementActivationBanner />
+			) }
 			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
 				<Fragment>
-					<GoogleTagIDMismatchNotification />
+					{ hasMismatchedGoogleTagID && (
+						<GoogleTagIDMismatchNotification />
+					) }
 					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }
-			<OptimizeRemovalNotification />
 			<ZeroDataStateNotifications />
-			{ adSenseModuleActive && <AdSenseAlerts /> }
-			{ ga4ReportingEnabled && analyticsModuleConnected && (
-				<SwitchGA4DashboardViewNotification />
-			) }
 		</Fragment>
 	);
 }

@@ -29,6 +29,7 @@ import WidgetReportZero from '../components/WidgetReportZero';
 import WidgetReportError from '../components/WidgetReportError';
 import WidgetNull from '../components/WidgetNull';
 import WidgetRecoverableModules from '../components/WidgetRecoverableModules';
+import WPDashboardReportError from '../components/WPDashboardReportError';
 
 /**
  * Gets the props to pass to a widget's component.
@@ -84,6 +85,35 @@ export const withWidgetComponentProps = ( widgetSlug ) => {
 			<WrappedComponent { ...props } { ...widgetComponentProps } />
 		);
 		DecoratedComponent.displayName = 'WithWidgetComponentProps';
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			DecoratedComponent.displayName += `(${
+				WrappedComponent.displayName || WrappedComponent.name
+			})`;
+		}
+		return DecoratedComponent;
+	};
+};
+
+/**
+ * Gets the props and passes them to the WP Dashboard widget's component through a HOC.
+ *
+ * @since 1.114.0
+ *
+ * @param {string} widgetSlug The slug of the widget.
+ * @return {Function} Enhancing function that adds the WP Dashboard specific
+ *                    props to the passed component.
+ */
+export const withWPDashboardWidgetComponentProps = ( widgetSlug ) => {
+	return ( WrappedComponent ) => {
+		const DecoratedComponent = ( props ) => (
+			<WrappedComponent
+				{ ...props }
+				WPDashboardReportError={ withWidgetSlug( widgetSlug )(
+					WPDashboardReportError
+				) }
+			/>
+		);
+		DecoratedComponent.displayName = 'WithWPDashboardWidgetComponentProps';
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
 			DecoratedComponent.displayName += `(${
 				WrappedComponent.displayName || WrappedComponent.name

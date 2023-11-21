@@ -36,27 +36,27 @@ class REST_Key_Metrics_Controller {
 	protected $settings;
 
 	/**
-	 * Key_Metrics_Setup_Completed instance.
+	 * Key_Metrics_Setup_Completed_By instance.
 	 *
-	 * @since 1.108.0
-	 * @var Key_Metrics_Setup_Completed
+	 * @since 1.113.0
+	 * @var Key_Metrics_Setup_Completed_By
 	 */
-	protected $key_metrics_setup_completed;
+	protected $key_metrics_setup_completed_by;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.93.0
 	 *
-	 * @param Key_Metrics_Settings        $settings                    Key Metrics settings.
-	 * @param Key_Metrics_Setup_Completed $key_metrics_setup_completed Site-wide option to check if key metrics set up is complete.
+	 * @param Key_Metrics_Settings           $settings                       Key Metrics settings.
+	 * @param Key_Metrics_Setup_Completed_By $key_metrics_setup_completed_by Site-wide option to check if key metrics set up is complete.
 	 */
 	public function __construct(
 		Key_Metrics_Settings $settings,
-		Key_Metrics_Setup_Completed $key_metrics_setup_completed
+		Key_Metrics_Setup_Completed_By $key_metrics_setup_completed_by
 	) {
-		$this->settings                    = $settings;
-		$this->key_metrics_setup_completed = $key_metrics_setup_completed;
+		$this->settings                       = $settings;
+		$this->key_metrics_setup_completed_by = $key_metrics_setup_completed_by;
 	}
 
 	/**
@@ -140,7 +140,13 @@ class REST_Key_Metrics_Controller {
 									array( 'status' => 400 )
 								);
 							}
-							$this->key_metrics_setup_completed->set( true );
+
+							$key_metrics_setup_already_done_by_user = $this->key_metrics_setup_completed_by->get();
+							if ( empty( $key_metrics_setup_already_done_by_user ) ) {
+								$current_user_id = get_current_user_id();
+
+								$this->key_metrics_setup_completed_by->set( $current_user_id );
+							}
 						}
 
 						$this->settings->merge( $data['settings'] );

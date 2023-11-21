@@ -22,7 +22,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
@@ -135,7 +134,7 @@ final class Modules {
 	/**
 	 * REST_Dashboard_Sharing_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.109.0
 	 * @var REST_Dashboard_Sharing_Controller
 	 */
 	private $dashboard_sharing_controller;
@@ -150,7 +149,6 @@ final class Modules {
 		Site_Verification::MODULE_SLUG  => Site_Verification::class,
 		Search_Console::MODULE_SLUG     => Search_Console::class,
 		Analytics::MODULE_SLUG          => Analytics::class,
-		Optimize::MODULE_SLUG           => Optimize::class,
 		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
 		AdSense::MODULE_SLUG            => AdSense::class,
 		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
@@ -677,7 +675,6 @@ final class Modules {
 		// Consider UA to be connected if GA4 is connected.
 		if (
 			Analytics::MODULE_SLUG === $slug &&
-			Feature_Flags::enabled( 'ga4Reporting' ) &&
 			! $module->is_connected() &&
 			$this->is_module_connected( Analytics_4::MODULE_SLUG )
 		) {

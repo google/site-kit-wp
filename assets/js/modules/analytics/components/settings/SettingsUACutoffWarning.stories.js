@@ -29,9 +29,7 @@ const Template = () => <SettingsUACutoffWarning />;
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.parameters = {
-	features: [ 'ga4Reporting' ],
-};
+Default.parameters = {};
 Default.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-01' );
@@ -43,9 +41,7 @@ Default.scenario = {
 
 export const PostUACutoffDate = Template.bind( {} );
 PostUACutoffDate.storyName = 'Post UA Cutoff Date';
-PostUACutoffDate.parameters = {
-	features: [ 'ga4Reporting' ],
-};
+PostUACutoffDate.parameters = {};
 PostUACutoffDate.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).setReferenceDate( UA_CUTOFF_DATE );

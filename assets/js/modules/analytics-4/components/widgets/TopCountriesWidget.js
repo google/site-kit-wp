@@ -22,15 +22,13 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_COUNTRIES,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -114,7 +112,7 @@ function TopCountriesWidget( { Widget } ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __( 'Top countries driving traffic', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_TOP_COUNTRIES }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }

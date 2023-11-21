@@ -31,7 +31,6 @@ import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
-	PROVISIONING_SCOPE,
 	EDIT_SCOPE,
 } from '../../../datastore/constants';
 import {
@@ -44,24 +43,23 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
-import { getAccountDefaults as getAccountDefaultsUA } from '../../../util/account';
-import { getAccountDefaults as getAccountDefaultsGA4 } from '../../../../analytics-4/utils/account';
+import { getAccountDefaults as getAccountDefaults } from '../../../../analytics-4/utils/account';
 import { Cell } from '../../../../../material-components';
 import Link from '../../../../../components/Link';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
-import GA4PropertyNotice from '../GA4PropertyNotice';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
 import PropertyField from './PropertyField';
-import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
+import EnhancedMeasurementSwitch from '../../../../analytics-4/components/common/EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useFeature } from '../../../../../hooks/useFeature';
+
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
@@ -70,26 +68,14 @@ export default function AccountCreate() {
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
-	const uaAccountTicketTermsOfServiceURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountTicketTermsOfServiceURL()
-	);
-	const ga4AccountTicketTermsOfServiceURL = useSelect( ( select ) =>
+	const accountTicketTermsOfServiceURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountTicketTermsOfServiceURL()
 	);
-	const canSubmitAccountCreateUA = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).canSubmitAccountCreate()
-	);
-	const canSubmitAccountCreateGA4 = useSelect( ( select ) =>
+	const canSubmitAccountCreate = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).canSubmitAccountCreate()
 	);
-	const isDoingCreateAccountUA = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isDoingCreateAccount()
-	);
-	const isDoingCreateAccountGA4 = useSelect( ( select ) =>
+	const isDoingCreateAccount = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isDoingCreateAccount()
-	);
-	const hasProvisioningScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( PROVISIONING_SCOPE )
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -116,43 +102,20 @@ export default function AccountCreate() {
 	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { createAccount } = useDispatch(
-		ga4ReportingEnabled ? MODULES_ANALYTICS_4 : MODULES_ANALYTICS
-	);
+	const { createAccount } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
-	const getAccountDefaults = ga4ReportingEnabled
-		? getAccountDefaultsGA4
-		: getAccountDefaultsUA;
-
-	const hasRequiredScope = ga4ReportingEnabled
-		? hasEditScope
-		: hasProvisioningScope;
-
-	const isDoingCreateAccount = ga4ReportingEnabled
-		? isDoingCreateAccountGA4
-		: isDoingCreateAccountUA;
-
-	const canSubmitAccountCreate = ga4ReportingEnabled
-		? canSubmitAccountCreateGA4
-		: canSubmitAccountCreateUA;
-
-	const accountTicketTermsOfServiceURL = ga4ReportingEnabled
-		? ga4AccountTicketTermsOfServiceURL
-		: uaAccountTicketTermsOfServiceURL;
+	const hasRequiredScope = hasEditScope;
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
 			( async () => {
-				await API.invalidateCache(
-					'modules',
-					ga4ReportingEnabled ? 'analytics-4' : 'analytics'
-				);
+				await API.invalidateCache( 'modules', 'analytics-4' );
 				navigateTo( accountTicketTermsOfServiceURL );
 			} )();
 		}
-	}, [ accountTicketTermsOfServiceURL, ga4ReportingEnabled, navigateTo ] );
+	}, [ accountTicketTermsOfServiceURL, navigateTo ] );
 
 	// Set form defaults on initial render.
 	useEffect( () => {
@@ -168,20 +131,12 @@ export default function AccountCreate() {
 				} )
 			);
 		}
-	}, [
-		hasAccountCreateForm,
-		siteName,
-		siteURL,
-		timezone,
-		setValues,
-		getAccountDefaults,
-	] );
+	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
 
-		if ( ! hasProvisioningScope || ! hasEditScope ) {
-			scopes.push( PROVISIONING_SCOPE );
+		if ( ! hasEditScope ) {
 			scopes.push( EDIT_SCOPE );
 		}
 		// The GTM scope should be granted for GTE support, but
@@ -227,7 +182,6 @@ export default function AccountCreate() {
 	}, [
 		createAccount,
 		setIsNavigating,
-		hasProvisioningScope,
 		hasEditScope,
 		hasGTMScope,
 		setPermissionScopeError,
@@ -289,8 +243,7 @@ export default function AccountCreate() {
 					<PropertyField />
 				</Cell>
 				<Cell size={ 6 }>
-					{ ga4ReportingEnabled && <WebDataStreamField /> }
-					{ ! ga4ReportingEnabled && <ProfileField /> }
+					<WebDataStreamField />
 				</Cell>
 			</div>
 
@@ -299,6 +252,14 @@ export default function AccountCreate() {
 
 				<TimezoneSelect />
 			</div>
+
+			{ enhancedMeasurementEnabled && (
+				<div className="googlesitekit-setup-module__inputs">
+					<EnhancedMeasurementSwitch
+						formName={ FORM_ACCOUNT_CREATE }
+					/>
+				</div>
+			) }
 
 			<p>
 				{ hasRequiredScope && (
@@ -318,15 +279,6 @@ export default function AccountCreate() {
 					</span>
 				) }
 			</p>
-
-			{ ! ga4ReportingEnabled && (
-				<GA4PropertyNotice
-					notice={ __(
-						'This will create both a Google Analytics 4 and Universal Analytics property.',
-						'google-site-kit'
-					) }
-				/>
-			) }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

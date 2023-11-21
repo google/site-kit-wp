@@ -28,6 +28,7 @@ import {
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { CORE_USER } from './constants';
 
 describe( 'core/user user-input-settings', () => {
@@ -57,9 +58,6 @@ describe( 'core/user user-input-settings', () => {
 			coreUserInputSettingsExpectedResponse.postFrequency.values,
 		goals: coreUserInputSettingsExpectedResponse.goals.values,
 	};
-	const surveyTriggerEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-trigger'
-	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );

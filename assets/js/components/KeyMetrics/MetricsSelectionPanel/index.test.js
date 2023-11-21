@@ -20,28 +20,41 @@
  * Internal dependencies
  */
 import MetricsSelectionPanel from '.';
-import { render } from '../../../../../tests/js/test-utils';
+import { act, fireEvent, render } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideKeyMetrics,
 	provideModules,
 	provideUserAuthentication,
+	provideUserInfo,
+	subscribeUntil,
 } from '../../../../../tests/js/utils';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
+import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import {
+	MODULES_ANALYTICS,
+	EDIT_SCOPE,
+} from '../../../modules/analytics/datastore/constants';
+import {
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 
 describe( 'MetricsSelectionPanel', () => {
 	let registry;
@@ -57,49 +70,27 @@ describe( 'MetricsSelectionPanel', () => {
 
 		provideUserAuthentication( registry );
 
+		registry.dispatch( CORE_USER ).receiveCapabilities( {
+			googlesitekit_manage_options: true,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: 1234567,
+			availableCustomDimensions: [],
+		} );
+
 		registry
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-	} );
 
-	describe( 'Header', () => {
-		it( 'should show the number of selected metrics', () => {
-			provideKeyMetrics( registry, {
-				widgetSlugs: [
-					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					KM_ANALYTICS_LOYAL_VISITORS,
-				],
-			} );
-
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			provideKeyMetricsWidgetRegistrations( registry, {
-				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
-				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
-					modules: [ 'analytics-4' ],
-				},
-			} );
-
-			render( <MetricsSelectionPanel />, { registry } );
-
-			expect(
-				document.querySelector(
-					'.googlesitekit-km-selection-panel-header'
-				)
-			).toHaveTextContent( '2 of 4 metrics selected' );
-		} );
+		// jsdom does not support scrollIntoView which is used by the last metric item
+		// to prevent it from hiding underneath the Custom Dimensions warning notice.
+		// See: https://github.com/jsdom/jsdom/issues/1695.
+		Element.prototype.scrollIntoView = jest.fn();
 	} );
 
 	describe( 'Metrics', () => {
-		it( 'should only list metrics dependent on connected modules', () => {
+		it( 'should list metrics regardless of modules being connected or not', () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
@@ -114,7 +105,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -125,7 +116,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).not.toHaveTextContent( 'Loyal visitors' );
+			).toHaveTextContent( 'Returning visitors' );
 
 			expect(
 				document.querySelector(
@@ -134,9 +125,81 @@ describe( 'MetricsSelectionPanel', () => {
 			).toHaveTextContent( 'Top performing keywords' );
 		} );
 
+		it( 'should render a single module disconnect notice when required module for a widget is disconnected', () => {
+			provideKeyMetrics( registry );
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'search-console',
+					active: false,
+					connected: false,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+
+			render( <MetricsSelectionPanel />, { registry } );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-metrics'
+				)
+			).toHaveTextContent(
+				'Search Console is disconnected, no data to show'
+			);
+		} );
+
+		it( 'should render a multiple module disconnect notice when required module for a widget is disconnected', () => {
+			provideKeyMetrics( registry );
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: false,
+					connected: false,
+				},
+				{
+					slug: 'search-console',
+					active: false,
+					connected: false,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+					modules: [ 'analytics-4', 'search-console' ],
+				},
+			} );
+
+			render( <MetricsSelectionPanel />, { registry } );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-metrics'
+				)
+			).toHaveTextContent(
+				'Analytics 4 and Search Console are disconnected, no data to show'
+			);
+		} );
+
 		it( 'should disable unchecked metrics when four metrics are checked', () => {
 			const metrics = [
-				KM_ANALYTICS_LOYAL_VISITORS,
+				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -181,9 +244,60 @@ describe( 'MetricsSelectionPanel', () => {
 			).toBeDisabled();
 		} );
 
+		it( 'should disable metrics that depend on a disconnected analytics-4 module', () => {
+			provideKeyMetrics( registry );
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: false,
+					connected: false,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+
+			// Set only the Search Console metric as selected.
+			provideKeyMetrics( registry, {
+				widgetSlugs: [ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ],
+			} );
+
+			const { getByRole } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			// Verify the limit of 4 metrics is not reached.
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer__metric-count'
+				)
+			).toHaveTextContent( '1 of 4 selected' );
+
+			// Verify that the metric dependent on a disconnected analytics-4 is disabled.
+			expect(
+				getByRole( 'checkbox', {
+					name: /Returning visitors/i,
+				} )
+			).toBeDisabled();
+
+			// Verify that the metric not dependent on a disconnected analytics-4 is enabled.
+			expect(
+				getByRole( 'checkbox', {
+					name: /Top performing keywords/i,
+				} )
+			).not.toBeDisabled();
+		} );
+
 		it( 'should order pre-saved metrics to the top', () => {
 			const metrics = [
-				KM_ANALYTICS_LOYAL_VISITORS,
+				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
@@ -225,7 +339,7 @@ describe( 'MetricsSelectionPanel', () => {
 			).toHaveTextContent( 'Top converting traffic source' );
 		} );
 
-		it( 'should not list metrics dependent on modules that a view-only user does not have access to', () => {
+		it( 'should not list metrics dependent on modules that a view-only user does not have access to', async () => {
 			provideUserAuthentication( registry, { authenticated: false } );
 
 			provideKeyMetrics( registry );
@@ -238,11 +352,26 @@ describe( 'MetricsSelectionPanel', () => {
 				},
 			] );
 
+			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+				purpose: {
+					values: [ 'purpose1' ],
+					scope: 'site',
+				},
+				postFrequency: {
+					values: [ 'daily' ],
+					scope: 'user',
+				},
+				goals: {
+					values: [ 'goal1', 'goal2' ],
+					scope: 'user',
+				},
+			} );
+
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -253,17 +382,23 @@ describe( 'MetricsSelectionPanel', () => {
 				'googlesitekit_read_shared_module_data::["search-console"]': true,
 			} );
 
-			render( <MetricsSelectionPanel />, {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( analytics4Fixtures.defaultSettings );
+
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			} );
+
+			await waitForRegistry();
 
 			// Verify that a metric dependent on GA4 isn't listed.
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-metrics'
 				)
-			).not.toHaveTextContent( 'Loyal visitors' );
+			).not.toHaveTextContent( 'Returning visitors' );
 
 			// Verify that a metric dependent on Search Console is listed.
 			expect(
@@ -271,6 +406,97 @@ describe( 'MetricsSelectionPanel', () => {
 					'.googlesitekit-km-selection-panel-metrics'
 				)
 			).toHaveTextContent( 'Top performing keywords' );
+		} );
+	} );
+
+	describe( 'Notice', () => {
+		beforeEach( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_RETURNING_VISITORS,
+				],
+			} );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				availableCustomDimensions: [],
+			} );
+		} );
+
+		it( 'should display appropriate notice when a metric requires custom dimensions and does not have edit scope', async () => {
+			const { container, getByText, findByLabelText } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+					features: [ 'keyMetrics' ],
+				}
+			);
+
+			// Verify that the message is not displayed by default.
+			expect( container ).not.toHaveTextContent(
+				'The metrics you selected require more data tracking. You will be directed to update your Analytics property after saving your selection.'
+			);
+
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				getByText(
+					/The metrics you selected require more data tracking. You will be directed to update your Analytics property after saving your selection./i
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should display appropriate message when a metric requires custom dimensions and has edit scope', async () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: EDIT_SCOPE,
+			} );
+
+			const { container, getByText, findByLabelText } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+					features: [ 'keyMetrics' ],
+				}
+			);
+
+			// Verify that the message is not displayed by default.
+			expect( container ).not.toHaveTextContent(
+				'The metrics you selected require more data tracking. We will update your Analytics property after saving your selection.'
+			);
+
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				getByText(
+					/The metrics you selected require more data tracking. We will update your Analytics property after saving your selection./i
+				)
+			).toBeInTheDocument();
 		} );
 	} );
 
@@ -290,7 +516,10 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_LOYAL_VISITORS ]: {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
 					modules: [ 'analytics-4' ],
 				},
 			} );
@@ -306,8 +535,101 @@ describe( 'MetricsSelectionPanel', () => {
 			).toBeDisabled();
 		} );
 
+		it( 'should display error message when less than two metrics are checked', async () => {
+			const { findByLabelText } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			// Select 1 key metric.
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
+				).textContent
+			).toBe( 'Select at least 2 metrics' );
+
+			// Select 2 key metrics.
+			const checkbox2 = await findByLabelText(
+				'Top performing keywords'
+			);
+			fireEvent.click( checkbox2 );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
+				)
+			).not.toBeInTheDocument();
+		} );
+
 		describe( 'CTA', () => {
-			it( "should have 'Save Selection' label if there are no pre-saved key metrics", () => {
+			it( 'should set autoSubmit to true if GA4 connected and missing custom dimensions', async () => {
+				fetchMock.reset();
+
+				provideUserAuthentication( registry, {
+					grantedScopes: EDIT_SCOPE,
+				} );
+				provideUserInfo( registry, { id: 1 } );
+
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [
+							KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+							KM_ANALYTICS_RETURNING_VISITORS,
+							KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+						],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_RETURNING_VISITORS,
+						KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+					],
+				} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableCustomDimensions: [],
+				} );
+
+				const { getByRole } = render( <MetricsSelectionPanel />, {
+					registry,
+					features: [ 'keyMetrics' ],
+				} );
+
+				const submitButton = getByRole( 'button', {
+					name: /Save selection/i,
+				} );
+
+				const isAutoSubmitTrue = () => {
+					const autoSubmit = registry
+						.select( CORE_FORMS )
+						.getValue(
+							FORM_CUSTOM_DIMENSIONS_CREATE,
+							'autoSubmit'
+						);
+					return autoSubmit === true;
+				};
+
+				await act( async () => {
+					fireEvent.click( submitButton );
+					// Wait for autoSubmit to become true.
+					await subscribeUntil( registry, isAutoSubmitTrue );
+				} );
+
+				const finalAutoSubmitValue = registry
+					.select( CORE_FORMS )
+					.getValue( FORM_CUSTOM_DIMENSIONS_CREATE, 'autoSubmit' );
+				expect( finalAutoSubmitValue ).toBe( true );
+			} );
+
+			it( "should have 'Save selection' label if there are no pre-saved key metrics", () => {
 				provideKeyMetrics( registry );
 
 				const { getByRole } = render( <MetricsSelectionPanel />, {
@@ -316,16 +638,16 @@ describe( 'MetricsSelectionPanel', () => {
 
 				expect(
 					getByRole( 'button', {
-						name: /Save Selection/i,
+						name: /Save selection/i,
 					} )
 				).toBeInTheDocument();
 			} );
 
-			it( "should have 'Apply changes' label if there are pre-saved key metrics", () => {
+			it( "should have 'Save selection' label if there are pre-saved key metrics", () => {
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						KM_ANALYTICS_LOYAL_VISITORS,
+						KM_ANALYTICS_RETURNING_VISITORS,
 					],
 				} );
 
@@ -335,10 +657,61 @@ describe( 'MetricsSelectionPanel', () => {
 
 				expect(
 					getByRole( 'button', {
+						name: /Save selection/i,
+					} )
+				).toBeInTheDocument();
+			} );
+
+			it( "should have 'Apply changes' label if pre-saved key metrics are changed", async () => {
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_RETURNING_VISITORS,
+					],
+				} );
+
+				const { getByRole, findByLabelText } = render(
+					<MetricsSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				// Button should be unchanged with pre-saved metrics.
+				expect(
+					getByRole( 'button', {
+						name: /Save selection/i,
+					} )
+				).toBeInTheDocument();
+
+				// Uncheck one of the selected metrics to trigger
+				// the button label change.
+				const checkbox = await findByLabelText( 'Returning visitors' );
+				fireEvent.click( checkbox );
+
+				expect(
+					getByRole( 'button', {
 						name: /Apply changes/i,
 					} )
 				).toBeInTheDocument();
 			} );
+		} );
+
+		it( 'should show the number of selected metrics', () => {
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_RETURNING_VISITORS,
+				],
+			} );
+
+			render( <MetricsSelectionPanel />, { registry } );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer__metric-count'
+				)
+			).toHaveTextContent( '2 of 4 selected' );
 		} );
 	} );
 } );

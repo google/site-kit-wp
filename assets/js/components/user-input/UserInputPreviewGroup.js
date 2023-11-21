@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -45,6 +45,7 @@ import {
 } from './util/constants';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
+import LoadingWrapper from '../LoadingWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
@@ -55,10 +56,9 @@ export default function UserInputPreviewGroup( {
 	slug,
 	title,
 	values,
-	options,
-	errorMessage,
-	onCollapse,
-	showIndividualCTAs = false,
+	options = {},
+	loading = false,
+	settingsView = false,
 } ) {
 	const viewContext = useViewContext();
 	const isNavigating = useSelect( ( select ) =>
@@ -85,37 +85,55 @@ export default function UserInputPreviewGroup( {
 		useDispatch( CORE_USER );
 
 	const isEditing = currentlyEditingSlug === slug;
+
 	const isScreenLoading = isSavingSettings || isNavigating;
 
+	const gaEventCategory = `${ viewContext }_kmw`;
+
 	const toggleEditMode = useCallback( () => {
-		if ( ! isEditing ) {
-			trackEvent( viewContext, 'question_edit', slug );
+		if ( isEditing ) {
+			setValues( {
+				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
+			} );
+			editButtonRef.current?.focus?.();
 		} else {
-			onCollapse();
+			trackEvent( gaEventCategory, 'question_edit', slug );
+			setValues( {
+				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: slug,
+			} );
 		}
+	}, [ gaEventCategory, isEditing, setValues, slug ] );
 
-		setValues( {
-			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: isEditing ? undefined : slug,
-		} );
-	}, [ isEditing, onCollapse, setValues, slug, viewContext ] );
-
-	const error = getErrorMessageForAnswer(
+	const errorMessage = getErrorMessageForAnswer(
 		values,
 		USER_INPUT_MAX_ANSWERS[ slug ]
 	);
 
 	const answerHasError = hasErrorForAnswer( values );
 
+	const editButtonRef = useRef();
+
 	const submitChanges = useCallback( async () => {
+		if ( answerHasError ) {
+			return;
+		}
+
 		const response = await saveUserInputSettings();
 
 		if ( ! response.error ) {
+			trackEvent( gaEventCategory, 'question_update', slug );
 			toggleEditMode();
 		}
-	}, [ saveUserInputSettings, toggleEditMode ] );
+	}, [
+		answerHasError,
+		gaEventCategory,
+		saveUserInputSettings,
+		slug,
+		toggleEditMode,
+	] );
 
 	const handleOnEditClick = useCallback( async () => {
-		if ( showIndividualCTAs ) {
+		if ( settingsView ) {
 			if (
 				isScreenLoading ||
 				( !! currentlyEditingSlug && ! isEditing )
@@ -131,7 +149,7 @@ export default function UserInputPreviewGroup( {
 
 		toggleEditMode();
 	}, [
-		showIndividualCTAs,
+		settingsView,
 		isScreenLoading,
 		currentlyEditingSlug,
 		isEditing,
@@ -153,39 +171,58 @@ export default function UserInputPreviewGroup( {
 			className={ classnames( 'googlesitekit-user-input__preview-group', {
 				'googlesitekit-user-input__preview-group--editing': isEditing,
 				'googlesitekit-user-input__preview-group--individual-cta':
-					showIndividualCTAs,
+					settingsView,
 			} ) }
 		>
 			<div className="googlesitekit-user-input__preview-group-title">
-				<p>{ title }</p>
-				<Link
-					onClick={ handleOnEditClick }
-					disabled={
-						isScreenLoading ||
-						( !! currentlyEditingSlug && ! isEditing )
-					}
+				<LoadingWrapper loading={ loading } width="340px" height="21px">
+					<p>{ title }</p>
+				</LoadingWrapper>
+				<LoadingWrapper
+					loading={ loading }
+					className="googlesitekit-margin-left-auto"
+					width="50px"
+					height="21px"
 				>
-					{ __( 'Edit', 'google-site-kit' ) }
+					<Link
+						secondary
+						onClick={ handleOnEditClick }
+						ref={ editButtonRef }
+						disabled={
+							isScreenLoading ||
+							( !! currentlyEditingSlug && ! isEditing )
+						}
+					>
+						{ __( 'Edit', 'google-site-kit' ) }
 
-					<ChevronDownIcon width={ 20 } height={ 20 } />
-				</Link>
+						<ChevronDownIcon width={ 20 } height={ 20 } />
+					</Link>
+				</LoadingWrapper>
 			</div>
 
 			{ ! isEditing && (
 				<div className="googlesitekit-user-input__preview-answers">
-					{ error && (
-						<p className="googlesitekit-error-text">{ error }</p>
-					) }
+					<LoadingWrapper
+						loading={ loading }
+						width="340px"
+						height="36px"
+					>
+						{ errorMessage && (
+							<p className="googlesitekit-error-text">
+								{ errorMessage }
+							</p>
+						) }
 
-					{ ! error &&
-						values.map( ( value ) => (
-							<div
-								key={ value }
-								className="googlesitekit-user-input__preview-answer"
-							>
-								{ options[ value ] }
-							</div>
-						) ) }
+						{ ! errorMessage &&
+							values.map( ( value ) => (
+								<div
+									key={ value }
+									className="googlesitekit-user-input__preview-answer"
+								>
+									{ options[ value ] }
+								</div>
+							) ) }
+					</LoadingWrapper>
 				</div>
 			) }
 
@@ -202,7 +239,7 @@ export default function UserInputPreviewGroup( {
 							{ errorMessage }
 						</p>
 					) }
-					{ showIndividualCTAs && (
+					{ settingsView && (
 						<Fragment>
 							<UserInputQuestionAuthor slug={ slug } />
 
@@ -247,11 +284,6 @@ UserInputPreviewGroup.propTypes = {
 	title: PropTypes.string.isRequired,
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	options: PropTypes.shape( {} ),
-	errorMessage: PropTypes.string,
-	onCollapse: PropTypes.func,
-	showIndividualCTAs: PropTypes.bool,
-};
-
-UserInputPreviewGroup.defaultProps = {
-	options: {},
+	loading: PropTypes.bool,
+	settingsView: PropTypes.bool,
 };

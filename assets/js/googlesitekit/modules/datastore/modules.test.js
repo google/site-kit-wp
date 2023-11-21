@@ -30,10 +30,10 @@ import {
 	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
-import { enabledFeatures } from '../../../features';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -41,7 +41,8 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
-import { DASHBOARD_VIEW_GA4 } from '../../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
+import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -88,15 +89,15 @@ describe( 'core/modules modules', () => {
 		},
 	];
 
-	const externalModules = [
+	const expectedRecoverableModules = [
 		{
-			slug: 'analytics',
-			name: 'Analytics',
+			slug: 'analytics-4',
+			name: 'Analytics-4',
 			active: true,
 			connected: true,
 			shareable: true,
 			recoverable: true,
-			internal: false,
+			internal: true,
 		},
 		{
 			slug: 'search-console',
@@ -160,8 +161,8 @@ describe( 'core/modules modules', () => {
 	describe( 'actions', () => {
 		describe( 'activateModule', () => {
 			it( 'dispatches a request to activate this module', async () => {
-				// In our fixtures, optimize is off by default.
-				const slug = 'optimize';
+				// In our fixtures, tag manager is off by default.
+				const slug = 'tagmanager';
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES }
@@ -208,7 +209,7 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				// Optimize should stay inactive.
+				// Tag Manager should stay inactive.
 				const isActiveAfter = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
@@ -263,8 +264,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
-				// In our fixtures, optimize is off by default.
-				const slug = 'optimize';
+				// In our fixtures, tag manager is off by default.
+				const slug = 'tagmanager';
 				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
 
 				const isActiveBefore = registry
@@ -304,7 +305,7 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				// Optimize should be active.
+				// Tag manager should be active.
 				const isActiveAfter = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
@@ -1372,7 +1373,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
-				const slug = 'optimize';
+				const slug = 'tagmanager';
 				const namesLoaded = registry
 					.select( CORE_MODULES )
 					[ selector ]( slug );
@@ -1388,7 +1389,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
-				const slug = 'optimize';
+				const slug = 'tagmanager';
 				registry.select( CORE_MODULES )[ selector ]( slug );
 
 				// Wait for loading to complete.
@@ -1522,8 +1523,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns false if a module is not active', async () => {
-				// Optimize in our fixtures is not active.
-				const slug = 'optimize';
+				// Tag manager in our fixtures is not active.
+				const slug = 'tagmanager';
 				const isActive = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
@@ -1586,7 +1587,7 @@ describe( 'core/modules modules', () => {
 				],
 				[
 					'false if a module is not active',
-					'optimize',
+					'tagmanager',
 					false,
 					{ active: false },
 				],
@@ -2006,65 +2007,10 @@ describe( 'core/modules modules', () => {
 					.getRecoverableModules();
 
 				expect( recoverableModules ).toMatchObject(
-					convertArrayListToKeyedObjectMap( externalModules, 'slug' )
-				);
-			} );
-
-			it( 'should return analytics-4 instead of analytics in the GA4 dashboard view', async () => {
-				enabledFeatures.add( 'ga4Reporting' );
-				provideModuleRegistrations( registry );
-
-				fetchMock.getOnce(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
-					{
-						body: [ ...FIXTURES, ...allModules ],
-						status: 200,
-					}
-				);
-
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
-					),
-					{
-						body: {
-							dashboardView: DASHBOARD_VIEW_GA4,
-						},
-						status: 200,
-					}
-				);
-
-				const initialRecoverableModules = registry
-					.select( CORE_MODULES )
-					.getRecoverableModules();
-				expect( initialRecoverableModules ).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					CORE_MODULES
-				).getRecoverableModules();
-
-				const recoverableModules = registry
-					.select( CORE_MODULES )
-					.getRecoverableModules();
-
-				const externalModulesWithoutAnalytics = externalModules.filter(
-					( module ) => module.slug !== 'analytics'
-				);
-
-				expect( recoverableModules ).toMatchObject(
 					convertArrayListToKeyedObjectMap(
-						externalModulesWithoutAnalytics,
+						expectedRecoverableModules,
 						'slug'
 					)
-				);
-
-				expect( Object.keys( recoverableModules ) ).toContain(
-					'analytics-4'
-				);
-
-				expect( Object.keys( recoverableModules ) ).not.toContain(
-					'analytics'
 				);
 			} );
 		} );
@@ -2187,7 +2133,7 @@ describe( 'core/modules modules', () => {
 				expect( shareableModules ).toEqual( {} );
 			} );
 
-			it( 'should not care if a module is internal when showing shared modules', () => {
+			it( 'should not care if a module is internal when showing shared modules', async () => {
 				provideModuleRegistrations( registry );
 				registry
 					.dispatch( CORE_MODULES )
@@ -2196,6 +2142,10 @@ describe( 'core/modules modules', () => {
 				const shareableModules = registry
 					.select( CORE_MODULES )
 					.getShareableModules();
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( analytics4fixtures.defaultSettings );
 
 				expect(
 					Object.values( shareableModules ).every(
@@ -2208,6 +2158,38 @@ describe( 'core/modules modules', () => {
 						( module ) => module.shareable
 					).length
 				).toEqual( Object.values( shareableModules ).length );
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should not include `analytics` module if the dashboard view is GA4', () => {
+				provideModuleRegistrations( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect( shareableModules ).not.toHaveProperty( 'analytics' );
+				expect( shareableModules ).toHaveProperty( 'analytics-4' );
+			} );
+
+			it( 'should not include `analytics-4` module if the dashboard view is UA', () => {
+				provideModuleRegistrations( registry );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					...FIXTURES,
+					...allModules.filter( ( module ) => {
+						return module.slug !== 'analytics-4';
+					} ),
+				] );
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect( shareableModules ).not.toHaveProperty( 'analytics-4' );
+				expect( shareableModules ).toHaveProperty( 'analytics' );
 			} );
 		} );
 	} );

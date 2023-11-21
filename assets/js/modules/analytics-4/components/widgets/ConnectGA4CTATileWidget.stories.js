@@ -23,6 +23,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
 	provideModuleRegistrations,
 	provideModules,
+	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
@@ -41,7 +42,7 @@ Default.scenario = {
 	delay: 250,
 };
 Default.parameters = {
-	features: [ 'userInput' ],
+	features: [ 'keyMetrics' ],
 };
 
 export default {
@@ -49,6 +50,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry );
 				provideUserCapabilities( registry );
 				provideModules( registry, [
 					{

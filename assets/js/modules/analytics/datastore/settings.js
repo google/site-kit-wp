@@ -33,7 +33,6 @@ import {
 	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '../../analytics-4/datastore/constants';
-import { GA4_AUTO_SWITCH_DATE } from '../../analytics-4/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
@@ -47,21 +46,16 @@ import {
 	isValidProfileName,
 	isValidAdsConversionID,
 } from '../util';
-import { stringToDate } from '../../../util';
 import {
 	MODULES_ANALYTICS,
 	PROPERTY_CREATE,
 	PROFILE_CREATE,
 	FORM_SETUP,
-	DASHBOARD_VIEW_GA4,
-	DASHBOARD_VIEW_UA,
-	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import { isFeatureEnabled } from '../../../features';
-import ga4Reporting from '../../../feature-tours/ga4-reporting';
+import ga4ReportingTour from '../../../feature-tours/ga4-reporting';
 
 const { createRegistrySelector } = Data;
 
@@ -80,7 +74,7 @@ export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID =
 	'cannot submit changes with incorrect internal webPropertyID';
 
 async function submitGA4Changes( { select, dispatch } ) {
-	if ( ! select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+	if ( ! select( MODULES_ANALYTICS_4 ).haveAnyGA4SettingsChanged() ) {
 		return {};
 	}
 
@@ -90,11 +84,9 @@ async function submitGA4Changes( { select, dispatch } ) {
 export async function submitChanges( registry ) {
 	const { select, dispatch } = registry;
 
-	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
-
 	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
 
-	if ( ! ga4ReportingEnabled || isUAEnabled ) {
+	if ( isUAEnabled ) {
 		let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
 		if ( propertyID === PROPERTY_CREATE ) {
 			const accountID = select( MODULES_ANALYTICS ).getAccountID();
@@ -133,18 +125,6 @@ export async function submitChanges( registry ) {
 		}
 	}
 
-	// If `ga4Reporting` is enabled, the dashboard view is set to UA
-	// and UA is not enabled, we need to set the dashboard view to GA4.
-	let dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
-	if (
-		ga4ReportingEnabled &&
-		dashboardView === DASHBOARD_VIEW_UA &&
-		! isUAEnabled
-	) {
-		dispatch( MODULES_ANALYTICS ).setDashboardView( DASHBOARD_VIEW_GA4 );
-		dashboardView = DASHBOARD_VIEW_GA4;
-	}
-
 	const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 	const ga4StreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 
@@ -174,23 +154,8 @@ export async function submitChanges( registry ) {
 		return { error };
 	}
 
-	if ( dashboardView === DASHBOARD_VIEW_GA4 ) {
-		if ( ! select( CORE_USER ).isTourDismissed( ga4Reporting.slug ) ) {
-			dispatch( CORE_USER ).dismissTour( ga4Reporting.slug );
-		}
-
-		await registry
-			.__experimentalResolveSelect( CORE_USER )
-			.getDismissedItems();
-		if (
-			! select( CORE_USER ).isItemDismissed(
-				GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-			)
-		) {
-			dispatch( CORE_USER ).dismissItem(
-				GA4_DASHBOARD_VIEW_NOTIFICATION_ID
-			);
-		}
+	if ( ! select( CORE_USER ).isTourDismissed( ga4ReportingTour.slug ) ) {
+		dispatch( CORE_USER ).dismissTour( ga4ReportingTour.slug );
 	}
 
 	return {};
@@ -223,7 +188,7 @@ export function validateCanSubmitChanges( select ) {
 
 	invariant(
 		haveSettingsChanged() ||
-			select( MODULES_ANALYTICS_4 ).haveSettingsChanged(),
+			select( MODULES_ANALYTICS_4 ).haveAnyGA4SettingsChanged(),
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 
@@ -233,9 +198,9 @@ export function validateCanSubmitChanges( select ) {
 	);
 
 	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
-	// Do not require selecting a property or profile if `ga4Reporting` is enabled.
-	// Only validate UA settings if `ga4Reporting` is not enabled OR `enableUA` is enabled.
-	if ( ! isFeatureEnabled( 'ga4Reporting' ) || isUAEnabled ) {
+	// Do not require selecting a property or profile.
+	// Only validate UA settings if `enableUA` is enabled.
+	if ( isUAEnabled ) {
 		invariant(
 			isValidPropertySelection( getPropertyID() ),
 			INVARIANT_INVALID_PROPERTY_SELECTION
@@ -324,12 +289,6 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
  * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
  */
 export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
-	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
-
-	if ( ! ga4ReportingEnabled ) {
-		return false;
-	}
-
 	const ga4ModuleConnected =
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
@@ -341,73 +300,5 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 		return false;
 	}
 
-	const referenceDate = select( CORE_USER ).getReferenceDate();
-
-	if (
-		stringToDate( referenceDate ) >= stringToDate( GA4_AUTO_SWITCH_DATE )
-	) {
-		return true;
-	}
-
-	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
-
-	if ( dashboardView === undefined ) {
-		return undefined;
-	}
-
-	return dashboardView === DASHBOARD_VIEW_GA4;
+	return true;
 } );
-
-/**
- * Determines whether the user should be prompted to switch to GA4 Dashboard View.
- *
- * @since 1.98.0
- *
- * @return {boolean} True if the user should be prompted to switch to the GA4 Dashboard View, false otherwise, or undefined if not loaded.
- */
-export const shouldPromptGA4DashboardView = createRegistrySelector(
-	( select ) => () => {
-		const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
-
-		if ( ! ga4ReportingEnabled ) {
-			return false;
-		}
-
-		const ga4ModuleConnected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-
-		if ( ga4ModuleConnected === undefined ) {
-			return undefined;
-		}
-
-		if ( ! ga4ModuleConnected ) {
-			return false;
-		}
-
-		const ga4DashboardView =
-			select( MODULES_ANALYTICS ).isGA4DashboardView();
-
-		if ( ga4DashboardView === undefined ) {
-			return undefined;
-		}
-
-		// Don't prompt if the user is already on the GA4 Dashboard.
-		if ( ga4DashboardView ) {
-			return false;
-		}
-
-		const ga4GatheringData =
-			select( MODULES_ANALYTICS_4 ).isGatheringData();
-
-		if ( ga4GatheringData === undefined ) {
-			return undefined;
-		}
-
-		// Don't prompt if GA4 is still gathering data.
-		if ( ga4GatheringData ) {
-			return false;
-		}
-
-		return true;
-	}
-);

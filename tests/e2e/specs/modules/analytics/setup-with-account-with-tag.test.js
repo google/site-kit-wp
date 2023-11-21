@@ -34,8 +34,8 @@ describe( 'setting up the Analytics module with an existing account and existing
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			const measurementID = 'G-2B7M8YQ1K6';
-			const containerMock = fixtures.container[ measurementID ];
+			const measurementID = 'G-500';
+			const containerMock = fixtures.containerE2E[ measurementID ];
 
 			if (
 				request
@@ -57,8 +57,15 @@ describe( 'setting up the Analytics module with an existing account and existing
 				request
 					.url()
 					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
+						'/wp-json/google-site-kit/v1/modules/analytics-4/data/report?'
 					)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/conversion-events' )
 			) {
 				request.respond( {
 					status: 200,
@@ -98,7 +105,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 				} );
 			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
 				request.respond( {
-					body: JSON.stringify( fixtures.properties[ 1 ] ),
+					body: JSON.stringify( fixtures.properties[ 0 ] ),
 					status: 200,
 				} );
 			} else if (
@@ -110,7 +117,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [] ),
+					body: JSON.stringify( fixtures.properties ),
 				} );
 			}
 
@@ -148,7 +155,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 	it( 'informs about an existing tag that matches the current selected property', async () => {
 		const existingTag = {
 			accountID: '100', // Test Account A
-			propertyID: 'UA-100-1', // Test Property X
+			propertyID: 'G-500',
 		};
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
@@ -168,12 +175,12 @@ describe( 'setting up the Analytics module with an existing account and existing
 			{ text: /test account a/i }
 		);
 		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-property .mdc-select__selected-text',
-			{ text: /test property x/i }
+			'.googlesitekit-analytics-4__select-property .mdc-select__selected-text',
+			{ text: /test ga4 property/i }
 		);
 		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-profile .mdc-select__selected-text',
-			{ text: /test profile x/i }
+			'.googlesitekit-analytics-4__select-webdatastream .mdc-select__selected-text',
+			{ text: /test ga4 webdatastream/i }
 		);
 
 		await expect( page ).toClick( 'button', {
@@ -187,23 +194,6 @@ describe( 'setting up the Analytics module with an existing account and existing
 			'.googlesitekit-publisher-win__title',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
-	} );
-
-	it( 'allows Analytics to be set up with an existing tag that does not match a property of the user', async () => {
-		const existingTag = {
-			accountID: '999',
-			propertyID: 'UA-999-9',
-		};
-
-		await setAnalyticsExistingPropertyID( existingTag.propertyID );
-		await proceedToSetUpAnalytics();
-
-		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /configure analytics/i,
 			}
 		);
 	} );

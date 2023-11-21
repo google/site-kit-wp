@@ -41,12 +41,15 @@ const ANALYTICS_4_METRIC_TYPES = {
 	newUsers: 'TYPE_INTEGER',
 	activeUsers: 'TYPE_INTEGER',
 	sessions: 'TYPE_INTEGER',
+	bounceRate: 'TYPE_FLOAT',
 	conversions: 'TYPE_INTEGER',
 	screenPageViews: 'TYPE_INTEGER',
+	screenPageViewsPerSession: 'TYPE_FLOAT',
 	engagedSessions: 'TYPE_INTEGER',
 	engagementRate: 'TYPE_FLOAT',
 	averageSessionDuration: 'TYPE_SECONDS',
 	sessionConversionRate: 'TYPE_FLOAT',
+	sessionsPerUser: 'TYPE_FLOAT',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {
@@ -54,7 +57,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Direct',
 		'Organic Search',
 		'Paid Social',
-		'Organic Social',
+		'(other)',
 		'Email',
 		'Affiliates',
 		'Referral',
@@ -86,7 +89,34 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 	pageTitle: ( i ) => ( i <= 12 ? `Test Post ${ i }` : false ),
 	pagePath: ( i ) => ( i <= 12 ? `/test-post-${ i }/` : false ),
 	newVsReturning: [ 'new', 'returning' ],
+	'customEvent:googlesitekit_post_author': ( i ) =>
+		i <= 12 ? `User ${ i }` : false,
+	'customEvent:googlesitekit_post_categories': [
+		'Entertainment; Sports; Media',
+		'Wealth',
+		'Health',
+		'Technology',
+		'Business',
+	],
 };
+
+/**
+ * Parses dimension arguments, returns dimensions as an array of strings.
+ *
+ * @since 1.113.0
+ *
+ * @param {string|Object|Array<string|Object>} dimensions A single dimension or an array of dimensions.
+ * @return {Array<string>} Array of dimension names.
+ */
+function parseDimensionArgs( dimensions ) {
+	const dimensionsArray = castArray( dimensions );
+
+	if ( dimensionsArray.length && typeof dimensionsArray[ 0 ] === 'object' ) {
+		return dimensionsArray.map( ( dimension ) => dimension.name );
+	}
+
+	return dimensionsArray;
+}
 
 /**
  * Gets the key for a metric or dimension.
@@ -388,7 +418,9 @@ export function getAnalytics4MockResponse(
 	// dimension set in the combined stream (array). We need to use array of streams because report arguments may
 	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
 	// of dimension values.
-	const dimensions = args.dimensions ? castArray( args.dimensions ) : [];
+	const dimensions = args.dimensions
+		? parseDimensionArgs( args.dimensions )
+		: [];
 
 	if ( hasDateRange ) {
 		dimensions.push( 'dateRange' );
@@ -472,7 +504,7 @@ export function getAnalytics4MockResponse(
 		// Sort rows if args.orderby is provided.
 		map( ( rows ) =>
 			args.orderby
-				? sortRows( rows, validMetrics, args.dimensions, args.orderby )
+				? sortRows( rows, validMetrics, dimensions, args.orderby )
 				: rows
 		),
 	];
@@ -637,10 +669,11 @@ export function getAnalytics4MockResponse(
 	faker.seed( originalSeedValue );
 
 	return {
-		dimensionHeaders:
-			args?.dimensions?.map( ( dimension ) => ( {
-				name: dimension,
-			} ) ) || null,
+		dimensionHeaders: args?.dimensions
+			? dimensions.map( ( dimension ) => ( {
+					name: dimension,
+			  } ) )
+			: null,
 		metricHeaders: validMetrics.map( ( metric ) => ( {
 			name: metric?.name || metric.toString(),
 			type: getMetricType( metric ),

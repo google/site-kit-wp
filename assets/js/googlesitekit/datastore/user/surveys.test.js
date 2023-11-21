@@ -26,6 +26,12 @@ import {
 	muteFetch,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
+import {
+	surveyEventEndpoint,
+	surveyTimeoutEndpoint,
+	surveyTimeoutsEndpoint,
+	surveyTriggerEndpoint,
+} from '../../../../../tests/js/mock-survey-endpoints';
 
 describe( 'core/user surveys', () => {
 	let registry;
@@ -41,19 +47,6 @@ describe( 'core/user surveys', () => {
 			session_token: '1234',
 		},
 	};
-
-	const surveyTriggerEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-trigger'
-	);
-	const surveyEventEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-event'
-	);
-	const surveyTimeoutEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-timeout'
-	);
-	const surveyTimeoutsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-timeouts'
-	);
 
 	describe( 'actions', () => {
 		describe( 'setSurveyTimeout', () => {
@@ -148,11 +141,11 @@ describe( 'core/user surveys', () => {
 
 				await registry
 					.dispatch( CORE_USER )
-					.triggerSurvey( 'optimizeSurvey' );
+					.triggerSurvey( 'userInput_answered_other__goals' );
 
 				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint, {
 					body: {
-						data: { triggerID: 'optimizeSurvey' },
+						data: { triggerID: 'userInput_answered_other__goals' },
 					},
 				} );
 			} );
@@ -174,7 +167,7 @@ describe( 'core/user surveys', () => {
 
 				const triggerSurveyPromise = registry
 					.dispatch( CORE_USER )
-					.triggerSurvey( 'optimizeSurvey' );
+					.triggerSurvey( 'userInput_answered_other__goals' );
 
 				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 
@@ -182,7 +175,7 @@ describe( 'core/user surveys', () => {
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
-						data: { triggerID: 'optimizeSurvey' },
+						data: { triggerID: 'userInput_answered_other__goals' },
 					},
 				} );
 			} );
@@ -197,17 +190,17 @@ describe( 'core/user surveys', () => {
 
 				await registry
 					.dispatch( CORE_USER )
-					.triggerSurvey( 'optimizeSurvey' );
+					.triggerSurvey( 'userInput_answered_other__goals' );
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
-						data: { triggerID: 'optimizeSurvey' },
+						data: { triggerID: 'userInput_answered_other__goals' },
 					},
 				} );
 			} );
 
 			it( 'should not fetch if the survey is timed out', async () => {
-				const triggerID = 'optimizeSurvey';
+				const triggerID = 'userInput_answered_other__goals';
 
 				provideUserAuthentication( registry );
 
@@ -225,7 +218,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'should cache survey for provided ttl', async () => {
-				const triggerID = 'optimizeSurvey';
+				const triggerID = 'userInput_answered_other__goals';
 
 				provideUserAuthentication( registry );
 
@@ -255,7 +248,10 @@ describe( 'core/user surveys', () => {
 
 				expect( fetchMock ).toHaveFetched( surveyTimeoutEndpoint, {
 					body: {
-						data: { slug: 'optimizeSurvey', timeout: 500 },
+						data: {
+							slug: 'userInput_answered_other__goals',
+							timeout: 500,
+						},
 					},
 				} );
 			} );

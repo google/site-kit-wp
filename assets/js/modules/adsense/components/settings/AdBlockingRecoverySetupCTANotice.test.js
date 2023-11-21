@@ -21,11 +21,17 @@
  */
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../../tests/js/mock-survey-endpoints';
+import {
 	act,
+	createTestRegistry,
 	fireEvent,
-	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	render,
+	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -48,8 +54,17 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'AdBlockingRecoverySetupCTANotice', () => {
 	mockLocation();
 
+	let registry;
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
+		mockSurveyEndpoints();
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetExistingAdBlockingRecoveryTag( null );
 	} );
 
 	it.each( [
@@ -87,30 +102,21 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 			adBlockingRecoverySetupStatus,
 			existingAdBlockingRecoveryTag = null
 		) => {
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				accountStatus,
+				siteStatus,
+				adBlockingRecoverySetupStatus,
+			} );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag(
+					existingAdBlockingRecoveryTag
+				);
+
 			const { container } = render(
 				<AdBlockingRecoverySetupCTANotice />,
 				{
-					setupRegistry: ( registry ) => {
-						provideModules( registry, [
-							{
-								slug: 'adsense',
-								active: true,
-								connected: true,
-							},
-						] );
-						registry
-							.dispatch( MODULES_ADSENSE )
-							.receiveGetSettings( {
-								accountStatus,
-								siteStatus,
-								adBlockingRecoverySetupStatus,
-							} );
-						registry
-							.dispatch( MODULES_ADSENSE )
-							.receiveGetExistingAdBlockingRecoveryTag(
-								existingAdBlockingRecoveryTag
-							);
-					},
+					registry,
 				}
 			);
 
@@ -129,27 +135,21 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 		}
 	);
 
-	it( 'should render the CTA when Ad Blocking Recovery is not set up', () => {
-		const { container } = render( <AdBlockingRecoverySetupCTANotice />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					accountStatus: ACCOUNT_STATUS_READY,
-					siteStatus: SITE_STATUS_READY,
-					adBlockingRecoverySetupStatus: '',
-				} );
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveGetExistingAdBlockingRecoveryTag( null );
-			},
-			viewContext: VIEW_CONTEXT_SETTINGS,
+	it( 'should render the CTA when Ad Blocking Recovery is not set up', async () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			accountStatus: ACCOUNT_STATUS_READY,
+			siteStatus: SITE_STATUS_READY,
+			adBlockingRecoverySetupStatus: '',
 		} );
+
+		const { container, waitForRegistry } = render(
+			<AdBlockingRecoverySetupCTANotice />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			}
+		);
+		await waitForRegistry();
 
 		expect(
 			container.querySelector(
@@ -169,33 +169,17 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 		);
 	} );
 
-	it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
-		const { container, registry } = render(
-			<AdBlockingRecoverySetupCTANotice />,
-			{
-				setupRegistry: ( testRegistry ) => {
-					provideSiteInfo( testRegistry );
-					provideModules( testRegistry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					testRegistry
-						.dispatch( MODULES_ADSENSE )
-						.receiveGetSettings( {
-							accountStatus: ACCOUNT_STATUS_READY,
-							siteStatus: SITE_STATUS_READY,
-							adBlockingRecoverySetupStatus: '',
-						} );
-					testRegistry
-						.dispatch( MODULES_ADSENSE )
-						.receiveGetExistingAdBlockingRecoveryTag( null );
-				},
-				viewContext: VIEW_CONTEXT_SETTINGS,
-			}
-		);
+	it( 'should navigate to ABR setup page when primary CTA is clicked', async () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			accountStatus: ACCOUNT_STATUS_READY,
+			siteStatus: SITE_STATUS_READY,
+			adBlockingRecoverySetupStatus: '',
+		} );
+
+		const { container } = render( <AdBlockingRecoverySetupCTANotice />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
 
 		const abrURL = registry
 			.select( CORE_SITE )
@@ -216,26 +200,15 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 		expect( global.location.assign ).toHaveBeenCalledWith( abrURL );
 	} );
 
-	it( 'Should fire track event when learn more is clicked', async () => {
+	it( 'should fire track event when learn more is clicked', async () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			accountStatus: ACCOUNT_STATUS_READY,
+			siteStatus: SITE_STATUS_READY,
+			adBlockingRecoverySetupStatus: '',
+		} );
+
 		const { getByRole } = render( <AdBlockingRecoverySetupCTANotice />, {
-			setupRegistry: ( registry ) => {
-				provideSiteInfo( registry );
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					accountStatus: ACCOUNT_STATUS_READY,
-					siteStatus: SITE_STATUS_READY,
-					adBlockingRecoverySetupStatus: '',
-				} );
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveGetExistingAdBlockingRecoveryTag( null );
-			},
+			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 		// eslint-disable-next-line require-await
@@ -247,6 +220,26 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'settings_adsense-abr-cta-widget',
 			'click_learn_more_link'
+		);
+	} );
+
+	it( 'should trigger a survey when rendered', async () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			accountStatus: ACCOUNT_STATUS_READY,
+			siteStatus: SITE_STATUS_READY,
+			adBlockingRecoverySetupStatus: '',
+		} );
+
+		render( <AdBlockingRecoverySetupCTANotice />, {
+			registry,
+		} );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_abr_setup_cta' },
+				},
+			} )
 		);
 	} );
 } );

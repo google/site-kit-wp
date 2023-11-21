@@ -24,7 +24,8 @@ import propTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import { useIntersection } from 'react-use';
 import { __ } from '@wordpress/i18n';
 import { ENTER, SPACE } from '@wordpress/keycodes';
 
@@ -35,11 +36,16 @@ import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import PlusIcon from '../../../svg/icons/plus.svg';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 const { useDispatch } = Data;
 
 export default function AddMetricCTATile( { Widget } ) {
+	const trackingRef = useRef();
 	const { setValue } = useDispatch( CORE_UI );
+	const viewContext = useViewContext();
+	const trackingCategory = `${ viewContext }_kmw`;
 
 	const openMetricsSelectionPanel = useCallback(
 		( event ) => {
@@ -54,13 +60,29 @@ export default function AddMetricCTATile( { Widget } ) {
 			event.preventDefault();
 
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+			trackEvent( trackingCategory, 'add_metric_click' );
 		},
-		[ setValue ]
+		[ setValue, trackingCategory ]
 	);
+
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			trackEvent( trackingCategory, 'add_metric_view' );
+
+			setHasBeenInView( true );
+		}
+	}, [ inView, trackingCategory, hasBeenInView ] );
 
 	return (
 		<Widget className="googlesitekit-widget--addMetricCTATile" noPadding>
 			<div
+				ref={ trackingRef }
 				className="googlesitekit-km-add-metric-cta-tile"
 				onClick={ openMetricsSelectionPanel }
 				onKeyDown={ openMetricsSelectionPanel }

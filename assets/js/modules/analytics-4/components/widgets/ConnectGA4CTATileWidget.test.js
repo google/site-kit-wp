@@ -21,9 +21,11 @@
  */
 import {
 	provideModules,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
@@ -35,8 +37,14 @@ describe( 'ConnectGA4CTATileWidget', () => {
 	it( 'should render the Connect GA4 CTA tile', () => {
 		const { container, getByText } = render( <WidgetWithComponentProps />, {
 			setupRegistry: ( registry ) => {
+				provideUserAuthentication( registry );
 				provideUserCapabilities( registry );
 				provideModules( registry );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [ 'widget1', 'widget2' ],
+					isWidgetHidden: false,
+				} );
 			},
 		} );
 

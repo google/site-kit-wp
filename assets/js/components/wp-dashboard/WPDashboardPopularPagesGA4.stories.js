@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 import { widgetDecorators } from './common.stories';
@@ -31,9 +31,9 @@ import {
 	setupAnalytics4Error,
 } from './common-GA4.stories';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardPopularPagesGA4
-);
+const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
+	'widget-slug'
+)( WPDashboardPopularPagesGA4 );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

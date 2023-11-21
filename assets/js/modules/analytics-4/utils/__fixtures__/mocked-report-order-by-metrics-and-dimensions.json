@@ -1,7 +1,7 @@
 {
 	"dimensionHeaders": [
-		{ "name": { "name": "date" } },
-		{ "name": { "name": "sessionDefaultChannelGrouping" } },
+		{ "name": "date" },
+		{ "name": "sessionDefaultChannelGrouping" },
 		{ "name": "dateRange" }
 	],
 	"metricHeaders": [
@@ -29,7 +29,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "20201201" },
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_1" }
 			],
 			"metricValues": [ { "value": "86" }, { "value": "32" } ]
@@ -109,7 +109,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "20201201" },
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_0" }
 			],
 			"metricValues": [ { "value": "27" }, { "value": "55" } ]
@@ -221,7 +221,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "20201202" },
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_0" }
 			],
 			"metricValues": [ { "value": "80" }, { "value": "3" } ]
@@ -237,7 +237,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "20201202" },
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_1" }
 			],
 			"metricValues": [ { "value": "64" }, { "value": "33" } ]
@@ -341,7 +341,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "20201204" },
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_1" }
 			],
 			"metricValues": [ { "value": "89" }, { "value": "48" } ]
@@ -485,7 +485,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "20201204" },
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_0" }
 			],
 			"metricValues": [ { "value": "3" }, { "value": "45" } ]
@@ -541,7 +541,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "20201205" },
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_1" }
 			],
 			"metricValues": [ { "value": "80" }, { "value": "22" } ]
@@ -629,7 +629,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "20201205" },
-				{ "value": "Organic Social" },
+				{ "value": "(other)" },
 				{ "value": "date_range_0" }
 			],
 			"metricValues": [ { "value": "35" }, { "value": "30" } ]

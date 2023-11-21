@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import cache from './cache';
 import connection from './connection';
 import errors from './errors';
 import html from './html';
@@ -46,6 +47,7 @@ const store = Data.combineStores(
 	settings,
 	urls,
 	notifications,
+	cache,
 	registryKey,
 	createErrorStore( CORE_SITE )
 );

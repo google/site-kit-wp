@@ -17,11 +17,18 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	act,
@@ -34,8 +41,17 @@ import {
 	provideUserAuthentication,
 	getAnalytics4HasZeroDataReportOptions,
 	fireEvent,
+	waitFor,
 } from '../../../../tests/js/test-utils';
-import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../tests/js/mock-survey-endpoints';
+
+jest.mock( 'react-use' );
+mockUseIntersection.mockImplementation( () => ( {
+	intersectionRatio: 1,
+} ) );
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
@@ -84,6 +100,9 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		] );
 
 		provideGatheringDataState( registry, { 'search-console': false } );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -92,7 +111,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'userInput' ],
+				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -118,9 +137,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		] );
 
 		provideGatheringDataState( registry, {
-			'analytics-4': false,
 			'search-console': true,
+			'analytics-4': false,
 		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -129,7 +151,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'userInput' ],
+				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -171,6 +193,9 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				{},
 				{ options: getAnalytics4HasZeroDataReportOptions( registry ) }
 			);
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -179,7 +204,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'userInput' ],
+				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -188,6 +213,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does render the CTA when SC and GA4 are both connected', async () => {
+		mockSurveyEndpoints();
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -205,10 +232,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, getByRole, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
@@ -217,7 +246,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'userInput' ],
+				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -232,6 +261,15 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		expect( button ).toHaveAttribute(
 			'href',
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
+		);
+
+		// Should also trigger a survey view.
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_kmw_setup_cta' },
+				},
+			} )
 		);
 	} );
 
@@ -253,10 +291,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
 
 		registry
 			.dispatch( CORE_USER )
@@ -269,7 +309,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'userInput' ],
+				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -285,6 +325,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				status: 200,
 			}
 		);
+
+		mockSurveyEndpoints();
 
 		await registry
 			.dispatch( CORE_USER )
@@ -303,10 +345,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			},
 		] );
 
-		provideGatheringDataState( registry, {
-			'analytics-4': false,
-			'search-console': false,
-		} );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
 
 		const { container, waitForRegistry } = render(
 			<div>
@@ -322,7 +366,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			</div>,
 			{
 				registry,
-				features: [ 'userInput' ],
+				features: [ 'keyMetrics' ],
 			}
 		);
 

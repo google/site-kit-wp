@@ -32,17 +32,12 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import {
 	EDIT_SCOPE,
 	FORM_SETUP,
-	GA4_DASHBOARD_VIEW_NOTIFICATION_ID,
 	MODULES_ANALYTICS,
 	SETUP_FLOW_MODE_GA4,
-	SETUP_FLOW_MODE_GA4_LEGACY,
-	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
-	SETUP_FLOW_MODE_UA,
 } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
-import ga4Reporting from '../../../../feature-tours/ga4-reporting';
-import { enabledFeatures } from '../../../../features';
+import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
 
 const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
@@ -73,45 +68,7 @@ describe( 'SetupForm', () => {
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the form correctly when setup flow mode is UA', async () => {
-		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
-		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProperties( [], { accountID } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( [], { accountID } );
-		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-
-		// Verify that the setup flow mode is UA.
-		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
-			SETUP_FLOW_MODE_UA
-		);
-
-		const { container, getByText, waitForRegistry } = render(
-			<SetupForm />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
-
-		expect( getByText( 'Account' ) ).toBeInTheDocument();
-		expect( getByText( 'Property' ) ).toBeInTheDocument();
-		expect( getByText( 'View' ) ).toBeInTheDocument();
-		expect( getByText( 'View Name' ) ).toBeInTheDocument();
-		expect(
-			getByText( 'A Google Analytics 4 property will also be created.' )
-		).toBeInTheDocument();
-	} );
-
 	it( 'renders the form correctly when setup flow mode is GA4', async () => {
-		enabledFeatures.add( 'ga4Reporting' );
-
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
@@ -135,7 +92,6 @@ describe( 'SetupForm', () => {
 			<SetupForm />,
 			{
 				registry,
-				features: [ 'ga4Reporting' ],
 			}
 		);
 		await waitForRegistry();
@@ -145,141 +101,9 @@ describe( 'SetupForm', () => {
 		expect( getByText( 'Account' ) ).toBeInTheDocument();
 		expect( getByText( 'Property' ) ).toBeInTheDocument();
 		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
-	} );
-
-	it( 'renders the form correctly when setup flow mode is GA4 Legacy', async () => {
-		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
-		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProperties( [], { accountID } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( analytics4Fixtures.properties, {
-				accountID,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetWebDataStreamsBatch(
-				analytics4Fixtures.webDataStreamsBatch,
-				{
-					propertyIDs: Object.keys(
-						analytics4Fixtures.webDataStreamsBatch
-					),
-				}
-			);
-		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-
-		// Verify that the setup flow mode is GA4 Legacy.
-		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
-			SETUP_FLOW_MODE_GA4_LEGACY
-		);
-
-		const { container, getByText, waitForRegistry } = render(
-			<SetupForm />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
-
-		expect( getByText( 'Account' ) ).toBeInTheDocument();
-		expect( getByText( 'Property' ) ).toBeInTheDocument();
-		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
-		expect(
-			getByText(
-				'An associated Universal Analytics property will also be created.'
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( 'renders the form correctly when setup flow mode is GA4 Transitional', async () => {
-		const propertyID =
-			fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
-
-		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
-		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProperties(
-				fixtures.accountsPropertiesProfiles.properties,
-				{ accountID }
-			);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( analytics4Fixtures.properties, {
-				accountID,
-			} );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [], {
-			accountID,
-			propertyID,
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetWebDataStreamsBatch(
-				analytics4Fixtures.webDataStreamsBatch,
-				{
-					propertyIDs: Object.keys(
-						analytics4Fixtures.webDataStreamsBatch
-					),
-				}
-			);
-		// TODO: This call to `selectAccount()` is deliberately _not_ awaited in order to avoid a bug resulting from Redux state mutation in the `PropertySelect` component.
-		// This should be revisited once the bug is fixed at which point it can be awaited for consistency with the other tests.
-		// See https://github.com/google/site-kit-wp/issues/7220.
-		registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-		await registry
-			.dispatch( MODULES_ANALYTICS )
-			.selectProperty( propertyID );
-
-		// Verify that the setup flow mode is GA4 Transitional.
-		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(
-			SETUP_FLOW_MODE_GA4_TRANSITIONAL
-		);
-
-		const { container, findAllByText, getByText, waitForRegistry } = render(
-			<SetupForm />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
-
-		// An additional wait is required in order for all resolvers to finish and the component to update.
-		await act( async () => {
-			await waitForDefaultTimeouts();
-		} );
-
-		expect( container ).toMatchSnapshot();
-
-		expect( getByText( 'Account' ) ).toBeInTheDocument();
-
-		const propertyElements = await findAllByText( 'Property' );
-		expect( propertyElements.length ).toBe( 2 );
-
-		expect( getByText( 'View' ) ).toBeInTheDocument();
-		expect( getByText( 'View Name' ) ).toBeInTheDocument();
-		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
-		expect(
-			getByText(
-				'You need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property.'
-			)
-		).toBeInTheDocument();
 	} );
 
 	it( 'submits the form upon pressing the CTA', async () => {
-		enabledFeatures.add( 'ga4Reporting' );
-
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
@@ -311,7 +135,6 @@ describe( 'SetupForm', () => {
 			<SetupForm finishSetup={ finishSetup } />,
 			{
 				registry,
-				features: [ 'ga4Reporting' ],
 			}
 		);
 		await waitForRegistry();
@@ -329,11 +152,7 @@ describe( 'SetupForm', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ] );
+			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
 		const updateAnalyticsSettingsRegexp = new RegExp(
 			'/analytics/data/settings'
@@ -377,8 +196,6 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'auto-submits the form', async () => {
-		enabledFeatures.add( 'ga4Reporting' );
-
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
@@ -420,11 +237,7 @@ describe( 'SetupForm', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ] );
+			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
 		const createPropertyRegexp = new RegExp(
 			'/analytics-4/data/create-property'
@@ -476,7 +289,6 @@ describe( 'SetupForm', () => {
 			<SetupForm finishSetup={ finishSetup } />,
 			{
 				registry,
-				features: [ 'ga4Reporting' ],
 			}
 		);
 		await waitForRegistry();
@@ -512,8 +324,6 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'auto-submits the form only once in the case of an error', async () => {
-		enabledFeatures.add( 'ga4Reporting' );
-
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
@@ -555,11 +365,7 @@ describe( 'SetupForm', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedTours( [ ga4Reporting.slug ] );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GA4_DASHBOARD_VIEW_NOTIFICATION_ID ] );
+			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
 		const createPropertyRegexp = new RegExp(
 			'/analytics-4/data/create-property'
@@ -578,7 +384,6 @@ describe( 'SetupForm', () => {
 			<SetupForm finishSetup={ finishSetup } />,
 			{
 				registry,
-				features: [ 'ga4Reporting' ],
 			}
 		);
 		await waitForRegistry();

@@ -47,7 +47,9 @@ import Link from './Link';
 
 const { useSelect, useDispatch } = Data;
 
-export default function ReportErrorActions( { moduleSlug, error } ) {
+export default function ReportErrorActions( props ) {
+	const { moduleSlug, error, GetHelpLink, onRetry, getHelpClassName } = props;
+
 	const isViewOnly = useViewOnly();
 	const storeName = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
@@ -94,7 +96,9 @@ export default function ReportErrorActions( { moduleSlug, error } ) {
 				selectorData.args
 			);
 		} );
-	}, [ dispatch, retryableErrors ] );
+
+		onRetry?.();
+	}, [ dispatch, retryableErrors, onRetry ] );
 
 	const showRequestAccessURL =
 		requestAccessURL && hasInsufficientPermissionsError && ! isViewOnly;
@@ -131,9 +135,15 @@ export default function ReportErrorActions( { moduleSlug, error } ) {
 					</span>
 				</Fragment>
 			) : (
-				<Link href={ errorTroubleshootingLinkURL } external>
-					{ __( 'Get help', 'google-site-kit' ) }
-				</Link>
+				<div className={ getHelpClassName }>
+					{ typeof GetHelpLink === 'function' ? (
+						<GetHelpLink linkURL={ errorTroubleshootingLinkURL } />
+					) : (
+						<Link href={ errorTroubleshootingLinkURL } external>
+							{ __( 'Get help', 'google-site-kit' ) }
+						</Link>
+					) }
+				</div>
 			) }
 		</div>
 	);
@@ -145,4 +155,7 @@ ReportErrorActions.propTypes = {
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
 	] ).isRequired,
+	GetHelpLink: PropTypes.elementType,
+	onRetry: PropTypes.func,
+	getHelpClassName: PropTypes.string,
 };

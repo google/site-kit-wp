@@ -19,7 +19,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
@@ -47,7 +46,6 @@ class ModulesTest extends TestCase {
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
-				'optimize'           => 'Google\\Site_Kit\\Modules\\Optimize',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
@@ -81,7 +79,7 @@ class ModulesTest extends TestCase {
 		);
 
 		// Analytics is no longer present due to the filter above.
-		// Analytics-4 and Optimize are no longer present due to their dependency on Analytics.
+		// Analytics-4 is no longer present due to their dependency on Analytics.
 		$this->assertEqualSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
@@ -182,8 +180,8 @@ class ModulesTest extends TestCase {
 	public function test_get_module_dependencies() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertArrayHasKey( 'optimize', $modules->get_available_modules() );
-		$dependencies = $modules->get_module_dependencies( 'optimize' );
+		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
+		$dependencies = $modules->get_module_dependencies( 'analytics-4' );
 
 		$this->assertContains( 'analytics', $dependencies );
 	}
@@ -223,7 +221,7 @@ class ModulesTest extends TestCase {
 		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
 		$dependants = $modules->get_module_dependants( 'analytics' );
 
-		$this->assertContains( 'optimize', $dependants );
+		$this->assertContains( 'analytics-4', $dependants );
 	}
 
 	public function test_get_module_dependants_exception() {
@@ -311,15 +309,7 @@ class ModulesTest extends TestCase {
 		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
 		$this->assertFalse( $modules->is_module_connected( 'analytics-4' ) );
 
-		// Ensure the method returns false when the `ga4Reporting` feature flag is disabled
-		// and analytics is not connected.
-		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
-		$this->assertFalse( $modules->is_module_connected( 'analytics' ) );
-
-		// Enable the `ga4Reporting` feature flag.
-		$this->enable_feature( 'ga4Reporting' );
-
-		// Ensure the method returns false when `ga4Reporting` feature flag is enabled but Analytics-4 is not connected.
+		// Ensure the method returns false when Analytics-4 is not connected.
 		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
 		$this->assertFalse( $modules->is_module_connected( 'analytics' ) );
 
@@ -470,7 +460,6 @@ class ModulesTest extends TestCase {
 			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
-			Optimize::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 		);
 
@@ -580,7 +569,6 @@ class ModulesTest extends TestCase {
 			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
-			Optimize::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 		);
 	}

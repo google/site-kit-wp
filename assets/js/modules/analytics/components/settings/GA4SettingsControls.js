@@ -41,6 +41,7 @@ import {
 	PropertySelect,
 	WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
+import SettingsEnhancedMeasurementSwitch from '../../../analytics-4/components/settings/SettingsEnhancedMeasurementSwitch';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -55,7 +56,7 @@ const { useSelect, useDispatch } = Data;
 export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
 
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 
 	const viewContext = useViewContext();
 
@@ -126,9 +127,7 @@ export default function GA4SettingsControls( props ) {
 				isDisabled={ isDisabled }
 			/>
 			<div className="googlesitekit-setup-module__inputs">
-				{ ga4ReportingEnabled && (
-					<AccountSelect hasModuleAccess={ hasModuleAccess } />
-				) }
+				<AccountSelect hasModuleAccess={ hasModuleAccess } />
 				<PropertySelect
 					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ isDisabled }
@@ -195,6 +194,12 @@ export default function GA4SettingsControls( props ) {
 				<div className="googlesitekit-settings-module__meta-item">
 					<SettingsUseSnippetSwitch />
 				</div>
+			) }
+
+			{ enhancedMeasurementEnabled && (
+				<SettingsEnhancedMeasurementSwitch
+					hasAnalytics4Access={ hasAnalytics4Access }
+				/>
 			) }
 		</div>
 	);

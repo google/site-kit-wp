@@ -114,22 +114,13 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since 1.24.0
 	 */
 	protected function enqueue_gtag_script() {
-		$gtag_opt = array();
+		$gtag_opt = $this->get_tag_config();
 		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tag_id );
 
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 		wp_enqueue_script( 'google_gtagjs', $gtag_src, false, null, false );
 		wp_script_add_data( 'google_gtagjs', 'script_execution', 'async' );
 		wp_add_inline_script( 'google_gtagjs', 'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}' );
-
-		if ( ! empty( $this->home_domain ) ) {
-			$gtag_opt['linker'] = array( 'domains' => array( $this->home_domain ) );
-		}
-
-		if ( $this->anonymize_ip ) {
-			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
-			$gtag_opt['anonymize_ip'] = true;
-		}
 
 		/**
 		 * Filters the gtag configuration options for the Analytics snippet.
@@ -155,14 +146,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		wp_add_inline_script( 'google_gtagjs', 'gtag("js", new Date());' );
 		wp_add_inline_script( 'google_gtagjs', 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
 
-		if ( empty( $gtag_opt ) ) {
-			$config = sprintf( 'gtag("config", "%s");', esc_js( $this->tag_id ) );
-			wp_add_inline_script( 'google_gtagjs', $config );
-		} else {
-			$config = sprintf( 'gtag("config", "%s", %s);', esc_js( $this->tag_id ), wp_json_encode( $gtag_opt ) );
-			wp_add_inline_script( 'google_gtagjs', $config );
-		}
-
+		$this->add_inline_config( $this->tag_id, $gtag_opt );
 		$this->add_inline_ads_conversion_id_config();
 
 		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
@@ -198,7 +182,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		};
 
 		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
-
 	}
 
 	/**
@@ -208,11 +191,46 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 */
 	protected function add_inline_ads_conversion_id_config() {
 		if ( $this->ads_conversion_id ) {
-			wp_add_inline_script(
-				'google_gtagjs',
-				sprintf( 'gtag("config", "%s");', esc_js( $this->ads_conversion_id ) )
-			);
+			$this->add_inline_config( $this->ads_conversion_id, array() );
 		}
+	}
+
+	/**
+	 * Adds an inline script to configure provided tag including configuration options.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @param string $tag_id The tag ID to add config for.
+	 * @param array  $gtag_opt The gtag configuration.
+	 */
+	protected function add_inline_config( $tag_id, $gtag_opt ) {
+		$config = ! empty( $gtag_opt )
+			? sprintf( 'gtag("config", "%s", %s);', esc_js( $tag_id ), wp_json_encode( $gtag_opt ) )
+			: sprintf( 'gtag("config", "%s");', esc_js( $tag_id ) );
+
+		wp_add_inline_script( 'google_gtagjs', $config );
+	}
+
+	/**
+	 * Gets the tag config as used in the gtag data vars.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @return array Tag configuration.
+	 */
+	protected function get_tag_config() {
+		$gtag_opt = array();
+
+		if ( ! empty( $this->home_domain ) ) {
+			$gtag_opt['linker'] = array( 'domains' => array( $this->home_domain ) );
+		}
+
+		if ( $this->anonymize_ip ) {
+			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
+			$gtag_opt['anonymize_ip'] = true;
+		}
+
+		return $gtag_opt;
 	}
 
 }

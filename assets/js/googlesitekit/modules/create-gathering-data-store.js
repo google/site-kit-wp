@@ -31,6 +31,7 @@ import { createFetchStore } from '../data/create-fetch-store';
 const { createRegistryControl } = Data;
 
 const RECEIVE_GATHERING_DATA = 'RECEIVE_GATHERING_DATA';
+const RECEIVE_DATA_AVAILABLE_ON_LOAD = 'RECEIVE_DATA_AVAILABLE_ON_LOAD';
 const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
 
 /**
@@ -108,6 +109,32 @@ export const createGatheringDataStore = (
 				type: RECEIVE_GATHERING_DATA,
 			};
 		},
+
+		/**
+		 * Receives data available on load state.
+		 *
+		 * This action was added to easily manipulate the state for
+		 * JS tests and Storybook / VRT scenarios.
+		 *
+		 * @since 1.110.0
+		 * @private
+		 *
+		 * @param {boolean} dataAvailableOnLoad Gathering data.
+		 * @return {Object} Redux-style action.
+		 */
+		receiveIsDataAvailableOnLoad( dataAvailableOnLoad ) {
+			invariant(
+				'boolean' === typeof dataAvailableOnLoad,
+				'dataAvailableOnLoad must be a boolean.'
+			);
+
+			return {
+				payload: {
+					dataAvailableOnLoad,
+				},
+				type: RECEIVE_DATA_AVAILABLE_ON_LOAD,
+			};
+		},
 	};
 
 	const controls = {
@@ -140,6 +167,14 @@ export const createGatheringDataStore = (
 				return {
 					...state,
 					gatheringData,
+				};
+			}
+
+			case RECEIVE_DATA_AVAILABLE_ON_LOAD: {
+				const { dataAvailableOnLoad } = payload;
+				return {
+					...state,
+					dataAvailableOnLoad,
 				};
 			}
 

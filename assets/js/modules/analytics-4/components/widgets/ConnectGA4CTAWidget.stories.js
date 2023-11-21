@@ -21,7 +21,7 @@
  */
 import {
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LOYAL_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../../../googlesitekit/datastore/user/constants';
@@ -49,7 +49,7 @@ export default {
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				const keyMetricWidgets = [
-					KM_ANALYTICS_LOYAL_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
 					KM_ANALYTICS_NEW_VISITORS,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,

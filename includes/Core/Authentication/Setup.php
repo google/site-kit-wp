@@ -66,7 +66,7 @@ class Setup {
 	/**
 	 * Proxy support URL.
 	 *
-	 * @since n.e.x.t Explicitly declared; previously, it was dynamically declared.
+	 * @since 1.109.0 Explicitly declared; previously, it was dynamically declared.
 	 *
 	 * @var string
 	 */

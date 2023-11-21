@@ -11,11 +11,21 @@ exports[`TopConvertingTrafficSourceWidget renders correctly with the expected me
       <div
         class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text"
       >
-        <h3
-          class="googlesitekit-km-widget-tile__title"
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
         >
-          Top converting traffic source
-        </h3>
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Top converting traffic source
+          </h3>
+          <span
+            class="googlesitekit-info-tooltip"
+            title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
+          >
+            <svg />
+          </span>
+        </div>
         <div
           class="googlesitekit-km-widget-tile__body"
         >

@@ -38,17 +38,12 @@ import { getBestTagID } from '../../modules/analytics-4/utils/google-tag';
 const { useSelect, useDispatch } = Data;
 
 export default function GoogleTagIDMismatchNotification() {
-	const hasMismatchedGoogleTagID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID()
-	);
-
 	const currentAnalyticsConfig = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getSettings()
 	);
 
 	const googleTagContainerDestinations = useSelect(
 		( select ) =>
-			hasMismatchedGoogleTagID &&
 			currentAnalyticsConfig?.googleTagAccountID &&
 			currentAnalyticsConfig?.googleTagContainerID &&
 			select( MODULES_ANALYTICS_4 ).getGoogleTagContainerDestinations(
@@ -66,10 +61,7 @@ export default function GoogleTagIDMismatchNotification() {
 	);
 
 	const newAnalyticsConfig = useSelect( ( select ) => {
-		if (
-			! hasMismatchedGoogleTagID ||
-			! Array.isArray( googleTagContainerDestinations )
-		) {
+		if ( ! Array.isArray( googleTagContainerDestinations ) ) {
 			return null;
 		}
 
@@ -153,10 +145,6 @@ export default function GoogleTagIDMismatchNotification() {
 		submitChanges,
 		setHasMismatchedGoogleTagID,
 	] );
-
-	if ( ! hasMismatchedGoogleTagID ) {
-		return null;
-	}
 
 	if (
 		googleTagContainerDestinations === undefined ||

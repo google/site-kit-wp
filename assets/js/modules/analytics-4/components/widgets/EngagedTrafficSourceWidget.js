@@ -31,7 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -55,8 +58,8 @@ function EngagedTrafficSourceWidget( props ) {
 	const reportOptions = {
 		...dates,
 		dimensions: [ 'sessionDefaultChannelGroup' ],
-		metrics: [ { name: 'engagementRate' } ],
-		orderBy: 'engagementRate',
+		metrics: [ { name: 'engagedSessions' } ],
+		orderBy: 'engagedSessions',
 		limit: 1,
 	};
 
@@ -78,7 +81,7 @@ function EngagedTrafficSourceWidget( props ) {
 			)
 	);
 
-	const { rows = [] } = report || {};
+	const { rows = [], totals = [] } = report || {};
 	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
 		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
 
@@ -86,17 +89,31 @@ function EngagedTrafficSourceWidget( props ) {
 		rows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
 			?.dimensionValues?.[ 0 ].value || '-';
 
-	const currentEngagementRate =
+	const currentEngagedSessions =
 		parseFloat(
 			rows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
 				?.metricValues?.[ 0 ]?.value
 		) || 0;
+	const currentTotalEngagedSessions =
+		parseFloat(
+			totals.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
+				?.metricValues?.[ 0 ]?.value
+		) || 0;
+	const currentEngagedSessionsRate =
+		currentEngagedSessions / currentTotalEngagedSessions || 0;
 
-	const previousEngagementRate =
+	const previousEngagedSessions =
 		parseFloat(
 			rows.filter( makeFilter( 'date_range_1', 1 ) )[ 0 ]
 				?.metricValues?.[ 0 ]?.value
 		) || 0;
+	const previousTotalEngagedSessions =
+		parseFloat(
+			totals.filter( makeFilter( 'date_range_1', 1 ) )[ 0 ]
+				?.metricValues?.[ 0 ]?.value
+		) || 0;
+	const previousEngagedSessionsRate =
+		previousEngagedSessions / previousTotalEngagedSessions || 0;
 
 	const format = {
 		style: 'percent',
@@ -107,16 +124,17 @@ function EngagedTrafficSourceWidget( props ) {
 	return (
 		<MetricTileText
 			Widget={ Widget }
-			title={ __( 'Most engaged traffic source', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
 			subText={ sprintf(
-				/* translators: %s: Number of engaged sessions. */
-				__( '%s of engaged sessions', 'google-site-kit' ),
-				numFmt( currentEngagementRate, format )
+				/* translators: 1. Percentage of total engaged sessions. 2: Total number of engaged sessions. */
+				__( '%1$s of %2$s engaged sessions', 'google-site-kit' ),
+				numFmt( currentEngagedSessionsRate, format ),
+				numFmt( currentTotalEngagedSessions, { style: 'decimal' } )
 			) }
-			previousValue={ previousEngagementRate }
-			currentValue={ currentEngagementRate }
+			previousValue={ previousEngagedSessionsRate }
+			currentValue={ currentEngagedSessionsRate }
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"

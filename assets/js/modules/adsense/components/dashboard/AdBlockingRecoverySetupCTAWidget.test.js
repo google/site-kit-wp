@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
+import fetchMock from 'fetch-mock';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../../tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -29,6 +34,7 @@ import {
 	provideUserAuthentication,
 	render,
 	unsubscribeFromAll,
+	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -76,6 +82,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
+		mockSurveyEndpoints();
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
@@ -286,6 +293,36 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				'view_notification'
 			);
 		} );
+
+		it( 'should trigger a survey when in-view', async () => {
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				...validSettings,
+				setupCompletedTimestamp: timestampThreeWeeksPrior,
+			} );
+
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
+
+			render(
+				<AdBlockingRecoverySetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID: 'view_abr_setup_cta' },
+					},
+				} )
+			);
+		} );
 	} );
 
 	describe( 'CTA actions', () => {
@@ -310,7 +347,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				.receiveGetExistingAdBlockingRecoveryTag( null );
 		} );
 
-		it( 'Should navigate to ABR setup page when primary CTA is clicked', async () => {
+		it( 'should navigate to ABR setup page when primary CTA is clicked', async () => {
 			const { getByRole } = render(
 				<div>
 					<div id="adminmenu">
@@ -477,8 +514,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			);
 		} );
 
-		it( 'Should fire track event when learn more is clicked', async () => {
-			const { getByRole } = render(
+		it( 'should fire track event when "learn more" is clicked', async () => {
+			const { getByRole, waitForRegistry } = render(
 				<div>
 					<div id="adminmenu">
 						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -495,6 +532,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
+
+			await waitForRegistry();
+
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );

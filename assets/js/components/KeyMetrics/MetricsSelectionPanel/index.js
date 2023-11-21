@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,9 +37,13 @@ import SideSheet from '../../SideSheet';
 import Header from './Header';
 import Footer from './Footer';
 import Metrics from './Metrics';
+import CustomDimensionsNotice from './CustomDimensionsNotice';
+import useViewContext from '../../../hooks/useViewContext';
+import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
+	const viewContext = useViewContext();
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
@@ -62,26 +66,38 @@ export default function MetricsSelectionPanel() {
 		setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
 		} );
-	}, [ savedViewableMetrics, setValues ] );
+		trackEvent( `${ viewContext }_kmw-sidebar`, 'metrics_sidebar_view' );
+	}, [ savedViewableMetrics, setValues, viewContext ] );
 
 	const sideSheetCloseFn = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
+		if ( isOpen ) {
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+		}
+	}, [ setValue, isOpen ] );
+
+	const [ isNavigatingToOAuthURL, setIsNavigatingToOAuthURL ] =
+		useState( false );
 
 	return (
 		<SideSheet
 			className="googlesitekit-km-selection-panel"
-			isOpen={ isOpen }
+			isOpen={ isOpen || isNavigatingToOAuthURL }
 			onOpen={ onSideSheetOpen }
 			closeFn={ sideSheetCloseFn }
 			focusTrapOptions={ {
 				initialFocus:
-					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-accordion__header',
+					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-selection-box input',
 			} }
 		>
 			<Header />
 			<Metrics savedMetrics={ savedViewableMetrics } />
-			<Footer savedMetrics={ savedViewableMetrics } />
+			<CustomDimensionsNotice />
+			<Footer
+				savedMetrics={ savedViewableMetrics }
+				onNavigationToOAuthURL={ () => {
+					setIsNavigatingToOAuthURL( true );
+				} }
+			/>
 		</SideSheet>
 	);
 }

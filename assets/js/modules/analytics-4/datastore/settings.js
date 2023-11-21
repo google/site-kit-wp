@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
+	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
@@ -36,16 +37,22 @@ import {
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	FORM_SETUP,
 	MODULES_ANALYTICS,
 } from '../../analytics/datastore/constants';
+import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
 import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
+	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -74,7 +81,7 @@ export async function submitChanges( { select, dispatch } ) {
 		);
 	}
 
-	const webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+	let webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 	if (
 		propertyID &&
 		( webDataStreamID === WEBDATASTREAM_CREATE ||
@@ -87,11 +94,67 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webdatastream._id );
+		webDataStreamID = webdatastream._id;
+		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webDataStreamID );
 		await dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID(
 			// eslint-disable-next-line sitekit/acronym-case
 			webdatastream.webStreamData.measurementId
 		);
+	}
+
+	if (
+		isFeatureEnabled( 'enhancedMeasurement' ) &&
+		isValidPropertyID( propertyID ) &&
+		isValidWebDataStreamID( webDataStreamID )
+	) {
+		const isEnhancedMeasurementEnabled = select( CORE_FORMS ).getValue(
+			ENHANCED_MEASUREMENT_FORM,
+			ENHANCED_MEASUREMENT_ENABLED
+		);
+
+		// Only make the API request to enable the Enhanced Measurement setting, not to disable it.
+		if ( isEnhancedMeasurementEnabled ) {
+			await dispatch(
+				MODULES_ANALYTICS_4
+			).setEnhancedMeasurementStreamEnabled(
+				propertyID,
+				webDataStreamID,
+				isEnhancedMeasurementEnabled
+			);
+
+			if (
+				select(
+					MODULES_ANALYTICS_4
+				).haveEnhancedMeasurementSettingsChanged(
+					propertyID,
+					webDataStreamID
+				)
+			) {
+				const { error } = await dispatch(
+					MODULES_ANALYTICS_4
+				).updateEnhancedMeasurementSettings(
+					propertyID,
+					webDataStreamID
+				);
+
+				if ( error ) {
+					return { error };
+				}
+
+				const shouldDismissActivationBanner = select(
+					CORE_FORMS
+				).getValue(
+					ENHANCED_MEASUREMENT_FORM,
+					ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
+				);
+
+				if ( shouldDismissActivationBanner ) {
+					await dispatch( CORE_USER ).dismissItem(
+						ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+					);
+				}
+			}
+		}
 	}
 
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
@@ -120,11 +183,15 @@ export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
 	}
+
+	if ( isFeatureEnabled( 'enhancedMeasurement' ) ) {
+		dispatch( MODULES_ANALYTICS_4 ).resetEnhancedMeasurementSettings();
+	}
 }
 
 export function validateCanSubmitChanges( select ) {
 	const {
-		haveSettingsChanged: haveGA4SettingsChanged,
+		haveAnyGA4SettingsChanged,
 		isDoingSubmitChanges,
 		getPropertyID,
 		getWebDataStreamID,
@@ -133,9 +200,12 @@ export function validateCanSubmitChanges( select ) {
 	const { haveSettingsChanged: haveUASettingsChanged } =
 		createStrictSelect( select )( MODULES_ANALYTICS );
 
-	// Check if we have GA4 settings changed only if we are sure that there is no UA changes.
+	// Check if GA4 / enhanced measurement settings are changed only if we are sure that there are no UA changes.
 	if ( ! haveUASettingsChanged() ) {
-		invariant( haveGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+		invariant(
+			haveAnyGA4SettingsChanged(),
+			INVARIANT_SETTINGS_NOT_CHANGED
+		);
 	}
 
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );

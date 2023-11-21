@@ -31,7 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_NEW_VISITORS,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -92,7 +95,7 @@ function NewVisitorsWidget( { Widget } ) {
 	return (
 		<MetricTileNumeric
 			Widget={ Widget }
-			title={ __( 'New visitors', 'google-site-kit' ) }
+			widgetSlug={ KM_ANALYTICS_NEW_VISITORS }
 			metricValue={ newVisitors }
 			subText={ sprintf(
 				/* translators: %d: Number of total visitors visiting the site. */

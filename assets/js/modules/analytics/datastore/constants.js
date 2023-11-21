@@ -46,13 +46,6 @@ export const UI_ALL_TRAFFIC_LOADED = 'dashboardAllTrafficWidgetLoaded';
 // Setup modes for Analytics based on UA/GA4 properties.
 export const SETUP_FLOW_MODE_UA = 'ua';
 export const SETUP_FLOW_MODE_GA4 = 'ga4';
-export const SETUP_FLOW_MODE_GA4_LEGACY = 'ga4-legacy';
-export const SETUP_FLOW_MODE_GA4_TRANSITIONAL = 'ga4-transitional';
 
 export const PROPERTY_TYPE_UA = 'ua';
 export const PROPERTY_TYPE_GA4 = 'ga4';
-
-export const DASHBOARD_VIEW_GA4 = 'google-analytics-4';
-export const DASHBOARD_VIEW_UA = 'universal-analytics';
-
-export const GA4_DASHBOARD_VIEW_NOTIFICATION_ID = 'switch-ga4-dashboard-view';

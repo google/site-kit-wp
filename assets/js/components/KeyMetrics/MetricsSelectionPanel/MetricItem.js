@@ -25,18 +25,25 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Checkbox } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
-import Accordion from '../../Accordion';
+import SelectionBox from '../../SelectionBox';
 const { useSelect, useDispatch } = Data;
 
-export default function MetricItem( { id, slug, title, description } ) {
+export default function MetricItem( {
+	id,
+	slug,
+	title,
+	description,
+	disconnectedModules,
+	savedMetrics = [],
+} ) {
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -66,40 +73,38 @@ export default function MetricItem( { id, slug, title, description } ) {
 	);
 
 	const isMetricSelected = selectedMetrics?.includes( slug );
-	const isMetricDisabled = ! isMetricSelected && selectedMetrics?.length > 3;
+	const isMetricDisabled =
+		( ! isMetricSelected && selectedMetrics?.length > 3 ) ||
+		( ! savedMetrics.includes( slug ) && disconnectedModules.length > 0 );
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
-			<Accordion
-				title={
-					<div
-						onClick={ ( event ) => {
-							event.stopPropagation();
-						} }
-						onKeyDown={ () => {} }
-						tabIndex={ -1 }
-						role="button"
-					>
-						<Checkbox
-							alignLeft
-							checked={ isMetricSelected }
-							onChange={ onCheckboxChange }
-							disabled={ isMetricDisabled }
-							id={ id }
-							name={ id }
-							value={ slug }
-							onKeyDown={ ( event ) => {
-								event.stopPropagation();
-							} }
-						>
-							{ title }
-						</Checkbox>
-					</div>
-				}
+			<SelectionBox
+				checked={ isMetricSelected }
 				disabled={ isMetricDisabled }
+				id={ id }
+				onChange={ onCheckboxChange }
+				title={ title }
+				value={ slug }
 			>
 				{ description }
-			</Accordion>
+				{ disconnectedModules.length > 0 && (
+					<div className="googlesitekit-km-selection-panel-metrics__metric-item-error">
+						{ sprintf(
+							/* translators: %s: module names. */
+							_n(
+								'%s is disconnected, no data to show',
+								'%s are disconnected, no data to show',
+								disconnectedModules.length,
+								'google-site-kit'
+							),
+							disconnectedModules.join(
+								__( ' and ', 'google-site-kit' )
+							)
+						) }
+					</div>
+				) }
+			</SelectionBox>
 		</div>
 	);
 }
@@ -109,4 +114,6 @@ MetricItem.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
+	disconnectedModules: PropTypes.array,
+	savedMetrics: PropTypes.array,
 };

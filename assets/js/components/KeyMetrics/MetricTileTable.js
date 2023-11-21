@@ -24,35 +24,15 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import { Tooltip } from 'googlesitekit-components';
-import MetricTileError from './MetricTileError';
-import MetricTileLoader from './MetricTileLoader';
-import InfoIcon from '../../../svg/icons/info-green.svg';
+import MetricTileWrapper from './MetricTileWrapper';
 
-export default function MetricTileTable( props ) {
-	const {
-		Widget,
-		loading,
-		title,
-		rows = [],
-		columns = [],
-		limit,
-		infoTooltip,
-		ZeroState,
-		error,
-		moduleSlug,
-	} = props;
-
-	if ( error ) {
-		return (
-			<MetricTileError
-				moduleSlug={ moduleSlug }
-				error={ error }
-				headerText={ title }
-			/>
-		);
-	}
-
+export default function MetricTileTable( {
+	rows = [],
+	columns = [],
+	limit,
+	ZeroState,
+	...props
+} ) {
 	let tileBody = null;
 
 	if ( rows?.length > 0 ) {
@@ -99,52 +79,20 @@ export default function MetricTileTable( props ) {
 	}
 
 	return (
-		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table">
-				<div className="googlesitekit-km-widget-tile__title-container">
-					<h3 className="googlesitekit-km-widget-tile__title">
-						{ title }
-					</h3>
-					{ infoTooltip && (
-						<Tooltip
-							tooltipClassName="googlesitekit-km-widget-tile-title__tooltip"
-							title={ infoTooltip }
-							placement="top"
-							enterTouchDelay={ 0 }
-							leaveTouchDelay={ 5000 }
-							interactive
-						>
-							<span>
-								<InfoIcon width="16" height="16" />
-							</span>
-						</Tooltip>
-					) }
-				</div>
-				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && <MetricTileLoader /> }
-					{ ! loading && (
-						<div className="googlesitekit-km-widget-tile__table">
-							{ tileBody }
-						</div>
-					) }
-				</div>
+		<MetricTileWrapper
+			className="googlesitekit-km-widget-tile--table"
+			{ ...props }
+		>
+			<div className="googlesitekit-km-widget-tile__table">
+				{ tileBody }
 			</div>
-		</Widget>
+		</MetricTileWrapper>
 	);
 }
 
 MetricTileTable.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	loading: PropTypes.bool,
-	title: PropTypes.string,
 	rows: PropTypes.array,
 	columns: PropTypes.array,
 	limit: PropTypes.number,
-	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	ZeroState: PropTypes.elementType,
-	error: PropTypes.oneOfType( [
-		PropTypes.arrayOf( PropTypes.object ),
-		PropTypes.object,
-	] ),
-	moduleSlug: PropTypes.string.isRequired,
 };

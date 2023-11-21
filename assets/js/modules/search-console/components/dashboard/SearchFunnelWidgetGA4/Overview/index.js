@@ -50,7 +50,7 @@ import useViewOnly from '../../../../../../hooks/useViewOnly';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
-import ga4Reporting from '../../../../../../feature-tours/ga4-reporting';
+import ga4ReportingTour from '../../../../../../feature-tours/ga4-reporting';
 const { useSelect, useDispatch, useInViewSelect } = Data;
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
@@ -122,11 +122,6 @@ export default function Overview( props ) {
 		select( CORE_USER ).isAuthenticated()
 	);
 
-	const conversionsRateLearnMoreURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/9267568',
-		} )
-	);
 	const engagementRateLearnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/12195621',
@@ -190,7 +185,7 @@ export default function Overview( props ) {
 			return;
 		}
 
-		triggerOnDemandTour( ga4Reporting );
+		triggerOnDemandTour( ga4ReportingTour );
 	}, [
 		showGA4,
 		dashboardType,
@@ -287,16 +282,6 @@ export default function Overview( props ) {
 						datapoint: ga4ConversionsDatapoint,
 						change: ga4ConversionsChange,
 						isGatheringData: isGA4GatheringData,
-						badge: (
-							<NewBadge
-								tooltipTitle={ __(
-									'Conversions is a new Google Analytics 4 metric replacing the Goals metric.',
-									'google-site-kit'
-								) }
-								learnMoreLink={ conversionsRateLearnMoreURL }
-								onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
-							/>
-						),
 					},
 			  ]
 			: [] ),

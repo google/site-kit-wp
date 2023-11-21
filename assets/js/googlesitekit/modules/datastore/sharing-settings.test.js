@@ -530,7 +530,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharingManagement = registry
 					.select( CORE_MODULES )
-					.getSharingManagement( 'optimize' );
+					.getSharingManagement( 'tagmanager' );
 				expect( sharingManagement ).toBeNull();
 			} );
 
@@ -580,7 +580,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharedRoles = registry
 					.select( CORE_MODULES )
-					.getSharedRoles( 'optimize' );
+					.getSharedRoles( 'tagmanager' );
 				expect( sharedRoles ).toBeNull();
 			} );
 

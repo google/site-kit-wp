@@ -56,6 +56,7 @@ function AdSenseAlerts() {
 			{ notifications.map(
 				( {
 					id,
+					title,
 					description,
 					format,
 					ctaURL,
@@ -67,10 +68,9 @@ function AdSenseAlerts() {
 					<BannerNotification
 						key={ id }
 						id={ id }
+						title={ title || '' }
 						description={ description }
-						WinImageSVG={ () => (
-							<NotificationAlertSVG height="136" />
-						) }
+						WinImageSVG={ NotificationAlertSVG }
 						format={ format || 'small' }
 						ctaLink={ ctaURL }
 						ctaLabel={ ctaLabel }

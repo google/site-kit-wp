@@ -17,3 +17,4 @@
  */
 
 export { default as ActivationBanner } from './ActivationBanner';
+export { default as EnhancedMeasurementActivationBanner } from './EnhancedMeasurementActivationBanner';

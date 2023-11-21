@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -50,19 +51,30 @@ import {
 	useShowTooltip,
 	useTooltipState,
 } from '../AdminMenuTooltip';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
+import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
 
 const { useDispatch, useSelect } = Data;
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
+	const viewContext = useViewContext();
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const searchConsoleIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
-	);
-	const analyticsIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isGatheringData()
-	);
+
+	// We should call isGatheringData() within this component for completeness as we do not want to rely
+	// on it being called in other components. This selector makes report requests which, if they return
+	// data, then the `data-available` transients are set. These transients are prefetched as a global on
+	// the next page load.
+	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) => {
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
+		return select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad();
+	} );
+	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
+		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
+	} );
 
 	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	const { isTooltipVisible } = useTooltipState(
@@ -76,13 +88,41 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const dismissCallback = async () => {
+		await trackEvent(
+			`${ viewContext }_kmw-cta-notification`,
+			'dismiss_notification'
+		);
 		showTooltip();
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	};
 
+	const onTooltipDismiss = useCallback( () => {
+		trackEvent( `${ viewContext }_kmw`, 'tooltip_dismiss' );
+	}, [ viewContext ] );
+
 	const openMetricsSelectionPanel = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+		trackEvent(
+			`${ viewContext }_kmw-cta-notification`,
+			'confirm_pick_own_metrics'
+		);
+	}, [ setValue, viewContext ] );
+
+	const onGetTailoredMetricsClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_kmw-cta-notification`,
+			'confirm_get_tailored_metrics'
+		);
+	}, [ viewContext ] );
+
+	useMount( () => {
+		// Since components are conditionally rendered, when tooltip
+		// appears, old component will unmount and new componnet will mount,
+		// with tooltip visible equal to true, so here we ensure event is sent only once when that occurs,
+		if ( isTooltipVisible ) {
+			trackEvent( `${ viewContext }_kmw`, 'tooltip_view' );
+		}
+	} );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -99,6 +139,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 					tooltipStateKey={ KEY_METRICS_SETUP_CTA_WIDGET_SLUG }
+					onDismiss={ onTooltipDismiss }
 				/>
 			</Fragment>
 		);
@@ -106,8 +147,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	if (
 		isDismissed !== false ||
-		analyticsIsGatheringData !== false ||
-		searchConsoleIsGatheringData !== false
+		! analyticsIsDataAvailableOnLoad ||
+		! searchConsoleIsDataAvailableOnLoad
 	) {
 		return <WidgetNull />;
 	}
@@ -130,9 +171,11 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 				) }
 				actions={
 					<Fragment>
+						<KeyMetricsSetupCTARenderedEffect />
 						<Button
 							className="googlesitekit-key-metrics-cta-button"
 							href={ ctaLink }
+							onClick={ onGetTailoredMetricsClick }
 						>
 							{ __( 'Get tailored metrics', 'google-site-kit' ) }
 						</Button>
@@ -148,6 +191,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 						</Link>
 					</Fragment>
 				}
+				ga4Connected
 			/>
 		</Widget>
 	);

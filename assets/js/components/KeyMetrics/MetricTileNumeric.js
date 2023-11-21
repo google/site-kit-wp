@@ -22,81 +22,43 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
-import MetricTileError from './MetricTileError';
-import MetricTileLoader from './MetricTileLoader';
+import MetricTileWrapper from './MetricTileWrapper';
 
-export default function MetricTileNumeric( props ) {
-	const {
-		Widget,
-		loading,
-		title,
-		metricValue,
-		metricValueFormat,
-		subText,
-		previousValue,
-		currentValue,
-		error,
-		moduleSlug,
-	} = props;
-
+export default function MetricTileNumeric( {
+	metricValue,
+	metricValueFormat,
+	subText,
+	previousValue,
+	currentValue,
+	...props
+} ) {
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
-	if ( error ) {
-		return (
-			<MetricTileError
-				moduleSlug={ moduleSlug }
-				error={ error }
-				headerText={ title }
-			/>
-		);
-	}
-
 	return (
-		<Widget noPadding>
-			<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
-				<h3 className="googlesitekit-km-widget-tile__title">
-					{ title }
-				</h3>
-				<div className="googlesitekit-km-widget-tile__body">
-					{ loading && <MetricTileLoader /> }
-					{ ! loading && (
-						<Fragment>
-							<div className="googlesitekit-km-widget-tile__metric-change-container">
-								<div className="googlesitekit-km-widget-tile__metric">
-									{ numFmt( metricValue, formatOptions ) }
-								</div>
-								<ChangeBadge
-									previousValue={ previousValue }
-									currentValue={ currentValue }
-									isAbsolute={
-										formatOptions?.style === 'percent'
-									}
-								/>
-							</div>
-							<p className="googlesitekit-km-widget-tile__subtext">
-								{ subText }
-							</p>
-						</Fragment>
-					) }
-				</div>
+		<MetricTileWrapper
+			className="googlesitekit-km-widget-tile--numeric"
+			{ ...props }
+		>
+			<div className="googlesitekit-km-widget-tile__metric">
+				{ numFmt( metricValue, formatOptions ) }
 			</div>
-		</Widget>
+			<p className="googlesitekit-km-widget-tile__subtext">{ subText }</p>
+			<div className="googlesitekit-km-widget-tile__metric-change-container">
+				<ChangeBadge
+					previousValue={ previousValue }
+					currentValue={ currentValue }
+					isAbsolute={ formatOptions?.style === 'percent' }
+				/>
+			</div>
+		</MetricTileWrapper>
 	);
 }
 
 MetricTileNumeric.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	loading: PropTypes.bool,
-	title: PropTypes.string,
 	metricValue: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
 	metricValueFormat: PropTypes.oneOfType( [
 		PropTypes.string,
@@ -105,9 +67,4 @@ MetricTileNumeric.propTypes = {
 	subtext: PropTypes.string,
 	previousValue: PropTypes.number,
 	currentValue: PropTypes.number,
-	error: PropTypes.oneOfType( [
-		PropTypes.arrayOf( PropTypes.object ),
-		PropTypes.object,
-	] ),
-	moduleSlug: PropTypes.string.isRequired,
 };

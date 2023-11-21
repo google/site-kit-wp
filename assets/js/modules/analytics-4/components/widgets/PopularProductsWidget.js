@@ -93,7 +93,7 @@ function PopularProductsWidget( props ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pageTitle', 'pagePath' ],
+		dimensions: [ 'pagePath' ],
 		dimensionFilters: {
 			pagePath: {
 				filterType: 'stringFilter',
@@ -131,12 +131,21 @@ function PopularProductsWidget( props ) {
 		] )
 	);
 
+	const titles = useInViewSelect( ( select ) =>
+		! error && report
+			? select( MODULES_ANALYTICS_4 ).getPageTitles(
+					report,
+					reportOptions
+			  )
+			: undefined
+	);
+
 	const loading = useSelect( ( select ) =>
 		showWidget
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
 					[ reportOptions ]
-			  )
+			  ) || titles === undefined
 			: undefined
 	);
 
@@ -144,9 +153,10 @@ function PopularProductsWidget( props ) {
 
 	const columns = [
 		{
-			field: 'dimensionValues',
+			field: 'dimensionValues.0.value',
 			Component: ( { fieldValue } ) => {
-				const [ title, url ] = fieldValue;
+				const url = fieldValue;
+				const title = titles[ url ];
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,
@@ -158,7 +168,7 @@ function PopularProductsWidget( props ) {
 								'all-pages-and-screens',
 								{
 									filters: {
-										unifiedPagePathScreen: url.value,
+										unifiedPagePathScreen: url,
 									},
 									dates,
 								}
@@ -167,17 +177,17 @@ function PopularProductsWidget( props ) {
 				} );
 
 				if ( viewOnlyDashboard ) {
-					return <MetricTileTablePlainText content={ title.value } />;
+					return <MetricTileTablePlainText content={ title } />;
 				}
 
 				return (
 					<Link
 						href={ serviceURL }
-						title={ title.value }
+						title={ title }
 						external
 						hideExternalIndicator
 					>
-						{ title.value }
+						{ title }
 					</Link>
 				);
 			},
@@ -196,7 +206,7 @@ function PopularProductsWidget( props ) {
 
 	const infoTooltip = createInterpolateElement(
 		__(
-			'Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
+			'Products on your site which visitors viewed the most. Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric',
 			'google-site-kit'
 		),
 		{
@@ -219,13 +229,13 @@ function PopularProductsWidget( props ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			title={ __(
-				'Most popular products by pageviews',
-				'google-site-kit'
-			) }
+			widgetSlug={ KM_ANALYTICS_POPULAR_PRODUCTS }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
+			// Instead of sourcing the infoTooltip from KEY_METRICS_WIDGETS,
+			// this widget provides it directly to the MetricTileTable component.
+			// This is to accommodate a link behavior within the tooltip when the Metrics Selection Panel is open.
 			infoTooltip={ showTooltip ? infoTooltip : null }
 			ZeroState={ () => zeroStateMessage }
 			error={ error }
