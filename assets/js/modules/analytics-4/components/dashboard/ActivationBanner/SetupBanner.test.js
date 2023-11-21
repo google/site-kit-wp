@@ -28,6 +28,7 @@ import {
 	provideSiteInfo,
 	createTestRegistry,
 	createWaitForRegistry,
+	untilResolved,
 } from '../../../../../../../tests/js/utils';
 import {
 	MODULES_ANALYTICS,
@@ -238,6 +239,14 @@ describe( 'SetupBanner', () => {
 		);
 		expect( fetchMock ).toHaveFetchedTimes( 1, ga4SettingsEndpoint );
 		expect( onSubmitSuccess ).toHaveBeenCalledTimes( 1 );
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+		// getPropertyCreateTime resolver should invoke getProperty on settings change.
+		await untilResolved( registry, MODULES_ANALYTICS_4 ).getProperty(
+			propertyID
+		);
 		expect( fetchMock ).toHaveFetchedTimes( 1, propertyEndpoint );
 	} );
 } );
