@@ -26,16 +26,16 @@ import { createInterpolateElement, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
+import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
+import SettingsEnhancedMeasurementView from '../../../analytics-4/components/settings/SettingsEnhancedMeasurementView';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { useFeature } from '../../../../hooks/useFeature';
-import SettingsEnhancedMeasurementView from '../../../analytics-4/components/settings/SettingsEnhancedMeasurementView';
 const { useSelect } = Data;
 
 export default function GA4SettingsView() {
