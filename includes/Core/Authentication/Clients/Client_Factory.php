@@ -119,9 +119,10 @@ final class Client_Factory {
 	/**
 	 * Get HTTP client configuration.
 	 *
-	 * @param array $config Initial configuration.
+	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @param array $config Initial configuration.
+	 * @return array The new HTTP client configuration.
 	 */
 	private static function get_http_client_config( $config ) {
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
@@ -139,7 +140,7 @@ final class Client_Factory {
 			$config['verify'] = false;
 		}
 
-		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
+		// Configure the Google_Client's HTTP client to use the same HTTP proxy as WordPress HTTP, if set.
 		$http_proxy = new WP_HTTP_Proxy();
 		if ( $http_proxy->is_enabled() ) {
 			// See https://docs.guzzlephp.org/en/6.5/request-options.html#proxy for reference.
