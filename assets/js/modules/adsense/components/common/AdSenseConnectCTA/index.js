@@ -81,13 +81,22 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
 
-	const isConnectingAdSense = useSelect(
-		( select ) =>
-			select( CORE_MODULES ).isFetchingSetModuleActivation(
-				'adsense',
-				true
-			) || select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
-	);
+	const isConnectingAdSense = useSelect( ( select ) => {
+		const isFetching = select( CORE_MODULES ).isFetchingSetModuleActivation(
+			'adsense',
+			true
+		);
+
+		if ( isFetching ) {
+			return true;
+		}
+
+		if ( ! adminReauthURL ) {
+			return false;
+		}
+
+		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
+	} );
 
 	const handleConnect = useCallback( async () => {
 		const { response, error } = await activateModule( 'adsense' );
