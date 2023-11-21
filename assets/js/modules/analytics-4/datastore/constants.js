@@ -41,7 +41,7 @@ export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analytics4CustomDimensionsCreate';
 export const CUSTOM_DIMENSION_DEFINITIONS = {
 	googlesitekit_post_date: {
 		parameterName: 'googlesitekit_post_date',
-		displayName: 'WordPress Post Creation Date',
+		displayName: 'WordPress Post Date',
 		description: 'Created by Site Kit: Date when a post was published',
 		scope: 'EVENT',
 	},
