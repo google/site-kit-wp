@@ -69,15 +69,15 @@ class Client_FactoryTest extends TestCase {
 			}
 		);
 
-		$client = Client_Factory::create_client();
-		$this->assertEquals( $want, $client->getConfig( 'force_ip_resolve' ) );
+		$client = Client_Factory::create_client( array() );
+		$this->assertEquals( $want, $client->getHttpClient()->getConfig( 'force_ip_resolve' ) );
 	}
 
 	public function data_config_ip_resolve_values() {
 		return array(
 			'null' => array( null, null ),
 			'v4'   => array( 'v4', 'v4' ),
-			'v6'   => array( 'v6', 'v4' ),
+			'v6'   => array( 'v6', 'v6' ),
 			'xyz'  => array( 'xyz', null ),
 		);
 	}
