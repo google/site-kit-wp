@@ -103,7 +103,6 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	if (
-		isFeatureEnabled( 'enhancedMeasurement' ) &&
 		isValidPropertyID( propertyID ) &&
 		isValidWebDataStreamID( webDataStreamID )
 	) {
