@@ -59,7 +59,7 @@ class Client_FactoryTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_config_values
+	 * @dataProvider data_config_ip_resolve_values
 	 */
 	public function test_client_ip_resolve_config_options( $ip_resolve, $want ) {
 		add_filter(
