@@ -75,11 +75,9 @@ function createSetupAccountStory( variation, args = {} ) {
 			const { _id: accountID } = accounts[ 0 ];
 			const {
 				receiveGetAccounts,
-				receiveGetAlerts,
 				receiveGetClients,
 				receiveGetSettings,
 				receiveGetSites,
-				receiveGetURLChannels,
 				receiveGetExistingTag,
 				setAccountID,
 			} = registry.dispatch( MODULES_ADSENSE );
@@ -92,19 +90,7 @@ function createSetupAccountStory( variation, args = {} ) {
 			receiveGetClients( clients, { accountID } );
 			receiveGetSites( sites, { accountID } );
 			receiveGetSettings( { ...defaultSettings, accountID } );
-			receiveGetAlerts( fixtures.alerts, { accountID } );
 			setAccountID( accountID );
-
-			const clientID = clients.find(
-				( { _accountID } ) => _accountID === accountID
-			)?._id;
-
-			if ( clientID ) {
-				receiveGetURLChannels( fixtures.urlchannels, {
-					accountID,
-					clientID,
-				} );
-			}
 
 			if ( existingTag ) {
 				receiveGetExistingTag( 'ca-pub-2833782679114991' );
