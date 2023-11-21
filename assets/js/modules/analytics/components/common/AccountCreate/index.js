@@ -52,15 +52,11 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
-import EnhancedMeasurementSwitch from '../../../../analytics-4/components/common/EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
-import { useFeature } from '../../../../../hooks/useFeature';
 
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
-	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
-
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccounts()
@@ -252,14 +248,6 @@ export default function AccountCreate() {
 
 				<TimezoneSelect />
 			</div>
-
-			{ enhancedMeasurementEnabled && (
-				<div className="googlesitekit-setup-module__inputs">
-					<EnhancedMeasurementSwitch
-						formName={ FORM_ACCOUNT_CREATE }
-					/>
-				</div>
-			) }
 
 			<p>
 				{ hasRequiredScope && (
