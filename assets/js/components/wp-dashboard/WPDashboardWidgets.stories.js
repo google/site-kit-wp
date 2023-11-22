@@ -74,7 +74,7 @@ ReadyWithActivateModuleCTA.args = {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
-		setupSearchConsoleMockReports();
+		setupSearchConsoleMockReports( registry );
 	},
 };
 
