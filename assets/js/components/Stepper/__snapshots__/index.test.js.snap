@@ -6,13 +6,13 @@ exports[`Stepper should render all steps as completed when activeStep is greater
     class="googlesitekit-stepper"
   >
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--completed"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--completed"
+          class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (completed)."
         >
           <svg />
@@ -21,33 +21,55 @@ exports[`Stepper should render all steps as completed when activeStep is greater
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--completed"
+          class="googlesitekit-stepper__step-title"
         >
           Step 1
         </h2>
+        <div
+          class="googlesitekit-stepper__step-content-container"
+        >
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 1.
+          </div>
+        </div>
       </div>
     </li>
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--completed"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--completed"
+          class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (completed)."
         >
           <svg />
         </span>
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--completed"
+          class="googlesitekit-stepper__step-title"
         >
           Step 2
         </h2>
+        <div
+          class="googlesitekit-stepper__step-content-container"
+        >
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 2.
+          </div>
+        </div>
       </div>
     </li>
   </ol>
@@ -60,13 +82,13 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
     class="googlesitekit-stepper"
   >
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--upcoming"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--upcoming"
+          class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (upcoming)."
         >
           1
@@ -75,33 +97,55 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
+          class="googlesitekit-stepper__step-title"
         >
           Step 1
         </h2>
+        <div
+          class="googlesitekit-stepper__step-content-container"
+        >
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 1.
+          </div>
+        </div>
       </div>
     </li>
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--upcoming"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--upcoming"
+          class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (upcoming)."
         >
           2
         </span>
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
+          class="googlesitekit-stepper__step-title"
         >
           Step 2
         </h2>
+        <div
+          class="googlesitekit-stepper__step-content-container"
+        >
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 2.
+          </div>
+        </div>
       </div>
     </li>
   </ol>
@@ -114,13 +158,13 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
     class="googlesitekit-stepper"
   >
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--upcoming"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--upcoming"
+          class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (upcoming)."
         >
           1
@@ -129,33 +173,55 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
+          class="googlesitekit-stepper__step-title"
         >
           Step 1
         </h2>
+        <div
+          class="googlesitekit-stepper__step-content-container"
+        >
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 1.
+          </div>
+        </div>
       </div>
     </li>
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--upcoming"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--upcoming"
+          class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (upcoming)."
         >
           2
         </span>
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
+          class="googlesitekit-stepper__step-title"
         >
           Step 2
         </h2>
+        <div
+          class="googlesitekit-stepper__step-content-container"
+        >
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 2.
+          </div>
+        </div>
       </div>
     </li>
   </ol>
@@ -168,13 +234,13 @@ exports[`Stepper should render the active step as active and display its content
     class="googlesitekit-stepper"
   >
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--active"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--active"
+          class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (active)."
         >
           1
@@ -183,38 +249,55 @@ exports[`Stepper should render the active step as active and display its content
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--active"
+          class="googlesitekit-stepper__step-title"
         >
           Step 1
         </h2>
         <div
-          class="googlesitekit-stepper__step-content"
+          class="googlesitekit-stepper__step-content-container"
         >
-          This is step 1.
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 1.
+          </div>
         </div>
       </div>
     </li>
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--upcoming"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--upcoming"
+          class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (upcoming)."
         >
           2
         </span>
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--upcoming"
+          class="googlesitekit-stepper__step-title"
         >
           Step 2
         </h2>
+        <div
+          class="googlesitekit-stepper__step-content-container"
+        >
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 2.
+          </div>
+        </div>
       </div>
     </li>
   </ol>
@@ -227,13 +310,13 @@ exports[`Stepper should render the active step as active and display its content
     class="googlesitekit-stepper"
   >
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--completed"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--completed"
+          class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (completed)."
         >
           <svg />
@@ -242,37 +325,54 @@ exports[`Stepper should render the active step as active and display its content
           class="googlesitekit-stepper__step-progress-line"
         />
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--completed"
+          class="googlesitekit-stepper__step-title"
         >
           Step 1
         </h2>
+        <div
+          class="googlesitekit-stepper__step-content-container"
+        >
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 1.
+          </div>
+        </div>
       </div>
     </li>
     <li
-      class="googlesitekit-stepper__step"
+      class="googlesitekit-stepper__step googlesitekit-stepper__step--active"
     >
       <div
         class="googlesitekit-stepper__step-progress"
       >
         <span
-          class="googlesitekit-stepper__step-number googlesitekit-stepper__step-number--active"
+          class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (active)."
         >
           2
         </span>
       </div>
-      <div>
+      <div
+        class="googlesitekit-stepper__step-info"
+      >
         <h2
-          class="googlesitekit-stepper__step-title googlesitekit-stepper__step-title--active"
+          class="googlesitekit-stepper__step-title"
         >
           Step 2
         </h2>
         <div
-          class="googlesitekit-stepper__step-content"
+          class="googlesitekit-stepper__step-content-container"
         >
-          This is step 2.
+          <div
+            class="googlesitekit-stepper__step-content"
+          >
+            This is step 2.
+          </div>
         </div>
       </div>
     </li>
