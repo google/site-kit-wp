@@ -138,9 +138,12 @@ const pageTitlesReportOptions = {
 	limit: 25,
 };
 
-export const provideAnalytics4ReportTitles = ( registry ) => {
+export const provideAnalytics4ReportTitles = (
+	registry,
+	options = pageTitlesReportOptions
+) => {
 	const pageTitlesReport = getAnalytics4MockResponse(
-		pageTitlesReportOptions,
+		options,
 		// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
 		// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
 		// page paths to page titles.
