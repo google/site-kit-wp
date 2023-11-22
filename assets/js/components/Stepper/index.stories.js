@@ -31,23 +31,19 @@ import Stepper from '.';
 function Template( { activeStep: initialActiveStep } ) {
 	const [ activeStep, setActiveStep ] = useState( initialActiveStep );
 
-	const P = ( { children } ) => (
-		<p style={ { marginTop: 0 } }>{ children }</p>
-	);
-
 	return (
 		<Stepper activeStep={ activeStep }>
 			<Step title="First Step">
-				<P>This is the first step.</P>
+				<p>This is the first step.</p>
 				<Button onClick={ () => setActiveStep( 1 ) }>Next</Button>
 			</Step>
 			<Step title="Middle Step">
-				<P>This is the middle step.</P>
+				<p>This is the middle step.</p>
 				<Button onClick={ () => setActiveStep( 2 ) }>Next</Button>
 				<Button onClick={ () => setActiveStep( 0 ) }>Prev</Button>
 			</Step>
 			<Step title="Last Step">
-				<P>This is the last step.</P>
+				<p>This is the last step.</p>
 				<Button onClick={ () => setActiveStep( 3 ) }>Done</Button>
 				<Button onClick={ () => setActiveStep( 1 ) }>Prev</Button>
 			</Step>
