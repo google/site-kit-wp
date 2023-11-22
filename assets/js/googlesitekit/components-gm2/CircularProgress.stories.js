@@ -19,7 +19,36 @@
  */
 import CircularProgress from './CircularProgress';
 
-const Template = () => (
+const Template = ( args ) => <CircularProgress { ...args } />;
+
+export const ColorPrimary = Template.bind( {} );
+ColorPrimary.storyName = 'Color - Primary';
+
+export const ColorSecondary = Template.bind( {} );
+ColorSecondary.storyName = 'Color - Secondary';
+ColorSecondary.args = {
+	color: 'secondary',
+};
+
+export const SizeBig = Template.bind( {} );
+SizeBig.storyName = 'Size - Big';
+SizeBig.args = {
+	size: 40,
+};
+
+export const SizeMedium = Template.bind( {} );
+SizeMedium.storyName = 'Size - Medium';
+SizeMedium.args = {
+	size: 24,
+};
+
+export const SizeSmall = Template.bind( {} );
+SizeSmall.storyName = 'Size - Small';
+SizeSmall.args = {
+	size: 14,
+};
+
+export const VRTStory = () => (
 	<div>
 		<h3>Colors</h3>
 		<div style={ { marginBottom: '50px' } }>
@@ -47,8 +76,9 @@ const Template = () => (
 	</div>
 );
 
-export const Default = Template.bind( {} );
-Default.storyName = 'CircularProgress';
+VRTStory.scenario = {
+	label: 'Global/CircularProgress',
+};
 
 export default {
 	title: 'Components/CircularProgress',
