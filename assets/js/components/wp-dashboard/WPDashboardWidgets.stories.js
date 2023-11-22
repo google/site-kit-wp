@@ -38,16 +38,11 @@ import {
 	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
 } from './common-GA4.stories';
-import FeaturesProvider from '../FeaturesProvider';
 
-const Template = ( { setupRegistry, features = [] } ) => {
-	const enabledFeatures = new Set( features );
-
+const Template = ( { setupRegistry } ) => {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<FeaturesProvider value={ enabledFeatures }>
-				<WPDashboardWidgets />
-			</FeaturesProvider>
+			<WPDashboardWidgets />
 		</WithRegistrySetup>
 	);
 };
