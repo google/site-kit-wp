@@ -46,10 +46,13 @@ import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
 
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 	const viewOnly = useViewOnly();
 
@@ -72,6 +75,11 @@ export default function BannerNotifications() {
 
 	const hasMismatchedGoogleTagID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID()
+	);
+	const keyMetricsSetupCTARendered = useSelect(
+		( select ) =>
+			keyMetricsEnabled &&
+			select( CORE_UI ).getValue( UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED )
 	);
 
 	const isGA4ModuleOwner = useSelect( ( select ) => {
@@ -99,6 +107,9 @@ export default function BannerNotifications() {
 
 	return (
 		<Fragment>
+			{ adSenseModuleActive && <AdSenseAlerts /> }
+			<ModuleRecoveryAlert />
+			<ActivationBanner />
 			{ 'authentication_success' === notification && (
 				<SetupSuccessBannerNotification />
 			) }
@@ -107,12 +118,10 @@ export default function BannerNotifications() {
 			) }
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			<ModuleRecoveryAlert />
 			{ analyticsModuleConnected && ga4ModuleConnected && (
 				<SwitchedToGA4Banner />
 			) }
-			<ActivationBanner />
-			{ enhancedMeasurementEnabled && (
+			{ enhancedMeasurementEnabled && ! keyMetricsSetupCTARendered && (
 				<EnhancedMeasurementActivationBanner />
 			) }
 			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
@@ -124,7 +133,6 @@ export default function BannerNotifications() {
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />
-			{ adSenseModuleActive && <AdSenseAlerts /> }
 		</Fragment>
 	);
 }

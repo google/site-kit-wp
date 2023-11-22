@@ -182,7 +182,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
-              for="googlesitekit-select-b108a08f-1663-4755-a545-bd07e5c5074e"
+              for="googlesitekit-select-0"
               style=""
             >
               Country
@@ -222,7 +222,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
           >
             <label
               class="mdc-floating-label mdc-floating-label--float-above"
-              for="googlesitekit-select-17b40e47-d8eb-47df-afae-f59fa90bb4dc"
+              for="googlesitekit-select-1"
               style=""
             >
               Timezone

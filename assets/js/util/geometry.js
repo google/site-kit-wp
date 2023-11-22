@@ -19,7 +19,7 @@
 /**
  * Checks if one element overlaps another.
  *
- * @since n.e.x.t
+ * @since 1.114.0
  *
  * @param {Element} element1 The first element.
  * @param {Element} element2 The second element.

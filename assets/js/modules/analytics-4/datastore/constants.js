@@ -16,11 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
 export const PROPERTY_CREATE = 'property_create';
@@ -40,38 +35,33 @@ export const ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER =
 
 export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analytics4CustomDimensionsCreate';
 
+// Note: names and descriptions are not translated as these are not surfaced in Site Kit
+// and are also subject to hard limits on the length which would be unpredictable if translated.
+// See https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1beta/properties.customDimensions#CustomDimension
 export const CUSTOM_DIMENSION_DEFINITIONS = {
 	googlesitekit_post_date: {
 		parameterName: 'googlesitekit_post_date',
-		displayName: __( 'WordPress Post Creation Date', 'google-site-kit' ),
-		description: __(
-			'Date of which this post was published',
-			'google-site-kit'
-		),
+		displayName: 'WordPress Post Date',
+		description: 'Created by Site Kit: Date when a post was published',
 		scope: 'EVENT',
 	},
 	googlesitekit_post_author: {
 		parameterName: 'googlesitekit_post_author',
-		displayName: __( 'WordPress Post Author', 'google-site-kit' ),
-		description: __(
-			'User ID of the author for this post',
-			'google-site-kit'
-		),
+		displayName: 'WordPress Post Author',
+		description: 'Created by Site Kit: WordPress name of the post author',
 		scope: 'EVENT',
 	},
 	googlesitekit_post_categories: {
 		parameterName: 'googlesitekit_post_categories',
-		displayName: __( 'WordPress Post Categories', 'google-site-kit' ),
-		description: __(
-			'Comma-separated list of category IDs assigned to this post',
-			'google-site-kit'
-		),
+		displayName: 'WordPress Post Categories',
+		description:
+			'Created by Site Kit: Names of categories assigned to a post',
 		scope: 'EVENT',
 	},
 	googlesitekit_post_type: {
 		parameterName: 'googlesitekit_post_type',
-		displayName: __( 'WordPress Post Type', 'google-site-kit' ),
-		description: __( 'Content type for this post', 'google-site-kit' ),
+		displayName: 'WordPress Post Type',
+		description: 'Created by Site Kit: Content type of a post',
 		scope: 'EVENT',
 	},
 };

@@ -45,6 +45,7 @@ import {
 } from './util/constants';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
+import LoadingWrapper from '../LoadingWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
@@ -56,6 +57,7 @@ export default function UserInputPreviewGroup( {
 	title,
 	values,
 	options = {},
+	loading = false,
 	settingsView = false,
 } ) {
 	const viewContext = useViewContext();
@@ -173,39 +175,54 @@ export default function UserInputPreviewGroup( {
 			} ) }
 		>
 			<div className="googlesitekit-user-input__preview-group-title">
-				<p>{ title }</p>
-				<Link
-					secondary
-					onClick={ handleOnEditClick }
-					ref={ editButtonRef }
-					disabled={
-						isScreenLoading ||
-						( !! currentlyEditingSlug && ! isEditing )
-					}
+				<LoadingWrapper loading={ loading } width="340px" height="21px">
+					<p>{ title }</p>
+				</LoadingWrapper>
+				<LoadingWrapper
+					loading={ loading }
+					className="googlesitekit-margin-left-auto"
+					width="50px"
+					height="21px"
 				>
-					{ __( 'Edit', 'google-site-kit' ) }
+					<Link
+						secondary
+						onClick={ handleOnEditClick }
+						ref={ editButtonRef }
+						disabled={
+							isScreenLoading ||
+							( !! currentlyEditingSlug && ! isEditing )
+						}
+					>
+						{ __( 'Edit', 'google-site-kit' ) }
 
-					<ChevronDownIcon width={ 20 } height={ 20 } />
-				</Link>
+						<ChevronDownIcon width={ 20 } height={ 20 } />
+					</Link>
+				</LoadingWrapper>
 			</div>
 
 			{ ! isEditing && (
 				<div className="googlesitekit-user-input__preview-answers">
-					{ errorMessage && (
-						<p className="googlesitekit-error-text">
-							{ errorMessage }
-						</p>
-					) }
+					<LoadingWrapper
+						loading={ loading }
+						width="340px"
+						height="36px"
+					>
+						{ errorMessage && (
+							<p className="googlesitekit-error-text">
+								{ errorMessage }
+							</p>
+						) }
 
-					{ ! errorMessage &&
-						values.map( ( value ) => (
-							<div
-								key={ value }
-								className="googlesitekit-user-input__preview-answer"
-							>
-								{ options[ value ] }
-							</div>
-						) ) }
+						{ ! errorMessage &&
+							values.map( ( value ) => (
+								<div
+									key={ value }
+									className="googlesitekit-user-input__preview-answer"
+								>
+									{ options[ value ] }
+								</div>
+							) ) }
+					</LoadingWrapper>
 				</div>
 			) }
 
@@ -267,5 +284,6 @@ UserInputPreviewGroup.propTypes = {
 	title: PropTypes.string.isRequired,
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	options: PropTypes.shape( {} ),
+	loading: PropTypes.bool,
 	settingsView: PropTypes.bool,
 };

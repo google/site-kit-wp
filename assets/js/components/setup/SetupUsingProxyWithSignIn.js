@@ -121,13 +121,6 @@ export default function SetupUsingProxyWithSignIn() {
 	const hasViewableModules = useSelect(
 		( select ) => !! select( CORE_USER ).getViewableModules()?.length
 	);
-	// These will be `null` if no errors exist.
-	const setupErrorMessage = useSelect( ( select ) =>
-		select( CORE_SITE ).getSetupErrorMessage()
-	);
-	const setupErrorRedoURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSetupErrorRedoURL()
-	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -249,23 +242,6 @@ export default function SetupUsingProxyWithSignIn() {
 			<Header>
 				<HelpMenu />
 			</Header>
-			{ setupErrorMessage && (
-				<BannerNotification
-					id="setup_error"
-					type="win-error"
-					title={ __(
-						'Oops! There was a problem during set up. Please try again.',
-						'google-site-kit'
-					) }
-					description={ setupErrorMessage }
-					isDismissible={ false }
-					ctaLabel={ __(
-						'Redo the plugin setup',
-						'google-site-kit'
-					) }
-					ctaLink={ setupErrorRedoURL }
-				/>
-			) }
 			{ getQueryArg( location.href, 'notification' ) ===
 				'reset_success' && (
 				<BannerNotification

@@ -17,12 +17,18 @@
  */
 
 /**
+ * External dependencies
+ */
+import { times } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
+	provideModules,
 	provideUserAuthentication,
 	unsubscribeFromAll,
 	untilResolved,
@@ -59,6 +65,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
+		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
 			googlesitekit_manage_options: true,
 		} );
@@ -276,6 +283,74 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				} );
 			} );
 		} );
+
+		describe( 'scheduleSyncAvailableCustomDimensions', () => {
+			beforeEach( () => {
+				jest.useFakeTimers();
+			} );
+
+			it( 'schedules a sync request to run after two seconds', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.scheduleSyncAvailableCustomDimensions();
+
+				jest.runAllTimers();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					)
+				);
+			} );
+
+			it( 'runs a sync request once even if the action is called multiple times when each call is made before the two second duration has elapsed', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				// Dispatch action 5 times.
+				times( 5, () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.scheduleSyncAvailableCustomDimensions();
+				} );
+
+				jest.runAllTimers();
+
+				// Verify that it only fetched once.
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					)
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -316,7 +391,50 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
+			it( 'does not make a network request if the analytics-4 module is not connected', async () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: null,
+				} );
+
+				// Trigger the resolver by invoking the selector.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableCustomDimensions()
+				).toBeNull();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAvailableCustomDimensions();
+
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
 			it( 'uses the resolver to fetch and set available custom dimensions if they are null', async () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				// Simulate a scenario where availableCustomDimensions is null.
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: null,
+				} );
+
 				fetchMock.postOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
@@ -326,12 +444,6 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 						status: 200,
 					}
 				);
-
-				// Simulate a scenario where availableCustomDimensions is null.
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID,
-					availableCustomDimensions: null,
-				} );
 
 				expect(
 					registry

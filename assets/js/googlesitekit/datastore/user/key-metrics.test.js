@@ -82,6 +82,7 @@ describe( 'core/user key metrics', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideModules( registry );
 		store = registry.stores[ CORE_USER ].store;
 		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 	} );

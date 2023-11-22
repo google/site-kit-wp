@@ -26,6 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
 import {
 	createTestRegistry,
 	fireEvent,
+	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
@@ -40,6 +41,7 @@ import withCustomDimensions from './withCustomDimensions';
 describe( 'withCustomDimensions', () => {
 	let registry;
 	const customDimension = 'test_custom_dimension';
+	const propertyID = '123456789';
 	const TestComponent = () => <div data-testid="component" />;
 	const WithCustomDimensionsComponent = withCustomDimensions( {
 		dimensions: [ customDimension ],
@@ -49,17 +51,30 @@ describe( 'withCustomDimensions', () => {
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsCustomDimensionGatheringData( customDimension, false );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+			{
+				createTime: '2014-10-02T15:01:23Z',
+			},
+			{ propertyID }
+		);
 	} );
 
 	it( 'renders appropriate error if required custom dimensions are not available', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
+			propertyID,
 			availableCustomDimensions: [],
 		} );
 
@@ -74,7 +89,7 @@ describe( 'withCustomDimensions', () => {
 
 	it( 'renders appropriate error if creating custom dimensions failed due to insufficient permissions', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
+			propertyID,
 			availableCustomDimensions: [],
 		} );
 
@@ -100,7 +115,7 @@ describe( 'withCustomDimensions', () => {
 
 	it( 'sets the appropriate `redirectURL` in the permission error object if creating custom dimensions failed due to the user not having `EDIT_SCOPE`', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
+			propertyID,
 			availableCustomDimensions: [ customDimension ],
 		} );
 
@@ -145,7 +160,7 @@ describe( 'withCustomDimensions', () => {
 
 	it( 'renders appropriate error if creating custom dimensions failed due to a generic error', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
+			propertyID,
 			availableCustomDimensions: [],
 		} );
 
@@ -171,7 +186,7 @@ describe( 'withCustomDimensions', () => {
 
 	it( 'renders gathering data state if GA4 is gathering data', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
+			propertyID,
 			availableCustomDimensions: [ customDimension ],
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
@@ -191,7 +206,7 @@ describe( 'withCustomDimensions', () => {
 
 	it( 'renders gathering data state if the custom dimension is gathering data', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
+			propertyID,
 			availableCustomDimensions: [ customDimension ],
 		} );
 		registry
@@ -213,7 +228,7 @@ describe( 'withCustomDimensions', () => {
 
 	it( 'renders report correctly if there are no errors', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: '123456789',
+			propertyID,
 			availableCustomDimensions: [ customDimension ],
 		} );
 

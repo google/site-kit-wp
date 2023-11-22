@@ -111,9 +111,14 @@ class Custom_Dimensions_Data_Available {
 	 * Resets the data available state for all custom dimensions.
 	 *
 	 * @since 1.113.0
+	 * @since 1.114.0 Added optional $custom_dimensions parameter.
+	 *
+	 * @param array $custom_dimensions Optional. List of custom dimension slugs to reset.
 	 */
-	public function reset_data_available() {
-		foreach ( self::CUSTOM_DIMENSION_SLUGS as $custom_dimension ) {
+	public function reset_data_available(
+		$custom_dimensions = self::CUSTOM_DIMENSION_SLUGS
+	) {
+		foreach ( $custom_dimensions as $custom_dimension ) {
 			$this->transients->delete( $this->get_data_available_transient_name( $custom_dimension ) );
 		}
 	}

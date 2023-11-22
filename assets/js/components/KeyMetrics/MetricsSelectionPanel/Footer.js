@@ -56,14 +56,12 @@ import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
-import { useFeature } from '../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( {
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
 } ) {
-	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 	const viewContext = useViewContext();
 
 	const selectedMetrics = useSelect( ( select ) =>
@@ -94,7 +92,7 @@ export default function Footer( {
 	} );
 
 	const hasMissingCustomDimensions = useSelect( ( select ) => {
-		if ( ! keyMetricsEnabled || ! requiredCustomDimensions?.length ) {
+		if ( ! requiredCustomDimensions?.length ) {
 			return false;
 		}
 
@@ -113,23 +111,14 @@ export default function Footer( {
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
-	const saveError = useSelect( ( select ) => {
-		if ( haveSettingsChanged && selectedMetrics?.length < 2 ) {
-			return {
-				message: __( 'Select at least 2 metrics', 'google-site-kit' ),
-			};
-		}
-
-		return select( CORE_USER ).getErrorForAction(
-			'saveKeyMetricsSettings',
-			[
-				{
-					...keyMetricsSettings,
-					widgetSlugs: selectedMetrics,
-				},
-			]
-		);
-	} );
+	const saveError = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveKeyMetricsSettings', [
+			{
+				...keyMetricsSettings,
+				widgetSlugs: selectedMetrics,
+			},
+		] )
+	);
 
 	// The `custom_dimensions` query value is arbitrary and serves two purposes:
 	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
@@ -176,11 +165,7 @@ export default function Footer( {
 		if ( ! error ) {
 			trackEvent( trackingCategory, 'metrics_sidebar_save' );
 
-			if (
-				keyMetricsEnabled &&
-				isGA4Connected &&
-				hasMissingCustomDimensions
-			) {
+			if ( isGA4Connected && hasMissingCustomDimensions ) {
 				setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 					autoSubmit: true,
 				} );
@@ -223,7 +208,6 @@ export default function Footer( {
 		saveKeyMetricsSettings,
 		selectedMetrics,
 		trackingCategory,
-		keyMetricsEnabled,
 		isGA4Connected,
 		hasMissingCustomDimensions,
 		isOpen,
@@ -262,21 +246,28 @@ export default function Footer( {
 
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
-			{ saveError && (
-				<ErrorNotice
-					error={ saveError }
-					noPrefix={ selectedMetrics?.length < 2 }
-				/>
-			) }
+			{ saveError && <ErrorNotice error={ saveError } /> }
 			<div className="googlesitekit-km-selection-panel-footer__content">
-				<p className="googlesitekit-km-selection-panel-footer__metric-count">
-					{ sprintf(
-						/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
-						__( '%1$d of %2$d selected', 'google-site-kit' ),
-						selectedMetrics?.length || 0,
-						4
-					) }
-				</p>
+				{ haveSettingsChanged && selectedMetrics?.length < 2 ? (
+					<ErrorNotice
+						error={ {
+							message: __(
+								'Select at least 2 metrics',
+								'google-site-kit'
+							),
+						} }
+						noPrefix={ selectedMetrics?.length < 2 }
+					/>
+				) : (
+					<p className="googlesitekit-km-selection-panel-footer__metric-count">
+						{ sprintf(
+							/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
+							__( '%1$d of %2$d selected', 'google-site-kit' ),
+							selectedMetrics?.length || 0,
+							4
+						) }
+					</p>
+				) }
 				<div className="googlesitekit-km-selection-panel-footer__actions">
 					<Link
 						onClick={ onCancelClick }

@@ -149,41 +149,6 @@
 		{
 			"dimensionValues": [
 				{ "value": "20201201" },
-				{ "value": "Organic Social" }
-			],
-			"metricValues": [ { "value": "13" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201202" },
-				{ "value": "Organic Social" }
-			],
-			"metricValues": [ { "value": "91" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201203" },
-				{ "value": "Organic Social" }
-			],
-			"metricValues": [ { "value": "22" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201204" },
-				{ "value": "Organic Social" }
-			],
-			"metricValues": [ { "value": "47" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Organic Social" }
-			],
-			"metricValues": [ { "value": "59" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201201" },
 				{ "value": "Organic Search" }
 			],
 			"metricValues": [ { "value": "14" } ]
@@ -355,15 +320,50 @@
 				{ "value": "Affiliates" }
 			],
 			"metricValues": [ { "value": "90" } ]
-		}
-	],
+		},
+    {
+      "dimensionValues": [
+        { "value": "20201201" },
+        { "value": "(other)" }
+      ],
+      "metricValues": [ { "value": "13" } ]
+    },
+    {
+      "dimensionValues": [
+        { "value": "20201202" },
+        { "value": "(other)" }
+      ],
+      "metricValues": [ { "value": "91" } ]
+    },
+    {
+      "dimensionValues": [
+        { "value": "20201203" },
+        { "value": "(other)" }
+      ],
+      "metricValues": [ { "value": "22" } ]
+    },
+    {
+      "dimensionValues": [
+        { "value": "20201204" },
+        { "value": "(other)" }
+      ],
+      "metricValues": [ { "value": "47" } ]
+    },
+    {
+      "dimensionValues": [
+        { "value": "20201205" },
+        { "value": "(other)" }
+      ],
+      "metricValues": [ { "value": "59" } ]
+    }
+  ],
 	"totals": [
 		{
 			"dimensionValues": [
 				{ "value": "RESERVED_TOTAL" },
 				{ "value": "RESERVED_TOTAL" }
 			],
-			"metricValues": [ { "value": "90" } ]
+			"metricValues": [ { "value": "59" } ]
 		}
 	],
 	"minimums": [
@@ -381,7 +381,7 @@
 				{ "value": "RESERVED_MAX" },
 				{ "value": "RESERVED_MAX" }
 			],
-			"metricValues": [ { "value": "90" } ]
+			"metricValues": [ { "value": "59" } ]
 		}
 	],
 	"metadata": { "currencyCode": "USD", "timeZone": "America/Los_Angeles" },
