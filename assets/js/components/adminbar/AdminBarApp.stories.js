@@ -23,8 +23,10 @@ import {
 	setupAnalytics4GatheringData,
 	setupBaseRegistry,
 	setupSearchConsoleGatheringData,
-	setupSearchConsoleAnalytics4MockReports,
-	setupSearchConsoleAnalytics4ZeroData,
+	setupSearchConsoleMockReports,
+	setupAnalytics4MockReports,
+	setupSearchConsoleZeroData,
+	setupAnalytics4ZeroData,
 } from './common-GA4.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
@@ -38,7 +40,10 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => (
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupSearchConsoleAnalytics4MockReports,
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
 };
 Ready.scenario = {
 	label: 'Global/Admin Bar',
@@ -58,7 +63,10 @@ GatheringData.args = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalytics4ZeroData,
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleZeroData( registry );
+		setupAnalytics4ZeroData( registry );
+	},
 };
 
 export default {

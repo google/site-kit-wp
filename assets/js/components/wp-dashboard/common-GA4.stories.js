@@ -187,11 +187,6 @@ export const setupSearchConsoleMockReports = ( registry, data ) => {
 	}
 };
 
-export const setupSearchConsoleAnalytics4MockReports = ( registry ) => {
-	setupSearchConsoleMockReports( registry );
-	setupAnalytics4MockReports( registry );
-};
-
 export const setupSearchConsoleGatheringData = ( registry ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
@@ -203,11 +198,6 @@ export const setupAnalytics4GatheringData = ( registry ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
-};
-
-export const setupSearchConsoleAnalytics4GatheringData = ( registry ) => {
-	setupSearchConsoleGatheringData( registry );
-	setupAnalytics4GatheringData( registry );
 };
 
 export function setupAnalytics4ZeroData(

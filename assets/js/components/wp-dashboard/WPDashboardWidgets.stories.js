@@ -29,16 +29,16 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
-import { widgetDecorators } from './common.stories';
+import { setupSearchConsoleZeroData, widgetDecorators } from './common.stories';
 import {
-	setupSearchConsoleAnalytics4MockReports,
-	setupSearchConsoleAnalytics4GatheringData,
 	setupAnalytics4ZeroData,
 	provideAnalytics4ReportTitles,
 	setupSearchConsoleMockReports,
+	setupAnalytics4MockReports,
+	setupSearchConsoleGatheringData,
+	setupAnalytics4GatheringData,
 } from './common-GA4.stories';
 import FeaturesProvider from '../FeaturesProvider';
-import { setupSearchConsoleAnalytics4ZeroData } from '../adminbar/common-GA4.stories';
 
 const Template = ( { setupRegistry, features = [] } ) => {
 	const enabledFeatures = new Set( features );
@@ -57,7 +57,8 @@ ReadyGA4.storyName = 'Ready';
 ReadyGA4.args = {
 	setupRegistry: ( registry ) => {
 		provideAnalytics4ReportTitles( registry );
-		setupSearchConsoleAnalytics4MockReports( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
 	},
 };
 
@@ -124,7 +125,8 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 		provideUserCapabilities( registry );
 		provideModuleRegistrations( registry );
 		provideUserAuthentication( registry );
-		setupSearchConsoleAnalytics4MockReports( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
 	},
 };
 
@@ -133,7 +135,8 @@ GatheringDataGA4.storyName = 'Gathering Data';
 GatheringDataGA4.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
-		setupSearchConsoleAnalytics4GatheringData( registry );
+		setupSearchConsoleGatheringData( registry );
+		setupAnalytics4GatheringData( registry );
 	},
 };
 
@@ -142,7 +145,7 @@ ZeroDataGA4.storyName = 'Zero Data';
 ZeroDataGA4.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
-		setupSearchConsoleAnalytics4ZeroData( registry );
+		setupSearchConsoleZeroData( registry );
 		setupAnalytics4ZeroData( registry );
 	},
 };
