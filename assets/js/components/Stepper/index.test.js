@@ -42,15 +42,13 @@ describe( 'Stepper', () => {
 			// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 			expect(
 				container.querySelectorAll(
-					'.googlesitekit-stepper__step-title--upcoming'
+					'.googlesitekit-stepper__step--upcoming .googlesitekit-stepper__step-title'
 				).length
 			).toBe( 2 );
 
 			expect(
-				container.querySelector(
-					'.googlesitekit-stepper__step-content'
-				)
-			).not.toBeInTheDocument();
+				container.querySelector( '.googlesitekit-stepper__step' )
+			).not.toHaveClass( 'googlesitekit-stepper__step--active' );
 		}
 	);
 
@@ -67,13 +65,13 @@ describe( 'Stepper', () => {
 		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 		expect(
 			container.querySelectorAll(
-				'.googlesitekit-stepper__step-title--completed'
+				'.googlesitekit-stepper__step--completed .googlesitekit-stepper__step-title'
 			).length
 		).toBe( 2 );
 
 		expect(
-			container.querySelector( '.googlesitekit-stepper__step-content' )
-		).not.toBeInTheDocument();
+			container.querySelector( '.googlesitekit-stepper__step' )
+		).not.toHaveClass( 'googlesitekit-stepper__step--active' );
 	} );
 
 	it( 'should render the active step as active and display its content', () => {
@@ -89,21 +87,15 @@ describe( 'Stepper', () => {
 		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-title'
+				'.googlesitekit-stepper__step:nth-child(1)'
 			)
-		).toHaveClass( 'googlesitekit-stepper__step-title--active' );
+		).toHaveClass( 'googlesitekit-stepper__step--active' );
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-content'
+				'.googlesitekit-stepper__step:nth-child(2)'
 			)
-		).toBeInTheDocument();
-
-		expect(
-			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-content'
-			)
-		).not.toBeInTheDocument();
+		).not.toHaveClass( 'googlesitekit-stepper__step--active' );
 
 		rerender(
 			<Stepper activeStep={ 1 }>
@@ -117,20 +109,14 @@ describe( 'Stepper', () => {
 		// Provide some explicit assertations to highlight key areas that will be captured in the snapshot above.
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(1) .googlesitekit-stepper__step-content'
+				'.googlesitekit-stepper__step:nth-child(1)'
 			)
-		).not.toBeInTheDocument();
+		).not.toHaveClass( 'googlesitekit-stepper__step--active' );
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-title'
+				'.googlesitekit-stepper__step:nth-child(2)'
 			)
-		).toHaveClass( 'googlesitekit-stepper__step-title--active' );
-
-		expect(
-			container.querySelector(
-				'.googlesitekit-stepper__step:nth-child(2) .googlesitekit-stepper__step-content'
-			)
-		).toBeInTheDocument();
+		).toHaveClass( 'googlesitekit-stepper__step--active' );
 	} );
 } );

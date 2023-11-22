@@ -40,10 +40,12 @@ function Template( { activeStep: initialActiveStep } ) {
 			<Step title="Middle Step">
 				<p>This is the middle step.</p>
 				<Button onClick={ () => setActiveStep( 2 ) }>Next</Button>
+				<Button onClick={ () => setActiveStep( 0 ) }>Prev</Button>
 			</Step>
 			<Step title="Last Step">
 				<p>This is the last step.</p>
 				<Button onClick={ () => setActiveStep( 3 ) }>Done</Button>
+				<Button onClick={ () => setActiveStep( 1 ) }>Prev</Button>
 			</Step>
 		</Stepper>
 	);
