@@ -61,7 +61,7 @@ class Client_FactoryTest extends TestCase {
 	/**
 	 * @dataProvider data_config_ip_resolve_values
 	 */
-	public function test_client_ip_resolve_config_options( $ip_resolve, $want ) {
+	public function test_client_ip_resolve_config_options( $ip_resolve, $expected_value ) {
 		add_filter(
 			'googlesitekit_force_ip_resolve',
 			function() use ( $ip_resolve ) {
@@ -70,7 +70,7 @@ class Client_FactoryTest extends TestCase {
 		);
 
 		$client = Client_Factory::create_client( array() );
-		$this->assertEquals( $want, $client->getHttpClient()->getConfig( 'force_ip_resolve' ) );
+		$this->assertEquals( $expected_value, $client->getHttpClient()->getConfig( 'force_ip_resolve' ) );
 	}
 
 	public function data_config_ip_resolve_values() {
