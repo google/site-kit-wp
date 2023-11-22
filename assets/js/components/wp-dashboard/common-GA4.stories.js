@@ -122,7 +122,7 @@ const pageTitlesReportOptions = {
 	startDate: '2020-12-31',
 	endDate: '2021-01-27',
 	dimensionFilters: {
-		pagePath: new Array( 3 )
+		pagePath: new Array( 5 )
 			.fill( '' )
 			.map( ( _, i ) => `/test-post-${ i + 1 }/` )
 			.sort(),
