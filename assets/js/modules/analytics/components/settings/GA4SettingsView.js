@@ -26,15 +26,16 @@ import { createInterpolateElement, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
+import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
 import SettingsEnhancedMeasurementView from '../../../analytics-4/components/settings/SettingsEnhancedMeasurementView';
+import VisuallyHidden from '../../../../components/VisuallyHidden';
+import { escapeURI } from '../../../../util/escape-uri';
 const { useSelect } = Data;
 
 export default function GA4SettingsView() {
@@ -56,6 +57,11 @@ export default function GA4SettingsView() {
 	const googleTagID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getGoogleTagID()
 	);
+	const editAccountSettingsURL = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getServiceURL( {
+			path: escapeURI`/a${ accountID }p${ ga4PropertyID }/admin/account/settings`,
+		} )
+	);
 
 	if ( ! ga4PropertyID || ga4PropertyID === PROPERTY_CREATE ) {
 		return null;
@@ -72,6 +78,24 @@ export default function GA4SettingsView() {
 						<DisplaySetting value={ accountID } />
 					</p>
 				</div>
+				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
+					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+						<Link href={ editAccountSettingsURL } external>
+							{ createInterpolateElement(
+								__(
+									'Edit <VisuallyHidden>account </VisuallyHidden>in Analytics',
+									'google-site-kit'
+								),
+								{
+									VisuallyHidden: <VisuallyHidden />,
+								}
+							) }
+						</Link>
+					</p>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __(

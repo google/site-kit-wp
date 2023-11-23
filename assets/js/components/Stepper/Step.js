@@ -21,24 +21,15 @@
  */
 import PropTypes from 'prop-types';
 
-/**
- * Internal dependencies
- */
-import { STEP_STATUS } from './constants';
-
-export default function Step( { children, title, stepStatus } ) {
+export default function Step( { children, title } ) {
 	return (
-		<div>
-			<h2
-				className={ `googlesitekit-stepper__step-title googlesitekit-stepper__step-title--${ stepStatus }` }
-			>
-				{ title }
-			</h2>
-			{ stepStatus === STEP_STATUS.ACTIVE && (
+		<div className="googlesitekit-stepper__step-info">
+			<h2 className="googlesitekit-stepper__step-title">{ title }</h2>
+			<div className="googlesitekit-stepper__step-content-container">
 				<div className="googlesitekit-stepper__step-content">
 					{ children }
 				</div>
-			) }
+			</div>
 		</div>
 	);
 }
@@ -46,5 +37,4 @@ export default function Step( { children, title, stepStatus } ) {
 Step.propTypes = {
 	children: PropTypes.node.isRequired,
 	title: PropTypes.string.isRequired,
-	stepStatus: PropTypes.oneOf( Object.values( STEP_STATUS ) ),
 };

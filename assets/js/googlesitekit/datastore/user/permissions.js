@@ -30,7 +30,6 @@ import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { getMetaCapabilityPropertyName } from '../util/permissions';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 const { createRegistrySelector } = Data;
 
 // Actions
@@ -228,10 +227,8 @@ const baseSelectors = {
 	 */
 	getViewableModules: createRegistrySelector( ( select ) => () => {
 		const modules = select( CORE_MODULES ).getModules();
-		const isGA4DashboardView =
-			select( MODULES_ANALYTICS ).isGA4DashboardView();
 
-		if ( modules === undefined || isGA4DashboardView === undefined ) {
+		if ( modules === undefined ) {
 			return undefined;
 		}
 
@@ -239,10 +236,7 @@ const baseSelectors = {
 		// shareable and the user has the "read shared module data"
 		// capability for.
 		return Object.values( modules ).reduce( ( slugs, module ) => {
-			if (
-				( module.slug === 'analytics' && isGA4DashboardView ) ||
-				( module.slug === 'analytics-4' && ! isGA4DashboardView )
-			) {
+			if ( module.slug === 'analytics' ) {
 				return slugs;
 			}
 
@@ -310,11 +304,8 @@ const baseSelectors = {
 				return false;
 			}
 
-			const isGA4DashboardView =
-				select( MODULES_ANALYTICS ).isGA4DashboardView();
-
 			let capabilityModuleSlug = module.slug;
-			if ( capabilityModuleSlug === 'analytics' && isGA4DashboardView ) {
+			if ( capabilityModuleSlug === 'analytics' ) {
 				capabilityModuleSlug = 'analytics-4';
 			}
 
