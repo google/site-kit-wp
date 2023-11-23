@@ -28,12 +28,14 @@ import {
 	provideUserAuthentication,
 	fireEvent,
 	waitFor,
+	waitForElementToBeRemoved,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
+import * as analytics4Fixtures from '../../../datastore/__fixtures__';
 import EnhancedMeasurementActivationBanner from './index';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
@@ -106,6 +108,15 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 	} );
 
 	it( 'should render the success step when the the setup form is successfully submitted', async () => {
+		const enhancedMeasurementSettingsEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+		);
+
+		fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
+			status: 200,
+			body: analytics4Fixtures.defaultEnhancedMeasurementSettings,
+		} );
+
 		const { container, getByRole, getByText, waitForRegistry } = render(
 			<EnhancedMeasurementActivationBanner />,
 			{
@@ -113,9 +124,21 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			}
 		);
 
-		fireEvent.click( getByRole( 'button', { name: 'Enable now' } ) );
+		await waitForRegistry();
+
+		const enableNowButton = getByRole( 'button', { name: 'Enable now' } );
+		fireEvent.click( enableNowButton );
+
+		await waitForElementToBeRemoved( enableNowButton );
 
 		await waitForRegistry();
+
+		// Enhanced measurement settings should update when Enhanced measurement
+		// is enabled via the  "Enable now" CTA.
+		expect( fetchMock ).toHaveBeenCalledTimes(
+			1,
+			enhancedMeasurementSettingsEndpoint
+		);
 
 		expect( container ).toMatchSnapshot();
 

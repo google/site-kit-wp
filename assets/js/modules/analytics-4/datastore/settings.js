@@ -52,7 +52,6 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { isFeatureEnabled } from '../../../features';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -103,7 +102,6 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	if (
-		isFeatureEnabled( 'enhancedMeasurement' ) &&
 		isValidPropertyID( propertyID ) &&
 		isValidWebDataStreamID( webDataStreamID )
 	) {
@@ -184,9 +182,7 @@ export function rollbackChanges( { select, dispatch } ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
 	}
 
-	if ( isFeatureEnabled( 'enhancedMeasurement' ) ) {
-		dispatch( MODULES_ANALYTICS_4 ).resetEnhancedMeasurementSettings();
-	}
+	dispatch( MODULES_ANALYTICS_4 ).resetEnhancedMeasurementSettings();
 }
 
 export function validateCanSubmitChanges( select ) {

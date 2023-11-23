@@ -458,7 +458,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_handle_provisioning_callback__with_enhancedMeasurement_streamEnabled() {
-		$this->enable_feature( 'enhancedMeasurement' );
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
@@ -732,7 +731,6 @@ class Analytics_4Test extends TestCase {
 
 	public function test_create_account_ticket__with_enhancedMeasurement() {
 		// TODO: Merge with above test or keep separate when feature flag is removed.
-		$this->enable_feature( 'enhancedMeasurement' );
 		$this->analytics->register();
 		$data = array(
 			'displayName'                      => 'test account name',

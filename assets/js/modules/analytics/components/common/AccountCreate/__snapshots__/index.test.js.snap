@@ -234,6 +234,59 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
         </div>
       </div>
     </div>
+    <div
+      class="googlesitekit-setup-module__inputs"
+    >
+      <div
+        class="googlesitekit-analytics-enable-enhanced-measurement"
+      >
+        <div
+          aria-checked="true"
+          class="mdc-switch mdc-switch--checked"
+          role="switch"
+          tabindex="0"
+        >
+          <div
+            class="mdc-switch__track"
+          >
+             
+          </div>
+          <div
+            class="mdc-switch__thumb-underlay"
+          >
+            <div
+              class="mdc-switch__thumb"
+            >
+              <input
+                class="mdc-switch__native-control"
+                id="googlesitekit-switch-0"
+                readonly=""
+                role="switch"
+                type="checkbox"
+              />
+            </div>
+          </div>
+        </div>
+        <label
+          class=""
+          for="googlesitekit-switch-0"
+        >
+          Enable enhanced measurement
+        </label>
+        <p>
+          This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+          <a
+            aria-label="Learn more (opens in a new tab)"
+            class="googlesitekit-cta-link googlesitekit-cta-link--external"
+            href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Learn more
+          </a>
+        </p>
+      </div>
+    </div>
     <p>
       <span>
         You will be redirected to Google Analytics to accept the terms of service.

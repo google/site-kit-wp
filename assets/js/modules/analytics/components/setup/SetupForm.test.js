@@ -24,6 +24,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../../tests/js/utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -39,6 +40,7 @@ import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
+import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../analytics-4/constants';
 
 const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 
@@ -128,6 +130,16 @@ describe( 'SetupForm', () => {
 					),
 				}
 			);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetEnhancedMeasurementSettings(
+				analytics4Fixtures.defaultEnhancedMeasurementSettings,
+				{
+					propertyID: analytics4Fixtures.properties[ 0 ]._id,
+					webDataStreamID: '2000',
+				}
+			);
+
 		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		const finishSetup = jest.fn();
@@ -162,6 +174,10 @@ describe( 'SetupForm', () => {
 			'/analytics-4/data/settings'
 		);
 
+		const dismissItemEndpointRegexp = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
+		);
+
 		fetchMock.post( updateAnalyticsSettingsRegexp, {
 			status: 200,
 			body: {},
@@ -172,6 +188,13 @@ describe( 'SetupForm', () => {
 			body: {},
 		} );
 
+		fetchMock.post( dismissItemEndpointRegexp, {
+			status: 200,
+			body: JSON.stringify( [
+				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+			] ),
+		} );
+
 		act( () => {
 			fireEvent.click(
 				getByRole( 'button', { name: /Configure Analytics/i } )
@@ -180,8 +203,8 @@ describe( 'SetupForm', () => {
 
 		await waitForRegistry();
 
-		// An additional wait is required to allow the finishSetup callback to be invoked.
-		await waitForDefaultTimeouts();
+		// An additional wait is required in order for all resolvers to finish.
+		await act( waitForDefaultTimeouts );
 
 		expect( fetchMock ).toHaveFetchedTimes(
 			1,
@@ -214,6 +237,11 @@ describe( 'SetupForm', () => {
 			.receiveGetProperties( [], { accountID } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( analytics4Fixtures.properties[ 0 ], {
+				propertyID: analytics4Fixtures.properties[ 0 ]._id,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetWebDataStreamsBatch(
 				analytics4Fixtures.webDataStreamsBatch,
 				{
@@ -222,6 +250,16 @@ describe( 'SetupForm', () => {
 					),
 				}
 			);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetEnhancedMeasurementSettings(
+				analytics4Fixtures.defaultEnhancedMeasurementSettings,
+				{
+					propertyID: analytics4Fixtures.properties[ 0 ]._id,
+					webDataStreamID: '2000',
+				}
+			);
+
 		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
@@ -231,6 +269,7 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_SETUP, { autoSubmit: true } );
+
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
@@ -255,10 +294,6 @@ describe( 'SetupForm', () => {
 			'/analytics-4/data/settings'
 		);
 
-		const getWebDataStreamsBatchRegexp = new RegExp(
-			'/analytics-4/data/webdatastreams-batch'
-		);
-
 		fetchMock.post( createPropertyRegexp, {
 			status: 200,
 			body: analytics4Fixtures.properties[ 0 ],
@@ -279,11 +314,6 @@ describe( 'SetupForm', () => {
 			body: {},
 		} );
 
-		fetchMock.get( getWebDataStreamsBatchRegexp, {
-			status: 200,
-			body: [],
-		} );
-
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
@@ -302,7 +332,7 @@ describe( 'SetupForm', () => {
 
 		// An additional wait is required in order for all resolvers to finish.
 		await act( async () => {
-			await waitForDefaultTimeouts();
+			await waitForTimeouts( 50 );
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyRegexp );
@@ -314,10 +344,6 @@ describe( 'SetupForm', () => {
 		expect( fetchMock ).toHaveFetchedTimes(
 			1,
 			updateAnalytics4SettingsRegexp
-		);
-		expect( fetchMock ).toHaveFetchedTimes(
-			1,
-			getWebDataStreamsBatchRegexp
 		);
 
 		expect( finishSetup ).toHaveBeenCalledTimes( 1 );
