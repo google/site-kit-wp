@@ -38,70 +38,12 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { generateDateRangeArgs } from '../../../util';
 import { getURLPath, untrailingslashit } from '../../../../../util';
-import {
-	MODULES_ANALYTICS,
-	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
-} from '../../../../analytics/datastore/constants';
+import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
-import { generateDateRangeArgs as generateAnalyticsDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import SourceLink from '../../../../../components/SourceLink';
 import Data from 'googlesitekit-data';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect } = Data;
-
-function SourceLinkAnalytics( { id } ) {
-	const viewOnlyDashboard = useViewOnly();
-
-	const serviceURL = useSelect(
-		( select ) => {
-			if ( viewOnlyDashboard ) {
-				return null;
-			}
-
-			const { getServiceReportURL } = select( MODULES_ANALYTICS );
-			const url = select( CORE_SITE ).getCurrentEntityURL();
-			const rangeDates = select( CORE_USER ).getDateRangeDates( {
-				compare: true,
-				offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
-			} );
-			const drilldownArgs = isURL( url )
-				? [ `analytics.pagePath:${ getURLPath( url ) }` ]
-				: [];
-
-			switch ( id ) {
-				case 'users':
-					return getServiceReportURL( 'acquisition-channels', {
-						...generateAnalyticsDateRangeArgs( rangeDates ),
-						'_r.drilldown': [
-							...drilldownArgs,
-							'analytics.trafficChannel:Organic Search',
-						].join( ',' ),
-					} );
-
-				case 'goals':
-					return getServiceReportURL( 'conversions-goals-overview', {
-						...generateAnalyticsDateRangeArgs( rangeDates ),
-						'_r.drilldown': drilldownArgs.join( ',' ),
-					} );
-
-				case 'bounce-rate':
-					return getServiceReportURL( 'visitors-overview', {
-						...generateAnalyticsDateRangeArgs( rangeDates ),
-						'_r.drilldown': drilldownArgs.join( ',' ),
-					} );
-			}
-		},
-		[ id ]
-	);
-
-	return (
-		<SourceLink
-			href={ serviceURL }
-			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			external
-		/>
-	);
-}
 
 function SourceLinkAnalytics4() {
 	const viewOnlyDashboard = useViewOnly();
@@ -193,25 +135,17 @@ function SourceLinkSearch( { metric } ) {
 }
 
 const Footer = ( { metrics, selectedStats } ) => {
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
-	);
-
 	if ( ! metrics?.[ selectedStats ] ) {
 		return null;
 	}
-	const { service, id, metric } = metrics[ selectedStats ];
+	const { service, metric } = metrics[ selectedStats ];
 
 	if ( service === 'search-console' ) {
 		return <SourceLinkSearch metric={ metric } />;
 	}
 
 	// If the service is not Search Console, it must be Analytics.
-	if ( isGA4DashboardView ) {
-		return <SourceLinkAnalytics4 />;
-	}
-
-	return <SourceLinkAnalytics id={ id } />;
+	return <SourceLinkAnalytics4 />;
 };
 
 Footer.propTypes = {

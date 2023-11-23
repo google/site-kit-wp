@@ -19,15 +19,28 @@
 /**
  * Internal dependencies
  */
-import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { getAnalyticsMockResponse } from '../../modules/analytics/util/data-mock';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
 import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { DAY_IN_SECONDS } from '../../util';
 import { properties } from '../../modules/analytics-4/datastore/__fixtures__';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+
+const adminbarSearchConsoleOptions = {
+	startDate: '2020-12-03',
+	endDate: '2021-01-27',
+	dimensions: 'date',
+	url: 'https://www.sitekitbygoogle.com/blog/',
+};
 
 const adminbarAnalytics4OptionSets = [
 	// Mock options for mocking isGatheringData selector's response.
@@ -60,6 +73,17 @@ const adminbarAnalytics4OptionSets = [
 		],
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		dimensions: [ 'date' ],
+		url: 'https://www.sitekitbygoogle.com/blog/',
+	},
 
 	// Mock options for mocking Sessions report's response.
 	{
@@ -88,6 +112,10 @@ export const setupBaseRegistry = ( registry, args ) => {
 		currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
 		currentEntityTitle: 'Blog test post for Google Site Kit',
 	} );
+
+	// Provide authentication, if isAuthenticated is false `gatheringData` will not be updated for `analytics-4` module
+	// leaving the `GA4` widgets in loading state.
+	provideUserAuthentication( registry );
 
 	// Set up analytics and analytics-4 modules stores but provide no data.
 	provideModules( registry, [
@@ -130,6 +158,21 @@ export const widgetDecorators = [
 	},
 ];
 
+export const setupSearchConsoleMockReports = ( registry, data ) => {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
+	if ( data ) {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( data, {
+			options: adminbarSearchConsoleOptions,
+		} );
+	} else {
+		provideSearchConsoleMockReport(
+			registry,
+			adminbarSearchConsoleOptions
+		);
+	}
+};
+
 export const setupAnalytics4MockReports = (
 	registry,
 	mockOptions = adminbarAnalytics4OptionSets
@@ -142,6 +185,13 @@ export const setupAnalytics4MockReports = (
 			.receiveGetReport( getAnalytics4MockResponse( options ), {
 				options,
 			} );
+	} );
+};
+
+export const setupSearchConsoleGatheringData = ( registry ) => {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+		options: adminbarSearchConsoleOptions,
 	} );
 };
 
@@ -174,6 +224,23 @@ export const setupAnalytics4GatheringData = (
 			options,
 		} );
 	} );
+};
+
+export const setupSearchConsoleZeroData = ( registry ) => {
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+		[
+			{
+				clicks: 0,
+				ctr: 0,
+				impressions: 0,
+				keys: [ '2021-08-18' ],
+				position: 0,
+			},
+		],
+		{
+			options: adminbarSearchConsoleOptions,
+		}
+	);
 };
 
 export const setupAnalytics4ZeroData = (
