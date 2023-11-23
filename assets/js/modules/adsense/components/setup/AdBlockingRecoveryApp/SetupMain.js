@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -63,25 +63,16 @@ export default function SetupMain() {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const adBlockingRecoverySetupStatus = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
-	);
-
-	const {
-		saveSettings,
-		setAdBlockingRecoverySetupStatus,
-		setUseAdBlockingRecoverySnippet,
-		setUseAdBlockingRecoveryErrorSnippet,
-	} = useDispatch( MODULES_ADSENSE );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-
-	const initialActiveStep = useMemo( () => {
+	const initialActiveStep = useSelect( ( select ) => {
 		const statusStepMap = {
 			[ ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED ]:
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.CREATE_MESSAGE,
 			[ ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED ]:
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.COMPLETE,
 		};
+
+		const adBlockingRecoverySetupStatus =
+			select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
 
 		if ( adBlockingRecoverySetupStatus === undefined ) {
 			return undefined;
@@ -91,7 +82,15 @@ export default function SetupMain() {
 			statusStepMap[ adBlockingRecoverySetupStatus ] ||
 			ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.PLACE_TAGS
 		);
-	}, [ adBlockingRecoverySetupStatus ] );
+	} );
+
+	const {
+		saveSettings,
+		setAdBlockingRecoverySetupStatus,
+		setUseAdBlockingRecoverySnippet,
+		setUseAdBlockingRecoveryErrorSnippet,
+	} = useDispatch( MODULES_ADSENSE );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const [ activeStep, setActiveStep ] = useState( initialActiveStep );
 
@@ -176,31 +175,29 @@ export default function SetupMain() {
 			</Grid>
 
 			<Content>
-				{ undefined !== adBlockingRecoverySetupStatus && (
-					<Stepper
-						activeStep={ activeStep }
-						className="googlesitekit-ad-blocking-recovery__steps"
+				<Stepper
+					activeStep={ activeStep }
+					className="googlesitekit-ad-blocking-recovery__steps"
+				>
+					<Step
+						title={ __(
+							'Enable ad blocking recovery message (required)',
+							'google-site-kit'
+						) }
+						className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-place-tags"
 					>
-						<Step
-							title={ __(
-								'Enable ad blocking recovery message (required)',
-								'google-site-kit'
-							) }
-							className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-place-tags"
-						>
-							<PlaceTagsStep setActiveStep={ setActiveStep } />
-						</Step>
-						<Step
-							title={ __(
-								'Create your site’s ad blocking recovery message (required)',
-								'google-site-kit'
-							) }
-							className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-create-message"
-						>
-							<CreateMessageStep />
-						</Step>
-					</Stepper>
-				) }
+						<PlaceTagsStep setActiveStep={ setActiveStep } />
+					</Step>
+					<Step
+						title={ __(
+							'Create your site’s ad blocking recovery message (required)',
+							'google-site-kit'
+						) }
+						className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-create-message"
+					>
+						<CreateMessageStep />
+					</Step>
+				</Stepper>
 			</Content>
 
 			<div className="googlesitekit-ad-blocking-recovery__footer googlesitekit-ad-blocking-recovery__buttons">
