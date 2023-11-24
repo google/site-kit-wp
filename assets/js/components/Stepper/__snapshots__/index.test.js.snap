@@ -31,13 +31,7 @@ exports[`Stepper should render all steps as completed when activeStep is greater
         </h2>
         <div
           class="googlesitekit-stepper__step-content-container"
-        >
-          <div
-            class="googlesitekit-stepper__step-content"
-          >
-            This is step 1.
-          </div>
-        </div>
+        />
       </div>
     </li>
     <li
@@ -63,13 +57,7 @@ exports[`Stepper should render all steps as completed when activeStep is greater
         </h2>
         <div
           class="googlesitekit-stepper__step-content-container"
-        >
-          <div
-            class="googlesitekit-stepper__step-content"
-          >
-            This is step 2.
-          </div>
-        </div>
+        />
       </div>
     </li>
   </ol>
@@ -107,13 +95,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
         </h2>
         <div
           class="googlesitekit-stepper__step-content-container"
-        >
-          <div
-            class="googlesitekit-stepper__step-content"
-          >
-            This is step 1.
-          </div>
-        </div>
+        />
       </div>
     </li>
     <li
@@ -139,13 +121,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
         </h2>
         <div
           class="googlesitekit-stepper__step-content-container"
-        >
-          <div
-            class="googlesitekit-stepper__step-content"
-          >
-            This is step 2.
-          </div>
-        </div>
+        />
       </div>
     </li>
   </ol>
@@ -183,13 +159,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
         </h2>
         <div
           class="googlesitekit-stepper__step-content-container"
-        >
-          <div
-            class="googlesitekit-stepper__step-content"
-          >
-            This is step 1.
-          </div>
-        </div>
+        />
       </div>
     </li>
     <li
@@ -215,13 +185,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
         </h2>
         <div
           class="googlesitekit-stepper__step-content-container"
-        >
-          <div
-            class="googlesitekit-stepper__step-content"
-          >
-            This is step 2.
-          </div>
-        </div>
+        />
       </div>
     </li>
   </ol>
@@ -291,13 +255,7 @@ exports[`Stepper should render the active step as active and display its content
         </h2>
         <div
           class="googlesitekit-stepper__step-content-container"
-        >
-          <div
-            class="googlesitekit-stepper__step-content"
-          >
-            This is step 2.
-          </div>
-        </div>
+        />
       </div>
     </li>
   </ol>
@@ -335,13 +293,7 @@ exports[`Stepper should render the active step as active and display its content
         </h2>
         <div
           class="googlesitekit-stepper__step-content-container"
-        >
-          <div
-            class="googlesitekit-stepper__step-content"
-          >
-            This is step 1.
-          </div>
-        </div>
+        />
       </div>
     </li>
     <li

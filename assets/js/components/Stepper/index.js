@@ -108,7 +108,7 @@ export default function Stepper( { children, activeStep, className } ) {
 								<div className="googlesitekit-stepper__step-progress-line"></div>
 							) }
 						</div>
-						{ cloneElement( child ) }
+						{ cloneElement( child, { stepStatus } ) }
 					</li>
 				);
 			} ) }
