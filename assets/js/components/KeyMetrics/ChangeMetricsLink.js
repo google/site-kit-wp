@@ -63,6 +63,7 @@ export default function ChangeMetricsLink() {
 		<Fragment>
 			<Link
 				secondary
+				linkButton
 				className="googlesitekit-km-change-metrics-cta"
 				onClick={ openMetricsSelectionPanel }
 			>

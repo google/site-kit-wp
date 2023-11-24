@@ -192,6 +192,7 @@ export default function UserInputPreviewGroup( {
 							isScreenLoading ||
 							( !! currentlyEditingSlug && ! isEditing )
 						}
+						linkButton
 					>
 						{ __( 'Edit', 'google-site-kit' ) }
 
