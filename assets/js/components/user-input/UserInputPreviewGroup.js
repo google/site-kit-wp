@@ -181,8 +181,8 @@ export default function UserInputPreviewGroup( {
 				<LoadingWrapper
 					loading={ loading }
 					className="googlesitekit-margin-left-auto"
-					width="50px"
-					height="21px"
+					width="60px"
+					height="26px"
 				>
 					<Link
 						secondary
