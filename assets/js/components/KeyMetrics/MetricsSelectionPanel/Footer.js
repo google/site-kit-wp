@@ -254,7 +254,7 @@ export default function Footer( {
 	} else if ( selectedMetrics?.length > 4 ) {
 		metricsLimitError = sprintf(
 			/* translators: %d: Number of selected metrics */
-			__( 'Select max 4 metrics (%d selected)', 'google-site-kit' ),
+			__( 'Select up to 4 metrics (%d selected)', 'google-site-kit' ),
 			selectedMetrics?.length
 		);
 	}
