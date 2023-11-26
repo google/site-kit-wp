@@ -262,7 +262,10 @@ export default function Footer( {
 					<p className="googlesitekit-km-selection-panel-footer__metric-count">
 						{ sprintf(
 							/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
-							__( '%1$d of %2$d selected', 'google-site-kit' ),
+							__(
+								'%1$d selected (up to %2$d)',
+								'google-site-kit'
+							),
 							selectedMetrics?.length || 0,
 							4
 						) }
