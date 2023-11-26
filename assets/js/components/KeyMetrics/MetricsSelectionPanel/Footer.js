@@ -244,19 +244,34 @@ export default function Footer( {
 		setPrevIsOpen( isOpen );
 	}, [ isOpen, prevIsOpen ] );
 
+	let metricsLimitError;
+	if ( selectedMetrics?.length < 2 ) {
+		metricsLimitError = sprintf(
+			/* translators: %d: Number of selected metrics */
+			__( 'Select at least 2 metrics (%d selected)', 'google-site-kit' ),
+			selectedMetrics?.length
+		);
+	} else if ( selectedMetrics?.length > 4 ) {
+		metricsLimitError = sprintf(
+			/* translators: %d: Number of selected metrics */
+			__( 'Select max 4 metrics (%d selected)', 'google-site-kit' ),
+			selectedMetrics?.length
+		);
+	}
+
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
 			{ saveError && <ErrorNotice error={ saveError } /> }
 			<div className="googlesitekit-km-selection-panel-footer__content">
-				{ haveSettingsChanged && selectedMetrics?.length < 2 ? (
+				{ haveSettingsChanged && metricsLimitError ? (
 					<ErrorNotice
 						error={ {
-							message: __(
-								'Select at least 2 metrics',
-								'google-site-kit'
-							),
+							message: metricsLimitError,
 						} }
-						noPrefix={ selectedMetrics?.length < 2 }
+						noPrefix={
+							selectedMetrics?.length < 2 ||
+							selectedMetrics?.length > 4
+						}
 					/>
 				) : (
 					<p className="googlesitekit-km-selection-panel-footer__metric-count">
