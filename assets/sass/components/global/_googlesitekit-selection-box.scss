@@ -67,9 +67,4 @@
 			pointer-events: none;
 		}
 	}
-
-	&:not(.googlesitekit-selection-box--disabled):focus-within {
-		border-color: $c-content-primary;
-		outline: none;
-	}
 }
