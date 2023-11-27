@@ -27,6 +27,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
 
 /**
  * @group Modules
@@ -132,15 +133,16 @@ class Synchronize_PropertyTest extends TestCase {
 			function ( Request $request ) use ( $property_id, $create_time ) {
 				$url = parse_url( $request->getUri() );
 
+				$property = new GoogleAnalyticsAdminV1betaProperty();
+				$property->setCreateTime( $create_time );
+				$property->setName( "properties/{$property_id}" );
+
 				if ( "/v1beta/properties/{$property_id}" === $url['path'] ) {
 					return new Response(
 						200,
 						array(),
 						json_encode(
-							array(
-								'name'       => "properties/{$property_id}",
-								'createTime' => $create_time,
-							)
+							$property
 						)
 					);
 				}
