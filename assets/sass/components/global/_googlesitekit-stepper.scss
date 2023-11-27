@@ -17,6 +17,7 @@
  */
 
 .googlesitekit-plugin {
+
 	.googlesitekit-stepper {
 		list-style: none;
 		margin: 0;
@@ -49,19 +50,6 @@
 		width: 24px;
 	}
 
-	.googlesitekit-stepper__step-number--completed {
-		color: $c-content-on-secondary;
-
-		svg {
-			height: 10px;
-			width: 10px;
-		}
-	}
-
-	.googlesitekit-stepper__step-number--upcoming {
-		background-color: $c-surfaces-on-surface-variant;
-	}
-
 	.googlesitekit-stepper__step-progress-line {
 		background-color: $c-surfaces-surface-2;
 		display: none;
@@ -91,16 +79,54 @@
 		}
 	}
 
-	.googlesitekit-stepper__step-title--upcoming {
-		color: $c-surfaces-on-surface-variant;
+	.googlesitekit-stepper__step-content-container {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows $t-default ease-in-out;
+
+		// Set visibility: hidden in order to hide from screen readers and prevent tabbing to hidden content.
+		visibility: hidden;
 	}
 
 	.googlesitekit-stepper__step-content {
-		margin-bottom: 24px;
+		overflow: hidden;
+	}
+
+	.googlesitekit-stepper__step--upcoming {
+
+		.googlesitekit-stepper__step-number {
+			background-color: $c-surfaces-on-surface-variant;
+		}
+
+		.googlesitekit-stepper__step-title {
+			color: $c-surfaces-on-surface-variant;
+		}
+	}
+
+	.googlesitekit-stepper__step--active {
+
+		.googlesitekit-stepper__step-content-container {
+			grid-template-rows: 1fr;
+			margin-bottom: 24px;
+			visibility: visible;
+		}
+	}
+
+	.googlesitekit-stepper__step--completed {
+
+		.googlesitekit-stepper__step-number {
+			color: $c-content-on-secondary;
+
+			svg {
+				height: 10px;
+				width: 10px;
+			}
+		}
 	}
 
 	.googlesitekit-stepper__step:last-child {
-		.googlesitekit-stepper__step-content {
+
+		.googlesitekit-stepper__step-content-container {
 			margin-bottom: 0;
 		}
 	}

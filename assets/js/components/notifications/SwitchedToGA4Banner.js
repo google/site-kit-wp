@@ -50,10 +50,6 @@ export default function SwitchedToGA4Banner() {
 
 	const viewContext = useViewContext();
 
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
-	);
-
 	const referenceDate = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
@@ -99,7 +95,6 @@ export default function SwitchedToGA4Banner() {
 
 	if (
 		! isUAConnected ||
-		! isGA4DashboardView ||
 		isTourDismissed === undefined ||
 		isTourDismissed ||
 		! hasAnalytics4Access ||

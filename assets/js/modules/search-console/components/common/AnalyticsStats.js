@@ -35,8 +35,6 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { extractAnalyticsDashboardData } from '../../../analytics/util';
 import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
 import GoogleChart from '../../../../components/GoogleChart';
-import { UA_CUTOFF_DATE } from '../../../analytics/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { getDateString } from '../../../../util';
@@ -110,9 +108,6 @@ export default function AnalyticsStats( props ) {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( moduleSlug )
 	);
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
-	);
 
 	const propertyCreatedDate = useSelect( ( select ) => {
 		if ( isViewOnly ) {
@@ -130,18 +125,6 @@ export default function AnalyticsStats( props ) {
 				date: getDateString( new Date( propertyCreatedDate ) ),
 				text: __(
 					'Google Analytics 4 property created',
-					'google-site-kit'
-				),
-			},
-		];
-	}
-
-	if ( isGA4DashboardView === false ) {
-		dateMarkers = [
-			{
-				date: UA_CUTOFF_DATE,
-				text: __(
-					'Universal Analytics stopped collecting data',
 					'google-site-kit'
 				),
 			},

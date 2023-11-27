@@ -36,8 +36,6 @@ let viewedAllSteps;
 const dashboardSharing = {
 	slug: 'dashboardSharing',
 	contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-	// TODO: This version should be changed when the feature flag is removed
-	// to the actual upcoming version.
 	version: '1.85.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_dashboard-sharing`,
 	steps: [
