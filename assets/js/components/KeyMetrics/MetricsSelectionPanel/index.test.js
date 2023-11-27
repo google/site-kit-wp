@@ -278,7 +278,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-footer__metric-count'
 				)
-			).toHaveTextContent( '1 of 4 selected' );
+			).toHaveTextContent( '1 selected (up to 4)' );
 
 			// Verify that the metric dependent on a disconnected analytics-4 is disabled.
 			expect(
@@ -711,7 +711,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-footer__metric-count'
 				)
-			).toHaveTextContent( '2 of 4 selected' );
+			).toHaveTextContent( '2 selected (up to 4)' );
 		} );
 	} );
 } );
