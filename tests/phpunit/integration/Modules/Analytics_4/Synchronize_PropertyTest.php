@@ -12,6 +12,11 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -54,23 +59,35 @@ class Synchronize_PropertyTest extends TestCase {
 	 */
 	protected $authentication;
 
-	/**
-	 * @var \WP_User
-	 */
-	protected $administrator;
-
 	public function set_up() {
 		parent::set_up();
 
-		$this->administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
 
 		$context              = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options        = new Options( $context );
-		$this->user_options   = new User_Options( $context, $this->administrator->ID );
+		$this->user_options   = new User_Options( $context );
 		$this->authentication = new Authentication( $context, $this->options, $this->user_options );
+		$modules              = new Modules( $context, $this->options, $this->user_options, $this->authentication );
+		$dismissed_items      = new Dismissed_Items( $this->user_options );
+		$encrypted_options    = new Encrypted_Options( $this->options );
+		$permissions          = new Permissions( $context, $this->authentication, $modules, $this->user_options, $dismissed_items );
 
 		// Fake a valid authentication token on the client.
 		$this->authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
+		$this->authentication->verification()->set( true );
+
+		$encrypted_options->set(
+			Credentials::OPTION,
+			array(
+				'oauth2_client_id'     => 'test-client-id',
+				'oauth2_client_secret' => 'test-client-secret',
+			)
+		);
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+
+		$permissions->register();
 
 		$this->analytics_4 = new Analytics_4(
 			$context,
@@ -96,7 +113,7 @@ class Synchronize_PropertyTest extends TestCase {
 				'accountID'       => '12345678',
 				'propertyID'      => '987654321',
 				'webDataStreamID' => '1234567890',
-				'measurementID'   => 'A1B2C3D4E5',
+				'measurementID'   => 'G-A1B2C3D4E5',
 			)
 		);
 
@@ -104,7 +121,7 @@ class Synchronize_PropertyTest extends TestCase {
 		$this->options->set(
 			Settings::OPTION,
 			array(
-				'ownerID' => $this->administrator->ID,
+				'ownerID' => get_current_user_id(),
 			)
 		);
 	}
@@ -133,19 +150,11 @@ class Synchronize_PropertyTest extends TestCase {
 		);
 	}
 
-	public function get_create_time_in_ms( $create_time ) {
-		$create_time = new \DateTime( $create_time, new \DateTimeZone( 'UTC' ) );
-		// Convert to Unix timestamp and then to milliseconds.
-		$create_time_ms = (int) ( $create_time->getTimestamp() * 1000 );
-
-		return $create_time_ms;
-	}
-
 	public function test_register() {
 		remove_all_actions( Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY );
 
 		$this->synchronize_property->register();
-		$this->synchronize_property->schedule_synchronize_property();
+		$this->synchronize_property->maybe_schedule_synchronize_property();
 
 		$this->assertTrue( has_action( Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY ) );
 
@@ -157,7 +166,7 @@ class Synchronize_PropertyTest extends TestCase {
 	public function test_schedule_synchronize_property__cron_callback() {
 		$property_id    = '987654321';
 		$create_time    = '2014-10-02T15:01:23Z';
-		$create_time_ms = $this->get_create_time_in_ms( $create_time );
+		$create_time_ms = Synchronize_Property::convert_time_to_unix_ms( $create_time );
 
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->analytics_4->get_scopes()
@@ -187,7 +196,7 @@ class Synchronize_PropertyTest extends TestCase {
 
 	public function test_schedule_synchronize_property__create_time_has_value() {
 		$create_time    = '2023-10-02T15:01:23Z';
-		$create_time_ms = $this->get_create_time_in_ms( $create_time );
+		$create_time_ms = Synchronize_Property::convert_time_to_unix_ms( $create_time );
 
 		$this->analytics_4->get_settings()->merge(
 			array(
@@ -198,7 +207,7 @@ class Synchronize_PropertyTest extends TestCase {
 		remove_all_actions( Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY );
 
 		$this->synchronize_property->register();
-		$this->synchronize_property->schedule_synchronize_property();
+		$this->synchronize_property->maybe_schedule_synchronize_property();
 
 		$this->assertTrue( has_action( Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY ) );
 
