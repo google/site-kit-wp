@@ -37,78 +37,127 @@ const { useSelect } = Data;
 export default function Metrics( { savedMetrics } ) {
 	const isViewOnlyDashboard = useViewOnly();
 
-	const availableMetrics = useSelect( ( select ) => {
-		const widgets =
+	const { isKeyMetricAvailable } = useSelect( ( select ) =>
+		select( CORE_USER )
+	);
+
+	const { getModule } = useSelect( ( select ) => select( CORE_MODULES ) );
+
+	const displayInList = useSelect(
+		( select ) => ( metric ) =>
+			KEY_METRICS_WIDGETS[ metric ].displayInList(
+				select,
+				isViewOnlyDashboard
+			)
+	);
+
+	const getWidget = useSelect(
+		( select ) => ( metric ) => select( CORE_WIDGETS ).getWidget( metric )
+	);
+
+	const metricsListReducer = ( acc, metric ) => {
+		if ( ! isKeyMetricAvailable( metric ) ) {
+			return acc;
+		}
+
+		if (
+			typeof KEY_METRICS_WIDGETS[ metric ].displayInList === 'function' &&
+			! displayInList( metric )
+		) {
+			return acc;
+		}
+
+		const widget = getWidget( metric );
+
+		KEY_METRICS_WIDGETS[ metric ].disconnectedModules =
+			widget.modules.reduce( ( modulesAcc, slug ) => {
+				const module = getModule( slug );
+				if ( module?.connected || ! module?.name ) {
+					return modulesAcc;
+				}
+
+				return [ ...modulesAcc, module.name ];
+			}, [] );
+
+		return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
+	};
+
+	const widgets = useSelect(
+		( select ) =>
 			select( CORE_WIDGETS ).getWidgets(
 				AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY
-			) || [];
+			) || []
+	);
 
-		const metrics = widgets
-			.filter( ( { slug } ) => savedMetrics.includes( slug ) )
-			.map( ( { slug } ) => slug );
+	const savedMetricSlugs = widgets
+		.filter( ( { slug } ) => savedMetrics.includes( slug ) )
+		.map( ( { slug } ) => slug );
 
-		const { isKeyMetricAvailable } = select( CORE_USER );
+	const availableSavedMetrics = Object.keys( KEY_METRICS_WIDGETS )
+		.filter( ( metricSlug ) => {
+			return savedMetricSlugs.includes( metricSlug );
+		} )
+		.reduce( metricsListReducer, {} );
 
-		const { getModule } = select( CORE_MODULES );
-
-		return Object.keys( KEY_METRICS_WIDGETS )
-			.sort(
-				( a, b ) =>
-					metrics.includes( b ) - metrics.includes( a ) ||
-					metrics.indexOf( a ) - metrics.indexOf( b )
-			)
-			.reduce( ( acc, metric ) => {
-				if ( ! isKeyMetricAvailable( metric ) ) {
-					return acc;
-				}
-
-				if (
-					typeof KEY_METRICS_WIDGETS[ metric ].displayInList ===
-						'function' &&
-					! KEY_METRICS_WIDGETS[ metric ].displayInList(
-						select,
-						isViewOnlyDashboard
-					)
-				) {
-					return acc;
-				}
-
-				const widget = select( CORE_WIDGETS ).getWidget( metric );
-
-				KEY_METRICS_WIDGETS[ metric ].disconnectedModules =
-					widget.modules.reduce( ( modulesAcc, slug ) => {
-						const module = getModule( slug );
-						if ( module?.connected || ! module?.name ) {
-							return modulesAcc;
-						}
-
-						return [ ...modulesAcc, module.name ];
-					}, [] );
-
-				return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
-			}, {} );
-	} );
+	const availableUnsavedMetrics = Object.keys( KEY_METRICS_WIDGETS )
+		.filter( ( metricSlug ) => {
+			return ! savedMetricSlugs.includes( metricSlug );
+		} )
+		.reduce( metricsListReducer, {} );
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
-			{ Object.keys( availableMetrics ).map( ( slug ) => {
-				const { title, description, disconnectedModules } =
-					availableMetrics[ slug ];
+			{ savedMetrics.length !== 0 && (
+				<p className="googlesitekit-km-selection-panel-metrics__subheading">
+					Current selection
+				</p>
+			) }
+			<div className="googlesitekit-km-selection-panel-metrics__subsection">
+				{ savedMetrics.length !== 0 &&
+					Object.keys( availableSavedMetrics ).map( ( slug ) => {
+						const { title, description, disconnectedModules } =
+							availableSavedMetrics[ slug ];
 
-				const id = `key-metric-selection-checkbox-${ slug }`;
+						const id = `key-metric-selection-checkbox-${ slug }`;
 
-				return (
-					<MetricItem
-						key={ id }
-						id={ id }
-						slug={ slug }
-						title={ title }
-						description={ description }
-						disconnectedModules={ disconnectedModules }
-						savedMetrics={ savedMetrics }
-					/>
-				);
-			} ) }
+						return (
+							<MetricItem
+								key={ id }
+								id={ id }
+								slug={ slug }
+								title={ title }
+								description={ description }
+								disconnectedModules={ disconnectedModules }
+								savedMetrics={ savedMetrics }
+							/>
+						);
+					} ) }
+			</div>
+			{ savedMetrics.length !== 0 && (
+				<p className="googlesitekit-km-selection-panel-metrics__subheading">
+					Additional metrics
+				</p>
+			) }
+			<div className="googlesitekit-km-selection-panel-metrics__subsection">
+				{ Object.keys( availableUnsavedMetrics ).map( ( slug ) => {
+					const { title, description, disconnectedModules } =
+						availableUnsavedMetrics[ slug ];
+
+					const id = `key-metric-selection-checkbox-${ slug }`;
+
+					return (
+						<MetricItem
+							key={ id }
+							id={ id }
+							slug={ slug }
+							title={ title }
+							description={ description }
+							disconnectedModules={ disconnectedModules }
+							savedMetrics={ savedMetrics }
+						/>
+					);
+				} ) }
+			</div>
 		</div>
 	);
 }
