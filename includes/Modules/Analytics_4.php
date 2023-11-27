@@ -151,15 +151,14 @@ final class Analytics_4 extends Module
 
 		$synchronize_property = new Synchronize_Property(
 			$this,
-			$this->user_options,
-			$this->authentication
+			$this->user_options
 		);
 		$synchronize_property->register();
 
 		add_action(
 			'init',
 			function() use ( $synchronize_property ) {
-				$synchronize_property->schedule_synchronize_property();
+				$synchronize_property->maybe_schedule_synchronize_property();
 			}
 		);
 
@@ -206,21 +205,6 @@ final class Analytics_4 extends Module
 
 			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 		}
-
-		// Check if property ID has changed and reset the value for `propertyCreateTime`.
-		// @TODO Merge it with same filter above once `keyMetrics` feature flag is removed.
-		add_filter(
-			'pre_update_option_googlesitekit_analytics-4_settings',
-			function ( $new_value, $old_value ) {
-				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
-					$new_value['propertyCreateTime'] = '';
-				}
-
-				return $new_value;
-			},
-			10,
-			2
-		);
 
 		// Replicate Analytics settings for Analytics-4 if not set.
 		add_filter(
@@ -604,9 +588,7 @@ final class Analytics_4 extends Module
 		$create_time    = isset( $property->createTime ) ? $property->createTime : ''; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$create_time_ms = '';
 		if ( $create_time ) {
-			$create_time = new \DateTime( $create_time, new \DateTimeZone( 'UTC' ) );
-			// Convert to Unix timestamp and then to milliseconds.
-			$create_time_ms = (int) ( $create_time->getTimestamp() * 1000 );
+			$create_time_ms = Synchronize_Property::convert_time_to_unix_ms( $create_time );
 		}
 
 		$this->get_settings()->merge(
