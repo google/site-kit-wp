@@ -21,7 +21,6 @@
  */
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
-import SearchFunnelWidget from './components/dashboard/SearchFunnelWidget';
 import SearchFunnelWidgetGA4 from './components/dashboard/SearchFunnelWidgetGA4';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
@@ -34,8 +33,6 @@ import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
 import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
 import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import { isFeatureEnabled } from '../../features';
-import { negateDefined } from '../../util/negate';
-import { MODULES_ANALYTICS } from '../analytics/datastore/constants';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -51,11 +48,6 @@ export const registerModule = ( modules ) => {
 		Icon: SearchConsoleIcon,
 	} );
 };
-
-const isAnalyticsActive = ( select ) =>
-	negateDefined( select( MODULES_ANALYTICS ).isGA4DashboardView() );
-const isAnalytics4Active = ( select ) =>
-	select( MODULES_ANALYTICS ).isGA4DashboardView();
 
 export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
@@ -73,23 +65,6 @@ export const registerWidgets = ( widgets ) => {
 		]
 	);
 
-	// Register widget reliant on Analytics (UA).
-	widgets.registerWidget(
-		'searchFunnel',
-		{
-			Component: SearchFunnelWidget,
-			width: [ widgets.WIDGET_WIDTHS.FULL ],
-			priority: 3,
-			wrapWidget: false,
-			modules: [ 'search-console' ],
-			isActive: isAnalyticsActive,
-		},
-		[
-			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-		]
-	);
-
 	// Register widget reliant on Analytics 4 (GA4).
 	widgets.registerWidget(
 		'searchFunnelGA4',
@@ -99,7 +74,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ 'search-console' ],
-			isActive: isAnalytics4Active,
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,

@@ -86,12 +86,13 @@ export default function Stepper( { children, activeStep, className } ) {
 					<li
 						className={ classnames(
 							'googlesitekit-stepper__step',
+							`googlesitekit-stepper__step--${ stepStatus }`,
 							child.props.className
 						) }
 					>
 						<div className="googlesitekit-stepper__step-progress">
 							<span
-								className={ `googlesitekit-stepper__step-number googlesitekit-stepper__step-number--${ stepStatus }` }
+								className="googlesitekit-stepper__step-number"
 								title={ getNumberTitle(
 									childNumber,
 									stepStatus

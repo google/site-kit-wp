@@ -215,19 +215,4 @@ module.exports = [
 			},
 		},
 	},
-	{
-		id: 'wordpress--wordpress-dashboard',
-		kind: 'WordPress',
-		name: 'WordPress Dashboard',
-		story: 'WordPress Dashboard',
-		parameters: {
-			fileName: './stories/wp-dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-data-block',
-				delay: 2000,
-			},
-		},
-	},
 ];

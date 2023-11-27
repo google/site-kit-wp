@@ -35,7 +35,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import { WEEK_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { Cell, Grid, Row } from '../../material-components';
 import GhostCardsSVG from './GhostCards';
@@ -76,7 +76,7 @@ export default function KeyMetricsCTAContent( {
 			}
 
 			if ( usingProxy ) {
-				triggerSurvey( 'view_kmw_setup_cta', { ttl: DAY_IN_SECONDS } );
+				triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
 			}
 
 			setHasBeenInView( true );
