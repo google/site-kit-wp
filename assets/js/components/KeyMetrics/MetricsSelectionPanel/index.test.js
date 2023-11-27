@@ -197,7 +197,7 @@ describe( 'MetricsSelectionPanel', () => {
 			);
 		} );
 
-		it( 'should disable unchecked metrics when four metrics are checked', () => {
+		it( 'should not disable unchecked metrics when four metrics are checked', () => {
 			const metrics = [
 				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
@@ -241,7 +241,7 @@ describe( 'MetricsSelectionPanel', () => {
 				getByRole( 'checkbox', {
 					name: /Most popular content/i,
 				} )
-			).toBeDisabled();
+			).not.toBeDisabled();
 		} );
 
 		it( 'should disable metrics that depend on a disconnected analytics-4 module', () => {
