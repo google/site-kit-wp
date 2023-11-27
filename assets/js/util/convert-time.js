@@ -46,7 +46,7 @@ export const convertSecondsToArray = ( seconds ) => {
 };
 
 /**
- * Converts seconds into an array with the following values [HH, MM, SS, MS] as described below.
+ * Converts Date time string into UNIX timestamp in milliseconds.
  *
  * For example, passing "2014-10-02T15:01:23Z" returns 1412262083000.
  *
@@ -60,6 +60,10 @@ export const convertDateStringToUNIXTimestamp = ( dateStringValue ) => {
 		dateStringValue && ! Number.isInteger( dateStringValue )
 			? new Date( dateStringValue ).getTime()
 			: dateStringValue;
+
+	if ( isNaN( unixTimestamp ) ) {
+		return '';
+	}
 
 	return unixTimestamp;
 };
