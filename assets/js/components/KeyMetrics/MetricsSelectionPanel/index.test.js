@@ -550,7 +550,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
 				).textContent
-			).toBe( 'Select at least 2 metrics' );
+			).toBe( 'Select at least 2 metrics (1 selected)' );
 
 			// Select 2 key metrics.
 			const checkbox2 = await findByLabelText(
