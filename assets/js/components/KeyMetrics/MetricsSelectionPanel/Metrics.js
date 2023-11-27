@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -32,6 +37,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import MetricItem from './MetricItem';
 import useViewOnly from '../../../hooks/useViewOnly';
+import { Fragment } from '@wordpress/element';
 const { useSelect } = Data;
 
 export default function Metrics( { savedMetrics } ) {
@@ -107,37 +113,47 @@ export default function Metrics( { savedMetrics } ) {
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
-			{ savedMetrics.length !== 0 && (
-				<p className="googlesitekit-km-selection-panel-metrics__subheading">
-					Current selection
-				</p>
-			) }
-			<div className="googlesitekit-km-selection-panel-metrics__subsection">
-				{ savedMetrics.length !== 0 &&
-					Object.keys( availableSavedMetrics ).map( ( slug ) => {
-						const { title, description, disconnectedModules } =
-							availableSavedMetrics[ slug ];
+			{
+				// Split list into two sections with sub-headings for current selection and
+				// additional metrics if there are already saved metrics.
+				savedMetrics.length !== 0 && (
+					<Fragment>
+						<p className="googlesitekit-km-selection-panel-metrics__subheading">
+							{ __( 'Current selection', 'google-site-kit' ) }
+						</p>
+						<div className="googlesitekit-km-selection-panel-metrics__subsection">
+							{ Object.keys( availableSavedMetrics ).map(
+								( slug ) => {
+									const {
+										title,
+										description,
+										disconnectedModules,
+									} = availableSavedMetrics[ slug ];
 
-						const id = `key-metric-selection-checkbox-${ slug }`;
+									const id = `key-metric-selection-checkbox-${ slug }`;
 
-						return (
-							<MetricItem
-								key={ id }
-								id={ id }
-								slug={ slug }
-								title={ title }
-								description={ description }
-								disconnectedModules={ disconnectedModules }
-								savedMetrics={ savedMetrics }
-							/>
-						);
-					} ) }
-			</div>
-			{ savedMetrics.length !== 0 && (
-				<p className="googlesitekit-km-selection-panel-metrics__subheading">
-					Additional metrics
-				</p>
-			) }
+									return (
+										<MetricItem
+											key={ id }
+											id={ id }
+											slug={ slug }
+											title={ title }
+											description={ description }
+											disconnectedModules={
+												disconnectedModules
+											}
+											savedMetrics={ savedMetrics }
+										/>
+									);
+								}
+							) }
+						</div>
+						<p className="googlesitekit-km-selection-panel-metrics__subheading">
+							{ __( 'Additional metrics', 'google-site-kit' ) }
+						</p>
+					</Fragment>
+				)
+			}
 			<div className="googlesitekit-km-selection-panel-metrics__subsection">
 				{ Object.keys( availableUnsavedMetrics ).map( ( slug ) => {
 					const { title, description, disconnectedModules } =
