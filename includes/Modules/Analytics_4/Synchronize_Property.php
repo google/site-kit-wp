@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4;
 
-use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
@@ -43,26 +43,16 @@ class Synchronize_Property {
 	protected $user_options;
 
 	/**
-	 * User_Options instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Authentication
-	 */
-	protected $authentication;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Analytics_4    $analytics_4 Analytics 4 instance.
-	 * @param User_Options   $user_options User_Options instance.
-	 * @param Authentication $authentication Authentication instance.
+	 * @param Analytics_4  $analytics_4 Analytics 4 instance.
+	 * @param User_Options $user_options User_Options instance.
 	 */
-	public function __construct( Analytics_4 $analytics_4, User_Options $user_options, Authentication $authentication ) {
-		$this->analytics_4    = $analytics_4;
-		$this->user_options   = $user_options;
-		$this->authentication = $authentication;
+	public function __construct( Analytics_4 $analytics_4, User_Options $user_options ) {
+		$this->analytics_4  = $analytics_4;
+		$this->user_options = $user_options;
 	}
 
 	/**
@@ -75,20 +65,27 @@ class Synchronize_Property {
 		add_action(
 			self::CRON_SYNCHRONIZE_PROPERTY,
 			function() {
-				$owner_id         = $this->analytics_4->get_owner_id();
-				$original_user_id = $this->user_options->get_user_id();
-
-				$this->user_options->switch_user( $owner_id );
-
-				if ( $this->authentication->is_authenticated() ) {
-					$property = $this->retrieve_property();
-
-					$this->synchronize_property_create_time( $property );
-				}
-
-				$this->user_options->switch_user( $original_user_id );
+				$this->synchronize_property_data();
 			}
 		);
+	}
+
+	/**
+	 * Cron callback for synchronizing the property.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function synchronize_property_data() {
+		$owner_id     = $this->analytics_4->get_owner_id();
+		$restore_user = $this->user_options->switch_user( $owner_id );
+
+		if ( user_can( $owner_id, Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) {
+			$property = $this->retrieve_property();
+
+			$this->synchronize_property_create_time( $property );
+		}
+
+		$restore_user();
 	}
 
 	/**
@@ -96,8 +93,10 @@ class Synchronize_Property {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function schedule_synchronize_property() {
-		$create_time_has_value  = $this->check_for_setting_value( 'propertyCreateTime' );
+	public function maybe_schedule_synchronize_property() {
+		$settings = $this->analytics_4->get_settings()->get();
+
+		$create_time_has_value  = $settings['propertyCreateTime'];
 		$analytics_4_connected  = $this->analytics_4->is_connected();
 		$cron_already_scheduled = wp_next_scheduled( self::CRON_SYNCHRONIZE_PROPERTY );
 
@@ -114,7 +113,9 @@ class Synchronize_Property {
 	 * @return GoogleAnalyticsAdminV1betaProperty|null $property Analytics 4 property object, or null if property is not found.
 	 */
 	protected function retrieve_property() {
-		$property_id = $this->check_for_setting_value( 'propertyID', true );
+		$settings = $this->analytics_4->get_settings()->get();
+
+		$property_id = $settings['propertyID'];
 		$property    = $this->analytics_4->get_data( 'property', array( 'propertyID' => $property_id ) );
 
 		if ( is_wp_error( $property ) ) {
@@ -136,9 +137,7 @@ class Synchronize_Property {
 			return;
 		}
 
-		$create_time = new \DateTime( $property->createTime, new \DateTimeZone( 'UTC' ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		// Convert to Unix timestamp and then to milliseconds.
-		$create_time_ms = (int) ( $create_time->getTimestamp() * 1000 );
+		$create_time_ms = self::convert_time_to_unix_ms( $property->createTime ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		$this->analytics_4->get_settings()->merge(
 			array(
@@ -148,30 +147,15 @@ class Synchronize_Property {
 	}
 
 	/**
-	 * Check for setting value.
+	 * Convert to Unix timestamp and then to milliseconds.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string  $setting_name Setting name for which to check value for.
-	 * @param boolean $return_value Whether to return the value of found setting, or just boolean to mark setting has value or not.
-	 * @return boolean|string If setting is present either Bollean, or value of the setting, otherwise false.
+	 * @param string $date_time Date in date-time format.
 	 */
-	protected function check_for_setting_value( $setting_name, $return_value = false ) {
-		$settings = $this->analytics_4->get_settings()->get();
+	public static function convert_time_to_unix_ms( $date_time ) {
+		$date_time_object = new \DateTime( $date_time, new \DateTimeZone( 'UTC' ) );
 
-		if ( ! isset( $settings[ $setting_name ] ) ) {
-			return false;
-		}
-
-		if ( isset( $settings[ $setting_name ] ) && empty( $settings[ $setting_name ] ) ) {
-			return false;
-		}
-
-		// If it reached here, it means setting is present and has a value.
-		if ( $return_value ) {
-			return $settings[ $setting_name ];
-		}
-
-		return true;
+		return (int) ( $date_time_object->getTimestamp() * 1000 );
 	}
 }
