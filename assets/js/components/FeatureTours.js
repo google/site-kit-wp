@@ -20,6 +20,10 @@
  * External dependencies
  */
 import { useMount } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
 import { useEffect } from '@wordpress/element';
 
 /**

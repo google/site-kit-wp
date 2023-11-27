@@ -86,9 +86,11 @@ describe( 'FeatureTours', () => {
 		);
 
 		await waitForRegistry();
-		await getByRole( 'alertdialog' );
 
-		getByRole( 'heading', { name: /test tour - step 1 title/i } );
+		expect( await getByRole( 'alertdialog' ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'heading', { name: /test tour - step 1 title/i } )
+		).toBeInTheDocument();
 	} );
 
 	it( 'dispatches resize event on dashboard element resize', async () => {
