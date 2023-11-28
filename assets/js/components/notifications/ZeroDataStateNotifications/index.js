@@ -134,17 +134,21 @@ export default function ZeroDataStateNotifications() {
 	}
 
 	let gatheringDataTitle;
+	let gatheringDataWaitTime;
 	if ( analyticsGatheringData && searchConsoleGatheringData ) {
+		gatheringDataWaitTime = '72';
 		gatheringDataTitle = __(
 			'Search Console and Analytics are gathering data',
 			'google-site-kit'
 		);
 	} else if ( analyticsGatheringData ) {
+		gatheringDataWaitTime = '72';
 		gatheringDataTitle = __(
 			'Analytics is gathering data',
 			'google-site-kit'
 		);
 	} else if ( searchConsoleGatheringData ) {
+		gatheringDataWaitTime = '48';
 		gatheringDataTitle = __(
 			'Search Console is gathering data',
 			'google-site-kit'
@@ -152,7 +156,12 @@ export default function ZeroDataStateNotifications() {
 	}
 
 	if ( analyticsGatheringData || searchConsoleGatheringData ) {
-		return <GatheringDataNotification title={ gatheringDataTitle } />;
+		return (
+			<GatheringDataNotification
+				title={ gatheringDataTitle }
+				gatheringDataWaitTime={ gatheringDataWaitTime }
+			/>
+		);
 	}
 
 	return <ZeroDataNotification />;
