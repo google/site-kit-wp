@@ -62,6 +62,7 @@ export default function Header() {
 				<Link
 					className="googlesitekit-km-selection-panel-header__close"
 					onClick={ onCloseClick }
+					linkButton
 				>
 					<CloseIcon width="15" height="15" />
 				</Link>
