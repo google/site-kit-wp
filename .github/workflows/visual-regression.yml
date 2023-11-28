@@ -55,6 +55,7 @@ jobs:
         run: npm run test:visualtest -- ${{ matrix.shard }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
+        if: failure()
         with:
           name: vrt-report-${{ matrix.shard }}
           path: |
