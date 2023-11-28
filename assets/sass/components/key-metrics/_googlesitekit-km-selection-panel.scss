@@ -48,6 +48,7 @@
 	.googlesitekit-km-selection-panel-header__close {
 		color: $c-surfaces-on-surface-variant;
 		display: flex;
+		padding: 8px; // Tweak the padding to ensure the link is aligned in its focus state.
 	}
 
 	.googlesitekit-km-selection-panel-metrics {
