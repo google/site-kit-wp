@@ -48,7 +48,7 @@ jobs:
       - name: npm install
         run: npm ci
       - name: Build Files
-        run: npm run build:files
+        run: VRT=1 npm run build:storybook
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
