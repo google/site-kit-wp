@@ -33,37 +33,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-files:
-    name: Build Files
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: github.event.pull_request.draft == false
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      - name: npm install
-        run: npm ci
-      - name: Build Files
-        run: VRT=1 npm run build:storybook
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-files
-          path: |
-            dist
   visual-regression:
     name: Run VR Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: build-files
+    if: github.event.pull_request.draft == false
     strategy:
       fail-fast: false
       matrix:
-        shard: [1/4, 2/4, 3/4, 4/4]
+        shard: [1-4, 2-4, 3-4, 4-4]
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js (.nvmrc)
@@ -71,15 +49,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: build-files
-          path: dist
       - name: npm install
         run: npm ci
       - name: Run Backstopjs
-        run: npm run backstopjs -- test ${{ matrix.shard }}
+        run: npm run test:visualtest -- ${{ matrix.shard }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:

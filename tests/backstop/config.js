@@ -23,7 +23,7 @@ const viewports = require( './viewports' );
 
 let shardedScenarios = scenarios;
 if ( shardConfig ) {
-	const [ shard, totalShards ] = shardConfig.split( '/' );
+	const [ shard, totalShards ] = shardConfig.split( '-' );
 	const total = scenarios.length;
 	const chunkSize = Math.ceil( total / parseInt( totalShards ) );
 	const start = ( parseInt( shard ) - 1 ) * chunkSize;
