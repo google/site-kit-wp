@@ -33,11 +33,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-files:
+    name: Build Files
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: npm install
+        run: npm ci
+      - name: Build Files
+        run: npm run build:files
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-files
+          path: |
+            dist
+            node_modules
   visual-regression:
     name: Run VR Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: github.event.pull_request.draft == false
+    needs: build-files
     strategy:
       fail-fast: false
       matrix:
@@ -49,39 +72,19 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-files
       - name: npm install
         run: npm ci
       - name: Run Backstopjs
-        run: npm run test:visualtest -- ${{ matrix.shard }}
+        run: npm run backstopjs -- test ${{ matrix.shard }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
-        if: failure()
         with:
-          name: vrt-shard-report
+          name: vrt-report-${{ matrix.shard }}
           path: |
             tests/backstop/html_report
             tests/backstop/reference
             tests/backstop/tests
-  merge-artifacts:
-    name: Merge VR Test Results
-    runs-on: ubuntu-latest
-    needs: visual-regression
-    # run only if one of the shards failed
-    # if: ${{ needs.visual-regression.result == 'failure' }}
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: vrt-shard-report
-      - name: Merge artifacts
-        run: |
-          mkdir -p tests/backstop/html_report
-          mkdir -p tests/backstop/reference
-          mkdir -p tests/backstop/tests
-          cp -r ${{ github.workspace }}/vrt-shard-report/* tests/backstop/
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: vrt-report
-          path: tests/backstop
-
