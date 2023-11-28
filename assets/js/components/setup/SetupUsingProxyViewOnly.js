@@ -116,7 +116,7 @@ export default function SetupUsingProxyViewOnly() {
 												<p className="googlesitekit-setup__description">
 													{ createInterpolateElement(
 														__(
-															"An administrator has granted you access to view this site's Dashboard to view stats from all shared Google services. <a>Learn more</a>",
+															"An administrator has granted you access to view this site's dashboard to view stats from all shared Google services. <a>Learn more</a>",
 															'google-site-kit'
 														),
 														{

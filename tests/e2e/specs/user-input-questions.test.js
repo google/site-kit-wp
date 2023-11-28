@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { set } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { visitAdminPage } from '@wordpress/e2e-test-utils';
@@ -48,6 +43,7 @@ import {
 	getAnalytics4MockResponse,
 } from '../../../assets/js/modules/analytics-4/utils/data-mock';
 import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
+import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-object-from-params';
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
@@ -87,6 +83,8 @@ describe( 'User Input Settings', () => {
 			);
 		} );
 
+		await pageWait();
+
 		await step(
 			'wait for settings submission',
 			Promise.all( [
@@ -98,7 +96,7 @@ describe( 'User Input Settings', () => {
 			] )
 		);
 
-		await pageWait();
+		await pageWait( 600 );
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
@@ -106,13 +104,6 @@ describe( 'User Input Settings', () => {
 				'.googlesitekit-widget--kmAnalyticsReturningVisitors'
 			)
 		);
-	}
-
-	function getMultiDimensionalObjectFromParams( params ) {
-		return Object.entries( params ).reduce( ( acc, [ key, value ] ) => {
-			set( acc, key, value );
-			return acc;
-		}, {} );
 	}
 
 	beforeAll( async () => {

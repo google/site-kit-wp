@@ -62,6 +62,7 @@ const Link = forwardRef( ( props, ref ) => {
 		onClick,
 		small = false,
 		standalone = false,
+		linkButton = false,
 		to,
 		...otherProps
 	} = props;
@@ -161,6 +162,7 @@ const Link = forwardRef( ( props, ref ) => {
 				'googlesitekit-cta-link--danger': danger,
 				'googlesitekit-cta-link--disabled': disabled,
 				'googlesitekit-cta-link--standalone': standalone,
+				'googlesitekit-cta-link--link-button': linkButton,
 			} ) }
 			disabled={ disabled }
 			href={
@@ -213,6 +215,7 @@ Link.propTypes = {
 	onClick: PropTypes.func,
 	small: PropTypes.bool,
 	standalone: PropTypes.bool,
+	linkButton: PropTypes.bool,
 	to: PropTypes.string,
 };
 

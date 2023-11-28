@@ -161,7 +161,11 @@
 			}
 
 			> p:first-child {
-				margin-top: $grid-gap-phone / 2;
+				margin-top: 0;
+
+				@media (min-width: $bp-tablet) {
+					margin-top: $grid-gap-phone / 2;
+				}
 			}
 		}
 	}

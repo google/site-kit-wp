@@ -57,6 +57,7 @@ on:
       - reopened
       - synchronize
       - ready_for_review
+  workflow_dispatch:
 
 concurrency:
   group: zips-${{ github.event_name }}-${{ github.ref }}

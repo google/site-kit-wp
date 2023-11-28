@@ -127,5 +127,20 @@ button {
 			}
 		}
 	}
+
+	&.googlesitekit-cta-link--link-button {
+		padding: 2px 10px;
+
+		&:focus {
+			background-color: rgba($c-content-primary, 0.08);
+			outline: none;
+		}
+
+		&.googlesitekit-cta-link--secondary {
+			&:focus {
+				background-color: rgba($c-content-secondary, 0.08);
+			}
+		}
+	}
 }
 /* stylelint-enable no-descending-specificity */

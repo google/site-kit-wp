@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import { WEEK_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { useInView } from '../../hooks/useInView';
 import SettingsKeyMetrics from './SettingsKeyMetrics';
@@ -136,7 +136,7 @@ export default function SettingsCardKeyMetrics() {
 								{ inView && (
 									<SurveyViewTrigger
 										triggerID="view_kmw_setup_cta"
-										ttl={ DAY_IN_SECONDS }
+										ttl={ WEEK_IN_SECONDS }
 									/>
 								) }
 							</Row>
