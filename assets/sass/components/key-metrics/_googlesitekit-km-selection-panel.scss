@@ -120,6 +120,11 @@
 
 	.googlesitekit-km-selection-panel-footer__metric-count {
 		font-weight: $fw-medium;
+
+		.googlesitekit-km-selection-panel-footer__metric-count--max-count {
+			color: $c-surfaces-on-surface-variant;
+			font-weight: $fw-normal;
+		}
 	}
 
 	.googlesitekit-km-selection-panel-footer__actions {
