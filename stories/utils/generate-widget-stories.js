@@ -288,12 +288,18 @@ export function generateReportBasedWidgetStories( args ) {
 	// Custom variants.
 	const customVariants = {};
 	Object.keys( additionalVariants ).forEach( ( name ) => {
+		// This allows for disabling a default variant by setting it to false.
+		if ( ! additionalVariants[ name ] ) {
+			customVariants[ name ] = false;
+			return;
+		}
+
 		const {
 			data: variantData,
 			options: variantOptions,
 			features,
 			storyName,
-		} = additionalVariants[ name ] || {};
+		} = additionalVariants[ name ];
 
 		if ( Array.isArray( variantOptions ) ) {
 			// 	If variantOptions is an array, so must variantData.
@@ -319,7 +325,7 @@ export function generateReportBasedWidgetStories( args ) {
 							{ options: variantOption }
 						);
 					} );
-				} else if ( variantData ) {
+				} else {
 					dispatch( datastore ).receiveGetReport( variantData, {
 						options: variantOptions,
 					} );
