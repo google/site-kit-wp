@@ -75,6 +75,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: build-files
+          path: dist
       - name: npm install
         run: npm ci
       - name: Run Backstopjs
