@@ -35,7 +35,10 @@ import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
 import { getTimeInSeconds, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 
-export default function GatheringDataNotification( { title } ) {
+export default function GatheringDataNotification( {
+	title,
+	gatheringDataWaitTime,
+} ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_gathering-data-notification`;
 	const handleOnView = useCallback( () => {
@@ -45,31 +48,32 @@ export default function GatheringDataNotification( { title } ) {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
 
-	const gatheringDataWaitTime = '72';
-
 	return (
-		<BannerNotification
-			id="gathering-data-notification"
-			title={ title }
-			description={ sprintf(
-				/* translators: %s: the number of hours the site can be in a gathering data state */
-				__(
-					'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-					'google-site-kit'
-				),
-				gatheringDataWaitTime
-			) }
-			format="small"
-			onView={ handleOnView }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			dismissExpires={ getTimeInSeconds( 'day' ) }
-			SmallImageSVG={ GatheringDataIcon }
-			onDismiss={ handleOnDismiss }
-			isDismissible
-		/>
+		gatheringDataWaitTime && (
+			<BannerNotification
+				id="gathering-data-notification"
+				title={ title }
+				description={ sprintf(
+					/* translators: %s: the number of hours the site can be in a gathering data state */
+					__(
+						'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+						'google-site-kit'
+					),
+					gatheringDataWaitTime
+				) }
+				format="small"
+				onView={ handleOnView }
+				dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+				dismissExpires={ getTimeInSeconds( 'day' ) }
+				SmallImageSVG={ GatheringDataIcon }
+				onDismiss={ handleOnDismiss }
+				isDismissible
+			/>
+		)
 	);
 }
 
 GatheringDataNotification.propTypes = {
 	title: PropTypes.string,
+	gatheringDataWaitTime: PropTypes.string,
 };
