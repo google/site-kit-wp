@@ -35,6 +35,7 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -286,34 +287,38 @@ export const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getAvailableCustomDimensions() {
-		const registry = yield Data.commonActions.getRegistry();
+		const { select, __experimentalResolveSelect } =
+			yield Data.commonActions.getRegistry();
+		const { isAuthenticated, hasCapability } = select( CORE_USER );
+
+		const isGA4Connected = yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_MODULES ).isModuleConnected(
+				'analytics-4'
+			)
+		);
+
+		if ( ! isGA4Connected ) {
+			return;
+		}
 
 		// Wait for settings to be loaded before proceeding.
 		yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-				.getSettings()
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
-		const availableCustomDimensions = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAvailableCustomDimensions();
+		const availableCustomDimensions =
+			select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
 
-		const isAuthenticated = registry.select( CORE_USER ).isAuthenticated();
-
-		if ( availableCustomDimensions || ! isAuthenticated ) {
+		if ( availableCustomDimensions || ! isAuthenticated() ) {
 			return;
 		}
 
 		// Wait for permissions to be loaded before checking if the user can manage options.
 		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_USER ).getCapabilities()
+			__experimentalResolveSelect( CORE_USER ).getCapabilities()
 		);
-		const canManageOptions = registry
-			.select( CORE_USER )
-			.hasCapability( PERMISSION_MANAGE_OPTIONS );
 
-		if ( ! canManageOptions ) {
+		if ( ! hasCapability( PERMISSION_MANAGE_OPTIONS ) ) {
 			return;
 		}
 

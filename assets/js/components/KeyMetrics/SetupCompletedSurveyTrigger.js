@@ -27,7 +27,7 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS } from '../../util';
+import { WEEK_IN_SECONDS } from '../../util';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
 const { useSelect } = Data;
@@ -51,11 +51,11 @@ export default function SetupCompletedSurveyTrigger() {
 
 	return (
 		<Fragment>
-			<SurveyViewTrigger triggerID="view_kmw" ttl={ DAY_IN_SECONDS } />
+			<SurveyViewTrigger triggerID="view_kmw" ttl={ WEEK_IN_SECONDS } />
 			{ isKeyMetricsSetupCompletedBy === currentUserID && (
 				<SurveyViewTrigger
 					triggerID="view_kmw_setup_completed"
-					ttl={ DAY_IN_SECONDS }
+					ttl={ WEEK_IN_SECONDS }
 				/>
 			) }
 		</Fragment>

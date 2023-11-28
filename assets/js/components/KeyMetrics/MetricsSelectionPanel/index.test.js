@@ -70,6 +70,15 @@ describe( 'MetricsSelectionPanel', () => {
 
 		provideUserAuthentication( registry );
 
+		registry.dispatch( CORE_USER ).receiveCapabilities( {
+			googlesitekit_manage_options: true,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: 1234567,
+			availableCustomDimensions: [],
+		} );
+
 		registry
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
@@ -524,6 +533,36 @@ describe( 'MetricsSelectionPanel', () => {
 					'.googlesitekit-km-selection-panel-footer .googlesitekit-button-icon--spinner'
 				)
 			).toBeDisabled();
+		} );
+
+		it( 'should display error message when less than two metrics are checked', async () => {
+			const { findByLabelText } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			// Select 1 key metric.
+			const checkbox = await findByLabelText(
+				'Top recent trending pages'
+			);
+			fireEvent.click( checkbox );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
+				).textContent
+			).toBe( 'Select at least 2 metrics' );
+
+			// Select 2 key metrics.
+			const checkbox2 = await findByLabelText(
+				'Top performing keywords'
+			);
+			fireEvent.click( checkbox2 );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
+				)
+			).not.toBeInTheDocument();
 		} );
 
 		describe( 'CTA', () => {

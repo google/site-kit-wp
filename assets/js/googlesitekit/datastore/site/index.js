@@ -32,7 +32,6 @@ import urls from './urls';
 import developerPlugin from './developer-plugin';
 import { CORE_SITE } from './constants';
 import notifications from './notifications';
-import registryKey from './registry-key';
 import { createErrorStore } from '../../data/create-error-store';
 
 const store = Data.combineStores(
@@ -48,7 +47,6 @@ const store = Data.combineStores(
 	urls,
 	notifications,
 	cache,
-	registryKey,
 	createErrorStore( CORE_SITE )
 );
 

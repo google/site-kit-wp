@@ -27,15 +27,12 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
-import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
-import AdminBarSessions from './AdminBarSessions';
 import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
 import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Row, Cell } from '../../material-components';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -50,13 +47,6 @@ const AdminBarImpressionsWidget =
 const AdminBarClicksWidget =
 	withWidgetComponentProps( WIDGET_CLICKS )( AdminBarClicks );
 
-// Analytics Widgets.
-const AdminBarUniqueVisitorsWidget = withWidgetComponentProps(
-	WIDGET_VISITORS
-)( AdminBarUniqueVisitors );
-const AdminBarSessionsWidget =
-	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessions );
-
 // Analytics 4 Widgets.
 const AdminBarUniqueVisitorsGA4Widget = withWidgetComponentProps(
 	WIDGET_VISITORS
@@ -65,9 +55,6 @@ const AdminBarSessionsGA4Widget =
 	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessionsGA4 );
 
 export default function AdminBarWidgets() {
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
-	);
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
 	);
@@ -90,26 +77,14 @@ export default function AdminBarWidgets() {
 
 				{ analyticsModuleConnected && analyticsModuleActive && (
 					<Fragment>
-						{ false === isGA4DashboardView && (
-							<Fragment>
-								<Cell lgSize={ 3 } mdSize={ 2 }>
-									<AdminBarUniqueVisitorsWidget />
-								</Cell>
-								<Cell lgSize={ 3 } mdSize={ 2 }>
-									<AdminBarSessionsWidget />
-								</Cell>
-							</Fragment>
-						) }
-						{ isGA4DashboardView && (
-							<Fragment>
-								<Cell lgSize={ 3 } mdSize={ 2 }>
-									<AdminBarUniqueVisitorsGA4Widget />
-								</Cell>
-								<Cell lgSize={ 3 } mdSize={ 2 }>
-									<AdminBarSessionsGA4Widget />
-								</Cell>
-							</Fragment>
-						) }
+						<Fragment>
+							<Cell lgSize={ 3 } mdSize={ 2 }>
+								<AdminBarUniqueVisitorsGA4Widget />
+							</Cell>
+							<Cell lgSize={ 3 } mdSize={ 2 }>
+								<AdminBarSessionsGA4Widget />
+							</Cell>
+						</Fragment>
 					</Fragment>
 				) }
 

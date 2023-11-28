@@ -30,13 +30,10 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import BannerNotification from '../BannerNotification';
 import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { getTimeInSeconds, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
-const { useSelect } = Data;
 
 export default function GatheringDataNotification( { title } ) {
 	const viewContext = useViewContext();
@@ -48,11 +45,7 @@ export default function GatheringDataNotification( { title } ) {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
 
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
-	);
-
-	const gatheringDataWaitTime = isGA4DashboardView ? '72' : '48';
+	const gatheringDataWaitTime = '72';
 
 	return (
 		<BannerNotification

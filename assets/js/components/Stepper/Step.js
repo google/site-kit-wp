@@ -28,17 +28,15 @@ import { STEP_STATUS } from './constants';
 
 export default function Step( { children, title, stepStatus } ) {
 	return (
-		<div>
-			<h2
-				className={ `googlesitekit-stepper__step-title googlesitekit-stepper__step-title--${ stepStatus }` }
-			>
-				{ title }
-			</h2>
-			{ stepStatus === STEP_STATUS.ACTIVE && (
-				<div className="googlesitekit-stepper__step-content">
-					{ children }
-				</div>
-			) }
+		<div className="googlesitekit-stepper__step-info">
+			<h2 className="googlesitekit-stepper__step-title">{ title }</h2>
+			<div className="googlesitekit-stepper__step-content-container">
+				{ stepStatus === STEP_STATUS.ACTIVE && (
+					<div className="googlesitekit-stepper__step-content">
+						{ children }
+					</div>
+				) }
+			</div>
 		</div>
 	);
 }

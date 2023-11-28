@@ -29,43 +29,30 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
+import { setupSearchConsoleZeroData, widgetDecorators } from './common.stories';
 import {
-	setupSearchConsoleAnalyticsMockReports,
-	setupSearchConsoleMockReports,
-	setupSearchConsoleAnalyticsZeroData,
-	setupSearchConsoleAnalyticsGatheringData,
-	widgetDecorators,
-} from './common.stories';
-import {
-	setupAnalytics4GatheringData,
-	setupAnalytics4MockReports,
 	setupAnalytics4ZeroData,
+	provideAnalytics4ReportTitles,
+	setupSearchConsoleMockReports,
+	setupAnalytics4MockReports,
+	setupSearchConsoleGatheringData,
+	setupAnalytics4GatheringData,
 } from './common-GA4.stories';
-import FeaturesProvider from '../FeaturesProvider';
 
-const Template = ( { setupRegistry, features = [] } ) => {
-	const enabledFeatures = new Set( features );
-
+const Template = ( { setupRegistry } ) => {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<FeaturesProvider value={ enabledFeatures }>
-				<WPDashboardWidgets />
-			</FeaturesProvider>
+			<WPDashboardWidgets />
 		</WithRegistrySetup>
 	);
 };
 
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Ready';
-Ready.args = {
-	setupRegistry: setupSearchConsoleAnalyticsMockReports,
-};
-
 export const ReadyGA4 = Template.bind( {} );
-ReadyGA4.storyName = 'Ready - GA4';
+ReadyGA4.storyName = 'Ready';
 ReadyGA4.args = {
 	setupRegistry: ( registry ) => {
-		setupSearchConsoleAnalyticsMockReports( registry );
+		provideAnalytics4ReportTitles( registry );
+		setupSearchConsoleMockReports( registry );
 		setupAnalytics4MockReports( registry );
 	},
 };
@@ -134,35 +121,26 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 		provideModuleRegistrations( registry );
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
 	},
 };
 
-export const GatheringData = Template.bind( {} );
-GatheringData.storyName = 'Gathering Data';
-GatheringData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
-};
-
 export const GatheringDataGA4 = Template.bind( {} );
-GatheringDataGA4.storyName = 'Gathering Data - GA4';
+GatheringDataGA4.storyName = 'Gathering Data';
 GatheringDataGA4.args = {
 	setupRegistry: ( registry ) => {
-		setupSearchConsoleAnalyticsGatheringData( registry );
+		provideUserAuthentication( registry );
+		setupSearchConsoleGatheringData( registry );
 		setupAnalytics4GatheringData( registry );
 	},
 };
 
-export const ZeroData = Template.bind( {} );
-ZeroData.storyName = 'Zero Data';
-ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
-};
-
 export const ZeroDataGA4 = Template.bind( {} );
-ZeroDataGA4.storyName = 'Zero Data - GA4';
+ZeroDataGA4.storyName = 'Zero Data';
 ZeroDataGA4.args = {
 	setupRegistry: ( registry ) => {
-		setupSearchConsoleAnalyticsZeroData( registry );
+		provideUserAuthentication( registry );
+		setupSearchConsoleZeroData( registry );
 		setupAnalytics4ZeroData( registry );
 	},
 };

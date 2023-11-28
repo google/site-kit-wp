@@ -111,9 +111,9 @@ jobs:
           git push origin gh-pages
         env:
           TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
-          GIT_AUTHOR_EMAIL: 138160377+google-site-kit-bot@users.noreply.github.com
+          GIT_AUTHOR_EMAIL: google-site-kit-bot@google.com
           GIT_AUTHOR_NAME: google-site-kit-bot
-          GIT_COMMITTER_EMAIL: 138160377+google-site-kit-bot@users.noreply.github.com
+          GIT_COMMITTER_EMAIL: google-site-kit-bot@google.com
           GIT_COMMITTER_NAME: google-site-kit-bot
 
   remove-storybook:
@@ -129,9 +129,9 @@ jobs:
       - name: Remove storybook
         env:
           PULL_REQUEST_NUMBER: ${{ github.event.number }}
-          GIT_AUTHOR_EMAIL: 138160377+google-site-kit-bot@users.noreply.github.com
+          GIT_AUTHOR_EMAIL: google-site-kit-bot@google.com
           GIT_AUTHOR_NAME: google-site-kit-bot
-          GIT_COMMITTER_EMAIL: 138160377+google-site-kit-bot@users.noreply.github.com
+          GIT_COMMITTER_EMAIL: google-site-kit-bot@google.com
           GIT_COMMITTER_NAME: google-site-kit-bot
         run: |
           git rm -rf storybook/pull/${PULL_REQUEST_NUMBER}
