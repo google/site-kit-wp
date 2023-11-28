@@ -146,6 +146,10 @@ generateReportBasedWidgetStories( {
 			endDate: '2020-10-28',
 		},
 	] ),
+	additionalVariants: {
+		// We are disabling this variant because it is not needed for adsense module.
+		DataUnavailable: false,
+	},
 	Component: ModuleOverviewWidget,
 	wrapWidget: false,
 } );

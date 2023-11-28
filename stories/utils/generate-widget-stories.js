@@ -293,7 +293,7 @@ export function generateReportBasedWidgetStories( args ) {
 			options: variantOptions,
 			features,
 			storyName,
-		} = additionalVariants[ name ];
+		} = additionalVariants[ name ] || {};
 
 		if ( Array.isArray( variantOptions ) ) {
 			// 	If variantOptions is an array, so must variantData.
@@ -319,7 +319,7 @@ export function generateReportBasedWidgetStories( args ) {
 							{ options: variantOption }
 						);
 					} );
-				} else {
+				} else if ( variantData ) {
 					dispatch( datastore ).receiveGetReport( variantData, {
 						options: variantOptions,
 					} );
