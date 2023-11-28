@@ -55,7 +55,6 @@ jobs:
           name: build-files
           path: |
             dist
-            node_modules
   visual-regression:
     name: Run VR Tests
     runs-on: ubuntu-latest
