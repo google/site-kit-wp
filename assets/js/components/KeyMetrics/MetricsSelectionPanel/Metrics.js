@@ -111,6 +111,27 @@ export default function Metrics( { savedMetrics } ) {
 		} )
 		.reduce( metricsListReducer, {} );
 
+	const renderMetricItems = ( metricSlugs ) => {
+		return Object.keys( metricSlugs ).map( ( slug ) => {
+			const { title, description, disconnectedModules } =
+				metricSlugs[ slug ];
+
+			const id = `key-metric-selection-checkbox-${ slug }`;
+
+			return (
+				<MetricItem
+					key={ id }
+					id={ id }
+					slug={ slug }
+					title={ title }
+					description={ description }
+					disconnectedModules={ disconnectedModules }
+					savedMetrics={ savedMetrics }
+				/>
+			);
+		} );
+	};
+
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
 			{
@@ -122,31 +143,7 @@ export default function Metrics( { savedMetrics } ) {
 							{ __( 'Current selection', 'google-site-kit' ) }
 						</p>
 						<div className="googlesitekit-km-selection-panel-metrics__subsection">
-							{ Object.keys( availableSavedMetrics ).map(
-								( slug ) => {
-									const {
-										title,
-										description,
-										disconnectedModules,
-									} = availableSavedMetrics[ slug ];
-
-									const id = `key-metric-selection-checkbox-${ slug }`;
-
-									return (
-										<MetricItem
-											key={ id }
-											id={ id }
-											slug={ slug }
-											title={ title }
-											description={ description }
-											disconnectedModules={
-												disconnectedModules
-											}
-											savedMetrics={ savedMetrics }
-										/>
-									);
-								}
-							) }
+							{ renderMetricItems( availableSavedMetrics ) }
 						</div>
 						<p className="googlesitekit-km-selection-panel-metrics__subheading">
 							{ __( 'Additional metrics', 'google-site-kit' ) }
@@ -155,24 +152,7 @@ export default function Metrics( { savedMetrics } ) {
 				)
 			}
 			<div className="googlesitekit-km-selection-panel-metrics__subsection">
-				{ Object.keys( availableUnsavedMetrics ).map( ( slug ) => {
-					const { title, description, disconnectedModules } =
-						availableUnsavedMetrics[ slug ];
-
-					const id = `key-metric-selection-checkbox-${ slug }`;
-
-					return (
-						<MetricItem
-							key={ id }
-							id={ id }
-							slug={ slug }
-							title={ title }
-							description={ description }
-							disconnectedModules={ disconnectedModules }
-							savedMetrics={ savedMetrics }
-						/>
-					);
-				} ) }
+				{ renderMetricItems( availableUnsavedMetrics ) }
 			</div>
 		</div>
 	);
