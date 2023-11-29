@@ -332,7 +332,7 @@ describe( 'SetupForm', () => {
 
 		// An additional wait is required in order for all resolvers to finish.
 		await act( async () => {
-			await waitForTimeouts( 50 );
+			await waitForTimeouts( 30 );
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyRegexp );
