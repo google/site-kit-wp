@@ -21,6 +21,8 @@ use Google\Site_Kit\Plugin;
  */
 class PluginTest extends TestCase {
 
+	use RestTestTrait;
+
 	/**
 	 * Plugin instance backup.
 	 *
@@ -36,6 +38,8 @@ class PluginTest extends TestCase {
 		parent::tear_down();
 		// Restore the main instance after each test.
 		$this->force_set_property( 'Google\Site_Kit\Plugin', 'instance', self::$backup_instance );
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
 	}
 
 	public function test_context() {
@@ -89,7 +93,9 @@ class PluginTest extends TestCase {
 		$this->assertEquals( 1, did_action( 'googlesitekit_init' ) );
 	}
 
-	public function test_user_input_route_on_init() {
+	public function test_register__init_keyMetrics() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_actions( 'init' );
 		$features = array(
 			'keyMetrics' => array( 'enabled' => true ),
 		);
@@ -97,18 +103,11 @@ class PluginTest extends TestCase {
 		update_option( 'googlesitekitpersistent_remote_features', $features );
 
 		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		remove_all_actions( 'init' );
-		remove_all_actions( 'googlesitekit_init' );
-		remove_all_actions( 'wp_head' );
-		remove_all_actions( 'login_head' );
-		unset( $GLOBALS['wp_actions']['googlesitekit_init'] );
-
 		$plugin->register();
-
 		do_action( 'init' );
+		$this->register_rest_routes();
 
 		$routes = rest_get_server()->get_routes();
-
 		$this->assertArrayHasKey( '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings', $routes );
 	}
 
