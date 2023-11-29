@@ -75,17 +75,25 @@ export default function Metrics( { savedMetrics } ) {
 
 		const widget = getWidget( metric );
 
-		KEY_METRICS_WIDGETS[ metric ].disconnectedModules =
-			widget.modules.reduce( ( modulesAcc, slug ) => {
+		const disconnectedModules = widget.modules.reduce(
+			( modulesAcc, slug ) => {
 				const module = getModule( slug );
 				if ( module?.connected || ! module?.name ) {
 					return modulesAcc;
 				}
 
 				return [ ...modulesAcc, module.name ];
-			}, [] );
+			},
+			[]
+		);
 
-		return { ...acc, [ metric ]: KEY_METRICS_WIDGETS[ metric ] };
+		return {
+			...acc,
+			[ metric ]: {
+				...KEY_METRICS_WIDGETS[ metric ],
+				disconnectedModules,
+			},
+		};
 	};
 
 	const widgets = useSelect(
