@@ -31,12 +31,18 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                 No fresh data to display. Universal Analytics stopped collecting data on July 1. To resume collecting Analytics data, set up Google Analytics 4. 
                 <a
                   aria-label="Learn more about Google Analytics 4 (opens in a new tab)"
-                  class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                  class="googlesitekit-cta-link"
                   href="https://sitekit.withgoogle.com/support/?doc=ga4"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
                   Learn more
+                  <span
+                    class="googlesitekit-icon-wrapper"
+                    style="margin-left: 5px;"
+                  >
+                    <svg />
+                  </span>
                 </a>
               </p>
             </div>
@@ -94,12 +100,18 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                 Your data is stale because Universal Analytics stopped collecting data on July 1, 2023. 
                 <a
                   aria-label="Learn more about Google Analytics 4 (opens in a new tab)"
-                  class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                  class="googlesitekit-cta-link"
                   href="https://sitekit.withgoogle.com/support/?doc=ga4"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
                   Learn more
+                  <span
+                    class="googlesitekit-icon-wrapper"
+                    style="margin-left: 5px;"
+                  >
+                    <svg />
+                  </span>
                 </a>
               </p>
             </div>
@@ -157,12 +169,18 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                 No fresh data to display. Universal Analytics stopped collecting data on July 1. To resume collecting Analytics data, set up Google Analytics 4. 
                 <a
                   aria-label="Learn more about Google Analytics 4 (opens in a new tab)"
-                  class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                  class="googlesitekit-cta-link"
                   href="https://sitekit.withgoogle.com/support/?doc=ga4"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
                   Learn more
+                  <span
+                    class="googlesitekit-icon-wrapper"
+                    style="margin-left: 5px;"
+                  >
+                    <svg />
+                  </span>
                 </a>
               </p>
             </div>
@@ -220,12 +238,18 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                 Your data is stale because Universal Analytics stopped collecting data on July 1, 2023. 
                 <a
                   aria-label="Learn more about Google Analytics 4 (opens in a new tab)"
-                  class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                  class="googlesitekit-cta-link"
                   href="https://sitekit.withgoogle.com/support/?doc=ga4"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
                   Learn more
+                  <span
+                    class="googlesitekit-icon-wrapper"
+                    style="margin-left: 5px;"
+                  >
+                    <svg />
+                  </span>
                 </a>
               </p>
             </div>

@@ -46,8 +46,12 @@ export default function SurveyTerms() {
 					'google-site-kit'
 				),
 				{
-					privacy: <Link href={ privacy } external />,
-					terms: <Link href={ terms } external />,
+					privacy: (
+						<Link href={ privacy } external hideExternalIndicator />
+					),
+					terms: (
+						<Link href={ terms } external hideExternalIndicator />
+					),
 				}
 			) }
 		</p>

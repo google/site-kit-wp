@@ -91,7 +91,13 @@ export default function InsufficientPermissionsError( props ) {
 							'google-site-kit'
 						),
 						{
-							a: <Link href={ helpLink } external />,
+							a: (
+								<Link
+									href={ helpLink }
+									external
+									hideExternalIndicator
+								/>
+							),
 						}
 					) }
 				</span>
