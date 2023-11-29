@@ -48,28 +48,30 @@ export default function GatheringDataNotification( {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
 
+	if ( ! gatheringDataWaitTime ) {
+		return null;
+	}
+
 	return (
-		gatheringDataWaitTime && (
-			<BannerNotification
-				id="gathering-data-notification"
-				title={ title }
-				description={ sprintf(
-					/* translators: %s: the number of hours the site can be in a gathering data state */
-					__(
-						'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-						'google-site-kit'
-					),
-					gatheringDataWaitTime
-				) }
-				format="small"
-				onView={ handleOnView }
-				dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-				dismissExpires={ getTimeInSeconds( 'day' ) }
-				SmallImageSVG={ GatheringDataIcon }
-				onDismiss={ handleOnDismiss }
-				isDismissible
-			/>
-		)
+		<BannerNotification
+			id="gathering-data-notification"
+			title={ title }
+			description={ sprintf(
+				/* translators: %s: the number of hours the site can be in a gathering data state */
+				__(
+					'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+					'google-site-kit'
+				),
+				gatheringDataWaitTime
+			) }
+			format="small"
+			onView={ handleOnView }
+			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+			dismissExpires={ getTimeInSeconds( 'day' ) }
+			SmallImageSVG={ GatheringDataIcon }
+			onDismiss={ handleOnDismiss }
+			isDismissible
+		/>
 	);
 }
 
