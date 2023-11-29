@@ -43,6 +43,8 @@ import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
+	MIN_SELECTED_METRICS_COUNT,
+	MAX_SELECTED_METRICS_COUNT,
 } from '../constants';
 import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
@@ -245,13 +247,13 @@ export default function Footer( {
 	}, [ isOpen, prevIsOpen ] );
 
 	let metricsLimitError;
-	if ( selectedMetrics?.length < 2 ) {
+	if ( selectedMetrics?.length < MIN_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
 			/* translators: %d: Number of selected metrics */
 			__( 'Select at least 2 metrics (%d selected)', 'google-site-kit' ),
 			selectedMetrics?.length
 		);
-	} else if ( selectedMetrics?.length > 4 ) {
+	} else if ( selectedMetrics?.length > MAX_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
 			/* translators: %d: Number of selected metrics */
 			__( 'Select up to 4 metrics (%d selected)', 'google-site-kit' ),
@@ -269,8 +271,9 @@ export default function Footer( {
 							message: metricsLimitError,
 						} }
 						noPrefix={
-							selectedMetrics?.length < 2 ||
-							selectedMetrics?.length > 4
+							selectedMetrics?.length <
+								MIN_SELECTED_METRICS_COUNT ||
+							selectedMetrics?.length > MAX_SELECTED_METRICS_COUNT
 						}
 					/>
 				) : (
@@ -296,8 +299,10 @@ export default function Footer( {
 						onClick={ onSaveClick }
 						isSaving={ isSavingSettings || isNavigatingToOAuthURL }
 						disabled={
-							selectedMetrics?.length < 2 ||
-							selectedMetrics?.length > 4 ||
+							selectedMetrics?.length <
+								MIN_SELECTED_METRICS_COUNT ||
+							selectedMetrics?.length >
+								MAX_SELECTED_METRICS_COUNT ||
 							isSavingSettings ||
 							( ! isOpen && wasSaved ) ||
 							isNavigatingToOAuthURL
