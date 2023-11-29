@@ -133,8 +133,8 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 
 		await waitForRegistry();
 
-		// Enhanced measurement settings should update when Enhanced measurement
-		// is enabled via the  "Enable now" CTA.
+		// Enhanced measurement settings should update when enhanced measurement
+		// is enabled via the "Enable now" CTA.
 		expect( fetchMock ).toHaveBeenCalledTimes(
 			1,
 			enhancedMeasurementSettingsEndpoint
