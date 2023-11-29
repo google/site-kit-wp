@@ -158,12 +158,12 @@ final class Plugin {
 
 				$user_input = new Core\User_Input\User_Input( $this->context, $options, $user_options, $survey_queue );
 
+				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients, $user_input );
+				$authentication->register();
+
 				if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 					$user_input->register();
 				}
-
-				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients, $user_input );
-				$authentication->register();
 
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
