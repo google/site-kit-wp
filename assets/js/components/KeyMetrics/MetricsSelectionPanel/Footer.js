@@ -281,9 +281,8 @@ export default function Footer( {
 							message: metricsLimitError,
 						} }
 						noPrefix={
-							selectedMetrics?.length <
-								MIN_SELECTED_METRICS_COUNT ||
-							selectedMetrics?.length > MAX_SELECTED_METRICS_COUNT
+							selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ||
+							selectedMetricsCount > MAX_SELECTED_METRICS_COUNT
 						}
 					/>
 				) : (
@@ -291,7 +290,7 @@ export default function Footer( {
 						{ sprintf(
 							/* translators: Number of selected metrics */
 							__( '%d selected ', 'google-site-kit' ),
-							selectedMetrics?.length || 0
+							selectedMetricsCount
 						) }
 						<span className="googlesitekit-km-selection-panel-footer__metric-count--max-count">
 							{ sprintf(
@@ -313,10 +312,8 @@ export default function Footer( {
 						onClick={ onSaveClick }
 						isSaving={ isSavingSettings || isNavigatingToOAuthURL }
 						disabled={
-							selectedMetrics?.length <
-								MIN_SELECTED_METRICS_COUNT ||
-							selectedMetrics?.length >
-								MAX_SELECTED_METRICS_COUNT ||
+							selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ||
+							selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ||
 							isSavingSettings ||
 							( ! isOpen && wasSaved ) ||
 							isNavigatingToOAuthURL
