@@ -297,14 +297,14 @@ export default function Footer( {
 							sprintf(
 								/* translators: 1: Number of selected metrics. 2: Maximum number of metrics that can be selected. */
 								__(
-									'%1$d selected <note>(up to %2$d)</note>',
+									'%1$d selected <MaxCount>(up to %2$d)</MaxCount>',
 									'google-site-kit'
 								),
 								selectedMetricsCount,
 								MAX_SELECTED_METRICS_COUNT
 							),
 							{
-								note: (
+								MaxCount: (
 									<span className="googlesitekit-km-selection-panel-footer__metric-count--max-count" />
 								),
 							}
