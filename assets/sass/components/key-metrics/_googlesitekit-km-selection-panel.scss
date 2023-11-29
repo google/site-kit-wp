@@ -24,7 +24,11 @@
 	}
 
 	.googlesitekit-km-selection-panel-header {
-		padding: $grid-gap-desktop;
+		padding: $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			padding: $grid-gap-desktop;
+		}
 
 		h3 {
 			margin: 0;
@@ -59,11 +63,19 @@
 			font-size: $fs-body-sm;
 			font-weight: $fw-medium;
 			line-height: $lh-body-sm;
-			margin: $grid-gap-desktop 0 0 $grid-gap-desktop;
+			margin: $grid-gap-phone 0 0 $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				margin: $grid-gap-desktop 0 0 $grid-gap-desktop;
+			}
 		}
 
 		.googlesitekit-km-selection-panel-metrics__subheading:first-child {
-			margin: 0 0 0 $grid-gap-desktop;
+			margin: 0 0 0 $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				margin: 0 0 0 $grid-gap-desktop;
+			}
 		}
 	}
 
