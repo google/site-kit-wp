@@ -125,6 +125,17 @@ describe( 'Analytics write scope requests', () => {
 					body: JSON.stringify( [] ),
 				} );
 			} else if (
+				request
+					.url()
+					.match( 'analytics-4/data/enhanced-measurement-settings' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						fixtures.defaultEnhancedMeasurementSettings
+					),
+				} );
+			} else if (
 				request.url().match( 'analytics-4/data/google-tag-settings' )
 			) {
 				request.respond( {
