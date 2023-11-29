@@ -806,7 +806,7 @@ describe( 'modules/analytics settings', () => {
 						);
 					} );
 
-					it( 'should save the enhanced measurement settings and retrieve new property create time if the setting has been changed', async () => {
+					it( 'should save the enhanced measurement settings if the setting has been changed', async () => {
 						await registry
 							.dispatch( MODULES_ANALYTICS )
 							.submitChanges();
