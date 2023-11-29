@@ -134,7 +134,7 @@ export default function ZeroDataStateNotifications() {
 	}
 
 	let gatheringDataTitle;
-	let gatheringDataWaitTime;
+	let gatheringDataWaitTime = '72';
 	if ( analyticsGatheringData && searchConsoleGatheringData ) {
 		gatheringDataWaitTime = '72';
 		gatheringDataTitle = __(
