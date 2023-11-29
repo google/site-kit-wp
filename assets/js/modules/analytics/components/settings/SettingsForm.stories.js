@@ -362,18 +362,6 @@ WithExistingGTMPropertyMatching.scenario = {
 	delay: 250,
 };
 
-export const WithEnhancedMeasurementToggle = Template.bind( null );
-WithEnhancedMeasurementToggle.storyName = 'With Enhanced Measurement Toggle';
-WithEnhancedMeasurementToggle.args = {
-	hasAnalyticsAccess: true,
-	hasAnalytics4Access: true,
-};
-
-WithEnhancedMeasurementToggle.scenario = {
-	label: 'Modules/Analytics/Settings/SettingsEdit/WithEnhancedMeasurementToggle',
-	delay: 250,
-};
-
 export const PostGA4AutoSwitch = Template.bind( null );
 PostGA4AutoSwitch.storyName = 'Post GA4 auto-switch';
 PostGA4AutoSwitch.args = {
