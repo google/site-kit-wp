@@ -142,7 +142,6 @@ export default function ZeroDataStateNotifications() {
 			'google-site-kit'
 		);
 	} else if ( analyticsGatheringData ) {
-		gatheringDataWaitTime = '72';
 		gatheringDataTitle = __(
 			'Analytics is gathering data',
 			'google-site-kit'
