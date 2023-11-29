@@ -136,7 +136,6 @@ export default function ZeroDataStateNotifications() {
 	let gatheringDataTitle;
 	let gatheringDataWaitTime = '72';
 	if ( analyticsGatheringData && searchConsoleGatheringData ) {
-		gatheringDataWaitTime = '72';
 		gatheringDataTitle = __(
 			'Search Console and Analytics are gathering data',
 			'google-site-kit'
