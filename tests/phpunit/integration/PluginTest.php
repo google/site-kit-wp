@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Tests;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Plugin;
 
@@ -17,6 +20,8 @@ use Google\Site_Kit\Plugin;
  * @group Root
  */
 class PluginTest extends TestCase {
+
+	use RestTestTrait;
 
 	/**
 	 * Plugin instance backup.
@@ -33,6 +38,8 @@ class PluginTest extends TestCase {
 		parent::tear_down();
 		// Restore the main instance after each test.
 		$this->force_set_property( 'Google\Site_Kit\Plugin', 'instance', self::$backup_instance );
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
 	}
 
 	public function test_context() {
@@ -84,6 +91,24 @@ class PluginTest extends TestCase {
 		$this->assertEquals( 0, did_action( 'googlesitekit_init' ) );
 		do_action( 'init' );
 		$this->assertEquals( 1, did_action( 'googlesitekit_init' ) );
+	}
+
+	public function test_register__init_keyMetrics() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_actions( 'init' );
+		$features = array(
+			'keyMetrics' => array( 'enabled' => true ),
+		);
+		// Set feature flag only in database.
+		update_option( 'googlesitekitpersistent_remote_features', $features );
+
+		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$plugin->register();
+		do_action( 'init' );
+		$this->register_rest_routes();
+
+		$routes = rest_get_server()->get_routes();
+		$this->assertArrayHasKey( '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings', $routes );
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {
