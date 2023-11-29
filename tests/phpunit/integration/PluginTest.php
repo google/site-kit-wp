@@ -96,6 +96,15 @@ class PluginTest extends TestCase {
 		// Set feature flag only in database.
 		update_option( 'googlesitekitpersistent_remote_features', $features );
 
+		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		remove_all_actions( 'init' );
+		remove_all_actions( 'googlesitekit_init' );
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'login_head' );
+		unset( $GLOBALS['wp_actions']['googlesitekit_init'] );
+
+		$plugin->register();
+
 		do_action( 'init' );
 
 		$routes = rest_get_server()->get_routes();
