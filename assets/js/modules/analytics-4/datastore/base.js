@@ -22,6 +22,7 @@
 import Modules from 'googlesitekit-modules';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
+	getPropertyCreateTime,
 	submitChanges,
 	validateCanSubmitChanges,
 	rollbackChanges,
@@ -61,5 +62,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	rollbackChanges,
 	validateCanSubmitChanges,
 } );
+
+baseModuleStore.selectors.getPropertyCreateTime = getPropertyCreateTime;
 
 export default baseModuleStore;

@@ -28,7 +28,6 @@ import {
 	provideSiteInfo,
 	createTestRegistry,
 	createWaitForRegistry,
-	untilResolved,
 } from '../../../../../../../tests/js/utils';
 import {
 	MODULES_ANALYTICS,
@@ -63,9 +62,6 @@ const ga4SettingsEndpoint = new RegExp(
 );
 const coreModulesListEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/modules/data/list'
-);
-const propertyEndpoint = new RegExp(
-	'^/google-site-kit/v1/modules/analytics-4/data/property'
 );
 
 describe( 'SetupBanner', () => {
@@ -138,10 +134,7 @@ describe( 'SetupBanner', () => {
 			body: withConnected( 'analytics', 'analytics-4' ),
 			status: 200,
 		} );
-		fetchMock.get( propertyEndpoint, {
-			body: createProperty,
-			status: 200,
-		} );
+
 		const onSubmitSuccess = jest.fn();
 
 		const { dispatch } = registry;
@@ -184,7 +177,6 @@ describe( 'SetupBanner', () => {
 		);
 		expect( fetchMock ).toHaveFetchedTimes( 1, ga4SettingsEndpoint );
 		expect( onSubmitSuccess ).toHaveBeenCalledTimes( 1 );
-		expect( fetchMock ).toHaveFetchedTimes( 1, propertyEndpoint );
 	} );
 
 	it( 'should create a single property when the form is auto submitted after the scope was granted', async () => {
@@ -202,10 +194,6 @@ describe( 'SetupBanner', () => {
 		// submitChanges reloads modules from server when ga4 is connected.
 		fetchMock.getOnce( coreModulesListEndpoint, {
 			body: withConnected( 'analytics', 'analytics-4' ),
-			status: 200,
-		} );
-		fetchMock.get( propertyEndpoint, {
-			body: createProperty,
 			status: 200,
 		} );
 		const onSubmitSuccess = jest.fn();
@@ -239,14 +227,5 @@ describe( 'SetupBanner', () => {
 		);
 		expect( fetchMock ).toHaveFetchedTimes( 1, ga4SettingsEndpoint );
 		expect( onSubmitSuccess ).toHaveBeenCalledTimes( 1 );
-
-		const propertyID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyID();
-		// getPropertyCreateTime resolver should invoke getProperty on settings change.
-		await untilResolved( registry, MODULES_ANALYTICS_4 ).getProperty(
-			propertyID
-		);
-		expect( fetchMock ).toHaveFetchedTimes( 1, propertyEndpoint );
 	} );
 } );

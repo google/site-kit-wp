@@ -109,7 +109,7 @@ export default function AnalyticsStats( props ) {
 		select( CORE_MODULES ).isModuleActive( moduleSlug )
 	);
 
-	const propertyCreatedDate = useSelect( ( select ) => {
+	const propertyCreateTime = useSelect( ( select ) => {
 		if ( isViewOnly ) {
 			return null;
 		}
@@ -119,10 +119,10 @@ export default function AnalyticsStats( props ) {
 
 	let dateMarkers = [];
 
-	if ( propertyCreatedDate ) {
+	if ( propertyCreateTime ) {
 		dateMarkers = [
 			{
-				date: getDateString( new Date( propertyCreatedDate ) ),
+				date: getDateString( new Date( propertyCreateTime ) ),
 				text: __(
 					'Google Analytics 4 property created',
 					'google-site-kit'

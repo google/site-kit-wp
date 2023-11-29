@@ -98,7 +98,7 @@ export default function UserCountGraph( props ) {
 		};
 	}, [] );
 
-	const propertyCreatedDate = useSelect( ( select ) => {
+	const propertyCreateTime = useSelect( ( select ) => {
 		if ( isViewOnly ) {
 			return null;
 		}
@@ -226,11 +226,11 @@ export default function UserCountGraph( props ) {
 				chartType="LineChart"
 				data={ chartData }
 				dateMarkers={
-					propertyCreatedDate
+					propertyCreateTime
 						? [
 								{
 									date: getDateString(
-										new Date( propertyCreatedDate )
+										new Date( propertyCreateTime )
 									),
 									text: __(
 										'Google Analytics 4 property created',

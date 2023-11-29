@@ -37,11 +37,7 @@ import {
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import {
-	HOUR_IN_SECONDS,
-	convertDateStringToUNIXTimestamp,
-	normalizeURL,
-} from '../../../util';
+import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
@@ -133,11 +129,6 @@ const fetchCreatePropertyStore = createFetchStore( {
 					...( state.properties[ accountID ] || [] ),
 					property,
 				],
-			},
-			// Reset the `propertyCreateTime` so new value can be invoked.
-			settings: {
-				...state.settings,
-				propertyCreateTime: undefined,
 			},
 		};
 	},
@@ -234,9 +225,7 @@ const baseActions = {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.updateSettingsForMeasurementID( '' );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyCreateTime( '' );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyCreateTime( 0 );
 
 			if ( PROPERTY_CREATE === propertyID ) {
 				return;
@@ -687,20 +676,6 @@ function baseReducer( state, { type, payload } ) {
 			return {
 				...state,
 				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
-			};
-		case SET_PROPERTY_CREATE_TIME:
-			// Convert the date string to a unix timestamp in ms so it is in
-			// unified format across the app when data is invoked.
-			const unixTimestamp = convertDateStringToUNIXTimestamp(
-				payload.value
-			);
-
-			return {
-				...state,
-				settings: {
-					...state.settings,
-					propertyCreateTime: unixTimestamp,
-				},
 			};
 		default:
 			return state;

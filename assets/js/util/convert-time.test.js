@@ -60,7 +60,9 @@ describe( 'convertSecondsToArray', () => {
 		const secondsArray = convertSecondsToArray( args );
 		expect( secondsArray ).toEqual( expected );
 	} );
+} );
 
+describe( 'convertDateStringToUNIXTimestamp', () => {
 	it.each( [
 		[
 			'should return a converted unix timestamp as value if a date time string is passed as parameter',
@@ -91,6 +93,12 @@ describe( 'convertSecondsToArray', () => {
 			'should return unix timestamp value if Date object is passed as parameter',
 			new Date(),
 			new Date().getTime(),
+		],
+
+		[
+			'should return null if null value is passed as parameter',
+			null,
+			null,
 		],
 	] )( '%s', ( _, args, expected ) => {
 		const unixTimestamp = convertDateStringToUNIXTimestamp( args );

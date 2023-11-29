@@ -156,7 +156,7 @@ final class Analytics_4 extends Module
 		$synchronize_property->register();
 
 		add_action(
-			'init',
+			'admin_init',
 			function() use ( $synchronize_property ) {
 				$synchronize_property->maybe_schedule_synchronize_property();
 			}
@@ -586,7 +586,7 @@ final class Analytics_4 extends Module
 		}
 
 		$create_time    = isset( $property->createTime ) ? $property->createTime : ''; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$create_time_ms = '';
+		$create_time_ms = 0;
 		if ( $create_time ) {
 			$create_time_ms = Synchronize_Property::convert_time_to_unix_ms( $create_time );
 		}

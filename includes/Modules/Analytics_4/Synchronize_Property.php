@@ -96,7 +96,7 @@ class Synchronize_Property {
 	public function maybe_schedule_synchronize_property() {
 		$settings = $this->analytics_4->get_settings()->get();
 
-		$create_time_has_value  = $settings['propertyCreateTime'];
+		$create_time_has_value  = (bool) $settings['propertyCreateTime'];
 		$analytics_4_connected  = $this->analytics_4->is_connected();
 		$cron_already_scheduled = wp_next_scheduled( self::CRON_SYNCHRONIZE_PROPERTY );
 

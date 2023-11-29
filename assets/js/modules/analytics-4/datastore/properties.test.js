@@ -189,7 +189,7 @@ describe( 'modules/analytics-4 properties', () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getPropertyCreateTime()
-				).toBe( '' );
+				).toBe( 0 );
 			} );
 
 			it( 'should set property ID, property create time and the first web data stream when a matching web data stream is not found', async () => {
@@ -407,7 +407,7 @@ describe( 'modules/analytics-4 properties', () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getPropertyCreateTime()
-				).toBe( '' );
+				).toBe( 0 );
 
 				resolveResponse();
 				await promise;
@@ -1433,7 +1433,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getPropertyCreateTime();
 
-				expect( propertyCreateTime ).toBe( '' );
+				expect( propertyCreateTime ).toBe( 0 );
 
 				expect( fetchMock ).toHaveFetchedTimes( 0 );
 			} );
@@ -1518,7 +1518,7 @@ describe( 'modules/analytics-4 properties', () => {
 					MODULES_ANALYTICS_4
 				).getPropertyCreateTime();
 
-				expect( propertyCreateTime ).toBe( '' );
+				expect( propertyCreateTime ).toBe( 0 );
 
 				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
 					query: { propertyID },
