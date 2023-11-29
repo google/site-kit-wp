@@ -246,18 +246,28 @@ export default function Footer( {
 		setPrevIsOpen( isOpen );
 	}, [ isOpen, prevIsOpen ] );
 
+	const selectedMetricsCount = selectedMetrics?.length || 0;
 	let metricsLimitError;
-	if ( selectedMetrics?.length < MIN_SELECTED_METRICS_COUNT ) {
+	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
-			/* translators: %d: Number of selected metrics */
-			__( 'Select at least 2 metrics (%d selected)', 'google-site-kit' ),
-			selectedMetrics?.length
+			/* translators: 1: Minimum number of metrics that can be selected 2: Number of selected metrics */
+			__(
+				'Select at least %1$d metrics (%2$d selected)',
+				'google-site-kit'
+			),
+			MIN_SELECTED_METRICS_COUNT,
+			selectedMetricsCount
 		);
-	} else if ( selectedMetrics?.length > MAX_SELECTED_METRICS_COUNT ) {
+	} else if ( selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
-			/* translators: %d: Number of selected metrics */
-			__( 'Select up to 4 metrics (%d selected)', 'google-site-kit' ),
-			selectedMetrics?.length
+			/* translators: 1: Maximum number of metrics that can be selected 2: Number of selected metrics */
+			__(
+				'Select up to %1$d metrics (%2$d selected)',
+				'google-site-kit'
+			),
+
+			MAX_SELECTED_METRICS_COUNT,
+			selectedMetricsCount
 		);
 	}
 
@@ -284,7 +294,11 @@ export default function Footer( {
 							selectedMetrics?.length || 0
 						) }
 						<span className="googlesitekit-km-selection-panel-footer__metric-count--max-count">
-							{ __( '(up to 4)', 'google-site-kit' ) }
+							{ sprintf(
+								/* translators: Maximum number of metrics that can be selected */
+								__( '(up to %d)', 'google-site-kit' ),
+								MAX_SELECTED_METRICS_COUNT
+							) }
 						</span>
 					</p>
 				) }
