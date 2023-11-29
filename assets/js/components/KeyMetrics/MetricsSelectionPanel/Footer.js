@@ -25,7 +25,13 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState, useMemo } from '@wordpress/element';
+import {
+	useCallback,
+	useEffect,
+	useState,
+	useMemo,
+	createInterpolateElement,
+} from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -250,7 +256,7 @@ export default function Footer( {
 	let metricsLimitError;
 	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
-			/* translators: 1: Minimum number of metrics that can be selected 2: Number of selected metrics */
+			/* translators: 1: Minimum number of metrics that can be selected. 2: Number of selected metrics. */
 			__(
 				'Select at least %1$d metrics (%2$d selected)',
 				'google-site-kit'
@@ -260,7 +266,7 @@ export default function Footer( {
 		);
 	} else if ( selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
-			/* translators: 1: Maximum number of metrics that can be selected 2: Number of selected metrics */
+			/* translators: 1: Maximum number of metrics that can be selected. 2: Number of selected metrics. */
 			__(
 				'Select up to %1$d metrics (%2$d selected)',
 				'google-site-kit'
@@ -287,18 +293,22 @@ export default function Footer( {
 					/>
 				) : (
 					<p className="googlesitekit-km-selection-panel-footer__metric-count">
-						{ sprintf(
-							/* translators: Number of selected metrics */
-							__( '%d selected ', 'google-site-kit' ),
-							selectedMetricsCount
-						) }
-						<span className="googlesitekit-km-selection-panel-footer__metric-count--max-count">
-							{ sprintf(
-								/* translators: Maximum number of metrics that can be selected */
-								__( '(up to %d)', 'google-site-kit' ),
+						{ createInterpolateElement(
+							sprintf(
+								/* translators: 1: Number of selected metrics. 2: Maximum number of metrics that can be selected. */
+								__(
+									'%1$d selected <note>(up to %2$d)</note>',
+									'google-site-kit'
+								),
+								selectedMetricsCount,
 								MAX_SELECTED_METRICS_COUNT
-							) }
-						</span>
+							),
+							{
+								note: (
+									<span className="googlesitekit-km-selection-panel-footer__metric-count--max-count" />
+								),
+							}
+						) }
 					</p>
 				) }
 				<div className="googlesitekit-km-selection-panel-footer__actions">
