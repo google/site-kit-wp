@@ -119,7 +119,7 @@ final class Client_Factory {
 	/**
 	 * Get HTTP client configuration.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.115.0
 	 *
 	 * @param array $config Initial configuration.
 	 * @return array The new HTTP client configuration.
@@ -152,7 +152,7 @@ final class Client_Factory {
 		/**
 		 * Filters the IP version to force hostname resolution with.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.115.0
 		 *
 		 * @param $force_ip_resolve null|string IP version to force. Default: null.
 		 */
