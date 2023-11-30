@@ -31,11 +31,7 @@ import { isInsufficientPermissionsError } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 const { useSelect } = Data;
 
-export default function StoreErrorNotices( {
-	moduleSlug,
-	storeName,
-	shouldDisplayError,
-} ) {
+export default function StoreErrorNotices( { moduleSlug, storeName } ) {
 	const errors = useSelect( ( select ) => select( storeName ).getErrors() );
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -73,7 +69,6 @@ export default function StoreErrorNotices( {
 					error={ error }
 					storeName={ storeName }
 					message={ message }
-					shouldDisplayError={ shouldDisplayError }
 				/>
 			);
 		} );
@@ -81,6 +76,5 @@ export default function StoreErrorNotices( {
 
 StoreErrorNotices.propTypes = {
 	storeName: PropTypes.string.isRequired,
-	shouldDisplayError: PropTypes.func,
 	moduleSlug: PropTypes.string,
 };

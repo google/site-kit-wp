@@ -1,5 +1,5 @@
 /**
- * AdSense Setup Account Site Getting Ready component.
+ * AdSense Setup Account Site Requires Review component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -26,13 +26,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../../components/Root/ViewContextContext';
-import { trackEvent } from '../../../../../../util';
-import { MODULES_ADSENSE } from '../../../../datastore/constants';
-import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../../util';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+import SetupAccountSiteUI from './SetupAccountSiteUI';
 const { useSelect } = Data;
 
-export default function GettingReady() {
+export default function RequiresReview() {
 	const viewContext = useContext( ViewContextContext );
 
 	const reviewSiteURL = useSelect( ( select ) =>
@@ -45,22 +45,22 @@ export default function GettingReady() {
 			trackEvent(
 				`${ viewContext }_adsense`,
 				'review_site_state',
-				'getting_ready'
+				'requires_review'
 			);
 			global.open( reviewSiteURL, '_blank' );
 		},
 		[ reviewSiteURL, viewContext ]
 	);
 
-	const heading = __( 'Your site is getting ready', 'google-site-kit' );
+	const heading = __( 'Your site requires review', 'google-site-kit' );
 
 	const description = __(
-		'This usually takes a few days, but in some cases can take up to 2 weeks. You’ll get an email from AdSense as soon as they have run some checks on your site.',
+		'To start serving ads, your site needs to be approved first. Go to AdSense to request the review.',
 		'google-site-kit'
 	);
 
 	const primaryButton = {
-		label: __( 'Review site in AdSense', 'google-site-kit' ),
+		label: __( 'Request review in AdSense', 'google-site-kit' ),
 		href: reviewSiteURL,
 		onClick: reviewSiteHandler,
 	};

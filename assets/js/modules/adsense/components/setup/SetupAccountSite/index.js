@@ -37,19 +37,19 @@ import {
 	API_STATE_GETTING_READY,
 	API_STATE_NEEDS_ATTENTION,
 	API_STATE_REQUIRES_REVIEW,
-} from '../../../../datastore/constants';
+} from '../../../datastore/constants';
 import {
 	SITE_STATUS_READY,
 	SITE_STATUS_GETTING_READY,
 	SITE_STATUS_NEEDS_ATTENTION,
 	SITE_STATUS_REQUIRES_REVIEW,
 	SITE_STATUS_READY_NO_AUTO_ADS,
-} from '../../../../util/status';
+} from '../../../util/status';
 import NeedsAttention from './NeedsAttention';
 import GettingReady from './GettingReady';
 import RequiresReview from './RequiresReview';
 import Ready from './Ready';
-import ErrorText from '../../../../../../components/ErrorText';
+import ErrorText from '../../../../../components/ErrorText';
 const { useDispatch } = Data;
 
 export default function SetupAccountSite( { site, finishSetup } ) {

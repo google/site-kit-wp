@@ -1,7 +1,7 @@
 /**
- * AdSense Setup Site Added component.
+ * SetupAccountCreateSite component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -33,60 +28,50 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import SiteSteps from '../common/SiteSteps';
 import { ErrorNotices } from '../common';
-const { useSelect, useDispatch } = Data;
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
+const { useSelect } = Data;
 
-export default function SetupSiteAdded( { finishSetup } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isDoingSubmitChanges()
+export default function SetupAccountCreateSite() {
+	const viewContext = useViewContext();
+
+	const addSiteURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getServiceAccountManageSiteURL()
 	);
 
-	const { completeSiteSetup } = useDispatch( MODULES_ADSENSE );
-	const continueHandler = useCallback( async () => {
-		if ( isDoingSubmitChanges ) {
-			return;
-		}
-
-		const success = await completeSiteSetup();
-		if ( success ) {
-			finishSetup();
-		}
-	}, [ isDoingSubmitChanges, finishSetup, completeSiteSetup ] );
+	const addSiteHandler = useCallback(
+		( event ) => {
+			event.preventDefault();
+			trackEvent( `${ viewContext }_adsense`, 'create_site' );
+			global.open( addSiteURL, '_blank' );
+		},
+		[ addSiteURL, viewContext ]
+	);
 
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
-				{ __( 'Let’s get your site ready for ads', 'google-site-kit' ) }
+				{ __(
+					'Add this site to your AdSense account',
+					'google-site-kit'
+				) }
 			</h3>
 
 			<ErrorNotices />
 
 			<p>
 				{ __(
-					'In order for your site to display ads, make sure you’ve completed these steps in AdSense',
+					'We’ve detected that you haven’t added this site to your AdSense account yet.',
 					'google-site-kit'
 				) }
 			</p>
 
-			<SiteSteps />
-
 			<div className="googlesitekit-setup-module__action">
-				<Button
-					onClick={ continueHandler }
-					disabled={ isDoingSubmitChanges }
-				>
-					{ __( 'Continue', 'google-site-kit' ) }
+				<Button onClick={ addSiteHandler } href={ addSiteURL }>
+					{ __( 'Add site to AdSense', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</Fragment>
 	);
 }
-
-SetupSiteAdded.propTypes = {
-	finishSetup: PropTypes.func,
-};
-
-SetupSiteAdded.defaultProps = {
-	finishSetup: () => {},
-};

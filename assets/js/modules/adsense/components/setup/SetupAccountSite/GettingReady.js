@@ -1,5 +1,5 @@
 /**
- * AdSense Setup Account Site Needs Attention component.
+ * AdSense Setup Account Site Getting Ready component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -26,13 +26,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../../components/Root/ViewContextContext';
-import { trackEvent } from '../../../../../../util';
-import { MODULES_ADSENSE } from '../../../../datastore/constants';
-import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../../util';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+import SetupAccountSiteUI from './SetupAccountSiteUI';
 const { useSelect } = Data;
 
-export default function NeedsAttention() {
+export default function GettingReady() {
 	const viewContext = useContext( ViewContextContext );
 
 	const reviewSiteURL = useSelect( ( select ) =>
@@ -45,20 +45,17 @@ export default function NeedsAttention() {
 			trackEvent(
 				`${ viewContext }_adsense`,
 				'review_site_state',
-				'needs_attention'
+				'getting_ready'
 			);
 			global.open( reviewSiteURL, '_blank' );
 		},
 		[ reviewSiteURL, viewContext ]
 	);
 
-	const heading = __(
-		'Your site isn’t ready to show ads yet',
-		'google-site-kit'
-	);
+	const heading = __( 'Your site is getting ready', 'google-site-kit' );
 
 	const description = __(
-		'You need to fix some things with this site before we can connect Site Kit to your AdSense account.',
+		'This usually takes a few days, but in some cases can take up to 2 weeks. You’ll get an email from AdSense as soon as they have run some checks on your site.',
 		'google-site-kit'
 	);
 

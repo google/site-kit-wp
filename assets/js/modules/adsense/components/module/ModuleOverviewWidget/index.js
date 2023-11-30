@@ -30,16 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useFeature } from '../../../../../hooks/useFeature';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	SITE_STATUS_ADDED,
-	isZeroReport,
-	legacyAccountStatuses,
-} from '../../../util';
-import DashboardZeroData from '../../dashboard/DashboardZeroData';
-import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constants';
+import { SITE_STATUS_ADDED, legacyAccountStatuses } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import whenActive from '../../../../../util/when-active';
 import Header from './Header';
@@ -51,14 +44,9 @@ import StatusMigration from './StatusMigration';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-const ModuleOverviewWidget = ( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) => {
+const ModuleOverviewWidget = ( { Widget, WidgetReportError } ) => {
 	const viewOnlyDashboard = useViewOnly();
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
-	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
 
 	const accountStatus = useSelect( ( select ) => {
 		if ( viewOnlyDashboard ) {
@@ -170,27 +158,9 @@ const ModuleOverviewWidget = ( {
 		);
 	}
 
-	if ( ! adsenseSetupV2Enabled ) {
-		if (
-			isZeroReport( currentRangeData ) ||
-			isZeroReport( currentRangeChartData )
-		) {
-			return (
-				<Widget noPadding>
-					<DashboardZeroData />
-					<div className={ HIDDEN_CLASS }>
-						<WidgetReportZero moduleSlug="adsense" />
-					</div>
-				</Widget>
-			);
-		}
-	}
-
 	return (
 		<Widget noPadding Header={ Header } Footer={ Footer }>
-			{ adsenseSetupV2Enabled && ! viewOnlyDashboard && legacyStatus && (
-				<StatusMigration />
-			) }
+			{ ! viewOnlyDashboard && legacyStatus && <StatusMigration /> }
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }

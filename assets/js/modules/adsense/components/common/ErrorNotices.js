@@ -17,33 +17,13 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useCallback } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import { errorToStatus } from '../../util/status';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { useFeature } from '../../../../hooks/useFeature';
 
 export default function ErrorNotices() {
-	const shouldDisplayError = useCallback(
-		( error ) => undefined === errorToStatus( error ),
-		[]
-	);
-
-	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
-
 	return (
-		<StoreErrorNotices
-			moduleSlug="adsense"
-			storeName={ MODULES_ADSENSE }
-			shouldDisplayError={
-				adsenseSetupV2Enabled ? undefined : shouldDisplayError
-			}
-		/>
+		<StoreErrorNotices moduleSlug="adsense" storeName={ MODULES_ADSENSE } />
 	);
 }

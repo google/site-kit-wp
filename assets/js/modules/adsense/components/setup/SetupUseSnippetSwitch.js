@@ -26,9 +26,9 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
-import { parseAccountID } from '../../../util/parsing';
-import { UseSnippetSwitch } from '../../common';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { parseAccountID } from '../../util/parsing';
+import { UseSnippetSwitch } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupUseSnippetSwitch() {
