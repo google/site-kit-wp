@@ -147,7 +147,7 @@ generateReportBasedWidgetStories( {
 		},
 	] ),
 	additionalVariants: {
-		// We are disabling this variant because it is not needed for adsense module.
+		// We are disabling this variant because it is not needed for AdSense module.
 		DataUnavailable: false,
 	},
 	Component: ModuleOverviewWidget,
