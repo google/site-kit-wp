@@ -29,7 +29,7 @@ import { useInstanceId } from '@wordpress/compose';
  * Using a regular `Map` to track objects will ensure they are not unpredictably garbage collected during tests, which can cause the
  * generated instance IDs to change, with resulting test failures.
  *
- * @since n.e.x.t
+ * @since 1.115.0
  *
  * @param {Map}    instanceMap Map of object instances to their current id.
  * @param {Object} object      Object reference to create an id for.
@@ -46,7 +46,7 @@ function createID( instanceMap, object ) {
  * Provides a unique instance ID.
  *
  * @since 1.107.0
- * @since n.e.x.t Updated to provide instance ID instead of memoized ID.
+ * @since 1.115.0 Updated to provide instance ID instead of memoized ID.
  *
  * @param {Map}    instanceMap Map of object instances to their current id.
  * @param {Object} object      Object reference to create an id for.
@@ -68,7 +68,7 @@ function useInstanceID( instanceMap, object, prefix = '' ) {
  * are predictable during tests.
  *
  * @since 1.107.0
- * @since n.e.x.t Updated to use `useInstanceID` and `instanceMap`.
+ * @since 1.115.0 Updated to use `useInstanceID` and `instanceMap`.
  */
 export function mockUseInstanceID() {
 	const instanceMap = new Map();

@@ -57,7 +57,7 @@ export function exampleTestFunction( props ) {
  * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.1
- * @since n.e.x.t This is fine as the final line.
+ * @since 1.115.0 This is fine as the final line.
  */
 export function exampleTestFunction( props ) {
 	return 'test';
