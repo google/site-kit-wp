@@ -90,6 +90,17 @@ describe( 'setting up the Analytics module with an existing account and existing
 					status: 200,
 				} );
 			} else if (
+				request
+					.url()
+					.match( 'analytics-4/data/enhanced-measurement-settings' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						fixtures.defaultEnhancedMeasurementSettings
+					),
+				} );
+			} else if (
 				request.url().match( 'analytics-4/data/google-tag-settings' )
 			) {
 				request.respond( {
