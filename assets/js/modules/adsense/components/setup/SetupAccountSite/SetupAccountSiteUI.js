@@ -30,9 +30,9 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { ErrorNotices } from '../../../common';
+import { ErrorNotices } from '../../common';
 import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
-import Link from '../../../../../../components/Link';
+import Link from '../../../../../components/Link';
 
 export default function SetupAccountSiteUI( {
 	heading,

@@ -1,7 +1,7 @@
 /**
- * AdSense Setup Account Create component.
+ * AdSense SetupCreateAccount component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@
  * WordPress dependencies
  */
 import {
-	Fragment,
 	createInterpolateElement,
+	Fragment,
 	useCallback,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -35,18 +35,14 @@ import SupportLink from '../../../../components/SupportLink';
 import { trackEvent } from '../../../../util';
 import { parseAccountID } from '../../util/parsing';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotices, UserProfile } from '../common';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
-export default function SetupAccountCreate() {
+export default function SetupCreateAccount() {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
-	const siteURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getReferenceSiteURL()
-	);
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
@@ -64,10 +60,6 @@ export default function SetupAccountCreate() {
 		[ signUpURL, eventCategory ]
 	);
 
-	if ( ! siteURL || ! userEmail || undefined === existingTag ) {
-		return null;
-	}
-
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
@@ -78,7 +70,7 @@ export default function SetupAccountCreate() {
 
 			<p>
 				{ __(
-					'Site Kit will place AdSense code on every page across your site. This means Google will automatically place ads for you in all the best places.',
+					'Once you create your account, Site Kit will place AdSense code on every page across your site. This means your site will be automatically optimized to help you earn money from your content.',
 					'google-site-kit'
 				) }
 			</p>
@@ -87,7 +79,7 @@ export default function SetupAccountCreate() {
 
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ createAccountHandler } href={ signUpURL }>
-					{ __( 'Create AdSense Account', 'google-site-kit' ) }
+					{ __( 'Create AdSense account', 'google-site-kit' ) }
 				</Button>
 			</div>
 

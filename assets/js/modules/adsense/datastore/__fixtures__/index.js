@@ -20,8 +20,5 @@ export { default as accounts } from './accounts.json';
 export { default as accountsMultiple } from './accounts-multiple.json';
 export { default as clients } from './clients.json';
 export { default as clientsNoAFC } from './clients-no-afc.json';
-export { default as urlchannels } from './urlchannels.json';
 export { default as adunits } from './adunits.json';
-export { default as alerts } from './alerts.json';
-export { default as alertsGraylisted } from './alerts-graylisted.json';
 export { default as sites } from './sites.json';

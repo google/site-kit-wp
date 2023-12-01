@@ -1,5 +1,5 @@
 /**
- * AdSense Setup Account Site Requires Review component.
+ * AdSense Setup Account Site Needs Attention component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -26,13 +26,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../../components/Root/ViewContextContext';
-import { trackEvent } from '../../../../../../util';
-import { MODULES_ADSENSE } from '../../../../datastore/constants';
-import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../../util';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+import SetupAccountSiteUI from './SetupAccountSiteUI';
 const { useSelect } = Data;
 
-export default function RequiresReview() {
+export default function NeedsAttention() {
 	const viewContext = useContext( ViewContextContext );
 
 	const reviewSiteURL = useSelect( ( select ) =>
@@ -45,22 +45,25 @@ export default function RequiresReview() {
 			trackEvent(
 				`${ viewContext }_adsense`,
 				'review_site_state',
-				'requires_review'
+				'needs_attention'
 			);
 			global.open( reviewSiteURL, '_blank' );
 		},
 		[ reviewSiteURL, viewContext ]
 	);
 
-	const heading = __( 'Your site requires review', 'google-site-kit' );
+	const heading = __(
+		'Your site isn’t ready to show ads yet',
+		'google-site-kit'
+	);
 
 	const description = __(
-		'To start serving ads, your site needs to be approved first. Go to AdSense to request the review.',
+		'You need to fix some things with this site before we can connect Site Kit to your AdSense account.',
 		'google-site-kit'
 	);
 
 	const primaryButton = {
-		label: __( 'Request review in AdSense', 'google-site-kit' ),
+		label: __( 'Review site in AdSense', 'google-site-kit' ),
 		href: reviewSiteURL,
 		onClick: reviewSiteHandler,
 	};

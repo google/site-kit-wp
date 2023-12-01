@@ -20,12 +20,10 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import VisuallyHidden from '../../../../components/VisuallyHidden';
 import {
 	trackingExclusionLabels,
 	AUTO_ADS_LOGGED_IN_USERS,
@@ -133,28 +131,6 @@ export const getSiteStatusLabel = ( siteStatus ) => {
 			break;
 	}
 	return siteStatusLabel;
-};
-
-/**
- * Returns translatable site status link label.
- *
- * @since 1.93.0
- *
- * @param {boolean} adsenseSetupV2Enabled The adsense setup V2 enabled flag.
- * @return {Element|string} The element if adsenseSetupV2Enabled, otherwise string.
- */
-export const getSiteStatusLinkLabel = ( adsenseSetupV2Enabled ) => {
-	return adsenseSetupV2Enabled
-		? createInterpolateElement(
-				__(
-					'View <VisuallyHidden>site </VisuallyHidden>in AdSense',
-					'google-site-kit'
-				),
-				{
-					VisuallyHidden: <VisuallyHidden />,
-				}
-		  )
-		: __( 'Check your site status', 'google-site-kit' );
 };
 
 /**

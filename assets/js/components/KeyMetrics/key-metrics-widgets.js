@@ -82,49 +82,44 @@ function shouldDisplayWidgetWithCustomDimensions(
 }
 
 const KEY_METRICS_WIDGETS = {
-	[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-		title: __( 'Returning visitors', 'google-site-kit' ),
+	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
+		title: __( 'Top recent trending pages', 'google-site-kit' ),
 		description: __(
-			'Portion of people who visited your site more than once',
+			'Pages with the most pageviews published in the last 3 days',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Portion of your site’s visitors that returned at least once in this timeframe',
+			'Pages with the most pageviews published in the last 3 days',
 			'google-site-kit'
 		),
+		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
-	[ KM_ANALYTICS_NEW_VISITORS ]: {
-		title: __( 'New visitors', 'google-site-kit' ),
+	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
+		title: __( 'Most popular authors by pageviews', 'google-site-kit' ),
 		description: __(
-			'How many new visitors you got and how the overall audience changed',
+			'Authors whose posts got the most visits',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Portion of visitors who visited your site for the first time in this timeframe',
+			'Authors whose posts got the most visits',
 			'google-site-kit'
 		),
+		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
-	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE ]: {
-		title: __( 'Top traffic source', 'google-site-kit' ),
+	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
+		title: __( 'Top categories by pageviews', 'google-site-kit' ),
 		description: __(
-			'Channel which brought in the most visitors to your site',
+			'Categories that your site visitors viewed the most',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
+			'Categories that your site visitors viewed the most',
 			'google-site-kit'
 		),
-	},
-	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
-		title: __( 'Most engaged traffic source', 'google-site-kit' ),
-		description: __(
-			'Visitors coming via this channel spent the most time on your site',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site',
-			'google-site-kit'
-		),
+		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
+		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_POPULAR_CONTENT ]: {
 		title: __( 'Most popular content by pageviews', 'google-site-kit' ),
@@ -148,14 +143,125 @@ const KEY_METRICS_WIDGETS = {
 				KM_ANALYTICS_POPULAR_PRODUCTS
 			) || select( CORE_SITE ).getProductBasePaths()?.length > 0,
 	},
-	[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-		title: __( 'Top performing keywords', 'google-site-kit' ),
+	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
+		title: __( 'Pages per visit', 'google-site-kit' ),
 		description: __(
-			'What people searched for before they came to your site',
+			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'The top search queries for your site by highest clickthrough rate',
+			'Number of pages visitors viewed per session on average',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_VISIT_LENGTH ]: {
+		title: __( 'Visit length', 'google-site-kit' ),
+		description: __(
+			'Average duration of engaged visits',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Average duration of engaged visits',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_VISITS_PER_VISITOR ]: {
+		title: __( 'Visits per visitor', 'google-site-kit' ),
+		description: __(
+			'Average number of sessions per site visitor',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Average number of sessions per site visitor',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
+		title: __( 'Most engaging pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the highest engagement rate',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Pages with the highest engagement rate',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
+		title: __( 'Least engaging pages', 'google-site-kit' ),
+		description: __(
+			'Pages with the highest percentage of visitors that left without engagement with your site',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Percentage of visitors that left without engagement with your site',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ]: {
+		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
+		description: __(
+			'Pages that attracted the most returning visitors',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Pages that attracted the most returning visitors',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_NEW_VISITORS ]: {
+		title: __( 'New visitors', 'google-site-kit' ),
+		description: __(
+			'How many new visitors you got and how the overall audience changed',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Portion of visitors who visited your site for the first time in this timeframe',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+		title: __( 'Returning visitors', 'google-site-kit' ),
+		description: __(
+			'Portion of people who visited your site more than once',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Portion of your site’s visitors that returned at least once in this timeframe',
+			'google-site-kit'
+		),
+	},
+
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE ]: {
+		title: __( 'Top traffic source', 'google-site-kit' ),
+		description: __(
+			'Channel which brought in the most visitors to your site',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
+		title: __( 'Most engaged traffic source', 'google-site-kit' ),
+		description: __(
+			'Visitors coming via this channel spent the most time on your site',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site',
+			'google-site-kit'
+		),
+	},
+	[ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ]: {
+		title: __( 'Top converting traffic source', 'google-site-kit' ),
+		description: __(
+			'Channel which brought in the most visits that resulted in conversions',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions',
 			'google-site-kit'
 		),
 	},
@@ -181,121 +287,16 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 	},
-	[ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ]: {
-		title: __( 'Top converting traffic source', 'google-site-kit' ),
+	[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+		title: __( 'Top performing keywords', 'google-site-kit' ),
 		description: __(
-			'Channel which brought in the most visits that resulted in conversions',
+			'What people searched for before they came to your site',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions',
+			'The top search queries for your site by highest clickthrough rate',
 			'google-site-kit'
 		),
-	},
-	[ KM_ANALYTICS_VISITS_PER_VISITOR ]: {
-		title: __( 'Visits per visitor', 'google-site-kit' ),
-		description: __(
-			'Average number of sessions per site visitor',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Average number of sessions per site visitor',
-			'google-site-kit'
-		),
-	},
-	[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
-		title: __( 'Least engaging pages', 'google-site-kit' ),
-		description: __(
-			'Pages with the highest percentage of visitors that left without engagement with your site',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Percentage of visitors that left without engagement with your site',
-			'google-site-kit'
-		),
-	},
-	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
-		title: __( 'Pages per visit', 'google-site-kit' ),
-		description: __(
-			'Number of pages visitors viewed per session on average',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Number of pages visitors viewed per session on average',
-			'google-site-kit'
-		),
-	},
-	[ KM_ANALYTICS_VISIT_LENGTH ]: {
-		title: __( 'Visit length', 'google-site-kit' ),
-		description: __(
-			'Average duration of engaged visits',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Average duration of engaged visits',
-			'google-site-kit'
-		),
-	},
-	[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ]: {
-		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
-		description: __(
-			'Pages that attracted the most returning visitors',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Pages that attracted the most returning visitors',
-			'google-site-kit'
-		),
-	},
-	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
-		title: __( 'Most engaging pages', 'google-site-kit' ),
-		description: __(
-			'Pages with the highest engagement rate',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Pages with the highest engagement rate',
-			'google-site-kit'
-		),
-	},
-	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
-		title: __( 'Top recent trending pages', 'google-site-kit' ),
-		description: __(
-			'Pages with the most pageviews published in the last 3 days',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Pages with the most pageviews published in the last 3 days',
-			'google-site-kit'
-		),
-		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
-		displayInList: shouldDisplayWidgetWithCustomDimensions,
-	},
-	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
-		title: __( 'Top categories by pageviews', 'google-site-kit' ),
-		description: __(
-			'Categories that your site visitors viewed the most',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Categories that your site visitors viewed the most',
-			'google-site-kit'
-		),
-		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
-		displayInList: shouldDisplayWidgetWithCustomDimensions,
-	},
-	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
-		title: __( 'Most popular authors by pageviews', 'google-site-kit' ),
-		description: __(
-			'Authors whose posts got the most visits',
-			'google-site-kit'
-		),
-		infoTooltip: __(
-			'Authors whose posts got the most visits',
-			'google-site-kit'
-		),
-		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
-		displayInList: shouldDisplayWidgetWithCustomDimensions,
 	},
 };
 

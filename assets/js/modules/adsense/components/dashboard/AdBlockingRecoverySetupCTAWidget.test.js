@@ -23,6 +23,7 @@ import fetchMock from 'fetch-mock';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	mockSurveyEndpoints,
+	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
 import {
@@ -35,6 +36,7 @@ import {
 	render,
 	unsubscribeFromAll,
 	waitFor,
+	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -515,6 +517,11 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should fire track event when "learn more" is clicked', async () => {
+			fetchMock.getOnce( surveyTimeoutsEndpoint, {
+				status: 200,
+				body: {},
+			} );
+
 			const { getByRole, waitForRegistry } = render(
 				<div>
 					<div id="adminmenu">
@@ -545,6 +552,11 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				'mainDashboard_adsense-abr-cta-widget',
 				'click_learn_more_link'
 			);
+
+			// This improves stability, as sometimes the test would fail
+			// due to the `survey-timeouts` call losing the `fetchMock`
+			// context.
+			await waitForDefaultTimeouts();
 		} );
 	} );
 } );

@@ -38,7 +38,7 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -80,6 +80,23 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 	const adSenseModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
+
+	const isConnectingAdSense = useSelect( ( select ) => {
+		const isFetching = select( CORE_MODULES ).isFetchingSetModuleActivation(
+			'adsense',
+			true
+		);
+
+		if ( isFetching ) {
+			return true;
+		}
+
+		if ( ! adminReauthURL ) {
+			return false;
+		}
+
+		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
+	} );
 
 	const handleConnect = useCallback( async () => {
 		const { response, error } = await activateModule( 'adsense' );
@@ -128,20 +145,25 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 					<Cell { ...cellProps }>
 						<div className="googlesitekit-setup-module__action">
 							{ ! adSenseModuleActive && (
-								<Button onClick={ handleConnect }>
+								<SpinnerButton
+									onClick={ handleConnect }
+									isSaving={ isConnectingAdSense }
+								>
 									{ __( 'Connect now', 'google-site-kit' ) }
-								</Button>
+								</SpinnerButton>
 							) }
 
-							{ adSenseModuleActive &&
-								! adSenseModuleConnected && (
-									<Button onClick={ handleCompleteSetup }>
-										{ __(
-											'Complete setup',
-											'google-site-kit'
-										) }
-									</Button>
-								) }
+							{ adSenseModuleActive && ! adSenseModuleConnected && (
+								<SpinnerButton
+									onClick={ handleCompleteSetup }
+									isSaving={ isConnectingAdSense }
+								>
+									{ __(
+										'Complete setup',
+										'google-site-kit'
+									) }
+								</SpinnerButton>
+							) }
 
 							<Link onClick={ handleDismissModule }>
 								{ __( 'Maybe later', 'google-site-kit' ) }
