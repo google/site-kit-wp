@@ -61,12 +61,11 @@ class Synchronize_PropertyTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user->ID );
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 
 		$context              = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options        = new Options( $context );
-		$this->user_options   = new User_Options( $context );
+		$this->user_options   = new User_Options( $context, $user_id );
 		$this->authentication = new Authentication( $context, $this->options, $this->user_options );
 
 		// Fake a valid authentication token on the client.
@@ -82,43 +81,31 @@ class Synchronize_PropertyTest extends TestCase {
 			$this->user_options,
 			$this->authentication
 		);
-
-		$this->set_analytics_settings();
-
-		$this->synchronize_property = new Synchronize_Property(
-			$this->analytics_4,
-			$this->user_options,
-			$this->authentication
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics_4->get_scopes()
 		);
-	}
+		// Clear user context which was only needed for setting values for the module owner.
+		$this->user_options->switch_user( 0 );
 
-	public function set_analytics_settings() {
-		// Ensure Analytics 4 module is connected
-		$this->options->set(
-			Analytics_4_Settings::OPTION,
+		// Ensure Analytics 4 module is connected.
+		$this->analytics_4->get_settings()->merge(
 			array(
 				'accountID'       => '12345678',
 				'propertyID'      => '987654321',
 				'webDataStreamID' => '1234567890',
 				'measurementID'   => 'G-A1B2C3D4E5',
+				'ownerID'         => $user_id,
 			)
 		);
-
-		// Set owner ID, using base analytics settings.
-		$this->options->set(
-			Analytics_Settings::OPTION,
-			array(
-				'ownerID' => get_current_user_id(),
-			)
+		// GA4 currently sources the ownerID from the original module settings.
+		( new Analytics_Settings( $this->options ) )->merge(
+			array( 'ownerID' => $user_id )
 		);
-	}
 
-	public function get_mocked_analytics_property_object( $property_id, $create_time ) {
-		$property = new GoogleAnalyticsAdminV1betaProperty();
-		$property->setName( "properties/{$property_id}" );
-		$property->setCreateTime( $create_time );
-
-		return $property;
+		$this->synchronize_property = new Synchronize_Property(
+			$this->analytics_4,
+			$this->user_options
+		);
 	}
 
 	public function fake_analytics_4_property_response( $property_id, $create_time ) {
@@ -127,7 +114,9 @@ class Synchronize_PropertyTest extends TestCase {
 			function ( Request $request ) use ( $property_id, $create_time ) {
 				$url = parse_url( $request->getUri() );
 
-				$property = $this->get_mocked_analytics_property_object( $property_id, $create_time );
+				$property = new GoogleAnalyticsAdminV1betaProperty();
+				$property->setName( "properties/{$property_id}" );
+				$property->setCreateTime( $create_time );
 
 				if ( "/v1beta/properties/{$property_id}" === $url['path'] ) {
 					return new Response(
@@ -167,10 +156,6 @@ class Synchronize_PropertyTest extends TestCase {
 		$create_time    = '2014-10-02T15:01:23Z';
 		$create_time_ms = Synchronize_Property::convert_time_to_unix_ms( $create_time );
 
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics_4->get_scopes()
-		);
-
 		$this->fake_analytics_4_property_response( $property_id, $create_time );
 
 		// Confirm that module is connected, as it will be needed in the cron callback.
@@ -193,10 +178,25 @@ class Synchronize_PropertyTest extends TestCase {
 		$this->assertEquals( $create_time_ms, $property_create_time );
 	}
 
-	public function test_convert_time_to_unix_ms() {
-		$create_time    = '2014-10-02T15:01:23Z';
-		$create_time_ms = Synchronize_Property::convert_time_to_unix_ms( $create_time );
+	/**
+	 * @dataProvider data_time_strings_to_unix_timestamps_in_ms
+	 */
+	public function test_convert_time_to_unix_ms( $iso_string, $expected_timestamp_ms ) {
+		$create_time_ms = Synchronize_Property::convert_time_to_unix_ms( $iso_string );
 
-		$this->assertEquals( 1412262083000, $create_time_ms );
+		$this->assertEquals( $expected_timestamp_ms, $create_time_ms );
+	}
+
+	public function data_time_strings_to_unix_timestamps_in_ms() {
+		return array(
+			'epoch'                              => array(
+				'1970-01-01T00:00:00Z',
+				0,
+			),
+			'epoch + 1 day, 2 hrs, 3 min, 4 sec' => array(
+				'1970-01-02T02:03:04Z',
+				( DAY_IN_SECONDS + ( 2 * HOUR_IN_SECONDS ) + ( 3 * MINUTE_IN_SECONDS ) + 4 ) * 1000,
+			),
+		);
 	}
 }
