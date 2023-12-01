@@ -42,7 +42,7 @@ import {
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
-import NewBadge from '../../components/NewBadge';
+import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -89,14 +89,13 @@ export function registerDefaults( widgetsAPI ) {
 	 * Main dashboard areas.
 	 */
 
-	const { keyMetricsSetupNew } = global._googlesitekitBaseData;
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 		{
 			title: (
 				<Fragment>
 					{ __( 'Key metrics', 'google-site-kit' ) }
-					{ keyMetricsSetupNew && <NewBadge /> }
+					<KeyMetricsNewBadge />
 				</Fragment>
 			),
 			subtitle: __(
