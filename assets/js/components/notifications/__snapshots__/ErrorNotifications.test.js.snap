@@ -232,12 +232,18 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
                
               <a
                 aria-label="Learn more (opens in a new tab)"
-                class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                class="googlesitekit-cta-link"
                 href="https://support.google.com/tagmanager/answer/11994839?hl=en-US"
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 Learn more
+                <span
+                  class="googlesitekit-icon-wrapper"
+                  style="margin-left: 5px;"
+                >
+                  <svg />
+                </span>
               </a>
             </p>
           </div>

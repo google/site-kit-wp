@@ -312,7 +312,7 @@ export function registerDefaults( widgetsAPI ) {
 			{
 				Component: AddMetricCTATile,
 				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
-				priority: 2,
+				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 				wrapWidget: false,
 				modules: [ 'search-console' ],
 				isActive: ( select ) => {
@@ -336,7 +336,7 @@ export function registerDefaults( widgetsAPI ) {
 			{
 				Component: AddMetricCTATile,
 				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
-				priority: 2,
+				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 				wrapWidget: false,
 				modules: [ 'search-console' ],
 				isActive: ( select ) => {

@@ -28,23 +28,20 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
-import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
 import {
 	getAccountStatusLabel,
 	getSiteStatusLabel,
-	getSiteStatusLinkLabel,
 	getSnippetLabel,
 	getAutoAdsDisabledMessage,
 } from './utils';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
+import VisuallyHidden from '../../../../components/VisuallyHidden';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
-
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
@@ -97,7 +94,15 @@ export default function SettingsView() {
 
 	const siteStatusLabel = getSiteStatusLabel( siteStatus );
 
-	const siteStatusLinkLabel = getSiteStatusLinkLabel( adsenseSetupV2Enabled );
+	const siteStatusLinkLabel = createInterpolateElement(
+		__(
+			'View <VisuallyHidden>site </VisuallyHidden>in AdSense',
+			'google-site-kit'
+		),
+		{
+			VisuallyHidden: <VisuallyHidden />,
+		}
+	);
 
 	const snippetLabel = getSnippetLabel( useSnippet, existingTag, clientID );
 
@@ -129,7 +134,7 @@ export default function SettingsView() {
 						{ __( 'Site Status', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ adsenseSetupV2Enabled && siteStatusLabel + ' ' }
+						{ siteStatusLabel + ' ' }
 						<Link
 							href={ siteStatusURL }
 							className="googlesitekit-settings-module__cta-button"

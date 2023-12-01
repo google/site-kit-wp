@@ -1,7 +1,7 @@
 /**
- * AdSense Setup Account Select component.
+ * AdSense SetupSelectAccount component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { AccountSelect, ErrorNotices } from '../common';
 
-export default function SetupAccountSelect() {
+export default function SetupSelectAccount() {
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">

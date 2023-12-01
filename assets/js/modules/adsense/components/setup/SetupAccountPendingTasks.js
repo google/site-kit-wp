@@ -1,7 +1,7 @@
 /**
- * AdSense Setup Account Pending component.
+ * SetupAccountPendingTasks component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,49 +19,56 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Link from '../../../../components/Link';
+import { Button } from 'googlesitekit-components';
+import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
-export default function SetupAccountPending() {
-	const accountSiteURL = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getServiceAccountManageSiteURL()
-	);
+export default function SetupAccountPendingTasks() {
+	const viewContext = useViewContext();
 
-	if ( ! accountSiteURL ) {
-		return null;
-	}
+	const onButtonClick = useCallback( () => {
+		trackEvent( `${ viewContext }_adsense`, 'review_tasks' );
+	}, [ viewContext ] );
+
+	const serviceAccountURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getServiceAccountURL()
+	);
 
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
-				{ __( 'Your account is getting ready', 'google-site-kit' ) }
+				{ __(
+					'Your account isn’t ready to show ads yet',
+					'google-site-kit'
+				) }
 			</h3>
 
 			<ErrorNotices />
 
 			<p>
 				{ __(
-					'Site Kit has placed AdSense code on every page across your site. After you’ve finished setting up your account, we’ll let you know when your site is ready to show ads. This usually takes less than a day, but it can sometimes take a bit longer.',
+					'You need to fix some things before we can connect Site Kit to your AdSense account.',
 					'google-site-kit'
 				) }
 			</p>
 
+			<SetupUseSnippetSwitch />
+
 			<div className="googlesitekit-setup-module__action">
-				<Link href={ accountSiteURL } external>
-					{ __(
-						'Go to your AdSense account to check on your site’s status or to complete setting up',
-						'google-site-kit'
-					) }
-				</Link>
+				<Button onClick={ onButtonClick } href={ serviceAccountURL }>
+					{ __( 'Review AdSense account', 'google-site-kit' ) }
+				</Button>
 			</div>
 		</Fragment>
 	);

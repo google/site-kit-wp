@@ -125,7 +125,7 @@ describe( 'MetricsSelectionPanel', () => {
 			).toHaveTextContent( 'Top performing keywords' );
 		} );
 
-		it( 'should render a single module disconnect notice when required module for a widget is disconnected', () => {
+		it( 'should render a single module disconnect notice when required module for a widget is disconnected', async () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
@@ -150,7 +150,11 @@ describe( 'MetricsSelectionPanel', () => {
 				},
 			} );
 
-			render( <MetricsSelectionPanel />, { registry } );
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
 
 			expect(
 				document.querySelector(
@@ -161,7 +165,7 @@ describe( 'MetricsSelectionPanel', () => {
 			);
 		} );
 
-		it( 'should render a multiple module disconnect notice when required module for a widget is disconnected', () => {
+		it( 'should render a multiple module disconnect notice when required module for a widget is disconnected', async () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
@@ -186,7 +190,11 @@ describe( 'MetricsSelectionPanel', () => {
 				},
 			} );
 
-			render( <MetricsSelectionPanel />, { registry } );
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
 
 			expect(
 				document.querySelector(
@@ -197,7 +205,7 @@ describe( 'MetricsSelectionPanel', () => {
 			);
 		} );
 
-		it( 'should disable unchecked metrics when four metrics are checked', () => {
+		it( 'should not disable unchecked metrics when four metrics are checked', async () => {
 			const metrics = [
 				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
@@ -232,19 +240,24 @@ describe( 'MetricsSelectionPanel', () => {
 				widgetSlugs: metrics.slice( 0, 4 ),
 			} );
 
-			const { getByRole } = render( <MetricsSelectionPanel />, {
-				registry,
-			} );
+			const { getByRole, waitForRegistry } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
 
 			// Verify that the fifth metric is disabled.
 			expect(
 				getByRole( 'checkbox', {
 					name: /Most popular content/i,
 				} )
-			).toBeDisabled();
+			).not.toBeDisabled();
 		} );
 
-		it( 'should disable metrics that depend on a disconnected analytics-4 module', () => {
+		it( 'should disable metrics that depend on a disconnected analytics-4 module', async () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
@@ -269,16 +282,21 @@ describe( 'MetricsSelectionPanel', () => {
 				widgetSlugs: [ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ],
 			} );
 
-			const { getByRole } = render( <MetricsSelectionPanel />, {
-				registry,
-			} );
+			const { getByRole, waitForRegistry } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
 
 			// Verify the limit of 4 metrics is not reached.
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-footer__metric-count'
 				)
-			).toHaveTextContent( '1 of 4 selected' );
+			).toHaveTextContent( '1 selected (up to 4)' );
 
 			// Verify that the metric dependent on a disconnected analytics-4 is disabled.
 			expect(
@@ -295,7 +313,7 @@ describe( 'MetricsSelectionPanel', () => {
 			).not.toBeDisabled();
 		} );
 
-		it( 'should order pre-saved metrics to the top', () => {
+		it( 'should order pre-saved metrics to the top', async () => {
 			const metrics = [
 				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
@@ -329,7 +347,11 @@ describe( 'MetricsSelectionPanel', () => {
 				widgetSlugs: [ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ],
 			} );
 
-			render( <MetricsSelectionPanel />, { registry } );
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
 
 			// Verify that the last metric is positioned at the top.
 			expect(
@@ -444,13 +466,13 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should display appropriate notice when a metric requires custom dimensions and does not have edit scope', async () => {
-			const { container, getByText, findByLabelText } = render(
-				<MetricsSelectionPanel />,
-				{
+			const { container, getByText, findByLabelText, waitForRegistry } =
+				render( <MetricsSelectionPanel />, {
 					registry,
 					features: [ 'keyMetrics' ],
-				}
-			);
+				} );
+
+			await waitForRegistry();
 
 			// Verify that the message is not displayed by default.
 			expect( container ).not.toHaveTextContent(
@@ -474,13 +496,13 @@ describe( 'MetricsSelectionPanel', () => {
 				grantedScopes: EDIT_SCOPE,
 			} );
 
-			const { container, getByText, findByLabelText } = render(
-				<MetricsSelectionPanel />,
-				{
+			const { container, getByText, findByLabelText, waitForRegistry } =
+				render( <MetricsSelectionPanel />, {
 					registry,
 					features: [ 'keyMetrics' ],
-				}
-			);
+				} );
+
+			await waitForRegistry();
 
 			// Verify that the message is not displayed by default.
 			expect( container ).not.toHaveTextContent(
@@ -525,8 +547,12 @@ describe( 'MetricsSelectionPanel', () => {
 			} );
 		} );
 
-		it( 'should prevent saving when less than two metrics are checked', () => {
-			render( <MetricsSelectionPanel />, { registry } );
+		it( 'should prevent saving when less than two metrics are checked', async () => {
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
 
 			expect(
 				document.querySelector(
@@ -536,9 +562,14 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should display error message when less than two metrics are checked', async () => {
-			const { findByLabelText } = render( <MetricsSelectionPanel />, {
-				registry,
-			} );
+			const { findByLabelText, waitForRegistry } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
 
 			// Select 1 key metric.
 			const checkbox = await findByLabelText(
@@ -550,7 +581,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
 				).textContent
-			).toBe( 'Select at least 2 metrics' );
+			).toBe( 'Select at least 2 metrics (1 selected)' );
 
 			// Select 2 key metrics.
 			const checkbox2 = await findByLabelText(
@@ -598,10 +629,15 @@ describe( 'MetricsSelectionPanel', () => {
 					availableCustomDimensions: [],
 				} );
 
-				const { getByRole } = render( <MetricsSelectionPanel />, {
-					registry,
-					features: [ 'keyMetrics' ],
-				} );
+				const { getByRole, waitForRegistry } = render(
+					<MetricsSelectionPanel />,
+					{
+						registry,
+						features: [ 'keyMetrics' ],
+					}
+				);
+
+				await waitForRegistry();
 
 				const submitButton = getByRole( 'button', {
 					name: /Save selection/i,
@@ -629,12 +665,17 @@ describe( 'MetricsSelectionPanel', () => {
 				expect( finalAutoSubmitValue ).toBe( true );
 			} );
 
-			it( "should have 'Save selection' label if there are no pre-saved key metrics", () => {
+			it( "should have 'Save selection' label if there are no pre-saved key metrics", async () => {
 				provideKeyMetrics( registry );
 
-				const { getByRole } = render( <MetricsSelectionPanel />, {
-					registry,
-				} );
+				const { getByRole, waitForRegistry } = render(
+					<MetricsSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
 
 				expect(
 					getByRole( 'button', {
@@ -643,7 +684,7 @@ describe( 'MetricsSelectionPanel', () => {
 				).toBeInTheDocument();
 			} );
 
-			it( "should have 'Save selection' label if there are pre-saved key metrics", () => {
+			it( "should have 'Save selection' label if there are pre-saved key metrics", async () => {
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -651,9 +692,14 @@ describe( 'MetricsSelectionPanel', () => {
 					],
 				} );
 
-				const { getByRole } = render( <MetricsSelectionPanel />, {
-					registry,
-				} );
+				const { getByRole, waitForRegistry } = render(
+					<MetricsSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
 
 				expect(
 					getByRole( 'button', {
@@ -670,12 +716,14 @@ describe( 'MetricsSelectionPanel', () => {
 					],
 				} );
 
-				const { getByRole, findByLabelText } = render(
+				const { getByRole, findByLabelText, waitForRegistry } = render(
 					<MetricsSelectionPanel />,
 					{
 						registry,
 					}
 				);
+
+				await waitForRegistry();
 
 				// Button should be unchanged with pre-saved metrics.
 				expect(
@@ -697,7 +745,7 @@ describe( 'MetricsSelectionPanel', () => {
 			} );
 		} );
 
-		it( 'should show the number of selected metrics', () => {
+		it( 'should show the number of selected metrics', async () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -705,13 +753,17 @@ describe( 'MetricsSelectionPanel', () => {
 				],
 			} );
 
-			render( <MetricsSelectionPanel />, { registry } );
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
 
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel-footer__metric-count'
 				)
-			).toHaveTextContent( '2 of 4 selected' );
+			).toHaveTextContent( '2 selected (up to 4)' );
 		} );
 	} );
 } );

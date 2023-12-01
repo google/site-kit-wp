@@ -17,6 +17,16 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { renderToString } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../../../../../components/Link';
+
+/**
  * Creates a GA4 report row for the given date, with a zero for the metric value.
  *
  * @since 1.96.0
@@ -40,3 +50,26 @@ export function createZeroDataRow( date ) {
 		],
 	};
 }
+/**
+ * Gets HTML string for a tooltip help link.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} url      The URL to link to.
+ * @param {string} label    The label for the link.
+ * @param {string} rowLabel The label for the row.
+ * @return {string} The HTML string for the tooltip help link.
+ */
+export const getTooltipHelp = ( url, label, rowLabel ) =>
+	renderToString(
+		<p>
+			<Link
+				className="googlesitekit-cta-link__tooltip"
+				external
+				href={ url }
+				data-row-label={ rowLabel }
+			>
+				{ label }
+			</Link>
+		</p>
+	);
