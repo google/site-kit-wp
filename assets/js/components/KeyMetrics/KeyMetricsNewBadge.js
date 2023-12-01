@@ -14,15 +14,32 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import NewBadge from '../NewBadge';
+import Badge from '../Badge';
 const { useSelect } = Data;
 
 export default function KeyMetricsNewBadge() {
 	// This is necessary to conditionally render the badge
 	// as this component is used in a context where `select` is not in scope.
-	const isNew = useSelect( CORE_SITE ).getKeyMetricsSetupNew();
+	const isNew = useSelect( ( select ) =>
+		select( CORE_SITE ).getKeyMetricsSetupNew()
+	);
 
-	return isNew && <NewBadge />;
+	return (
+		isNew && (
+			<Badge
+				className="googlesitekit-new-badge"
+				label={ __( 'New', 'google-site-kit' ) }
+			/>
+		)
+	);
 }
