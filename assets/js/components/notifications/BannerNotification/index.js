@@ -122,6 +122,8 @@ export default function BannerNotification( props ) {
 		threshold: 0,
 	} );
 
+	const isCTALink = isURL( ctaLink ) && ctaTarget !== '_blank';
+
 	useEffect( () => {
 		if ( ! isViewed && intersectionEntry?.isIntersecting ) {
 			if ( typeof onView === 'function' ) {
@@ -164,19 +166,24 @@ export default function BannerNotification( props ) {
 	};
 
 	const dismissNotification = () => {
-		setIsClosed( true );
+		if ( ! isCTALink ) {
+			setIsClosed( true );
+		}
 
-		setTimeout( async () => {
-			await persistDismissal();
+		return new Promise( ( resolve ) => {
+			setTimeout( async () => {
+				await persistDismissal();
 
-			if ( isMounted() ) {
-				setIsDismissed( true );
-			}
+				if ( isMounted() ) {
+					setIsDismissed( true );
+				}
 
-			// Emit an event for the notification counter to listen for.
-			const event = new Event( 'notificationDismissed' );
-			document.dispatchEvent( event );
-		}, 350 );
+				// Emit an event for the notification counter to listen for.
+				const event = new Event( 'notificationDismissed' );
+				document.dispatchEvent( event );
+				resolve( true );
+			}, 350 );
+		} );
 	};
 
 	const isNavigatingToCTALink = useSelect( ( select ) =>
@@ -186,6 +193,9 @@ export default function BannerNotification( props ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const handleCTAClick = async ( event ) => {
 		event.persist();
+		if ( isCTALink && ! event.defaultPrevented ) {
+			event.preventDefault();
+		}
 
 		let dismissOnCTAClick = true;
 		if ( onCTAClick ) {
@@ -194,15 +204,10 @@ export default function BannerNotification( props ) {
 		}
 
 		if ( isDismissible && dismissOnCTAClick ) {
-			dismissNotification();
+			await dismissNotification();
 		}
 
-		if (
-			isURL( ctaLink ) &&
-			ctaTarget !== '_blank' &&
-			! event.defaultPrevented
-		) {
-			event.preventDefault();
+		if ( isCTALink ) {
 			navigateTo( ctaLink );
 		}
 	};
