@@ -18,7 +18,7 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Implementation Brief
 
-* <!-- One or more bullet points for how to technically implement the feature. Make sure to include changes to Storybook and visual regression tests where relevant. -->
+* [ ] <!-- One or more bullet points for how to technically implement the feature. Make sure to include changes to Storybook and visual regression tests where relevant. -->
 
 ### Test Coverage
 
