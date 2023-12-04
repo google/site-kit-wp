@@ -247,7 +247,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 				label: 'Media',
 			},
 		],
-		productBasePaths: [ '^/product/' ],
+		productPostType: 'product',
 		keyMetricsSetupCompletedBy: 0,
 	};
 
