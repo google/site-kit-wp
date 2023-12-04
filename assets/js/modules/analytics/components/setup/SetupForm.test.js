@@ -24,7 +24,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
-	waitForTimeouts,
 } from '../../../../../../tests/js/utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -332,7 +331,7 @@ describe( 'SetupForm', () => {
 
 		// An additional wait is required in order for all resolvers to finish.
 		await act( async () => {
-			await waitForTimeouts( 30 );
+			await waitForDefaultTimeouts();
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyRegexp );
