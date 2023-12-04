@@ -37,6 +37,7 @@ import {
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'SettingsModule', () => {
 	const SettingsModuleWithWrapper = ( { slug = 'analytics' } ) => (
@@ -100,6 +101,7 @@ describe( 'SettingsModule', () => {
 		] );
 		provideUserAuthentication( registry );
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 	} );
 

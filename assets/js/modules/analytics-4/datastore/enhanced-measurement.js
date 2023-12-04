@@ -37,7 +37,6 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID, isValidWebDataStreamID } from '../utils/validation';
-import { isFeatureEnabled } from '../../../features';
 
 const enhancedMeasurementSettingsFields = [
 	'name',
@@ -511,10 +510,6 @@ const baseSelectors = {
 
 		if ( haveSettingsChanged() ) {
 			return true;
-		}
-
-		if ( ! isFeatureEnabled( 'enhancedMeasurement' ) ) {
-			return false;
 		}
 
 		const propertyID = getPropertyID();
