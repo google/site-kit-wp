@@ -161,7 +161,7 @@ export const reducer = ( state, { payload, type } ) => {
 				changePluginAutoUpdatesCapacity,
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
-				productBasePaths,
+				productPostType,
 				keyMetricsSetupCompletedBy,
 			} = payload.siteInfo;
 
@@ -193,7 +193,7 @@ export const reducer = ( state, { payload, type } ) => {
 					changePluginAutoUpdatesCapacity,
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
-					productBasePaths,
+					productPostType,
 					keyMetricsSetupCompletedBy,
 				},
 			};
@@ -270,7 +270,7 @@ export const resolvers = {
 			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
-			productBasePaths,
+			productPostType,
 			keyMetricsSetupCompletedBy,
 		} = global._googlesitekitBaseData;
 
@@ -307,7 +307,7 @@ export const resolvers = {
 			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
-			productBasePaths,
+			productPostType,
 			keyMetricsSetupCompletedBy,
 		} );
 	},
@@ -817,7 +817,7 @@ export const selectors = {
 	 *
 	 * @return {Array.<string>} The list of product base paths.
 	 */
-	getProductBasePaths: getSiteInfoProperty( 'productBasePaths' ),
+	getProductPostType: getSiteInfoProperty( 'productPostType' ),
 
 	/**
 	 * Checks if the Key Metrics widget has been setup either if at least one user
