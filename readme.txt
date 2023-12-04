@@ -113,7 +113,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Enhanced**
 
-* Update timeouts for Key Metrics survey triggers to be one week. See [#7911](https://github.com/google/site-kit-wp/issues/7911).
 * Update version used for GA4 feature tour. See [#7879](https://github.com/google/site-kit-wp/issues/7879).
 * Update CircularProgress component to use correct material design colors. See [#7863](https://github.com/google/site-kit-wp/issues/7863).
 * Improve styles for some link-styled buttons. See [#7776](https://github.com/google/site-kit-wp/issues/7776).
@@ -129,7 +128,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 **Changed**
 
 * Allow the IP version to be specified for server-side requests. See [#7864](https://github.com/google/site-kit-wp/issues/7864).
-* Remove infrastructure code that is no longer being used. See [#7808](https://github.com/google/site-kit-wp/issues/7808).
 
 **Fixed**
 
