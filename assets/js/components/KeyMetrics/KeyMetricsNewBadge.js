@@ -17,6 +17,7 @@
 /**
  * WordPress dependencies
  */
+import { useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -30,9 +31,25 @@ const { useSelect } = Data;
 export default function KeyMetricsNewBadge() {
 	// This is necessary to conditionally render the badge
 	// as this component is used in a context where `select` is not in scope.
-	const isNew = useSelect( ( select ) =>
+	const isKeyMetricsSetupNew = useSelect( ( select ) =>
 		select( CORE_SITE ).getKeyMetricsSetupNew()
 	);
+
+	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
+		select( CORE_SITE ).isKeyMetricsSetupCompleted()
+	);
+
+	const [ initialKeyMetricsSetupCompleted ] = useState(
+		isKeyMetricsSetupCompleted
+	);
+
+	const [ isNew, setIsNew ] = useState( isKeyMetricsSetupNew );
+
+	useEffect( () => {
+		if ( ! initialKeyMetricsSetupCompleted && isKeyMetricsSetupCompleted ) {
+			setIsNew( true );
+		}
+	}, [ initialKeyMetricsSetupCompleted, isKeyMetricsSetupCompleted ] );
 
 	return (
 		isNew && (
