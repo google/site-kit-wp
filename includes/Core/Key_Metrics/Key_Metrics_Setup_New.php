@@ -70,7 +70,7 @@ class Key_Metrics_Setup_New {
 	 */
 	protected function mark_setup_completed( $option, $value ) {
 		if ( $value ) {
-			$this->transients->set( self::TRANSIENT, true, WEEK_IN_SECONDS );
+			$this->transients->set( self::TRANSIENT, true, 2 * WEEK_IN_SECONDS );
 		}
 	}
 
