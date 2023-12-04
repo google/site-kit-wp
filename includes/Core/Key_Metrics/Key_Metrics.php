@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Key_Metrics;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
@@ -51,6 +52,14 @@ class Key_Metrics {
 	protected $rest_controller;
 
 	/**
+	 * Key_Metrics_Setup_New instance.
+	 *
+	 * @since 1.115.0
+	 * @var Key_Metrics_Setup_New
+	 */
+	protected $key_metrics_setup_new;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.93.0
@@ -62,6 +71,7 @@ class Key_Metrics {
 	public function __construct( Context $context, User_Options $user_options = null, Options $options = null ) {
 		$this->key_metrics_settings           = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
 		$this->key_metrics_setup_completed_by = new Key_Metrics_Setup_Completed_By( $options ?: new Options( $context ) );
+		$this->key_metrics_setup_new          = new Key_Metrics_Setup_New( new Transients( $context ) );
 		$this->rest_controller                = new REST_Key_Metrics_Controller( $this->key_metrics_settings, $this->key_metrics_setup_completed_by );
 	}
 
@@ -73,6 +83,7 @@ class Key_Metrics {
 	public function register() {
 		$this->key_metrics_settings->register();
 		$this->key_metrics_setup_completed_by->register();
+		$this->key_metrics_setup_new->register();
 		$this->rest_controller->register();
 
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
