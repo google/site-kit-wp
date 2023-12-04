@@ -62,8 +62,8 @@ function PopularProductsWidget( props ) {
 
 	const viewOnlyDashboard = useViewOnly();
 
-	const productBasePaths = useSelect( ( select ) =>
-		select( CORE_SITE ).getProductBasePaths()
+	const productPostType = useSelect( ( select ) =>
+		select( CORE_SITE ).getProductPostType()
 	);
 
 	const dates = useSelect( ( select ) =>
@@ -95,10 +95,11 @@ function PopularProductsWidget( props ) {
 		...dates,
 		dimensions: [ 'pagePath' ],
 		dimensionFilters: {
-			pagePath: {
+			'customEvent:googlesitekit_post_type': {
 				filterType: 'stringFilter',
-				matchType: 'PARTIAL_REGEXP',
-				value: productBasePaths,
+				matchType: 'EXACT',
+				value: productPostType,
+				notExpression: true,
 			},
 		},
 		metrics: [ { name: 'screenPageViews' } ],
@@ -115,9 +116,7 @@ function PopularProductsWidget( props ) {
 		select( CORE_USER ).isKeyMetricActive( KM_ANALYTICS_POPULAR_PRODUCTS )
 	);
 
-	const siteHasProductBasePaths = productBasePaths?.length > 0;
-
-	const showWidget = isPopularProductsWidgetActive || siteHasProductBasePaths;
+	const showWidget = isPopularProductsWidgetActive || productPostType;
 
 	const report = useInViewSelect( ( select ) =>
 		showWidget
@@ -219,7 +218,7 @@ function PopularProductsWidget( props ) {
 		'google-site-kit'
 	);
 
-	if ( ! siteHasProductBasePaths && isPopularProductsWidgetActive ) {
+	if ( ! productPostType && isPopularProductsWidgetActive ) {
 		zeroStateMessage = __(
 			'No product posts currently detected on your site. This metric applies only to sites with product posts.',
 			'google-site-kit'
