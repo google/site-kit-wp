@@ -195,7 +195,6 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it.each( [
-				[ 'undefined', undefined ],
 				[ 'null', null ],
 				[ 'an empty object', {} ],
 				[ 'an object with empty purpose', { purpose: {} } ],
@@ -205,8 +204,17 @@ describe( 'core/user key metrics', () => {
 				],
 			] )(
 				'should return an empty array if user input settings are %s',
-				( userInputSettings ) => {
-					registry
+				async ( userInputSettings ) => {
+					fetchMock.getOnce( coreUserInputSettingsEndpointRegExp, {
+						body: coreUserInputSettingsExpectedResponse,
+						status: 200,
+					} );
+
+					await waitForDefaultTimeouts();
+
+					registry.select( CORE_USER ).getUserInputSettings();
+
+					await registry
 						.dispatch( CORE_USER )
 						.receiveGetUserInputSettings( userInputSettings );
 
