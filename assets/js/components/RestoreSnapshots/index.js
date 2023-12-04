@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { restoreAllSnapshots } from '../../googlesitekit/data/create-snapshot-store';
 const { useRegistry } = Data;
 
-const RestoreSnapshots = ( { children } ) => {
+function RestoreSnapshots( { children } ) {
 	const registry = useRegistry();
 	const [ restoredSnapshots, setRestoredSnapshots ] = useState( false );
 
@@ -47,6 +47,6 @@ const RestoreSnapshots = ( { children } ) => {
 	}
 
 	return children;
-};
+}
 
 export default RestoreSnapshots;

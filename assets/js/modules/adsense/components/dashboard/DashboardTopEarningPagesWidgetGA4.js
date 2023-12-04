@@ -75,14 +75,16 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 		return <WidgetNull />;
 	}
 
-	const Footer = () => (
-		<SourceLink
-			className="googlesitekit-data-block__source"
-			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			href={ analyticsMainURL }
-			external
-		/>
-	);
+	function Footer() {
+		return (
+			<SourceLink
+				className="googlesitekit-data-block__source"
+				name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				href={ analyticsMainURL }
+				external
+			/>
+		);
+	}
 
 	const tableColumns = [
 		{

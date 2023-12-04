@@ -68,9 +68,9 @@ describe( 'SettingsApp', () => {
 				slug: 'analytics',
 				active: true,
 				connected: true,
-				SettingsEditComponent: () => (
-					<div data-testid="edit-component">edit</div>
-				),
+				SettingsEditComponent() {
+					return <div data-testid="edit-component">edit</div>;
+				},
 			},
 			{
 				slug: 'tagmanager',

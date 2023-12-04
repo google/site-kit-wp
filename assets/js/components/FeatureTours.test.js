@@ -36,14 +36,16 @@ describe( 'FeatureTours', () => {
 	let disconnectMock;
 	const dashboardElementClassName = 'js-googlesitekit-main-dashboard';
 
-	const TourTooltipsWithMockUI = () => (
-		<div>
-			<div className={ dashboardElementClassName }>
-				<div className="test-tour-step-1-target" />
+	function TourTooltipsWithMockUI() {
+		return (
+			<div>
+				<div className={ dashboardElementClassName }>
+					<div className="test-tour-step-1-target" />
+				</div>
+				<FeatureTours />
 			</div>
-			<FeatureTours />
-		</div>
-	);
+		);
+	}
 
 	const testTour = {
 		slug: 'test-tour',

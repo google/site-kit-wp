@@ -35,15 +35,17 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 
-const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider
-			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
-		>
-			<ReportError moduleSlug="test-module" { ...args } />
-		</ViewContextProvider>
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ViewContextProvider
+				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+			>
+				<ReportError moduleSlug="test-module" { ...args } />
+			</ViewContextProvider>
+		</WithRegistrySetup>
+	);
+}
 
 export const DefaultReportError = Template.bind( {} );
 DefaultReportError.storyName = 'Default ReportError';

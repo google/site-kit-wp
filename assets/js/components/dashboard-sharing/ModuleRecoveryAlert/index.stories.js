@@ -39,13 +39,15 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
 import ModuleRecoveryAlert from '.';
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-			<ModuleRecoveryAlert { ...args } />
-		</ViewContextProvider>
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry = () => {}, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+				<ModuleRecoveryAlert { ...args } />
+			</ViewContextProvider>
+		</WithRegistrySetup>
+	);
+}
 
 const provideModulesWithRecoverable = ( registry, recoverableModules ) => {
 	provideModules(

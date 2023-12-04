@@ -174,7 +174,7 @@ const customRenderHook = ( callback, options = {} ) => {
 
 	let setInView;
 
-	const Wrapper = ( { children } ) => {
+	function Wrapper( { children } ) {
 		const [ inViewStateValue, setInViewStateValue ] = useState( inView );
 		setInView = setInViewStateValue;
 
@@ -201,7 +201,7 @@ const customRenderHook = ( callback, options = {} ) => {
 				</RegistryProvider>
 			</InViewProvider>
 		);
-	};
+	}
 
 	return {
 		...renderHook( callback, { wrapper: Wrapper, ...renderHookOptions } ),

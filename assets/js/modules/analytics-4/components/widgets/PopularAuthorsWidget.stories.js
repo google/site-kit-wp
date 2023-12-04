@@ -41,11 +41,13 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_POPULAR_AUTHORS
 )( PopularAuthorsWidget );
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WidgetWithComponentProps { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 const reportOptions = {
 	startDate: '2020-08-11',

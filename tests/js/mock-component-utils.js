@@ -27,11 +27,13 @@
  * @return {WPElement} The mock component.
  */
 export function mockCreateComponent( name ) {
-	return ( { children, ...props } ) => (
-		<div>
-			{ name }
-			{ JSON.stringify( props ) }
-			{ children }
-		</div>
-	);
+	return function ( { children, ...props } ) {
+		return (
+			<div>
+				{ name }
+				{ JSON.stringify( props ) }
+				{ children }
+			</div>
+		);
+	};
 }

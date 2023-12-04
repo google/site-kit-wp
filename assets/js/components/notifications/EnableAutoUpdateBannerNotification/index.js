@@ -45,7 +45,7 @@ import {
 
 const { useSelect, useDispatch } = Data;
 
-const EnableAutoUpdateBannerNotification = () => {
+function EnableAutoUpdateBannerNotification() {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_UPDATE_PLUGINS )
 	);
@@ -214,6 +214,6 @@ const EnableAutoUpdateBannerNotification = () => {
 			} }
 		/>
 	);
-};
+}
 
 export default EnableAutoUpdateBannerNotification;

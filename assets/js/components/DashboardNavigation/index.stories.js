@@ -27,13 +27,15 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { setupDefaultChips } from './test-utils';
 
-const Template = ( { setupRegistry, viewContext, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider value={ viewContext }>
-			<DashboardNavigation { ...args } />
-		</ViewContextProvider>
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, viewContext, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ViewContextProvider value={ viewContext }>
+				<DashboardNavigation { ...args } />
+			</ViewContextProvider>
+		</WithRegistrySetup>
+	);
+}
 
 export const DefaultDashboardNavigation = Template.bind( {} );
 DefaultDashboardNavigation.storyName = 'Default State';
@@ -57,7 +59,9 @@ DefaultDashboardNavigation.args = {
 		registry
 			.dispatch( CORE_WIDGETS )
 			.registerWidget( 'MonetizationWidget', {
-				Component: () => <div>Monetization Widget</div>,
+				Component() {
+					return <div>Monetization Widget</div>;
+				},
 			} );
 		registry
 			.dispatch( CORE_WIDGETS )

@@ -105,7 +105,7 @@ function TopCategoriesWidget( { Widget } ) {
 	const columns = [
 		{
 			field: 'dimensionValues',
-			Component: ( { fieldValue } ) => {
+			Component( { fieldValue } ) {
 				const [ categories ] = fieldValue;
 
 				const categoriesList =
@@ -126,9 +126,9 @@ function TopCategoriesWidget( { Widget } ) {
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<strong>{ numFmt( fieldValue ) }</strong>
-			),
+			Component( { fieldValue } ) {
+				return <strong>{ numFmt( fieldValue ) }</strong>;
+			},
 		},
 	];
 

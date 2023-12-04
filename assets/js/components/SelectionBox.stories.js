@@ -26,7 +26,7 @@ import { Fragment, useState } from '@wordpress/element';
  */
 import SelectionBox from './SelectionBox';
 
-const Template = () => {
+function Template() {
 	const [ checked, setChecked ] = useState( false );
 
 	return (
@@ -54,7 +54,7 @@ const Template = () => {
 			</SelectionBox>
 		</Fragment>
 	);
-};
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'SelectionBox';

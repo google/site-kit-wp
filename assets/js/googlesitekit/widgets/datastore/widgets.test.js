@@ -43,12 +43,12 @@ describe( 'core/widgets Widgets', () => {
 	describe( 'actions', () => {
 		describe( 'assignWidget', () => {
 			it( 'should assign widgets to a widget area', () => {
-				const WidgetComponent = () => {
+				function WidgetComponent() {
 					return <div>Foo bar!</div>;
-				};
-				const AnotherWidgetComponent = () => {
+				}
+				function AnotherWidgetComponent() {
 					return <div>Howdy friend!</div>;
-				};
+				}
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidgetArea( 'dashboard-header', {
@@ -179,9 +179,9 @@ describe( 'core/widgets Widgets', () => {
 
 		describe( 'registerWidget', () => {
 			const slug = 'widget-spinner';
-			const WidgetComponent = ( props ) => {
+			function WidgetComponent( props ) {
 				return <div>Hello { props.children }!</div>;
-			};
+			}
 
 			it( 'should require a component to be provided', () => {
 				expect( () =>
@@ -222,12 +222,12 @@ describe( 'core/widgets Widgets', () => {
 			} );
 
 			it( 'should not overwrite an existing widget', () => {
-				const WidgetOne = () => {
+				function WidgetOne() {
 					return <div>Hello world!</div>;
-				};
-				const WidgetOneRedone = () => {
+				}
+				function WidgetOneRedone() {
 					return <div>Goodbye you!</div>;
-				};
+				}
 				registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
 					Component: WidgetOne,
 				} );
@@ -266,9 +266,9 @@ describe( 'core/widgets Widgets', () => {
 			} );
 
 			it( 'should return all widgets for a given widgetAreaSlug after they are registered', () => {
-				const PageViews = () => {
+				function PageViews() {
 					return <div>Ten people viewed your page!</div>;
-				};
+				}
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidgetArea( 'dashboard-header', {
@@ -294,9 +294,9 @@ describe( 'core/widgets Widgets', () => {
 			} );
 
 			it( 'should return widgets in the correct priority', () => {
-				const WidgetComponent = () => {
+				function WidgetComponent() {
 					return <div>Foo bar!</div>;
-				};
+				}
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidgetArea( 'dashboard-header', {
@@ -367,13 +367,13 @@ describe( 'core/widgets Widgets', () => {
 			} );
 
 			it( 'should return widgets that have been assigned before they were registered, once they have been registered', () => {
-				const PageViews = () => {
+				function PageViews() {
 					return (
 						<div>
 							Only one person viewed your page, and it was you :-(
 						</div>
 					);
-				};
+				}
 				registry
 					.dispatch( CORE_WIDGETS )
 					.assignWidgetArea( 'dashboard-header', 'dashboard' );
@@ -392,7 +392,9 @@ describe( 'core/widgets Widgets', () => {
 			} );
 
 			it( 'should return widgets for provided modules', () => {
-				const Component = () => <div>Hello test.</div>;
+				function Component() {
+					return <div>Hello test.</div>;
+				}
 
 				registry
 					.dispatch( CORE_WIDGETS )
@@ -451,7 +453,9 @@ describe( 'core/widgets Widgets', () => {
 					},
 				} );
 
-				const Component = () => <div>Hello test.</div>;
+				function Component() {
+					return <div>Hello test.</div>;
+				}
 
 				registry
 					.dispatch( CORE_WIDGETS )
@@ -500,7 +504,9 @@ describe( 'core/widgets Widgets', () => {
 					},
 				} );
 
-				const Component = () => <div>Hello test.</div>;
+				function Component() {
+					return <div>Hello test.</div>;
+				}
 
 				registry
 					.dispatch( CORE_WIDGETS )
@@ -543,7 +549,9 @@ describe( 'core/widgets Widgets', () => {
 		} );
 
 		describe( 'isWidgetActive', () => {
-			const Component = () => <div>Hello test.</div>;
+			function Component() {
+				return <div>Hello test.</div>;
+			}
 
 			beforeEach( () => {
 				registry
@@ -597,7 +605,7 @@ describe( 'core/widgets Widgets', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget', {
-						Component: () => {
+						Component() {
 							return <div>Hello test.</div>;
 						},
 					} );
@@ -632,7 +640,7 @@ describe( 'core/widgets Widgets', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget', {
-						Component: () => {
+						Component() {
 							return <div>Hello test.</div>;
 						},
 						isPreloaded: ( select ) =>
@@ -657,7 +665,7 @@ describe( 'core/widgets Widgets', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget', {
-						Component: () => {
+						Component() {
 							return <div>Hello test.</div>;
 						},
 						isPreloaded: ( select ) =>
@@ -675,7 +683,7 @@ describe( 'core/widgets Widgets', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget', {
-						Component: () => {
+						Component() {
 							return <div>Hello test.</div>;
 						},
 					} );
@@ -701,7 +709,7 @@ describe( 'core/widgets Widgets', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget', {
-						Component: () => {
+						Component() {
 							return <div>Hello test.</div>;
 						},
 					} );

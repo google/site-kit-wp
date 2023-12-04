@@ -28,13 +28,13 @@ import {
 	waitFor,
 } from '../../../../../tests/js/test-utils';
 
-const WidgetComponent = () => {
+function WidgetComponent() {
 	return <div>Foo bar!</div>;
-};
+}
 
-const WidgetComponentEmpty = ( { WidgetNull } ) => {
+function WidgetComponentEmpty( { WidgetNull } ) {
 	return <WidgetNull />;
-};
+}
 
 describe( 'WidgetContextRenderer', () => {
 	let registry;

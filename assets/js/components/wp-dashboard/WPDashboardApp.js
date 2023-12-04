@@ -37,7 +37,7 @@ import InViewProvider from '../../components/InViewProvider';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-const WPDashboardApp = () => {
+function WPDashboardApp() {
 	const trackingRef = useRef();
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
@@ -85,6 +85,6 @@ const WPDashboardApp = () => {
 			</div>
 		</InViewProvider>
 	);
-};
+}
 
 export default WPDashboardApp;

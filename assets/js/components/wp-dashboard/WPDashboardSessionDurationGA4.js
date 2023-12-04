@@ -41,7 +41,7 @@ import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardSessionDurationGA4 = ( { WPDashboardReportError } ) => {
+function WPDashboardSessionDurationGA4( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
@@ -118,7 +118,7 @@ const WPDashboardSessionDurationGA4 = ( { WPDashboardReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
-};
+}
 
 WPDashboardSessionDurationGA4.propTypes = {
 	WPDashboardReportError: PropTypes.elementType.isRequired,

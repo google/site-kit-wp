@@ -40,19 +40,21 @@ import { MODULES_TAGMANAGER } from '../../../modules/tagmanager/datastore/consta
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'SettingsModule', () => {
-	const SettingsModuleWithWrapper = ( { slug = 'analytics' } ) => (
-		<Switch>
-			<Route
-				path={ [
-					'/connected-services/:moduleSlug/:action',
-					'/connected-services/:moduleSlug',
-					'/connected-services',
-				] }
-			>
-				<SettingsActiveModule slug={ slug } />
-			</Route>
-		</Switch>
-	);
+	function SettingsModuleWithWrapper( { slug = 'analytics' } ) {
+		return (
+			<Switch>
+				<Route
+					path={ [
+						'/connected-services/:moduleSlug/:action',
+						'/connected-services/:moduleSlug',
+						'/connected-services',
+					] }
+				>
+					<SettingsActiveModule slug={ slug } />
+				</Route>
+			</Switch>
+		);
+	}
 
 	// Create hash history to interact with HashRouter using `history.push`
 	const history = createHashHistory();
@@ -68,20 +70,20 @@ describe( 'SettingsModule', () => {
 				active: true,
 				connected: true,
 				storeName: MODULES_ANALYTICS,
-				SettingsEditComponent: () => (
-					<div data-testid="edit-component">edit</div>
-				),
-				SettingsViewComponent: () => (
-					<div data-testid="view-component">view</div>
-				),
+				SettingsEditComponent() {
+					return <div data-testid="edit-component">edit</div>;
+				},
+				SettingsViewComponent() {
+					return <div data-testid="view-component">view</div>;
+				},
 			},
 			{
 				slug: 'pagespeed-insights',
 				active: true,
 				connected: true,
-				SettingsViewComponent: () => (
-					<div data-testid="view-component">view</div>
-				),
+				SettingsViewComponent() {
+					return <div data-testid="view-component">view</div>;
+				},
 				// SettingsEditComponent is intentionally `null` here for no-edit-component tests below.
 				SettingsEditComponent: null,
 			},
@@ -91,12 +93,12 @@ describe( 'SettingsModule', () => {
 				// Intentionally not connected here with both settings components for tests below.
 				connected: false,
 				storeName: MODULES_TAGMANAGER,
-				SettingsEditComponent: () => (
-					<div data-testid="edit-component">edit</div>
-				),
-				SettingsViewComponent: () => (
-					<div data-testid="view-component">view</div>
-				),
+				SettingsEditComponent() {
+					return <div data-testid="edit-component">edit</div>;
+				},
+				SettingsViewComponent() {
+					return <div data-testid="view-component">view</div>;
+				},
 			},
 		] );
 		provideUserAuthentication( registry );

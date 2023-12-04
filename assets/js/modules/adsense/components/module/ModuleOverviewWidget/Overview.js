@@ -28,13 +28,13 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import { calculateChange } from '../../../../../util';
 import DataBlock from '../../../../../components/DataBlock';
 
-const Overview = ( {
+function Overview( {
 	metrics,
 	currentRangeData,
 	previousRangeData,
 	selectedStats,
 	handleStatsSelection,
-} ) => {
+} ) {
 	const { totals, headers } = currentRangeData;
 	const { totals: previousTotals } = previousRangeData;
 
@@ -117,7 +117,7 @@ const Overview = ( {
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Overview.propTypes = {
 	metrics: PropTypes.object,

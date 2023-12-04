@@ -21,7 +21,9 @@
  */
 import NewBadge from './NewBadge';
 
-const Template = ( args ) => <NewBadge { ...args } />;
+function Template( args ) {
+	return <NewBadge { ...args } />;
+}
 
 export const NewBadgeDefault = Template.bind( {} );
 NewBadgeDefault.storyName = 'Default';

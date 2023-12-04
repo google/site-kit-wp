@@ -33,7 +33,9 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsSetupCTA'
 )( KeyMetricsSetupCTAWidget );
 
-const Template = () => <WidgetWithComponentProps />;
+function Template() {
+	return <WidgetWithComponentProps />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'SetupCTAWidget';

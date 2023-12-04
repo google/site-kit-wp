@@ -96,14 +96,20 @@ export default function DashboardPopularKeywordsWidget( props ) {
 		} );
 	} );
 
-	const Footer = () => (
-		<SourceLink
-			className="googlesitekit-data-block__source"
-			name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-			href={ baseServiceURL }
-			external
-		/>
-	);
+	function Footer() {
+		return (
+			<SourceLink
+				className="googlesitekit-data-block__source"
+				name={ _x(
+					'Search Console',
+					'Service name',
+					'google-site-kit'
+				) }
+				href={ baseServiceURL }
+				external
+			/>
+		);
+	}
 
 	if ( error ) {
 		return (
@@ -135,7 +141,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 			),
 			primary: true,
 			field: 'keys.0',
-			Component: ( { fieldValue } ) => {
+			Component( { fieldValue } ) {
 				const searchAnalyticsURL = useSelect( ( select ) => {
 					if ( viewOnlyDashboard ) {
 						return null;
@@ -170,9 +176,11 @@ export default function DashboardPopularKeywordsWidget( props ) {
 				'Number of times users clicked on your content in search results',
 				'google-site-kit'
 			),
-			Component: ( { row } ) => (
-				<span>{ numFmt( row.clicks, { style: 'decimal' } ) }</span>
-			),
+			Component( { row } ) {
+				return (
+					<span>{ numFmt( row.clicks, { style: 'decimal' } ) }</span>
+				);
+			},
 		},
 		{
 			title: __( 'Impressions', 'google-site-kit' ),
@@ -180,9 +188,13 @@ export default function DashboardPopularKeywordsWidget( props ) {
 				'Counted each time your content appears in search results',
 				'google-site-kit'
 			),
-			Component: ( { row } ) => (
-				<span>{ numFmt( row.impressions, { style: 'decimal' } ) }</span>
-			),
+			Component( { row } ) {
+				return (
+					<span>
+						{ numFmt( row.impressions, { style: 'decimal' } ) }
+					</span>
+				);
+			},
 		},
 	];
 

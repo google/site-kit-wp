@@ -60,8 +60,12 @@ describe( 'AdSenseConnectCTA', () => {
 				}
 			);
 
-			const Widget = ( { children } ) => <div>{ children }</div>;
-			const WidgetNull = () => <div>NULL</div>;
+			function Widget( { children } ) {
+				return <div>{ children }</div>;
+			}
+			function WidgetNull() {
+				return <div>NULL</div>;
+			}
 
 			container = render(
 				<div>

@@ -21,11 +21,13 @@
  */
 import SurveyQuestionMultiSelect from './SurveyQuestionMultiSelect';
 
-const Template = ( args ) => (
-	<div className="googlesitekit-survey">
-		<SurveyQuestionMultiSelect { ...args } />
-	</div>
-);
+function Template( args ) {
+	return (
+		<div className="googlesitekit-survey">
+			<SurveyQuestionMultiSelect { ...args } />
+		</div>
+	);
+}
 
 export const SurveyQuestionMultiSelectStory = Template.bind( {} );
 SurveyQuestionMultiSelectStory.storyName = 'SurveyQuestionMultiSelect';

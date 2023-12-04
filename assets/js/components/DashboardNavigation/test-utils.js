@@ -44,7 +44,9 @@ export const setupDefaultChips = ( registry ) => {
 		.dispatch( CORE_WIDGETS )
 		.assignWidgetArea( 'TrafficArea', CONTEXT_MAIN_DASHBOARD_TRAFFIC );
 	registry.dispatch( CORE_WIDGETS ).registerWidget( 'TrafficWidget', {
-		Component: () => <div>Traffic Widget</div>,
+		Component() {
+			return <div>Traffic Widget</div>;
+		},
 	} );
 	registry
 		.dispatch( CORE_WIDGETS )
@@ -60,7 +62,9 @@ export const setupDefaultChips = ( registry ) => {
 		.dispatch( CORE_WIDGETS )
 		.assignWidgetArea( 'ContentArea', CONTEXT_MAIN_DASHBOARD_CONTENT );
 	registry.dispatch( CORE_WIDGETS ).registerWidget( 'ContentWidget', {
-		Component: () => <div>Content Widget</div>,
+		Component() {
+			return <div>Content Widget</div>;
+		},
 	} );
 	registry
 		.dispatch( CORE_WIDGETS )
@@ -76,7 +80,9 @@ export const setupDefaultChips = ( registry ) => {
 		.dispatch( CORE_WIDGETS )
 		.assignWidgetArea( 'SpeedArea', CONTEXT_MAIN_DASHBOARD_SPEED );
 	registry.dispatch( CORE_WIDGETS ).registerWidget( 'SpeedWidget', {
-		Component: () => <div>Speed Widget</div>,
+		Component() {
+			return <div>Speed Widget</div>;
+		},
 	} );
 	registry
 		.dispatch( CORE_WIDGETS )
