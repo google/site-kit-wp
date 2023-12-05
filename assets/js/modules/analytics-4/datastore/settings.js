@@ -25,7 +25,6 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
 	isValidPropertyID,
@@ -54,9 +53,6 @@ import {
 } from './constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
-import { convertDateStringToUNIXTimestamp } from '../../../util';
-
-const { createRegistrySelector } = Data;
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -227,31 +223,3 @@ export function validateCanSubmitChanges( select ) {
 		);
 	}
 }
-
-/**
- * Gets the value of propertyCreateTime converted to UNIX timestamp.
- *
- * @since n.e.x.t
- *
- * @return {number|undefined} Value converted to the UNIX timestamp in ms. `undefined` if not loaded.
- */
-export const getPropertyCreateTime = createRegistrySelector(
-	( select ) => () => {
-		const analytics4Settings = select( MODULES_ANALYTICS_4 ).getSettings();
-
-		if ( ! analytics4Settings ) {
-			return undefined;
-		}
-
-		const propertyCreateTime = analytics4Settings.propertyCreateTime;
-
-		if ( undefined === propertyCreateTime ) {
-			return undefined;
-		}
-
-		const unixTimestamp =
-			convertDateStringToUNIXTimestamp( propertyCreateTime );
-
-		return unixTimestamp;
-	}
-);
