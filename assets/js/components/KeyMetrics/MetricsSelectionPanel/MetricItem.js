@@ -74,8 +74,7 @@ export default function MetricItem( {
 
 	const isMetricSelected = selectedMetrics?.includes( slug );
 	const isMetricDisabled =
-		( ! isMetricSelected && selectedMetrics?.length > 3 ) ||
-		( ! savedMetrics.includes( slug ) && disconnectedModules.length > 0 );
+		! savedMetrics.includes( slug ) && disconnectedModules.length > 0;
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics__metric-item">

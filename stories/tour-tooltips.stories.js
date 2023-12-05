@@ -228,7 +228,7 @@ const MockWPDashboard = () => (
 												edge of space…
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -254,7 +254,7 @@ const MockWPDashboard = () => (
 												About – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/about/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -280,7 +280,7 @@ const MockWPDashboard = () => (
 												WordPress Websites – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/wordpress-websites/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -307,7 +307,7 @@ const MockWPDashboard = () => (
 												Development – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/wordpress-websites/wordpress-programming/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -333,7 +333,7 @@ const MockWPDashboard = () => (
 												WordPress – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/category/wordpress/"
 												target="_blank"
 												rel="noopener noreferrer"

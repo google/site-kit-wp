@@ -19,15 +19,7 @@
 /**
  * Internal dependencies
  */
-import helpVisibility from './help-visibility';
-import unifiedDashboard from './unified-dashboard';
 import dashboardSharing from './dashboard-sharing';
-import allTrafficWidget from './all-traffic-widget';
 
 // Ordered tours.
-export default [
-	allTrafficWidget,
-	helpVisibility,
-	unifiedDashboard,
-	dashboardSharing,
-];
+export default [ dashboardSharing ];

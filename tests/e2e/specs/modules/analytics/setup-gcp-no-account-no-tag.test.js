@@ -72,6 +72,17 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					status: 200,
 					body: '[]',
 				} );
+			} else if (
+				request
+					.url()
+					.match( 'analytics-4/data/enhanced-measurement-settings' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						fixtures.defaultEnhancedMeasurementSettings
+					),
+				} );
 			} else if ( url.match( 'analytics/data/report?' ) ) {
 				request.respond( {
 					status: 200,

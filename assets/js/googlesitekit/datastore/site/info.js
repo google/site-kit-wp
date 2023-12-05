@@ -163,6 +163,7 @@ export const reducer = ( state, { payload, type } ) => {
 				pluginBasename,
 				productBasePaths,
 				keyMetricsSetupCompletedBy,
+				keyMetricsSetupNew,
 			} = payload.siteInfo;
 
 			return {
@@ -195,6 +196,7 @@ export const reducer = ( state, { payload, type } ) => {
 					pluginBasename,
 					productBasePaths,
 					keyMetricsSetupCompletedBy,
+					keyMetricsSetupNew,
 				},
 			};
 		}
@@ -272,6 +274,7 @@ export const resolvers = {
 			pluginBasename,
 			productBasePaths,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupNew,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -309,6 +312,7 @@ export const resolvers = {
 			pluginBasename,
 			productBasePaths,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupNew,
 		} );
 	},
 };
@@ -780,6 +784,15 @@ export const selectors = {
 	getKeyMetricsSetupCompletedBy: getSiteInfoProperty(
 		'keyMetricsSetupCompletedBy'
 	),
+
+	/**
+	 * Gets the state of whether or not Key Metrics was recently set up.
+	 *
+	 * @since 1.115.0
+	 *
+	 * @return {boolean} `true` if recently set up, otherwise `false`.
+	 */
+	getKeyMetricsSetupNew: getSiteInfoProperty( 'keyMetricsSetupNew' ),
 
 	/**
 	 * Determines whether the current WordPress site has the minimum required version.

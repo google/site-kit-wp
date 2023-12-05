@@ -19,15 +19,24 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
 
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
 import { forwardRef } from '@wordpress/element';
+import { _x } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import ArrowIcon from '../../svg/icons/arrow.svg';
+import ArrowInverseIcon from '../../svg/icons/arrow-inverse.svg';
+import BackIcon from '../../svg/icons/back.svg';
+import ExternalIcon from '../../svg/icons/external.svg';
+import IconWrapper from './IconWrapper';
 
 const BUTTON = 'BUTTON';
 const BUTTON_DISABLED = 'BUTTON_DISABLED';
@@ -53,6 +62,7 @@ const Link = forwardRef( ( props, ref ) => {
 		onClick,
 		small = false,
 		standalone = false,
+		linkButton = false,
 		to,
 		...otherProps
 	} = props;
@@ -146,16 +156,13 @@ const Link = forwardRef( ( props, ref ) => {
 			aria-label={ ariaLabel }
 			className={ classnames( 'googlesitekit-cta-link', className, {
 				'googlesitekit-cta-link--secondary': secondary,
-				'googlesitekit-cta-link--arrow': arrow,
-				'googlesitekit-cta-link--external':
-					external && ! hideExternalIndicator,
 				'googlesitekit-cta-link--inverse': inverse,
-				'googlesitekit-cta-link--back': back,
 				'googlesitekit-cta-link--small': small,
 				'googlesitekit-cta-link--caps': caps,
 				'googlesitekit-cta-link--danger': danger,
 				'googlesitekit-cta-link--disabled': disabled,
 				'googlesitekit-cta-link--standalone': standalone,
+				'googlesitekit-cta-link--link-button': linkButton,
 			} ) }
 			disabled={ disabled }
 			href={
@@ -170,7 +177,25 @@ const Link = forwardRef( ( props, ref ) => {
 			to={ to }
 			{ ...otherProps }
 		>
+			{ back && (
+				<IconWrapper marginRight={ 5 }>
+					<BackIcon width={ 14 } height={ 14 } />
+				</IconWrapper>
+			) }
 			{ children }
+			{ external && ! hideExternalIndicator && (
+				<IconWrapper marginLeft={ 5 }>
+					<ExternalIcon width={ 14 } height={ 14 } />
+				</IconWrapper>
+			) }
+			{ arrow && (
+				<IconWrapper marginLeft={ 5 }>
+					{ ! inverse && <ArrowIcon width={ 14 } height={ 14 } /> }
+					{ inverse && (
+						<ArrowInverseIcon width={ 14 } height={ 14 } />
+					) }
+				</IconWrapper>
+			) }
 		</LinkComponent>
 	);
 } );
@@ -190,6 +215,7 @@ Link.propTypes = {
 	onClick: PropTypes.func,
 	small: PropTypes.bool,
 	standalone: PropTypes.bool,
+	linkButton: PropTypes.bool,
 	to: PropTypes.string,
 };
 

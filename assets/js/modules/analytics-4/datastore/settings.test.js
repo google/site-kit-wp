@@ -43,7 +43,6 @@ import {
 	INVARIANT_INVALID_WEBDATASTREAM_ID,
 } from './settings';
 import * as fixtures from './__fixtures__';
-import { enabledFeatures } from '../../../features';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
 
 describe( 'modules/analytics-4 settings', () => {
@@ -274,8 +273,6 @@ describe( 'modules/analytics-4 settings', () => {
 				};
 
 				beforeEach( () => {
-					enabledFeatures.add( 'enhancedMeasurement' );
-
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( { propertyID, webDataStreamID } );
@@ -468,8 +465,6 @@ describe( 'modules/analytics-4 settings', () => {
 
 			describe( 'required changes', () => {
 				beforeEach( () => {
-					enabledFeatures.add( 'enhancedMeasurement' );
-
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( {

@@ -56,7 +56,6 @@ import {
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 } from './settings';
 import ga4ReportingTour from '../../../feature-tours/ga4-reporting';
-import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -765,8 +764,6 @@ describe( 'modules/analytics settings', () => {
 					};
 
 					beforeEach( () => {
-						enabledFeatures.add( 'enhancedMeasurement' );
-
 						const ga4Settings = {
 							...ga4fixtures.defaultSettings,
 							propertyID,
@@ -974,8 +971,6 @@ describe( 'modules/analytics settings', () => {
 				const webDataStreamID = '2000';
 
 				beforeEach( () => {
-					enabledFeatures.add( 'enhancedMeasurement' );
-
 					// Recreate the registry to ensure a clean settings state.
 					registry = createTestRegistry();
 

@@ -90,7 +90,7 @@ export const registerWidgets = ( widgets ) => {
 			{
 				Component: PopularKeywordsWidget,
 				width: widgets.WIDGET_WIDTHS.QUARTER,
-				priority: 1,
+				priority: 2,
 				wrapWidget: false,
 				modules: [ 'search-console' ],
 				isActive: ( select ) =>

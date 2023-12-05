@@ -134,6 +134,8 @@ export default function ZeroDataStateNotifications() {
 	}
 
 	let gatheringDataTitle;
+	// Analytics requires up to 72 hours to gather data.
+	let gatheringDataWaitTimeInHours = 72;
 	if ( analyticsGatheringData && searchConsoleGatheringData ) {
 		gatheringDataTitle = __(
 			'Search Console and Analytics are gathering data',
@@ -145,6 +147,9 @@ export default function ZeroDataStateNotifications() {
 			'google-site-kit'
 		);
 	} else if ( searchConsoleGatheringData ) {
+		// If only Search Console is gathering data, show a lower wait
+		// time, since it only requires 48 hours.
+		gatheringDataWaitTimeInHours = 48;
 		gatheringDataTitle = __(
 			'Search Console is gathering data',
 			'google-site-kit'
@@ -152,7 +157,12 @@ export default function ZeroDataStateNotifications() {
 	}
 
 	if ( analyticsGatheringData || searchConsoleGatheringData ) {
-		return <GatheringDataNotification title={ gatheringDataTitle } />;
+		return (
+			<GatheringDataNotification
+				title={ gatheringDataTitle }
+				gatheringDataWaitTimeInHours={ gatheringDataWaitTimeInHours }
+			/>
+		);
 	}
 
 	return <ZeroDataNotification />;

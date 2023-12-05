@@ -273,12 +273,18 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                             All collected data is treated in accordance with the 
                             <a
                               aria-label="Google Privacy Policy. (opens in a new tab)"
-                              class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                              class="googlesitekit-cta-link"
                               href="https://policies.google.com/privacy"
                               rel="noopener noreferrer"
                               target="_blank"
                             >
                               Google Privacy Policy.
+                              <span
+                                class="googlesitekit-icon-wrapper"
+                                style="margin-left: 5px;"
+                              >
+                                <svg />
+                              </span>
                             </a>
                           </span>
                         </label>
@@ -638,12 +644,18 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             All collected data is treated in accordance with the 
                             <a
                               aria-label="Google Privacy Policy. (opens in a new tab)"
-                              class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                              class="googlesitekit-cta-link"
                               href="https://policies.google.com/privacy"
                               rel="noopener noreferrer"
                               target="_blank"
                             >
                               Google Privacy Policy.
+                              <span
+                                class="googlesitekit-icon-wrapper"
+                                style="margin-left: 5px;"
+                              >
+                                <svg />
+                              </span>
                             </a>
                           </span>
                         </label>

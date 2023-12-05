@@ -463,7 +463,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_handle_provisioning_callback__with_enhancedMeasurement_streamEnabled() {
-		$this->enable_feature( 'enhancedMeasurement' );
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
@@ -701,11 +700,12 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->register();
 		$data = array(
-			'displayName'    => $account_display_name,
-			'regionCode'     => $region_code,
-			'propertyName'   => $property_display_name,
-			'dataStreamName' => $stream_display_name,
-			'timezone'       => $timezone,
+			'displayName'                      => $account_display_name,
+			'regionCode'                       => $region_code,
+			'propertyName'                     => $property_display_name,
+			'dataStreamName'                   => $stream_display_name,
+			'timezone'                         => $timezone,
+			'enhancedMeasurementStreamEnabled' => true,
 		);
 
 		$response = $this->analytics->set_data( 'create-account-ticket', $data );
@@ -737,41 +737,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'] );
 		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'] );
 		$this->assertEquals( $timezone, $account_ticket_params['timezone'] );
-	}
-
-	public function test_create_account_ticket__with_enhancedMeasurement() {
-		// TODO: Merge with above test or keep separate when feature flag is removed.
-		$this->enable_feature( 'enhancedMeasurement' );
-		$this->analytics->register();
-		$data = array(
-			'displayName'                      => 'test account name',
-			'regionCode'                       => 'US',
-			'propertyName'                     => 'test property name',
-			'dataStreamName'                   => 'test stream name',
-			'timezone'                         => 'UTC',
-			'enhancedMeasurementStreamEnabled' => true,
-		);
-
-		// Required scopes are tested above.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
-			)
-		);
-
-		// No need to control response again.
-		FakeHttp::fake_google_http_handler( $this->analytics->get_client() );
-
-		$response = $this->analytics->set_data( 'create-account-ticket', $data );
-		// Assert request was made with expected arguments.
-		$this->assertNotWPError( $response );
-
-		// Assert transient is set with params.
-		$account_ticket_params = get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
-		$this->assertEquals( 'test property name', $account_ticket_params['property_name'] );
-		$this->assertEquals( 'test stream name', $account_ticket_params['data_stream_name'] );
-		$this->assertEquals( 'UTC', $account_ticket_params['timezone'] );
 		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'] );
 	}
 

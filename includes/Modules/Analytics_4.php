@@ -619,7 +619,7 @@ final class Analytics_4 extends Module
 			)
 		);
 
-		if ( Feature_Flags::enabled( 'enhancedMeasurement' ) && $account_ticket->get_enhanced_measurement_stream_enabled() ) {
+		if ( $account_ticket->get_enhanced_measurement_stream_enabled() ) {
 			$this->set_data(
 				'enhanced-measurement-settings',
 				array(

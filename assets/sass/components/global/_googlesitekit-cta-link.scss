@@ -17,8 +17,10 @@
  */
 
 .googlesitekit-cta-link {
+	align-items: center;
 	color: $c-link;
 	cursor: pointer;
+	display: inline-flex;
 	font-family: inherit;
 	font-size: inherit;
 	font-weight: inherit;
@@ -70,44 +72,7 @@
 	}
 
 	&.googlesitekit-cta-link--standalone {
-		display: block;
-	}
-
-	&.googlesitekit-cta-link--arrow,
-	&.googlesitekit-cta-link--external {
-		// This is the external link icon, in the color #108080 ($c-content-secondary).
-		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M11%2011H2V2h3V0H2a2%202%200%200%200-2%202v9a2%202%200%200%200%202%202h9c1.1%200%202-.9%202-2V8h-2v3z%22%20fill%3D%22%23108080%22%20fill-rule%3D%22nonzero%22%2F%3E%3Cpath%20fill%3D%22%23108080%22%20d%3D%22M7%200h6v2H7zM11%202h2v4h-2z%22%2F%3E%3Cpath%20d%3D%22M11%202L5%208%22%20stroke%3D%22%23108080%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22square%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-		background-position: calc(100% - 1px) center;
-		background-repeat: no-repeat;
-		background-size: 13px 13px;
-		padding-right: 20px;
-	}
-
-	&.googlesitekit-cta-link--arrow {
-		/**
-		 * This is the cta-link-arrow icon (solid circle with a
-		 * arrow right in the middle), with the background color
-		 * #108080 ($c-content-secondary) and the arrow color #FFF ($c-white).
-		 */
-		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Ccircle%20fill%3D%22%23108080%22%20cx%3D%226.5%22%20cy%3D%226.5%22%20r%3D%226.5%22%2F%3E%3Cpath%20d%3D%22M3.461%206.96h5.15L6.36%209.21a.464.464%200%200%200%20.325.79.459.459%200%200%200%20.325-.135l3.037-3.038a.459.459%200%200%200%200-.65L7.015%203.135a.46.46%200%200%200-.65.65L8.61%206.039H3.461a.462.462%200%200%200-.461.46c0%20.254.207.462.461.462z%22%20fill%3D%22%23FFF%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-	}
-
-	&.googlesitekit-cta-link--arrow.googlesitekit-cta-link--inverse {
-		/**
-		 * This is the cta-link-arrow icon (solid circle with a
-		 * arrow right in the middle), with the background color #FFF ($c-white)
-		 * and the arrow color #108080 ($c-content-secondary).
-		 */
-		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Ccircle%20fill%3D%22%23FFF%22%20cx%3D%226.5%22%20cy%3D%226.5%22%20r%3D%226.5%22%2F%3E%3Cpath%20d%3D%22M3.461%206.96h5.15L6.36%209.21a.464.464%200%200%200%20.325.79.459.459%200%200%200%20.325-.135l3.037-3.038a.459.459%200%200%200%200-.65L7.015%203.135a.46.46%200%200%200-.65.65L8.61%206.039H3.461a.462.462%200%200%200-.461.46c0%20.254.207.462.461.462z%22%20fill%3D%22%23108080%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-	}
-
-	&.googlesitekit-cta-link--arrow.googlesitekit-cta-link--disabled {
-		/**
-		 * This is the cta-link-arrow icon (solid circle with a
-		 * arrow right in the middle), with the background color #BBB
-		 * and the arrow color #FFF ($c-white).
-		 */
-		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Ccircle%20fill%3D%22%23bbb%22%20cx%3D%226.5%22%20cy%3D%226.5%22%20r%3D%226.5%22%2F%3E%3Cpath%20d%3D%22M3.461%206.96h5.15L6.36%209.21a.464.464%200%200%200%20.325.79.459.459%200%200%200%20.325-.135l3.037-3.038a.459.459%200%200%200%200-.65L7.015%203.135a.46.46%200%200%200-.65.65L8.61%206.039H3.461a.462.462%200%200%200-.461.46c0%20.254.207.462.461.462z%22%20fill%3D%22%23FFF%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+		display: flex;
 	}
 
 	&.googlesitekit-cta-link--inverse {
@@ -116,19 +81,6 @@
 		&:hover {
 			color: $c-content-on-primary;
 		}
-	}
-
-	&.googlesitekit-cta-link--back::before {
-		// This is the arrow-left icon, in the color ($c-content-secondary).
-		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%228%22%20height%3D%227%22%20viewBox%3D%220%200%208%207%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M6.722%203.96H1.573l2.25%202.25a.464.464%200%200%201-.325.79.459.459%200%200%201-.325-.135L.135%203.827a.459.459%200%200%201%200-.65L3.168.135a.46.46%200%201%201%20.65.65L1.573%203.039h5.15c.253%200%20.46.207.46.46a.462.462%200%200%201-.46.462z%22%20fill%3D%22%23108080%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
-		background-position: center center;
-		background-repeat: no-repeat;
-		background-size: 9px 9px;
-		content: "";
-		display: inline-block;
-		height: 9px;
-		margin-right: 5px;
-		width: 9px;
 	}
 
 	&.googlesitekit-cta-link--disabled {
@@ -161,6 +113,7 @@
 button {
 	&.googlesitekit-cta-link {
 		color: $c-content-primary;
+		display: inline-block;
 
 		svg {
 			fill: currentColor;
@@ -173,15 +126,20 @@ button {
 				fill: currentColor;
 			}
 		}
+	}
 
-		&.googlesitekit-cta-link--arrow {
-			/**
-			 * This is the cta-link-arrow icon (solid circle
-			 * with a arrow right in the middle), with the
-			 * background color #3c7251 ($c-content-primary)
-			 * and the arrow color #FFF ($c-white).
-			 */
-			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Ccircle%20fill%3D%22%233c7251%22%20cx%3D%226.5%22%20cy%3D%226.5%22%20r%3D%226.5%22%2F%3E%3Cpath%20d%3D%22M3.461%206.96h5.15L6.36%209.21a.464.464%200%200%200%20.325.79.459.459%200%200%200%20.325-.135l3.037-3.038a.459.459%200%200%200%200-.65L7.015%203.135a.46.46%200%200%200-.65.65L8.61%206.039H3.461a.462.462%200%200%200-.461.46c0%20.254.207.462.461.462z%22%20fill%3D%22%23FFF%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+	&.googlesitekit-cta-link--link-button {
+		padding: 2px 10px;
+
+		&:focus {
+			background-color: rgba($c-content-primary, 0.08);
+			outline: none;
+		}
+
+		&.googlesitekit-cta-link--secondary {
+			&:focus {
+				background-color: rgba($c-content-secondary, 0.08);
+			}
 		}
 	}
 }
