@@ -166,7 +166,6 @@ const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
-const SET_PROPERTY_CREATE_TIME = 'SET_PROPERTY_CREATE_TIME';
 
 const baseInitialState = {
 	properties: {},
@@ -733,12 +732,9 @@ const baseResolvers = {
 				.getProperty( propertyID )
 		);
 
-		yield {
-			type: SET_PROPERTY_CREATE_TIME,
-			payload: {
-				value: property?.createTime,
-			},
-		};
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyCreateTime( property?.createTime );
 	},
 };
 
