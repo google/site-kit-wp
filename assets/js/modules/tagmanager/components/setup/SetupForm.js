@@ -24,14 +24,14 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useCallback } from '@wordpress/element';
+import { Fragment, useEffect, useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, SpinnerButton } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
@@ -95,6 +95,7 @@ export default function SetupForm( { finishSetup } ) {
 		select( CORE_LOCATION ).isNavigating()
 	);
 	const isSaving = isDoingSubmitChanges || isNavigating || submitInProgress;
+	const [ savingGA4AndGTM, setSavingGA4AndGTM ] = useState( false );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -209,12 +210,16 @@ export default function SetupForm( { finishSetup } ) {
 			<div className="googlesitekit-setup-module__action">
 				{ isSetupWithAnalytics && (
 					<Fragment>
-						<Button disabled={ ! canSubmitChanges }>
+						<SpinnerButton
+							disabled={ ! canSubmitChanges }
+							isSaving={ savingGA4AndGTM && isSaving }
+							onClick={ () => setSavingGA4AndGTM( true ) }
+						>
 							{ __(
 								'Continue to Analytics setup',
 								'google-site-kit'
 							) }
-						</Button>
+						</SpinnerButton>
 						{ /*
 						This "link" below will be rendered as a <button> but should not
 						trigger a form submit when clicked, hence the `type="button"`.
