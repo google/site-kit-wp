@@ -79,15 +79,11 @@ describe( 'convertDateStringToUNIXTimestamp', () => {
 			'2014-10-02',
 			1412208000000,
 		],
+		[ 'should return zero if empty value is passed as parameter', '', 0 ],
 		[
-			'should return empty value if empty value is passed as parameter',
-			'',
-			'',
-		],
-		[
-			'should return empty value if invalid date/date time string is passed as parameter',
+			'should return zero value if invalid date/date time string is passed as parameter',
 			'15:01:23',
-			'',
+			0,
 		],
 		[
 			'should return unix timestamp value if Date object is passed as parameter',
@@ -95,11 +91,7 @@ describe( 'convertDateStringToUNIXTimestamp', () => {
 			new Date().getTime(),
 		],
 
-		[
-			'should return null if null value is passed as parameter',
-			null,
-			null,
-		],
+		[ 'should return zero if null value is passed as parameter', null, 0 ],
 	] )( '%s', ( _, args, expected ) => {
 		const unixTimestamp = convertDateStringToUNIXTimestamp( args );
 		expect( unixTimestamp ).toEqual( expected );

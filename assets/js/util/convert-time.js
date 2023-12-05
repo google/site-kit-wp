@@ -61,8 +61,8 @@ export const convertDateStringToUNIXTimestamp = ( dateStringValue ) => {
 			? new Date( dateStringValue ).getTime()
 			: dateStringValue;
 
-	if ( isNaN( unixTimestamp ) ) {
-		return '';
+	if ( isNaN( unixTimestamp ) || ! unixTimestamp ) {
+		return 0;
 	}
 
 	return unixTimestamp;
