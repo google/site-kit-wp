@@ -161,7 +161,6 @@ class User_Input {
 			}
 
 			$answered_by = intval( $setting['answeredBy'] );
-			unset( $setting['answeredBy'] );
 
 			if ( ! $answered_by || $answered_by === $this->user_options->get_user_id() ) {
 				continue;
@@ -228,8 +227,24 @@ class User_Input {
 			$setting_data['scope']  = static::$questions[ $setting_key ]['scope'];
 
 			if ( 'site' === $setting_data['scope'] ) {
-				$setting_data['answeredBy']    = $this->user_options->get_user_id();
+				$existing_answers = $this->get_answers();
+				$answered_by      = $this->user_options->get_user_id();
+				if ( ! empty( $existing_answers['purpose']['answeredBy'] ) ) {
+					// If answers are not saved for the first time, keep original attribution.
+					$answered_by = $existing_answers['purpose']['answeredBy'];
+				}
+
+				if ( ! empty( $existing_answers['purpose']['values'] ) ) {
+					$answer_differs = array_diff( $existing_answers['purpose']['values'], $answers );
+					// If purpose answer changed, attribute it to the current user.
+					if ( ! empty( $answer_differs ) ) {
+						$answered_by = $this->user_options->get_user_id();
+					}
+				}
+
+				$setting_data['answeredBy']    = $answered_by;
 				$site_settings[ $setting_key ] = $setting_data;
+
 			} elseif ( 'user' === $setting_data['scope'] ) {
 				$user_settings[ $setting_key ] = $setting_data;
 			}
