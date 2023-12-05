@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Input\User_Input;
 use Google\Site_Kit\Core\User_Input\Site_Specific_Answers;
 use Google\Site_Kit\Core\User_Input\User_Specific_Answers;
@@ -26,7 +27,14 @@ class User_InputTest extends TestCase {
 	private $context;
 
 	/**
-	 * Context object.
+	 * User_Options instance.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
+	 * User_Input instance.
 	 *
 	 * @var User_Input
 	 */
@@ -44,9 +52,9 @@ class User_InputTest extends TestCase {
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		$this->user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $this->user_id );
 
-		$this->user_input = new User_Input( $this->context );
+		$this->user_options = new User_Options( $this->context, $this->user_id );
+		$this->user_input   = new User_Input( $this->context, null, $this->user_options );
 		$this->user_input->register();
 	}
 
@@ -152,8 +160,9 @@ class User_InputTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'purpose'       => array(
-					'scope'  => 'site',
-					'values' => array( 'purpose1' ),
+					'scope'      => 'site',
+					'values'     => array( 'purpose1' ),
+					'answeredBy' => $this->user_id,
 				),
 				'postFrequency' => array(
 					'scope'  => 'user',
@@ -182,8 +191,9 @@ class User_InputTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'purpose'       => array(
-					'scope'  => 'site',
-					'values' => array( 'purpose1' ),
+					'scope'      => 'site',
+					'values'     => array( 'purpose1' ),
+					'answeredBy' => $this->user_id,
 				),
 				'postFrequency' => array(
 					'scope'  => 'user',
@@ -196,5 +206,65 @@ class User_InputTest extends TestCase {
 			),
 			$response
 		);
+	}
+
+	public function test_set_answers__preserves_purpose_answer_user_attribution() {
+		$second_admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		$this->user_input->set_answers(
+			array(
+				'purpose'       => array( 'publish_blog' ),
+				'postFrequency' => array( 'daily' ),
+				'goals'         => array( 'growing_audience', 'finding_new_topics' ),
+			)
+		);
+
+		$existing_answers = $this->user_input->get_answers();
+
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
+
+		$this->user_options->switch_user( $second_admin_id );
+
+		$this->user_input->set_answers(
+			array(
+				'purpose'       => array( 'publish_blog' ),
+				'postFrequency' => array( 'weekly' ),
+				'goals'         => array( 'improving_performance' ),
+			)
+		);
+
+		$existing_answers = $this->user_input->get_answers();
+		// Since purpose answer didn't change, it should still be attributed to admin 1.
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
+	}
+
+	public function test_set_answers__assigns_correct_user_attribution_on_purpose_answer_change() {
+		$second_admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		$this->user_input->set_answers(
+			array(
+				'purpose'       => array( 'publish_blog' ),
+				'postFrequency' => array( 'daily' ),
+				'goals'         => array( 'growing_audience', 'finding_new_topics' ),
+			)
+		);
+
+		$existing_answers = $this->user_input->get_answers();
+
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
+
+		$this->user_options->switch_user( $second_admin_id );
+
+		$this->user_input->set_answers(
+			array(
+				'purpose'       => array( 'other' ),
+				'postFrequency' => array( 'weekly' ),
+				'goals'         => array( 'improving_performance' ),
+			)
+		);
+
+		$existing_answers = $this->user_input->get_answers();
+		// Since purpose answer changed, it should be attributed to admin 2.
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $second_admin_id );
 	}
 }
