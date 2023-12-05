@@ -22,11 +22,11 @@
 import Modules from 'googlesitekit-modules';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
-	getPropertyCreateTime,
 	submitChanges,
 	validateCanSubmitChanges,
 	rollbackChanges,
 } from './settings';
+import { convertDateStringToUNIXTimestamp } from '../../../util';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	ownedSettingsSlugs: [
@@ -63,6 +63,13 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	validateCanSubmitChanges,
 } );
 
-baseModuleStore.selectors.getPropertyCreateTime = getPropertyCreateTime;
+const originalSetPropertyCreateTime =
+	baseModuleStore.actions.setPropertyCreateTime;
+
+baseModuleStore.actions.setPropertyCreateTime = ( value ) => {
+	return originalSetPropertyCreateTime(
+		convertDateStringToUNIXTimestamp( value )
+	);
+};
 
 export default baseModuleStore;
