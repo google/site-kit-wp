@@ -99,7 +99,6 @@ function PopularProductsWidget( props ) {
 				filterType: 'stringFilter',
 				matchType: 'EXACT',
 				value: productPostType,
-				notExpression: true,
 			},
 		},
 		metrics: [ { name: 'screenPageViews' } ],

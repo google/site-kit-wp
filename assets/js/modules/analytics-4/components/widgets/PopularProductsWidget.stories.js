@@ -57,7 +57,6 @@ const reportOptions = {
 			filterType: 'stringFilter',
 			matchType: 'EXACT',
 			value: 'product',
-			notExpression: true,
 		},
 	},
 	metrics: [ { name: 'screenPageViews' } ],
