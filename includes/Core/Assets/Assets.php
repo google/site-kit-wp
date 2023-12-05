@@ -1075,7 +1075,7 @@ final class Assets {
 		/**
 		* Filters the product post type.
 		*
-		* @since 1.113.0
+		* @since n.e.x.t
 		*
 		* @param string $product_post_type The product post type name.
 		*/
