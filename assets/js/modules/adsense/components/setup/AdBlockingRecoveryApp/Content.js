@@ -26,25 +26,28 @@ import { Cell, Grid, Row } from '../../../../../material-components';
 import AdBlockingSetupSVG from '../../../../../../svg/graphics/ad-blocking-recovery-setup.svg';
 import {
 	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
 
 export default function Content( { children } ) {
 	const breakpoint = useBreakpoint();
 
-	const isTabletWidthOrLarger = breakpoint !== BREAKPOINT_SMALL;
+	const isDesktopWidthOrLarger = ! [
+		BREAKPOINT_TABLET,
+		BREAKPOINT_SMALL,
+	].includes( breakpoint );
 
 	return (
 		<Grid className="googlesitekit-ad-blocking-recovery__content">
 			<Row>
-				<Cell mdSize={ 6 } lgSize={ 8 }>
+				<Cell mdSize={ 8 } lgSize={ 8 }>
 					{ children }
 				</Cell>
 
-				{ isTabletWidthOrLarger && (
+				{ isDesktopWidthOrLarger && (
 					<Cell
 						className="googlesitekit-ad-blocking-recovery__hero-graphic"
-						mdSize={ 2 }
 						lgSize={ 4 }
 					>
 						<AdBlockingSetupSVG />
