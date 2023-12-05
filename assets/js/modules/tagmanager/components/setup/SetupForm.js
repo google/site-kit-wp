@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
@@ -41,6 +41,7 @@ import {
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { isPermissionScopeError } from '../../../../util/errors';
 import {
 	AccountSelect,
@@ -84,6 +85,16 @@ export default function SetupForm( { finishSetup } ) {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).isDoingSubmitChanges()
+	);
+	const submitInProgress = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' )
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
+	const isSaving = isDoingSubmitChanges || isNavigating || submitInProgress;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -222,9 +233,12 @@ export default function SetupForm( { finishSetup } ) {
 					</Fragment>
 				) }
 				{ ! isSetupWithAnalytics && (
-					<Button disabled={ ! canSubmitChanges }>
+					<SpinnerButton
+						disabled={ ! canSubmitChanges || isSaving }
+						isSaving={ isSaving }
+					>
 						{ __( 'Confirm & Continue', 'google-site-kit' ) }
-					</Button>
+					</SpinnerButton>
 				) }
 			</div>
 		</form>
