@@ -60,12 +60,14 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 			groups: 'site_kit',
 			send_page_view: config.isSiteKitScreen,
 			domain: referenceSiteURL,
-			user_roles: userRoles.join( ',' ),
-			user_identifier: userIDHash,
 			plugin_version: pluginVersion || '',
 			enabled_features: Array.from( enabledFeatures ).join( ',' ),
 			active_modules: activeModules.join( ',' ),
 			authenticated: isAuthenticated ? '1' : '0',
+			user_properties: {
+				user_roles: userRoles.join( ',' ),
+				user_identifier: userIDHash,
+			},
 		} );
 
 		// If not present, inject it and initialize dataLayer.
