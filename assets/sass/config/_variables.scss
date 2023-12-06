@@ -297,13 +297,6 @@ $mdc-layout-grid-breakpoints: (
 );
 /* stylelint-enable */
 
-// Base64 images for reuse
-// This is the check icon, in the color #FFF ($c-white).
-$icon-checked: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%206.414L1.415%205l5.292%205.292-1.414%201.415z%22%2F%3E%3Cpath%20d%3D%22M14.146.146l1.415%201.414L5.414%2011.707%204%2010.292z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-
-// This is the tick icon, in the color #3C7251 ($c-content-primary).
-$icon-tick: url("data:image/svg+xml,%3Csvg width='10' height='9' viewBox='0 0 10 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4.5L4 7.5L9 1.5' stroke='%233c7251' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
-
 $mdc-button-min-height: 40px;
 $mdc-typography-font-family: $f-primary;
 $mdc-typography-styles-subtitle1: (
