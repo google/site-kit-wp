@@ -75,11 +75,10 @@ export default function SetupForm( { finishSetup } ) {
 
 		return canSubmitChanges;
 	} );
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
-	);
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
+	const isSaving = useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS ).isDoingSubmitChanges() ||
+			select( CORE_LOCATION ).isNavigating()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -138,12 +137,8 @@ export default function SetupForm( { finishSetup } ) {
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
-					disabled={
-						! canSubmitGA4Changes ||
-						isDoingSubmitChanges ||
-						isNavigating
-					}
-					isSaving={ isDoingSubmitChanges || isNavigating }
+					disabled={ ! canSubmitGA4Changes || isSaving }
+					isSaving={ isSaving }
 				>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
 				</SpinnerButton>

@@ -43,11 +43,10 @@ export default function SetupAccountSiteUI( {
 	primaryButton,
 	secondaryButton,
 } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isDoingSubmitChanges()
-	);
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
+	const isSaving = useSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).isDoingSubmitChanges() ||
+			select( CORE_LOCATION ).isNavigating()
 	);
 
 	return (
@@ -66,8 +65,8 @@ export default function SetupAccountSiteUI( {
 				<SpinnerButton
 					onClick={ primaryButton.onClick }
 					href={ primaryButton.href }
-					disabled={ isDoingSubmitChanges || isNavigating }
-					isSaving={ isDoingSubmitChanges || isNavigating }
+					disabled={ isSaving }
+					isSaving={ isSaving }
 				>
 					{ primaryButton.label }
 				</SpinnerButton>
