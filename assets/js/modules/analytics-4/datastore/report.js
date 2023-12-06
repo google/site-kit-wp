@@ -205,14 +205,8 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 			return undefined;
 		}
 
-		// Backward compatibility to ensure time is received in unit timestamp, if
-		// old format is not updated yet.
-		const propertyCreateTimeMs = Number.isInteger( propertyCreateTime )
-			? propertyCreateTime
-			: new Date( propertyCreateTime ).getTime();
-
 		// If the property was created within the last three days and has no data, assume it's still gathering data.
-		if ( propertyCreateTimeMs > Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
+		if ( propertyCreateTime > Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
 			return false;
 		}
 

@@ -39,7 +39,10 @@ import {
 } from './constants';
 import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidPropertySelection } from '../utils/validation';
+import {
+	isValidPropertyID,
+	isValidPropertySelection,
+} from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -718,11 +721,7 @@ const baseResolvers = {
 			.select( MODULES_ANALYTICS_4 )
 			.getPropertyCreateTime();
 
-		if (
-			propertyCreateTime ||
-			propertyID === PROPERTY_CREATE ||
-			! propertyID
-		) {
+		if ( propertyCreateTime || ! isValidPropertyID( propertyID ) ) {
 			return;
 		}
 
