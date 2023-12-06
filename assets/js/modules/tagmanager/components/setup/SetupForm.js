@@ -85,21 +85,19 @@ export default function SetupForm( { finishSetup } ) {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).isDoingSubmitChanges()
+
+	const isSaving = useSelect(
+		( select ) =>
+			select( MODULES_TAGMANAGER ).isDoingSubmitChanges() ||
+			select( CORE_LOCATION ).isNavigating() ||
+			select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' )
 	);
-	const submitInProgress = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' )
-	);
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
-	);
-	const isSaving = isDoingSubmitChanges || isNavigating || submitInProgress;
 
 	// This flag is be used to determine whether to show the loading spinner
 	// within the "Continue to Analytics setup" button when setting up GTM with Analytics.
 	// It prevents the spinner from showing when the user opts to set up GTM without Analytics.
-	const [ savingGA4AndGTM, setSavingGA4AndGTM ] = useState( false );
+	const [ isSavingWithAnalytics, setIsSavingWithAnalytics ] =
+		useState( false );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -216,9 +214,9 @@ export default function SetupForm( { finishSetup } ) {
 					<Fragment>
 						<SpinnerButton
 							disabled={ ! canSubmitChanges }
-							isSaving={ savingGA4AndGTM && isSaving }
+							isSaving={ isSavingWithAnalytics && isSaving }
 							// Show the spinner only when saving GA4 and GTM together.
-							onClick={ () => setSavingGA4AndGTM( true ) }
+							onClick={ () => setIsSavingWithAnalytics( true ) }
 						>
 							{ __(
 								'Continue to Analytics setup',
