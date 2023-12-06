@@ -79,7 +79,7 @@ storyFiles.forEach( ( storyFile ) => {
 			} else if ( node.right.type === 'ObjectExpression' ) {
 				nodeValue = {};
 				node.right.properties.forEach( ( property ) => {
-					if ( 'value' in property?.value ) {
+					if ( property?.value && 'value' in property.value ) {
 						nodeValue[ property.key.name ] = property.value.value;
 					}
 				} );
