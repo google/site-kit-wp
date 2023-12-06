@@ -25,6 +25,9 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { Cell, Row } from '../material-components';
+import ConnectedIcon from '../../svg/icons/connected.svg';
+import ExclamationIcon from '../../svg/icons/exclamation.svg';
+import IconWrapper from './IconWrapper';
 
 export default function PageHeader( props ) {
 	const { title, icon, className, status, statusText, fullWidth, children } =
@@ -76,6 +79,19 @@ export default function PageHeader( props ) {
 									) }
 								>
 									{ statusText }
+									<IconWrapper>
+										{ 'connected' === status ? (
+											<ConnectedIcon
+												width={ 10 }
+												height={ 8 }
+											/>
+										) : (
+											<ExclamationIcon
+												width={ 2 }
+												height={ 12 }
+											/>
+										) }
+									</IconWrapper>
 								</span>
 							) }
 							{ children }
