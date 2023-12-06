@@ -1,5 +1,5 @@
 /**
- * ESLint rules: capitalization tests.
+ * ESLint rules: no-yield-dispatch tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -35,7 +35,6 @@ const ruleTester = new RuleTester( {
 
 ruleTester.run( 'no-yield-dispatch', rule, {
 	valid: [
-		// Add code snippets that should NOT trigger the rule
 		'function* myGenerator() { yield {data: "value"}; }',
 		'function* anotherGenerator() { const result = yield; }',
 		'function functionWithRegistryDispatch() { registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] ); }',
@@ -43,26 +42,41 @@ ruleTester.run( 'no-yield-dispatch', rule, {
 	],
 
 	invalid: [
-		// Add code snippets that should trigger the rule
 		{
 			code: 'function* myGeneratorWithRegistryDispatch() { yield registry.dispatch(); }',
 			errors: [
-				{ message: "Using 'yield registry.dispatch' is disallowed." },
+				{
+					message:
+						'Only plain objects should be yielded from action generator functions. dispatch always returns a Promise.',
+				},
 			],
 		},
 		{
 			code: 'function* anotherGeneratorWithRegistryDispatch() { const result = yield registry.dispatch(); }',
 			errors: [
-				{ message: "Using 'yield registry.dispatch' is disallowed." },
+				{
+					message:
+						'Only plain objects should be yielded from action generator functions. dispatch always returns a Promise.',
+				},
 			],
 		},
 		{
 			code: 'function* generatorWithDispatch() { yield dispatch(); }',
-			errors: [ { message: "Using 'yield dispatch' is disallowed." } ],
+			errors: [
+				{
+					message:
+						'Only plain objects should be yielded from action generator functions. dispatch always returns a Promise.',
+				},
+			],
 		},
 		{
 			code: 'function* anotherGeneratorWithDispatch() { const result = yield dispatch(); }',
-			errors: [ { message: "Using 'yield dispatch' is disallowed." } ],
+			errors: [
+				{
+					message:
+						'Only plain objects should be yielded from action generator functions. dispatch always returns a Promise.',
+				},
+			],
 		},
 	],
 } );

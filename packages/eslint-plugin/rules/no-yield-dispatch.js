@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+const ERROR_MESSAGE =
+	'Only plain objects should be yielded from action generator functions. dispatch always returns a Promise.';
+
 module.exports = {
 	create( context ) {
 		return {
@@ -30,7 +33,7 @@ module.exports = {
 					if ( callee.name === 'dispatch' ) {
 						context.report( {
 							node,
-							message: "Using 'yield dispatch' is disallowed.",
+							message: ERROR_MESSAGE,
 						} );
 					}
 
@@ -42,8 +45,7 @@ module.exports = {
 						) {
 							context.report( {
 								node,
-								message:
-									"Using 'yield registry.dispatch' is disallowed.",
+								message: ERROR_MESSAGE,
 							} );
 						}
 					}
