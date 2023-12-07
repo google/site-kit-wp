@@ -811,11 +811,11 @@ export const selectors = {
 	),
 
 	/**
-	 * Gets base paths for products found in WordPress.
+	 * Gets product post type.
 	 *
-	 * @since 1.106.0
+	 * @since n.e.x.t
 	 *
-	 * @return {Array.<string>} The list of product base paths.
+	 * @return {string|null} The product post type or null if not present.
 	 */
 	getProductPostType: getSiteInfoProperty( 'productPostType' ),
 
