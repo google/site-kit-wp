@@ -1073,12 +1073,12 @@ final class Assets {
 	 */
 	protected function get_product_post_type() {
 		/**
-		* Filters the product post type.
-		*
-		* @since n.e.x.t
-		*
-		* @param string $product_post_type The product post type name.
-		*/
+		 * Filters the product post type.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $product_post_type The product post type name.
+		 */
 		$product_post_type = apply_filters( 'googlesitekit_product_post_type', 'product' );
 		$product_type      = get_post_type_object( $product_post_type );
 
