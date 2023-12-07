@@ -37,6 +37,7 @@ import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidAdsConversionID } from '../../util';
+import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {
@@ -109,6 +110,7 @@ export default function AdsConversionIDTextField() {
 							<VisuallyHidden>
 								{ __( 'Error', 'google-site-kit' ) }
 							</VisuallyHidden>
+							<WarningIcon width={ 14 } height={ 12 } />
 						</span>
 					)
 				}

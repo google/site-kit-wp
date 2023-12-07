@@ -177,83 +177,89 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 
 	const { Icon, title, style, subtitle, CTA } = widgetArea;
 
-	// Here we render the bare output as it is guaranteed to render empty.
-	// This is important compared to returning `null` so that the area
-	// can maybe render later if conditions change for widgets to become active.
-	// Returning `null` here however would have the side-effect of making
-	// all widgets active again, which is why we must return the "null" output.
-	if ( ! isActive ) {
-		return (
-			<Grid
-				className={ classnames(
-					HIDDEN_CLASS,
-					'googlesitekit-widget-area',
-					{
-						[ `googlesitekit-widget-area--${ slug }` ]: !! slug,
-						[ `googlesitekit-widget-area--${ style }` ]: !! style,
-					}
-				) }
-				ref={ widgetAreaRef }
-			>
-				{ widgetsOutput }
-			</Grid>
-		);
-	}
-
 	return (
 		<InViewProvider value={ inViewState }>
-			<Grid
-				className={ classnames(
-					'googlesitekit-widget-area',
-					`googlesitekit-widget-area--${ slug }`,
-					`googlesitekit-widget-area--${ style }`
-				) }
-				ref={ widgetAreaRef }
-			>
-				<Row>
-					<Cell
-						className="googlesitekit-widget-area-header"
-						size={ 12 }
-					>
-						{ Icon && <Icon width={ 33 } height={ 33 } /> }
-
-						{ title && (
-							<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-								{ title }
-							</h3>
-						) }
-
-						{ ( subtitle || CTA ) && (
-							<div className="googlesitekit-widget-area-header__details">
-								{ subtitle && (
-									<h4 className="googlesitekit-widget-area-header__subtitle">
-										{ subtitle }
-									</h4>
-								) }
-
-								{ CTA && (
-									<div className="googlesitekit-widget-area-header__cta">
-										<CTA />
-									</div>
-								) }
-							</div>
-						) }
-					</Cell>
-				</Row>
-
-				<div className="googlesitekit-widget-area-widgets">
+			{ !! isActive && (
+				<Grid
+					className={ classnames(
+						'googlesitekit-widget-area',
+						`googlesitekit-widget-area--${ slug }`,
+						`googlesitekit-widget-area--${ style }`
+					) }
+					ref={ widgetAreaRef }
+				>
 					<Row>
-						{ style === WIDGET_AREA_STYLES.BOXES && widgetsOutput }
-						{ style === WIDGET_AREA_STYLES.COMPOSITE && (
-							<Cell size={ 12 }>
-								<Grid>
-									<Row>{ widgetsOutput }</Row>
-								</Grid>
-							</Cell>
-						) }
+						<Cell
+							className="googlesitekit-widget-area-header"
+							size={ 12 }
+						>
+							{ Icon && <Icon width={ 33 } height={ 33 } /> }
+
+							{ title && (
+								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+									{ title }
+								</h3>
+							) }
+
+							{ ( subtitle || CTA ) && (
+								<div className="googlesitekit-widget-area-header__details">
+									{ subtitle && (
+										<h4 className="googlesitekit-widget-area-header__subtitle">
+											{ subtitle }
+										</h4>
+									) }
+
+									{ CTA && (
+										<div className="googlesitekit-widget-area-header__cta">
+											<CTA />
+										</div>
+									) }
+								</div>
+							) }
+						</Cell>
 					</Row>
-				</div>
-			</Grid>
+
+					<div className="googlesitekit-widget-area-widgets">
+						<Row>
+							{ style === WIDGET_AREA_STYLES.BOXES &&
+								widgetsOutput }
+							{ style === WIDGET_AREA_STYLES.COMPOSITE && (
+								<Cell size={ 12 }>
+									<Grid>
+										<Row>{ widgetsOutput }</Row>
+									</Grid>
+								</Cell>
+							) }
+						</Row>
+					</div>
+				</Grid>
+			) }
+			{
+				// Here we render the bare output as it is guaranteed to render empty.
+				// This is important compared to returning `null` so that the area
+				// can maybe render later if conditions change for widgets to become
+				// active.
+				//
+				// Returning `null` here however would have the side-effect of making
+				// all widgets active again, which is why we must return the "null"
+				// output.
+			 }
+			{ ! isActive && (
+				<Grid
+					className={ classnames(
+						HIDDEN_CLASS,
+						'googlesitekit-widget-area',
+						{
+							[ `googlesitekit-widget-area--${ slug }` ]: !! slug,
+							[ `googlesitekit-widget-area--${ style }` ]:
+								!! style,
+						}
+					) }
+					ref={ widgetAreaRef }
+				>
+					{ widgetsOutput }
+				</Grid>
+			) }
 		</InViewProvider>
 	);
 }

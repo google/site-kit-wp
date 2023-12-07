@@ -35,7 +35,6 @@ import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import SetupForm from './SetupForm';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import useExistingTagEffectUA from '../../hooks/useExistingTagEffect';
 import useExistingTagEffectGA4 from '../../../analytics-4/hooks/useExistingTagEffect';
 import { AccountCreate, AccountCreateLegacy } from '../common';
@@ -48,17 +47,11 @@ export default function SetupMain( { finishSetup } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
-	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
-	);
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
 	);
 	const setupFlowMode = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
@@ -73,12 +66,7 @@ export default function SetupMain( { finishSetup } ) {
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if (
-		isDoingSubmitChanges ||
-		! hasResolvedAccounts ||
-		isNavigating ||
-		setupFlowMode === undefined
-	) {
+	if ( ! hasResolvedAccounts || setupFlowMode === undefined ) {
 		viewComponent = <ProgressBar />;
 	} else if (
 		isCreateAccount ||
