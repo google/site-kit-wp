@@ -320,17 +320,17 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			const startDate =
+			const propertyCreateTime =
 				select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
 
-			if ( ! startDate ) {
+			if ( ! propertyCreateTime ) {
 				return undefined;
 			}
 
 			const endDate = select( CORE_USER ).getReferenceDate();
 
 			return {
-				startDate: getDateString( new Date( startDate ) ),
+				startDate: getDateString( new Date( propertyCreateTime ) ),
 				endDate,
 				dimensions: [ `customEvent:${ customDimension }` ],
 				metrics: [ { name: 'eventCount' } ],
