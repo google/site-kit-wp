@@ -242,19 +242,13 @@ const baseResolvers = {
 	},
 
 	*getDataAvailabilityReportOptions() {
-		const { __experimentalResolveSelect, select } =
+		const { __experimentalResolveSelect } =
 			yield Data.commonActions.getRegistry();
 
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-		if ( ! propertyID ) {
-			return;
-		}
-
 		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty(
-				propertyID
-			)
+			__experimentalResolveSelect(
+				MODULES_ANALYTICS_4
+			).getPropertyCreateTime()
 		);
 	},
 };
