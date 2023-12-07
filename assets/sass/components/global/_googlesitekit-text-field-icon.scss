@@ -17,30 +17,26 @@
  */
 
 .googlesitekit-plugin {
-	.googlesitekit-text-field-icon--warning::before,
-	.googlesitekit-text-field-icon--error::before {
-		/**
-		 * This is the warning icon (a solid triangle with a
-		 * transparent exclamation mark in the middle),
-		 * in the color #FFF ($c-white).
-		 */
-		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2222%22%20height%3D%2219%22%20viewBox%3D%220%200%2022%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%2019h22L11%200%200%2019zm12-3h-2v-2h2v2zm0-4h-2V8h2v4z%22%20fill%3D%22%23FFF%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
-		background-position: center 4px;
-		background-repeat: no-repeat;
-		background-size: 14px 12px;
+	.googlesitekit-text-field-icon--warning,
+	.googlesitekit-text-field-icon--error {
+		align-items: center;
 		border-radius: 50%;
-		content: "";
-		display: inline-block;
+		display: flex;
 		height: 22px;
-		vertical-align: middle;
+		justify-content: center;
 		width: 22px;
+
+		svg {
+			color: $c-white;
+			margin-bottom: 3px; // Move the icon a bit to the top to align with the circle visually.
+		}
 	}
 
-	.googlesitekit-text-field-icon--warning::before {
+	.googlesitekit-text-field-icon--warning {
 		background-color: $c-warning;
 	}
 
-	.googlesitekit-text-field-icon--error::before {
+	.googlesitekit-text-field-icon--error {
 		background-color: $c-error;
 	}
 }

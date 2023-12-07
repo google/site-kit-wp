@@ -52,6 +52,11 @@
 
 	.googlesitekit-ad-blocking-recovery__hero-graphic {
 		margin: 0 2rem;
+		text-align: center;
+
+		svg {
+			max-width: 400px;
+		}
 	}
 
 	.googlesitekit-ad-blocking-recovery__footer {
