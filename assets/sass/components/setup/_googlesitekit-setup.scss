@@ -65,44 +65,6 @@
 			vertical-align: middle;
 		}
 
-		.googlesitekit-setup__notice-warning-icon {
-			display: inline-block;
-
-			&::before {
-				background-color: $c-warning;
-
-				/**
-				 * This is the warning icon (a solid triangle with a
-				 * transparent exclamation mark in the middle),
-				 * in the color #FFF ($c-white).
-				 */
-				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2222%22%20height%3D%2219%22%20viewBox%3D%220%200%2022%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%2019h22L11%200%200%2019zm12-3h-2v-2h2v2zm0-4h-2V8h2v4z%22%20fill%3D%22%23FFF%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
-				background-position: center 4px;
-				background-repeat: no-repeat;
-				background-size: 14px 12px;
-				border-radius: 50%;
-				content: "";
-				display: inline-block;
-				height: 22px;
-				vertical-align: middle;
-				width: 22px;
-			}
-		}
-
-		.googlesitekit-setup__success-notice-icon {
-			align-items: center;
-			background-color: $c-success;
-			border-radius: 50%;
-			display: inline-flex;
-			height: 22px;
-			justify-content: center;
-			line-height: 22px;
-			margin: 0 auto;
-			position: relative;
-			width: 22px;
-			z-index: 2;
-		}
-
 		.googlesitekit-setup__footer {
 			border-top: 1px solid $c-border-light;
 		}

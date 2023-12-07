@@ -90,25 +90,15 @@
 		}
 
 		.googlesitekit-settings-module__status-icon {
+			align-items: center;
+			border-radius: 50%;
+			display: flex;
+			justify-content: center;
 			margin-right: 8px;
-			vertical-align: text-bottom;
-
-			&::before {
-				background-position: center center;
-				background-repeat: no-repeat;
-				border-radius: 50%;
-				content: "";
-				display: inline-block;
-				height: 16px;
-				vertical-align: middle;
-				width: 16px;
-			}
 		}
 
-		.googlesitekit-settings-module__status-icon--connected::before {
+		.googlesitekit-settings-module__status-icon--connected {
 			background-color: $c-success;
-			background-image: $icon-checked;
-			background-size: 8px 6px;
 		}
 	}
 }
