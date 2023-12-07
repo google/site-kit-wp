@@ -65,7 +65,7 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 		select( CORE_WIDGETS ).isWidgetPreloaded( slug )
 	);
 
-	if ( ! widget ) {
+	if ( ! widget || widgetRecoverableModules === undefined ) {
 		return <WidgetNull />;
 	}
 

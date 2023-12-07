@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.4
 Requires PHP:      5.6
-Stable tag:        1.114.0
+Stable tag:        1.115.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, tag-manager, site-kit
@@ -108,6 +108,33 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.115.0 =
+
+**Enhanced**
+
+* Update version used for GA4 feature tour. See [#7879](https://github.com/google/site-kit-wp/issues/7879).
+* Update CircularProgress component to use correct material design colors. See [#7863](https://github.com/google/site-kit-wp/issues/7863).
+* Improve styles for some link-styled buttons. See [#7776](https://github.com/google/site-kit-wp/issues/7776).
+* Re-organize the Key Metrics selection panel. See [#7767](https://github.com/google/site-kit-wp/issues/7767).
+* When showing the "Select at least 2 metrics" notification on the Key Metrics selection panel, display it in place of the current selection count. See [#7749](https://github.com/google/site-kit-wp/issues/7749).
+* Update support links for the All Traffic widget to point to Analytics 4 support. See [#7696](https://github.com/google/site-kit-wp/issues/7696).
+* Add a loading state to the AdSense Connect CTA buttons. See [#7385](https://github.com/google/site-kit-wp/issues/7385).
+* Add a step transition animation to the Ad Blocking Recovery setup widget. See [#7292](https://github.com/google/site-kit-wp/issues/7292).
+* Enhance AdSense existing tag detection to detect AdSense Auto Ads snippets. See [#7259](https://github.com/google/site-kit-wp/issues/7259).
+* Lowercase the word "dashboard" on the view-only splash screen. See [#6898](https://github.com/google/site-kit-wp/issues/6898).
+* Adjust the layout of the Analytics settings view. See [#6821](https://github.com/google/site-kit-wp/issues/6821).
+
+**Changed**
+
+* Allow the IP version to be specified for server-side requests. See [#7864](https://github.com/google/site-kit-wp/issues/7864).
+
+**Fixed**
+
+* Prevent console warning when disconnecting Analytics when Key Metrics feature flag is enabled. See [#7852](https://github.com/google/site-kit-wp/issues/7852).
+* Improve Key Metrics questionnaire so that its submission requires all questions to be answered. See [#7494](https://github.com/google/site-kit-wp/issues/7494).
+* Remove non-GA4 dashboard view. See [#7009](https://github.com/google/site-kit-wp/issues/7009).
+* Fix bug that caused the feature tour highlights to be misaligned. See [#5701](https://github.com/google/site-kit-wp/issues/5701).
 
 = 1.114.0 =
 

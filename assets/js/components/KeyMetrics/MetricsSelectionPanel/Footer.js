@@ -25,7 +25,13 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState, useMemo } from '@wordpress/element';
+import {
+	useCallback,
+	useEffect,
+	useState,
+	useMemo,
+	createInterpolateElement,
+} from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -43,6 +49,8 @@ import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
+	MIN_SELECTED_METRICS_COUNT,
+	MAX_SELECTED_METRICS_COUNT,
 } from '../constants';
 import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
@@ -244,27 +252,62 @@ export default function Footer( {
 		setPrevIsOpen( isOpen );
 	}, [ isOpen, prevIsOpen ] );
 
+	const selectedMetricsCount = selectedMetrics?.length || 0;
+	let metricsLimitError;
+	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
+		metricsLimitError = sprintf(
+			/* translators: 1: Minimum number of metrics that can be selected. 2: Number of selected metrics. */
+			__(
+				'Select at least %1$d metrics (%2$d selected)',
+				'google-site-kit'
+			),
+			MIN_SELECTED_METRICS_COUNT,
+			selectedMetricsCount
+		);
+	} else if ( selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ) {
+		metricsLimitError = sprintf(
+			/* translators: 1: Maximum number of metrics that can be selected. 2: Number of selected metrics. */
+			__(
+				'Select up to %1$d metrics (%2$d selected)',
+				'google-site-kit'
+			),
+
+			MAX_SELECTED_METRICS_COUNT,
+			selectedMetricsCount
+		);
+	}
+
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
 			{ saveError && <ErrorNotice error={ saveError } /> }
 			<div className="googlesitekit-km-selection-panel-footer__content">
-				{ haveSettingsChanged && selectedMetrics?.length < 2 ? (
+				{ haveSettingsChanged && metricsLimitError ? (
 					<ErrorNotice
 						error={ {
-							message: __(
-								'Select at least 2 metrics',
-								'google-site-kit'
-							),
+							message: metricsLimitError,
 						} }
-						noPrefix={ selectedMetrics?.length < 2 }
+						noPrefix={
+							selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ||
+							selectedMetricsCount > MAX_SELECTED_METRICS_COUNT
+						}
 					/>
 				) : (
 					<p className="googlesitekit-km-selection-panel-footer__metric-count">
-						{ sprintf(
-							/* translators: 1: Number of selected metrics, 2: Number of selectable metrics */
-							__( '%1$d of %2$d selected', 'google-site-kit' ),
-							selectedMetrics?.length || 0,
-							4
+						{ createInterpolateElement(
+							sprintf(
+								/* translators: 1: Number of selected metrics. 2: Maximum number of metrics that can be selected. */
+								__(
+									'%1$d selected <MaxCount>(up to %2$d)</MaxCount>',
+									'google-site-kit'
+								),
+								selectedMetricsCount,
+								MAX_SELECTED_METRICS_COUNT
+							),
+							{
+								MaxCount: (
+									<span className="googlesitekit-km-selection-panel-footer__metric-count--max-count" />
+								),
+							}
 						) }
 					</p>
 				) }
@@ -279,8 +322,8 @@ export default function Footer( {
 						onClick={ onSaveClick }
 						isSaving={ isSavingSettings || isNavigatingToOAuthURL }
 						disabled={
-							selectedMetrics?.length < 2 ||
-							selectedMetrics?.length > 4 ||
+							selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ||
+							selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ||
 							isSavingSettings ||
 							( ! isOpen && wasSaved ) ||
 							isNavigatingToOAuthURL

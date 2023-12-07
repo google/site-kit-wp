@@ -39,12 +39,18 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
                
               <a
                 aria-label="Learn more (opens in a new tab)"
-                class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                class="googlesitekit-cta-link"
                 href="https://support.google.com/analytics/answer/9216061?hl=en-US"
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 Learn more
+                <span
+                  class="googlesitekit-icon-wrapper"
+                  style="margin-left: 5px;"
+                >
+                  <svg />
+                </span>
               </a>
             </p>
           </div>
@@ -122,12 +128,18 @@ exports[`SetupBanner should render correctly when the user does not have the edi
                
               <a
                 aria-label="Learn more (opens in a new tab)"
-                class="googlesitekit-cta-link googlesitekit-cta-link--external"
+                class="googlesitekit-cta-link"
                 href="https://support.google.com/analytics/answer/9216061?hl=en-US"
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 Learn more
+                <span
+                  class="googlesitekit-icon-wrapper"
+                  style="margin-left: 5px;"
+                >
+                  <svg />
+                </span>
               </a>
             </p>
           </div>

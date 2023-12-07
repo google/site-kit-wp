@@ -26,7 +26,6 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
-use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\URL;
 use Exception;
 

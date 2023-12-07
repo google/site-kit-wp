@@ -156,7 +156,6 @@ describe( 'SetupBanner', () => {
 			<SetupBanner onSubmitSuccess={ onSubmitSuccess } />,
 			{
 				registry,
-				features: [ 'enhancedMeasurement' ],
 			}
 		);
 
@@ -203,7 +202,6 @@ describe( 'SetupBanner', () => {
 			<SetupBanner onSubmitSuccess={ onSubmitSuccess } />,
 			{
 				registry,
-				features: [ 'enhancedMeasurement' ],
 			}
 		);
 

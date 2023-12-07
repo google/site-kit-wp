@@ -31,7 +31,7 @@ exports[`WPDashboardReportError should only render one error per module when the
         <div>
           <a
             aria-label="Get help (opens in a new tab)"
-            class="googlesitekit-cta-link googlesitekit-cta-link--external"
+            class="googlesitekit-cta-link"
             href="undefined?error_id=test_error"
             rel="noopener noreferrer"
             target="_blank"
@@ -69,7 +69,7 @@ exports[`WPDashboardReportError should only render one error per module when the
         <div>
           <a
             aria-label="Get help (opens in a new tab)"
-            class="googlesitekit-cta-link googlesitekit-cta-link--external"
+            class="googlesitekit-cta-link"
             href="undefined?error_id=test_error"
             rel="noopener noreferrer"
             target="_blank"

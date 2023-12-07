@@ -28,7 +28,7 @@ import { set } from 'lodash';
  * If a key represents a path to a nested structure (e.g., 'metrics[0][name]'),
  * it converts this path into a nested object hierarchy.
  *
- * @since n.e.x.t
+ * @since 1.115.0
  *
  * @param {Object} params The flat object with keys indicating nested paths.
  * @return {Object} A new object with the same data represented in a nested structure.

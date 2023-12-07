@@ -21,3 +21,5 @@ export const KEY_METRICS_SELECTION_PANEL_OPENED_KEY =
 	'googlesitekit-key-metrics-selection-panel-opened';
 export const KEY_METRICS_SELECTION_FORM = 'key-metrics-selection-form';
 export const KEY_METRICS_SELECTED = 'key-metrics-selected';
+export const MIN_SELECTED_METRICS_COUNT = 2;
+export const MAX_SELECTED_METRICS_COUNT = 4;

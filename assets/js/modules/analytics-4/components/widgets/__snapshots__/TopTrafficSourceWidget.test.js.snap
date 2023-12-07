@@ -106,7 +106,7 @@ exports[`TopTrafficSourceWidget retries both reports when an error is encountere
           Retry didn’t work? 
           <a
             aria-label="Get help (opens in a new tab)"
-            class="googlesitekit-cta-link googlesitekit-cta-link--external"
+            class="googlesitekit-cta-link"
             href="undefined?error_id=invalid_json"
             rel="noopener noreferrer"
             target="_blank"

@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,6 +42,7 @@ import {
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
+import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -90,7 +92,12 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 		{
-			title: __( 'Key metrics', 'google-site-kit' ),
+			title: (
+				<Fragment>
+					{ __( 'Key metrics', 'google-site-kit' ) }
+					<KeyMetricsNewBadge />
+				</Fragment>
+			),
 			subtitle: __(
 				'Track progress towards your goals with tailored metrics',
 				'google-site-kit'
@@ -312,7 +319,7 @@ export function registerDefaults( widgetsAPI ) {
 			{
 				Component: AddMetricCTATile,
 				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
-				priority: 2,
+				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 				wrapWidget: false,
 				modules: [ 'search-console' ],
 				isActive: ( select ) => {
@@ -336,7 +343,7 @@ export function registerDefaults( widgetsAPI ) {
 			{
 				Component: AddMetricCTATile,
 				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
-				priority: 2,
+				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 				wrapWidget: false,
 				modules: [ 'search-console' ],
 				isActive: ( select ) => {

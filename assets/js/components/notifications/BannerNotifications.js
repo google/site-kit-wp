@@ -53,7 +53,6 @@ const { useSelect } = Data;
 
 export default function BannerNotifications() {
 	const keyMetricsEnabled = useFeature( 'keyMetrics' );
-	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 	const viewOnly = useViewOnly();
 
 	const isAuthenticated = useSelect( ( select ) =>
@@ -121,7 +120,7 @@ export default function BannerNotifications() {
 			{ analyticsModuleConnected && ga4ModuleConnected && (
 				<SwitchedToGA4Banner />
 			) }
-			{ enhancedMeasurementEnabled && ! keyMetricsSetupCTARendered && (
+			{ ! keyMetricsSetupCTARendered && (
 				<EnhancedMeasurementActivationBanner />
 			) }
 			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (

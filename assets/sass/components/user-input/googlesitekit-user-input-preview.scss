@@ -138,6 +138,7 @@
 			font-weight: $fw-medium;
 			gap: 4px;
 			margin-left: auto;
+			padding: 3px 7px 3px 12px; // Tweak the padding to ensure the button is aligned in its focus state.
 
 			&[disabled] {
 				color: $c-utility-outline;
