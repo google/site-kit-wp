@@ -176,32 +176,12 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectProperty( PROPERTY_CREATE );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( PROPERTY_CREATE );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( WEBDATASTREAM_CREATE );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( '' );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getPropertyCreateTime()
-				).toBe( 0 );
-			} );
-
-			it( 'should reset propertyCreateTime setting when property ID is PROPERTY_CREATE', async () => {
-				provideUserAuthentication( registry );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.selectProperty( PROPERTY_CREATE );
-
-				const { propertyCreateTime } = store.getState().settings;
-
-				expect( propertyCreateTime ).toBe( 0 );
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID: PROPERTY_CREATE,
+					webDataStreamID: WEBDATASTREAM_CREATE,
+					measurementID: '',
+					propertyCreateTime: 0,
+				} );
 			} );
 
 			it( 'should set property ID, property create time and the first web data stream when a matching web data stream is not found', async () => {
