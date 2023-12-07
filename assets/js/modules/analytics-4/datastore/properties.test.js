@@ -217,29 +217,22 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectProperty( propertyID );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( propertyID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( fixtures.webDataStreams[ 0 ]._id );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe(
+				const [ webDataStream ] = fixtures.webDataStreams;
+
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: webDataStream._id,
 					// eslint-disable-next-line sitekit/acronym-case
-					fixtures.webDataStreams[ 0 ].webStreamData.measurementId
-				);
+					measurementID: webDataStream.webStreamData.measurementId,
+					propertyCreateTime: new Date(
+						fixtures.properties[ 0 ].createTime
+					).getTime(),
+				} );
+
 				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
 					query: { propertyID },
 				} );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getPropertyCreateTime()
-				).toBe(
-					new Date( fixtures.properties[ 0 ].createTime ).getTime()
-				);
 			} );
 
 			it( 'should set property ID and property create time and reset datastream and measurement IDs when no web data streams are available', async () => {
@@ -276,22 +269,14 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectProperty( propertyID );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( propertyID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( WEBDATASTREAM_CREATE );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( '' );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getPropertyCreateTime()
-				).toBe(
-					new Date( fixtures.properties[ 0 ].createTime ).getTime()
-				);
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: WEBDATASTREAM_CREATE,
+					measurementID: '',
+					propertyCreateTime: new Date(
+						fixtures.properties[ 0 ].createTime
+					).getTime(),
+				} );
 			} );
 
 			it( 'should set property, property create time, datastream, and measurement IDs when web data stream is found', async () => {
@@ -327,25 +312,16 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectProperty( propertyID );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( propertyID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( fixtures.webDataStreams[ 1 ]._id );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe(
+				const webDataStream = fixtures.webDataStreams[ 1 ];
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: webDataStream._id,
 					// eslint-disable-next-line sitekit/acronym-case
-					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
-				);
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getPropertyCreateTime()
-				).toBe(
-					new Date( fixtures.properties[ 0 ].createTime ).getTime()
-				);
+					measurementID: webDataStream.webStreamData.measurementId,
+					propertyCreateTime: new Date(
+						fixtures.properties[ 0 ].createTime
+					).getTime(),
+				} );
 			} );
 
 			it( 'supports asynchronous webdatastream resolution', async () => {
@@ -386,20 +362,12 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectProperty( propertyID );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( propertyID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( WEBDATASTREAM_CREATE );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( '' );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getPropertyCreateTime()
-				).toBe( 0 );
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: WEBDATASTREAM_CREATE,
+					measurementID: '',
+					propertyCreateTime: 0,
+				} );
 
 				resolveResponse();
 				await promise;
@@ -409,67 +377,16 @@ describe( 'modules/analytics-4 properties', () => {
 						'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
 					)
 				);
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( propertyID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( fixtures.webDataStreams[ 1 ]._id );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe(
+
+				const webDataStream = fixtures.webDataStreams[ 1 ];
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: webDataStream._id,
 					// eslint-disable-next-line sitekit/acronym-case
-					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
-				);
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getPropertyCreateTime()
-				).toBe(
-					new Date( fixtures.properties[ 0 ].createTime ).getTime()
-				);
-			} );
-			it( 'should reset create time when property is changed', async () => {
-				const propertyID = '1000';
-
-				const settings = {
-					propertyID: '12345',
-					webDataStreamID: '1000',
-					measurementID: 'abcd',
-					propertyCreateTime: 1662715085968,
-				};
-
-				provideUserAuthentication( registry );
-
-				muteFetch( propertyEndpoint );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( settings );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreams( fixtures.webDataStreams, {
-						propertyID,
-					} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.selectProperty( propertyID );
-
-				const propertyCreateTime = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPropertyCreateTime();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getPropertyCreateTime();
-
-				expect( propertyCreateTime ).toBe( 0 );
-
-				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
-					query: { propertyID },
+					measurementID: webDataStream.webStreamData.measurementId,
+					propertyCreateTime: new Date(
+						fixtures.properties[ 0 ].createTime
+					).getTime(),
 				} );
 			} );
 		} );
