@@ -1334,7 +1334,7 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'getPropertyCreateTime', () => {
-			it( 'should use a resolver to make a network request', async () => {
+			it( 'should use a resolver to fetch the current property if create time is not set yet', async () => {
 				fetchMock.get( propertyEndpoint, {
 					body: fixtures.properties[ 0 ],
 					status: 200,
@@ -1369,44 +1369,15 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should reset create time when new property is created', async () => {
-				provideUserAuthentication( registry );
-
-				const accountID = fixtures.createProperty.parent;
-
-				fetchMock.post( createPropertyEndpoint, {
-					body: fixtures.createProperty,
-					status: 200,
-				} );
-
-				muteFetch( propertyEndpoint );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.selectProperty( PROPERTY_CREATE );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.createProperty( accountID );
-
-				const propertyCreateTime = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPropertyCreateTime();
-
-				expect( propertyCreateTime ).toBe( 0 );
-			} );
-
-			it( 'should not invoke getProperty resolver if property is already received', () => {
+			it( 'should not fetch the property if the propertyCreateTime is already set', async () => {
 				const propertyID = fixtures.properties[ 0 ]._id;
 
 				const settings = {
 					propertyID,
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
-					propertyCreateTime: 0,
+					propertyCreateTime: 123456789,
 				};
-
-				muteFetch( propertyEndpoint );
 
 				provideUserAuthentication( registry );
 
@@ -1414,18 +1385,47 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( settings );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperty( fixtures.properties[ 0 ], {
-						propertyID,
-					} );
+				registry.select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
 
 				const propertyCreateTime = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getPropertyCreateTime();
+				expect( propertyCreateTime ).toBe(
+					settings.propertyCreateTime
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+			} );
 
-				expect( propertyCreateTime ).toBe( 0 );
+			it( 'should not fetch the property if the current property ID is invalid', async () => {
+				const settings = {
+					propertyID: '',
+					webDataStreamID: '',
+					measurementID: '',
+					propertyCreateTime: 0,
+				};
 
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+
+				registry.select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+				expect( propertyCreateTime ).toBe(
+					settings.propertyCreateTime
+				);
 				expect( fetchMock ).toHaveFetchedTimes( 0 );
 			} );
 		} );
