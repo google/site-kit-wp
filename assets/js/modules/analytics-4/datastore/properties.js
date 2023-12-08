@@ -479,6 +479,7 @@ const baseActions = {
 	 */
 	*waitForPropertySummaries() {
 		yield {
+			payload: {},
 			type: WAIT_FOR_PROPERTY_SUMMARIES,
 		};
 	},
