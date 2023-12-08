@@ -805,44 +805,6 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks if properties are currently being loaded.
-	 *
-	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
-	 * components, initially the `PropertySelect` and `SettingsEnhancedMeasurementSwitch` components.
-	 *
-	 * @since 1.111.0
-	 *
-	 * @param {Object}  state                Data store's state.
-	 * @param {Object}  args                 Arguments object.
-	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
-	 */
-	isLoadingProperties: createRegistrySelector(
-		( select ) =>
-			( state, { hasModuleAccess } ) => {
-				const accountID = select( MODULES_ANALYTICS ).getAccountID();
-
-				const isResolvingProperties =
-					hasModuleAccess === false || ! accountID
-						? false
-						: select( MODULES_ANALYTICS_4 ).isResolving(
-								'getProperties',
-								[ accountID ]
-						  );
-
-				return (
-					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-					! select( MODULES_ANALYTICS ).hasFinishedResolution(
-						'getAccounts'
-					) ||
-					isResolvingProperties ||
-					select(
-						MODULES_ANALYTICS
-					).hasFinishedSelectingAccount() === false
-				);
-			}
-	),
-
-	/**
 	 * Checks if properties summaries are currently being loaded.
 	 *
 	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
