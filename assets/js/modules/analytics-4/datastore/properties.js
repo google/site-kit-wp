@@ -659,6 +659,15 @@ const baseControls = {
 			};
 		}
 	),
+	[ WAIT_FOR_PROPERTY_SUMMARIES ]: createRegistryControl(
+		( { __experimentalResolveSelect } ) => {
+			return async () => {
+				await __experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getAccountSummaries();
+			};
+		}
+	),
 };
 
 function baseReducer( state, { type, payload } ) {
