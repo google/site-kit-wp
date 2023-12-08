@@ -21,13 +21,19 @@
  */
 import PropTypes from 'prop-types';
 
-export default function IconWrapper( { children, marginLeft, marginRight } ) {
+export default function IconWrapper( {
+	children,
+	marginLeft,
+	marginRight,
+	top,
+} ) {
 	return (
 		<span
 			className="googlesitekit-icon-wrapper"
 			style={ {
 				marginLeft,
 				marginRight,
+				top: top ?? 0,
 			} }
 		>
 			{ children }
@@ -39,4 +45,5 @@ IconWrapper.propTypes = {
 	children: PropTypes.node.isRequired,
 	marginLeft: PropTypes.number,
 	marginRight: PropTypes.number,
+	top: PropTypes.number,
 };

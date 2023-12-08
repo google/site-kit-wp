@@ -178,18 +178,18 @@ const Link = forwardRef( ( props, ref ) => {
 			{ ...otherProps }
 		>
 			{ back && (
-				<IconWrapper marginRight={ 5 }>
+				<IconWrapper marginRight={ 5 } top={ 3.5 }>
 					<BackIcon width={ 14 } height={ 14 } />
 				</IconWrapper>
 			) }
 			{ children }
 			{ external && ! hideExternalIndicator && (
-				<IconWrapper marginLeft={ 5 }>
+				<IconWrapper marginLeft={ 5 } top={ 3.5 }>
 					<ExternalIcon width={ 14 } height={ 14 } />
 				</IconWrapper>
 			) }
 			{ arrow && (
-				<IconWrapper marginLeft={ 5 }>
+				<IconWrapper marginLeft={ 5 } top={ 3.5 }>
 					{ ! inverse && <ArrowIcon width={ 14 } height={ 14 } /> }
 					{ inverse && (
 						<ArrowInverseIcon width={ 14 } height={ 14 } />
