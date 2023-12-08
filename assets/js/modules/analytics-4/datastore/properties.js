@@ -647,16 +647,6 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_PROPERTIES ]: createRegistryControl(
-		( { __experimentalResolveSelect } ) => {
-			return async ( { payload } ) => {
-				const { accountID } = payload;
-				await __experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getProperties( accountID );
-			};
-		}
-	),
 	[ WAIT_FOR_PROPERTY_SUMMARIES ]: createRegistryControl(
 		( { __experimentalResolveSelect } ) => {
 			return async () => {
