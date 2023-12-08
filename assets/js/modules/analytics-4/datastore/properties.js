@@ -163,6 +163,7 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+// const WAIT_FOR_PROPERTY_SUMMARIES = 'WAIT_FOR_PROPERTY_SUMMARIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
@@ -304,15 +305,15 @@ const baseActions = {
 	*matchAccountProperty( accountID ) {
 		const registry = yield Data.commonActions.getRegistry();
 
-		yield baseActions.waitForProperties( accountID );
+		yield baseActions.waitForPropertySummaries( accountID );
 
 		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
-		const properties = registry
+		const propertySummaries = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getProperties( accountID );
+			.getPropertySummaries( accountID );
 
 		const property = yield baseActions.matchPropertyByURL(
-			( properties || [] ).map( ( { _id } ) => _id ),
+			( propertySummaries || [] ).map( ( { _id } ) => _id ),
 			referenceURL
 		);
 
