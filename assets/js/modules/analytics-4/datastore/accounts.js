@@ -28,7 +28,11 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { ENHANCED_MEASUREMENT_ENABLED, MODULES_ANALYTICS_4 } from './constants';
+import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from './constants';
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
@@ -141,6 +145,45 @@ const baseResolvers = {
 			.getAccountSummaries();
 		if ( summaries === undefined ) {
 			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
+		}
+	},
+	*getAccounts() {
+		const registry = yield Data.commonActions.getRegistry();
+		const accountSummaries = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAccountSummaries();
+
+		if ( accountSummaries === undefined ) {
+			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
+		}
+
+		let ga4Property;
+		const ga4PropertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		// Bail out if the analytics-4 propertyID is already set to create a new property.
+		if ( ga4PropertyID === PROPERTY_CREATE ) {
+			return;
+		}
+
+		const accountID = registry.select( MODULES_ANALYTICS ).getAccountID();
+
+		if ( ga4PropertyID ) {
+			ga4Property = yield Data.commonActions.await(
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getProperty( ga4PropertyID )
+			);
+		}
+
+		// Try to find a new matched ga4 property if the current one has a different accountID.
+		if ( accountID && ga4Property?._accountID !== accountID ) {
+			yield Data.commonActions.await(
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.matchAndSelectProperty( accountID, PROPERTY_CREATE )
+			);
 		}
 	},
 };
