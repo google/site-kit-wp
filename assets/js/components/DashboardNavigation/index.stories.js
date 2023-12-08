@@ -24,10 +24,14 @@ import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_MONETIZATION } from '../../googlesitekit/widgets/default-contexts';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
+import { freezeFetch } from '../../../../tests/js/utils';
 import { setupDefaultChips } from './test-utils';
 
-const Template = ( { setupRegistry, viewContext, ...args } ) => (
+const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
 		<ViewContextProvider value={ viewContext }>
 			<DashboardNavigation { ...args } />
@@ -64,6 +68,17 @@ DefaultDashboardNavigation.args = {
 			.assignWidget( 'MonetizationWidget', 'MonetizationArea' );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+};
+
+export const LoadingDashboardNavigation = Template.bind( {} );
+LoadingDashboardNavigation.storyName = 'Loading State';
+LoadingDashboardNavigation.args = {
+	setupRegistry: () => {
+		freezeFetch(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
+		);
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
 export const MonetizationHiddenDashboardNavigation = Template.bind( {} );
