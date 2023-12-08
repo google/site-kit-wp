@@ -29,11 +29,11 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
+	AccountSelect,
 	PropertySelect as GA4PropertySelect,
 	WebDataStreamSelect as GA4WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
 import SetupEnhancedMeasurementSwitch from '../../../analytics-4/components/setup/SetupEnhancedMeasurementSwitch';
-import { AccountSelect } from '../common';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
 const { useSelect, useDispatch } = Data;
 
