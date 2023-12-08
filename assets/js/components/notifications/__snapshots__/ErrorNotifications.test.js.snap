@@ -240,7 +240,7 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
                 Learn more
                 <span
                   class="googlesitekit-icon-wrapper"
-                  style="margin-left: 5px;"
+                  style="margin-left: 5px; top: 3.5px;"
                 >
                   <svg />
                 </span>

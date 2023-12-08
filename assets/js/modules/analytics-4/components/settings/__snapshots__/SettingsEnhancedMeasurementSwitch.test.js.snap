@@ -22,7 +22,7 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
@@ -83,7 +83,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
@@ -135,7 +135,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
@@ -187,7 +187,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
@@ -239,7 +239,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
@@ -299,7 +299,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
@@ -359,7 +359,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
@@ -419,7 +419,7 @@ exports[`SettingsEnhancedMeasurementSwitch when propertyID is property_create sh
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
@@ -479,7 +479,7 @@ exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>

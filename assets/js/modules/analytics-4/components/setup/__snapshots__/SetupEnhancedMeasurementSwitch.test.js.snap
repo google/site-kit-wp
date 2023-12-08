@@ -24,7 +24,7 @@ exports[`SetupEnhancedMeasurementSwitch should not render the switch when enhanc
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
@@ -84,7 +84,7 @@ exports[`SetupEnhancedMeasurementSwitch should render with the switch defaulting
         Learn more
         <span
           class="googlesitekit-icon-wrapper"
-          style="margin-left: 5px;"
+          style="margin-left: 5px; top: 3.5px;"
         >
           <svg />
         </span>
