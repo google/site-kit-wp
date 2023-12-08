@@ -163,7 +163,7 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
-// const WAIT_FOR_PROPERTY_SUMMARIES = 'WAIT_FOR_PROPERTY_SUMMARIES';
+const WAIT_FOR_PROPERTY_SUMMARIES = 'WAIT_FOR_PROPERTY_SUMMARIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
@@ -469,6 +469,20 @@ const baseActions = {
 		yield {
 			payload: { accountID },
 			type: WAIT_FOR_PROPERTIES,
+		};
+	},
+
+	/**
+	 * Waits for property summaries to be loaded for an account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID GA4 account ID.
+	 */
+	*waitForPropertySummaries( accountID ) {
+		yield {
+			payload: { accountID },
+			type: WAIT_FOR_PROPERTY_SUMMARIES,
 		};
 	},
 
