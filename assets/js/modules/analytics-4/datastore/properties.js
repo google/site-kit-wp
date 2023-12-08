@@ -476,12 +476,9 @@ const baseActions = {
 	 * Waits for property summaries to be loaded for an account.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @param {string} accountID GA4 account ID.
 	 */
-	*waitForPropertySummaries( accountID ) {
+	*waitForPropertySummaries() {
 		yield {
-			payload: { accountID },
 			type: WAIT_FOR_PROPERTY_SUMMARIES,
 		};
 	},
