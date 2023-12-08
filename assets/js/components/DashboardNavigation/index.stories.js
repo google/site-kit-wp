@@ -28,10 +28,10 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
-import { setupDefaultChips } from './test-utils';
 import { freezeFetch } from '../../../../tests/js/utils';
+import { setupDefaultChips } from './test-utils';
 
-const Template = ( { setupRegistry, viewContext, ...args } ) => (
+const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
 		<ViewContextProvider value={ viewContext }>
 			<DashboardNavigation { ...args } />
