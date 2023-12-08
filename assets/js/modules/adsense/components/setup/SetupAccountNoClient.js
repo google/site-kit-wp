@@ -1,5 +1,5 @@
 /**
- * AdSense Setup Account No Client component.
+ * SetupAccountNoClient component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,21 +19,34 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import SupportLink from '../../../../components/SupportLink';
 import { ErrorNotices } from '../common';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 
 export default function SetupAccountNoClient() {
+	const viewContext = useViewContext();
+
+	const onButtonClick = useCallback( () => {
+		trackEvent( `${ viewContext }_adsense`, 'apply_afc' );
+	}, [ viewContext ] );
+
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 				{ __(
-					'Looks like you have an AdMob account',
+					'Looks like you need to upgrade your AdSense account',
 					'google-site-kit'
 				) }
 			</h3>
@@ -41,23 +54,38 @@ export default function SetupAccountNoClient() {
 			<ErrorNotices />
 
 			<p>
-				{ __(
-					'To start using AdSense, you need to update your account so that you can connect your site to AdSense.',
-					'google-site-kit'
+				{ createInterpolateElement(
+					__(
+						'To start using AdSense on your website, you need to upgrade your account to add “AdSense for content”. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<SupportLink
+								path="/adsense/answer/6023158"
+								external
+								aria-label={ __(
+									'Learn more about updating your AdSense account',
+									'google-site-kit'
+								) }
+							/>
+						),
+					}
 				) }
 			</p>
 
 			<div className="googlesitekit-setup-module__action">
-				<SupportLink
-					path="/adsense/answer/6023158"
-					external
+				<Button
+					href="https://www.google.com/adsense"
+					target="_blank"
 					aria-label={ __(
 						'Learn more about updating your AdSense account',
 						'google-site-kit'
 					) }
+					onClick={ onButtonClick }
 				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</SupportLink>
+					{ __( 'Apply now', 'google-site-kit' ) }
+				</Button>
 			</div>
 		</Fragment>
 	);

@@ -69,16 +69,6 @@ WithEnableUAToggle.scenario = {
 	delay: 250,
 };
 
-export const WithEnhancedMeasurementToggle = Template.bind( null );
-WithEnhancedMeasurementToggle.storyName = 'With Enhanced Measurement Toggle';
-WithEnhancedMeasurementToggle.parameters = {
-	features: [ 'enhancedMeasurement' ],
-};
-WithEnhancedMeasurementToggle.scenario = {
-	label: 'Modules/Analytics/Setup/SetupFormGA4/WithEnhancedMeasurementToggle',
-	delay: 250,
-};
-
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormGA4',
 	decorators: [

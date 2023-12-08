@@ -24,14 +24,11 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/Layout';
-import DashboardZeroData from '../assets/js/modules/adsense/components/dashboard/DashboardZeroData';
 import {
 	AccountSelect,
 	UseSnippetSwitch,
 	AdBlockerWarning,
 	UserProfile,
-	SiteSteps,
 } from '../assets/js/modules/adsense/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
@@ -139,38 +136,6 @@ storiesOf( 'AdSense Module', module )
 						<UserProfile />
 					</div>
 				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Site Steps', () => {
-		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.setAccountID( fixtures.accounts[ 0 ]._id );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<SiteSteps />
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Dashboard Zero Data', () => {
-		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.setAccountID( fixtures.accounts[ 0 ]._id );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<Layout fill>
-					<div className="googlesitekit-setup-module">
-						<DashboardZeroData />
-					</div>
-				</Layout>
 			</WithTestRegistry>
 		);
 	} );

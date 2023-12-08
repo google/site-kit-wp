@@ -143,7 +143,6 @@ const configTemplate = `<?php
  */
 
 return array(
-	'buildMode' => {{buildMode}},
 	'features' => {{features}},
 );
 `;
@@ -271,7 +270,7 @@ corePackages.forEach( ( name ) => {
 } );
 
 function* webpackConfig( env, argv ) {
-	const { mode, flagMode = mode } = argv;
+	const { mode } = argv;
 	const { ANALYZE } = env || {};
 
 	const rules = createRules( mode );
@@ -366,12 +365,10 @@ function* webpackConfig( env, argv ) {
 			new CreateFileWebpack( {
 				path: './dist',
 				fileName: 'config.php',
-				content: configTemplate
-					.replace( '{{buildMode}}', `'${ flagMode }'` )
-					.replace(
-						'{{features}}',
-						`array( ${ formattedFeaturesToPHPArray } )`
-					),
+				content: configTemplate.replace(
+					'{{features}}',
+					`array( ${ formattedFeaturesToPHPArray } )`
+				),
 			} ),
 			new ManifestPlugin( {
 				...manifestArgs( mode ),

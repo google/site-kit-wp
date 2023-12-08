@@ -126,7 +126,7 @@ describe( 'Footer', () => {
 
 	it( 'should make a analytics settings request normally when the view context is NOT "view only"', async () => {
 		const analyticsSettingsRegExp = new RegExp(
-			'^/google-site-kit/v1/modules/analytics/data/settings'
+			'^/google-site-kit/v1/modules/analytics-4/data/settings'
 		);
 		fetchMock.getOnce( analyticsSettingsRegExp, { body: {}, status: 200 } );
 

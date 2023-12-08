@@ -21,6 +21,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	freezeFetch,
+	muteFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -82,6 +83,7 @@ describe( 'core/user key metrics', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideModules( registry );
 		store = registry.stores[ CORE_USER ].store;
 		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 	} );
@@ -194,7 +196,6 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it.each( [
-				[ 'undefined', undefined ],
 				[ 'null', null ],
 				[ 'an empty object', {} ],
 				[ 'an object with empty purpose', { purpose: {} } ],
@@ -204,14 +205,20 @@ describe( 'core/user key metrics', () => {
 				],
 			] )(
 				'should return an empty array if user input settings are %s',
-				( userInputSettings ) => {
-					registry
+				async ( _, userInputSettings ) => {
+					muteFetch( coreUserInputSettingsEndpointRegExp );
+
+					registry.select( CORE_USER ).getUserInputSettings();
+
+					await registry
 						.dispatch( CORE_USER )
 						.receiveGetUserInputSettings( userInputSettings );
 
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()
 					).toEqual( [] );
+
+					await waitForDefaultTimeouts();
 				}
 			);
 

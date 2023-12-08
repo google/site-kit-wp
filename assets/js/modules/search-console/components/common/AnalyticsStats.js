@@ -35,11 +35,9 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { extractAnalyticsDashboardData } from '../../../analytics/util';
 import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
 import GoogleChart from '../../../../components/GoogleChart';
-import { UA_CUTOFF_DATE } from '../../../analytics/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { getDateString } from '../../../../util';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import { getDateString } from '../../../../util';
 const { useSelect } = Data;
 
 /**
@@ -110,48 +108,23 @@ export default function AnalyticsStats( props ) {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( moduleSlug )
 	);
-	const isGA4DashboardView = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGA4DashboardView()
-	);
 
-	const property = useSelect( ( select ) => {
-		if ( isViewOnly || ! isGA4DashboardView ) {
+	const propertyCreateTime = useSelect( ( select ) => {
+		if ( isViewOnly ) {
 			return null;
 		}
 
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-		if ( ! propertyID ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+		return select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
 	} );
-
-	const propertyCreatedDate = property?.createTime
-		? getDateString( new Date( property.createTime ) )
-		: null;
 
 	let dateMarkers = [];
 
-	if ( isGA4DashboardView && propertyCreatedDate ) {
+	if ( propertyCreateTime ) {
 		dateMarkers = [
 			{
-				date: propertyCreatedDate,
+				date: getDateString( new Date( propertyCreateTime ) ),
 				text: __(
 					'Google Analytics 4 property created',
-					'google-site-kit'
-				),
-			},
-		];
-	}
-
-	if ( isGA4DashboardView === false ) {
-		dateMarkers = [
-			{
-				date: UA_CUTOFF_DATE,
-				text: __(
-					'Universal Analytics stopped collecting data',
 					'google-site-kit'
 				),
 			},

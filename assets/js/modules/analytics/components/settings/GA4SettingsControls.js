@@ -46,7 +46,6 @@ import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/S
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4SettingsNotice from './GA4SettingsNotice';
-import { useFeature } from '../../../../hooks/useFeature';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -55,8 +54,6 @@ const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( props ) {
 	const { hasAnalyticsAccess, hasAnalytics4Access } = props;
-
-	const enhancedMeasurementEnabled = useFeature( 'enhancedMeasurement' );
 
 	const viewContext = useViewContext();
 
@@ -196,11 +193,9 @@ export default function GA4SettingsControls( props ) {
 				</div>
 			) }
 
-			{ enhancedMeasurementEnabled && (
-				<SettingsEnhancedMeasurementSwitch
-					hasAnalytics4Access={ hasAnalytics4Access }
-				/>
-			) }
+			<SettingsEnhancedMeasurementSwitch
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
 		</div>
 	);
 }

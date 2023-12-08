@@ -288,6 +288,12 @@ export function generateReportBasedWidgetStories( args ) {
 	// Custom variants.
 	const customVariants = {};
 	Object.keys( additionalVariants ).forEach( ( name ) => {
+		// This allows for disabling a default variant by setting it to false.
+		if ( ! additionalVariants[ name ] ) {
+			customVariants[ name ] = false;
+			return;
+		}
+
 		const {
 			data: variantData,
 			options: variantOptions,

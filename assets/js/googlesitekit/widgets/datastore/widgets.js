@@ -44,7 +44,6 @@ const WidgetWidthKeys = Object.keys( WIDGET_WIDTHS )
 
 export const initialState = {
 	areaAssignments: {},
-	registryKey: undefined,
 	widgets: {},
 	widgetStates: {},
 };

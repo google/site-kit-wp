@@ -78,6 +78,7 @@ class SettingsTest extends SettingsTestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			get_option( Settings::OPTION )
 		);

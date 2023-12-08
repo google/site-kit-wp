@@ -37,7 +37,7 @@ import SideSheet from '../../SideSheet';
 import Header from './Header';
 import Footer from './Footer';
 import Metrics from './Metrics';
-import Notice from './Notice';
+import CustomDimensionsNotice from './CustomDimensionsNotice';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
@@ -91,7 +91,7 @@ export default function MetricsSelectionPanel() {
 		>
 			<Header />
 			<Metrics savedMetrics={ savedViewableMetrics } />
-			<Notice />
+			<CustomDimensionsNotice />
 			<Footer
 				savedMetrics={ savedViewableMetrics }
 				onNavigationToOAuthURL={ () => {

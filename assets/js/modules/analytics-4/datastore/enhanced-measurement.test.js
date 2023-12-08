@@ -28,7 +28,6 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 enhanced-measurement', () => {
 	let registry;
@@ -643,8 +642,6 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 
 		describe( 'haveAnyGA4SettingsChanged', () => {
 			beforeEach( () => {
-				enabledFeatures.add( 'enhancedMeasurement' );
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( { propertyID, webDataStreamID } );

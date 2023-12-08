@@ -189,7 +189,7 @@
 		"@wordpress/eslint-plugin": "^7.1.0",
 		"@wordpress/jest-console": "^7.17.0",
 		"@wordpress/jest-preset-default": "^11.17.0",
-		"@wordpress/prettier-config": "^1.1.1",
+		"@wordpress/prettier-config": "^2.0.0",
 		"@wordpress/stylelint-config": "^21.0.0",
 		"amphtml-validator": "^1.0.35",
 		"archiver": "^5.0.2",

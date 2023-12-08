@@ -60,6 +60,7 @@ import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '../../../../../components/GatheringDataNotice';
 import useViewContext from '../../../../../hooks/useViewContext';
+import { getTooltipHelp } from './utils';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
@@ -183,19 +184,6 @@ export default function UserDimensionsPieChart( props ) {
 			absOthers.previous -= metricValues[ 0 ].value;
 		}
 	} );
-
-	const getTooltipHelp = ( url, label, rowLabel ) =>
-		`<p>
-			<a
-				href="${ url }"
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link__tooltip"
-				target="_blank"
-				rel="noreferrer noopener"
-				data-row-label="${ rowLabel }"
-			>
-				${ label }
-			</a>
-		</p>`;
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
 		keyColumnIndex: 0,

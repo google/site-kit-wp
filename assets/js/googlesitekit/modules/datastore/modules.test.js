@@ -2174,23 +2174,6 @@ describe( 'core/modules modules', () => {
 				expect( shareableModules ).not.toHaveProperty( 'analytics' );
 				expect( shareableModules ).toHaveProperty( 'analytics-4' );
 			} );
-
-			it( 'should not include `analytics-4` module if the dashboard view is UA', () => {
-				provideModuleRegistrations( registry );
-				registry.dispatch( CORE_MODULES ).receiveGetModules( [
-					...FIXTURES,
-					...allModules.filter( ( module ) => {
-						return module.slug !== 'analytics-4';
-					} ),
-				] );
-
-				const shareableModules = registry
-					.select( CORE_MODULES )
-					.getShareableModules();
-
-				expect( shareableModules ).not.toHaveProperty( 'analytics-4' );
-				expect( shareableModules ).toHaveProperty( 'analytics' );
-			} );
 		} );
 	} );
 } );

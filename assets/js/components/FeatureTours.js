@@ -22,6 +22,11 @@
 import { useMount } from 'react-use';
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -41,6 +46,26 @@ export default function FeatureTours() {
 	const tour = useSelect( ( select ) =>
 		select( CORE_USER ).getCurrentTour()
 	);
+
+	useEffect( () => {
+		if ( ! tour ) {
+			return;
+		}
+
+		const dashboardElement = document.getElementById(
+			'js-googlesitekit-main-dashboard'
+		);
+
+		const observer = new ResizeObserver( () => {
+			global.dispatchEvent( new Event( 'resize' ) );
+		} );
+
+		observer.observe( dashboardElement );
+
+		return () => {
+			observer.disconnect();
+		};
+	}, [ tour ] );
 
 	if ( ! tour ) {
 		return null;

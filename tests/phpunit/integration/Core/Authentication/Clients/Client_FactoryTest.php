@@ -57,4 +57,29 @@ class Client_FactoryTest extends TestCase {
 		$this->assertEquals( $token, $client->getAccessToken() );
 		$this->assertEquals( $login_hint, $client->getConfig( 'login_hint' ) );
 	}
+
+	/**
+	 * @dataProvider data_config_ip_resolve_values
+	 */
+	public function test_client_ip_resolve_config_options( $ip_resolve, $expected_value ) {
+		add_filter(
+			'googlesitekit_force_ip_resolve',
+			function() use ( $ip_resolve ) {
+				return $ip_resolve;
+			}
+		);
+
+		$client = Client_Factory::create_client( array() );
+		$this->assertEquals( $expected_value, $client->getHttpClient()->getConfig( 'force_ip_resolve' ) );
+	}
+
+	public function data_config_ip_resolve_values() {
+		return array(
+			'null' => array( null, null ),
+			'v4'   => array( 'v4', 'v4' ),
+			'v6'   => array( 'v6', 'v6' ),
+			'xyz'  => array( 'xyz', null ),
+		);
+	}
+
 }

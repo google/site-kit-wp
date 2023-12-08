@@ -56,7 +56,6 @@ import {
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 } from './settings';
 import ga4ReportingTour from '../../../feature-tours/ga4-reporting';
-import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -622,9 +621,10 @@ describe( 'modules/analytics settings', () => {
 				} );
 
 				it( 'should save analytics-4 settings as well', async () => {
+					const propertyID = '1000';
 					const ga4Settings = {
 						...ga4fixtures.defaultSettings,
-						propertyID: '1000',
+						propertyID,
 						webDataStreamID: '2000',
 					};
 
@@ -675,9 +675,10 @@ describe( 'modules/analytics settings', () => {
 				} );
 
 				it( 'should surface analytics-4 errors if it fails', async () => {
+					const propertyID = '1000';
 					const ga4Settings = {
 						...ga4fixtures.defaultSettings,
-						propertyID: '1000',
+						propertyID,
 						webDataStreamID: '2000',
 					};
 
@@ -763,8 +764,6 @@ describe( 'modules/analytics settings', () => {
 					};
 
 					beforeEach( () => {
-						enabledFeatures.add( 'enhancedMeasurement' );
-
 						const ga4Settings = {
 							...ga4fixtures.defaultSettings,
 							propertyID,
@@ -889,6 +888,7 @@ describe( 'modules/analytics settings', () => {
 						};
 
 						fetchMock.reset();
+
 						fetchMock.postOnce(
 							enhancedMeasurementSettingsEndpoint,
 							{
@@ -901,7 +901,10 @@ describe( 'modules/analytics settings', () => {
 							.dispatch( MODULES_ANALYTICS_4 )
 							.submitChanges();
 
-						expect( fetchMock ).toHaveFetchedTimes( 1 );
+						expect( fetchMock ).toHaveFetchedTimes(
+							1,
+							enhancedMeasurementSettingsEndpoint
+						);
 						expect( responseError ).toEqual( errorObject );
 						expect(
 							registry
@@ -968,8 +971,6 @@ describe( 'modules/analytics settings', () => {
 				const webDataStreamID = '2000';
 
 				beforeEach( () => {
-					enabledFeatures.add( 'enhancedMeasurement' );
-
 					// Recreate the registry to ensure a clean settings state.
 					registry = createTestRegistry();
 

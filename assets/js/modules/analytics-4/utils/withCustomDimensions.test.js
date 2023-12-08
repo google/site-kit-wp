@@ -26,6 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
 import {
 	createTestRegistry,
 	fireEvent,
+	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
@@ -50,6 +51,13 @@ describe( 'withCustomDimensions', () => {
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );

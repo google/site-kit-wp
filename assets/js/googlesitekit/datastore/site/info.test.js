@@ -366,6 +366,7 @@ describe( 'core/site site info', () => {
 			[ 'getTimezone', 'timezone' ],
 			[ 'getPostTypes', 'postTypes' ],
 			[ 'getKeyMetricsSetupCompletedBy', 'keyMetricsSetupCompletedBy' ],
+			[ 'getKeyMetricsSetupNew', 'keyMetricsSetupNew' ],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],

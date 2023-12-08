@@ -149,27 +149,6 @@ describe( 'modules/adsense settings', () => {
 			} );
 		} );
 
-		describe( 'receiveOriginalAccountStatus', () => {
-			it( 'requires the originalAccountStatus param', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ADSENSE )
-						.receiveOriginalAccountStatus();
-				} ).toThrow( 'originalAccountStatus is required.' );
-			} );
-
-			it( 'receives and sets originalAccountStatus from parameter', () => {
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveOriginalAccountStatus( 'something' );
-				expect(
-					registry
-						.select( MODULES_ADSENSE )
-						.getOriginalAccountStatus()
-				).toEqual( 'something' );
-			} );
-		} );
-
 		describe( 'receiveOriginalUseSnippet', () => {
 			it( 'requires the originalUseSnippet param', () => {
 				expect( () => {
@@ -276,92 +255,6 @@ describe( 'modules/adsense settings', () => {
 				expect(
 					registry.select( MODULES_ADSENSE ).canSubmitChanges()
 				).toBe( true );
-			} );
-		} );
-
-		describe( 'getOriginalAccountStatus', () => {
-			it( 'uses a resolver to make a network request via getSettings', async () => {
-				const response = { accountStatus: 'some-status' };
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/settings'
-					),
-					{ body: response, status: 200 }
-				);
-
-				const initialOriginalAccountStatus = registry
-					.select( MODULES_ADSENSE )
-					.getOriginalAccountStatus();
-				// Settings will be their initial value while being fetched.
-				expect( initialOriginalAccountStatus ).toEqual( undefined );
-
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ADSENSE )
-							.hasFinishedResolution(
-								'getOriginalAccountStatus'
-							) &&
-						registry
-							.select( MODULES_ADSENSE )
-							.hasFinishedResolution( 'getSettings' )
-				);
-
-				const originalAccountStatus = registry
-					.select( MODULES_ADSENSE )
-					.getOriginalAccountStatus();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( originalAccountStatus ).toEqual(
-					response.accountStatus
-				);
-			} );
-
-			it( 'does not make a network request if original account status is already set', async () => {
-				const value = 'a-status';
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveOriginalAccountStatus( value );
-
-				expect(
-					registry
-						.select( MODULES_ADSENSE )
-						.getOriginalAccountStatus()
-				).toEqual( value );
-
-				await subscribeUntil( registry, () =>
-					registry
-						.select( MODULES_ADSENSE )
-						.hasFinishedResolution( 'getOriginalAccountStatus' )
-				);
-
-				expect( fetchMock ).not.toHaveFetched();
-			} );
-
-			it( 'does not override original account status when receiving settings again', () => {
-				// Set original value.
-				const value = 'a-status';
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveOriginalAccountStatus( value );
-
-				expect(
-					registry
-						.select( MODULES_ADSENSE )
-						.getOriginalAccountStatus()
-				).toEqual( value );
-
-				// Despite receiving settings, the value should not be updated
-				// as it was already set.
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveGetSettings( { accountStatus: 'another-status' } );
-				expect(
-					registry
-						.select( MODULES_ADSENSE )
-						.getOriginalAccountStatus()
-				).toEqual( value );
 			} );
 		} );
 

@@ -23,11 +23,9 @@ import Data from 'googlesitekit-data';
 import baseModuleStore from './base';
 import accounts from './accounts';
 import adunits from './adunits';
-import alerts from './alerts';
 import clients from './clients';
 import report from './report';
 import tags from './tags';
-import urlchannels from './urlchannels';
 import settings from './settings';
 import adblocker from './adblocker';
 import service from './service';
@@ -39,11 +37,9 @@ const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
 	adunits,
-	alerts,
 	clients,
 	report,
 	tags,
-	urlchannels,
 	settings,
 	adblocker,
 	service,

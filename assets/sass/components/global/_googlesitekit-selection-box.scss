@@ -17,11 +17,10 @@
  */
 
 .googlesitekit-selection-box {
-	border: 2px solid $c-neutral-n-66;
-	border-radius: 8px;
+	border-bottom: 2px solid $c-neutral-n-66;
 	outline: 1px solid $c-white;
 	outline-offset: -1px;
-	padding: 6px 10px 10px 7px;
+	padding: 6px 10px 6px 7px;
 
 	.mdc-form-field {
 		align-items: flex-start;
@@ -67,10 +66,5 @@
 			color: $c-interactive-on-disable-container;
 			pointer-events: none;
 		}
-	}
-
-	&:not(.googlesitekit-selection-box--disabled):focus-within {
-		border-color: $c-content-primary;
-		outline: none;
 	}
 }

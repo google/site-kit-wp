@@ -19,6 +19,8 @@
 export default [
 	// Detect google_ad_client.
 	/google_ad_client: ?["|'](.*?)["|']/,
-	// Detect auto-ads tags.
+	// Detect old style auto-ads tags.
 	/<(?:script|amp-auto-ads) [^>]*data-ad-client="([^"]+)"/,
+	// Detect new style auto-ads tags.
+	/<(?:script|amp-auto-ads)[^>]*src="[^"]*\?client=(ca-pub-[^"]+)"[^>]*>/,
 ];

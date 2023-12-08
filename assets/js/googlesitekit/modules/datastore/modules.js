@@ -759,12 +759,7 @@ const baseResolvers = {
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable && ! module.internal ) {
-					if (
-						moduleSlug === 'analytics' &&
-						registry
-							.select( MODULES_ANALYTICS )
-							.isGA4DashboardView()
-					) {
+					if ( moduleSlug === 'analytics' ) {
 						moduleList.push( 'analytics-4' );
 					} else {
 						moduleList.push( moduleSlug );
@@ -1386,14 +1381,8 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const isGA4DashboardView =
-			select( MODULES_ANALYTICS ).isGA4DashboardView();
-
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
-			if (
-				( slug === 'analytics' && isGA4DashboardView ) ||
-				( slug === 'analytics-4' && ! isGA4DashboardView )
-			) {
+			if ( slug === 'analytics' ) {
 				return acc;
 			}
 

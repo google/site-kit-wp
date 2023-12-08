@@ -127,6 +127,17 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
+				request
+					.url()
+					.match( 'analytics-4/data/enhanced-measurement-settings' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						fixtures.defaultEnhancedMeasurementSettings
+					),
+				} );
+			} else if (
 				request.url().match( 'analytics-4/data/create-property' )
 			) {
 				request.respond( {
