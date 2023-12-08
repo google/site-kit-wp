@@ -286,9 +286,7 @@ const baseResolvers = {
 		const { isAuthenticated, hasCapability } = select( CORE_USER );
 
 		const isGA4Connected = yield Data.commonActions.await(
-			resolveSelect( CORE_MODULES ).isModuleConnected(
-				'analytics-4'
-			)
+			resolveSelect( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 		);
 
 		if ( ! isGA4Connected ) {

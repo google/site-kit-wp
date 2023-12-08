@@ -240,13 +240,10 @@ const baseResolvers = {
 	},
 
 	*getDataAvailabilityReportOptions() {
-		const { resolveSelect } =
-			yield Data.commonActions.getRegistry();
+		const { resolveSelect } = yield Data.commonActions.getRegistry();
 
 		yield Data.commonActions.await(
-			resolveSelect(
-				MODULES_ANALYTICS_4
-			).getPropertyCreateTime()
+			resolveSelect( MODULES_ANALYTICS_4 ).getPropertyCreateTime()
 		);
 	},
 };
