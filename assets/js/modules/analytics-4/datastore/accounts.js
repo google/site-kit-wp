@@ -190,6 +190,18 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
+	 * Gets all Google Analytics 4 account summaries with their properties.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array.<Object>|undefined} An array of account summaries; `undefined` if not loaded.
+	 */
+	getAccounts( state ) {
+		return state.accountSummaries;
+	},
+
+	/**
 	 * Gets account summaries.
 	 *
 	 * @since 1.32.0
