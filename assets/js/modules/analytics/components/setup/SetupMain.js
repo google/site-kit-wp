@@ -37,6 +37,7 @@ import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import useExistingTagEffectUA from '../../hooks/useExistingTagEffect';
 import useExistingTagEffectGA4 from '../../../analytics-4/hooks/useExistingTagEffect';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect } = Data;
 
@@ -48,7 +49,9 @@ export default function SetupMain( { finishSetup } ) {
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getAccountSummaries'
+		)
 	);
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
