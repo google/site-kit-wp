@@ -83,17 +83,9 @@ export const LoadingDashboardNavigation = Template.bind( {} );
 LoadingDashboardNavigation.storyName = 'Loading State';
 LoadingDashboardNavigation.args = {
 	setupRegistry: () => {
-		// freezeFetch(
-		// 	new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
-		// );
 		freezeFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
 		);
-		// freezeFetch(
-		// 	new RegExp(
-		// 		'^/google-site-kit/v1/core/user/data/user-input-settings'
-		// 	)
-		// );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
