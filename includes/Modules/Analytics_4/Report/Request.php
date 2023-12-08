@@ -285,6 +285,7 @@ class Request extends Report {
 				'customEvent:googlesitekit_post_author',
 				'customEvent:googlesitekit_post_categories',
 				'customEvent:googlesitekit_post_date',
+				'customEvent:googlesitekit_post_type',
 			)
 		);
 
