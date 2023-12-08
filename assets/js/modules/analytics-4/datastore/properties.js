@@ -841,6 +841,39 @@ const baseSelectors = {
 				);
 			}
 	),
+
+	/**
+	 * Checks if properties summaries are currently being loaded.
+	 *
+	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
+	 * components, initially the `PropertySelect` and `SettingsEnhancedMeasurementSwitch` components.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}  state                Data store's state.
+	 * @param {Object}  args                 Arguments object.
+	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 */
+	isLoadingPropertySummaries: createRegistrySelector(
+		( select ) =>
+			( state, { hasModuleAccess } ) => {
+				const isResolvingAccountSummaries =
+					hasModuleAccess === false
+						? false
+						: select( MODULES_ANALYTICS_4 ).isResolving(
+								'getAccountSummaries',
+								[]
+						  );
+
+				return (
+					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
+					isResolvingAccountSummaries ||
+					select(
+						MODULES_ANALYTICS
+					).hasFinishedSelectingAccount() === false
+				);
+			}
+	),
 };
 
 const store = Data.combineStores(
