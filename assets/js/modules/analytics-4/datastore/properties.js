@@ -743,6 +743,32 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Gets all GA4 properties from the account summaries this account can access.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID The GA4 Account ID to fetch properties for.
+	 * @return {(Array.<Object>|undefined)} An array of GA4 properties; `undefined` if not loaded.
+	 */
+	getPropertySummaries: createRegistrySelector(
+		( select ) => ( state, accountID ) => {
+			const accountSummaries =
+				select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+
+			if ( accountSummaries === undefined ) {
+				return undefined;
+			}
+
+			const account = accountSummaries.find(
+				( summary ) => summary._id === accountID
+			);
+
+			return account ? account.propertySummaries : [];
+		}
+	),
+
+	/**
 	 * Determines whether we are matching account property or not.
 	 *
 	 * @since 1.98.0
