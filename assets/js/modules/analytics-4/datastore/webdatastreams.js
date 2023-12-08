@@ -555,23 +555,12 @@ const baseSelectors = {
 	isLoadingWebDataStreams: createRegistrySelector(
 		( select ) =>
 			( state, { hasModuleAccess } ) => {
-				const accountID = select( MODULES_ANALYTICS ).getAccountID();
-
 				const propertyID =
 					select( MODULES_ANALYTICS_4 ).getPropertyID();
 
-				const loadedAccounts =
-					select( MODULES_ANALYTICS ).hasFinishedResolution(
-						'getAccounts'
-					);
-
-				const loadedProperties =
-					hasModuleAccess !== false
-						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-								'getProperties',
-								[ accountID ]
-						  )
-						: true;
+				const loadedAccounts = select(
+					MODULES_ANALYTICS_4
+				).hasFinishedResolution( 'getAccountSummaries' );
 
 				const loadedWebDataStreams =
 					isValidPropertyID( propertyID ) && hasModuleAccess !== false
@@ -592,7 +581,6 @@ const baseSelectors = {
 				return (
 					isMatchingAccountProperty ||
 					! loadedAccounts ||
-					! loadedProperties ||
 					! loadedWebDataStreams ||
 					! finishedSelectingAccount
 				);
