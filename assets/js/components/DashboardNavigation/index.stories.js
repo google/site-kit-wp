@@ -24,8 +24,12 @@ import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_MONETIZATION } from '../../googlesitekit/widgets/default-contexts';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
 import { setupDefaultChips } from './test-utils';
+import { freezeFetch } from '../../../../tests/js/utils';
 
 const Template = ( { setupRegistry, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -73,6 +77,28 @@ MonetizationHiddenDashboardNavigation.args = {
 		setupDefaultChips( registry );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+};
+
+export const LoadingDashboardNavigation = Template.bind( {} );
+LoadingDashboardNavigation.storyName = 'Loading State';
+LoadingDashboardNavigation.args = {
+	setupRegistry: () => {
+		// freezeFetch(
+		// 	new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
+		// );
+		freezeFetch(
+			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
+		);
+		// freezeFetch(
+		// 	new RegExp(
+		// 		'^/google-site-kit/v1/core/user/data/user-input-settings'
+		// 	)
+		// );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+LoadingDashboardNavigation.parameters = {
+	features: [ 'keyMetrics' ],
 };
 
 export default {
