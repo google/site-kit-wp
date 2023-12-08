@@ -55,7 +55,7 @@ export default function PropertySelect( props ) {
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
 	// eslint-disable-next-line no-unused-vars
-	useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() );
+	useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getAccounts() );
 
 	// TODO: Update this select hook to pull accountID from the modules/analytics-4
 	// datastore when GA4 module becomes separated from the Analytics one.
@@ -65,7 +65,8 @@ export default function PropertySelect( props ) {
 
 	const properties = useSelect( ( select ) =>
 		hasModuleAccess !== false && ! isDisabled
-			? select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
+			? select( MODULES_ANALYTICS_4 ).getPropertySummaries( accountID ) ||
+			  []
 			: null
 	);
 
@@ -78,7 +79,7 @@ export default function PropertySelect( props ) {
 			return false;
 		}
 
-		return select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
+		return select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries( {
 			hasModuleAccess,
 		} );
 	} );
