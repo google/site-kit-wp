@@ -132,62 +132,11 @@ describe( 'createErrorStore store', () => {
 					generateErrorKey( baseName, args )
 				);
 			} );
-
-			it( 'clears the legacy error when clearMatchingLegacyError is set and the legacy error is the same object as the matched error', () => {
-				dispatch.receiveError( errorForbidden, baseName, args );
-				dispatch.receiveError( errorForbidden );
-
-				expect( select.getError( baseName, args ) ).toBe(
-					errorForbidden
-				);
-				expect( select.getError() ).toBe( errorForbidden );
-
-				dispatch.clearError( baseName, args, {
-					clearMatchingLegacyError: true,
-				} );
-
-				expect( select.getError( baseName, args ) ).toBeUndefined();
-				expect( select.getError() ).toBeUndefined();
-			} );
-
-			it( 'does not clear the legacy error when clearMatchingLegacyError is set and the legacy error is not the same object as the matched error', () => {
-				dispatch.receiveError( errorForbidden, baseName, args );
-				dispatch.receiveError( errorNotFound );
-
-				expect( select.getError( baseName, args ) ).toBe(
-					errorForbidden
-				);
-				expect( select.getError() ).toBe( errorNotFound );
-
-				dispatch.clearError( baseName, args, {
-					clearMatchingLegacyError: true,
-				} );
-
-				expect( select.getError( baseName, args ) ).toBeUndefined();
-				expect( select.getError() ).toBe( errorNotFound );
-			} );
-
-			it( 'does not clear the legacy error when clearMatchingLegacyError is not set', () => {
-				dispatch.receiveError( errorForbidden, baseName, args );
-				dispatch.receiveError( errorForbidden );
-
-				expect( select.getError( baseName, args ) ).toBe(
-					errorForbidden
-				);
-				expect( select.getError() ).toBe( errorForbidden );
-
-				dispatch.clearError( baseName, args, {
-					clearMatchingLegacyError: false,
-				} );
-
-				expect( select.getError( baseName, args ) ).toBeUndefined();
-				expect( select.getError() ).toBe( errorForbidden );
-			} );
 		} );
 
 		describe( 'clearErrors', () => {
 			it( 'clears all received errors when called with no arguments', () => {
-				dispatch.receiveError( errorNotFound );
+				dispatch.receiveError( errorNotFound, baseName );
 				dispatch.receiveError( errorForbidden, baseName, [] );
 				dispatch.receiveError( errorForbidden, baseName, args );
 
@@ -200,14 +149,13 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'clears all received errors for a given `baseName`', () => {
-				dispatch.receiveError( errorNotFound );
+				dispatch.receiveError( errorNotFound, baseName );
 				dispatch.receiveError( errorForbidden, baseName, [] );
 				dispatch.receiveError( errorForbidden, baseName, args );
 				dispatch.receiveError( errorNotFound, 'otherBaseName', args );
 
 				dispatch.clearErrors( baseName );
 
-				expect( store.getState().error ).toEqual( errorNotFound );
 				expect( store.getState().errors ).toHaveProperty(
 					generateErrorKey( 'otherBaseName', args ),
 					errorNotFound
@@ -315,22 +263,6 @@ describe( 'createErrorStore store', () => {
 		} );
 
 		describe( 'getError', () => {
-			describe( 'legacy argumentless behavior', () => {
-				it( 'returns `undefined` if no error exists', () => {
-					expect( select.getError() ).toBeUndefined();
-				} );
-
-				it( 'returns the error which was received without any `baseName` or `args`', () => {
-					dispatch.receiveError( errorNotFound, baseName, [] );
-
-					expect( select.getError() ).toBeUndefined();
-
-					dispatch.receiveError( errorForbidden );
-
-					expect( select.getError() ).toEqual( errorForbidden );
-				} );
-			} );
-
 			it( 'returns `undefined` if no error exists for the given `baseName` and `args`', () => {
 				expect( select.getError( baseName, args ) ).toBeUndefined();
 			} );
@@ -368,8 +300,8 @@ describe( 'createErrorStore store', () => {
 				);
 			} );
 
-			it( 'returns a list of unique errors, regardless of `baseName` or `args`', () => {
-				dispatch.receiveError( errorNotFound );
+			it( 'returns a list of unique errors, regardless of `args`', () => {
+				dispatch.receiveError( errorNotFound, baseName );
 				dispatch.receiveError( errorNotFound, baseName, [] );
 				dispatch.receiveError( errorNotFound, 'otherBaseName', [] );
 				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
@@ -458,12 +390,6 @@ describe( 'createErrorStore store', () => {
 
 			it( 'returns `true` if there are any errors', () => {
 				dispatch.receiveError( errorNotFound, baseName, args );
-
-				expect( select.hasErrors() ).toBe( true );
-			} );
-
-			it( 'returns `true` if an error was received with no arguments', () => {
-				dispatch.receiveError( errorNotFound );
 
 				expect( select.hasErrors() ).toBe( true );
 			} );
