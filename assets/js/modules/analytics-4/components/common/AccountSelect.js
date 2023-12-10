@@ -110,7 +110,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 		>
 			{ ( accounts || [] )
 				.concat( {
-					id: ACCOUNT_CREATE,
+					_id: ACCOUNT_CREATE,
 					displayName: __(
 						'Set up a new account',
 						'google-site-kit'
