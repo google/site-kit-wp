@@ -64,19 +64,21 @@ abstract class Setting {
 	/**
 	 * Subscribes to updates for this setting.
 	 *
-	 * @param callable $callback Function taking $new_value and $old_value called when option value updates.
+	 * @since n.e.x.t
+	 *
+	 * @param callable $callback Function taking $old_value & $new_value parameters that gets called when option value updates.
 	 * @return \Closure Function to remove added listeners.
 	 */
-	public function on_update( callable $callback ) {
+	public function on_change( callable $callback ) {
 		$option = static::OPTION;
 
 		$on_add_option = function ( $_, $value ) use ( $callback ) {
-			$callback( $value, $this->get_default() );
+			$callback( $this->get_default(), $value );
 		};
 		add_action( "add_option_{$option}", $on_add_option, 10, 2 );
 
 		$on_update_option = function ( $old_value, $value ) use ( $callback ) {
-			$callback( $value, $old_value );
+			$callback( $old_value, $value );
 		};
 		add_action( "update_option_{$option}", $on_update_option, 10, 2 );
 
