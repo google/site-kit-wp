@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Storage;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Tests\MethodSpy;
 use Google\Site_Kit\Tests\TestCase;
 use WP_Error;
 
@@ -149,5 +150,33 @@ class SettingTest extends TestCase {
 		$setting->delete();
 
 		$this->assertFalse( get_network_option( null, FakeSetting::OPTION ) );
+	}
+
+	public function test_on_update() {
+		$setting = new FakeSetting( new Options( $this->context ) );
+		$spy     = new MethodSpy();
+
+		$unsubscribe = $setting->on_update( array( $spy, 'on_update' ) );
+
+		$this->assertTrue( empty( $spy->invocations['on_update'] ) );
+
+		add_option( FakeSetting::OPTION, 'test value' );
+
+		$this->assertCount( 1, $spy->invocations['on_update'] );
+		$this->assertEquals( 'test value', $spy->invocations['on_update'][0][0] ); // 1st invocation, 1st arg
+		$this->assertEquals( false, $spy->invocations['on_update'][0][1] ); // 1st invocation, 2nd arg
+
+		update_option( FakeSetting::OPTION, 'new test value' );
+		$this->assertCount( 2, $spy->invocations['on_update'] );
+		$this->assertEquals( 'new test value', $spy->invocations['on_update'][1][0] ); // 2nd invocation, 1st arg
+		$this->assertEquals( 'test value', $spy->invocations['on_update'][1][1] ); // 2nd invocation, 2nd arg
+
+		$unsubscribe();
+
+		update_option( FakeSetting::OPTION, 'after unsubscribe 1' );
+		update_option( FakeSetting::OPTION, 'after unsubscribe 2' );
+		update_option( FakeSetting::OPTION, 'after unsubscribe 3' );
+
+		$this->assertCount( 2, $spy->invocations['on_update'] ); // no change
 	}
 }
