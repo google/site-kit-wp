@@ -23,13 +23,17 @@ import { capitalize } from 'lodash';
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+} from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { STRATEGY_ZIP, getAnalytics4MockResponse } from '../../utils/data-mock';
@@ -49,10 +53,10 @@ const reportOptions = {
 	endDate: '2020-09-07',
 	dimensions: [ 'pagePath' ],
 	dimensionFilters: {
-		pagePath: {
+		'customEvent:googlesitekit_post_type': {
 			filterType: 'stringFilter',
-			matchType: 'PARTIAL_REGEXP',
-			value: [ '^/product/' ],
+			matchType: 'EXACT',
+			value: 'product',
 		},
 	},
 	metrics: [ { name: 'screenPageViews' } ],
@@ -98,6 +102,9 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
+
 		const pageTitlesReport = getAnalytics4MockResponse(
 			pageTitlesReportOptions,
 			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -137,6 +144,9 @@ export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
 ReadyViewOnly.args = {
 	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
+
 		const pageTitlesReport = getAnalytics4MockResponse(
 			pageTitlesReportOptions,
 			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -176,22 +186,28 @@ ReadyViewOnly.scenario = {
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
-			reportOptions,
-		] );
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ reportOptions ] );
 	},
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
+
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
 		} );
 	},
@@ -201,10 +217,35 @@ ZeroData.scenario = {
 	delay: 250,
 };
 
+export const NoProductPostType = Template.bind( {} );
+NoProductPostType.storyName = 'No Product Post Type';
+NoProductPostType.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry, {
+			productPostType: null,
+		} );
+		provideKeyMetrics( registry, {
+			widgetSlugs: [ KM_ANALYTICS_POPULAR_PRODUCTS ],
+		} );
+
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options: reportOptions,
+		} );
+	},
+};
+
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
+
 		const errorObject = {
 			code: 400,
 			message: 'Test error message. ',
@@ -219,15 +260,13 @@ Error.args = {
 			},
 		};
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveError(
-			errorObject,
-			'getReport',
-			[ reportOptions ]
-		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( errorObject, 'getReport', [ reportOptions ] );
 
-		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
-			reportOptions,
-		] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ reportOptions ] );
 	},
 };
 Error.scenario = {
@@ -238,7 +277,10 @@ Error.scenario = {
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
 InsufficientPermissions.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
+
 		const errorObject = {
 			code: 403,
 			message: 'Test error message. ',
@@ -253,15 +295,13 @@ InsufficientPermissions.args = {
 			},
 		};
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveError(
-			errorObject,
-			'getReport',
-			[ reportOptions ]
-		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( errorObject, 'getReport', [ reportOptions ] );
 
-		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
-			reportOptions,
-		] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ reportOptions ] );
 	},
 };
 

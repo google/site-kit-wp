@@ -42,25 +42,25 @@
 			outline-offset: 0;
 		}
 
-		&::after {
-			// This is the expand_more icon (arrow/chevron down), in the color #5B5B61.
-			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%235B5B61%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
-			background-position: center center;
-			background-repeat: no-repeat;
-			content: "";
-			display: block;
-			height: 20px;
+		.googlesitekit-icon-wrapper {
+			align-items: center;
+			display: flex;
+			justify-content: center;
 			position: absolute;
 			right: $grid-gap-phone;
 			top: 50%;
 			transform: translateY(-50%);
 			width: 20px;
+
+			svg {
+				color: $c-davys-grey;
+			}
 		}
 
 		&.is-active {
 			font-weight: 700;
 
-			&::after {
+			.googlesitekit-icon-wrapper {
 				transform: translateY(-50%) rotate(180deg);
 			}
 		}
@@ -86,9 +86,11 @@
 		.googlesitekit-accordion__header {
 			pointer-events: none;
 
-			&::after {
-				// This is the expand_more icon (arrow/chevron down), in the color $c-interactive-on-disable-container.
-				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%23030E07%22%20fill-opacity%3D%220.32%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
+			.googlesitekit-icon-wrapper {
+
+				svg {
+					color: $c-interactive-on-disable-container;
+				}
 			}
 		}
 	}

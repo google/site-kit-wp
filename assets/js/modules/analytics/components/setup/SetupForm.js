@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { SpinnerButton, ProgressBar } from 'googlesitekit-components';
 import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
@@ -41,6 +41,7 @@ import {
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
@@ -74,6 +75,11 @@ export default function SetupForm( { finishSetup } ) {
 
 		return canSubmitChanges;
 	} );
+	const isSaving = useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS ).isDoingSubmitChanges() ||
+			select( CORE_LOCATION ).isNavigating()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS );
@@ -130,9 +136,12 @@ export default function SetupForm( { finishSetup } ) {
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
 			<div className="googlesitekit-setup-module__action">
-				<Button disabled={ ! canSubmitGA4Changes }>
+				<SpinnerButton
+					disabled={ ! canSubmitGA4Changes || isSaving }
+					isSaving={ isSaving }
+				>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
-				</Button>
+				</SpinnerButton>
 			</div>
 		</form>
 	);
