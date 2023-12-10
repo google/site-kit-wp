@@ -152,24 +152,33 @@ class SettingTest extends TestCase {
 		$this->assertFalse( get_network_option( null, FakeSetting::OPTION ) );
 	}
 
-	public function test_on_update() {
+	public function test_on_change() {
 		$setting = new FakeSetting( new Options( $this->context ) );
 		$spy     = new MethodSpy();
 
-		$unsubscribe = $setting->on_update( array( $spy, 'on_update' ) );
+		$unsubscribe = $setting->on_change( array( $spy, 'on_change' ) );
 
-		$this->assertTrue( empty( $spy->invocations['on_update'] ) );
+		$this->assertTrue( empty( $spy->invocations['on_change'] ) );
 
 		add_option( FakeSetting::OPTION, 'test value' );
 
-		$this->assertCount( 1, $spy->invocations['on_update'] );
-		$this->assertEquals( 'test value', $spy->invocations['on_update'][0][0] ); // 1st invocation, 1st arg
-		$this->assertEquals( false, $spy->invocations['on_update'][0][1] ); // 1st invocation, 2nd arg
+		$this->assertCount( 1, $spy->invocations['on_change'] );
+
+		// Verify that the old value is false, since the option was just added.
+		$this->assertEquals( false, $spy->invocations['on_change'][0][0] );
+
+		// Verify that the new value is 'test value'.
+		$this->assertEquals( 'test value', $spy->invocations['on_change'][0][1] );
 
 		update_option( FakeSetting::OPTION, 'new test value' );
-		$this->assertCount( 2, $spy->invocations['on_update'] );
-		$this->assertEquals( 'new test value', $spy->invocations['on_update'][1][0] ); // 2nd invocation, 1st arg
-		$this->assertEquals( 'test value', $spy->invocations['on_update'][1][1] ); // 2nd invocation, 2nd arg
+
+		$this->assertCount( 2, $spy->invocations['on_change'] );
+
+		// Verify that the old value is 'test value'.
+		$this->assertEquals( 'test value', $spy->invocations['on_change'][1][0] );
+
+		// Verify that the new value is 'new test value'.
+		$this->assertEquals( 'new test value', $spy->invocations['on_change'][1][1] );
 
 		$unsubscribe();
 
@@ -177,6 +186,7 @@ class SettingTest extends TestCase {
 		update_option( FakeSetting::OPTION, 'after unsubscribe 2' );
 		update_option( FakeSetting::OPTION, 'after unsubscribe 3' );
 
-		$this->assertCount( 2, $spy->invocations['on_update'] ); // no change
+		// Verify that the changes are no longer listened to after unsubscribing.
+		$this->assertCount( 2, $spy->invocations['on_change'] );
 	}
 }
