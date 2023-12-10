@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { convertSecondsToArray } from './convert-time';
+import {
+	convertDateStringToUNIXTimestamp,
+	convertSecondsToArray,
+} from './convert-time';
 
 describe( 'convertSecondsToArray', () => {
 	it.each( [
@@ -56,5 +59,41 @@ describe( 'convertSecondsToArray', () => {
 	] )( '%s', ( _, args, expected ) => {
 		const secondsArray = convertSecondsToArray( args );
 		expect( secondsArray ).toEqual( expected );
+	} );
+} );
+
+describe( 'convertDateStringToUNIXTimestamp', () => {
+	it.each( [
+		[
+			'should return a converted unix timestamp as value if a date time string is passed as parameter',
+			'2014-10-02T15:01:23Z',
+			1412262083000,
+		],
+		[
+			'should return passed unix timestamp as value if unix timestamp is passed as parameter',
+			1412262083000,
+			1412262083000,
+		],
+		[
+			'should return a converted unix timestamp as value if only a date string is passed as parameter',
+			'2014-10-02',
+			1412208000000,
+		],
+		[ 'should return zero if empty value is passed as parameter', '', 0 ],
+		[
+			'should return zero value if invalid date/date time string is passed as parameter',
+			'15:01:23',
+			0,
+		],
+		[
+			'should return unix timestamp value if Date object is passed as parameter',
+			new Date(),
+			new Date().getTime(),
+		],
+
+		[ 'should return zero if null value is passed as parameter', null, 0 ],
+	] )( '%s', ( _, args, expected ) => {
+		const unixTimestamp = convertDateStringToUNIXTimestamp( args );
+		expect( unixTimestamp ).toEqual( expected );
 	} );
 } );

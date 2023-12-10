@@ -44,3 +44,26 @@ export const convertSecondsToArray = ( seconds ) => {
 		Math.floor( seconds * 1000 ) - Math.floor( seconds ) * 1000,
 	];
 };
+
+/**
+ * Converts Date time string into UNIX timestamp in milliseconds.
+ *
+ * For example, passing "2014-10-02T15:01:23Z" returns 1412262083000.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateStringValue The date time string.
+ * @return {number} UNIX timestamp in milliseconds.
+ */
+export const convertDateStringToUNIXTimestamp = ( dateStringValue ) => {
+	const unixTimestamp =
+		dateStringValue && ! Number.isInteger( dateStringValue )
+			? new Date( dateStringValue ).getTime()
+			: dateStringValue;
+
+	if ( isNaN( unixTimestamp ) || ! unixTimestamp ) {
+		return 0;
+	}
+
+	return unixTimestamp;
+};

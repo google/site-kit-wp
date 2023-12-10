@@ -26,6 +26,7 @@ import {
 	validateCanSubmitChanges,
 	rollbackChanges,
 } from './settings';
+import { convertDateStringToUNIXTimestamp } from '../../../util';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	ownedSettingsSlugs: [
@@ -55,10 +56,20 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'googleTagContainerID',
 		'googleTagLastSyncedAtMs',
 		'availableCustomDimensions',
+		'propertyCreateTime',
 	],
 	submitChanges,
 	rollbackChanges,
 	validateCanSubmitChanges,
 } );
+
+const originalSetPropertyCreateTime =
+	baseModuleStore.actions.setPropertyCreateTime;
+
+baseModuleStore.actions.setPropertyCreateTime = ( value ) => {
+	return originalSetPropertyCreateTime(
+		convertDateStringToUNIXTimestamp( value )
+	);
+};
 
 export default baseModuleStore;
