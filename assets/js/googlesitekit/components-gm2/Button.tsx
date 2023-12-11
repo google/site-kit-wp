@@ -34,7 +34,7 @@ import { _x } from '@wordpress/i18n';
 import { MDCRipple } from '../../material-components';
 import Tooltip from './Tooltip';
 
-interface ButtonProps {
+type ButtonProps = {
 	onClick?: () => void;
 	children?: React.ReactNode;
 	href?: string;
@@ -52,7 +52,7 @@ interface ButtonProps {
 	'aria-label'?: string;
 	target?: string;
 	tooltipEnterDelayInMS?: number;
-}
+};
 
 // eslint-disable-next-line sitekit/acronym-case
 const Button = forwardRef< HTMLButtonElement, ButtonProps >(
