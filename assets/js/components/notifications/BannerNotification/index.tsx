@@ -57,7 +57,52 @@ const { useSelect, useDispatch } = Data;
 
 export * from './constants';
 
-export default function BannerNotification( props ) {
+type LEARN_MORE_TARGET = {
+	EXTERNAL: 'external';
+	INTERNAL: 'internal';
+};
+
+type BannerNotificationProps = {
+	id: string;
+	className?: string;
+	children?: React.ReactNode;
+	title: string;
+	description?: React.ReactNode;
+	learnMoreURL?: string;
+	learnMoreDescription?: string;
+	learnMoreLabel?: string;
+	learnMoreTarget?: LEARN_MORE_TARGET;
+	WinImageSVG?: React.ElementType;
+	SmallImageSVG?: React.ElementType;
+	format?: string;
+	ctaLink?: string;
+	ctaLabel?: string;
+	ctaTarget?: string;
+	type?: string;
+	dismiss?: string;
+	isDismissible?: boolean;
+	logo?: boolean;
+	module?: string;
+	moduleName?: string;
+	dismissExpires?: number;
+	showOnce?: boolean;
+	onCTAClick?: ( event: React.MouseEvent ) => void | Promise< any >;
+	onView?: () => void;
+	onDismiss?: ( event: React.MouseEvent ) => void | Promise< any >;
+	onLearnMoreClick?: ( event: React.MouseEvent ) => void | Promise< any >;
+	badgeLabel?: string;
+	rounded?: boolean;
+	footer?: React.ReactNode;
+	secondaryPane?: React.ReactNode;
+	showSmallWinImage?: boolean;
+	smallWinImageSVGWidth?: number;
+	smallWinImageSVGHeight?: number;
+	mediumWinImageSVGWidth?: number;
+	mediumWinImageSVGHeight?: number;
+	ctaComponent?: React.ReactNode;
+};
+
+export default function BannerNotification( props: BannerNotificationProps ) {
 	const {
 		badgeLabel,
 		children,
@@ -152,7 +197,7 @@ export default function BannerNotification( props ) {
 		}
 	} );
 
-	const handleDismiss = async ( event ) => {
+	const handleDismiss = async ( event: React.MouseEvent ) => {
 		event.persist();
 		event.preventDefault();
 
@@ -184,7 +229,7 @@ export default function BannerNotification( props ) {
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const handleCTAClick = async ( event ) => {
+	const handleCTAClick = async ( event: React.MouseEvent ) => {
 		event.persist();
 
 		let dismissOnCTAClick = true;
@@ -341,40 +386,3 @@ export default function BannerNotification( props ) {
 		</Banner>
 	);
 }
-
-BannerNotification.propTypes = {
-	id: PropTypes.string.isRequired,
-	className: PropTypes.string,
-	title: PropTypes.string.isRequired,
-	description: PropTypes.node,
-	learnMoreURL: PropTypes.string,
-	learnMoreDescription: PropTypes.string,
-	learnMoreLabel: PropTypes.string,
-	learnMoreTarget: PropTypes.oneOf( Object.values( LEARN_MORE_TARGET ) ),
-	WinImageSVG: PropTypes.elementType,
-	SmallImageSVG: PropTypes.elementType,
-	format: PropTypes.string,
-	ctaLink: PropTypes.string,
-	ctaLabel: PropTypes.string,
-	type: PropTypes.string,
-	dismiss: PropTypes.string,
-	isDismissible: PropTypes.bool,
-	logo: PropTypes.bool,
-	module: PropTypes.string,
-	moduleName: PropTypes.string,
-	dismissExpires: PropTypes.number,
-	showOnce: PropTypes.bool,
-	onCTAClick: PropTypes.func,
-	onView: PropTypes.func,
-	onDismiss: PropTypes.func,
-	onLearnMoreClick: PropTypes.func,
-	badgeLabel: PropTypes.string,
-	rounded: PropTypes.bool,
-	footer: PropTypes.node,
-	secondaryPane: PropTypes.node,
-	showSmallWinImage: PropTypes.bool,
-	smallWinImageSVGWidth: PropTypes.number,
-	smallWinImageSVGHeight: PropTypes.number,
-	mediumWinImageSVGWidth: PropTypes.number,
-	mediumWinImageSVGHeight: PropTypes.number,
-};
