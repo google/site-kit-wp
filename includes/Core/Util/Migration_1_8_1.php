@@ -29,7 +29,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-class Migration_1_8_1 {
+class Migration_1_8_1 implements \Google\Site_Kit\Core\Contracts\Registerable {
 	/**
 	 * Target DB version.
 	 */

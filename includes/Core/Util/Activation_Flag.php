@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Contracts\Registerable;
 use Google\Site_Kit\Core\Storage\Options;
 
 /**
@@ -20,7 +21,7 @@ use Google\Site_Kit\Core\Storage\Options;
  * @access private
  * @ignore
  */
-final class Activation_Flag {
+final class Activation_Flag implements Registerable {
 	const OPTION_SHOW_ACTIVATION_NOTICE = 'googlesitekit_show_activation_notice';
 	const OPTION_NEW_SITE_POSTS         = 'googlesitekit_new_site_posts';
 

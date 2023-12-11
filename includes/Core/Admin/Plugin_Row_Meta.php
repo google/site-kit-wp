@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Admin;
 
+use Google\Site_Kit\Core\Contracts\Registerable;
+
 /**
  * Class for managing plugin row meta.
  *
@@ -17,7 +19,7 @@ namespace Google\Site_Kit\Core\Admin;
  * @access private
  * @ignore
  */
-class Plugin_Row_Meta {
+class Plugin_Row_Meta implements Registerable {
 
 	/**
 	 * Registers functionality through WordPress hooks.

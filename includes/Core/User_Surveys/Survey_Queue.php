@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\User_Surveys;
 
+use Google\Site_Kit\Core\Contracts\Registerable;
 use Google\Site_Kit\Core\Storage\User_Setting;
 use Google\Site_Kit\Core\Storage\Setting\List_Setting;
 
@@ -20,7 +21,7 @@ use Google\Site_Kit\Core\Storage\Setting\List_Setting;
  * @access private
  * @ignore
  */
-class Survey_Queue extends User_Setting {
+class Survey_Queue extends User_Setting implements Registerable {
 
 	use List_Setting;
 

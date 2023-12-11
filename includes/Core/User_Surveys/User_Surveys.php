@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @access private
  * @ignore
  */
-class User_Surveys {
+class User_Surveys implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	/**
 	 * Survey_Timeouts instance.

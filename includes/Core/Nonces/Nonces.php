@@ -26,7 +26,7 @@ use WP_REST_Server;
  * @access private
  * @ignore
  */
-final class Nonces {
+final class Nonces implements \Google\Site_Kit\Core\Contracts\Registerable {
 	/*
 	 * Nonce actions.
 	 *

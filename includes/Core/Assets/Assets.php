@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Contracts\Registerable;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
@@ -26,7 +27,7 @@ use WP_Post_Type;
  * @access private
  * @ignore
  */
-final class Assets {
+final class Assets implements Registerable {
 
 	/**
 	 * Plugin context.

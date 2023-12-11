@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-final class Tracking {
+final class Tracking implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	use Method_Proxy_Trait;
 

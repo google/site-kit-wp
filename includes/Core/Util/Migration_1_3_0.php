@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Tracking\Tracking_Consent;
  * @access private
  * @ignore
  */
-class Migration_1_3_0 {
+class Migration_1_3_0 implements \Google\Site_Kit\Core\Contracts\Registerable {
 	/**
 	 * Target DB version.
 	 */

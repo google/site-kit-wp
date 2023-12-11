@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Assets\Stylesheet;
  * @access private
  * @ignore
  */
-final class Standalone {
+final class Standalone implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	/**
 	 * Plugin context.

@@ -24,7 +24,7 @@ use WP_REST_Response;
  * @access private
  * @ignore
  */
-class REST_Entity_Search_Controller {
+class REST_Entity_Search_Controller implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	/**
 	 * Plugin context.

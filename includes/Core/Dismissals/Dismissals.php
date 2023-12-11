@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Dismissals;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Contracts\Registerable;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
@@ -20,7 +21,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @access private
  * @ignore
  */
-class Dismissals {
+class Dismissals implements Registerable {
 
 	/**
 	 * Dismissed_Items instance.

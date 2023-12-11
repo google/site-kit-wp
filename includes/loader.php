@@ -11,6 +11,8 @@
 namespace Google\Site_Kit;
 
 // Define global constants.
+use Google\Site_Kit\Core\Contracts\Registerable;
+
 define( 'GOOGLESITEKIT_PLUGIN_BASENAME', plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 define( 'GOOGLESITEKIT_PLUGIN_DIR_PATH', plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -63,6 +65,12 @@ function autoload_vendor_files() {
 	}
 }
 autoload_vendor_files();
+
+function register( Registerable ...$instances ) {
+	foreach ( $instances as $instance ) {
+		$instance->register();
+	}
+}
 
 // Initialize the plugin.
 Plugin::load( GOOGLESITEKIT_PLUGIN_MAIN_FILE );

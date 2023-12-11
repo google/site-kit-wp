@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Admin;
  * @access private
  * @ignore
  */
-final class Notices {
+final class Notices implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	/**
 	 * Registers functionality through WordPress hooks.

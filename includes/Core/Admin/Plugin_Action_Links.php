@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Contracts\Registerable;
 use Google\Site_Kit\Core\Permissions\Permissions;
 
 /**
@@ -20,7 +21,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
  * @access private
  * @ignore
  */
-class Plugin_Action_Links {
+class Plugin_Action_Links implements Registerable {
 
 	/**
 	 * Plugin context.

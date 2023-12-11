@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\User_Input;
 
 use ArrayAccess;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Contracts\Registerable;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -26,7 +27,7 @@ use WP_User;
  * @access private
  * @ignore
  */
-class User_Input {
+class User_Input implements Registerable {
 
 	/**
 	 * Site_Specific_Answers instance.

@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Contracts\Registerable;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -36,7 +37,7 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Modules {
+final class Modules implements Registerable {
 
 	use Method_Proxy_Trait;
 
