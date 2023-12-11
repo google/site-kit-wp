@@ -19,16 +19,22 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Tooltip as MuiTooltip } from '@material-ui/core';
 
-export default function Tooltip( {
+type TooltipProps = {
+	children: React.ReactElement;
+	popperClassName?: string;
+	tooltipClassName?: string;
+	[ key: string ]: any;
+};
+
+const Tooltip: React.FC< TooltipProps > = ( {
 	children,
 	popperClassName,
 	tooltipClassName,
 	...props
-} ) {
+} ) => {
 	return (
 		<MuiTooltip
 			classes={ {
@@ -47,10 +53,6 @@ export default function Tooltip( {
 			{ children }
 		</MuiTooltip>
 	);
-}
-
-Tooltip.propTypes = {
-	children: PropTypes.node,
-	popperClassName: PropTypes.string,
-	tooltipClassName: PropTypes.string,
 };
+
+export default Tooltip;
