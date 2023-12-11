@@ -18,7 +18,7 @@ use WP_Query;
 
 
 /**
- * Class to handle all wp-admin Dashboard related functionality.
+ * Class to handle addint admin columns data.
  *
  * @since n.e.x.t
  * @access private
@@ -59,6 +59,14 @@ class Columns_Data {
 	protected $allowed_post_types;
 
 	/**
+	 * Allowed post types array.
+	 *
+	 * @since n.e.x.t
+	 * @var Admin_Columns
+	 */
+	protected $columns;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -75,6 +83,7 @@ class Columns_Data {
 		$this->context    = $context;
 		$this->module     = $module;
 		$this->transients = $transients ?: new Transients( $this->context );
+		$this->columns    = new Admin_Columns();
 
 		/**
 		 * Allowed post types for which to show column data.
@@ -97,6 +106,15 @@ class Columns_Data {
 		if ( ! $this->module->is_connected() || ! is_admin() ) {
 			return;
 		}
+
+		// @TODO extract this to a wrapper method add(..)
+		$this->columns->add(
+			'views',
+			esc_html__( 'Views', 'google-site-kit' ),
+			'pageScreenViews',
+			array( 'post', 'page' )
+		);
+		$this->columns->register();
 
 		add_action(
 			'pre_get_posts',
@@ -210,14 +228,14 @@ class Columns_Data {
 					'value'      => $paths,
 				),
 			),
-			'limit'            => '20',
+			'limit'            => '20', // @TODO pull this dynamically from user option
 		);
 
 		return $this->module->get_data( 'report', $options );
 	}
 
 	/**
-	 * Process the report data and save in transient if response is no WP_Error.
+	 * Process the report data and save in transient if response is not WP_Error.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -229,7 +247,7 @@ class Columns_Data {
 			return;
 		}
 
-		$data->rows;
+		$data->totals;
 	}
 
 	/**
@@ -286,7 +304,7 @@ class Columns_Data {
 	 *               - 'metrics': An array of metric names.
 	 */
 	protected function extract_columns_definition() {
-		$definition = $this->module->get_columns_definition();
+		$definition = $this->columns->get_columns_definition();
 
 		$columns = array_keys( $definition );
 		$metrics = wp_list_pluck( $definition, 'metric' );

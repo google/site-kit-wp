@@ -17,15 +17,7 @@ namespace Google\Site_Kit\Core\Admin;
  * @access private
  * @ignore
  */
-final class Admin_Column {
-
-	/**
-	 * Unique column slug.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $key;
+class Admin_Column {
 
 	/**
 	 * Column arguments.
@@ -33,32 +25,24 @@ final class Admin_Column {
 	 * @since n.e.x.t
 	 * @var array
 	 */
-	private $args = array();
+	protected $args = array();
 
 	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $key Unique admin column key.
-	 * @param array  $args {
+	 * @param array $args {
 	 *     Associative array of admin column arguments.
 	 *
+	 *     @type string   $key             Unique admin column key.
 	 *     @type string   $label           The admin column label.
 	 *     @type string   $post_type       Post type to add the admin column to.
 	 *     @type callable $render_callback Callback function to render the column content. The post ID and column key are passed to the callback.
 	 * }
 	 */
-	public function __construct( $key, array $args ) {
-		$this->key  = $key;
-		$this->args = wp_parse_args(
-			$args,
-			array(
-				'label'           => $this->key,
-				'post_type'       => 'post',
-				'render_callback' => null,
-			)
-		);
+	public function __construct( array $args ) {
+		$this->args = $args;
 	}
 
 	/**
@@ -67,10 +51,11 @@ final class Admin_Column {
 	 * @since n.e.x.t
 	 */
 	public function register() {
+		// @TODO args['post_type'] is replaced by allowed post types, it can be passed here as well.
 		add_filter(
 			'manage_' . $this->args['post_type'] . '_posts_columns',
 			function( $columns ) {
-				$columns[ $this->key ] = $this->args['label'];
+				$columns[ $this->args['key'] ] = $this->args['label'];
 				return $columns;
 			}
 		);
@@ -80,7 +65,7 @@ final class Admin_Column {
 			function( $key, $post_id ) {
 
 				if (
-				$key !== $this->key ||
+				$key !== $this->args['key'] ||
 				! is_callable( $this->args['render_callback'] )
 				) {
 					return;
