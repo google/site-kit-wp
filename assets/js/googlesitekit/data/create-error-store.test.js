@@ -186,44 +186,20 @@ describe( 'createErrorStore store', () => {
 			it( 'returns the error for the given `selectorName` with empty `args` or none', () => {
 				dispatch.receiveError( errorForbidden, baseName, [] );
 
-				expect( select.getErrorForSelector( baseName ) ).toEqual( {
-					...errorForbidden,
-					selectorData: {
-						args: [],
-						name: baseName,
-						storeName: TEST_STORE,
-					},
-				} );
-				expect( select.getErrorForSelector( baseName, [] ) ).toEqual( {
-					...errorForbidden,
-					selectorData: {
-						args: [],
-						name: baseName,
-						storeName: TEST_STORE,
-					},
-				} );
+				expect( select.getErrorForSelector( baseName ) ).toEqual(
+					errorForbidden
+				);
+				expect( select.getErrorForSelector( baseName, [] ) ).toEqual(
+					errorForbidden
+				);
 			} );
 
-			it.each( [
-				[
-					'returns the error received for the given `selectorName` and `args`',
-				],
-				[
-					'`selectorData` matches the selector name for the given `selectorName` and `args`',
-				],
-			] )( '%s', () => {
+			it( 'returns the error received for the given `selectorName` and `args`', () => {
 				dispatch.receiveError( errorNotFound, baseName, [] );
 				dispatch.receiveError( errorForbidden, baseName, args );
 
 				expect( select.getErrorForSelector( baseName, args ) ).toEqual(
-					{
-						...errorForbidden,
-						selectorData: {
-							args,
-							name: baseName,
-							storeName: TEST_STORE,
-						},
-					}
+					errorForbidden
 				);
 			} );
 		} );

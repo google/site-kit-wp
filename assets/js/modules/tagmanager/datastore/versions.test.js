@@ -844,14 +844,7 @@ describe( 'modules/tagmanager versions', () => {
 							accountID,
 							internalContainerID,
 						] )
-				).toEqual( {
-					...errorResponse,
-					selectorData: {
-						args: [ accountID, internalContainerID ],
-						name: 'getLiveContainerVersion',
-						storeName: MODULES_TAGMANAGER,
-					},
-				} );
+				).toEqual( errorResponse );
 				expect(
 					registry
 						.select( MODULES_TAGMANAGER )
