@@ -30,6 +30,10 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 
 	/**
 	 * Injects the necessary script tag if not present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Tag src as scriptTagSrc property.
 	 */
 	return function initializeSnippet() {
 		const { document } = global;
@@ -76,5 +80,9 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 		scriptTag.async = true;
 		scriptTag.src = `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID_GA4 }&l=${ DATA_LAYER }`;
 		document.head.appendChild( scriptTag );
+
+		return {
+			scriptTagSrc: `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID_GA4 }&l=${ DATA_LAYER }`,
+		};
 	};
 }
