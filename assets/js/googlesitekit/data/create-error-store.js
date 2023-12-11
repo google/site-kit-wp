@@ -185,20 +185,7 @@ export function createErrorStore( storeName ) {
 		 */
 		getErrorForSelector( state, selectorName, args = [] ) {
 			invariant( selectorName, 'selectorName is required.' );
-			const error = selectors.getError( state, selectorName, args );
-
-			if ( ! error ) {
-				return undefined;
-			}
-
-			return {
-				...error,
-				selectorData: {
-					storeName,
-					name: selectorName,
-					args,
-				},
-			};
+			return selectors.getError( state, selectorName, args );
 		},
 
 		/**
