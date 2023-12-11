@@ -41,7 +41,7 @@ import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
 import EntityHeader from './EntityHeader';
 import ViewOnlyMenu from './ViewOnlyMenu';
-import { useFeature } from '../hooks/useFeature';
+import SetupErrorNotification from './notifications/SetupErrorNotification';
 import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
@@ -49,7 +49,6 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const isDashboard = !! useDashboardType();
 	const isViewOnly = useViewOnly();
 
@@ -102,26 +101,23 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 							{ children }
 
 							{ ! isAuthenticated &&
-								dashboardSharingEnabled &&
 								isDashboard &&
 								isViewOnly && <ViewOnlyMenu /> }
-							{ isAuthenticated &&
-								( ! dashboardSharingEnabled ||
-									! isViewOnly ) && <UserMenu /> }
+							{ isAuthenticated && ! isViewOnly && <UserMenu /> }
 						</Cell>
 					</Row>
 				</Grid>
 			</header>
 
 			<div className="googlesitekit-subheader" ref={ subHeaderRef }>
+				<ErrorNotifications />
+				<SetupErrorNotification />
 				{ subHeader }
 			</div>
 
 			{ showNavigation && <DashboardNavigation /> }
 
 			<EntityHeader />
-
-			<ErrorNotifications />
 		</Fragment>
 	);
 };

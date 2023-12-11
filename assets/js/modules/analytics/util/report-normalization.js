@@ -19,9 +19,8 @@
 /**
  * External dependencies
  */
-import castArray from 'lodash/castArray';
-import isPlainObject from 'lodash/isPlainObject';
 import memize from 'memize';
+import { castArray, isPlainObject } from 'lodash';
 
 /**
  * Normalizes report options.

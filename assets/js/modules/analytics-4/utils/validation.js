@@ -31,7 +31,7 @@ import { isValidNumericID } from '../../../util';
  * @return {boolean} Whether or not the given property ID is valid.
  */
 export function isValidPropertyID( propertyID ) {
-	return typeof propertyID === 'string' && /^\w+$/.test( propertyID );
+	return typeof propertyID === 'string' && /^\d+$/.test( propertyID );
 }
 
 /**

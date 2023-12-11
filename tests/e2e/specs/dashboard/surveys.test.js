@@ -37,10 +37,10 @@ describe( 'dashboard surveys', () => {
 
 			// The survey endpoint is stubbed on the server to always return a null survey
 			// so we will intercept it on the client (see e2e-rest-survey-trigger.php).
-			if ( url.match( 'user/data/survey-trigger' ) ) {
+			if ( url.match( 'user/data/survey' ) ) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( surveyResponse ),
+					body: JSON.stringify( { survey: surveyResponse } ),
 				} );
 			} else if (
 				url.match( 'user/data/survey-event' ) ||
@@ -61,10 +61,27 @@ describe( 'dashboard surveys', () => {
 	} );
 
 	it( 'shows a survey', async () => {
+		const expectElemSelector = '.googlesitekit-survey';
+		const expectElemText = {
+			text: surveyResponse.survey_payload.question[ 0 ].question_text,
+		};
+
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
-		await expect( page ).toMatchElement( '.googlesitekit-survey', {
-			text: surveyResponse.survey_payload.question[ 0 ].question_text,
-		} );
+		// Wait for 3 seconds and check that we don't see the survey yet.
+		// The survey should appear only after 5 seconds, not earlier.
+		await new Promise( ( resolve ) => setTimeout( resolve, 3000 ) );
+		await expect( page ).not.toMatchElement(
+			expectElemSelector,
+			expectElemText
+		);
+
+		// Wait for 3 more seconds to ensure that the survey appears since
+		// the total waiting time is 6 seconds now.
+		await new Promise( ( resolve ) => setTimeout( resolve, 3000 ) );
+		await expect( page ).toMatchElement(
+			expectElemSelector,
+			expectElemText
+		);
 	} );
 } );

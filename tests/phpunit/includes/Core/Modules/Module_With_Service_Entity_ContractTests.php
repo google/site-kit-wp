@@ -12,9 +12,9 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
-use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase_Context_Trait;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 trait Module_With_Service_Entity_ContractTests {
 
@@ -75,15 +75,12 @@ trait Module_With_Service_Entity_ContractTests {
 	}
 
 	protected function mock_service_entity_access( Module $module, $status_code ) {
-		$fake_http_client = new FakeHttpClient();
-
-		$fake_http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$module->get_client(),
 			function () use ( $status_code ) {
 				return new Response( $status_code );
 			}
 		);
-
-		$module->get_client()->setHttpClient( $fake_http_client );
 	}
 
 }

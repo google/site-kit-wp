@@ -24,8 +24,6 @@ import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
 	ACCOUNT_CREATE,
-	PROPERTY_CREATE,
-	PROFILE_CREATE,
 	PROPERTY_TYPE_UA,
 	PROPERTY_TYPE_GA4,
 } from './constants';
@@ -39,6 +37,7 @@ import {
 	untilResolved,
 	provideSiteInfo,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
@@ -171,6 +170,8 @@ describe( 'modules/analytics accounts', () => {
 
 		describe( 'resetAccounts', () => {
 			it( 'sets accounts and related values back to their initial values', async () => {
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
@@ -373,7 +374,7 @@ describe( 'modules/analytics accounts', () => {
 				).toBe( '' );
 			} );
 
-			it( 'should correctly select property and profile IDs', async () => {
+			it( 'should reset propertyID and profileID when selecting an account ID', async () => {
 				fetchMock.get(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
@@ -394,54 +395,7 @@ describe( 'modules/analytics accounts', () => {
 				const accountID =
 					fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
-				await registry
-					.dispatch( MODULES_ANALYTICS )
-					.selectAccount( accountID );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getAccountID()
-				).toBe( accountID );
-				expect(
-					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe(
-					// eslint-disable-next-line sitekit/acronym-case
-					fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId
-				);
-				expect(
-					registry
-						.select( MODULES_ANALYTICS )
-						.getInternalWebPropertyID()
-				).toBe(
-					/* eslint-disable sitekit/acronym-case */
-					fixtures.propertiesProfiles.profiles[ 0 ]
-						.internalWebPropertyId
-					/* eslint-enable sitekit/acronym-case */
-				);
-				expect(
-					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( fixtures.propertiesProfiles.profiles[ 0 ].id );
-			} );
-
-			it( 'should correctly select PROPERTY_CREATE and PROFILE_CREATE when account has no properties', async () => {
-				fetchMock.get(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
-					),
-					{ body: { properties: [], profiles: [] }, status: 200 }
-				);
-				fetchMock.getOnce(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
-					{ body: [] }
-				);
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/properties'
-					),
-					{ body: [] }
-				);
-
-				const accountID =
-					fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				provideUserAuthentication( registry );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS )
@@ -452,7 +406,7 @@ describe( 'modules/analytics accounts', () => {
 				).toBe( accountID );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe( PROPERTY_CREATE );
+				).toBe( '' );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS )
@@ -460,7 +414,7 @@ describe( 'modules/analytics accounts', () => {
 				).toBe( '' );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( PROFILE_CREATE );
+				).toBe( '' );
 			} );
 
 			describe( 'analytics-4', () => {
@@ -492,7 +446,7 @@ describe( 'modules/analytics accounts', () => {
 					} );
 
 					provideSiteInfo( registry );
-
+					provideUserAuthentication( registry );
 					provideModules( registry, [
 						{
 							slug: 'analytics',
@@ -516,7 +470,7 @@ describe( 'modules/analytics accounts', () => {
 					).toBe( ga4Fixtures.properties[ 0 ]._id );
 				} );
 
-				it( 'should select the correct UA property', async () => {
+				it( 'should reset the UA property', async () => {
 					provideSiteInfo( registry, {
 						referenceSiteURL:
 							/* eslint-disable sitekit/acronym-case */
@@ -529,7 +483,7 @@ describe( 'modules/analytics accounts', () => {
 						.selectAccount( accountID );
 					expect(
 						registry.select( MODULES_ANALYTICS ).getPropertyID()
-					).toBe( fixtures.propertiesProfiles.properties[ 0 ].id );
+					).toBe( '' );
 				} );
 
 				it( 'should set primary property type to UA when there is a matching UA property', async () => {
@@ -601,6 +555,8 @@ describe( 'modules/analytics accounts', () => {
 						status: 200,
 					}
 				);
+
+				provideUserAuthentication( registry );
 			} );
 
 			it( 'uses a resolver to make a network request', async () => {
@@ -850,15 +806,15 @@ describe( 'modules/analytics accounts', () => {
 				).toBe( matchedProperty.accountId ); // eslint-disable-line sitekit/acronym-case
 				expect(
 					registry.select( MODULES_ANALYTICS ).getPropertyID()
-				).toBe( matchedProperty.id );
+				).toBeUndefined();
 				expect(
 					registry
 						.select( MODULES_ANALYTICS )
 						.getInternalWebPropertyID()
-				).toBe( matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+				).toBeUndefined();
 				expect(
 					registry.select( MODULES_ANALYTICS ).getProfileID()
-				).toBe( matchedProperty.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+				).toBeUndefined();
 			} );
 		} );
 		describe( 'getAccounts - analytics-4', () => {
@@ -893,6 +849,7 @@ describe( 'modules/analytics accounts', () => {
 				} );
 
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 				provideModules( registry, [
 					{
 						slug: 'analytics',

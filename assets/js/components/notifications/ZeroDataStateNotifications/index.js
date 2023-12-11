@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import useViewOnly from '../../../hooks/useViewOnly';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import GatheringDataNotification from './GatheringDataNotification';
 import ZeroDataNotification from './ZeroDataNotification';
@@ -36,15 +36,16 @@ const { useSelect, useInViewSelect } = Data;
 
 export default function ZeroDataStateNotifications() {
 	const viewOnly = useViewOnly();
+
 	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const canViewSharedAnalytics = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
 	} );
 	const canViewSharedSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
@@ -65,7 +66,7 @@ export default function ZeroDataStateNotifications() {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'analytics' );
+		return Object.keys( recoverableModules ).includes( 'analytics-4' );
 	} );
 	const showRecoverableSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
@@ -86,7 +87,7 @@ export default function ZeroDataStateNotifications() {
 		isAnalyticsConnected &&
 		canViewSharedAnalytics &&
 		false === showRecoverableAnalytics
-			? select( MODULES_ANALYTICS ).isGatheringData()
+			? select( MODULES_ANALYTICS_4 ).isGatheringData()
 			: false
 	);
 	const searchConsoleGatheringData = useInViewSelect(
@@ -99,7 +100,7 @@ export default function ZeroDataStateNotifications() {
 		isAnalyticsConnected &&
 		canViewSharedAnalytics &&
 		false === showRecoverableAnalytics
-			? select( MODULES_ANALYTICS ).hasZeroData()
+			? select( MODULES_ANALYTICS_4 ).hasZeroData()
 			: false
 	);
 	const searchConsoleHasZeroData = useInViewSelect(
@@ -133,6 +134,8 @@ export default function ZeroDataStateNotifications() {
 	}
 
 	let gatheringDataTitle;
+	// Analytics requires up to 72 hours to gather data.
+	let gatheringDataWaitTimeInHours = 72;
 	if ( analyticsGatheringData && searchConsoleGatheringData ) {
 		gatheringDataTitle = __(
 			'Search Console and Analytics are gathering data',
@@ -144,6 +147,9 @@ export default function ZeroDataStateNotifications() {
 			'google-site-kit'
 		);
 	} else if ( searchConsoleGatheringData ) {
+		// If only Search Console is gathering data, show a lower wait
+		// time, since it only requires 48 hours.
+		gatheringDataWaitTimeInHours = 48;
 		gatheringDataTitle = __(
 			'Search Console is gathering data',
 			'google-site-kit'
@@ -151,7 +157,12 @@ export default function ZeroDataStateNotifications() {
 	}
 
 	if ( analyticsGatheringData || searchConsoleGatheringData ) {
-		return <GatheringDataNotification title={ gatheringDataTitle } />;
+		return (
+			<GatheringDataNotification
+				title={ gatheringDataTitle }
+				gatheringDataWaitTimeInHours={ gatheringDataWaitTimeInHours }
+			/>
+		);
 	}
 
 	return <ZeroDataNotification />;

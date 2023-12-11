@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { Fragment } from '@wordpress/element';
 
-export default function SettingsNoticeSingleRow( { notice, LearnMore } ) {
+export default function SettingsNoticeSingleRow( { notice, LearnMore, CTA } ) {
 	return (
 		<Fragment>
 			<div className="googlesitekit-settings-notice__text">
@@ -38,6 +38,12 @@ export default function SettingsNoticeSingleRow( { notice, LearnMore } ) {
 					<LearnMore />
 				</div>
 			) }
+
+			{ CTA && (
+				<div className="googlesitekit-settings-notice__cta">
+					<CTA />
+				</div>
+			) }
 		</Fragment>
 	);
 }
@@ -45,4 +51,5 @@ export default function SettingsNoticeSingleRow( { notice, LearnMore } ) {
 SettingsNoticeSingleRow.propTypes = {
 	notice: PropTypes.node.isRequired,
 	LearnMore: PropTypes.elementType,
+	CTA: PropTypes.elementType,
 };

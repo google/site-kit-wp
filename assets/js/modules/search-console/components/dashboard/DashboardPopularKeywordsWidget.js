@@ -31,7 +31,6 @@ import {
 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
 import { generateDateRangeArgs } from '../../util';
@@ -43,7 +42,7 @@ import { ZeroDataMessage } from '../common';
 import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-function DashboardPopularKeywordsWidget( props ) {
+export default function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportError } = props;
 
 	const viewOnlyDashboard = useViewOnly();
@@ -200,7 +199,3 @@ function DashboardPopularKeywordsWidget( props ) {
 		</Widget>
 	);
 }
-
-export default whenActive( { moduleName: 'search-console' } )(
-	DashboardPopularKeywordsWidget
-);

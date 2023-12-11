@@ -20,12 +20,19 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
 	unsubscribeFromAll,
+	freezeFetch,
+	subscribeUntil,
+	muteFetch,
+	waitForTimeouts,
 } from '../../../../../tests/js/utils';
+import { DAY_IN_SECONDS } from '../../../util';
+import { isZeroReport } from '../utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 report', () => {
@@ -48,6 +55,14 @@ describe( 'modules/analytics-4 report', () => {
 	} );
 
 	describe( 'selectors', () => {
+		const zeroDataReport = { totals: [ {} ] };
+		const analytics4ReportRegexp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/report'
+		);
+		const dataAvailableRegexp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+		);
+
 		describe( 'getReport', () => {
 			const options = {
 				startDate: '2022-11-02',
@@ -74,13 +89,10 @@ describe( 'modules/analytics-4 report', () => {
 			};
 
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/report/,
-					{
-						body: fixtures.report,
-						status: 200,
-					}
-				);
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
 
 				const initialReport = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -125,13 +137,10 @@ describe( 'modules/analytics-4 report', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/report/,
-					{
-						body: response,
-						status: 500,
-					}
-				);
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: response,
+					status: 500,
+				} );
 
 				registry.select( MODULES_ANALYTICS_4 ).getReport( options );
 				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
@@ -145,6 +154,387 @@ describe( 'modules/analytics-4 report', () => {
 					.getReport( options );
 				expect( report ).toEqual( undefined );
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getPageTitles', () => {
+			it( 'generates a map using a getReport call.', async () => {
+				const startDate = '2021-01-01';
+				const endDate = '2021-01-31';
+				const pagePaths = [ '/', '/one/', '/two/' ];
+
+				const pageTitlesArgs = {
+					startDate,
+					endDate,
+					dimensions: [ 'pagePath', 'pageTitle' ],
+					dimensionFilters: {
+						pagePath: pagePaths,
+					},
+					metrics: [
+						{
+							name: 'screenPageViews',
+						},
+					],
+					orderby: [
+						{
+							metric: { metricName: 'screenPageViews' },
+							desc: true,
+						},
+					],
+					limit: 15,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.pageTitles, {
+						options: pageTitlesArgs,
+					} );
+
+				const report = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( pageTitlesArgs );
+
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
+					pageTitlesArgs
+				);
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPageTitles( report, { startDate, endDate } );
+
+				const titles = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPageTitles( report, { startDate, endDate } );
+
+				expect( titles ).toStrictEqual( {
+					'/': 'HOME',
+					'/one/': 'ONE',
+					'/two/': 'TWO',
+				} );
+			} );
+		} );
+
+		describe( 'isGatheringData', () => {
+			it( 'should return `undefined` if getReport is not resolved yet', async () => {
+				freezeFetch( analytics4ReportRegexp );
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForTimeouts( 30 );
+
+				expect( fetchMock ).toHaveFetched( analytics4ReportRegexp );
+			} );
+
+			it( 'should return FALSE if the returned report has data', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+				} );
+
+				muteFetch( dataAvailableRegexp );
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( isGatheringData() ).toBe( false );
+			} );
+
+			it( 'should return TRUE if report API returns error', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: response,
+					status: 500,
+				} );
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForTimeouts( 30 );
+
+				expect( isGatheringData() ).toBe( true );
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
+			} );
+
+			describe.each( [
+				[ 'undefined', undefined ],
+				[ 'null', null ],
+				[ 'empty', {} ],
+				[ 'a zero data report', zeroDataReport ],
+				[
+					'a report with rows but zero data',
+					{
+						...fixtures.report,
+						totals: [ { metricValues: [ { value: '0' } ] } ],
+					},
+				],
+			] )( 'when the returned report is %s', ( _, body ) => {
+				beforeEach( () => {
+					fetchMock.getOnce( analytics4ReportRegexp, {
+						body,
+					} );
+				} );
+
+				it( 'should return undefined if getSettings is not resolved yet', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
+
+					freezeFetch(
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/settings'
+						)
+					);
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for resolvers to run.
+					await waitForTimeouts( 30 );
+
+					// Verify that isGatheringData still returns undefined due to getSettings not being resolved yet, while hasZeroData now returns true.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBe( true );
+
+					await waitForTimeouts( 30 );
+				} );
+
+				it( 'should return TRUE if the connnected GA4 property is under three days old', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
+
+					// Create a timestamp that is two and a half days ago.
+					const createTime = new Date(
+						Date.now() - DAY_IN_SECONDS * 2.5 * 1000
+					).toISOString();
+
+					const property = {
+						...fixtures.properties[ 0 ],
+						createTime,
+					};
+					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetProperty( property, { propertyID } );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyID( propertyID );
+
+					const { isGatheringData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					expect( isGatheringData() ).toBeUndefined();
+
+					await subscribeUntil(
+						registry,
+						() => isGatheringData() !== undefined
+					);
+
+					expect( isGatheringData() ).toBe( true );
+				} );
+
+				it( 'should return FALSE if the connnected GA4 property is older than three days', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
+
+					muteFetch( dataAvailableRegexp );
+
+					// Create a timestamp that is three days ago.
+					const createTime = new Date(
+						Date.now() - DAY_IN_SECONDS * 3 * 1000
+					).toISOString();
+
+					const property = {
+						...fixtures.properties[ 0 ],
+						createTime,
+					};
+					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetProperty( property, { propertyID } );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyID( propertyID );
+
+					const { isGatheringData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					expect( isGatheringData() ).toBeUndefined();
+
+					await subscribeUntil(
+						registry,
+						() => isGatheringData() !== undefined
+					);
+
+					expect( isGatheringData() ).toBe( false );
+				} );
+
+				it( 'should return TRUE without checking for property settings if the report has zero data and user is not authenticated', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: false,
+					} );
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for resolvers to run.
+					await waitForTimeouts( 30 );
+
+					// Verify that isGatheringData now returns TRUE if hasZeroData now returns true but the user is not authenticated.
+					expect( isGatheringData() ).toBe( true );
+					expect( hasZeroData() ).toBe( true );
+
+					await waitForTimeouts( 30 );
+				} );
+
+				it( 'should return undefined if getAuthentication is not resolved yet', async () => {
+					fetchMock.getOnce(
+						new RegExp(
+							'^/google-site-kit/v1/core/user/data/authentication'
+						),
+						{
+							authenticated: false,
+						}
+					);
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for the next tick to allow getReport to resolve. We don't use waitForDefaultTimeouts as the longer timeout in that function
+					// can allow the getAuthenticated call to resolve too, which we don't want here.
+					await new Promise( ( resolve ) => {
+						setTimeout( resolve, 1 );
+					} );
+
+					// The second call to isGatheringData returns undefined because the call to isAuthenticated returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					// This confirms that hasZeroData is now resolved.
+					expect( hasZeroData() ).toBe( true );
+
+					await untilResolved(
+						registry,
+						CORE_USER
+					).getAuthentication();
+
+					// Verify that isGatheringData now returns TRUE as the call to getAuthentication has resolved and user is not authenticated.
+					expect( isGatheringData() ).toBe( true );
+					expect( hasZeroData() ).toBe( true );
+				} );
+			} );
+		} );
+
+		describe( 'hasZeroData', () => {
+			it( 'should return `undefined` if getReport has not resolved yet', async () => {
+				freezeFetch( analytics4ReportRegexp );
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForTimeouts( 30 );
+			} );
+
+			it( 'should return TRUE if report API returns error', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: response,
+					status: 500,
+				} );
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForTimeouts( 30 );
+
+				expect( hasZeroData() ).toBe( true );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should return TRUE if isZeroReport is true', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: zeroDataReport,
+				} );
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect( hasZeroData() ).toBe( true );
+			} );
+
+			it( 'should return FALSE if isZeroReport returns FALSE', async () => {
+				expect( isZeroReport( fixtures.report ) ).toBe( false );
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+				} );
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect( hasZeroData() ).toBe( false );
 			} );
 		} );
 	} );

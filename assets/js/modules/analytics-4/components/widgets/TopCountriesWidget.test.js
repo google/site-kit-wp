@@ -16,15 +16,61 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { render } from '../../../../../../tests/js/test-utils';
+import {
+	provideKeyMetrics,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import { provideAnalytics4MockReport } from '../../utils/data-mock';
+import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_COUNTRIES,
+} from '../../../../googlesitekit/datastore/user/constants';
 import TopCountriesWidget from './TopCountriesWidget';
 
 describe( 'TopCountriesWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <TopCountriesWidget /> );
+	const { Widget } = getWidgetComponentProps( KM_ANALYTICS_TOP_COUNTRIES );
 
-		expect(
-			getByText( 'TODO: UI for TopCountriesWidget' )
-		).toBeInTheDocument();
+	it( 'renders correctly with the expected metrics', async () => {
+		const { container, waitForRegistry } = render(
+			<TopCountriesWidget Widget={ Widget } />,
+			{
+				setupRegistry: ( registry ) => {
+					registry
+						.dispatch( CORE_USER )
+						.setReferenceDate( '2020-09-08' );
+					provideModules( registry, [
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
+					provideKeyMetrics( registry );
+					provideAnalytics4MockReport( registry, {
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+						dimensions: [ 'country' ],
+						metrics: [ { name: 'totalUsers' } ],
+						orderby: [
+							{
+								metric: {
+									metricName: 'totalUsers',
+								},
+								desc: true,
+							},
+						],
+						limit: 3,
+					} );
+				},
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
 	} );
 } );

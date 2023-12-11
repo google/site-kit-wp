@@ -36,9 +36,14 @@ const CoreSiteBannerNotifications = () => {
 	const [ ready, setReady ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
 	const startTime = useRef( Date.now() );
+
 	const surveys = useSelect( ( select ) =>
-		select( CORE_USER ).getCurrentSurvey()
+		select( CORE_SITE ).isUsingProxy() &&
+		select( CORE_USER ).areSurveysOnCooldown() === false
+			? select( CORE_USER ).getCurrentSurvey()
+			: null
 	);
+
 	const notifications = useSelect( ( select ) =>
 		select( CORE_SITE ).getNotifications()
 	);

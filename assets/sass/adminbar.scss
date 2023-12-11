@@ -35,6 +35,7 @@
 // Material Modifications
 @import "vendor/mdc-button";
 @import "vendor/mdc-linear-progress";
+@import "vendor/mui-circular-progress";
 
 /*
  * Components
@@ -51,7 +52,9 @@
 @import "components/global/googlesitekit-cta";
 @import "components/global/googlesitekit-cta-link";
 @import "components/global/googlesitekit-data-block";
+@import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-gathering-data-notice";
+@import "components/global/googlesitekit-icon-wrapper";
 @import "components/global/googlesitekit-preview-block";
 @import "components/global/googlesitekit-noscript";
 

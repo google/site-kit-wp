@@ -16,15 +16,66 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { render } from '../../../../../../tests/js/test-utils';
+import {
+	provideKeyMetrics,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import { provideAnalytics4MockReport } from '../../utils/data-mock';
+import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+} from '../../../../googlesitekit/datastore/user/constants';
 import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
 
 describe( 'TopConvertingTrafficSourceWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <TopConvertingTrafficSourceWidget /> );
+	const { Widget, WidgetNull } = getWidgetComponentProps(
+		KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE
+	);
 
-		expect(
-			getByText( 'TODO: UI for TopConvertingTrafficSourceWidget' )
-		).toBeInTheDocument();
+	it( 'renders correctly with the expected metrics', async () => {
+		const { container, waitForRegistry } = render(
+			<TopConvertingTrafficSourceWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				setupRegistry: ( registry ) => {
+					registry
+						.dispatch( CORE_USER )
+						.setReferenceDate( '2020-09-08' );
+
+					provideModules( registry, [
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
+					provideKeyMetrics( registry );
+					provideAnalytics4MockReport( registry, {
+						compareStartDate: '2020-07-14',
+						compareEndDate: '2020-08-10',
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+						dimensions: [ 'sessionDefaultChannelGroup' ],
+						metrics: [
+							{
+								name: 'sessionConversionRate',
+							},
+						],
+						limit: 1,
+						orderBy: 'sessionConversionRate',
+					} );
+				},
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
 	} );
 } );

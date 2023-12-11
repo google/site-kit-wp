@@ -27,14 +27,6 @@ import {
 
 describe( 'Reporting API validation', () => {
 	describe( 'isValidDateRange', () => {
-		it( 'should return TRUE if dateRange is valid only', () => {
-			expect(
-				isValidDateRange( {
-					dateRange: 'last-14-days',
-				} )
-			).toBeTruthy();
-		} );
-
 		it( 'should return TRUE if startDate and endDate are valid only', () => {
 			expect(
 				isValidDateRange( {
@@ -44,10 +36,9 @@ describe( 'Reporting API validation', () => {
 			).toBeTruthy();
 		} );
 
-		it( 'should return FALSE if neither dateRange nor start/end dates are valid', () => {
+		it( 'should return FALSE if neither start date nor end date are valid', () => {
 			expect(
 				isValidDateRange( {
-					dateRange: 'xxx',
 					startDate: '2020',
 					endDate: '2020-01-01',
 				} )
@@ -81,7 +72,7 @@ describe( 'Reporting API validation', () => {
 					fieldName: 'city',
 					sortOrder: 'ASCENDING',
 				} )
-			).toBeTruthy();
+			).toBe( true );
 		} );
 
 		it( 'should return TRUE if multiple valid order objects are passed', () => {
@@ -96,7 +87,7 @@ describe( 'Reporting API validation', () => {
 						sortOrder: 'DESCENDING',
 					},
 				] )
-			).toBeTruthy();
+			).toBe( true );
 		} );
 
 		it( 'should return FALSE if a non object item is passed in the array', () => {
@@ -112,7 +103,7 @@ describe( 'Reporting API validation', () => {
 						sortOrder: 'DESCENDING',
 					},
 				] )
-			).toBeFalsy();
+			).toBe( false );
 		} );
 
 		it( 'should return FALSE if a non object item is passed', () => {
@@ -125,7 +116,7 @@ describe( 'Reporting API validation', () => {
 					fieldName: 'city',
 					sortOrder: 'test',
 				} )
-			).toBeFalsy();
+			).toBe( false );
 		} );
 
 		it( 'should return FALSE if fieldName is undefined', () => {
@@ -133,7 +124,7 @@ describe( 'Reporting API validation', () => {
 				isValidOrders( {
 					sortOrder: 'DESCENDING',
 				} )
-			).toBeFalsy();
+			).toBe( false );
 		} );
 	} );
 } );

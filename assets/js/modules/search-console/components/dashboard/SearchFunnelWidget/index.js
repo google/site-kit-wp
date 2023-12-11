@@ -44,12 +44,12 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import UACutoffWarning from '../../../../analytics/components/common/UACutoffWarning';
 import Header from './Header';
 import Footer from './Footer';
 import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
-import AnalyticsStats from './AnalyticsStats';
-import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
+import { ActivateAnalyticsCTA, AnalyticsStats } from '../../common';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import {
@@ -59,7 +59,6 @@ import {
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-// eslint-disable-next-line complexity
 const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
@@ -132,23 +131,6 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 			: {};
 	} );
 
-	const analyticsGoalsLoading = useSelect( ( select ) =>
-		isAnalyticsConnected &&
-		canViewSharedAnalytics &&
-		! showRecoverableAnalytics
-			? ! select( MODULES_ANALYTICS ).hasFinishedResolution(
-					'getGoals',
-					[]
-			  )
-			: false
-	);
-
-	const analyticsGoalsError = useSelect( ( select ) =>
-		isAnalyticsConnected && ! showRecoverableAnalytics
-			? select( MODULES_ANALYTICS ).getErrorForSelector( 'getGoals', [] )
-			: null
-	);
-
 	const searchConsoleReportArgs = {
 		startDate: compareStartDate,
 		endDate,
@@ -207,20 +189,6 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 			)
 	);
 
-	const analyticsOverviewLoading = useSelect( ( select ) => {
-		if (
-			! isAnalyticsConnected ||
-			! canViewSharedAnalytics ||
-			showRecoverableAnalytics
-		) {
-			return false;
-		}
-
-		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getReport',
-			[ analyticsOverviewArgs ]
-		);
-	} );
 	const analyticsOverviewData = useInViewSelect( ( select ) => {
 		if (
 			! isAnalyticsConnected ||
@@ -232,30 +200,6 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 
 		return select( MODULES_ANALYTICS ).getReport( analyticsOverviewArgs );
 	} );
-	const analyticsOverviewError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
-			return false;
-		}
-
-		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			analyticsOverviewArgs,
-		] );
-	} );
-
-	const analyticsStatsLoading = useSelect( ( select ) => {
-		if (
-			! isAnalyticsConnected ||
-			! canViewSharedAnalytics ||
-			showRecoverableAnalytics
-		) {
-			return false;
-		}
-
-		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getReport',
-			[ analyticsStatsArgs ]
-		);
-	} );
 	const analyticsStatsData = useInViewSelect( ( select ) => {
 		if (
 			! isAnalyticsConnected ||
@@ -266,30 +210,6 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 		}
 
 		return select( MODULES_ANALYTICS ).getReport( analyticsStatsArgs );
-	} );
-	const analyticsStatsError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
-			return false;
-		}
-
-		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			analyticsStatsArgs,
-		] );
-	} );
-
-	const analyticsVisitorsOverviewAndStatsLoading = useSelect( ( select ) => {
-		if (
-			! isAnalyticsConnected ||
-			! canViewSharedAnalytics ||
-			showRecoverableAnalytics
-		) {
-			return false;
-		}
-
-		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getReport',
-			[ analyticsVisitorsOverviewAndStatsArgs ]
-		);
 	} );
 	const analyticsVisitorsOverviewAndStatsData = useInViewSelect(
 		( select ) => {
@@ -306,14 +226,43 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 			);
 		}
 	);
-	const analyticsVisitorsOverviewAndStatsError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
+
+	const analyticsLoading = useSelect( ( select ) => {
+		if (
+			! isAnalyticsConnected ||
+			! canViewSharedAnalytics ||
+			showRecoverableAnalytics
+		) {
 			return false;
 		}
 
-		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			analyticsVisitorsOverviewAndStatsArgs,
-		] );
+		const { hasFinishedResolution } = select( MODULES_ANALYTICS );
+
+		return ! (
+			hasFinishedResolution( 'getReport', [ analyticsOverviewArgs ] ) &&
+			hasFinishedResolution( 'getReport', [ analyticsStatsArgs ] ) &&
+			hasFinishedResolution( 'getReport', [
+				analyticsVisitorsOverviewAndStatsArgs,
+			] ) &&
+			hasFinishedResolution( 'getGoals', [] )
+		);
+	} );
+
+	const analyticsError = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
+			return null;
+		}
+
+		const { getErrorForSelector } = select( MODULES_ANALYTICS );
+
+		return (
+			getErrorForSelector( 'getReport', [ analyticsOverviewArgs ] ) ||
+			getErrorForSelector( 'getReport', [ analyticsStatsArgs ] ) ||
+			getErrorForSelector( 'getReport', [
+				analyticsVisitorsOverviewAndStatsArgs,
+			] ) ||
+			getErrorForSelector( 'getGoals', [] )
+		);
 	} );
 
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
@@ -347,10 +296,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 
 	if (
 		searchConsoleLoading ||
-		analyticsOverviewLoading ||
-		analyticsStatsLoading ||
-		analyticsVisitorsOverviewAndStatsLoading ||
-		analyticsGoalsLoading ||
+		analyticsLoading ||
 		isAnalyticsGatheringData === undefined ||
 		isSearchConsoleGatheringData === undefined
 	) {
@@ -364,6 +310,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 
 	return (
 		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
+			<UACutoffWarning />
 			<Overview
 				analyticsData={ analyticsOverviewData }
 				analyticsGoalsData={ analyticsGoalsData }
@@ -372,12 +319,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 				dateRangeLength={ dateRangeLength }
-				error={
-					analyticsOverviewError ||
-					analyticsStatsError ||
-					analyticsVisitorsOverviewAndStatsError ||
-					analyticsGoalsError
-				}
+				error={ analyticsError }
 				WidgetReportError={ WidgetReportError }
 				showRecoverableAnalytics={ showRecoverableAnalytics }
 			/>
@@ -398,7 +340,12 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 					<Grid>
 						<Row>
 							<Cell>
-								<ActivateAnalyticsCTA />
+								<ActivateAnalyticsCTA
+									title={ __(
+										'Goals completed',
+										'google-site-kit'
+									) }
+								/>
 							</Cell>
 						</Row>
 					</Grid>
@@ -413,13 +360,14 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 					dataLabels={ [
 						__( 'Unique Visitors', 'google-site-kit' ),
 					] }
-					dataFormats={ [
+					tooltipDataFormats={ [
 						( x ) => parseFloat( x ).toLocaleString(),
 					] }
 					statsColor={
 						SearchFunnelWidget.metrics[ selectedStats ].color
 					}
 					gatheringData={ isAnalyticsGatheringData }
+					moduleSlug="analytics"
 				/>
 			) }
 
@@ -435,7 +383,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 							__( 'Goals', 'google-site-kit' ),
 							__( 'Bounce Rate %', 'google-site-kit' ),
 						] }
-						dataFormats={ [
+						tooltipDataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
 							( x ) =>
 								numFmt( x / 100, {
@@ -448,6 +396,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 							SearchFunnelWidget.metrics[ selectedStats ].color
 						}
 						gatheringData={ isAnalyticsGatheringData }
+						moduleSlug="analytics"
 					/>
 				) }
 		</Widget>

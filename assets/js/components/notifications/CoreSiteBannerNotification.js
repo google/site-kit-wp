@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useMount } from 'react-use';
 import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
@@ -55,13 +54,13 @@ const CoreSiteBannerNotification = ( {
 		useDispatch( CORE_SITE );
 	const viewContext = useViewContext();
 
-	useMount( () => {
+	const handleOnView = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_remote-site-notification`,
 			'view_notification',
 			id
 		);
-	} );
+	}, [ id, viewContext ] );
 
 	const onCTAClick = useCallback( () => {
 		acceptNotification( id );
@@ -103,6 +102,7 @@ const CoreSiteBannerNotification = ( {
 			dismiss={ dismissLabel }
 			isDismissible={ dismissible }
 			onCTAClick={ onCTAClick }
+			onView={ handleOnView }
 			onDismiss={ onDismiss }
 			onLearnMoreClick={ onLearnMoreClick }
 		/>

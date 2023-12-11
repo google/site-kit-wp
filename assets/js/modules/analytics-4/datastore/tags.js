@@ -31,6 +31,36 @@ const existingTagStore = createExistingTagStore( {
 	isValidTag: isValidMeasurementID,
 } );
 
+// Override the `getExistingTag()` resolver to provide the extended Google Tag behavior.
+existingTagStore.resolvers.getExistingTag = function* () {
+	const registry = yield Data.commonActions.getRegistry();
+
+	let existingTag = registry.select( MODULES_ANALYTICS_4 ).getExistingTag();
+
+	if ( existingTag === undefined ) {
+		existingTag = yield existingTagStore.actions.fetchGetExistingTag();
+	}
+
+	// As it's not possible to directly look up a Google Tag container by one of its tag IDs, we look up the container by destination ID (the measurement ID).
+	// We then check if the tag ID is included in the container's tag IDs. If so, we have confirmed the existing tag is a Google Tag pointing to the given measurement ID.
+	// Otherwise, we ignore the existing tag (set it to null).
+	if ( existingTag !== null ) {
+		const container = yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getGoogleTagContainer( existingTag )
+		);
+
+		if ( ! container?.tagIds.includes( existingTag ) ) {
+			existingTag = null;
+		}
+	}
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetExistingTag( existingTag );
+};
+
 const store = Data.combineStores( existingTagStore );
 
 export const initialState = store.initialState;

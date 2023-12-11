@@ -3,7 +3,7 @@
 exports[`BannerNotification should not wrap the description in a paragraph when the description is a React element 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win googlesitekit-publisher-win--is-open"
+    class="googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
     id="fake"
   >
     <div
@@ -34,14 +34,6 @@ exports[`BannerNotification should not wrap the description in a paragraph when 
             </p>
             <p />
           </div>
-          <div
-            class="googlesitekit-publisher-win__actions"
-          >
-            <span
-              class="spinner"
-              style="display: none; float: none; margin-top: 0px; visibility: visible;"
-            />
-          </div>
         </div>
       </div>
     </div>
@@ -52,7 +44,7 @@ exports[`BannerNotification should not wrap the description in a paragraph when 
 exports[`BannerNotification should wrap the description in a paragraph when the description is not a React element 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win googlesitekit-publisher-win--is-open"
+    class="googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
     id="fake"
   >
     <div
@@ -82,14 +74,6 @@ exports[`BannerNotification should wrap the description in a paragraph when the 
               </span>
                
             </p>
-          </div>
-          <div
-            class="googlesitekit-publisher-win__actions"
-          >
-            <span
-              class="spinner"
-              style="display: none; float: none; margin-top: 0px; visibility: visible;"
-            />
           </div>
         </div>
       </div>

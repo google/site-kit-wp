@@ -32,11 +32,21 @@ export default function useGAPropertyIDEffect() {
 	const singleAnalyticsPropertyID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
+	const tagmanagerExistingSettings = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getSettings()
+	);
 	const { setGAPropertyID } = useDispatch( MODULES_TAGMANAGER );
 
 	useEffect( () => {
-		if ( singleAnalyticsPropertyID !== undefined ) {
+		if (
+			tagmanagerExistingSettings !== undefined &&
+			singleAnalyticsPropertyID !== undefined
+		) {
 			setGAPropertyID( singleAnalyticsPropertyID || '' );
 		}
-	}, [ singleAnalyticsPropertyID, setGAPropertyID ] );
+	}, [
+		tagmanagerExistingSettings,
+		singleAnalyticsPropertyID,
+		setGAPropertyID,
+	] );
 }

@@ -128,7 +128,7 @@ describe( 'trackEvent', () => {
 				dimension4: '1.2.3',
 				dimension5: 'feature1,feature2',
 				dimension6: '',
-				dimension7: 1,
+				dimension7: '1',
 			} )
 		);
 		expect( pushArgs[ 0 ][ 2 ] ).toHaveProperty( 'event_callback' );

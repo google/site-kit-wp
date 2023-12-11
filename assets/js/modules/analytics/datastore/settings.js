@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
@@ -52,9 +53,9 @@ import {
 	FORM_SETUP,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { isPermissionScopeError } from '../../../util/errors';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import ga4ReportingTour from '../../../feature-tours/ga4-reporting';
 
 const { createRegistrySelector } = Data;
 
@@ -73,56 +74,55 @@ export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID =
 	'cannot submit changes with incorrect internal webPropertyID';
 
 async function submitGA4Changes( { select, dispatch } ) {
-	if ( ! select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+	if ( ! select( MODULES_ANALYTICS_4 ).haveAnyGA4SettingsChanged() ) {
 		return {};
 	}
 
-	const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
-	if ( isPermissionScopeError( error ) ) {
-		return { error };
-	}
-
-	return {};
+	return await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 }
 
 export async function submitChanges( registry ) {
 	const { select, dispatch } = registry;
 
-	let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
-	if ( propertyID === PROPERTY_CREATE ) {
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-		const { response: property, error } = await dispatch(
-			MODULES_ANALYTICS
-		).createProperty( accountID );
+	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
 
-		if ( error ) {
-			return { error };
+	if ( isUAEnabled ) {
+		let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
+		if ( propertyID === PROPERTY_CREATE ) {
+			const accountID = select( MODULES_ANALYTICS ).getAccountID();
+			const { response: property, error } = await dispatch(
+				MODULES_ANALYTICS
+			).createProperty( accountID );
+
+			if ( error ) {
+				return { error };
+			}
+
+			propertyID = property.id;
+			dispatch( MODULES_ANALYTICS ).setPropertyID( property.id );
+			dispatch( MODULES_ANALYTICS ).setInternalWebPropertyID(
+				// eslint-disable-next-line sitekit/acronym-case
+				property.internalWebPropertyId
+			);
 		}
 
-		propertyID = property.id;
-		dispatch( MODULES_ANALYTICS ).setPropertyID( property.id );
-		dispatch( MODULES_ANALYTICS ).setInternalWebPropertyID(
-			// eslint-disable-next-line sitekit/acronym-case
-			property.internalWebPropertyId
-		);
-	}
+		const profileID = select( MODULES_ANALYTICS ).getProfileID();
+		if ( profileID === PROFILE_CREATE ) {
+			const profileName = select( CORE_FORMS ).getValue(
+				FORM_SETUP,
+				'profileName'
+			);
+			const accountID = select( MODULES_ANALYTICS ).getAccountID();
+			const { response: profile, error } = await dispatch(
+				MODULES_ANALYTICS
+			).createProfile( accountID, propertyID, { profileName } );
 
-	const profileID = select( MODULES_ANALYTICS ).getProfileID();
-	if ( profileID === PROFILE_CREATE ) {
-		const profileName = select( CORE_FORMS ).getValue(
-			FORM_SETUP,
-			'profileName'
-		);
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-		const { response: profile, error } = await dispatch(
-			MODULES_ANALYTICS
-		).createProfile( accountID, propertyID, { profileName } );
+			if ( error ) {
+				return { error };
+			}
 
-		if ( error ) {
-			return { error };
+			dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 		}
-
-		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
 	const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -142,7 +142,6 @@ export async function submitChanges( registry ) {
 	// but this prevents errors in tests.
 	if ( select( MODULES_ANALYTICS ).haveSettingsChanged() ) {
 		const { error } = await dispatch( MODULES_ANALYTICS ).saveSettings();
-
 		if ( error ) {
 			return { error };
 		}
@@ -153,6 +152,10 @@ export async function submitChanges( registry ) {
 	const { error } = await submitGA4Changes( registry );
 	if ( error ) {
 		return { error };
+	}
+
+	if ( ! select( CORE_USER ).isTourDismissed( ga4ReportingTour.slug ) ) {
+		dispatch( CORE_USER ).dismissTour( ga4ReportingTour.slug );
 	}
 
 	return {};
@@ -185,7 +188,7 @@ export function validateCanSubmitChanges( select ) {
 
 	invariant(
 		haveSettingsChanged() ||
-			select( MODULES_ANALYTICS_4 ).haveSettingsChanged(),
+			select( MODULES_ANALYTICS_4 ).haveAnyGA4SettingsChanged(),
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 
@@ -193,14 +196,38 @@ export function validateCanSubmitChanges( select ) {
 		isValidAccountID( getAccountID() ),
 		INVARIANT_INVALID_ACCOUNT_ID
 	);
-	invariant(
-		isValidPropertySelection( getPropertyID() ),
-		INVARIANT_INVALID_PROPERTY_SELECTION
-	);
-	invariant(
-		isValidProfileSelection( getProfileID() ),
-		INVARIANT_INVALID_PROFILE_SELECTION
-	);
+
+	const isUAEnabled = select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' );
+	// Do not require selecting a property or profile.
+	// Only validate UA settings if `enableUA` is enabled.
+	if ( isUAEnabled ) {
+		invariant(
+			isValidPropertySelection( getPropertyID() ),
+			INVARIANT_INVALID_PROPERTY_SELECTION
+		);
+		invariant(
+			isValidProfileSelection( getProfileID() ),
+			INVARIANT_INVALID_PROFILE_SELECTION
+		);
+
+		if ( getProfileID() === PROFILE_CREATE ) {
+			const profileName = select( CORE_FORMS ).getValue(
+				FORM_SETUP,
+				'profileName'
+			);
+			invariant(
+				isValidProfileName( profileName ),
+				INVARIANT_INVALID_PROFILE_NAME
+			);
+		}
+
+		// If the property ID is valid (non-create) the internal ID must be valid as well.
+		invariant(
+			! isValidPropertyID( getPropertyID() ) ||
+				isValidInternalWebPropertyID( getInternalWebPropertyID() ),
+			INVARIANT_INVALID_INTERNAL_PROPERTY_ID
+		);
+	}
 
 	if ( getAdsConversionID() ) {
 		invariant(
@@ -208,24 +235,6 @@ export function validateCanSubmitChanges( select ) {
 			INVARIANT_INVALID_CONVERSION_ID
 		);
 	}
-
-	if ( getProfileID() === PROFILE_CREATE ) {
-		const profileName = select( CORE_FORMS ).getValue(
-			FORM_SETUP,
-			'profileName'
-		);
-		invariant(
-			isValidProfileName( profileName ),
-			INVARIANT_INVALID_PROFILE_NAME
-		);
-	}
-
-	// If the property ID is valid (non-create) the internal ID must be valid as well.
-	invariant(
-		! isValidPropertyID( getPropertyID() ) ||
-			isValidInternalWebPropertyID( getInternalWebPropertyID() ),
-		INVARIANT_INVALID_INTERNAL_PROPERTY_ID
-	);
 
 	if ( select( MODULES_ANALYTICS ).canUseGA4Controls() ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();

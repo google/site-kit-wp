@@ -30,54 +30,63 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
-import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
-import WPDashboardSessionDuration from './WPDashboardSessionDuration';
-import WPDashboardPopularPages from './WPDashboardPopularPages';
+import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
+import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
+import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
+import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
-import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'wpDashboardImpressions';
 const WIDGET_CLICKS = 'wpDashboardClicks';
 const WIDGET_VISITORS = 'wpDashboardUniqueVisitors';
+const WIDGET_VISITORS_CHART = 'wpDashboardUniqueVisitorsChart';
 const WIDGET_SESSION_DURATION = 'wpDashboardSessionDuration';
 const WIDGET_POPULAR_PAGES = 'wpDashboardPopularPages';
 
 // Search Console widgets.
-const WPDashboardImpressionsWidget = withWidgetComponentProps(
+const WPDashboardImpressionsWidget = withWPDashboardWidgetComponentProps(
 	WIDGET_IMPRESSIONS
 )( WPDashboardImpressions );
 const WPDashboardClicksWidget =
-	withWidgetComponentProps( WIDGET_CLICKS )( WPDashboardClicks );
+	withWPDashboardWidgetComponentProps( WIDGET_CLICKS )( WPDashboardClicks );
 
-// Analytics Widgets.
-const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps(
+// Analytics 4 Widgets.
+const WPDashboardUniqueVisitorsGA4Widget = withWPDashboardWidgetComponentProps(
 	WIDGET_VISITORS
-)( WPDashboardUniqueVisitors );
-const WPDashboardSessionDurationWidget = withWidgetComponentProps(
+)( WPDashboardUniqueVisitorsGA4 );
+const WPDashboardSessionDurationGA4Widget = withWPDashboardWidgetComponentProps(
 	WIDGET_SESSION_DURATION
-)( WPDashboardSessionDuration );
-const WPDashboardPopularPagesWidget = withWidgetComponentProps(
+)( WPDashboardSessionDurationGA4 );
+const WPDashboardPopularPagesGA4Widget = withWPDashboardWidgetComponentProps(
 	WIDGET_POPULAR_PAGES
-)( WPDashboardPopularPages );
+)( WPDashboardPopularPagesGA4 );
+const WPDashboardUniqueVisitorsChartGA4Widget =
+	withWPDashboardWidgetComponentProps( WIDGET_VISITORS_CHART )(
+		WPDashboardUniqueVisitorsChartGA4
+	);
 
-const WPDashboardWidgets = () => {
+export default function WPDashboardWidgets() {
 	const analyticsModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
-	const analyticsModuleActive = analyticsModule?.active;
-	const analyticsModuleConnected = analyticsModule?.connected;
-	const analyticsModuleActiveAndConnected =
-		analyticsModuleActive && analyticsModuleConnected;
 
 	if ( analyticsModule === undefined ) {
 		return null;
 	}
+
+	const {
+		active: analyticsModuleActive,
+		connected: analyticsModuleConnected,
+	} = analyticsModule;
+
+	const analyticsModuleActiveAndConnected =
+		analyticsModuleActive && analyticsModuleConnected;
 
 	return (
 		<div
@@ -85,21 +94,21 @@ const WPDashboardWidgets = () => {
 				'googlesitekit-wp-dashboard-stats googlesitekit-wp-dashboard-stats--twoup',
 				{
 					'googlesitekit-wp-dashboard-stats--fourup':
-						analyticsModuleActive && analyticsModuleConnected,
+						analyticsModuleActiveAndConnected,
 				}
 			) }
 		>
 			{ analyticsModuleActiveAndConnected && (
 				<Fragment>
-					<WPDashboardUniqueVisitorsWidget />
-					<WPDashboardSessionDurationWidget />
+					<WPDashboardUniqueVisitorsGA4Widget />
+					<WPDashboardSessionDurationGA4Widget />
 				</Fragment>
 			) }
 
 			<WPDashboardImpressionsWidget />
 			<WPDashboardClicksWidget />
 
-			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+			{ ! analyticsModuleActiveAndConnected && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
 					<WPDashboardActivateAnalyticsCTA />
 				</div>
@@ -107,12 +116,10 @@ const WPDashboardWidgets = () => {
 
 			{ analyticsModuleActiveAndConnected && (
 				<Fragment>
-					<WPDashboardUniqueVisitorsChartWidget />
-					<WPDashboardPopularPagesWidget />
+					<WPDashboardUniqueVisitorsChartGA4Widget />
+					<WPDashboardPopularPagesGA4Widget />
 				</Fragment>
 			) }
 		</div>
 	);
-};
-
-export default WPDashboardWidgets;
+}

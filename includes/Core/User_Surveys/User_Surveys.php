@@ -45,10 +45,19 @@ class User_Surveys {
 	 *
 	 * @param Authentication $authentication Authentication instance.
 	 * @param User_Options   $user_options   User option API.
+	 * @param Survey_Queue   $survey_queue   Optional. Survey_Queue instance. Default a new instance.
 	 */
-	public function __construct( Authentication $authentication, User_Options $user_options ) {
+	public function __construct(
+		Authentication $authentication,
+		User_Options $user_options,
+		Survey_Queue $survey_queue
+	) {
 		$this->survey_timeouts = new Survey_Timeouts( $user_options );
-		$this->rest_controller = new REST_User_Surveys_Controller( $authentication, $this->survey_timeouts );
+		$this->rest_controller = new REST_User_Surveys_Controller(
+			$authentication,
+			$this->survey_timeouts,
+			$survey_queue ?: new Survey_Queue( $user_options )
+		);
 	}
 
 	/**

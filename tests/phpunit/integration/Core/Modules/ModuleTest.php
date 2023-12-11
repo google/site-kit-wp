@@ -11,7 +11,14 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
@@ -29,7 +36,7 @@ class ModuleTest extends TestCase {
 
 	public function test_register() {
 		// The register method is abstract and required by any implementation
-		$method = new \ReflectionMethod( self::MODULE_CLASS_NAME, 'register' );
+		$method = new ReflectionMethod( self::MODULE_CLASS_NAME, 'register' );
 		$this->assertTrue( $method->isAbstract() );
 	}
 
@@ -74,7 +81,7 @@ class ModuleTest extends TestCase {
 
 	public function test_get_data() {
 		// get_data is a wrapper for the protected execute_data_request method.
-		$method = new \ReflectionMethod( self::MODULE_CLASS_NAME, 'get_data' );
+		$method = new ReflectionMethod( self::MODULE_CLASS_NAME, 'get_data' );
 		// Make assertions that affect backwards compatibility
 		$this->assertTrue( $method->isPublic() );
 		// Number of parameters can increase while preserving B/C, but not decrease
@@ -109,9 +116,143 @@ class ModuleTest extends TestCase {
 		);
 	}
 
+	public function test_get_data__current_module_owner_without_shared_role() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$module           = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$module->owner_id = $user_id;
+
+		// Verify that the user owns the module, and that it is shareable.
+		$this->assertEquals( $user_id, $module->get_owner_id() );
+		$this->assertTrue( $module->is_shareable() );
+
+		// Verify that the user does not have a shared role.
+		$this->assertFalse( current_user_can( Permissions::READ_SHARED_MODULE_DATA, $module->slug ) );
+
+		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
+
+		// Verify that the response returned data as expected.
+		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
+
+		// The module should not have made a shared request, as it doesn't need to because it's owned by the current user.
+		$this->assertFalse( $module->made_shared_data_request() );
+	}
+
+	public function test_get_data__current_module_owner_with_shared_role() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		// Set up sharing capabilities...
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+
+		$modules     = new Modules( $context, null, $user_options, $authentication );
+		$permissions = new Permissions( $context, $authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+		$permissions->register();
+
+		$module           = new FakeModule( $context, $options, $user_options, $authentication );
+		$module->owner_id = $user_id;
+
+		// Ensure sharing is enabled for the module.
+		add_option(
+			Module_Sharing_Settings::OPTION,
+			array(
+				$module->slug => array(
+					'sharedRoles' => $user->roles,
+					'management'  => 'owner',
+				),
+			)
+		);
+
+		// Verify that the user owns the module, and that it is shareable.
+		$this->assertEquals( $user_id, $module->get_owner_id() );
+		$this->assertTrue( $module->is_shareable() );
+
+		// Verify that the user has a shared role.
+		$this->assertTrue( current_user_can( Permissions::READ_SHARED_MODULE_DATA, $module->slug ) );
+
+		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
+
+		// Verify that the response returned data as expected.
+		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
+
+		// The module should not have made a shared request, even though the user does have a shared role, as it still doesn't need to because it's owned by the current user.
+		$this->assertFalse( $module->made_shared_data_request() );
+	}
+
+	public function test_get_data__non_module_owner_without_shared_role() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Verify that the user does not own the module, and that it is shareable.
+		$this->assertNotEquals( $user_id, $module->get_owner_id() );
+		$this->assertTrue( $module->is_shareable() );
+
+		// Verify that the user does not have a shared role.
+		$this->assertFalse( current_user_can( Permissions::READ_SHARED_MODULE_DATA, $module->slug ) );
+
+		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
+
+		// Verify that the response returned data as expected.
+		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
+
+		// The module should not have made a shared request, as the user doesn't own the module and doesn't have a shared role.
+		$this->assertFalse( $module->made_shared_data_request() );
+	}
+
+	public function test_get_data__non_module_owner_with_shared_role() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		// Set up sharing capabilities...
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+
+		$modules     = new Modules( $context, null, $user_options, $authentication );
+		$permissions = new Permissions( $context, $authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+		$permissions->register();
+
+		$module = new FakeModule( $context, $options, $user_options, $authentication );
+
+		// Ensure sharing is enabled for the module.
+		add_option(
+			Module_Sharing_Settings::OPTION,
+			array(
+				$module->slug => array(
+					'sharedRoles' => $user->roles,
+					'management'  => 'owner',
+				),
+			)
+		);
+
+		// Verify that the user does not own the module, and that it is shareable.
+		$this->assertNotEquals( $user_id, $module->get_owner_id() );
+		$this->assertTrue( $module->is_shareable() );
+
+		// Verify that the user has a shared role.
+		$this->assertTrue( current_user_can( Permissions::READ_SHARED_MODULE_DATA, $module->slug ) );
+
+		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
+
+		// Verify that the response returned data as expected.
+		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
+
+		// The module should have made a shared request, as the user doesn't own the module and does have a shared role.
+		$this->assertTrue( $module->made_shared_data_request() );
+	}
+
 	public function test_set_data() {
 		// set_data is a wrapper for the protected execute_data_request method.
-		$method = new \ReflectionMethod( self::MODULE_CLASS_NAME, 'set_data' );
+		$method = new ReflectionMethod( self::MODULE_CLASS_NAME, 'set_data' );
 		// Make assertions that affect backwards compatibility
 		$this->assertTrue( $method->isPublic() );
 		// Number of parameters can increase while preserving B/C, but not decrease
@@ -126,121 +267,6 @@ class ModuleTest extends TestCase {
 		$this->assertEqualSets(
 			array( 'test-request' ),
 			$module->get_datapoints()
-		);
-	}
-
-	/**
-	 * @dataProvider data_site_hosts
-	 */
-	public function test_permute_site_hosts( $hostname, $expected ) {
-		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$method = new ReflectionMethod( $module, 'permute_site_hosts' );
-		$method->setAccessible( true );
-		$permute_site_hosts = function ( ...$args ) use ( $module, $method ) {
-			return $method->invoke( $module, ...$args );
-		};
-
-		$this->assertEqualSets(
-			$expected,
-			$permute_site_hosts( $hostname )
-		);
-	}
-
-	public function data_site_hosts() {
-		return array(
-			'example.com'              => array(
-				'example.com',
-				array(
-					'example.com',
-					'www.example.com',
-				),
-			),
-			'www.example.com'          => array(
-				'www.example.com',
-				array(
-					'example.com',
-					'www.example.com',
-				),
-			),
-			'éxämplę.test'             => array(
-				'éxämplę.test',
-				array(
-					'éxämplę.test',
-					'www.éxämplę.test',
-					'xn--xmpl-loa2a55a.test',
-					'www.xn--xmpl-loa2a55a.test',
-				),
-			),
-			'éxämplę.test as punycode' => array(
-				'xn--xmpl-loa2a55a.test',
-				array(
-					'éxämplę.test',
-					'www.éxämplę.test',
-					'xn--xmpl-loa2a55a.test',
-					'www.xn--xmpl-loa2a55a.test',
-				),
-			),
-		);
-	}
-
-	/**
-	 * @dataProvider data_site_urls
-	 */
-	public function test_permute_site_url( $site_url, $expected ) {
-		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$method = new ReflectionMethod( $module, 'permute_site_url' );
-		$method->setAccessible( true );
-		$permute_site_url = function ( ...$args ) use ( $module, $method ) {
-			return $method->invoke( $module, ...$args );
-		};
-
-		$this->assertEqualSets(
-			$expected,
-			$permute_site_url( $site_url )
-		);
-	}
-
-	public function data_site_urls() {
-		return array(
-			'http://éxämplę.test'               => array(
-				'http://éxämplę.test',
-				array(
-					'http://éxämplę.test',
-					'https://éxämplę.test',
-					'http://www.éxämplę.test',
-					'https://www.éxämplę.test',
-					'http://xn--xmpl-loa2a55a.test',
-					'https://xn--xmpl-loa2a55a.test',
-					'http://www.xn--xmpl-loa2a55a.test',
-					'https://www.xn--xmpl-loa2a55a.test',
-				),
-			),
-			'http://éxämplę.test/sub-directory' => array(
-				'http://éxämplę.test/sub-directory',
-				array(
-					'http://éxämplę.test/sub-directory',
-					'https://éxämplę.test/sub-directory',
-					'http://www.éxämplę.test/sub-directory',
-					'https://www.éxämplę.test/sub-directory',
-					'http://xn--xmpl-loa2a55a.test/sub-directory',
-					'https://xn--xmpl-loa2a55a.test/sub-directory',
-					'http://www.xn--xmpl-loa2a55a.test/sub-directory',
-					'https://www.xn--xmpl-loa2a55a.test/sub-directory',
-				),
-			),
-			'http://éxämplę.test/sub-directory as punycode' => array(
-				'http://xn--xmpl-loa2a55a.test/sub-directory',
-				array(
-					'http://éxämplę.test/sub-directory',
-					'https://éxämplę.test/sub-directory',
-					'http://www.éxämplę.test/sub-directory',
-					'https://www.éxämplę.test/sub-directory',
-					'http://xn--xmpl-loa2a55a.test/sub-directory',
-					'https://xn--xmpl-loa2a55a.test/sub-directory',
-					'http://www.xn--xmpl-loa2a55a.test/sub-directory',
-					'https://www.xn--xmpl-loa2a55a.test/sub-directory',
-				),
-			),
 		);
 	}
 
@@ -346,7 +372,7 @@ class ModuleTest extends TestCase {
 	public function test_is_shareable() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertFalse( $module->is_shareable() );
+		$this->assertTrue( $module->is_shareable() );
 	}
 
 	public function test_is_recoverable() {

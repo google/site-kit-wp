@@ -34,10 +34,16 @@ global._googlesitekitLegacyData = {
 
 global._googlesitekitUserData = {
 	user: {},
+	connectURL:
+		'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 };
 
-global._googlesitekitBaseData = {};
+global._googlesitekitBaseData = {
+	storagePrefix: 'abc123',
+};
 global._googlesitekitEntityData = {};
+
+global.GOOGLESITEKIT_VERSION = '1.23.0';
 
 // eslint-disable-next-line no-undef
 global.gtag = function ( type, name, sendto, category, label, value ) {

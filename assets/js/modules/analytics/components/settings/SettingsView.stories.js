@@ -21,8 +21,10 @@
  */
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../..//analytics-4/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -31,6 +33,19 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+
+const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
+const properties = [
+	{
+		...fixtures.accountsPropertiesProfiles.properties[ 0 ],
+		websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+	},
+	{
+		...fixtures.accountsPropertiesProfiles.properties[ 1 ],
+	},
+];
+
+const accountID = accounts[ 0 ].id;
 
 function Template( { setupRegistry = () => {}, ...args } ) {
 	return (
@@ -65,25 +80,32 @@ WithGA4Snippet.args = {
 	},
 };
 
+export const PostGA4AutoSwitch = Template.bind( null );
+PostGA4AutoSwitch.storyName = 'Settings post GA4 auto-switch';
+PostGA4AutoSwitch.args = {
+	setupRegistry: ( registry ) => {
+		// Ensure UA is in a connected state so that the Dashboard View section would ordinarily be shown.
+		registry.dispatch( MODULES_ANALYTICS ).selectProperty(
+			properties[ 0 ].id,
+			// eslint-disable-next-line sitekit/acronym-case
+			properties[ 0 ].internalWebPropertyId
+		);
+
+		// Set the reference date to the GA4 auto-switch date, to demonstrate that the Dashboard View section is hidden
+		// in this case.
+		registry.dispatch( CORE_USER ).setReferenceDate( GA4_AUTO_SWITCH_DATE );
+	},
+};
+PostGA4AutoSwitch.parameters = {};
+PostGA4AutoSwitch.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsView/PostGA4AutoSwitch',
+};
+
 export default {
 	title: 'Modules/Analytics/Settings/SettingsView',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const accounts =
-					fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
-				const properties = [
-					{
-						...fixtures.accountsPropertiesProfiles.properties[ 0 ],
-						websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-					},
-					{
-						...fixtures.accountsPropertiesProfiles.properties[ 1 ],
-					},
-				];
-
-				const accountID = accounts[ 0 ].id;
-
 				provideModules( registry, [
 					{
 						slug: 'analytics',

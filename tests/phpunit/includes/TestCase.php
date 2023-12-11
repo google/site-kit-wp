@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Tests;
 
 use Closure;
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -41,15 +40,10 @@ class TestCase extends WP_UnitTestCase {
 	public static function tear_down_after_class() {
 		parent::tear_down_after_class();
 		self::reset_feature_flags();
-		self::reset_build_mode();
 	}
 
 	protected static function reset_feature_flags() {
 		Feature_Flags::set_features( self::$featureFlagsConfig );
-	}
-
-	protected static function reset_build_mode() {
-		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
 	}
 
 	/**
@@ -228,7 +222,7 @@ class TestCase extends WP_UnitTestCase {
 	 * @param string $message Optional. Message to display when the assertion fails.
 	 */
 	protected function assertArrayIntersection( array $subset, array $array, $message = '' ) {
-		$intersection = array_intersect_key( $subset, $array );
+		$intersection = array_intersect_key( $array, $subset );
 
 		$this->assertEqualSetsWithIndex( $subset, $intersection, $message );
 	}

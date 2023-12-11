@@ -26,7 +26,13 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Assets
  */
 class AssetsTest extends TestCase {
+
 	use Fake_Site_Connection_Trait;
+
+	/**
+	 * @var Assets
+	 */
+	private $assets;
 
 	// The actions and filters below only get registered for users that can
 	// authorize with Site Kit.
@@ -36,6 +42,7 @@ class AssetsTest extends TestCase {
 		'admin_print_styles',
 		'wp_print_styles',
 	);
+
 	private $authorized_filters = array(
 		// Both script_loader_tag and style_loader_tag are hooked by add_amp_dev_mode_attributes
 		// which requires authorization, however script_loader_tag is also filtered
@@ -47,10 +54,20 @@ class AssetsTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
+		$this->assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_styles()->registered  = array();
 		wp_styles()->queue       = array();
+	}
+
+	public function tear_down() {
+		parent::tear_down();
+		// Ensure registered post types are cleaned up.
+		if ( post_type_exists( 'product' ) ) {
+			unregister_post_type( 'product' );
+		}
 	}
 
 	public function test_register() {
@@ -69,8 +86,7 @@ class AssetsTest extends TestCase {
 			remove_all_filters( $hook );
 		}
 
-		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$assets->register();
+		$this->assets->register();
 
 		foreach ( $actions_to_test as $hook ) {
 			$this->assertTrue( has_action( $hook ), "Failed asserting that action was added to {$hook}." );
@@ -88,7 +104,7 @@ class AssetsTest extends TestCase {
 		// For a user that can authenticate, ensure the hooks are added.
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
-		$assets->register();
+		$this->assets->register();
 		foreach ( $this->authorized_actions as $hook ) {
 			$this->assertTrue( has_action( $hook ), "Failed asserting that action was added to {$hook}." );
 		}
@@ -99,11 +115,9 @@ class AssetsTest extends TestCase {
 
 	public function test_register_dashboard_sharing() {
 		// For a user that can view shared dashboard, ensure the hooks are added.
-		$this->enable_feature( 'dashboardSharing' );
-		$contributor = self::factory()->user->create_and_get( array( 'role' => 'contributor' ) );
+		$contributor = $this->factory()->user->create_and_get( array( 'role' => 'contributor' ) );
 
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$assets          = new Assets( $context );
 		$settings        = new Module_Sharing_Settings( new Options( $context ) );
 		$user_options    = new User_Options( $context, $contributor->ID );
 		$dismissed_items = new Dismissed_Items( $user_options );
@@ -131,7 +145,7 @@ class AssetsTest extends TestCase {
 		$this->assertTrue( $authentication->is_setup_completed() );
 
 		wp_set_current_user( $contributor->ID );
-		$assets->register();
+		$this->assets->register();
 		foreach ( $this->authorized_actions as $hook ) {
 			$this->assertTrue( has_action( $hook ), "Failed asserting that action was added to {$hook}." );
 		}
@@ -142,11 +156,7 @@ class AssetsTest extends TestCase {
 
 	public function test_enqueue_asset_with_unknown() {
 		$this->assertFalse( wp_script_is( 'unknown_script', 'enqueued' ) );
-
-		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$assets->enqueue_asset( 'unknown_script' );
-
+		$this->assets->enqueue_asset( 'unknown_script' );
 		$this->assertFalse( wp_script_is( 'unknown_script', 'enqueued' ) );
 	}
 
@@ -154,9 +164,7 @@ class AssetsTest extends TestCase {
 		$this->setExpectedDeprecated( Assets::class . '::enqueue_fonts' );
 		remove_all_actions( 'login_enqueue_scripts' );
 
-		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		add_action( 'login_enqueue_scripts', array( $assets, 'enqueue_fonts' ) );
+		add_action( 'login_enqueue_scripts', array( $this->assets, 'enqueue_fonts' ) );
 		do_action( 'login_enqueue_scripts' );
 
 		// Ensure the method does not execute its logic twice (via the above once check).
@@ -166,15 +174,13 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_run_before_print_callbacks() {
-		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
 		remove_all_actions( 'wp_print_scripts' );
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
-		$assets->register();
+		$this->assets->register();
 
 		// Enqueue script that has 'googlesitekit-commons' as dependency.
-		$assets->enqueue_asset( 'googlesitekit-main-dashboard' );
+		$this->assets->enqueue_asset( 'googlesitekit-main-dashboard' );
 
 		// Ensure that 'googlesitekit-commons' is enqueued too.
 		$this->assertTrue( wp_script_is( 'googlesitekit-main-dashboard', 'enqueued' ) );
@@ -185,5 +191,95 @@ class AssetsTest extends TestCase {
 		// Ensure that before_print callback for 'googlesitekit-commons' was run (its localized script should be there).
 		$localized_script = wp_scripts()->get_data( 'googlesitekit-commons', 'data' );
 		$this->assertStringContainsString( 'var _googlesitekitLegacyData = ', $localized_script );
+	}
+
+	private function get_inline_base_data() {
+		remove_all_actions( 'wp_print_scripts' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$this->assets->register();
+
+		$this->assets->enqueue_asset( 'googlesitekit-base-data' );
+		do_action( 'wp_print_scripts' );
+
+		$localized_script = wp_scripts()->get_data( 'googlesitekit-base-data', 'data' );
+
+		$json = substr( $localized_script, strlen( 'var _googlesitekitBaseData = ' ) );
+		$json = substr( $json, 0, -1 ); // Remove the trailing semicolon.
+
+		return json_decode( $json, true );
+	}
+
+	public function test_base_data__reference_date_default() {
+		$data = $this->get_inline_base_data();
+		$this->assertEquals( null, $data['referenceDate'] );
+	}
+
+	public function test_base_data__reference_date_filter() {
+		add_filter(
+			'googlesitekit_reference_date',
+			function() {
+				return '2020-01-01';
+			}
+		);
+
+		$data = $this->get_inline_base_data();
+		$this->assertEquals( '2020-01-01', $data['referenceDate'] );
+	}
+
+	public function test_base_data__product_post_type__no_products() {
+		$this->enable_feature( 'keyMetrics' );
+		$data = $this->get_inline_base_data();
+		$this->assertTrue( empty( $data['productPostType'] ) );
+	}
+
+	public function test_base_data__product_post_type__hidden_post_type() {
+		$this->enable_feature( 'keyMetrics' );
+		$this->set_permalink_structure( '/%postname%/' );
+
+		register_post_type( 'product', array( 'public' => false ) );
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( empty( $data['productPostType'] ) );
+	}
+
+	public function test_base_data__product_post_type__filter_change_product_post() {
+		$this->enable_feature( 'keyMetrics' );
+		register_post_type( 'digital_product', array( 'public' => true ) );
+
+		add_filter(
+			'googlesitekit_product_post_type',
+			function() {
+				return 'digital_product';
+			}
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( 'digital_product', $data['productPostType'] );
+	}
+
+	public function test_base_data__product_post_type__invalid_post_type() {
+		$this->enable_feature( 'keyMetrics' );
+
+		add_filter(
+			'googlesitekit_product_post_type',
+			function() {
+				return 'invalid_post_type';
+			}
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( empty( $data['productPostType'] ) );
+	}
+
+	public function test_base_data__product_post_type() {
+		$this->enable_feature( 'keyMetrics' );
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( 'product', $data['productPostType'] );
 	}
 }

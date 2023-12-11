@@ -34,9 +34,9 @@ import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
-import DashboardOverallPageMetricsWidget from './components/dashboard/DashboardOverallPageMetricsWidget';
-import { ModulePopularPagesWidget } from './components/module';
+import DashboardAllTrafficWidgetGA4 from './components/dashboard/DashboardAllTrafficWidgetGA4';
+import DashboardOverallPageMetricsWidgetGA4 from './components/dashboard/DashboardOverallPageMetricsWidgetGA4';
+import { ModulePopularPagesWidgetGA4 } from './components/module';
 
 export { registerStore } from './datastore';
 
@@ -56,14 +56,15 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
+	// Register Analytics 4 (GA4) Widgets.
 	widgets.registerWidget(
-		'analyticsAllTraffic',
+		'analyticsAllTrafficGA4',
 		{
-			Component: DashboardAllTrafficWidget,
+			Component: DashboardAllTrafficWidgetGA4,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics' ],
+			modules: [ 'analytics-4' ],
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -72,25 +73,25 @@ export const registerWidgets = ( widgets ) => {
 	);
 
 	widgets.registerWidget(
-		'analyticsOverallPageMetrics',
+		'analyticsOverallPageMetricsGA4',
 		{
-			Component: DashboardOverallPageMetricsWidget,
+			Component: DashboardOverallPageMetricsWidgetGA4,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 3,
 			wrapWidget: false,
-			modules: [ 'analytics' ],
+			modules: [ 'analytics-4' ],
 		},
 		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
 	);
 
 	widgets.registerWidget(
-		'analyticsModulePopularPages',
+		'analyticsModulePopularPagesGA4',
 		{
-			Component: ModulePopularPagesWidget,
+			Component: ModulePopularPagesWidgetGA4,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 4,
 			wrapWidget: false,
-			modules: [ 'analytics' ],
+			modules: [ 'analytics-4' ],
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);

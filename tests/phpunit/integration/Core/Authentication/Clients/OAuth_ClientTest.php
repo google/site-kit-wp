@@ -20,14 +20,13 @@ use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Query;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 /**
  * @group Authentication
@@ -81,11 +80,12 @@ class OAuth_ClientTest extends TestCase {
 		);
 
 		delete_user_option( $user_id, OAuth_Client::OPTION_ERROR_CODE );
-		$fake_http_client = new FakeHttpClient();
+
 		// Set the request handler to return a response with a new access token.
-		$fake_http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$client->get_client(),
 			function ( Request $request ) use ( $activity_metrics ) {
-				if ( 0 !== strpos( $request->getUrl(), 'https://oauth2.googleapis.com/token' ) ) {
+				if ( 0 !== strpos( $request->getUri(), 'https://oauth2.googleapis.com/token' ) ) {
 					return new Response( 200 );
 				}
 
@@ -99,19 +99,17 @@ class OAuth_ClientTest extends TestCase {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'access_token' => 'new-test-access-token',
-								'expires_in'   => 3599,
-								'token_type'   => 'Bearer',
-							)
+					json_encode(
+						array(
+							'access_token' => 'new-test-access-token',
+							'expires_in'   => 3599,
+							'token_type'   => 'Bearer',
 						)
 					)
 				);
 			}
 		);
-		$client->get_client()->setHttpClient( $fake_http_client );
+
 		$client->refresh_token();
 
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
@@ -458,10 +456,11 @@ class OAuth_ClientTest extends TestCase {
 		// No other way around this but to mock the Google_Site_Kit_Client
 		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
 			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
-		$http_client        = new FakeHttpClient();
-		$http_client->set_request_handler(
+
+		FakeHttp::fake_google_http_handler(
+			$google_client_mock,
 			function ( Request $request ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
 					return new Response( 200 );
 				}
@@ -469,25 +468,23 @@ class OAuth_ClientTest extends TestCase {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'emailAddresses' => array(
-									array( 'value' => 'fresh@foo.com' ),
-								),
-								'photos'         => array(
-									array( 'url' => 'https://example.com/fresh.jpg' ),
-								),
-								'names'          => array(
-									array( 'displayName' => 'Dr Funkenstein' ),
-								),
-							)
+					json_encode(
+						array(
+							'emailAddresses' => array(
+								array( 'value' => 'fresh@foo.com' ),
+							),
+							'photos'         => array(
+								array( 'url' => 'https://example.com/fresh.jpg' ),
+							),
+							'names'          => array(
+								array( 'displayName' => 'Dr Funkenstein' ),
+							),
 						)
 					)
 				);
 			}
 		);
-		$google_client_mock->setHttpClient( $http_client );
+
 		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
 		$this->force_set_property( $client, 'google_client', $google_client_mock );
 
@@ -522,10 +519,11 @@ class OAuth_ClientTest extends TestCase {
 		// No other way around this but to mock the Google_Site_Kit_Client
 		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
 			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
-		$http_client        = new FakeHttpClient();
-		$http_client->set_request_handler(
+
+		FakeHttp::fake_google_http_handler(
+			$google_client_mock,
 			function ( Request $request ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
 					return new Response( 200 );
 				}
@@ -533,25 +531,23 @@ class OAuth_ClientTest extends TestCase {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'emailAddresses' => array(
-									array( 'value' => 'fresh@foo.com' ),
-								),
-								'photos'         => array(
-									array( 'url' => 'https://example.com/fresh.jpg' ),
-								),
-								'names'          => array(
-									array( 'displayName' => 'Dr Funkenstein' ),
-								),
-							)
+					json_encode(
+						array(
+							'emailAddresses' => array(
+								array( 'value' => 'fresh@foo.com' ),
+							),
+							'photos'         => array(
+								array( 'url' => 'https://example.com/fresh.jpg' ),
+							),
+							'names'          => array(
+								array( 'displayName' => 'Dr Funkenstein' ),
+							),
 						)
 					)
 				);
 			}
 		);
-		$google_client_mock->setHttpClient( $http_client );
+
 		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
 		$this->force_set_property( $client, 'google_client', $google_client_mock );
 
@@ -621,10 +617,16 @@ class OAuth_ClientTest extends TestCase {
 		// No other way around this but to mock the Google_Site_Kit_Client
 		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
 								->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
-		$http_client        = new FakeHttpClient();
-		$http_client->set_request_handler(
+		// Deferred request execution is false by default.
+		$this->assertFalse( $google_client_mock->shouldDefer() );
+		// This ensures that the defer is disabled in the method under test. (See #7356)
+		// If not handled properly, the caller will not expect the response to be a Request and it will error.
+		$google_client_mock->setDefer( true );
+
+		FakeHttp::fake_google_http_handler(
+			$google_client_mock,
 			function ( Request $request ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
 					return new Response( 200 );
 				}
@@ -632,7 +634,7 @@ class OAuth_ClientTest extends TestCase {
 				return new Response( 500 );
 			}
 		);
-		$google_client_mock->setHttpClient( $http_client );
+
 		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
 		$this->force_set_property( $client, 'google_client', $google_client_mock );
 
@@ -658,33 +660,34 @@ class OAuth_ClientTest extends TestCase {
 			$current_time,
 			wp_next_scheduled( OAuth_Client::CRON_REFRESH_PROFILE_DATA, array( $user_id_b ) )
 		);
-		$http_client->set_request_handler(
+
+		FakeHttp::fake_google_http_handler(
+			$google_client_mock,
 			function ( Request $request ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
 					return new Response( 200 );
 				}
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'emailAddresses' => array(
-									array( 'value' => 'fresh@foo.com' ),
-								),
-								'photos'         => array(
-									array( 'url' => 'https://example.com/fresh.jpg' ),
-								),
-								'names'          => array(
-									array( 'displayName' => 'Dr Funkenstein' ),
-								),
-							)
+					json_encode(
+						array(
+							'emailAddresses' => array(
+								array( 'value' => 'fresh@foo.com' ),
+							),
+							'photos'         => array(
+								array( 'url' => 'https://example.com/fresh.jpg' ),
+							),
+							'names'          => array(
+								array( 'displayName' => 'Dr Funkenstein' ),
+							),
 						)
 					)
 				);
 			}
 		);
+
 		// Call refresh again for the second user, which will succeed.
 		$client->refresh_profile_data( MINUTE_IN_SECONDS );
 		// The scheduled event for the second user should now be cleared.
@@ -697,6 +700,9 @@ class OAuth_ClientTest extends TestCase {
 			$current_time,
 			wp_next_scheduled( OAuth_Client::CRON_REFRESH_PROFILE_DATA, array( $user_id_a ) )
 		);
+
+		// This ensures the previous defer was properly restored.
+		$this->assertTrue( $google_client_mock->shouldDefer() );
 	}
 
 	public function test_using_proxy() {

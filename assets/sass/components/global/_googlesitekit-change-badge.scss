@@ -1,0 +1,47 @@
+/**
+ * Change badge styles.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-change-badge {
+		background-color: $c-green-g-50;
+		border-radius: $br-lg;
+		color: $c-green-g-700;
+		font: $f-primary;
+		font-size: $fs-label-sm;
+		font-weight: 500;
+		letter-spacing: $ls-xs;
+		line-height: $lh-label-sm;
+		margin-top: 6px;
+		padding: 4px 8px;
+
+		@media (min-width: $bp-nonMobile) {
+			margin-top: 12px;
+		}
+
+		&.googlesitekit-change-badge--negative {
+			background-color: $c-red-r-50;
+			color: $c-red-r-700;
+		}
+
+		&.googlesitekit-change-badge--zero {
+			background-color: $c-neutral-n-50;
+			color: $c-neutral-n-700;
+		}
+	}
+}

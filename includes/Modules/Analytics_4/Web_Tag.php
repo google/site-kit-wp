@@ -20,9 +20,28 @@ use Google\Site_Kit\Modules\Analytics\Web_Tag as Analytics_Web_Tag;
  * @access private
  * @ignore
  */
-class Web_Tag extends Analytics_Web_Tag {
+class Web_Tag extends Analytics_Web_Tag implements Tag_Interface {
 
 	use Method_Proxy_Trait;
+
+	/**
+	 * Custom dimensions data.
+	 *
+	 * @since 1.113.0
+	 * @var array
+	 */
+	private $custom_dimensions;
+
+	/**
+	 * Sets custom dimensions data.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @param string $custom_dimensions Custom dimensions data.
+	 */
+	public function set_custom_dimensions( $custom_dimensions ) {
+		$this->custom_dimensions = $custom_dimensions;
+	}
 
 	/**
 	 * Registers tag hooks.
@@ -43,12 +62,39 @@ class Web_Tag extends Analytics_Web_Tag {
 	protected function enqueue_gtag_script() {
 		if ( did_action( 'googlesitekit_analytics_init_tag' ) ) {
 			// If the gtag script is already registered in the Analytics module, then we need to add <MEASUREMENT_ID> configuration only.
-			$config = sprintf( 'gtag("config", "%s");', esc_js( $this->tag_id ) );
-			wp_add_inline_script( 'google_gtagjs', $config );
+			$this->add_inline_config(
+				$this->tag_id,
+				! empty( $this->custom_dimensions )
+					? $this->custom_dimensions
+					: array()
+			);
 		} else {
 			// Otherwise register gtag as in the Analytics module knowing that we used Measurement ID from GA4 instead of Property ID.
 			parent::enqueue_gtag_script();
 		}
+	}
+
+	/**
+	 * Gets the tag config as used in the gtag data vars.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @return array Tag configuration.
+	 */
+	protected function get_tag_config() {
+		$config = parent::get_tag_config();
+
+		// Do not add custom dimensions if UA is enabled because they will be
+		// added to the UA property instead of to the GA4 measurement ID.
+		if ( did_action( 'googlesitekit_analytics_init_tag' ) ) {
+			return $config;
+		}
+
+		if ( ! empty( $this->custom_dimensions ) ) {
+			$config = array_merge( $config, $this->custom_dimensions );
+		}
+
+		return $config;
 	}
 
 }

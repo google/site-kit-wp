@@ -23,6 +23,11 @@ import { storiesOf } from '@storybook/react';
 import fetchMock from 'fetch-mock';
 
 /**
+ * WordPress dependencies
+ */
+import { createInterpolateElement } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -223,7 +228,7 @@ const MockWPDashboard = () => (
 												edge of space…
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -249,7 +254,7 @@ const MockWPDashboard = () => (
 												About – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/about/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -275,7 +280,7 @@ const MockWPDashboard = () => (
 												WordPress Websites – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/wordpress-websites/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -302,7 +307,7 @@ const MockWPDashboard = () => (
 												Development – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/wordpress-websites/wordpress-programming/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -328,7 +333,7 @@ const MockWPDashboard = () => (
 												WordPress – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url "
 												href="/category/wordpress/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -395,11 +400,12 @@ storiesOf( 'Global', module ).add( 'TourTooltips', () => {
 			title: 'Generic step title for the fourth step',
 			content: (
 				<div>
-					This is the fourth step with an external link that should go
-					to Google,{ ' ' }
-					<Link href="http://google.com" external>
-						link.
-					</Link>
+					{ createInterpolateElement(
+						'This is the fourth step with an external link that should go to Google, <a>link</a>.',
+						{
+							a: <Link href="http://google.com" external />,
+						}
+					) }
 				</div>
 			),
 		},

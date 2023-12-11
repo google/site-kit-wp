@@ -11,8 +11,11 @@ import {
 	setSiteVerification,
 	setSearchConsoleProperty,
 	useRequestInterception,
+	setupAnalytics4,
 } from '../../../utils';
 import * as adminBarMockResponses from './fixtures/admin-bar';
+import { getAnalytics4MockResponse } from '../../../../../assets/js/modules/analytics-4/utils/data-mock';
+import getMultiDimensionalObjectFromParams from '../../../utils/get-multi-dimensional-object-from-params';
 
 let mockBatchResponse;
 
@@ -24,6 +27,12 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
+			const url = request.url();
+
+			const paramsObject = Object.fromEntries(
+				new URL( url ).searchParams.entries()
+			);
+
 			if (
 				request
 					.url()
@@ -43,15 +52,18 @@ describe( 'Site Kit admin bar component display', () => {
 				request
 					.url()
 					.match(
-						'google-site-kit/v1/modules/analytics/data/report?'
+						'google-site-kit/v1/modules/analytics-4/data/report?'
 					)
 			) {
+				const multiDimensionalObjectParams =
+					getMultiDimensionalObjectFromParams( paramsObject );
+
 				request.respond( {
 					status: 200,
 					body: JSON.stringify(
-						mockBatchResponse[
-							'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c'
-						]
+						getAnalytics4MockResponse(
+							multiDimensionalObjectParams
+						)
 					),
 				} );
 			} else {
@@ -72,6 +84,8 @@ describe( 'Site Kit admin bar component display', () => {
 		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
 
 		await setupAnalytics();
+		await setupAnalytics4();
+
 		await page.reload();
 
 		await Promise.all( [
@@ -87,7 +101,7 @@ describe( 'Site Kit admin bar component display', () => {
 				res
 					.url()
 					.match(
-						'google-site-kit/v1/modules/analytics/data/report?'
+						'google-site-kit/v1/modules/analytics-4/data/report?'
 					)
 			),
 		] );

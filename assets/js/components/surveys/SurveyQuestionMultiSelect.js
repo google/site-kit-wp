@@ -21,7 +21,7 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import keyBy from 'lodash/keyBy';
+import { keyBy } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -33,9 +33,13 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button, Checkbox } from 'googlesitekit-components';
+import {
+	Button,
+	Checkbox,
+	TextField,
+	HelperText,
+} from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
-import { TextField, Input, HelperText } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
@@ -200,21 +204,17 @@ const SurveyQuestionMultiSelect = ( {
 													) }
 												</label>
 											</VisuallyHidden>
-											<TextField>
-												<Input
-													id={ `${ id }-write-in` }
-													onChange={ ( event ) =>
-														handleAnswerChange(
-															event,
-															answer_ordinal
-														)
-													}
-													value={ answer.answer_text }
-													disabled={
-														! answer.selected
-													}
-												/>
-											</TextField>
+											<TextField
+												id={ `${ id }-write-in` }
+												onChange={ ( event ) =>
+													handleAnswerChange(
+														event,
+														answer_ordinal
+													)
+												}
+												value={ answer.answer_text }
+												disabled={ ! answer.selected }
+											/>
 										</Fragment>
 									)
 								}

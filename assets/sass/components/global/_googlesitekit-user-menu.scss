@@ -48,6 +48,7 @@
 
 	.googlesitekit-user-menu {
 		background-color: $c-surfaces-background;
+		border-radius: $br-md;
 		max-width: 335px;
 		width: calc(100vw - 32px);
 
@@ -56,11 +57,11 @@
 		}
 
 		li {
+			margin: 0;
 			padding: 0 8px;
 		}
 
 		.mdc-list-item {
-			margin: 12px 0;
 			padding: 0 7.16% 0 14.33%;
 		}
 	}
@@ -86,7 +87,7 @@
 	.googlesitekit-user-menu__details {
 		align-items: center;
 		background-color: $c-surfaces-surface;
-		border-radius: 16px;
+		border-radius: $br-md;
 		column-gap: 14px;
 		display: flex;
 		padding: 16px;

@@ -31,29 +31,26 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { SpinnerButton, ProgressBar } from 'googlesitekit-components';
 import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
-	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 	MODULES_ANALYTICS,
 	FORM_SETUP,
 	EDIT_SCOPE,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
-import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { ExistingGTMPropertyNotice } from '../common';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useSelect( ( select ) =>
+	const canSubmitUAChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitChanges()
 	);
 	const hasEditScope = useSelect( ( select ) =>
@@ -65,32 +62,48 @@ export default function SetupForm( { finishSetup } ) {
 	const setupFlowMode = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
+	const isUAEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableUA' )
+	);
+	const canSubmitGA4Changes = useSelect( ( select ) => {
+		const canSubmitChanges =
+			select( MODULES_ANALYTICS_4 ).canSubmitChanges();
+
+		if ( isUAEnabled ) {
+			return canSubmitUAChanges && canSubmitChanges;
+		}
+
+		return canSubmitChanges;
+	} );
+	const isSaving = useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS ).isDoingSubmitChanges() ||
+			select( CORE_LOCATION ).isNavigating()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS );
+
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
+			// Disable autoSubmit unconditionally to prevent
+			// automatic invocation more than once.
+			setValues( FORM_SETUP, { autoSubmit: false } );
+
 			const { error } = await submitChanges();
+
 			if ( isPermissionScopeError( error ) ) {
 				setValues( FORM_SETUP, { autoSubmit: true } );
 			}
+
 			if ( ! error ) {
-				setValues( FORM_SETUP, { autoSubmit: false } );
 				finishSetup();
 			}
 		},
 		[ finishSetup, setValues, submitChanges ]
 	);
 
-	const isTagManagerAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
-	);
-	const gtmAnalyticsPropertyID = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
 	const gtmContainersResolved = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
@@ -116,18 +129,19 @@ export default function SetupForm( { finishSetup } ) {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
 			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
-			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && (
-				<SetupFormGA4Transitional />
-			) }
 			<div className="googlesitekit-setup-module__action">
-				<Button disabled={ ! canSubmitChanges }>
+				<SpinnerButton
+					disabled={ ! canSubmitGA4Changes || isSaving }
+					isSaving={ isSaving }
+				>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
-				</Button>
+				</SpinnerButton>
 			</div>
 		</form>
 	);

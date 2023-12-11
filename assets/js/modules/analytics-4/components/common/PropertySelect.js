@@ -31,9 +31,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { Select, Option } from '../../../../material-components';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -45,103 +44,73 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect( {
-	label,
-	hasModuleAccess,
-	className,
-	onChange = () => {},
-} ) {
+export default function PropertySelect( props ) {
+	const {
+		isDisabled,
+		hasModuleAccess,
+		className,
+		onChange = () => {},
+	} = props;
+
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const accounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccounts()
-	);
+	// eslint-disable-next-line no-unused-vars
+	useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() );
 
-	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
+	// TODO: Update this select hook to pull accountID from the modules/analytics-4
+	// datastore when GA4 module becomes separated from the Analytics one.
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
-	const properties = useSelect( ( select ) => {
-		if ( hasModuleAccess === false ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [];
-	} );
+	const properties = useSelect( ( select ) =>
+		hasModuleAccess !== false && ! isDisabled
+			? select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
+			: null
+	);
 
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	const propertyIDs = ( properties || [] ).map( ( { _id } ) => _id );
-
-	const measurementIDs = useSelect( ( select ) => {
-		if ( ! properties?.length ) {
-			return null;
-		}
-
-		return select(
-			MODULES_ANALYTICS_4
-		).getMatchedMeasurementIDsByPropertyIDs( propertyIDs );
-	} );
-
-	const areMeasurementIDsResolving = useSelect( ( select ) => {
-		if ( properties === undefined ) {
-			return true;
-		}
-
-		if ( ! properties || properties?.length === 0 ) {
+	const isLoading = useSelect( ( select ) => {
+		if ( isDisabled ) {
 			return false;
 		}
 
-		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getWebDataStreamsBatch',
-			[ propertyIDs ]
-		);
+		return select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
+			hasModuleAccess,
+		} );
 	} );
 
-	const isLoading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution(
-				'getAccounts'
-			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getProperties',
-				[ accountID ]
-			) ||
-			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() ===
-				false ||
-			areMeasurementIDsResolving
-	);
-
-	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
-
 	const viewContext = useViewContext();
-
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 	const onPropertyChange = useCallback(
-		( index, item ) => {
-			const newPropertyID = item.dataset.value;
-			if ( propertyID !== newPropertyID ) {
-				const action =
-					newPropertyID === PROPERTY_CREATE
-						? 'change_property_new'
-						: 'change_property';
-				selectProperty( newPropertyID );
-				trackEvent( `${ viewContext }_analytics`, action, 'ga4' );
-				onChange();
+		( index, { dataset } ) => {
+			const newPropertyID = dataset.value;
+			if ( propertyID === newPropertyID ) {
+				return;
 			}
+
+			selectProperty( newPropertyID );
+
+			trackEvent(
+				`${ viewContext }_analytics`,
+				newPropertyID === PROPERTY_CREATE
+					? 'change_property_new'
+					: 'change_property',
+				'ga4'
+			);
+
+			onChange();
 		},
 		[ onChange, propertyID, selectProperty, viewContext ]
 	);
 
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
-	}
-
-	if ( isLoading ) {
-		return <ProgressBar height={ 100 } small />;
+	} else if ( isLoading ) {
+		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
 	}
 
 	const isValidSelection =
@@ -153,10 +122,10 @@ export default function PropertySelect( {
 		return (
 			<Select
 				className={ classnames(
-					'googlesitekit-analytics__select-property',
+					'googlesitekit-analytics-4__select-property',
 					className
 				) }
-				label={ label || __( 'Property', 'google-site-kit' ) }
+				label={ __( 'Property', 'google-site-kit' ) }
 				value={ propertyID }
 				enhanced
 				outlined
@@ -170,19 +139,18 @@ export default function PropertySelect( {
 	return (
 		<Select
 			className={ classnames(
-				'googlesitekit-analytics__select-property',
 				'googlesitekit-analytics-4__select-property',
 				className,
 				{
-					'googlesitekit-analytics-4__select-property--with-access':
-						hasModuleAccess === true,
 					'mdc-select--invalid': ! isValidSelection,
+					'googlesitekit-analytics-4__select-property--loaded':
+						! isDisabled && ! isLoading,
 				}
 			) }
-			label={ label || __( 'Property', 'google-site-kit' ) }
+			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onPropertyChange }
-			disabled={ ! isValidAccountID( accountID ) }
+			disabled={ isDisabled }
 			enhanced
 			outlined
 		>
@@ -194,19 +162,19 @@ export default function PropertySelect( {
 						'google-site-kit'
 					),
 				} )
-				.map( ( { _id, displayName }, index ) => (
-					<Option key={ index } value={ _id }>
-						{ _id === PROPERTY_CREATE || ! measurementIDs?.[ _id ]
+				.map( ( { _id, displayName } ) => (
+					<Option key={ _id } value={ _id }>
+						{ _id === PROPERTY_CREATE
 							? displayName
 							: sprintf(
-									/* translators: 1: Property name. 2: Measurement ID. */
+									/* translators: 1: Property name. 2: Property ID. */
 									_x(
 										'%1$s (%2$s)',
 										'Analytics property name and ID',
 										'google-site-kit'
 									),
 									displayName,
-									measurementIDs?.[ _id ] || ''
+									_id
 							  ) }
 					</Option>
 				) ) }
@@ -215,7 +183,7 @@ export default function PropertySelect( {
 }
 
 PropertySelect.propTypes = {
-	label: PropTypes.string,
+	isDisabled: PropTypes.bool,
 	hasModuleAccess: PropTypes.bool,
 	className: PropTypes.string,
 	onChange: PropTypes.func,

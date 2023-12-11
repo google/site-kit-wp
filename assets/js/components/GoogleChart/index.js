@@ -24,6 +24,7 @@ import '../../util/initialize-google-global';
  * External dependencies
  */
 import classnames from 'classnames';
+import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
 import { useMount } from 'react-use';
@@ -31,6 +32,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
+import { useInstanceId as useInstanceID } from '@wordpress/compose';
 import {
 	useEffect,
 	useLayoutEffect,
@@ -46,6 +48,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
 import Data from 'googlesitekit-data';
 import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
+import DateMarker from './DateMarker';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import useViewContext from '../../hooks/useViewContext';
 import { isSiteKitScreen } from '../../util/is-site-kit-screen';
@@ -55,6 +58,7 @@ import {
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
+import { stringToDate, getDateString } from '../../util/date-range';
 const { useDispatch, useSelect } = Data;
 
 export default function GoogleChart( props ) {
@@ -64,6 +68,7 @@ export default function GoogleChart( props ) {
 		children,
 		className,
 		data,
+		dateMarkers,
 		getChartWrapper,
 		height,
 		loaded,
@@ -76,9 +81,16 @@ export default function GoogleChart( props ) {
 		selectedStats,
 		width,
 		options,
-		gatheringData = false,
+		gatheringData,
 		...otherProps
 	} = props;
+
+	/**
+	 * Size of the icons (in pixels) used in the tooltip.
+	 */
+	const iconSize = 18;
+
+	const instanceID = useInstanceID( GoogleChart );
 
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
@@ -197,6 +209,130 @@ export default function GoogleChart( props ) {
 		}
 	}, [ onMouseOver, onMouseOut ] );
 
+	// Checks to see if the date is within the date range.
+	const isDateWithinRange = ( date ) => {
+		// If any of the dates are not set, return false.
+		if ( ! date || ! startDate || ! endDate ) {
+			return false;
+		}
+
+		if (
+			// Don't render this marker if the date is before the first date
+			// in the current date range.
+			date.getTime() < stringToDate( startDate ).getTime() ||
+			// Don't render this marker if the date is after the last date
+			// in the current date range.
+			date.getTime() > stringToDate( endDate ).getTime()
+		) {
+			return false;
+		}
+
+		return true;
+	};
+
+	// Only use markers if the date is within the current date range.
+	const dateMarkersInRange = dateMarkers.filter( ( dateMarker ) => {
+		return isDateWithinRange( new Date( dateMarker.date ) );
+	} );
+
+	/**
+	 * Adds any "key date" vertical lines/tooltips to the charts.
+	 */
+	const addKeyDateLinesToChart = () => {
+		if ( ! chartWrapperRef.current ) {
+			return;
+		}
+
+		if ( ! dateMarkersInRange.length ) {
+			return;
+		}
+
+		const chart = chartWrapperRef.current.getChart();
+		const chartLayoutInterface = chart?.getChartLayoutInterface();
+		const chartArea = chartLayoutInterface?.getChartAreaBoundingBox();
+		const dataTable = chartWrapperRef.current.getDataTable();
+
+		if ( ! chartLayoutInterface || ! chartArea || ! dataTable ) {
+			return;
+		}
+
+		// Add the dotted line and tooltip for each date marker.
+		dateMarkersInRange.forEach( ( dateMarker, index ) => {
+			const dateFromMarker = new Date( dateMarker.date );
+
+			const chartLine = document.getElementById(
+				`googlesitekit-chart__date-marker-line--${ instanceID }-${ index }`
+			);
+			invariant(
+				chartLine,
+				`#googlesitekit-chart__date-marker-line--${ instanceID }-${ index } is missing from the DOM, but required to render date markers.`
+			);
+
+			// We need to make sure the dates we use on the chart and on
+			// this line are exactly the same, so we get the position on the
+			// chart that matches the date we create from the date string.
+			//
+			// This prevents the line and the chart data from being
+			// slightly out-of-alignment, see:
+			// https://github.com/google/site-kit-wp/pull/6822#pullrequestreview-1376066844.
+			const dateCoordinateX = Math.floor(
+				chartLayoutInterface.getXLocation(
+					stringToDate( getDateString( dateFromMarker ) )
+				)
+			);
+
+			// Align the dotted line with the date for this marker.
+			Object.assign( chartLine.style, {
+				left: `${ dateCoordinateX - 1 }px`,
+				top: `${ Math.floor( chartArea.top ) }px`,
+				height: `${ Math.floor( chartArea.height ) }px`,
+				opacity: 1,
+			} );
+
+			// Text is optional, so only modify the DOM elements for the tooltip
+			// text if the property was provided.
+			if ( dateMarker.text ) {
+				const tooltip = document.getElementById(
+					`googlesitekit-chart__date-marker-tooltip--${ instanceID }-${ index }`
+				);
+				invariant(
+					tooltip,
+					`#googlesitekit-chart__date-marker-tooltip--${ instanceID }-${ index } is missing from the DOM, but required to render date marker tooltips.`
+				);
+
+				// Align the tooltip component with the date line.
+				Object.assign( tooltip.style, {
+					left: `${ dateCoordinateX - iconSize / 2 }px`,
+					top: `${ Math.floor( chartArea.top ) - iconSize }px`,
+					opacity: 1,
+				} );
+			}
+		} );
+
+		const legendElement = document.querySelector(
+			`#googlesitekit-chart-${ instanceID } svg:first-of-type > g:first-of-type > g > g > text`
+		)?.parentElement.parentElement.parentElement;
+
+		// A legend is present if there are more than three `g` elements; charts
+		// without legends won't have that many `g` elements so we don't need to
+		// modify anything.
+		const hasLegend =
+			!! legendElement &&
+			document.querySelectorAll(
+				`#googlesitekit-chart-${ instanceID } svg:first-of-type > g`
+			).length >= 3;
+
+		// If there is a legend, move it up to make room for the date marker icon.
+		if ( hasLegend ) {
+			// `10px` is the best size to use to accommodate the bounding box of the
+			// chart without needing to modify the chart's height.
+			//
+			// It allows the legend and the icon to fit without moving anything else
+			// and without things feeling cramped or being cut off.
+			legendElement.style.transform = 'translateY(-10px)';
+		}
+	};
+
 	if ( googleChartsCollisionError ) {
 		return null;
 	}
@@ -216,7 +352,19 @@ export default function GoogleChart( props ) {
 	}
 
 	const combinedChartEvents = getCombinedChartEvents(
-		chartEvents,
+		[
+			...( chartEvents || [] ),
+			// Call the `addKeyDateLinesToChart` function after the chart
+			// has been rendered.
+			//
+			// This is to ensure that the chart has finished rendering before
+			// we try to add the lines. If we don't do this, the `chart`
+			// variable (from `chartWrapper.getChart()`) will be `null`.
+			{
+				eventName: 'ready',
+				callback: addKeyDateLinesToChart,
+			},
+		],
 		onReady,
 		onSelect
 	);
@@ -237,6 +385,7 @@ export default function GoogleChart( props ) {
 					`googlesitekit-chart--${ chartType }`,
 					className
 				) }
+				id={ `googlesitekit-chart-${ instanceID }` }
 				tabIndex={ -1 }
 			>
 				<Chart
@@ -287,6 +436,16 @@ export default function GoogleChart( props ) {
 				{ gatheringData && isChartLoaded && (
 					<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
 				) }
+				{ !! dateMarkersInRange.length &&
+					dateMarkersInRange.map( ( dateMarker, index ) => {
+						return (
+							<DateMarker
+								key={ `googlesitekit-chart__date-marker--${ instanceID }-${ index }` }
+								id={ `${ instanceID }-${ index }` }
+								text={ dateMarker.text }
+							/>
+						);
+					} ) }
 				{ children }
 			</div>
 		</GoogleChartErrorHandler>
@@ -309,6 +468,18 @@ GoogleChart.propTypes = {
 	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r626620601
 	chartType: PropTypes.oneOf( [ 'LineChart', 'PieChart' ] ).isRequired,
 	data: PropTypes.array,
+	dateMarkers: PropTypes.arrayOf(
+		PropTypes.shape( {
+			/**
+			 * The date to mark on the chart, in the format `'YYYY-MM-DD'`.
+			 */
+			date: PropTypes.string.isRequired,
+			/**
+			 * Text to display in a tooltip when the date marker is hovered.
+			 */
+			text: PropTypes.string,
+		} )
+	),
 	getChartWrapper: PropTypes.func,
 	height: PropTypes.string,
 	loaded: PropTypes.bool,
@@ -326,5 +497,7 @@ GoogleChart.propTypes = {
 
 GoogleChart.defaultProps = {
 	...Chart.defaultProps,
+	dateMarkers: [],
+	gatheringData: false,
 	loaded: true,
 };

@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import Tab from '@material/react-tab';
-import TabBar from '@material/react-tab-bar';
 import { withRouter, Link, useLocation } from 'react-router-dom';
 
 /**
@@ -32,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Tab, TabBar } from 'googlesitekit-components';
 import Header from '../Header';
 import PageHeader from '../PageHeader';
 import Layout from '../layout/Layout';

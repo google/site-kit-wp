@@ -41,6 +41,9 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
+			const measurementID = 'G-2B7M8YQ1K6';
+			const containerMock = fixtures.container[ measurementID ];
+
 			const url = request.url();
 			if (
 				url.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
@@ -60,14 +63,35 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					},
 				} );
 			} else if (
-				url.match( 'analytics/data/report?' ) ||
 				url.match( 'analytics-4/data/properties' ) ||
+				url.match( 'analytics-4/data/conversion-events' ) ||
 				url.match( 'user/data/survey-timeouts' ) ||
 				url.match( 'search-console/data/searchanalytics' )
 			) {
 				request.respond( {
 					status: 200,
 					body: '[]',
+				} );
+			} else if (
+				request
+					.url()
+					.match( 'analytics-4/data/enhanced-measurement-settings' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						fixtures.defaultEnhancedMeasurementSettings
+					),
+				} );
+			} else if ( url.match( 'analytics/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: '[]',
+				} );
+			} else if ( url.match( 'analytics-4/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: '{}',
 				} );
 			} else if (
 				url.match( 'pagespeed-insights/data/pagespeed' ) ||
@@ -83,6 +107,23 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			} else if ( url.match( 'analytics-4/data/create-webdatastream' ) ) {
 				request.respond( {
 					body: JSON.stringify( fixtures.createWebDataStream ),
+					status: 200,
+				} );
+			} else if ( url.match( 'analytics-4/data/google-tag-settings' ) ) {
+				request.respond( {
+					body: JSON.stringify( fixtures.googleTagSettings ),
+					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/container-lookup' )
+			) {
+				request.respond( {
+					body: JSON.stringify( containerMock ),
+					status: 200,
+				} );
+			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
+				request.respond( {
+					body: JSON.stringify( fixtures.properties[ 1 ] ),
 					status: 200,
 				} );
 			} else {
@@ -164,13 +205,16 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
 			{ text: '' }
 		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-property .mdc-select__selected-text',
-			{ text: '' }
+
+		await expect( page ).toClick(
+			'.googlesitekit-analytics__select-account'
 		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-profile .mdc-select__selected-text',
-			{ text: '' }
+
+		await expect( page ).toClick(
+			'.mdc-menu-surface--open .mdc-list-item',
+			{
+				text: /test account a/i,
+			}
 		);
 
 		await pageWait( 1000 );

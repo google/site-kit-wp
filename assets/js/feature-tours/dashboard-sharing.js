@@ -20,13 +20,12 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { EVENTS, ACTIONS } from 'react-joyride';
+import { EVENTS, ACTIONS, STATUS } from 'react-joyride';
 
 /*
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
-import { isFeatureEnabled } from '../features';
 import settingsTour from './dashboard-sharing-settings';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
@@ -37,8 +36,6 @@ let viewedAllSteps;
 const dashboardSharing = {
 	slug: 'dashboardSharing',
 	contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-	// TODO: This version should be changed when the feature flag is removed
-	// to the actual upcoming version.
 	version: '1.85.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_dashboard-sharing`,
 	steps: [
@@ -53,9 +50,8 @@ const dashboardSharing = {
 		},
 		...settingsTour.steps,
 	],
-	checkRequirements: () => isFeatureEnabled( 'dashboardSharing' ),
 	callback: ( data, { select, dispatch } ) => {
-		const { action, index, size, type } = data;
+		const { action, index, size, type, status } = data;
 
 		const dialogOpen = select( CORE_UI ).getValue( SETTINGS_DIALOG );
 
@@ -65,7 +61,12 @@ const dashboardSharing = {
 		}
 
 		// Close the dialog if the tour is ended or we end up back on the first step.
-		if ( ACTIONS.STOP === action || ( index === 0 && dialogOpen ) ) {
+		if (
+			ACTIONS.STOP === action ||
+			ACTIONS.CLOSE === action ||
+			( index === 0 && dialogOpen ) ||
+			( action === ACTIONS.NEXT && status === STATUS.FINISHED )
+		) {
 			dispatch( CORE_UI ).setValue( SETTINGS_DIALOG, false );
 		}
 

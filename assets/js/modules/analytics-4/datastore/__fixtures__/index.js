@@ -18,10 +18,14 @@
 
 export { default as accountSummaries } from './account-summaries.json';
 export { default as container } from './container.json';
+export { default as containerE2E } from './container-e2e.json';
 export { default as containerDestinations } from './container-destinations.json';
+export { default as conversionEvents } from './conversion-events.json';
 export { default as createProperty } from './create-property.json';
 export { default as createWebDataStream } from './create-webdatastream.json';
 export { default as defaultSettings } from './default-settings.json';
+export { default as defaultEnhancedMeasurementSettings } from './default-enhanced-measurement-settings.json';
+export { default as pageTitles } from './page-titles.json';
 export { default as properties } from './properties.json';
 export { default as report } from './report.json';
 export { default as webDataStreams } from './webdatastreams.json';

@@ -134,6 +134,49 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->assertEquals( $expected, $this->settings->get() );
 	}
 
+	/**
+	 * @dataProvider data_get_module
+	 * @param array $sharing_settings
+	 * @param string $module_slug
+	 * @param array $expected
+	 */
+	public function test_get_module( $sharing_settings, $module_slug, $expected ) {
+		update_option( $this->get_option_name(), $sharing_settings );
+
+		$actual = $this->settings->get_module( $module_slug );
+
+		$this->assertEquals( $expected, $actual );
+	}
+
+	public function data_get_module() {
+		$module_slug = 'test-module';
+		$defaults    = array(
+			'sharedRoles' => array(),
+			'management'  => 'owner',
+		);
+
+		return array(
+			'no saved settings'          => array(
+				array(),
+				$module_slug,
+				$defaults,
+			),
+			'non-default saved settings' => array(
+				array(
+					$module_slug => array(
+						'sharedRoles' => array( 'editor' ),
+						'management'  => 'all_admins',
+					),
+				),
+				$module_slug,
+				array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'all_admins',
+				),
+			),
+		);
+	}
+
 	public function test_unset_module() {
 		$test_sharing_settings = array(
 			'analytics'          => array(
@@ -218,8 +261,6 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_merge() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		// Check there are no settings to begin with.
 		$this->assertEmpty( $this->settings->get() );
 

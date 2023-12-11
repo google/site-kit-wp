@@ -34,7 +34,15 @@
     "jsdoc/require-returns": "error",
     "jsdoc/no-undefined-types": "error",
     "jsdoc/valid-types": "error",
+    "lodash/import-scope": [
+      "error",
+      "member"
+    ],
     "require-await": "error",
+    "react/jsx-boolean-value": [
+      "error",
+      "never"
+    ],
     "react/jsx-curly-brace-presence": "error",
     "no-invalid-regexp": "error",
     "no-useless-escape": "error",
@@ -83,6 +91,13 @@
     "curly": [
       "error",
       "all"
+    ],
+    "prettier/prettier": [
+      "error",
+      {},
+      {
+        "usePrettierrc": true
+      }
     ],
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-var-requires": "off",
@@ -169,6 +184,7 @@
     "filenames",
     "sitekit",
     "jsdoc",
-    "react-hooks"
+    "react-hooks",
+    "lodash"
   ]
 }

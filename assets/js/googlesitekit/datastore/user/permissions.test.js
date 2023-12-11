@@ -36,7 +36,6 @@ describe( 'core/user authentication', () => {
 			googlesitekit_manage_options: true,
 			'googlesitekit_read_shared_module_data::["site-verification"]': false,
 			'googlesitekit_read_shared_module_data::["tagmanager"]': false,
-			'googlesitekit_read_shared_module_data::["optimize"]': false,
 			'googlesitekit_read_shared_module_data::["adsense"]': false,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["search-console"]': false,
@@ -53,10 +52,10 @@ describe( 'core/user authentication', () => {
 			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
 			'googlesitekit_read_shared_module_data::["site-verification"]': false,
 			'googlesitekit_read_shared_module_data::["tagmanager"]': false,
-			'googlesitekit_read_shared_module_data::["optimize"]': false,
 			'googlesitekit_read_shared_module_data::["adsense"]': false,
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["analytics"]': true,
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
 		},
 	};
@@ -102,7 +101,6 @@ describe( 'core/user authentication', () => {
 					googlesitekit_manage_options: true,
 					'googlesitekit_read_shared_module_data::["site-verification"]': true,
 					'googlesitekit_read_shared_module_data::["tagmanager"]': true,
-					'googlesitekit_read_shared_module_data::["optimize"]': false,
 					'googlesitekit_read_shared_module_data::["adsense"]': false,
 					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 					'googlesitekit_read_shared_module_data::["search-console"]': false,
@@ -358,8 +356,8 @@ describe( 'core/user authentication', () => {
 
 				expect( viewableModules ).toEqual( [
 					'search-console',
-					'analytics',
 					'pagespeed-insights',
+					'analytics-4',
 				] );
 			} );
 		} );
@@ -478,6 +476,36 @@ describe( 'core/user authentication', () => {
 					.canViewSharedModule( 'search-console' );
 
 				expect( canViewSharedModule ).toBe( true );
+			} );
+
+			it( 'should treat `analytics` as `analytics-4` when the dashboard view is GA4', () => {
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					...capabilitiesWithPermission.permissions,
+					// Set the `analytics` permission to `false` to help verify that the
+					// `analytics` module is treated as `analytics-4` when the dashboard
+					// view is GA4.
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+				} );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						shareable: true,
+					},
+					{
+						slug: 'analytics-4',
+						name: 'Analytics-4',
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+				] );
+
+				const canViewSharedAnalytics = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'analytics' );
+
+				expect( canViewSharedAnalytics ).toBe( true );
 			} );
 		} );
 	} );

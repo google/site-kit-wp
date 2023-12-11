@@ -31,4 +31,16 @@
 		width: 100%;
 		z-index: 1;
 	}
+
+	// The Checkbox component has an essential padding of 11 pixels to accommodate
+	// its hover/focus background. This makes it not possible to align the checkbox
+	// to the absolute left when required. The following style compensates for the
+	// padding and aligns it to the absolute left.
+	&.mdc-checkbox--align-left {
+		margin-left: -11px;
+	}
+
+	+ .mdc-checkbox__content {
+		padding-left: 4px;
+	}
 }

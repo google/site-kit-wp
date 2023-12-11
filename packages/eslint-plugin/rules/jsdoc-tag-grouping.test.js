@@ -54,6 +54,19 @@ export function exampleTestFunction( props ) {
 		{
 			code: `
 /**
+ * A function that returns a string, to test out ESLint.
+ *
+ * @since 1.7.1
+ * @since 1.115.0 This is fine as the final line.
+ */
+export function exampleTestFunction( props ) {
+	return 'test';
+}
+      `,
+		},
+		{
+			code: `
+/**
  * A function without a second group, that ends with a "private" tag.
  *
  * @since 1.7.1

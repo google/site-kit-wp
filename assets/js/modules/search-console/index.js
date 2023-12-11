@@ -21,7 +21,7 @@
  */
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
-import SearchFunnelWidget from './components/dashboard/SearchFunnelWidget';
+import SearchFunnelWidgetGA4 from './components/dashboard/SearchFunnelWidgetGA4';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -32,6 +32,11 @@ import {
 import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
 import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
 import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
+import { isFeatureEnabled } from '../../features';
+import {
+	CORE_USER,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from '../../googlesitekit/datastore/user/constants';
 
 export { registerStore } from './datastore';
 
@@ -60,10 +65,11 @@ export const registerWidgets = ( widgets ) => {
 		]
 	);
 
+	// Register widget reliant on Analytics 4 (GA4).
 	widgets.registerWidget(
-		'searchFunnel',
+		'searchFunnelGA4',
 		{
-			Component: SearchFunnelWidget,
+			Component: SearchFunnelWidgetGA4,
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,
@@ -75,18 +81,24 @@ export const registerWidgets = ( widgets ) => {
 		]
 	);
 
-	/*
-	 * Key metrics widgets.
-	 */
-	widgets.registerWidget(
-		'kmSearchConsolePopularKeywords',
-		{
-			Component: PopularKeywordsWidget,
-			width: widgets.WIDGET_WIDTHS.QUARTER,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ 'search-console' ],
-		},
-		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-	);
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
+		/*
+		 * Key metrics widgets.
+		 */
+		widgets.registerWidget(
+			KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			{
+				Component: PopularKeywordsWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 2,
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 };

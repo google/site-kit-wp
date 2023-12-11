@@ -20,12 +20,11 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
@@ -36,27 +35,39 @@ import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
 import { getTimeInSeconds, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 
-export default function GatheringDataNotification( { title } ) {
+export default function GatheringDataNotification( {
+	title,
+	gatheringDataWaitTimeInHours,
+} ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_gathering-data-notification`;
-
+	const handleOnView = useCallback( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	}, [ eventCategory ] );
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
 
-	useMount( () => {
-		trackEvent( eventCategory, 'view_notification' );
-	} );
+	if ( ! gatheringDataWaitTimeInHours ) {
+		return null;
+	}
 
 	return (
 		<BannerNotification
 			id="gathering-data-notification"
 			title={ title }
-			description={ __(
-				'It can take up to 48 hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-				'google-site-kit'
+			description={ sprintf(
+				/* translators: %s: the number of hours the site can be in a gathering data state */
+				_n(
+					'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+					'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+					gatheringDataWaitTimeInHours,
+					'google-site-kit'
+				),
+				gatheringDataWaitTimeInHours
 			) }
 			format="small"
+			onView={ handleOnView }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) }
 			SmallImageSVG={ GatheringDataIcon }
@@ -68,4 +79,5 @@ export default function GatheringDataNotification( { title } ) {
 
 GatheringDataNotification.propTypes = {
 	title: PropTypes.string,
+	gatheringDataWaitTimeInHours: PropTypes.number,
 };

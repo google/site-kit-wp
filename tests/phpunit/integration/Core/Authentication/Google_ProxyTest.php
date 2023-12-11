@@ -236,6 +236,25 @@ class Google_ProxyTest extends TestCase {
 		}
 	}
 
+	public function test_url_handles_development() {
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+		// The test for this behaviour depends on a constant value which can
+		// only be redefined if PECL extension runkit/7 is installed.
+		if ( ! extension_loaded( 'runkit7' ) && ! extension_loaded( 'runkit' ) ) {
+			$this->markTestSkipped( 'The runkit7 or runkit extension is not available.' );
+		}
+
+		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::DEVELOPMENT_BASE_URL );
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::DEVELOPMENT_BASE_URL );
+		if ( function_exists( 'runkit7_constant_remove' ) ) {
+			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
+			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		}
+	}
+
 	public function test_url_ignores_invalid_values() {
 		// The test for this behaviour depends on a constant value which can
 		// only be redefined if PECL extension runkit/7 is installed.
@@ -419,7 +438,7 @@ class Google_ProxyTest extends TestCase {
 
 		$expected_url              = $this->google_proxy->url( Google_Proxy::FEATURES_URI );
 		$expected_success_response = array(
-			'userInput'        => array( 'enabled' => true ),
+			'keyMetrics'       => array( 'enabled' => true ),
 			'test.featureName' => array( 'enabled' => true ),
 		);
 
@@ -441,6 +460,7 @@ class Google_ProxyTest extends TestCase {
 				'connected_user_count'   => 0, // No authenticated users - tested in test_count_connected_users() below.
 				'active_modules'         => 'site-verification search-console pagespeed-insights',
 				'connected_modules'      => 'site-verification search-console pagespeed-insights',
+				'php_version'            => phpversion(),
 			),
 			$this->request_args['body']
 		);

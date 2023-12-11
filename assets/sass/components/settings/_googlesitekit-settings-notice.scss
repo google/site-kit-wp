@@ -25,7 +25,6 @@
 	letter-spacing: $ls-xs;
 	line-height: $lh-body-sm;
 	margin: 1.5em 0;
-	max-width: 1098px;
 	padding: $grid-gap-phone;
 
 	@media (min-width: $bp-desktop) {
@@ -53,6 +52,7 @@
 	.googlesitekit-settings-notice__text {
 		flex-grow: 1;
 		line-height: 20px; // Match icon height.
+		max-width: $max-width-settings-notice-content;
 	}
 
 	.mdc-select:not(.mdc-select--disabled),
@@ -130,6 +130,7 @@
 	}
 
 	.googlesitekit-settings-notice__inner-row {
+		max-width: $max-width-settings-notice-content;
 		padding-top: $grid-gap-phone;
 
 		@media (min-width: $bp-tablet) {
@@ -178,4 +179,65 @@
 .googlesitekit-settings-notice--suggestion {
 	background-color: $c-background-notice-suggestion;
 	color: $c-text-notice-suggestion;
+}
+
+.googlesitekit-setup-module,
+.googlesitekit-setup {
+
+	.googlesitekit-settings-notice {
+		max-width: $max-width-settings-notice-content;
+	}
+}
+
+.googlesitekit-settings-notice-ua-cutoff-warning,
+.googlesitekit-settings-notice-adsense-status-migration {
+	max-width: none;
+
+	.googlesitekit-settings-notice__icon {
+		padding-top: 10px;
+	}
+
+	.googlesitekit-settings-notice__body {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 14px;
+	}
+
+	.googlesitekit-settings-notice__text {
+		flex: 1 1 50%;
+	}
+}
+
+.googlesitekit-settings-notice-ua-cutoff-warning__notice {
+	margin: 0 14px 0 0;
+}
+
+.googlesitekit-settings-notice-adsense-top-earning-pages-widget {
+	align-items: normal;
+	flex-flow: column wrap;
+	gap: 15px;
+	padding-bottom: 24px;
+	padding-top: 24px;
+
+	@media (min-width: $bp-desktop) {
+		align-items: center;
+		flex-direction: row;
+	}
+
+	.googlesitekit-settings-notice__icon {
+		margin-right: 5px;
+	}
+
+	.googlesitekit-settings-notice__text {
+		font-size: $fs-title-sm;
+		font-weight: $fw-medium;
+		line-height: $lh-title-sm;
+	}
+
+	.googlesitekit-settings-notice__inner-row {
+		font-size: $fs-body-md;
+		line-height: $lh-body-md;
+		padding-top: 3px;
+	}
 }

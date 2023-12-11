@@ -1,9 +1,24 @@
 /**
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
-import castArray from 'lodash/castArray';
-import mapValues from 'lodash/mapValues';
 import fetchMock from 'fetch-mock';
+import { castArray, mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -26,7 +41,6 @@ import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics from '../../assets/js/modules/analytics';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
-import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
@@ -43,6 +57,7 @@ import {
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import { singleQuestionSurvey } from '../../assets/js/components/surveys/__fixtures__';
 import InViewProvider from '../../assets/js/components/InViewProvider';
 
 const allCoreStores = [
@@ -58,7 +73,6 @@ const allCoreModules = [
 	modulesAdSense,
 	modulesAnalytics,
 	modulesAnalytics4,
-	modulesOptimize,
 	modulesPageSpeedInsights,
 	modulesSearchConsole,
 	modulesTagManager,
@@ -233,6 +247,9 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 				label: 'Media',
 			},
 		],
+		productPostType: 'product',
+		keyMetricsSetupCompletedBy: 0,
+		keyMetricsSetupNew: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -361,23 +378,48 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
  * Provides the current survey data to the given registry.
  *
  * @since 1.42.0
+ * @since 1.98.0 Removed tracking enabling side effect.
  *
- * @param {Object}  registry             Registry object to dispatch to.
- * @param {Object}  data                 List of module registration data objects to be merged with defaults. Default empty array.
- * @param {Object}  args                 Optional arguments.
- * @param {boolean} args.trackingEnabled Optional. Whether the tracking should be enabled or not.
- * @param {string}  args.triggerID       Optional. Survey trigger ID.
+ * @param {Object} registry Registry object to dispatch to.
+ * @param {Object} survey   The current survey.
  */
 export function provideCurrentSurvey(
 	registry,
-	data,
-	{ triggerID = 'testSurvey', trackingEnabled = true } = {}
+	survey = singleQuestionSurvey
 ) {
-	registry.dispatch( CORE_USER ).receiveTriggerSurvey( data, { triggerID } );
-	registry
-		.dispatch( CORE_USER )
-		.receiveGetTracking( { enabled: trackingEnabled } );
+	registry.dispatch( CORE_USER ).receiveGetSurvey( { survey } );
 }
+
+/**
+ * Provides user tracking consent state.
+ *
+ * @since 1.98.0
+ *
+ * @param {Object}  registry Registry object to dispatch to.
+ * @param {boolean} enabled  Optional. Whether tracking consent has been granted. Defaults to `true`.
+ */
+export function provideTracking( registry, enabled = true ) {
+	registry.dispatch( CORE_USER ).receiveGetTracking( { enabled } );
+}
+
+/**
+ * Provides key metrics settings data to the given registry.
+ *
+ * @since 1.103.0
+ *
+ * @param {Object} registry    The registry to set up.
+ * @param {Object} [extraData] Extra data to merge with the default settings.
+ */
+export const provideKeyMetrics = ( registry, extraData = {} ) => {
+	const defaults = {
+		widgetSlugs: [ 'test-slug' ],
+		isWidgetHidden: false,
+	};
+	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+		...defaults,
+		...extraData,
+	} );
+};
 
 /**
  * Mutes a fetch request to the given URL once.
@@ -507,6 +549,20 @@ export const unsubscribeFromAll = () => {
 export const waitForDefaultTimeouts = () => {
 	return new Promise( ( resolve ) => {
 		setTimeout( resolve, 5 );
+	} );
+};
+
+/**
+ * Creates a delay in the execution of subsequent code for a specified duration in milliseconds.
+ *
+ * @since 1.102.0
+ *
+ * @param {number} timeout The duration to wait before resolving the promise, in milliseconds.
+ * @return {Promise} A promise that resolves after the specified `timeout` duration.
+ */
+export const waitForTimeouts = ( timeout ) => {
+	return new Promise( ( resolve ) => {
+		setTimeout( resolve, timeout );
 	} );
 };
 

@@ -47,3 +47,65 @@ export function mockLocation() {
 		locationAssignMock.mockReset();
 	} );
 }
+
+/**
+ * Mocks the offset properties of an element. Sets up in beforeAll and tears down in afterAll.
+ *
+ * Based on https://github.com/jsdom/jsdom/issues/135#issuecomment-68191941, thanks to the original author.
+ *
+ * @since 1.98.0
+ */
+export function mockElementOffsets() {
+	let restoreElementOffsets;
+
+	beforeAll( () => {
+		const oldOffsetLeft = Object.getOwnPropertyDescriptor(
+			global.HTMLElement.prototype,
+			'offsetLeft'
+		);
+		const oldOffsetTop = Object.getOwnPropertyDescriptor(
+			global.HTMLElement.prototype,
+			'offsetTop'
+		);
+		const oldOffsetHeight = Object.getOwnPropertyDescriptor(
+			global.HTMLElement.prototype,
+			'offsetHeight'
+		);
+		const oldOffsetWidth = Object.getOwnPropertyDescriptor(
+			global.HTMLElement.prototype,
+			'offsetWidth'
+		);
+
+		restoreElementOffsets = () => {
+			Object.defineProperties( global.HTMLElement.prototype, {
+				offsetLeft: oldOffsetLeft,
+				offsetTop: oldOffsetTop,
+				offsetHeight: oldOffsetHeight,
+				offsetWidth: oldOffsetWidth,
+			} );
+		};
+
+		function createGetterDefinitionFor( property ) {
+			return {
+				get() {
+					return (
+						parseFloat(
+							global.getComputedStyle( this )[ property ]
+						) || 0
+					);
+				},
+			};
+		}
+
+		Object.defineProperties( global.HTMLElement.prototype, {
+			offsetLeft: createGetterDefinitionFor( 'marginLeft' ),
+			offsetTop: createGetterDefinitionFor( 'marginTop' ),
+			offsetHeight: createGetterDefinitionFor( 'height' ),
+			offsetWidth: createGetterDefinitionFor( 'width' ),
+		} );
+	} );
+
+	afterAll( () => {
+		restoreElementOffsets();
+	} );
+}

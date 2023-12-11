@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import each from 'lodash/each';
+import { each } from 'lodash';
 
 /*
  * Internal dependencies

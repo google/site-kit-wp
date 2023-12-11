@@ -18,3 +18,5 @@
 
 export { default as PropertySelect } from './PropertySelect';
 export { default as ZeroDataMessage } from './ZeroDataMessage';
+export { default as ActivateAnalyticsCTA } from './ActivateAnalyticsCTA';
+export { default as AnalyticsStats } from './AnalyticsStats';

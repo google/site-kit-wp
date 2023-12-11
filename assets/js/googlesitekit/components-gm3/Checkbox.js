@@ -19,19 +19,32 @@
 /**
  * External dependencies
  */
-import '@material/web/checkbox/checkbox';
+import { MdCheckbox } from '@material/web/checkbox/checkbox';
+import { createComponent } from '@lit-labs/react';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
-import Spinner from '../../components/Spinner';
+import * as WordPressElement from '@wordpress/element';
+const { useCallback, useEffect, useRef } = WordPressElement;
 
 /**
  * Internal dependencies
  */
 import { getLabelFromChildren } from '../../util/react-children-to-text';
+import Spinner from '../../components/Spinner';
+
+const MdCheckboxComponent = createComponent( {
+	tagName: 'md-checkbox',
+	elementClass: MdCheckbox,
+	react: WordPressElement,
+	events: {
+		onKeyDown: 'keydown',
+		onChange: 'change',
+	},
+} );
 
 export default function Checkbox( {
 	onChange,
@@ -44,79 +57,58 @@ export default function Checkbox( {
 	tabIndex,
 	onKeyDown,
 	loading,
+	alignLeft,
+	description,
 } ) {
 	const ref = useRef( null );
 
-	useEffect( () => {
+	const updateCheckedState = useCallback( () => {
 		const { current } = ref;
 
 		if ( ! current ) {
 			return;
 		}
 
-		function updateCheckedState() {
-			current.checked = checked;
+		current.checked = checked;
 
-			// The checked property doesn't get reflected to the inner input element checked state,
-			// so we need to set it manually.
-			const innerInput = current.shadowRoot.querySelector( 'input' );
-			if ( innerInput ) {
-				innerInput.checked = checked;
-			}
+		// The checked property doesn't get reflected to the inner input element checked state,
+		// so we need to set it manually.
+		const innerInput = current.shadowRoot.querySelector( 'input' );
+		if ( innerInput ) {
+			innerInput.checked = checked;
 		}
+	}, [ checked ] );
 
-		function handleChange( event ) {
-			onChange?.( event );
+	function handleChange( event ) {
+		onChange?.( event );
 
-			// Restore current checked state for controlled component behaviour.
-			updateCheckedState();
-		}
-
-		current.addEventListener( 'change', handleChange );
-
-		if ( onKeyDown ) {
-			current.addEventListener( 'keydown', onKeyDown );
-		}
-
+		// Restore current checked state for controlled component behaviour.
 		updateCheckedState();
+	}
 
-		return () => {
-			current.removeEventListener( 'change', handleChange );
+	useEffect( () => {
+		updateCheckedState();
+	}, [ updateCheckedState ] );
 
-			if ( onKeyDown ) {
-				current.removeEventListener( 'keydown', onKeyDown );
-			}
-		};
-	}, [ checked, onChange, onKeyDown ] );
-
-	// TODO: Remove `onLabelClick` once the `md-checkbox` component is updated to be a form-associated custom element.
-	const onLabelClick = () => {
-		const { current } = ref;
-
-		if ( ! current || disabled ) {
-			return;
-		}
-
-		current.checked = ! current.checked;
-
-		current.dispatchEvent(
-			new Event( 'change', { bubbles: true, cancelable: true } )
-		);
-	};
+	const labelID = `${ id }-label`;
 
 	return (
-		<div className="googlesitekit-component-gm3_checkbox">
+		<div
+			className={ classnames( 'googlesitekit-component-gm3_checkbox', {
+				'googlesitekit-component-gm3_checkbox--align-left': alignLeft,
+			} ) }
+		>
 			{ loading && (
 				<div className="googlesitekit-component-gm3_checkbox--loading">
 					<Spinner isSaving />
 				</div>
 			) }
 			{ ! loading && (
-				<md-checkbox
+				<MdCheckboxComponent
 					id={ id }
 					ref={ ref }
-					role="checkbox"
 					aria-label={ getLabelFromChildren( children ) }
+					aria-labelledby={ labelID }
 					// `Lit` boolean attributes treat anything non-null/undefined as true.
 					// Coerce to null if false.
 					// See https://lit.dev/docs/v1/components/properties/#attributes
@@ -125,21 +117,27 @@ export default function Checkbox( {
 					name={ name }
 					value={ value }
 					tabIndex={ tabIndex }
-				></md-checkbox>
+					onChange={ handleChange }
+					onKeyDown={ onKeyDown }
+				/>
 			) }
-			{
-				// These ESLint rules are disabled because we are intentionally adding a click handler to the
-				// label to make up for a bug in the `@material/web` component, where the label does not respond to
-				// click events for the checkbox. Usually, labels associated with inputs don't respond to
-				// keyboard events, but due to our hack this is required.
-				/* eslint-disable jsx-a11y/click-events-have-key-events */
-				/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-			 }
-			<label htmlFor={ id } onClick={ onLabelClick }>
-				{ children }
-			</label>
-			{ /* eslint-enable jsx-a11y/click-events-have-key-events */
-			/* eslint-enable jsx-a11y/no-noninteractive-element-interactions */ }
+
+			{ ! description && (
+				<label id={ labelID } htmlFor={ id }>
+					{ children }
+				</label>
+			) }
+
+			{ description && (
+				<div className="googlesitekit-component-gm3_checkbox__content">
+					<label id={ labelID } htmlFor={ id }>
+						{ children }
+					</label>
+					<div className="googlesitekit-component-gm3_checkbox__description">
+						{ description }
+					</div>
+				</div>
+			) }
 		</div>
 	);
 }
@@ -155,6 +153,8 @@ Checkbox.propTypes = {
 	children: PropTypes.node.isRequired,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	loading: PropTypes.bool,
+	alignLeft: PropTypes.bool,
+	description: PropTypes.node,
 };
 
 Checkbox.defaultProps = {
@@ -163,4 +163,6 @@ Checkbox.defaultProps = {
 	tabIndex: undefined,
 	onKeyDown: null,
 	loading: false,
+	alignLeft: false,
+	description: '',
 };

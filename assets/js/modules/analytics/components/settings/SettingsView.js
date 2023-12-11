@@ -19,40 +19,23 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { ExistingGTMPropertyNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4SettingsView from './GA4SettingsView';
-import UASettingsView from './UASettingsView';
 import OptionalSettingsView from './OptionalSettingsView';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 
 export default function SettingsView() {
-	const isTagManagerAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
-	);
-
-	const gtmAnalyticsPropertyID = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
-
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-
-			<ExistingGTMPropertyNotice
-				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+			<StoreErrorNotices
+				moduleSlug="analytics-4"
+				storeName={ MODULES_ANALYTICS_4 }
 			/>
-
-			<UASettingsView />
 
 			<GA4SettingsView />
 

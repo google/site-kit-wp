@@ -27,11 +27,13 @@ export const VIEW_CONTEXT_ACTIVATION = 'activation';
 export const VIEW_CONTEXT_SPLASH = 'splash';
 export const VIEW_CONTEXT_ADMIN_BAR = 'adminBar';
 export const VIEW_CONTEXT_SETTINGS = 'settings';
+export const VIEW_CONTEXT_AD_BLOCKING_RECOVERY = 'adBlockingRecovery';
 export const VIEW_CONTEXT_MODULE = 'module';
 export const VIEW_CONTEXT_WP_DASHBOARD = 'wpDashboard';
 export const VIEW_CONTEXT_MODULE_SETUP = 'moduleSetup';
 
 // Anchor ID Constants
+export const ANCHOR_ID_KEY_METRICS = 'key-metrics';
 export const ANCHOR_ID_TRAFFIC = 'traffic';
 export const ANCHOR_ID_CONTENT = 'content';
 export const ANCHOR_ID_SPEED = 'speed';

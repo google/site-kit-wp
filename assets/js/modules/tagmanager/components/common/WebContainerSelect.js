@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import {
 	CONTAINER_CREATE,
@@ -37,7 +38,6 @@ import {
 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
-import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -58,12 +58,7 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 
 		return select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 	} );
-	const isPrimaryAMP = useSelect( ( select ) =>
-		select( CORE_SITE ).isPrimaryAMP()
-	);
-	const isSecondaryAMP = useSelect( ( select ) =>
-		select( CORE_SITE ).isSecondaryAMP()
-	);
+	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 
 	const { setContainerID, setInternalContainerID } =
 		useDispatch( MODULES_TAGMANAGER );
@@ -88,11 +83,7 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 		[ containerID, setContainerID, setInternalContainerID, viewContext ]
 	);
 
-	if ( isPrimaryAMP ) {
-		return null;
-	}
-
-	const label = isSecondaryAMP
+	const label = isAMP
 		? __( 'Web Container', 'google-site-kit' )
 		: __( 'Container', 'google-site-kit' );
 

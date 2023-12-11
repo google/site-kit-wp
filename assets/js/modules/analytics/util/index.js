@@ -164,7 +164,7 @@ function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
  * @param {number} currentMonthMetricIndex  The index of the current month metrics in the metrics set.
  * @param {number} previousMonthMetricIndex The index of the last month metrics in the metrics set.
  * @param {Array}  dataLabels               The labels to be displayed.
- * @param {Array}  dataFormats              The formats to be used for the data.
+ * @param {Array}  tooltipDataFormats       The formats to be used for the data.
  * @return {Array} The dataMap ready for charting.
  */
 export function extractAnalyticsDashboardData(
@@ -179,7 +179,7 @@ export function extractAnalyticsDashboardData(
 		__( 'Bounce Rate %', 'google-site-kit' ),
 		__( 'Session Duration', 'google-site-kit' ),
 	],
-	dataFormats = [
+	tooltipDataFormats = [
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) =>
@@ -212,11 +212,11 @@ export function extractAnalyticsDashboardData(
 				day;
 
 			if ( i > rowLength ) {
-				const emptyWeek = {
+				const emptyDay = {
 					dimensions: [ dateString ],
 					metrics: [ { values: [ 0, 0, 0, 0, 0 ] } ],
 				};
-				rows.unshift( emptyWeek );
+				rows.unshift( emptyDay );
 			}
 			date.setDate( date.getDate() - 1 );
 		}
@@ -295,7 +295,7 @@ export function extractAnalyticsDashboardData(
 				'google-site-kit'
 			),
 			dataLabels[ selectedStats ],
-			dataFormats[ selectedStats ]( row[ 1 ] ),
+			tooltipDataFormats[ selectedStats ]( row[ 1 ] ),
 			svgArrow,
 			numFmt( Math.abs( difference ), '%' )
 		);

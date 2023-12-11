@@ -35,7 +35,7 @@ describe( 'getAccountDefaults', () => {
 	it( 'should throw an error if siteURL is invalid', () => {
 		expect( () =>
 			getAccountDefaults( { siteName, siteURL: undefined, timezone } )
-		).toThrow( 'a valid siteURL is required.' );
+		).toThrow( 'A valid siteURL is required.' );
 	} );
 
 	describe( 'accountName', () => {

@@ -47,6 +47,7 @@ import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
+import UACutoffWarning from '../../common/UACutoffWarning';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
@@ -301,6 +302,7 @@ function DashboardAllTrafficWidget( props ) {
 			) }
 			noPadding
 		>
+			<UACutoffWarning />
 			<Grid>
 				<Row>
 					<Cell

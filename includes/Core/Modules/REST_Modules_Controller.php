@@ -14,6 +14,9 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
+use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Analytics_4;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -341,8 +344,8 @@ class REST_Modules_Controller {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 
-							if ( ! $this->modules->is_module_connected( $slug ) ) {
-								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
+							if ( ! $module->is_connected() ) {
+								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 
 							if ( ! $module instanceof Module_With_Service_Entity ) {
@@ -354,7 +357,7 @@ class REST_Modules_Controller {
 									);
 								}
 
-								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 400 ) );
+								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 
 							$access = $module->check_service_entity_access();
@@ -422,7 +425,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function( WP_REST_Request $request ) use ( $can_manage_options ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -433,9 +436,25 @@ class REST_Modules_Controller {
 							if ( ! $module instanceof Module_With_Settings ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
-							return new WP_REST_Response( $module->get_settings()->get() );
+
+							$settings = $module->get_settings();
+
+							if ( $can_manage_options() ) {
+								return new WP_REST_Response( $settings->get() );
+							}
+
+							if ( $settings instanceof Setting_With_ViewOnly_Keys_Interface ) {
+								$view_only_settings = array_intersect_key(
+									$settings->get(),
+									array_flip( $settings->get_view_only_keys() )
+								);
+
+								return new WP_REST_Response( $view_only_settings );
+							}
+
+							return new WP_Error( 'no_view_only_settings' );
 						},
-						'permission_callback' => $can_manage_options,
+						'permission_callback' => $can_list_data,
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
@@ -468,6 +487,42 @@ class REST_Modules_Controller {
 								},
 							),
 						),
+					),
+				),
+				array(
+					'args' => array(
+						'slug' => array(
+							'type'              => 'string',
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+							'sanitize_callback' => 'sanitize_key',
+						),
+					),
+				)
+			),
+			new REST_Route(
+				'modules/(?P<slug>[a-z0-9\-]+)/data/data-available',
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+							try {
+								$module = $this->modules->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							if ( ! $this->modules->is_module_connected( $slug ) ) {
+								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
+							}
+
+							if ( ! $module instanceof Module_With_Data_Available_State ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Module does not support setting data available state.', 'google-site-kit' ), array( 'status' => 500 ) );
+							}
+
+							return new WP_REST_Response( $module->set_data_available() );
+						},
+						'permission_callback' => $can_list_data,
 					),
 				),
 				array(
@@ -650,6 +705,27 @@ class REST_Modules_Controller {
 									continue;
 								}
 
+								// Since currently the Analytics_4 module doesn't have an ownerID setting,
+								// it uses the ownerID from Analytics as the source of truth. Hence,
+								// instead of updating ownerID for Analytics_4, we should be updating that
+								// of Analytics.
+								if ( Analytics_4::MODULE_SLUG === $slug ) {
+									try {
+										$module = $this->modules->get_module( Analytics::MODULE_SLUG );
+									} catch ( Exception $e ) {
+										$response = $this->handle_module_recovery_error(
+											$slug,
+											$response,
+											new WP_Error(
+												'invalid_module_slug',
+												$e->getMessage(),
+												array( 'status' => 404 )
+											)
+										);
+										continue;
+									}
+								}
+
 								// Update the module's ownerID to the ID of the user making the request.
 								$module_setting_updates = array(
 									'ownerID' => get_current_user_id(),
@@ -696,8 +772,8 @@ class REST_Modules_Controller {
 			'internal'     => $module->internal,
 			'order'        => $module->order,
 			'forceActive'  => $module->force_active,
-			'shareable'    => $module->is_shareable(),
 			'recoverable'  => $module->is_recoverable(),
+			'shareable'    => $this->modules->is_module_shareable( $module->slug ),
 			'active'       => $this->modules->is_module_active( $module->slug ),
 			'connected'    => $this->modules->is_module_connected( $module->slug ),
 			'dependencies' => $this->modules->get_module_dependencies( $module->slug ),

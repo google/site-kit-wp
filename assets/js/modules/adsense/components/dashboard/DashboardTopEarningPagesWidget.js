@@ -39,6 +39,7 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import AdBlockerWarning from '../common/AdBlockerWarning';
+import UACutoffWarning from '../../../analytics/components/common/UACutoffWarning';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import {
 	ZeroDataMessage,
@@ -205,6 +206,7 @@ function DashboardTopEarningPagesWidget( props ) {
 
 	return (
 		<Widget noPadding Footer={ Footer }>
+			<UACutoffWarning />
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data?.[ 0 ]?.data?.rows || [] }

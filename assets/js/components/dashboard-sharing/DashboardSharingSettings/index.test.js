@@ -27,6 +27,7 @@ import {
 	provideModuleRegistrations,
 	provideSiteConnection,
 	provideUserInfo,
+	act,
 } from '../../../../../tests/js/test-utils';
 import DashboardSharingSettings from '.';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
@@ -43,28 +44,31 @@ describe( 'DashboardSharingSettings', () => {
 
 	describe( 'Single Admin Environment', () => {
 		it( 'should render the modules for dashboard sharing', () => {
-			provideModules( registry, modules );
-			provideModuleRegistrations( registry );
-			provideSiteConnection( registry, {
-				hasMultipleAdmins: false,
+			act( () => {
+				provideModules( registry, modules );
+				provideModuleRegistrations( registry );
+				provideSiteConnection( registry, {
+					hasMultipleAdmins: false,
+				} );
+				provideUserInfo( registry );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( sharingSettings );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveShareableRoles( roles );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+
+				registry.dispatch( CORE_USER ).receiveCapabilities( {
+					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+				} );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( { ownerID: 1 } );
 			} );
-			provideUserInfo( registry );
-
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveGetSharingSettings( sharingSettings );
-			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
-
-			registry.dispatch( CORE_USER ).receiveCapabilities( {
-				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			} );
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetSettings( { ownerID: 1 } );
-
 			const { container } = render( <DashboardSharingSettings />, {
 				registry,
 			} );
@@ -78,28 +82,31 @@ describe( 'DashboardSharingSettings', () => {
 		} );
 
 		it( 'should render the modules with user role select when the admin owns the modules', () => {
-			provideModules( registry, modules );
-			provideModuleRegistrations( registry );
-			provideSiteConnection( registry, {
-				hasMultipleAdmins: false,
+			act( () => {
+				provideModules( registry, modules );
+				provideModuleRegistrations( registry );
+				provideSiteConnection( registry, {
+					hasMultipleAdmins: false,
+				} );
+				provideUserInfo( registry );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( sharingSettings );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveShareableRoles( roles );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+
+				registry.dispatch( CORE_USER ).receiveCapabilities( {
+					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+				} );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( { ownerID: 1 } );
 			} );
-			provideUserInfo( registry );
-
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveGetSharingSettings( sharingSettings );
-			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
-
-			registry.dispatch( CORE_USER ).receiveCapabilities( {
-				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			} );
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetSettings( { ownerID: 1 } );
-
 			const { container } = render( <DashboardSharingSettings />, {
 				registry,
 			} );
@@ -112,28 +119,31 @@ describe( 'DashboardSharingSettings', () => {
 		} );
 
 		it( 'should not render sharing management for a single admin environment', () => {
-			provideModules( registry, modules );
-			provideModuleRegistrations( registry );
-			provideSiteConnection( registry, {
-				hasMultipleAdmins: false,
+			act( () => {
+				provideModules( registry, modules );
+				provideModuleRegistrations( registry );
+				provideSiteConnection( registry, {
+					hasMultipleAdmins: false,
+				} );
+				provideUserInfo( registry );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( sharingSettings );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveShareableRoles( roles );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+
+				registry.dispatch( CORE_USER ).receiveCapabilities( {
+					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+				} );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( { ownerID: 1 } );
 			} );
-			provideUserInfo( registry );
-
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveGetSharingSettings( sharingSettings );
-			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
-
-			registry.dispatch( CORE_USER ).receiveCapabilities( {
-				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			} );
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetSettings( { ownerID: 1 } );
-
 			const { container } = render( <DashboardSharingSettings />, {
 				registry,
 			} );
@@ -148,7 +158,7 @@ describe( 'DashboardSharingSettings', () => {
 	} );
 
 	describe( 'Multi-Admin Environment', () => {
-		it( 'should render the sharing management column for a multi-admin environment', () => {
+		it( 'should render the sharing management column for a multi-admin environment', async () => {
 			provideModules( registry, modules );
 			provideModuleRegistrations( registry );
 			provideSiteConnection( registry, {
@@ -172,9 +182,14 @@ describe( 'DashboardSharingSettings', () => {
 				.dispatch( MODULES_SEARCH_CONSOLE )
 				.receiveGetSettings( { ownerID: 1 } );
 
-			const { container } = render( <DashboardSharingSettings />, {
-				registry,
-			} );
+			const { container, waitForRegistry } = render(
+				<DashboardSharingSettings />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
 
 			expect( container ).toHaveTextContent(
 				'Who can manage view access'

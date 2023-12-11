@@ -24,14 +24,14 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useCallback } from '@wordpress/element';
+import { Fragment, useEffect, useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
@@ -41,6 +41,7 @@ import {
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { isPermissionScopeError } from '../../../../util/errors';
 import {
 	AccountSelect,
@@ -84,6 +85,19 @@ export default function SetupForm( { finishSetup } ) {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
+
+	const isSaving = useSelect(
+		( select ) =>
+			select( MODULES_TAGMANAGER ).isDoingSubmitChanges() ||
+			select( CORE_LOCATION ).isNavigating() ||
+			select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' )
+	);
+
+	// This flag is be used to determine whether to show the loading spinner
+	// within the "Continue to Analytics setup" button when setting up GTM with Analytics.
+	// It prevents the spinner from showing when the user opts to set up GTM without Analytics.
+	const [ isSavingWithAnalytics, setIsSavingWithAnalytics ] =
+		useState( false );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -198,12 +212,17 @@ export default function SetupForm( { finishSetup } ) {
 			<div className="googlesitekit-setup-module__action">
 				{ isSetupWithAnalytics && (
 					<Fragment>
-						<Button disabled={ ! canSubmitChanges }>
+						<SpinnerButton
+							disabled={ ! canSubmitChanges }
+							isSaving={ isSavingWithAnalytics && isSaving }
+							// Show the spinner only when saving GA4 and GTM together.
+							onClick={ () => setIsSavingWithAnalytics( true ) }
+						>
 							{ __(
 								'Continue to Analytics setup',
 								'google-site-kit'
 							) }
-						</Button>
+						</SpinnerButton>
 						{ /*
 						This "link" below will be rendered as a <button> but should not
 						trigger a form submit when clicked, hence the `type="button"`.
@@ -222,9 +241,12 @@ export default function SetupForm( { finishSetup } ) {
 					</Fragment>
 				) }
 				{ ! isSetupWithAnalytics && (
-					<Button disabled={ ! canSubmitChanges }>
+					<SpinnerButton
+						disabled={ ! canSubmitChanges || isSaving }
+						isSaving={ isSaving }
+					>
 						{ __( 'Confirm & Continue', 'google-site-kit' ) }
-					</Button>
+					</SpinnerButton>
 				) }
 			</div>
 		</form>

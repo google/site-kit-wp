@@ -41,11 +41,18 @@
 		position: relative;
 
 		a {
+			text-decoration: underline;
 
 			&:active,
 			&:hover,
 			&:visited {
 				color: $c-content-on-primary;
+			}
+
+			&:focus {
+				box-shadow: none;
+				outline: 1px dotted $c-interactive-inverse-focus;
+				outline-offset: 3px;
 			}
 		}
 
@@ -81,8 +88,7 @@
 	line-height: 1em;
 }
 
-.googlesitekit-tooltip-button,
-.googlesitekit-tooltip-button:not(:disabled) {
+.googlesitekit-tooltip-button {
 	color: $c-white;
 	height: auto;
 	letter-spacing: normal;
@@ -91,9 +97,18 @@
 	padding: 0;
 	text-transform: none;
 
+	&:focus {
+		outline: 1px dotted $c-interactive-inverse-focus;
+		outline-offset: 6px;
+	}
+
 	&:not(:first-of-type) {
 		margin-left: 28px;
 	}
+}
+
+.googlesitekit-tooltip-button:not(:disabled) {
+	@extend .googlesitekit-tooltip-button;
 }
 
 .googlesitekit-tooltip-close {
@@ -103,6 +118,11 @@
 	position: absolute;
 	right: 29px;
 	top: 29px;
+
+	&:focus {
+		outline: 1px dotted $c-interactive-inverse-focus;
+		outline-offset: 6px;
+	}
 }
 
 .mdc-card__actions.googlesitekit-tooltip-actions {

@@ -17,12 +17,27 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { ENHANCED_MEASUREMENT_ENABLED, MODULES_ANALYTICS_4 } from './constants';
+import {
+	MODULES_ANALYTICS,
+	FORM_ACCOUNT_CREATE,
+} from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+
+const { createRegistrySelector } = Data;
+const { receiveError, clearError } = errorStoreActions;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
@@ -42,11 +57,71 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 	},
 } );
 
+const fetchCreateAccountStore = createFetchStore( {
+	baseName: 'createAccount',
+	controlCallback: ( { data } ) => {
+		return API.set(
+			'modules',
+			'analytics-4',
+			'create-account-ticket',
+			data
+		);
+	},
+	// eslint-disable-next-line sitekit/acronym-case
+	reducerCallback: ( state, { accountTicketId: accountTicketID } ) => {
+		return {
+			...state,
+			accountTicketID,
+		};
+	},
+	argsToParams: ( data ) => {
+		return { data };
+	},
+	validateParams: ( { data } = {} ) => {
+		invariant( isPlainObject( data ), 'data must be an object.' );
+	},
+} );
+
 const baseInitialState = {
 	accountSummaries: undefined,
+	accountTicketID: undefined,
 };
 
-const baseActions = {};
+const baseActions = {
+	/**
+	 * Creates a new Analytics (GA4) account.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*createAccount() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const { getValue } = registry.select( CORE_FORMS );
+		const data = {
+			displayName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
+			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
+			dataStreamName: getValue( FORM_ACCOUNT_CREATE, 'dataStreamName' ),
+			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
+			regionCode: getValue( FORM_ACCOUNT_CREATE, 'countryCode' ),
+			enhancedMeasurementStreamEnabled: getValue(
+				FORM_ACCOUNT_CREATE,
+				ENHANCED_MEASUREMENT_ENABLED
+			),
+		};
+
+		yield clearError( 'createAccount', [] );
+		const { response, error } =
+			yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+
+		if ( error ) {
+			yield receiveError( error, 'createAccount', [] );
+		}
+
+		return { response, error };
+	},
+};
 
 const baseControls = {};
 
@@ -82,16 +157,101 @@ const baseSelectors = {
 	getAccountSummaries( state ) {
 		return state.accountSummaries;
 	},
+
+	/**
+	 * Indicates whether account creation is currently in progress.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if an account is being created, false otherwise.
+	 */
+	isDoingCreateAccount( state ) {
+		// Since isFetchingCreateAccount (via createFetchStore)
+		// holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such
+		// request is in progress.
+		return Object.values( state.isFetchingCreateAccount ).some( Boolean );
+	},
+
+	/**
+	 * Get the terms of service URL.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The terms of service URL.
+	 */
+	getAccountTicketTermsOfServiceURL: createRegistrySelector(
+		( select ) => ( state ) => {
+			const { accountTicketID } = state;
+
+			if ( accountTicketID === undefined ) {
+				return undefined;
+			}
+
+			const termsOfServiceURL = select( MODULES_ANALYTICS ).getServiceURL(
+				{
+					path: `/termsofservice/${ accountTicketID }`,
+					query: { provisioningSignup: 'false' },
+				}
+			);
+
+			if ( ! termsOfServiceURL ) {
+				return undefined;
+			}
+
+			return termsOfServiceURL;
+		}
+	),
+
+	/**
+	 * Whether or not the account create form is valid to submit.
+	 *
+	 * @since 1.98.0
+	 * @private
+	 *
+	 * @return {boolean} True if valid, otherwise false.
+	 */
+	canSubmitAccountCreate: createRegistrySelector( ( select ) => () => {
+		const { getValue } = select( CORE_FORMS );
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
+			return false;
+		}
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
+			return false;
+		}
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'dataStreamName' ) ) {
+			return false;
+		}
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
+			return false;
+		}
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'countryCode' ) ) {
+			return false;
+		}
+
+		return true;
+	} ),
 };
 
-const store = Data.combineStores( fetchGetAccountSummariesStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	controls: baseControls,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetAccountSummariesStore,
+	fetchCreateAccountStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

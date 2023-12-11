@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { useSelect } from '@wordpress/data';
@@ -41,6 +36,10 @@ export default function ZeroDataNotification() {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_zero-data-notification`;
 
+	const handleOnView = useCallback( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	}, [ eventCategory ] );
+
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
@@ -48,10 +47,6 @@ export default function ZeroDataNotification() {
 	const handleOnLearnMoreClick = useCallback( () => {
 		trackEvent( eventCategory, 'click_learn_more_link' );
 	}, [ eventCategory ] );
-
-	useMount( () => {
-		trackEvent( eventCategory, 'view_notification' );
-	} );
 
 	const notEnoughTrafficURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
@@ -76,6 +71,7 @@ export default function ZeroDataNotification() {
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) }
 			SmallImageSVG={ ZeroStateIcon }
+			onView={ handleOnView }
 			onDismiss={ handleOnDismiss }
 			onLearnMoreClick={ handleOnLearnMoreClick }
 			isDismissible

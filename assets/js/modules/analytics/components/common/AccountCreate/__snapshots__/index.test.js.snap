@@ -1,0 +1,317 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AccountCreate renders correctly in a loading state 1`] = `
+<div>
+  <div
+    class="mdc-linear-progress mdc-linear-progress--indeterminate"
+    role="progressbar"
+  >
+    <div
+      class="mdc-linear-progress__buffering-dots"
+    />
+    <div
+      class="mdc-linear-progress__buffer"
+    />
+    <div
+      class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+    >
+      <span
+        class="mdc-linear-progress__bar-inner"
+      />
+    </div>
+    <div
+      class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
+    >
+      <span
+        class="mdc-linear-progress__bar-inner"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AccountCreate renders correctly when data has loaded 1`] = `
+<div>
+  <div>
+    <h3
+      class="googlesitekit-heading-4"
+    >
+      Create your Analytics account
+    </h3>
+    <p>
+      We’ve pre-filled the required information for your new account. Confirm or edit any details:
+    </p>
+    <div
+      class="googlesitekit-setup-module__inputs"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+      >
+        <div
+          class="mdc-text-field mdc-text-field mdc-text-field--outlined"
+          name="account"
+        >
+          <input
+            class="mdc-text-field__input"
+            id="googlesitekit_analytics_account_create_account"
+            value="My Site Name"
+          />
+          <div
+            class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+          >
+            <div
+              class="mdc-notched-outline__leading"
+            />
+            <div
+              class="mdc-notched-outline__notch"
+            >
+              <label
+                class="mdc-floating-label mdc-floating-label--float-above"
+                for="googlesitekit_analytics_account_create_account"
+                style=""
+              >
+                Account
+              </label>
+            </div>
+            <div
+              class="mdc-notched-outline__trailing"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+      >
+        <div
+          class="mdc-text-field mdc-text-field mdc-text-field--outlined"
+          name="property"
+        >
+          <input
+            class="mdc-text-field__input"
+            id="googlesitekit_analytics_account_create_property"
+            value="example.com"
+          />
+          <div
+            class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+          >
+            <div
+              class="mdc-notched-outline__leading"
+            />
+            <div
+              class="mdc-notched-outline__notch"
+            >
+              <label
+                class="mdc-floating-label mdc-floating-label--float-above"
+                for="googlesitekit_analytics_account_create_property"
+                style=""
+              >
+                Property
+              </label>
+            </div>
+            <div
+              class="mdc-notched-outline__trailing"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+      >
+        <div
+          class="mdc-text-field mdc-text-field mdc-text-field--outlined"
+          name="dataStream"
+        >
+          <input
+            class="mdc-text-field__input"
+            id="googlesitekit_analytics_account_create_dataStream"
+            value="example.com"
+          />
+          <div
+            class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+          >
+            <div
+              class="mdc-notched-outline__leading"
+            />
+            <div
+              class="mdc-notched-outline__notch"
+            >
+              <label
+                class="mdc-floating-label mdc-floating-label--float-above"
+                for="googlesitekit_analytics_account_create_dataStream"
+                style=""
+              >
+                Web Data Stream
+              </label>
+            </div>
+            <div
+              class="mdc-notched-outline__trailing"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-setup-module__inputs"
+    >
+      <div
+        class="mdc-select googlesitekit-analytics__select-country mdc-select--outlined"
+      >
+        <i
+          class="mdc-select__dropdown-icon"
+        />
+        <input
+          name="enhanced-select"
+          type="hidden"
+          value="US"
+        />
+        <div
+          aria-disabled="false"
+          class="mdc-select__selected-text"
+          tabindex="0"
+        >
+          United States
+        </div>
+        <div
+          class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+        >
+          <div
+            class="mdc-notched-outline__leading"
+          />
+          <div
+            class="mdc-notched-outline__notch"
+          >
+            <label
+              class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-0"
+              style=""
+            >
+              Country
+            </label>
+          </div>
+          <div
+            class="mdc-notched-outline__trailing"
+          />
+        </div>
+      </div>
+      <div
+        class="mdc-select googlesitekit-analytics__select-timezone mdc-select--outlined"
+      >
+        <i
+          class="mdc-select__dropdown-icon"
+        />
+        <input
+          name="enhanced-select"
+          type="hidden"
+          value="America/Detroit"
+        />
+        <div
+          aria-disabled="false"
+          class="mdc-select__selected-text"
+          tabindex="0"
+        >
+          (GMT-04:00) Detroit Time
+        </div>
+        <div
+          class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+        >
+          <div
+            class="mdc-notched-outline__leading"
+          />
+          <div
+            class="mdc-notched-outline__notch"
+          >
+            <label
+              class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-1"
+              style=""
+            >
+              Timezone
+            </label>
+          </div>
+          <div
+            class="mdc-notched-outline__trailing"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-setup-module__inputs"
+    >
+      <div
+        class="googlesitekit-analytics-enable-enhanced-measurement"
+      >
+        <div
+          aria-checked="true"
+          class="mdc-switch mdc-switch--checked"
+          role="switch"
+          tabindex="0"
+        >
+          <div
+            class="mdc-switch__track"
+          >
+             
+          </div>
+          <div
+            class="mdc-switch__thumb-underlay"
+          >
+            <div
+              class="mdc-switch__thumb"
+            >
+              <input
+                class="mdc-switch__native-control"
+                id="googlesitekit-switch-0"
+                readonly=""
+                role="switch"
+                type="checkbox"
+              />
+            </div>
+          </div>
+        </div>
+        <label
+          class=""
+          for="googlesitekit-switch-0"
+        >
+          Enable enhanced measurement
+        </label>
+        <p>
+          This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+          <a
+            aria-label="Learn more (opens in a new tab)"
+            class="googlesitekit-cta-link"
+            href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Learn more
+            <span
+              class="googlesitekit-icon-wrapper"
+              style="margin-left: 5px;"
+            >
+              <svg />
+            </span>
+          </a>
+        </p>
+      </div>
+    </div>
+    <p>
+      <span>
+        You will be redirected to Google Analytics to accept the terms of service.
+      </span>
+    </p>
+    <div
+      class="googlesitekit-setup-module__action"
+    >
+      <button
+        class="mdc-button mdc-button--raised"
+        target="_self"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Create Account
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;

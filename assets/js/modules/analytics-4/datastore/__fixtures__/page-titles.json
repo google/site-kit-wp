@@ -1,0 +1,71 @@
+{
+	"kind": "analyticsData#runReport",
+	"rowCount": 3,
+	"dimensionHeaders": [ { "name": "pagePath" }, { "name": "pageTitle" } ],
+	"metricHeaders": [ { "name": "screenPageViews", "type": "TYPE_INTEGER" } ],
+	"rows": [
+		{
+			"dimensionValues": [
+				{
+					"value": "/"
+				},
+				{
+					"value": "HOME"
+				}
+			],
+			"metricValues": [ { "value": "110" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/one/" },
+				{
+					"value": "ONE"
+				}
+			],
+			"metricValues": [ { "value": "58" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/two/" },
+				{
+					"value": "TWO"
+				}
+			],
+			"metricValues": [ { "value": "54" } ]
+		}
+	],
+	"totals": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_TOTAL" },
+				{ "value": "RESERVED_TOTAL" }
+			],
+			"metricValues": [ { "value": "222" } ]
+		}
+	],
+	"maximums": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MAX" },
+				{ "value": "RESERVED_MAX" }
+			],
+			"metricValues": [ { "value": "110" } ]
+		}
+	],
+	"minimums": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MIN" },
+				{ "value": "RESERVED_MIN" }
+			],
+			"metricValues": [ { "value": "1" } ]
+		}
+	],
+	"metadata": {
+		"currencyCode": "USD",
+		"dataLossFromOtherRow": null,
+		"emptyReason": null,
+		"subjectToThresholding": null,
+		"timeZone": "America/Los_Angeles"
+	}
+}

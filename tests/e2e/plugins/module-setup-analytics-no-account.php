@@ -39,6 +39,19 @@ add_action(
 
 		register_rest_route(
 			REST_Routes::REST_ROOT,
+			'modules/analytics-4/data/account-summaries',
+			array(
+				'methods'             => 'GET',
+				'callback'            => function () {
+					return array();
+				},
+				'permission_callback' => '__return_true',
+			),
+			true
+		);
+
+		register_rest_route(
+			REST_Routes::REST_ROOT,
 			'e2e/setup/analytics/account-created',
 			array(
 				'methods'             => 'POST',

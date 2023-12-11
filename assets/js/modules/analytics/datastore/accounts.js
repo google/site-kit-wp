@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -99,6 +99,8 @@ const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION =
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
 const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
+const RESET_PROPERTY_AND_PROFILE_IDS = 'RESET_PROPERTY_AND_PROFILE_IDS';
+const REVERT_PROPERTY_AND_PROFILE_IDS = 'REVERT_PROPERTY_AND_PROFILE_IDS';
 
 const baseInitialState = {
 	accounts: undefined,
@@ -135,6 +137,20 @@ const baseActions = {
 		return dispatch(
 			MODULES_ANALYTICS
 		).invalidateResolutionForStoreSelector( 'getAccounts' );
+	},
+
+	resetPropertyAndProfileIDs() {
+		return {
+			payload: {},
+			type: RESET_PROPERTY_AND_PROFILE_IDS,
+		};
+	},
+
+	revertPropertyAndProfileIDs() {
+		return {
+			payload: {},
+			type: REVERT_PROPERTY_AND_PROFILE_IDS,
+		};
 	},
 
 	selectAccount: createValidatedAction(
@@ -185,16 +201,8 @@ const baseActions = {
 				};
 			}
 
-			if ( uaProperty?.id ) {
-				yield propertyActions.selectProperty(
-					uaProperty?.id,
-					// eslint-disable-next-line sitekit/acronym-case
-					uaProperty?.internalWebPropertyId
-				);
-			} else {
-				registry.dispatch( MODULES_ANALYTICS ).setPropertyID( '' );
-				registry.dispatch( MODULES_ANALYTICS ).setProfileID( '' );
-			}
+			registry.dispatch( MODULES_ANALYTICS ).setPropertyID( '' );
+			registry.dispatch( MODULES_ANALYTICS ).setProfileID( '' );
 
 			if ( ! registry.select( MODULES_ANALYTICS ).canUseGA4Controls() ) {
 				yield finishSelectingAccountAction;
@@ -298,6 +306,33 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RESET_PROPERTY_AND_PROFILE_IDS: {
+			return {
+				...state,
+				settings: {
+					...state.settings,
+					propertyID: '',
+					internalWebPropertyID: '',
+					profileID: '',
+					useSnippet: false,
+				},
+			};
+		}
+
+		case REVERT_PROPERTY_AND_PROFILE_IDS: {
+			return {
+				...state,
+				settings: {
+					...state.settings,
+					propertyID: state.savedSettings.propertyID,
+					internalWebPropertyID:
+						state.savedSettings.internalWebPropertyID,
+					profileID: state.savedSettings.profileID,
+					useSnippet: state.savedSettings.useSnippet,
+				},
+			};
+		}
+
 		default: {
 			return state;
 		}
@@ -377,10 +412,6 @@ const baseResolvers = {
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.setAccountID( matchedProperty.accountId );
-			yield propertyActions.selectProperty(
-				matchedProperty.id,
-				matchedProperty.internalWebPropertyId
-			);
 			/* eslint-enable */
 		}
 

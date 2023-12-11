@@ -11,11 +11,13 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -30,6 +32,7 @@ class Search_ConsoleTest extends TestCase {
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
+	use Module_With_Data_Available_State_ContractTests;
 
 	public function test_magic_methods() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -119,17 +122,17 @@ class Search_ConsoleTest extends TestCase {
 		update_option(
 			'googlesitekit_search-console_settings',
 			array(
-				'propertyID' => 'https://example1.com',
+				'propertyID' => 'https://example.com',
 				'ownerID'    => $admin,
 			)
 		);
 
-		$test_token_response['search_console_property'] = 'https://example2.com';
+		$test_token_response['search_console_property'] = 'https://example.org';
 		do_action( 'googlesitekit_authorize_user', $test_token_response );
 
 		$this->assertEqualSets(
 			array(
-				'propertyID' => 'https://example2.com',
+				'propertyID' => 'https://example.org',
 				'ownerID'    => $admin,
 			),
 			get_option( 'googlesitekit_search-console_settings' )
@@ -150,17 +153,17 @@ class Search_ConsoleTest extends TestCase {
 		update_option(
 			'googlesitekit_search-console_settings',
 			array(
-				'propertyID' => 'https://example1.com',
+				'propertyID' => 'https://example.com',
 				'ownerID'    => $admin + 10, // Make sure $admin is never the owner.
 			)
 		);
 
-		$test_token_response['search_console_property'] = 'https://example2.com';
+		$test_token_response['search_console_property'] = 'https://example.org';
 		do_action( 'googlesitekit_authorize_user', $test_token_response );
 
 		$this->assertEqualSets(
 			array(
-				'propertyID' => 'https://example1.com',
+				'propertyID' => 'https://example.com',
 				'ownerID'    => $admin + 10,
 			),
 			get_option( 'googlesitekit_search-console_settings' )
@@ -192,6 +195,24 @@ class Search_ConsoleTest extends TestCase {
 		);
 	}
 
+	public function test_data_available_reset_on_property_change() {
+		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$search_console->register();
+		$search_console->get_settings()->merge(
+			array(
+				'propertyID' => 'https://example.com',
+			)
+		);
+		$search_console->set_data_available();
+		$search_console->get_settings()->merge(
+			array(
+				'propertyID' => 'https://example.org',
+			)
+		);
+
+		$this->assertFalse( $search_console->is_data_available() );
+	}
+
 	/**
 	 * @return Module_With_Scopes
 	 */
@@ -217,6 +238,13 @@ class Search_ConsoleTest extends TestCase {
 	 * @return Module_With_Service_Entity
 	 */
 	protected function get_module_with_service_entity() {
+		return new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Data_Available_State
+	 */
+	protected function get_module_with_data_available_state() {
 		return new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 

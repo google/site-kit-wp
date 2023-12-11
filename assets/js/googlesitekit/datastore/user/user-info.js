@@ -133,7 +133,7 @@ export const actions = {
 	/**
 	 * Stores the user input state in the datastore.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 * @private
 	 *
 	 * @param {Object} isUserInputCompleted User input state.
@@ -264,7 +264,7 @@ export const resolvers = {
 	*isUserInputCompleted() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( CORE_USER ).isUserInputCompleted() ) {
+		if ( undefined !== select( CORE_USER ).isUserInputCompleted() ) {
 			return;
 		}
 
@@ -476,7 +476,7 @@ export const selectors = {
 	/**
 	 * Gets the user input state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The user input state.

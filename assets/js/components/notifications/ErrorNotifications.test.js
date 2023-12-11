@@ -27,8 +27,12 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+} from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 describe( 'ErrorNotifications', () => {
 	let registry;
@@ -65,6 +69,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
 		);
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'renders `Get help` link', () => {
@@ -89,5 +94,130 @@ describe( 'ErrorNotifications', () => {
 				code: registry.select( CORE_SITE ).getSetupErrorCode(),
 			} )
 		);
+	} );
+
+	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', () => {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+			],
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit needs additional permissions to detect updates to tags on your site'
+		);
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'does not render the GTE message if there are multiple unsatisfied scopes', () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+				'https://www.googleapis.com/auth/analytics.readonly',
+			],
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit can’t access necessary data'
+		);
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'does not render the GTE message if the GTE feature is not enabled', () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+			],
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit can’t access necessary data'
+		);
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'does render the redo setup CTA if initial Site Kit setup authentication is not granted', () => {
+		provideUserAuthentication( registry, {
+			authenticated: false,
+		} );
+		provideSiteInfo( registry, {
+			setupErrorRedoURL: '#',
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent( 'Setup was interrupted' );
+		expect( container ).toHaveTextContent( 'Redo the plugin setup' );
+	} );
+
+	it( 'does not render the redo setup CTA if it is not due to the interruption of plugin setup and no permission is temporarily persisted', () => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry, {
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+			setupErrorRedoURL: '#',
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent( 'Setup was interrupted' );
+		expect( container ).not.toHaveTextContent( 'Redo the plugin setup' );
+	} );
+
+	it( 'does render the grant permission CTA if additional permissions were not granted and permission is temporarily persisted', () => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry, {
+			isAuthenticated: true,
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+			setupErrorRedoURL: '#',
+		} );
+
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
+				status: 403,
+				message: 'Generic scope',
+				data: {
+					scopes: [
+						'https://www.googleapis.com/auth/analytics.edit',
+					],
+				},
+			} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent( 'Setup was interrupted' );
+		expect( container ).not.toHaveTextContent( 'Grant permission' );
 	} );
 } );

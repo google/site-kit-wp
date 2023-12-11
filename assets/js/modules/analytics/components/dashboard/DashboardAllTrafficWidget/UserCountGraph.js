@@ -41,10 +41,11 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
 import { stringToDate } from '../../../../../util/date-range/string-to-date';
+import { UA_CUTOFF_DATE } from '../../../constants';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
-const MOBILE_TO_DESKOP_MEDIA_QUERY =
+const MOBILE_TO_DESKTOP_MEDIA_QUERY =
 	'(min-width: 451px) and (max-width: 1280px';
 const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
@@ -68,7 +69,7 @@ export default function UserCountGraph( props ) {
 		global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY )
 	);
 	const [ mobileToDesktop, setMobileToDesktop ] = useState(
-		global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY )
+		global.matchMedia( MOBILE_TO_DESKTOP_MEDIA_QUERY )
 	);
 	const [ xLargeAndAbove, setXLargeAndAbove ] = useState(
 		global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY )
@@ -79,7 +80,7 @@ export default function UserCountGraph( props ) {
 		const updateBreakpoints = () => {
 			setXSmallOnly( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
 			setMobileToDesktop(
-				global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY )
+				global.matchMedia( MOBILE_TO_DESKTOP_MEDIA_QUERY )
 			);
 			setXLargeAndAbove(
 				global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY )
@@ -111,10 +112,12 @@ export default function UserCountGraph( props ) {
 				label: __( 'Users', 'google-site-kit' ),
 			},
 		],
-		...rows.map( ( { metrics, dimensions } ) => [
-			parseDimensionStringToDate( dimensions[ 0 ] ),
-			metrics[ 0 ].values[ 0 ],
-		] ),
+		...rows.map( ( { metrics, dimensions } ) => {
+			return [
+				parseDimensionStringToDate( dimensions[ 0 ] ),
+				metrics[ 0 ].values[ 0 ],
+			];
+		} ),
 	];
 
 	// Putting the actual start and end dates in the ticks causes the charts not to render
@@ -204,6 +207,15 @@ export default function UserCountGraph( props ) {
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
+				dateMarkers={ [
+					{
+						date: UA_CUTOFF_DATE,
+						text: __(
+							'Universal Analytics stopped collecting data',
+							'google-site-kit'
+						),
+					},
+				] }
 				height="368px"
 				loadingHeight="340px"
 				loaded={ loaded }
@@ -240,7 +252,8 @@ UserCountGraph.chartOptions = {
 		position: 'none',
 	},
 	hAxis: {
-		backgroundColor: '#eef4fd', // rgba(26, 115, 232, 0.08) over the white background.
+		// This color is the result of placing `rgba(26, 115, 232, 0.08)` over the white (`#ffffff`) background.
+		backgroundColor: '#eef4fd',
 		format: 'MMM d',
 		gridlines: {
 			color: '#ffffff',

@@ -32,4 +32,5 @@ export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitche
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
 export { default as GA4ActivateSwitch } from './GA4ActivateSwitch';
 export { default as GA4PropertyNotice } from './GA4PropertyNotice';
+export { default as UACutoffWarning } from './UACutoffWarning';
 export { default as ZeroDataMessage } from './ZeroDataMessage';

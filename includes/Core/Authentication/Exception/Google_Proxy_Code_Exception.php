@@ -23,6 +23,15 @@ use Exception;
 class Google_Proxy_Code_Exception extends Exception {
 
 	/**
+	 * Temporary code for an undelegated proxy token.
+	 *
+	 * @since 1.109.0 Explicitly declared; previously, it was dynamically declared.
+	 *
+	 * @var string
+	 */
+	protected $access_code;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0

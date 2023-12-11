@@ -64,6 +64,15 @@ class Setup {
 	protected $google_proxy;
 
 	/**
+	 * Proxy support URL.
+	 *
+	 * @since 1.109.0 Explicitly declared; previously, it was dynamically declared.
+	 *
+	 * @var string
+	 */
+	protected $proxy_support_link_url;
+
+	/**
 	 * Credentials instance.
 	 *
 	 * @since 1.48.0

@@ -20,21 +20,60 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	freezeFetch,
+	muteFetch,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserInfo,
 	unsubscribeFromAll,
+	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { CORE_USER } from './constants';
+import { provideKeyMetricsWidgetRegistrations } from '../../../components/KeyMetrics/test-utils';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from './constants';
+import { CORE_SITE } from '../site/constants';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
-describe( 'core/user user-input-settings', () => {
+describe( 'core/user key metrics', () => {
 	let registry;
 	let store;
 
 	const coreKeyMetricsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/key-metrics'
 	);
-
 	const coreKeyMetricsExpectedResponse = {
 		widgetSlugs: [ 'widget1', 'widget2' ],
 		isWidgetHidden: false,
+	};
+
+	const coreUserAuthenticationEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/authentication'
+	);
+	const coreUserInputSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/user-input-settings'
+	);
+	const coreUserInputSettingsExpectedResponse = {
+		purpose: {
+			values: [ 'publish_blog' ],
+			scope: 'site',
+		},
 	};
 
 	beforeAll( () => {
@@ -43,7 +82,10 @@ describe( 'core/user user-input-settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideModules( registry );
 		store = registry.stores[ CORE_USER ].store;
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 	} );
 
 	afterAll( () => {
@@ -58,22 +100,229 @@ describe( 'core/user user-input-settings', () => {
 		const settingID = 'test-setting';
 		const settingValue = 'test-value';
 
-		describe( 'setKeyMetricSetting', () => {
+		describe( 'getKeyMetrics', () => {
+			beforeEach( () => {
+				provideUserAuthentication( registry );
+			} );
+
+			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/user-input-settings'
+					),
+					{
+						body: {
+							purpose: {
+								values: [ 'publish_blog' ],
+								scope: 'site',
+							},
+						},
+						status: 200,
+					}
+				);
+
+				registry.select( CORE_USER ).getUserInputSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( [
+					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			it( 'should use the user-selected key metrics if the user has selected any widgets', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [ KM_ANALYTICS_RETURNING_VISITORS ],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
+
+		describe( 'getAnswerBasedMetrics', () => {
+			it( 'should return undefined if user input settings are not resolved', async () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/user-input-settings'
+					)
+				);
+
+				expect(
+					registry.select( CORE_USER ).getAnswerBasedMetrics()
+				).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+			} );
+
+			it.each( [
+				[ 'null', null ],
+				[ 'an empty object', {} ],
+				[ 'an object with empty purpose', { purpose: {} } ],
+				[
+					'an object with empty purpose values',
+					{ purpose: { values: [] } },
+				],
+			] )(
+				'should return an empty array if user input settings are %s',
+				async ( _, userInputSettings ) => {
+					muteFetch( coreUserInputSettingsEndpointRegExp );
+
+					registry.select( CORE_USER ).getUserInputSettings();
+
+					await registry
+						.dispatch( CORE_USER )
+						.receiveGetUserInputSettings( userInputSettings );
+
+					expect(
+						registry.select( CORE_USER ).getAnswerBasedMetrics()
+					).toEqual( [] );
+
+					await waitForDefaultTimeouts();
+				}
+			);
+
+			it.each( [
+				[
+					'publish_blog',
+					[
+						KM_ANALYTICS_RETURNING_VISITORS,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					],
+				],
+				[
+					'publish_news',
+					[
+						KM_ANALYTICS_PAGES_PER_VISIT,
+						KM_ANALYTICS_VISIT_LENGTH,
+						KM_ANALYTICS_VISITS_PER_VISITOR,
+						KM_ANALYTICS_MOST_ENGAGING_PAGES,
+					],
+				],
+				[
+					'monetize_content',
+					[
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					],
+				],
+				[
+					'sell_products_or_service',
+					[
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					],
+				],
+				[
+					'share_portfolio',
+					[
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					],
+				],
+			] )(
+				'should return the correct metrics for the %s purpose',
+				( purpose, expectedMetrics ) => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetUserInputSettings( {
+							purpose: { values: [ purpose ] },
+						} );
+
+					expect(
+						registry.select( CORE_USER ).getAnswerBasedMetrics()
+					).toEqual( expectedMetrics );
+				}
+			);
+
+			it( 'should return the correct metrics for the sell_products_or_service purposes when the site has a product post type', () => {
+				provideSiteInfo( registry, {
+					postTypes: [ { slug: 'product', label: 'Product' } ],
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: { values: [ 'sell_products_or_service' ] },
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getAnswerBasedMetrics()
+				).toEqual( [
+					KM_ANALYTICS_POPULAR_PRODUCTS,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				] );
+			} );
+		} );
+
+		describe( 'setKeyMetricsSetting', () => {
 			it( 'should set the setting value to the store', async () => {
 				await registry
 					.dispatch( CORE_USER )
-					.setKeyMetricSetting( settingID, settingValue );
+					.setKeyMetricsSetting( settingID, settingValue );
 
-				expect( store.getState().keyMetrics[ settingID ] ).toBe(
+				expect( store.getState().keyMetricsSettings[ settingID ] ).toBe(
 					settingValue
 				);
 			} );
 		} );
-		describe( 'saveKeyMetrics', () => {
+
+		describe( 'saveKeyMetricsSettings', () => {
+			const userID = 123;
 			beforeEach( async () => {
+				provideUserInfo( registry, { id: userID } );
+				provideUserAuthentication( registry );
 				await registry
 					.dispatch( CORE_USER )
-					.setKeyMetricSetting( settingID, settingValue );
+					.setKeyMetricsSetting( settingID, settingValue );
 			} );
 
 			it( 'should save settings and add it to the store ', async () => {
@@ -82,7 +331,7 @@ describe( 'core/user user-input-settings', () => {
 					status: 200,
 				} );
 
-				await registry.dispatch( CORE_USER ).saveKeyMetrics();
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -98,7 +347,7 @@ describe( 'core/user user-input-settings', () => {
 					}
 				);
 
-				expect( store.getState().keyMetrics ).toMatchObject(
+				expect( store.getState().keyMetricsSettings ).toMatchObject(
 					coreKeyMetricsExpectedResponse
 				);
 
@@ -117,15 +366,448 @@ describe( 'core/user user-input-settings', () => {
 					status: 500,
 				} );
 
-				await registry.dispatch( CORE_USER ).saveKeyMetrics();
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
 
 				expect(
 					registry
 						.select( CORE_USER )
-						.getErrorForAction( 'saveKeyMetrics', [] )
+						.getErrorForAction( 'saveKeyMetricsSettings', [] )
 				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();
+			} );
+
+			it( 'optionally saves additional settings besides whatever is stored', async () => {
+				const settings = {
+					[ settingID ]: settingValue,
+					isWidgetHidden: true,
+				};
+
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: settings,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( CORE_USER )
+					.saveKeyMetricsSettings( { isWidgetHidden: true } );
+
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					coreKeyMetricsEndpointRegExp,
+					{
+						body: {
+							data: {
+								settings,
+							},
+						},
+					}
+				);
+
+				expect( store.getState().keyMetricsSettings ).toEqual(
+					settings
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should mark key metrics setup as completed by current user', async () => {
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				expect(
+					registry.select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+				).toBe( 0 );
+
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+				).toBe( userID );
+			} );
+
+			it( 'should not set the keyMetricsSetupCompleted site info setting to true if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( coreKeyMetricsEndpointRegExp, {
+					body: response,
+					status: 500,
+				} );
+
+				// Verify the setting is initially false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
+
+				// Verify the setting is still false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should not set the keyMetricsSetupCompleted site info setting to true if only `isWidgetHidden` is changed', async () => {
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				// Verify the setting is initially false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				await registry
+					.dispatch( CORE_USER )
+					.saveKeyMetricsSettings( { isWidgetHidden: true } );
+
+				// Verify the setting is still false.
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
+				).toBe( false );
+
+				expect( console ).not.toHaveErrored();
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getKeyMetricsSettings', () => {
+			it( 'should fetch user key metrics settings from the API if none exist', async () => {
+				provideUserAuthentication( registry );
+
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( coreUserInputSettingsEndpointRegExp, {
+					body: coreUserInputSettingsExpectedResponse,
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getUserInputSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
+
+				registry.select( CORE_USER ).getKeyMetricsSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect( fetchMock ).toHaveFetched(
+					coreKeyMetricsEndpointRegExp,
+					{
+						body: {
+							settings: coreKeyMetricsExpectedResponse,
+						},
+					}
+				);
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetricsSettings()
+				).toMatchObject( coreKeyMetricsExpectedResponse );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			it( 'should not make a network request if settings exist', async () => {
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings(
+						coreKeyMetricsExpectedResponse
+					);
+
+				registry.select( CORE_USER ).getKeyMetricsSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect( fetchMock ).not.toHaveFetched(
+					coreKeyMetricsEndpointRegExp
+				);
+			} );
+
+			it( 'should return the filtered widget slugs that do not require custom dimensions when the user is in a view-only dashboard', () => {
+				// Set up state to simulate view-only mode.
+				provideUserAuthentication( registry, { authenticated: false } );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: null,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_PAGES_PER_VISIT,
+						KM_ANALYTICS_TOP_CATEGORIES,
+					],
+					isWidgetHidden: false,
+				} );
+
+				const keyMetricsSettings = registry
+					.select( CORE_USER )
+					.getKeyMetricsSettings();
+				expect( keyMetricsSettings.widgetSlugs ).toEqual( [
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_PAGES_PER_VISIT,
+				] );
+			} );
+
+			it( 'should return an empty array if only one widget slug is present when the user is in a view-only dashboard', () => {
+				// Set up state to simulate view-only mode.
+				provideUserAuthentication( registry, { authenticated: false } );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: null,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_CATEGORIES,
+					],
+					isWidgetHidden: false,
+				} );
+
+				const keyMetricsSettings = registry
+					.select( CORE_USER )
+					.getKeyMetricsSettings();
+				expect( keyMetricsSettings.widgetSlugs ).toEqual( [] );
+			} );
+		} );
+
+		describe( 'getUserPickedMetrics', () => {
+			beforeEach( () => {
+				provideUserAuthentication( registry );
+			} );
+
+			it( 'should return undefined while settings are loading', async () => {
+				freezeFetch( coreKeyMetricsEndpointRegExp );
+
+				const { getUserPickedMetrics } = registry.select( CORE_USER );
+
+				expect( getUserPickedMetrics() ).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'uses a resolver to make a network request if settings are not available', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				const { getUserPickedMetrics } = registry.select( CORE_USER );
+
+				expect( getUserPickedMetrics() ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_USER ).getUserPickedMetrics()
+				).toEqual( coreKeyMetricsExpectedResponse.widgetSlugs );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should return user picked metrics', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings(
+						coreKeyMetricsExpectedResponse
+					);
+
+				expect(
+					registry.select( CORE_USER ).getUserPickedMetrics()
+				).toEqual( coreKeyMetricsExpectedResponse.widgetSlugs );
+			} );
+		} );
+
+		describe( 'isKeyMetricsWidgetHidden', () => {
+			beforeEach( () => {
+				provideUserAuthentication( registry );
+			} );
+
+			it( 'should return undefined while settings are loading', async () => {
+				freezeFetch( coreKeyMetricsEndpointRegExp );
+
+				const { isKeyMetricsWidgetHidden } =
+					registry.select( CORE_USER );
+
+				expect( isKeyMetricsWidgetHidden() ).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'uses a resolver to make a network request if settings are not available', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				const { isKeyMetricsWidgetHidden } =
+					registry.select( CORE_USER );
+
+				expect( isKeyMetricsWidgetHidden() ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_USER ).isKeyMetricsWidgetHidden()
+				).toEqual( coreKeyMetricsExpectedResponse.isWidgetHidden );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
+
+		describe( 'isKeyMetricAvailable', () => {
+			it( 'should return an error if widget slug is not provided', () => {
+				expect( () => {
+					registry.select( CORE_USER ).isKeyMetricAvailable();
+				} ).toThrow( 'Key metric widget slug required.' );
+			} );
+
+			it( 'should return undefined if authentication state is loading', async () => {
+				freezeFetch( coreUserAuthenticationEndpointRegExp );
+
+				const { isKeyMetricAvailable } = registry.select( CORE_USER );
+
+				expect( isKeyMetricAvailable( 'metricA' ) ).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return false if a widget with the provided slug is not registered', () => {
+				provideUserAuthentication( registry );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( false );
+			} );
+
+			it( 'should return true if a module that the widget depends on is not connected', () => {
+				provideUserAuthentication( registry );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				provideKeyMetricsWidgetRegistrations( registry, {
+					metricA: {
+						modules: [ 'analytics-4' ],
+					},
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( true );
+			} );
+
+			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', async () => {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideKeyMetricsWidgetRegistrations( registry, {
+					metricA: {
+						modules: [ 'analytics-4' ],
+					},
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': false,
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( false );
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return true if modules that the widget depends on are connected and accessible by a view-only user', async () => {
+				provideUserAuthentication( registry );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideKeyMetricsWidgetRegistrations( registry, {
+					metricA: {
+						modules: [ 'analytics-4' ],
+					},
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( analytics4Fixtures.defaultSettings );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( true );
+
+				provideUserAuthentication( registry, { authenticated: false } );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isKeyMetricAvailable( 'metricA' )
+				).toBe( true );
+				await waitForDefaultTimeouts();
 			} );
 		} );
 	} );

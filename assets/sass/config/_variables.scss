@@ -73,11 +73,13 @@ $c-oslo-gray: #7b807d;
 $c-jordy-blue: #7f9cd4;
 $c-pizazz: #fece72;
 $c-tundora: #464b48;
+$c-davys-grey: #5b5b61;
 $c-aqua-haze: #ebeef0;
 $c-salomie-40: rgba(255, 220, 130, 0.4);
 $c-mine-shaft: #333;
 $c-boulder: #757575;
 $c-mariner: #3367d6;
+$c-woodsmoke: #131418;
 
 // WordPress core pallete
 // see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/
@@ -227,6 +229,9 @@ $c-setup-analytics-notice-text: $c-cape-cod;
 $c-search-funnel-analytics-cta-bg: $c-surfaces-surface-1;
 $c-search-funnel-analytics-cta-icon: $c-silver-2;
 
+// Overlay
+$c-overlay: rgba($c-black, 0.6);
+
 // Google MDC Theme Overrides
 $mdc-theme-primary: $c-content-primary;
 $mdc-theme-secondary: $c-brand;
@@ -292,13 +297,6 @@ $mdc-layout-grid-breakpoints: (
 );
 /* stylelint-enable */
 
-// Base64 images for reuse
-// This is the check icon, in the color #FFF ($c-white).
-$icon-checked: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%206.414L1.415%205l5.292%205.292-1.414%201.415z%22%2F%3E%3Cpath%20d%3D%22M14.146.146l1.415%201.414L5.414%2011.707%204%2010.292z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-
-// This is the tick icon, in the color #3C7251 ($c-content-primary).
-$icon-tick: url("data:image/svg+xml,%3Csvg width='10' height='9' viewBox='0 0 10 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4.5L4 7.5L9 1.5' stroke='%233c7251' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
-
 $mdc-button-min-height: 40px;
 $mdc-typography-font-family: $f-primary;
 $mdc-typography-styles-subtitle1: (
@@ -307,3 +305,24 @@ $mdc-typography-styles-subtitle1: (
 $mdc-text-field-error: $c-utility-error;
 $mdc-text-field-placeholder-ink-color: $c-interactive-on-disable-container;
 $mdc-text-field-label: $c-interactive-on-disable-container;
+
+// Custom max width for settings notice content
+$max-width-settings-notice-content: 1098px;
+
+/*
+ * Custom z-Index values
+ *
+ * Important values within the WordPress dashboard are as follows:
+ * - Top admin bar and its child menus, at z-index 99999
+ * - Left most main/side admin menu wrapper, at z-index 9990
+ * - The left most main/side admin menu sub menus on hover, at z-index 9999
+ *
+ * It is important to note that WordPress generally employs a 10 step jump
+ * in values when moving between z-index layers and this should be adhered
+ * to where possible.
+ */
+
+// Ensures header does not interfere with important wp dashboard menu elements.
+$z-index-sk-side-sheet: 10000;
+$z-index-sk-side-sheet-overlay: 9990;
+$z-index-sk-header: 9980;

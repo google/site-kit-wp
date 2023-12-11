@@ -15,5 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+export * from './chart';
+export * from './is-zero-report';
 export * from './report-normalization';
 export * from './report-validation';
+export * from './extract-dashboard-data';

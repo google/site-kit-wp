@@ -21,6 +21,7 @@
  */
 import { setDefaultOptions } from 'expect-puppeteer';
 import { get } from 'lodash';
+import { ConsoleMessage } from 'puppeteer';
 
 /**
  * WordPress dependencies
@@ -74,6 +75,8 @@ const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
+// Set default timeout for Puppeteer waits. (Default: 30 sec)
+page.setDefaultTimeout( 5000 );
 // Set default timeout for individual expect-puppeteer assertions. (Default: 1000)
 setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 
@@ -220,7 +223,27 @@ function observeConsoleLogging() {
 			return;
 		}
 
-		const logFunction = OBSERVED_CONSOLE_MESSAGE_TYPES[ type ];
+		// WordPress 6.3 moved the editor into an iframe and warns when
+		// when styles are added incorrectly.
+		// See https://github.com/WordPress/gutenberg/blob/5977e3d60b7aea6e22d4a452f7525d3f140c37b6/packages/block-editor/src/components/iframe/index.js#L170
+		// Here we ignore core those from core themes in case we add our own styles
+		// here in the future.
+		if (
+			text.match( /^twenty[a-z-]+ was added to the iframe incorrectly/ )
+		) {
+			return;
+		}
+
+		let logFunction = OBSERVED_CONSOLE_MESSAGE_TYPES[ type ];
+
+		// At this point, any unexpected message will result in a test failure.
+
+		// Check if it's raised by the AMP plugin.
+		if ( isPluginConsoleMessage( 'amp', message ) ) {
+			// Convert console messages originating from AMP to debug statements.
+			// This avoids failing tests from console errors we don't have control of.
+			logFunction = 'debug';
+		}
 
 		// As of Puppeteer 1.6.1, `message.text()` wrongly returns an object of
 		// type JSHandle for error logging, instead of the expected string.
@@ -247,6 +270,25 @@ function observeConsoleLogging() {
 		// eslint-disable-next-line no-console
 		console[ logFunction ]( text );
 	} );
+}
+
+/**
+ * Checks if the given console message is coming from a specific plugin.
+ *
+ * @since 1.98.0
+ *
+ * @param {string}         pluginSlug Plugin slug.
+ * @param {ConsoleMessage} message    Console message.
+ * @return {boolean} Whether or not a match was found.
+ */
+function isPluginConsoleMessage( pluginSlug, message ) {
+	return message
+		.stackTrace()
+		.some( ( { url } ) =>
+			url.match(
+				`${ process.env.WP_BASE_URL }/wp-content/plugins/${ pluginSlug }/`
+			)
+		);
 }
 
 /**

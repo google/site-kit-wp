@@ -152,6 +152,34 @@ class Module_Sharing_Settings extends Setting {
 	}
 
 	/**
+	 * Gets the sharing settings for a given module, or the defaults.
+	 *
+	 * @since 1.95.0
+	 *
+	 * @param string $slug Module slug.
+	 * @return array {
+	 *     Sharing settings for the given module.
+	 *     Default sharing settings do not grant any access so they
+	 *     are safe to return for a non-existent or non-shareable module.
+	 *
+	 *     @type array  $sharedRoles A list of WP Role IDs that the module is shared with.
+	 *     @type string $management  Which users can manage the sharing settings.
+	 * }
+	 */
+	public function get_module( $slug ) {
+		$settings = $this->get();
+
+		if ( isset( $settings[ $slug ] ) ) {
+			return $settings[ $slug ];
+		}
+
+		return array(
+			'sharedRoles' => array(),
+			'management'  => 'owner',
+		);
+	}
+
+	/**
 	 * Unsets the settings for a given module.
 	 *
 	 * @since 1.68.0

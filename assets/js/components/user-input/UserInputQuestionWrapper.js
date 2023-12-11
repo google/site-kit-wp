@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -45,14 +44,11 @@ export default function UserInputQuestionWrapper( props ) {
 	const {
 		children,
 		slug,
-		isActive,
 		questionNumber,
 		title,
 		description,
 		next,
-		nextLabel,
 		back,
-		backLabel,
 		error,
 	} = props;
 
@@ -61,12 +57,7 @@ export default function UserInputQuestionWrapper( props ) {
 	);
 
 	return (
-		<div
-			className={ classnames( 'googlesitekit-user-input__question', {
-				'googlesitekit-user-input__question--active': isActive,
-				'googlesitekit-user-input__question--next': ! isActive,
-			} ) }
-		>
+		<div className="googlesitekit-user-input__question">
 			<div className="googlesitekit-user-input__question-contents">
 				<Row>
 					<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
@@ -87,32 +78,30 @@ export default function UserInputQuestionWrapper( props ) {
 					</Cell>
 				</Row>
 			</div>
-			{ isActive && (
-				<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
-					<div className="googlesitekit-user-input__footer-nav">
-						{ next && (
-							<Button
-								className="googlesitekit-user-input__buttons--next"
-								onClick={ next }
-								disabled={ hasErrorForAnswer( values ) }
-							>
-								{ nextLabel || __( 'Next', 'google-site-kit' ) }
-							</Button>
-						) }
-						{ back && (
-							<Link
-								className="googlesitekit-user-input__buttons--back"
-								onClick={ back }
-							>
-								{ backLabel || __( 'Back', 'google-site-kit' ) }
-							</Link>
-						) }
-					</div>
-					<div className="googlesitekit-user-input__footer-cancel">
-						<CancelUserInputButton />
-					</div>
+			<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
+				<div className="googlesitekit-user-input__footer-nav">
+					{ next && (
+						<Button
+							className="googlesitekit-user-input__buttons--next"
+							onClick={ next }
+							disabled={ hasErrorForAnswer( values ) }
+						>
+							{ __( 'Next', 'google-site-kit' ) }
+						</Button>
+					) }
+					{ back && (
+						<Link
+							className="googlesitekit-user-input__buttons--back"
+							onClick={ back }
+						>
+							{ __( 'Back', 'google-site-kit' ) }
+						</Link>
+					) }
 				</div>
-			) }
+				<div className="googlesitekit-user-input__footer-cancel">
+					<CancelUserInputButton />
+				</div>
+			</div>
 		</div>
 	);
 }
@@ -121,12 +110,9 @@ UserInputQuestionWrapper.propTypes = {
 	slug: PropTypes.string.isRequired,
 	questionNumber: PropTypes.number.isRequired,
 	children: PropTypes.node,
-	isActive: PropTypes.bool,
 	title: PropTypes.string,
 	description: PropTypes.string,
 	next: PropTypes.func,
-	nextLabel: PropTypes.string,
 	back: PropTypes.func,
-	backLabel: PropTypes.string,
 	error: PropTypes.object,
 };

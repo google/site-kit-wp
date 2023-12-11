@@ -25,12 +25,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, Option } from '../../../../../material-components';
+import { Option, Select } from 'googlesitekit-components';
+import Data from 'googlesitekit-data';
 import {
 	allCountries,
 	countriesByCode,
 } from '../../../util/countries-timezones';
-import Data from 'googlesitekit-data';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 const { useSelect, useDispatch } = Data;

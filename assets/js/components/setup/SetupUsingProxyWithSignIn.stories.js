@@ -65,7 +65,7 @@ StartUserInput.args = {
 	},
 };
 StartUserInput.parameters = {
-	features: [ 'userInput' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const StartUserInputError = Template.bind( {} );
@@ -86,7 +86,7 @@ StartUserInputError.args = {
 	},
 };
 StartUserInputError.parameters = {
-	features: [ 'userInput' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const DisconnectedURLMismatch = Template.bind( {} );
@@ -119,7 +119,7 @@ DisconnectedURLMismatchUserInput.args = {
 	},
 };
 DisconnectedURLMismatchUserInput.parameters = {
-	features: [ 'userInput' ],
+	features: [ 'keyMetrics' ],
 };
 
 export const AnalyticsActive = Template.bind( {} );
@@ -166,9 +166,6 @@ SharedDashboardAdminCanView.args = {
 		} );
 	},
 };
-SharedDashboardAdminCanView.parameters = {
-	features: [ 'dashboardSharing' ],
-};
 
 export const SharedDashboardSingleAdminCanView = Template.bind( {} );
 SharedDashboardSingleAdminCanView.storyName =
@@ -196,9 +193,6 @@ SharedDashboardSingleAdminCanView.args = {
 			) ]: true,
 		} );
 	},
-};
-SharedDashboardSingleAdminCanView.parameters = {
-	features: [ 'dashboardSharing' ],
 };
 
 export default {

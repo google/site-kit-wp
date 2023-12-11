@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Authentication\Clients;
 
 use Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Client;
 use WP_HTTP_Proxy;
 
 /**
@@ -59,29 +60,10 @@ final class Client_Factory {
 		// Enable exponential retries, try up to three times.
 		$client->setConfig( 'retry', array( 'retries' => 3 ) );
 
-		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
-		// By default this header uses the generic Guzzle client's user-agent and includes
-		// Guzzle, cURL, and PHP versions as it is normally shared.
-		// In our case however, the client is namespaced to be used by Site Kit only.
-		$http_client = $client->getHttpClient();
-		$http_client->setDefaultOption( 'headers/User-Agent', Google_Proxy::get_application_name() );
-
-		/** This filter is documented in wp-includes/class-http.php */
-		$ssl_verify = apply_filters( 'https_ssl_verify', true, null );
-		// If SSL verification is enabled (default) use the SSL certificate bundle included with WP.
-		if ( $ssl_verify ) {
-			$http_client->setDefaultOption( 'verify', ABSPATH . WPINC . '/certificates/ca-bundle.crt' );
-		} else {
-			$http_client->setDefaultOption( 'verify', false );
-		}
-
-		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
-		$http_proxy = new WP_HTTP_Proxy();
-		if ( $http_proxy->is_enabled() ) {
-			// See http://docs.guzzlephp.org/en/5.3/clients.html#proxy for reference.
-			$auth = $http_proxy->use_authentication() ? "{$http_proxy->authentication()}@" : '';
-			$http_client->setDefaultOption( 'proxy', "{$auth}{$http_proxy->host()}:{$http_proxy->port()}" );
-		}
+		$http_client        = $client->getHttpClient();
+		$http_client_config = self::get_http_client_config( $http_client->getConfig() );
+		// In Guzzle 6+, the HTTP client is immutable, so only a new instance can be set.
+		$client->setHttpClient( new Client( $http_client_config ) );
 
 		$auth_config = self::get_auth_config( $args['client_id'], $args['client_secret'], $args['redirect_uri'] );
 		if ( ! empty( $auth_config ) ) {
@@ -97,7 +79,6 @@ final class Client_Factory {
 		$client->setPrompt( 'consent' );
 		$client->setRedirectUri( $args['redirect_uri'] );
 		$client->setScopes( (array) $args['required_scopes'] );
-		$client->prepareScopes();
 
 		// Set the full token data.
 		if ( ! empty( $args['token'] ) ) {
@@ -133,6 +114,54 @@ final class Client_Factory {
 		}
 
 		return $client;
+	}
+
+	/**
+	 * Get HTTP client configuration.
+	 *
+	 * @since 1.115.0
+	 *
+	 * @param array $config Initial configuration.
+	 * @return array The new HTTP client configuration.
+	 */
+	private static function get_http_client_config( $config ) {
+		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
+		// By default this header uses the generic Guzzle client's user-agent and includes
+		// Guzzle, cURL, and PHP versions as it is normally shared.
+		// In our case however, the client is namespaced to be used by Site Kit only.
+		$config['headers']['User-Agent'] = Google_Proxy::get_application_name();
+
+		/** This filter is documented in wp-includes/class-http.php */
+		$ssl_verify = apply_filters( 'https_ssl_verify', true, null );
+		// If SSL verification is enabled (default) use the SSL certificate bundle included with WP.
+		if ( $ssl_verify ) {
+			$config['verify'] = ABSPATH . WPINC . '/certificates/ca-bundle.crt';
+		} else {
+			$config['verify'] = false;
+		}
+
+		// Configure the Google_Client's HTTP client to use the same HTTP proxy as WordPress HTTP, if set.
+		$http_proxy = new WP_HTTP_Proxy();
+		if ( $http_proxy->is_enabled() ) {
+			// See https://docs.guzzlephp.org/en/6.5/request-options.html#proxy for reference.
+			$auth = $http_proxy->use_authentication() ? "{$http_proxy->authentication()}@" : '';
+
+			$config['proxy'] = "{$auth}{$http_proxy->host()}:{$http_proxy->port()}";
+		}
+
+		/**
+		 * Filters the IP version to force hostname resolution with.
+		 *
+		 * @since 1.115.0
+		 *
+		 * @param $force_ip_resolve null|string IP version to force. Default: null.
+		 */
+		$force_ip_resolve = apply_filters( 'googlesitekit_force_ip_resolve', null );
+		if ( in_array( $force_ip_resolve, array( null, 'v4', 'v6' ), true ) ) {
+			$config['force_ip_resolve'] = $force_ip_resolve;
+		}
+
+		return $config;
 	}
 
 	/**

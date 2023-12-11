@@ -20,9 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
-import isEqual from 'lodash/isEqual';
-import pick from 'lodash/pick';
+import { isPlainObject, isEqual, pick } from 'lodash';
 
 /**
  * Internal dependencies
@@ -69,6 +67,7 @@ const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
  * @param {Array}  [options.ownedSettingsSlugs] Optional. List of "owned settings" for this module, if they exist.
  * @param {number} [options.storeName]          Store name to use. Default is '{type}/{identifier}'.
  * @param {Array}  [options.settingSlugs]       List of the slugs that are part of the settings object handled by the respective API endpoint.
+ * @param {Object} [options.initialSettings]    Optional. An initial set of settings as key-value pairs.
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
@@ -80,6 +79,7 @@ export const createSettingsStore = (
 		ownedSettingsSlugs = undefined,
 		storeName = undefined,
 		settingSlugs = [],
+		initialSettings = undefined,
 	} = {}
 ) => {
 	invariant( type, 'type is required.' );
@@ -90,7 +90,7 @@ export const createSettingsStore = (
 
 	const initialState = {
 		ownedSettingsSlugs,
-		settings: undefined,
+		settings: initialSettings,
 		savedSettings: undefined,
 	};
 

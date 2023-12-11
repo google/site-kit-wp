@@ -30,7 +30,11 @@ exports[`Overview should not render the Activate Analytics CTA when the Analytic
                 <h3
                   class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
                 >
-                  Total Impressions
+                  <span
+                    class="googlesitekit-data-block__title-inner"
+                  >
+                    Total Impressions
+                  </span>
                 </h3>
                 <div
                   class="googlesitekit-data-block__datapoint"
@@ -69,7 +73,11 @@ exports[`Overview should not render the Activate Analytics CTA when the Analytic
                 <h3
                   class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
                 >
-                  Total Clicks
+                  <span
+                    class="googlesitekit-data-block__title-inner"
+                  >
+                    Total Clicks
+                  </span>
                 </h3>
                 <div
                   class="googlesitekit-data-block__datapoint"
@@ -129,7 +137,11 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
                 <h3
                   class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
                 >
-                  Total Impressions
+                  <span
+                    class="googlesitekit-data-block__title-inner"
+                  >
+                    Total Impressions
+                  </span>
                 </h3>
                 <div
                   class="googlesitekit-data-block__datapoint"
@@ -168,7 +180,11 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
                 <h3
                   class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
                 >
-                  Total Clicks
+                  <span
+                    class="googlesitekit-data-block__title-inner"
+                  >
+                    Total Clicks
+                  </span>
                 </h3>
                 <div
                   class="googlesitekit-data-block__datapoint"
@@ -252,7 +268,7 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
               See how many people visit your site from Search and track how you’re achieving your goals.
             </p>
             <button
-              class="mdc-button mdc-button--raised"
+              class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
               target="_self"
             >
               <span

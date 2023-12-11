@@ -25,9 +25,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { Select, Option } from '../../../../material-components';
 import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import { isValidPropertySelection, isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
@@ -50,7 +49,10 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID );
+		return (
+			select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID ) ||
+			[]
+		);
 	} );
 
 	const isLoading = useSelect( ( select ) => {
@@ -120,16 +122,11 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 			enhanced
 			outlined
 		>
-			{ ( profiles || [] )
-				.concat( {
-					id: PROFILE_CREATE,
-					name: __( 'Set up a new view', 'google-site-kit' ),
-				} )
-				.map( ( { id, name }, index ) => (
-					<Option key={ index } value={ id }>
-						{ name }
-					</Option>
-				) ) }
+			{ profiles.map( ( { id, name }, index ) => (
+				<Option key={ index } value={ id }>
+					{ name }
+				</Option>
+			) ) }
 		</Select>
 	);
 }

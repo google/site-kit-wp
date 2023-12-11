@@ -1,0 +1,12 @@
+// Overrides for .MuiCircularProgress-*
+
+.googlesitekit-plugin {
+
+	.MuiCircularProgress-colorPrimary {
+		color: $c-content-primary;
+	}
+
+	.MuiCircularProgress-colorSecondary {
+		color: $c-content-secondary;
+	}
+}

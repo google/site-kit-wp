@@ -39,9 +39,10 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 	DASHBOARD_TYPE_ENTITY,
 } from '../../../../../../hooks/useDashboardType';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS } from '../../../../../analytics/datastore/constants';
 import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import OptionalCells from './OptionalCells';
 const { useSelect, useInViewSelect } = Data;
 
@@ -95,6 +96,11 @@ const Overview = ( {
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 
+	const isAnalyticsGatheringData = useInViewSelect(
+		( select ) =>
+			analyticsModuleConnected &&
+			select( MODULES_ANALYTICS ).isGatheringData()
+	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -193,6 +199,7 @@ const Overview = ( {
 			title: __( 'Total Impressions', 'google-site-kit' ),
 			datapoint: totalImpressions,
 			change: totalImpressionsChange,
+			isGatheringData: isSearchConsoleGatheringData,
 		},
 		{
 			id: 'clicks',
@@ -200,6 +207,7 @@ const Overview = ( {
 			title: __( 'Total Clicks', 'google-site-kit' ),
 			datapoint: totalClicks,
 			change: totalClicksChange,
+			isGatheringData: isSearchConsoleGatheringData,
 		},
 		...( showAnalytics
 			? [
@@ -212,6 +220,7 @@ const Overview = ( {
 						),
 						datapoint: analyticsVisitorsDatapoint,
 						change: analyticsVisitorsChange,
+						isGatheringData: isAnalyticsGatheringData,
 					},
 			  ]
 			: [] ),
@@ -225,6 +234,7 @@ const Overview = ( {
 						title: __( 'Goals', 'google-site-kit' ),
 						datapoint: analyticsGoalsDatapoint,
 						change: analyticsGoalsChange,
+						isGatheringData: isAnalyticsGatheringData,
 					},
 			  ]
 			: [] ),
@@ -237,6 +247,7 @@ const Overview = ( {
 						datapoint: analyticsBounceDatapoint,
 						datapointUnit: '%',
 						change: analyticsBounceChange,
+						isGatheringData: isAnalyticsGatheringData,
 					},
 			  ]
 			: [] ),
@@ -288,9 +299,7 @@ const Overview = ( {
 										selectedStats === dataBlock.stat
 									}
 									handleStatSelection={ handleStatsSelection }
-									gatheringData={
-										isSearchConsoleGatheringData
-									}
+									gatheringData={ dataBlock.isGatheringData }
 								/>
 							</Cell>
 						) ) }

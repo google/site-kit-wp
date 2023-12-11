@@ -26,12 +26,9 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS,
-	DATE_RANGE_OFFSET,
-} from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
-import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
@@ -43,20 +40,24 @@ export default function Footer() {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const contentPagesURL = useSelect( ( select ) => {
+	const sourceLinkURL = useSelect( ( select ) => {
 		if ( viewOnlyDashboard ) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getServiceReportURL(
-			'content-pages',
-			generateDateRangeArgs( dates )
+		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+			'all-pages-and-screens',
+			{
+				dates,
+				// eslint-disable-next-line sitekit/acronym-case
+				otherArgs: { collectionId: 'life-cycle' },
+			}
 		);
 	} );
 
 	return (
 		<SourceLink
-			href={ contentPagesURL }
+			href={ sourceLinkURL }
 			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			external
 		/>

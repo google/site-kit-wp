@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Tests\Core\Modules\FakeModule;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -25,7 +26,7 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Debug_DataTest extends TestCase {
 
-	public function test_register() {
+	public function new_debug_data() {
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options         = new Options( $context );
 		$user_options    = new User_Options( $context );
@@ -34,36 +35,32 @@ class Debug_DataTest extends TestCase {
 		$dismissed_items = new Dismissed_Items( $user_options );
 		$permissions     = new Permissions( $context, $authentication, $modules, $user_options, $dismissed_items );
 
-		$debug_data = new Debug_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
-		remove_all_filters( 'debug_information' );
+		$fake_module = new FakeModule( $context, $options, $user_options );
+		$fake_module->set_force_active( true ); // necessary to add sharing fields
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
+		return new Debug_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
+	}
+
+	public function test_register() {
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data();
 		$debug_data->register();
 
 		$this->assertTrue( has_filter( 'debug_information' ) );
+	}
+
+	public function test_registered_debug_information() {
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data();
+		$debug_data->register();
 
 		$info = apply_filters( 'debug_information', array() );
 		$this->assertArrayHasKey( 'google-site-kit', $info );
 
-		$this->assertEqualSets(
-			array(
-				'version',
-				'php_version',
-				'wp_version',
-				'amp_mode',
-				'site_status',
-				'user_status',
-				'verification_status',
-				'connected_user_count',
-				'active_modules',
-				'recoverable_modules',
-				'reference_url',
-				'search_console_property',
-				'required_scopes',
-				'capabilities',
-				'enabled_features',
-			),
-			array_keys( $info['google-site-kit']['fields'] )
-		);
+		$this->assertNonConditionalFields( $info );
+		$this->assertArrayHasKey( 'recoverable_modules', $info['google-site-kit']['fields'] );
+		$this->assertHasDashboardSharingModuleFields( 'fake-module', $info );
 	}
 
 	/**
@@ -98,6 +95,45 @@ class Debug_DataTest extends TestCase {
 				'',
 				-4,
 			),
+		);
+	}
+
+	protected function assertNonConditionalFields( $debug_information ) {
+		$non_conditional_keys = array(
+			'version',
+			'php_version',
+			'wp_version',
+			'amp_mode',
+			'site_status',
+			'user_status',
+			'verification_status',
+			'connected_user_count',
+			'active_modules',
+			'reference_url',
+			'required_scopes',
+			'capabilities',
+			'enabled_features',
+		);
+		$actual_keys          = array_keys( $debug_information['google-site-kit']['fields'] );
+
+		$this->assertEqualSets(
+			$non_conditional_keys,
+			array_intersect( $non_conditional_keys, $actual_keys ),
+			'Failed to assert all non-conditional debug info fields are present'
+		);
+	}
+
+	protected function assertHasDashboardSharingModuleFields( $module_slug, $debug_information ) {
+		$sharing_keys = array(
+			"{$module_slug}_shared_roles",
+			"{$module_slug}_management",
+		);
+		$actual_keys  = array_keys( $debug_information['google-site-kit']['fields'] );
+
+		$this->assertEqualSets(
+			$sharing_keys,
+			array_intersect( $sharing_keys, $actual_keys ),
+			"Failed to assert that dashboard sharing fields were present for $module_slug"
 		);
 	}
 }

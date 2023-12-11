@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import { useHistory, useParams } from 'react-router-dom';
-import isEmpty from 'lodash/isEmpty';
+import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -32,15 +32,14 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
-import Spinner from '../../Spinner';
 import Link from '../../Link';
 import { trackEvent } from '../../../util';
 import { clearCache } from '../../../googlesitekit/api/cache';
@@ -100,7 +99,7 @@ export default function Footer( props ) {
 	} );
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
-	const { clearErrors } = useDispatch( `modules/${ slug }` );
+	const { clearErrors } = useDispatch( module?.storeName ) || {};
 	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
@@ -111,7 +110,7 @@ export default function Footer( props ) {
 			'cancel_module_settings',
 			slug
 		);
-		await clearErrors();
+		await clearErrors?.();
 		history.push( `/connected-services/${ slug }` );
 
 		if ( slug === 'analytics' ) {
@@ -135,7 +134,7 @@ export default function Footer( props ) {
 					'update_module_settings',
 					slug
 				);
-				await clearErrors();
+				await clearErrors?.();
 				history.push( `/connected-services/${ slug }` );
 
 				if ( slug === 'analytics' ) {
@@ -169,6 +168,37 @@ export default function Footer( props ) {
 		);
 	}, [ slug, viewContext ] );
 
+	// Check if the resolution for the specified selector has finished.
+	// This allows us to determine if the data needed by the module is still being loaded.
+	// The primary reason for this loading check is to disable the submit button
+	// while the necessary data for the settings is still being loaded, preventing
+	// premature interactions by the user.
+	const isLoading = useSelect( ( select ) => {
+		const resolutionMapping = {
+			analytics: 'getAccounts',
+			tagmanager: 'getAccounts',
+			'search-console': 'getMatchedProperties',
+		};
+		const resolutionSelector = resolutionMapping[ slug ];
+
+		if ( ! module || ! resolutionSelector ) {
+			return false;
+		}
+
+		return ! select( module.storeName ).hasFinishedResolution(
+			resolutionSelector
+		);
+	} );
+
+	let buttonText = __( 'Save', 'google-site-kit' );
+
+	if ( canSubmitChanges ) {
+		buttonText = __( 'Apply changes', 'google-site-kit' );
+	}
+	if ( isSaving ) {
+		buttonText = __( 'Saving…', 'google-site-kit' );
+	}
+
 	if ( ! module ) {
 		return null;
 	}
@@ -178,27 +208,21 @@ export default function Footer( props ) {
 	let secondaryColumn = null;
 
 	if ( isEditing || isSaving ) {
-		const closeButton = (
-			<Button onClick={ handleClose }>
-				{ __( 'Close', 'google-site-kit' ) }
-			</Button>
-		);
-		const submitButton = (
-			<Button
-				disabled={ isSaving || ! canSubmitChanges }
-				onClick={ handleConfirm }
-			>
-				{ isSaving
-					? __( 'Saving…', 'google-site-kit' )
-					: __( 'Confirm Changes', 'google-site-kit' ) }
-			</Button>
-		);
-
 		primaryColumn = (
 			<Fragment>
-				{ hasSettings && moduleConnected ? submitButton : closeButton }
-
-				<Spinner isSaving={ isSaving } />
+				{ hasSettings && moduleConnected ? (
+					<SpinnerButton
+						disabled={ isSaving || isLoading }
+						onClick={ handleConfirm }
+						isSaving={ isSaving }
+					>
+						{ buttonText }
+					</SpinnerButton>
+				) : (
+					<Button onClick={ handleClose }>
+						{ __( 'Close', 'google-site-kit' ) }
+					</Button>
+				) }
 
 				{ hasSettings && (
 					<Link
@@ -216,6 +240,11 @@ export default function Footer( props ) {
 				className="googlesitekit-settings-module__edit-button"
 				to={ `/connected-services/${ slug }/edit` }
 				onClick={ handleEdit }
+				aria-label={ sprintf(
+					/* translators: %s: module name */
+					__( 'Edit %s settings', 'google-site-kit' ),
+					name
+				) }
 			>
 				{ __( 'Edit', 'google-site-kit' ) }
 				<PencilIcon

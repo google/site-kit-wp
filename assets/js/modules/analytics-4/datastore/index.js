@@ -24,8 +24,13 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import accounts from './accounts';
 import baseModuleStore from './base';
 import containers from './containers';
+import conversionEvents from './conversion-events';
+import customDimensions from './custom-dimensions';
+import customDimensionsGatheringData from './custom-dimensions-gathering-data';
+import enhancedMeasurement from './enhanced-measurement';
 import properties from './properties';
 import report from './report';
+import service from './service';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
@@ -34,9 +39,14 @@ const store = Data.combineStores(
 	accounts,
 	baseModuleStore,
 	containers,
+	conversionEvents,
 	createSnapshotStore( MODULES_ANALYTICS_4 ),
+	customDimensions,
+	customDimensionsGatheringData,
+	enhancedMeasurement,
 	properties,
 	report,
+	service,
 	tags,
 	webdatastreams
 );

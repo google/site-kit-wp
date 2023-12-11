@@ -38,7 +38,10 @@ function getComponentNames( componentPath ) {
 	return fs
 		.readdirSync( componentPath )
 		.filter(
-			( name ) => ! /^index|utils|\.(stories|test)\.js$/.test( name )
+			( name ) =>
+				! /^index|utils|__snapshots__|\.(stories|test)\.js$/.test(
+					name
+				)
 		)
 		.map( ( name ) => name.replace( /\..*/, '' ) );
 }
@@ -46,11 +49,17 @@ function getComponentNames( componentPath ) {
 describe( 'all modules', () => {
 	describe.each( directories( '.' ) )( '%s', ( moduleSlug ) => {
 		const components = directories( `${ moduleSlug }/components` );
-		if ( ! components.length ) {
+
+		// Filter out the custom-dimensions-report-options directory
+		const filteredComponents = components.filter(
+			( component ) => component !== 'custom-dimensions-report-options'
+		);
+
+		if ( ! filteredComponents.length ) {
 			return;
 		}
 
-		it.each( components )(
+		it.each( filteredComponents )(
 			'components/%s has an index module with all components exported',
 			( componentDir ) => {
 				const componentDirPath = path.join(
@@ -59,6 +68,7 @@ describe( 'all modules', () => {
 					'components',
 					componentDir
 				);
+
 				const {
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					default: _,
@@ -68,7 +78,12 @@ describe( 'all modules', () => {
 				const componentNames =
 					getComponentNames( componentDirPath ).sort();
 
-				expect( indexExportNames ).toEqual( componentNames );
+				const filteredComponentNames = componentNames.filter(
+					( component ) =>
+						component !== 'custom-dimensions-report-options'
+				);
+
+				expect( indexExportNames ).toEqual( filteredComponentNames );
 			}
 		);
 	} );

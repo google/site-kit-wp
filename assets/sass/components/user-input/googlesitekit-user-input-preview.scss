@@ -102,11 +102,6 @@
 
 		.googlesitekit-user-input__select-option {
 
-			.mdc-radio,
-			.mdc-checkbox {
-				margin-left: -10px;
-			}
-
 			&:not(:last-child) {
 				border-bottom: none;
 			}
@@ -120,7 +115,6 @@
 	}
 
 	.googlesitekit-user-input__preview-group-title {
-		align-items: baseline;
 		display: flex;
 		flex-direction: column-reverse;
 		justify-content: space-between;
@@ -138,23 +132,26 @@
 		}
 
 		button {
-			color: $c-content-secondary;
+			align-items: center;
+			display: flex;
 			font-family: $f-secondary;
 			font-weight: $fw-medium;
+			gap: 4px;
 			margin-left: auto;
+			padding: 3px 7px 3px 12px; // Tweak the padding to ensure the button is aligned in its focus state.
 
-			&::after {
-				// This is the expand_more icon (arrow/chevron down), in the color #108080 ($c-content-secondary).
-				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%23108080%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
-				background-position: right 4px;
-				background-repeat: no-repeat;
-				background-size: 14px 12px;
-				border-radius: 50%;
-				content: "";
-				display: inline-block;
-				height: 22px;
-				vertical-align: middle;
-				width: 20px;
+			&[disabled] {
+				color: $c-utility-outline;
+			}
+
+			svg {
+				fill: none;
+				transition: transform $t-default ease-out;
+			}
+
+			&:hover,
+			&:focus {
+				svg { fill: none; }
 			}
 		}
 	}
@@ -163,9 +160,10 @@
 
 		.googlesitekit-user-input__preview-group-title {
 
-			button::after {
-				background-position: left 6px;
-				transform: rotate(180deg);
+			button {
+				svg {
+					transform: rotate(180deg);
+				}
 			}
 		}
 	}

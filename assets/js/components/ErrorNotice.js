@@ -41,7 +41,7 @@ export default function ErrorNotice( {
 	error,
 	storeName,
 	message = error.message,
-	shouldDisplayError = () => true,
+	noPrefix = false,
 } ) {
 	const dispatch = useDispatch();
 
@@ -61,11 +61,7 @@ export default function ErrorNotice( {
 	}, [ dispatch, selectorData ] );
 
 	// Do not display if there is no error, or if the error is for missing scopes.
-	if (
-		! error ||
-		isPermissionScopeError( error ) ||
-		! shouldDisplayError( error )
-	) {
+	if ( ! error || isPermissionScopeError( error ) ) {
 		return null;
 	}
 
@@ -76,9 +72,13 @@ export default function ErrorNotice( {
 			<ErrorText
 				message={ message }
 				reconnectURL={ error.data?.reconnectURL }
+				noPrefix={ noPrefix }
 			/>
 			{ shouldDisplayRetry && (
-				<Button onClick={ handleRetry }>
+				<Button
+					className="googlesitekit-error-notice__retry-button"
+					onClick={ handleRetry }
+				>
 					{ __( 'Retry', 'google-site-kit' ) }
 				</Button>
 			) }
@@ -92,5 +92,5 @@ ErrorNotice.propTypes = {
 	} ),
 	storeName: PropTypes.string,
 	message: PropTypes.string,
-	shouldDisplayError: PropTypes.func,
+	noPrefix: PropTypes.bool,
 };

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -50,8 +50,37 @@ import {
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
 import { isZeroReport } from '../util';
+import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 
 const { createRegistrySelector } = Data;
+
+/**
+ * Returns report args for a sample report.
+ *
+ * @since 1.107.0
+ *
+ * @param {Function} select The select function of the registry.
+ * @return {Object} Report args.
+ */
+const getSampleReportArgs = ( select ) => {
+	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} );
+
+	const args = {
+		dimensions: [ 'ga:date' ],
+		metrics: [ { expression: 'ga:users' } ],
+		startDate,
+		endDate,
+	};
+
+	const url = select( CORE_SITE ).getCurrentEntityURL();
+	if ( url ) {
+		args.url = url;
+	}
+
+	return args;
+};
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -120,6 +149,45 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
+const gatheringDataStore = createGatheringDataStore( 'analytics', {
+	storeName: MODULES_ANALYTICS,
+	dataAvailable:
+		global._googlesitekitModulesData?.[ 'data_available_analytics' ],
+	selectDataAvailability: createRegistrySelector( ( select ) => () => {
+		const args = getSampleReportArgs( select );
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		const hasReportError = select( MODULES_ANALYTICS ).getErrorForSelector(
+			'getReport',
+			[ args ]
+		);
+
+		// If there is an error, return `null` since we don't know if there is data or not.
+		if ( hasReportError ) {
+			return null;
+		}
+
+		if (
+			! Array.isArray( report[ 0 ]?.data?.rows ) ||
+			report[ 0 ]?.data?.rows?.length === 0
+		) {
+			return false;
+		}
+
+		return true;
+	} ),
+} );
+
 const baseInitialState = {
 	reports: {},
 };
@@ -165,21 +233,18 @@ const baseSelectors = {
 	 *
 	 * @since 1.13.0
 	 *
-	 * @param {Object}         state                       Data store's state.
-	 * @param {Object}         options                     Options for generating the report.
-	 * @param {string}         options.startDate           Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate             Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.dateRange           Required, alternative to startDate and endDate. A date range string such as 'last-28-days'.
-	 * @param {Array.<string>} options.metrics             Required. List of metrics to query.
-	 * @param {boolean}        [options.compareDateRanges] Optional. Only relevant with dateRange. Default false.
-	 * @param {boolean}        [options.multiDateRange]    Optional. Only relevant with dateRange. Default false.
-	 * @param {string}         [options.compareStartDate]  Optional. Start date to compare report data for as YYYY-mm-dd.
-	 * @param {string}         [options.compareEndDate]    Optional. End date to compare report data for as YYYY-mm-dd.
-	 * @param {Array.<string>} [options.dimensions]        Optional. List of dimensions to group results by. Default an empty array.
-	 * @param {Object}         [options.dimensionFilters]  Optional. Map of dimension filters for filtering options on a dimension. Default an empty object.
-	 * @param {Array.<Object>} [options.orderby]           Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
-	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
-	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         state                      Data store's state.
+	 * @param {Object}         options                    Options for generating the report.
+	 * @param {string}         options.startDate          Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate            Required. End date to query report data for as YYYY-mm-dd.
+	 * @param {Array.<string>} options.metrics            Required. List of metrics to query.
+	 * @param {string}         [options.compareStartDate] Optional. Start date to compare report data for as YYYY-mm-dd.
+	 * @param {string}         [options.compareEndDate]   Optional. End date to compare report data for as YYYY-mm-dd.
+	 * @param {Array.<string>} [options.dimensions]       Optional. List of dimensions to group results by. Default an empty array.
+	 * @param {Object}         [options.dimensionFilters] Optional. Map of dimension filters for filtering options on a dimension. Default an empty object.
+	 * @param {Array.<Object>} [options.orderby]          Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
+	 * @param {string}         [options.url]              Optional. URL to get a report for only this URL. Default an empty string.
+	 * @param {number}         [options.limit]            Optional. Maximum number of entries to return. Default 1000.
 	 * @return {(Array.<Object>|undefined)} An Analytics report; `undefined` if not loaded.
 	 */
 	getReport( state, options ) {
@@ -194,7 +259,7 @@ const baseSelectors = {
 	 * @since 1.42.0
 	 *
 	 * @param {Object} state             Data store's state.
-	 * @param {Object} report            A report from getReport selector containing pagePaths.
+	 * @param {Object} report            A report from the getReport selector containing pagePaths.
 	 * @param {Object} options           Options for generating the report.
 	 * @param {string} options.startDate Required, start date to query report data for as YYYY-mm-dd.
 	 * @param {string} options.endDate   Required, end date to query report data for as YYYY-mm-dd.
@@ -207,11 +272,11 @@ const baseSelectors = {
 					return;
 				}
 
-				const pagePaths = []; // Array of pagePaths.
+				const pagePaths = [];
 				const REQUEST_MULTIPLIER = 5;
 
 				/*
-				 * Iterate the report, finding which dimension contains the
+				 * Iterate over the report, finding which dimension contains the
 				 * ga:pagePath metric which we add to the array of pagePaths.
 				 */
 				( report || [] ).forEach( ( { columnHeader, data } ) => {
@@ -283,56 +348,6 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Determines whether the Analytics is still gathering data.
-	 *
-	 * @todo Review the name of this selector to a less confusing one.
-	 * @since 1.44.0
-	 *
-	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
-	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_ANALYTICS ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ args ] );
-
-		if ( ! hasResolvedReport ) {
-			return undefined;
-		}
-
-		if ( ! Array.isArray( report ) ) {
-			return false;
-		}
-
-		if (
-			! Array.isArray( report[ 0 ]?.data?.rows ) ||
-			report[ 0 ]?.data?.rows?.length === 0
-		) {
-			return true;
-		}
-
-		return false;
-	} ),
-
-	/**
 	 * Determines whether Analytics has zero data or not.
 	 *
 	 * @since 1.69.0
@@ -340,26 +355,15 @@ const baseSelectors = {
 	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-
 		const isGatheringData = select( MODULES_ANALYTICS ).isGatheringData();
 		if ( isGatheringData === undefined ) {
 			return undefined;
 		}
+		if ( isGatheringData === true ) {
+			return true;
+		}
+
+		const args = getSampleReportArgs( select );
 
 		// Disable reason: select needs to be called here or it will never run.
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -376,16 +380,11 @@ const baseSelectors = {
 			return false;
 		}
 
-		const hasZeroReport = isZeroReport( report );
-		if ( isGatheringData === false && hasZeroReport === false ) {
-			return false;
-		}
-
-		return true;
+		return isZeroReport( report );
 	} ),
 };
 
-const store = Data.combineStores( fetchGetReportStore, {
+const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

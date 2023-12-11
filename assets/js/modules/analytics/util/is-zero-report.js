@@ -17,12 +17,12 @@
  */
 
 /**
- * Checks whether the report data is empty or not.
+ * Checks whether the report data has only zero values.
  *
  * @since 1.22.0
  *
  * @param {Object} report Report data object.
- * @return {(boolean|undefined)} Returns undefined if in the loading state, true if the report has no data or missing data, otherwise false.
+ * @return {(boolean|undefined)} Returns TRUE if the report data has only zero values, FALSE if there is at least one non-zero value, or undefined if the report data is not resolved yet.
  */
 export function isZeroReport( report ) {
 	if ( report === undefined ) {

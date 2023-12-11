@@ -24,14 +24,13 @@ import {
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import * as CacheModule from '../../../googlesitekit/api/cache';
+import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_USER } from './constants';
 import {
 	initialState,
 	FEATURE_TOUR_COOLDOWN_SECONDS,
 	FEATURE_TOUR_LAST_DISMISSED_AT,
 } from './feature-tours';
-const { setItem } = CacheModule;
 
 describe( 'core/user feature-tours', () => {
 	let registry;
@@ -64,8 +63,11 @@ describe( 'core/user feature-tours', () => {
 	};
 
 	beforeEach( () => {
-		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
 		registry = createTestRegistry();
+		setItemSpy = jest.spyOn(
+			registry.dispatch( CORE_SITE ),
+			'setCacheItem'
+		);
 		store = registry.stores[ CORE_USER ].store;
 		registry.dispatch( CORE_USER ).receiveInitialSiteKitVersion( '1.0.0' );
 	} );
@@ -176,7 +178,7 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'sets the currentTour in state', () => {
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 
 				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
 
@@ -284,7 +286,7 @@ describe( 'core/user feature-tours', () => {
 
 		describe( 'triggerTour', () => {
 			it( 'sets the currentTour in state if none is already set', async () => {
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 
 				await registry.dispatch( CORE_USER ).triggerTour( testTourA );
 
@@ -301,7 +303,7 @@ describe( 'core/user feature-tours', () => {
 
 		describe( 'triggerOnDemandTour', () => {
 			it( 'triggers the given tour', async () => {
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 				await registry
 					.dispatch( CORE_USER )
@@ -311,7 +313,7 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'does not trigger the given tour if it has been dismissed', async () => {
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedTours( [ testTourA.slug ] );
@@ -319,7 +321,7 @@ describe( 'core/user feature-tours', () => {
 					.dispatch( CORE_USER )
 					.triggerOnDemandTour( testTourA );
 
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 			} );
 
 			it( 'will trigger the given tour even when tours are on cooldown', async () => {
@@ -342,7 +344,7 @@ describe( 'core/user feature-tours', () => {
 			it( 'will not trigger a given tour with a checkRequirements function that returns false', async () => {
 				const checkRequirements = jest.fn( () => false );
 				const tour = { ...testTourA, checkRequirements };
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 
 				await registry
@@ -350,13 +352,13 @@ describe( 'core/user feature-tours', () => {
 					.triggerOnDemandTour( tour );
 
 				expect( checkRequirements ).toHaveBeenCalledTimes( 1 );
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 			} );
 
 			it( 'will trigger a given tour with a checkRequirements function that returns true', async () => {
 				const checkRequirements = jest.fn( () => true );
 				const tour = { ...testTourA, checkRequirements };
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 
 				await registry
@@ -377,7 +379,7 @@ describe( 'core/user feature-tours', () => {
 				expect( testTourA.contexts ).toContain( 'common-context' );
 				expect( testTourB.contexts ).toContain( 'common-context' );
 
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 
 				await registry
 					.dispatch( CORE_USER )
@@ -394,11 +396,28 @@ describe( 'core/user feature-tours', () => {
 				expect( testTourA.contexts ).not.toContain( 'b-only-context' );
 				expect( testTourB.contexts ).toContain( 'b-only-context' );
 
-				expect( store.getState().currentTour ).toBeNull();
+				expect( store.getState().currentTour ).toBeUndefined();
 
 				await registry
 					.dispatch( CORE_USER )
 					.triggerTourForView( 'b-only-context' );
+
+				expect( store.getState().currentTour ).toEqual( testTourB );
+			} );
+
+			it( 'does not override an existing tour if present when no tour qualifies', async () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveAllFeatureTours( [ testTourA ] );
+
+				expect( store.getState().currentTour ).toBeUndefined();
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourB );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerTourForView( 'non-existent-context' );
 
 				expect( store.getState().currentTour ).toEqual( testTourB );
 			} );
@@ -551,7 +570,9 @@ describe( 'core/user feature-tours', () => {
 
 			it( 'uses a resolver to set lastDismissedAt in the store if there is a value in the cache', async () => {
 				const timestamp = Date.now();
-				await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp );
+				await registry
+					.dispatch( CORE_SITE )
+					.setCacheItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp );
 
 				registry.select( CORE_USER ).getLastDismissedAt();
 				await untilResolved( registry, CORE_USER ).getLastDismissedAt();
@@ -564,9 +585,11 @@ describe( 'core/user feature-tours', () => {
 			it( 'returns false for an expired lastDismissedAt value in the cache', async () => {
 				const timestamp = Date.now();
 				// Set an item that is guaranteed to be expired when called with `getItem`
-				await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
-					ttl: -1,
-				} );
+				await registry
+					.dispatch( CORE_SITE )
+					.setCacheItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
+						ttl: -1,
+					} );
 
 				registry.select( CORE_USER ).getLastDismissedAt();
 				await untilResolved( registry, CORE_USER ).getLastDismissedAt();

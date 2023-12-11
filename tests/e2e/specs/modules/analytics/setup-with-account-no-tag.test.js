@@ -69,6 +69,9 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await page.setRequestInterception( true );
 
 		useRequestInterception( ( request ) => {
+			const measurementID = 'G-2B7M8YQ1K6';
+			const containerMock = fixtures.container[ measurementID ];
+
 			if (
 				request
 					.url()
@@ -96,16 +99,26 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					)
 			) {
 				request.respond( { status: 200, body: JSON.stringify( [] ) } );
+			} else if ( request.url().match( 'analytics-4/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
+			} else if ( request.url().match( 'analytics/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else if (
 				request
 					.url()
 					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
+						'/wp-json/google-site-kit/v1/modules/analytics-4/data/conversion-events'
 					)
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [] ),
+					body: JSON.stringify( fixtures.conversionEvents ),
 				} );
 			} else if (
 				request
@@ -114,11 +127,15 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
-				request.url().match( 'analytics-4/data/account-summaries' )
+				request
+					.url()
+					.match( 'analytics-4/data/enhanced-measurement-settings' )
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( {} ),
+					body: JSON.stringify(
+						fixtures.defaultEnhancedMeasurementSettings
+					),
 				} );
 			} else if (
 				request.url().match( 'analytics-4/data/create-property' )
@@ -142,10 +159,24 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					body: JSON.stringify( fixtures.createWebDataStream ),
 					status: 200,
 				} );
-			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
+			} else if (
+				request.url().match( 'analytics-4/data/google-tag-settings' )
+			) {
 				request.respond( {
+					body: JSON.stringify( fixtures.googleTagSettings ),
 					status: 200,
-					body: JSON.stringify( [] ),
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/container-lookup' )
+			) {
+				request.respond( {
+					body: JSON.stringify( containerMock ),
+					status: 200,
+				} );
+			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
+				request.respond( {
+					body: JSON.stringify( fixtures.properties[ 0 ] ),
+					status: 200,
 				} );
 			} else {
 				request.continue();
@@ -183,10 +214,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /test account a/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test property x/i,
+				text: /example.com/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test profile x/i,
+				text: /test ga4 webdatastream/i,
 			} );
 
 			// Select Test Account B
@@ -202,11 +233,11 @@ describe( 'setting up the Analytics module with an existing account and no exist
 						}
 					),
 					page.waitForResponse( ( res ) =>
-						res.url().match( 'modules/analytics/data' )
+						res.url().match( 'modules/analytics-4/data' )
 					),
 				] );
 
-				// Selects reload with properties and profiles for Test Account B
+				// Selects reload with properties and web data streams for Test Account B
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
@@ -216,13 +247,13 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /test property y/i,
+						text: /example.net/i,
 					}
 				);
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /test profile y/i,
+						text: /another webdatastream/i,
 					}
 				);
 			} );
@@ -230,21 +261,21 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			// Select Property Z
 			await step( 'select property Z', async () => {
 				await expect( page ).toClick( '.mdc-select', {
-					text: /test property y/i,
+					text: /example.net/i,
 				} );
 				await Promise.all( [
 					expect( page ).toClick(
 						'.mdc-menu-surface--open .mdc-list-item',
 						{
-							text: /test property z/i,
+							text: /example.org/i,
 						}
 					),
 					page.waitForResponse( ( res ) =>
-						res.url().match( 'modules/analytics/data' )
+						res.url().match( 'modules/analytics-4/data' )
 					),
 				] );
 
-				// Selects reload with properties and profiles for Test Profile Z
+				// Selects reload with properties and web data streams for Test Profile Z
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
@@ -254,13 +285,13 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /test property z/i,
+						text: /example.org/i,
 					}
 				);
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /test profile z/i,
+						text: /third webdatastream/i,
 					}
 				);
 			} );
@@ -290,15 +321,11 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 			await proceedToSetUpAnalytics();
 
-			await expect( page ).toMatchElement(
-				'.googlesitekit-analytics__select-account .mdc-select__selected-text',
-				{ text: '' }
+			await expect( page ).not.toMatchElement(
+				'.googlesitekit-analytics-4__select-property'
 			);
 			await expect( page ).not.toMatchElement(
-				'.googlesitekit-analytics__select-property'
-			);
-			await expect( page ).not.toMatchElement(
-				'.googlesitekit-analytics__select-profile'
+				'.googlesitekit-analytics-4__select-webdatastream'
 			);
 
 			await expect( page ).toMatchElement( 'button[disabled]', {
@@ -310,12 +337,18 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				await expect( page ).toClick(
 					'.googlesitekit-analytics__select-account .mdc-select__selected-text'
 				);
-				await expect( page ).toClick(
-					'.mdc-menu-surface--open .mdc-list-item',
-					{
-						text: /test account a/i,
-					}
-				);
+
+				await Promise.all( [
+					await expect( page ).toClick(
+						'.mdc-menu-surface--open .mdc-list-item',
+						{
+							text: /test account a/i,
+						}
+					),
+					page.waitForResponse( ( res ) =>
+						res.url().match( 'modules/analytics-4/data' )
+					),
+				] );
 
 				// See the selects populate
 				await expect( page ).toMatchElement(
@@ -326,18 +359,21 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				);
 				// Property dropdown should not select anything because there is no property associated with the current reference URL.
 				await expect( page ).toMatchElement(
-					'.googlesitekit-analytics__select-property',
+					'.mdc-select__selected-text',
 					{
-						text: /property/i,
+						text: /set up a new property/i,
 					}
 				);
-				// Profile dropdown should not be displayed.
-				await expect( page ).not.toMatchElement(
-					'.googlesitekit-analytics__select-profile'
+				// Web data stream should not be preselected.
+				await expect( page ).toMatchElement(
+					'.mdc-select__selected-text',
+					{
+						text: /set up a new web data stream/i,
+					}
 				);
 			} );
 
-			// Intentionally does not submit to trigger property & profile creation requests.
+			// Intentionally does not submit to trigger property & webdatastream creation requests.
 		} );
 	} );
 
@@ -370,10 +406,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /test account a/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test property x/i,
+				text: /example.com/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test profile x/i,
+				text: /test ga4 webdatastream/i,
 			} );
 
 			await expect( page ).toClick(
@@ -406,10 +442,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /test account a/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test property x/i,
+				text: /example.com/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test profile x/i,
+				text: /test ga4 webdatastream/i,
 			} );
 		} );
 	} );

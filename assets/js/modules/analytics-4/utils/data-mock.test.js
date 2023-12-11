@@ -19,11 +19,18 @@
 /**
  * Internal dependencies
  */
-import { getAnalytics4MockResponse } from './data-mock';
+import { getAnalytics4MockResponse, STRATEGY_ZIP } from './data-mock';
 import mockedReportResponse from './__fixtures__/mocked-report.json';
-import mockedReportMultipleDateRangesResponse from './__fixtures__/mocked-report-multiple-date-ranges.json';
+import mockedReportMultipleDistinctDateRangesResponse from './__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
+import mockedReportMultipleOverlappingDateRangesResponse from './__fixtures__/mocked-report-multiple-overlapping-date-ranges.json';
 import mockedReportFixedValueDimensionResponse from './__fixtures__/mocked-report-fixed-value-dimension.json';
-import mockedReportMultipleDimensionResponse from './__fixtures__/mocked-report-multiple-dimensions.json';
+import mockedReportMultipleDimensionsCartesianResponse from './__fixtures__/mocked-report-multiple-dimensions-cartesian.json';
+import mockedReportMultipleDimensionsZippedResponse from './__fixtures__/mocked-report-multiple-dimensions-zipped.json';
+import mockedReportOrderByMetricAscendingResponse from './__fixtures__/mocked-report-order-by-metric-ascending.json';
+import mockedReportOrderByMetricDescendingResponse from './__fixtures__/mocked-report-order-by-metric-descending.json';
+import mockedReportOrderByDimensionAscendingResponse from './__fixtures__/mocked-report-order-by-dimension-ascending.json';
+import mockedReportOrderByDimensionDescendingResponse from './__fixtures__/mocked-report-order-by-dimension-descending.json';
+import mockedReportOrderByMetricsAndDimensionsResponse from './__fixtures__/mocked-report-order-by-metrics-and-dimensions.json';
 
 describe( 'getAnalytics4MockResponse', () => {
 	it( 'throws if called without report options', () => {
@@ -56,7 +63,7 @@ describe( 'getAnalytics4MockResponse', () => {
 					name: 'sessions',
 				},
 				{
-					name: 'newUsers',
+					name: 'engagementRate',
 				},
 			],
 			dimensions: [ 'date' ],
@@ -68,11 +75,36 @@ describe( 'getAnalytics4MockResponse', () => {
 		expect( report.rows ).toHaveLength( 5 );
 	} );
 
-	it( 'generates a valid report with multiple date ranges', () => {
+	it( 'generates a valid report with multiple distinct date ranges', () => {
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-01',
 			endDate: '2020-12-03',
-			compareStartDate: '2020-12-04',
+			compareStartDate: '2020-12-06',
+			compareEndDate: '2020-12-07',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [ 'date' ],
+		} );
+
+		expect( report ).toEqual(
+			mockedReportMultipleDistinctDateRangesResponse
+		);
+
+		// Verify the correct number of rows for the date ranges.
+		expect( report.rows ).toHaveLength( 10 );
+	} );
+
+	it( 'generates a valid report with multiple overlapping date ranges', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-03',
+			compareStartDate: '2020-12-02',
 			compareEndDate: '2020-12-05',
 			metrics: [
 				{
@@ -85,7 +117,9 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report ).toEqual( mockedReportMultipleDateRangesResponse );
+		expect( report ).toEqual(
+			mockedReportMultipleOverlappingDateRangesResponse
+		);
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 10 );
@@ -114,7 +148,8 @@ describe( 'getAnalytics4MockResponse', () => {
 		expect( report.rows ).toHaveLength( 20 );
 	} );
 
-	it( 'generates a valid report using a multiple dimensions', () => {
+	it( 'generates a valid report using the cartesian product of multiple dimensions', () => {
+		// Note that the cartesian strategy is the default for mock reports.
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-01',
 			endDate: '2020-12-03',
@@ -131,10 +166,30 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'deviceCategory', 'sessionDefaultChannelGrouping' ],
 		} );
 
-		expect( report ).toEqual( mockedReportMultipleDimensionResponse );
+		expect( report ).toEqual(
+			mockedReportMultipleDimensionsCartesianResponse
+		);
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 60 );
+	} );
+
+	it( 'generates a valid report using zipped multiple dimensions', () => {
+		const report = getAnalytics4MockResponse(
+			{
+				startDate: '2020-12-01',
+				endDate: '2020-12-05',
+				dimensions: [ 'pagePath', 'pageTitle' ],
+				metrics: [ { name: 'totalUsers' } ],
+			},
+			{
+				dimensionCombinationStrategy: STRATEGY_ZIP,
+			}
+		);
+
+		expect( report ).toEqual(
+			mockedReportMultipleDimensionsZippedResponse
+		);
 	} );
 
 	it( 'generates the same number of rows for each date range in a multi-date range report', () => {
@@ -168,5 +223,172 @@ describe( 'getAnalytics4MockResponse', () => {
 		);
 
 		expect( dateRangeZero ).toHaveLength( dateRangeOne.length );
+	} );
+
+	it( 'sorts by metric in ascending order', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+			],
+			orderby: [
+				{
+					metric: {
+						metricName: 'totalUsers',
+					},
+					desc: false,
+				},
+			],
+		} );
+
+		expect( report ).toEqual( mockedReportOrderByMetricAscendingResponse );
+	} );
+
+	it( 'sorts by metric in descending order', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+			],
+			orderby: [
+				{
+					metric: {
+						metricName: 'averageSessionDuration',
+					},
+					desc: true,
+				},
+			],
+		} );
+
+		expect( report ).toEqual( mockedReportOrderByMetricDescendingResponse );
+	} );
+
+	it( 'sorts by dimension in ascending order', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+				{
+					name: 'sessionDefaultChannelGrouping',
+				},
+			],
+			orderby: [
+				{
+					dimension: {
+						dimensionName: 'date',
+					},
+					desc: false,
+				},
+			],
+		} );
+
+		expect( report ).toEqual(
+			mockedReportOrderByDimensionAscendingResponse
+		);
+	} );
+
+	it( 'sorts by dimension in descending order', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+				{
+					name: 'sessionDefaultChannelGrouping',
+				},
+			],
+			orderby: [
+				{
+					dimension: {
+						dimensionName: 'sessionDefaultChannelGrouping',
+					},
+					desc: true,
+				},
+			],
+		} );
+
+		expect( report ).toEqual(
+			mockedReportOrderByDimensionDescendingResponse
+		);
+	} );
+
+	it( 'sorts by a combination of metrics and dimensions, with multiple date ranges', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-02',
+			compareStartDate: '2020-12-04',
+			compareEndDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+				{
+					name: 'sessionDefaultChannelGrouping',
+				},
+			],
+			orderby: [
+				{
+					dimension: {
+						dimensionName: 'date',
+					},
+					desc: false,
+				},
+				{
+					metric: {
+						metricName: 'totalUsers',
+					},
+					desc: true,
+				},
+			],
+		} );
+
+		expect( report ).toEqual(
+			mockedReportOrderByMetricsAndDimensionsResponse
+		);
 	} );
 } );

@@ -47,9 +47,37 @@ export default function SettingsEdit() {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const hasAnalyticsAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' )
-	);
+	const hasAnalyticsAccess = useSelect( ( select ) => {
+		const { hasModuleOwnershipOrAccess, getErrorForAction } =
+			select( CORE_MODULES );
+
+		const hasAccess = hasModuleOwnershipOrAccess( 'analytics' );
+
+		if ( hasAccess ) {
+			return true;
+		}
+
+		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
+			'analytics',
+		] );
+
+		// Return early if request is not completed yet.
+		if ( undefined === hasAccess && ! checkAccessError ) {
+			return undefined;
+		}
+
+		// Return false if UA is connected and access is concretely missing.
+		if ( false === hasAccess ) {
+			return false;
+		}
+
+		if ( 'module_not_connected' === checkAccessError?.code ) {
+			return true;
+		}
+
+		// For any other error or case, the user does not have access to UA.
+		return false;
+	} );
 
 	const hasAnalytics4Access = useSelect( ( select ) => {
 		// Prevent the access check from erroring if GA4 isn't connected yet.

@@ -1,18 +1,39 @@
-[
-	{
-		"property": "1000",
-		"dimensions": [],
-		"metrics": [],
-		"dateRanges": [],
-		"dimensionFilter": {},
-		"metricFilter": {},
-		"offset": 0,
-		"limit": 1000,
-		"metricAggregations": [],
-		"orderBys": [],
+{
+	"kind": "analyticsData#runReport",
+	"rowCount": 364,
+	"dimensionHeaders": [ { "name": "date" } ],
+	"metricHeaders": [
+		{ "name": "userEngagementDuration", "type": "TYPE_SECONDS" }
+	],
+	"rows": [
+		{
+			"dimensionValues": [ { "value": "20230110" } ],
+			"metricValues": [ { "value": "5568" } ]
+		}
+	],
+	"totals": [
+		{
+			"dimensionValues": [ { "value": "RESERVED_TOTAL" } ],
+			"metricValues": [ { "value": "542731" } ]
+		}
+	],
+	"maximums": [
+		{
+			"dimensionValues": [ { "value": "RESERVED_MAX" } ],
+			"metricValues": [ { "value": "5568" } ]
+		}
+	],
+	"minimums": [
+		{
+			"dimensionValues": [ { "value": "RESERVED_MIN" } ],
+			"metricValues": [ { "value": "0" } ]
+		}
+	],
+	"metadata": {
 		"currencyCode": "USD",
-		"cohortSpec": {},
-		"keepEmptyRows": true,
-		"returnPropertyQuota": true
+		"dataLossFromOtherRow": null,
+		"emptyReason": null,
+		"subjectToThresholding": null,
+		"timeZone": "America/Los_Angeles"
 	}
-]
+}

@@ -28,17 +28,25 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
-import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
+import {
+	fireEvent,
+	act,
+	render,
+	provideUserAuthentication,
+} from '../../../../../../tests/js/test-utils';
 
 const { createProperty, properties, webDataStreamsBatch } = fixtures;
 const { accounts } = analyticsFixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
 const propertyIDs = properties.map( ( { _id } ) => _id );
 
-const setupRegistry = ( { dispatch } ) => {
+const setupRegistry = ( registry ) => {
+	const { dispatch } = registry;
+
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: 'http://example.com',
 	} );
+	provideUserAuthentication( registry );
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
@@ -109,7 +117,7 @@ describe( 'PropertySelect', () => {
 
 		// Verify that the Property select dropdown is disabled.
 		[
-			'.googlesitekit-analytics__select-property',
+			'.googlesitekit-analytics-4__select-property',
 			'.mdc-select--disabled',
 		].forEach( ( className ) => {
 			expect( container.querySelector( className ) ).toBeInTheDocument();
@@ -123,7 +131,7 @@ describe( 'PropertySelect', () => {
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
 		const selectWrapper = container.querySelector(
-			'.googlesitekit-analytics__select-property'
+			'.googlesitekit-analytics-4__select-property'
 		);
 		const selectedText = container.querySelector(
 			'.mdc-select__selected-text'
@@ -150,7 +158,7 @@ describe( 'PropertySelect', () => {
 		// After we set a valid account ID, the property select should be visible.
 		expect(
 			container.querySelector(
-				'.googlesitekit-analytics__select-property'
+				'.googlesitekit-analytics-4__select-property'
 			)
 		).toBeInTheDocument();
 		expect(

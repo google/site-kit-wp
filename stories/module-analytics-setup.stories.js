@@ -33,6 +33,7 @@ import {
 	ACCOUNT_CREATE,
 	PROFILE_CREATE,
 	PROVISIONING_SCOPE,
+	EDIT_SCOPE,
 } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
@@ -379,7 +380,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry, {
-				grantedScopes: [ PROVISIONING_SCOPE ],
+				grantedScopes: [ EDIT_SCOPE ],
 			} );
 
 			registry

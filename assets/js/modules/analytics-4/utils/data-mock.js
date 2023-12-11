@@ -22,11 +22,9 @@
 import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
-import castArray from 'lodash/castArray';
+import { castArray, cloneDeep, isPlainObject, zip } from 'lodash';
 import { Observable, merge, from } from 'rxjs';
 import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
-import cloneDeep from 'lodash/cloneDeep';
-import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
@@ -35,14 +33,23 @@ import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { isValidDateString } from '../../../util';
 import { stringToDate } from '../../../util/date-range/string-to-date';
 
+export const STRATEGY_CARTESIAN = 'cartesian';
+export const STRATEGY_ZIP = 'zip';
+
 const ANALYTICS_4_METRIC_TYPES = {
 	totalUsers: 'TYPE_INTEGER',
 	newUsers: 'TYPE_INTEGER',
+	activeUsers: 'TYPE_INTEGER',
 	sessions: 'TYPE_INTEGER',
+	bounceRate: 'TYPE_FLOAT',
 	conversions: 'TYPE_INTEGER',
 	screenPageViews: 'TYPE_INTEGER',
+	screenPageViewsPerSession: 'TYPE_FLOAT',
 	engagedSessions: 'TYPE_INTEGER',
+	engagementRate: 'TYPE_FLOAT',
 	averageSessionDuration: 'TYPE_SECONDS',
+	sessionConversionRate: 'TYPE_FLOAT',
+	sessionsPerUser: 'TYPE_FLOAT',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {
@@ -50,7 +57,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Direct',
 		'Organic Search',
 		'Paid Social',
-		'Organic Social',
+		'(other)',
 		'Email',
 		'Affiliates',
 		'Referral',
@@ -58,6 +65,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Video',
 		'Display',
 	],
+	sessionDefaultChannelGroup: [ 'Organic Search' ],
 	country: [
 		'United States',
 		'United Kingdom',
@@ -68,39 +76,76 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Italy',
 		'Mexico',
 	],
+	city: [
+		'Dublin',
+		'(not set)',
+		'Cork',
+		'New York',
+		'London',
+		'Los Angeles',
+		'San Francisco',
+	],
 	deviceCategory: [ 'Desktop', 'Tablet', 'Mobile' ],
 	pageTitle: ( i ) => ( i <= 12 ? `Test Post ${ i }` : false ),
 	pagePath: ( i ) => ( i <= 12 ? `/test-post-${ i }/` : false ),
+	newVsReturning: [ 'new', 'returning' ],
+	'customEvent:googlesitekit_post_author': ( i ) =>
+		i <= 12 ? `User ${ i }` : false,
+	'customEvent:googlesitekit_post_categories': [
+		'Entertainment; Sports; Media',
+		'Wealth',
+		'Health',
+		'Technology',
+		'Business',
+	],
 };
 
 /**
- * Gets metric key.
+ * Parses dimension arguments, returns dimensions as an array of strings.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
- * @param {string|Object} metric Metric name or object.
- * @return {string} Metric key.
+ * @param {string|Object|Array<string|Object>} dimensions A single dimension or an array of dimensions.
+ * @return {Array<string>} Array of dimension names.
  */
-function getMetricKey( metric ) {
-	return metric?.name || metric.toString();
+function parseDimensionArgs( dimensions ) {
+	const dimensionsArray = castArray( dimensions );
+
+	if ( dimensionsArray.length && typeof dimensionsArray[ 0 ] === 'object' ) {
+		return dimensionsArray.map( ( dimension ) => dimension.name );
+	}
+
+	return dimensionsArray;
+}
+
+/**
+ * Gets the key for a metric or dimension.
+ *
+ * @since 1.94.0
+ *
+ * @param {string|Object} item Metric or dimension name or object.
+ * @return {string} Metric or dimension key.
+ */
+function getItemKey( item ) {
+	return item?.name || item?.toString();
 }
 
 /**
  * Gets metric type.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string|Object} metric Metric name or object.
  * @return {string} Type of the metric.
  */
 function getMetricType( metric ) {
-	return ANALYTICS_4_METRIC_TYPES[ getMetricKey( metric ) ];
+	return ANALYTICS_4_METRIC_TYPES[ getItemKey( metric ) ];
 }
 
 /**
  * Generates and returns metric values.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Array.<Object>} validMetrics Metric list.
  * @return {Array.<Object>} Array of metric values.
@@ -114,6 +159,18 @@ function generateMetricValues( validMetrics ) {
 				values.push( {
 					value: faker.datatype
 						.number( { min: 0, max: 100 } )
+						.toString(),
+				} );
+				break;
+			case 'TYPE_FLOAT':
+				values.push( {
+					value: faker.datatype
+						.float( {
+							min: 0,
+							max: 1,
+							// The GA4 API returns 17 decimal places, so specify that here, although it seems like Faker is only returning up to 16.
+							precision: 0.00000000000000001,
+						} )
 						.toString(),
 				} );
 				break;
@@ -135,7 +192,7 @@ function generateMetricValues( validMetrics ) {
  *
  * Cribbed from https://stackoverflow.com/a/36234242/12296658, thanks to the original author(s).
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Array.<Array>} arrays An array of arrays.
  * @return {Array.<Array>} The cartesian product of the input arrays.
@@ -158,50 +215,115 @@ function cartesianProduct( arrays ) {
 }
 
 /**
- * Sorts report rows and returns it.
+ * Finds a metric value in a row.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
- * @param {Array.<Object>}        rows    Array of rows to sort.
- * @param {Array.<Object>}        metrics Array of report metrics.
- * @param {Object|Array.<Object>} orderby Sorting options.
+ * @param {Object}               row        Report row.
+ * @param {Array<string|Object>} metrics    Array of valid metrics.
+ * @param {string}               metricName Metric name.
+ * @return {number|null} Metric value, or null if not found.
+ */
+function findMetricValue( row, metrics, metricName ) {
+	const index = metrics.findIndex(
+		( metric ) => getItemKey( metric ) === metricName
+	);
+	if ( index === -1 ) {
+		return null;
+	}
+	return parseInt( row.metricValues[ index ].value, 10 );
+}
+
+/**
+ * Finds a dimension value in a row.
+ *
+ * @since 1.95.0
+ *
+ * @param {Object}               row           Report row.
+ * @param {Array<string|Object>} dimensions    Array of valid dimensions.
+ * @param {string}               dimensionName Dimension name.
+ * @return {string|null} Dimension value, or null if not found.
+ */
+function findDimensionValue( row, dimensions, dimensionName ) {
+	const index = dimensions.findIndex(
+		( dimension ) => getItemKey( dimension ) === dimensionName
+	);
+	if ( index === -1 ) {
+		return null;
+	}
+	return row.dimensionValues[ index ].value;
+}
+
+/**
+ * Compares two rows by the given sorting options.
+ *
+ * @since 1.95.0
+ *
+ * @param {Array.<Object>} rowA       First row to compare.
+ * @param {Array.<Object>} rowB       Second row to compare.
+ * @param {Array.<Object>} metrics    Array of report metrics.
+ * @param {Array.<Object>} dimensions Array of report dimensions.
+ * @param {Array.<Object>} orderby    Sorting options.
  * @return {Array.<Object>} Sorted rows.
  */
-function sortRows( rows, metrics, orderby ) {
-	let sorted = rows;
+function compareRows( rowA, rowB, metrics, dimensions, orderby ) {
+	const order = orderby[ 0 ];
+	let valA, valB;
 
-	const orders = castArray( orderby );
-	for ( const order of orders ) {
-		const direction = order?.sortOrder === 'DESCENDING' ? -1 : 1;
-		const index = metrics.findIndex(
-			( metric ) => getMetricKey( metric ) === order?.fieldName
+	if ( order.metric ) {
+		valA = findMetricValue( rowA, metrics, order.metric.metricName );
+		valB = findMetricValue( rowB, metrics, order.metric.metricName );
+	} else if ( order.dimension ) {
+		valA = findDimensionValue(
+			rowA,
+			dimensions,
+			order.dimension.dimensionName
 		);
-		if ( index < 0 ) {
-			continue;
-		}
-
-		sorted = sorted.sort( ( a, b ) => {
-			let valA = parseFloat( a.metricValues[ index ]?.value );
-			if ( Number.isNaN( valA ) ) {
-				valA = 0;
-			}
-
-			let valB = parseFloat( b.metricValues[ index ]?.value );
-			if ( Number.isNaN( valB ) ) {
-				valB = 0;
-			}
-
-			return ( valA - valB ) * direction;
-		} );
+		valB = findDimensionValue(
+			rowB,
+			dimensions,
+			order.dimension.dimensionName
+		);
 	}
 
-	return sorted;
+	if ( valA === valB ) {
+		if ( orderby.length > 1 ) {
+			return compareRows(
+				rowA,
+				rowB,
+				metrics,
+				dimensions,
+				orderby.slice( 1 )
+			);
+		}
+		return 0;
+	}
+
+	const direction = order.desc ? -1 : 1;
+	return ( valA < valB ? -1 : 1 ) * direction;
+}
+
+/**
+ * Sorts report rows and returns it.
+ *
+ * @since 1.94.0
+ *
+ * @param {Array.<Object>} rows       Array of rows to sort.
+ * @param {Array.<Object>} metrics    Array of report metrics.
+ * @param {Array.<Object>} dimensions Array of report dimensions.
+ * @param {Array.<Object>} orderby    Sorting options.
+ * @return {Array.<Object>} Sorted rows.
+ */
+export function sortRows( rows, metrics, dimensions, orderby ) {
+	return rows.sort( ( rowA, rowB ) =>
+		compareRows( rowA, rowB, metrics, dimensions, orderby )
+	);
 }
 
 /**
  * Generates date range.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string} startDate The start date.
  * @param {string} endDate   The end date.
@@ -228,52 +350,19 @@ function generateDateRange( startDate, endDate ) {
 }
 
 /**
- * Returns the earliest of two dates.
- *
- * @since n.e.x.t
- *
- * @param {string} dateA The first date.
- * @param {string} dateB The second date.
- * @return {string} The earliest date.
- */
-function getEarliestDate( dateA, dateB ) {
-	if ( ! dateB ) {
-		return dateA;
-	}
-
-	return stringToDate( dateA ).getTime() < stringToDate( dateB ).getTime()
-		? dateA
-		: dateB;
-}
-
-/**
- * Returns the latest of two dates.
- *
- * @since n.e.x.t
- *
- * @param {string} dateA The first date.
- * @param {string} dateB The second date.
- * @return {string} The latest date.
- */
-function getLatestDate( dateA, dateB ) {
-	if ( ! dateB ) {
-		return dateA;
-	}
-
-	return stringToDate( dateA ).getTime() > stringToDate( dateB ).getTime()
-		? dateA
-		: dateB;
-}
-
-/**
  * Generates mock data for Analytics 4 reports.
  *
- * @since n.e.x.t
+ * @since 1.94.0
+ * @since 1.96.0 Added support for using zip to generate dimension combinations.
  *
- * @param {Object} options Report options.
+ * @param {Object} options        Report options.
+ * @param {Object} [extraOptions] Extra options for report generation.
  * @return {Array.<Object>} An array with generated report.
  */
-export function getAnalytics4MockResponse( options ) {
+export function getAnalytics4MockResponse(
+	options,
+	extraOptions = { dimensionCombinationStrategy: STRATEGY_CARTESIAN }
+) {
 	invariant(
 		isPlainObject( options ),
 		'report options are required to generate a mock response.'
@@ -329,33 +418,39 @@ export function getAnalytics4MockResponse( options ) {
 	// dimension set in the combined stream (array). We need to use array of streams because report arguments may
 	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
 	// of dimension values.
-	const dimensions = castArray( args.dimensions );
+	const dimensions = args.dimensions
+		? parseDimensionArgs( args.dimensions )
+		: [];
 
 	if ( hasDateRange ) {
 		dimensions.push( 'dateRange' );
 	}
 
 	dimensions.forEach( ( singleDimension ) => {
-		const dimension = singleDimension?.name || singleDimension?.toString();
+		const dimension = getItemKey( singleDimension );
 
-		if ( dimension === 'date' || dimension === 'dateRange' ) {
-			// When a comparison date range is specified, the report will contain a merged date range of the current and compare periods.
-			const startDate = getEarliestDate(
-				args.startDate,
-				args.compareStartDate
-			);
-			const endDate = getLatestDate( args.endDate, args.compareEndDate );
+		if ( dimension === 'date' ) {
+			const dateRanges = [
+				generateDateRange( args.startDate, args.endDate ),
+			];
 
-			const dateRange = generateDateRange( startDate, endDate );
-
-			// Generates a stream (an array) of dates when the dimension is date.
-			if ( dimension === 'date' ) {
-				streams.push( from( dateRange ) );
+			if ( args.compareStartDate && args.compareEndDate ) {
+				// When a comparison date range is specified, the report will contain a combined date range of all the dates in the current and compare periods.
+				dateRanges.push(
+					generateDateRange(
+						args.compareStartDate,
+						args.compareEndDate
+					)
+				);
 			}
 
-			if ( dimension === 'dateRange' ) {
-				streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
-			}
+			// Create a set of unique dates from the date ranges.
+			const dateRange = new Set( dateRanges.flat() );
+
+			// Generates a stream (an array) of dates.
+			streams.push( from( [ ...dateRange ] ) );
+		} else if ( dimension === 'dateRange' ) {
+			streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
 		} else if (
 			dimension &&
 			typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
@@ -408,9 +503,25 @@ export function getAnalytics4MockResponse( options ) {
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
 		// Sort rows if args.orderby is provided.
 		map( ( rows ) =>
-			args.orderby ? sortRows( rows, validMetrics, args.orderby ) : rows
+			args.orderby
+				? sortRows( rows, validMetrics, dimensions, args.orderby )
+				: rows
 		),
 	];
+
+	const { dimensionCombinationStrategy } = extraOptions;
+	let mergeMapper;
+	if ( dimensionCombinationStrategy === STRATEGY_CARTESIAN ) {
+		// When STRATEGY_CARTESIAN is specified we use the cartesianProduct function to generate all possible combinations of dimension values.
+		mergeMapper = cartesianProduct;
+	} else if ( dimensionCombinationStrategy === STRATEGY_ZIP ) {
+		// When STRATEGY_ZIP is specified we use the zip function to generate one-to-one combinations of dimension values.
+		mergeMapper = ( arrays ) => zip( ...arrays );
+	} else {
+		throw new Error(
+			`Invalid dimension combination strategy: ${ dimensionCombinationStrategy }`
+		);
+	}
 
 	// Process the streams of dimension values and add generated rows to the report data object.
 	// First we merge all streams into one which will emit each set of dimension values as an array.
@@ -418,9 +529,9 @@ export function getAnalytics4MockResponse( options ) {
 		.pipe(
 			// Then we convert the resulting stream to an array...
 			toArray(),
-			// So that we can pass it to the cartesianProduct function to generate all possible combinations of dimension values.
+			// So that we can pass it to the mergeMapper function defined above in order to generate the combinations of dimension values.
 			// Using mergeMap here ensures the resulting set of values will be emitted as a new stream.
-			mergeMap( cartesianProduct ),
+			mergeMap( mergeMapper ),
 			// Then we apply the remaining operations to generate a row for each combination of dimension values.
 			...ops
 		)
@@ -441,7 +552,7 @@ export function getAnalytics4MockResponse( options ) {
 							value: 'RESERVED_MIN',
 						};
 					} ),
-					metricValues: [ ...( rows[ 0 ]?.metricValues || [] ) ],
+					metricValues: cloneDeep( rows[ 0 ]?.metricValues || [] ),
 				},
 			].concat(
 				hasDateRange
@@ -460,9 +571,9 @@ export function getAnalytics4MockResponse( options ) {
 										};
 									}
 								),
-								metricValues: [
-									...( rows[ 1 ]?.metricValues || [] ),
-								],
+								metricValues: cloneDeep(
+									rows[ 1 ]?.metricValues || []
+								),
 							},
 					  ]
 					: []
@@ -483,9 +594,9 @@ export function getAnalytics4MockResponse( options ) {
 							value: 'RESERVED_MAX',
 						};
 					} ),
-					metricValues: [
-						...( rows[ firstItemIndex ]?.metricValues || [] ),
-					],
+					metricValues: cloneDeep(
+						rows[ firstItemIndex ]?.metricValues || []
+					),
 				},
 			].concat(
 				hasDateRange
@@ -504,10 +615,9 @@ export function getAnalytics4MockResponse( options ) {
 										};
 									}
 								),
-								metricValues: [
-									...( rows[ rows.length - 1 ]
-										?.metricValues || [] ),
-								],
+								metricValues: cloneDeep(
+									rows[ rows.length - 1 ]?.metricValues || []
+								),
 							},
 					  ]
 					: []
@@ -525,9 +635,9 @@ export function getAnalytics4MockResponse( options ) {
 							value: 'RESERVED_TOTAL',
 						};
 					} ),
-					metricValues: [
-						...( rows[ firstItemIndex ]?.metricValues || [] ),
-					],
+					metricValues: cloneDeep(
+						rows[ firstItemIndex ]?.metricValues || []
+					),
 				},
 			].concat(
 				hasDateRange
@@ -546,10 +656,9 @@ export function getAnalytics4MockResponse( options ) {
 										};
 									}
 								),
-								metricValues: [
-									...( rows[ rows.length - 1 ]
-										?.metricValues || [] ),
-								],
+								metricValues: cloneDeep(
+									rows[ rows.length - 1 ]?.metricValues || []
+								),
 							},
 					  ]
 					: []
@@ -560,10 +669,11 @@ export function getAnalytics4MockResponse( options ) {
 	faker.seed( originalSeedValue );
 
 	return {
-		dimensionHeaders:
-			args?.dimensions?.map( ( dimension ) => ( {
-				name: dimension,
-			} ) ) || null,
+		dimensionHeaders: args?.dimensions
+			? dimensions.map( ( dimension ) => ( {
+					name: dimension,
+			  } ) )
+			: null,
 		metricHeaders: validMetrics.map( ( metric ) => ( {
 			name: metric?.name || metric.toString(),
 			type: getMetricType( metric ),
@@ -575,7 +685,7 @@ export function getAnalytics4MockResponse( options ) {
 /**
  * Generates mock response for Analytics 4 reports.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  * @param {Object}           options  Report options.

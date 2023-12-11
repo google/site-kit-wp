@@ -21,8 +21,10 @@
  */
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { GA4_AUTO_SWITCH_DATE } from '../../..//analytics-4/constants';
 import { createBuildAndReceivers } from '../../../../modules/tagmanager/datastore/__factories__/utils';
 import {
 	provideModules,
@@ -73,6 +75,87 @@ WithGA4andUASnippet.scenario = {
 	delay: 250,
 };
 
+export const WithoutUAToggleGA4Enabled = Template.bind( null );
+WithoutUAToggleGA4Enabled.storyName = 'Settings w/o UA toggle, GA4 enabled';
+WithoutUAToggleGA4Enabled.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetProperties( [], { accountID } );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithoutUAToggleGA4Enabled.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithoutUAToggleGA4Enabled',
+	delay: 250,
+};
+
+export const PropertyNotAvailable = Template.bind( null );
+PropertyNotAvailable.storyName =
+	'Settings w/ selected GA4 property not available';
+PropertyNotAvailable.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+PropertyNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+PropertyNotAvailable.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/PropertyNotAvailable',
+	delay: 250,
+};
+
+export const WebDataStreamNotAvailable = Template.bind( null );
+WebDataStreamNotAvailable.storyName =
+	'Settings w/ selected GA4 webDataStream not available';
+WebDataStreamNotAvailable.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+WebDataStreamNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreamsBatch(
+					{ 1000: [] },
+					{
+						propertyIDs: [ '1000' ],
+					}
+				);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WebDataStreamNotAvailable.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WebDataStreamNotAvailable',
+	delay: 250,
+};
+
 export const WithoutUAAndGA4AccessGA4NotConnected = Template.bind( null );
 WithoutUAAndGA4AccessGA4NotConnected.storyName =
 	'Settings w/o UA access, GA4 not connected';
@@ -96,7 +179,7 @@ WithoutUAAndGA4AccessGA4NotConnected.decorators = [
 					connected: false,
 				},
 			] );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		};
 
 		return (
@@ -129,7 +212,7 @@ WithoutUAAndGA4AccessFallbackOwnerName.decorators = [
 					connected: false,
 				},
 			] );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		};
 
 		return (
@@ -169,33 +252,6 @@ OwnedSettingsChanged.args = {
 	hasAnalyticsAccess: true,
 	hasAnalytics4Access: true,
 };
-OwnedSettingsChanged.parameters = {
-	features: [ 'dashboardSharing' ],
-};
-
-export const WithUATag = Template.bind( null );
-WithUATag.storyName = 'With UA Tag, non-matching property selected';
-WithUATag.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
-				properties[ 1 ].id,
-				// eslint-disable-next-line sitekit/acronym-case
-				properties[ 1 ].internalWebPropertyId
-			);
-
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( properties[ 0 ].id );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
 
 export const WithGA4Tag = Template.bind( null );
 WithGA4Tag.storyName = 'With GA4 Tag, non-matching property selected';
@@ -219,6 +275,10 @@ WithGA4Tag.decorators = [
 		);
 	},
 ];
+WithGA4Tag.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithGA4Tag',
+	delay: 250,
+};
 
 export const WithBothTags = Template.bind( null );
 WithBothTags.storyName =
@@ -302,11 +362,42 @@ WithExistingGTMPropertyMatching.scenario = {
 	delay: 250,
 };
 
+export const PostGA4AutoSwitch = Template.bind( null );
+PostGA4AutoSwitch.storyName = 'Post GA4 auto-switch';
+PostGA4AutoSwitch.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+PostGA4AutoSwitch.parameters = {};
+PostGA4AutoSwitch.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( CORE_USER )
+				.setReferenceDate( GA4_AUTO_SWITCH_DATE );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+PostGA4AutoSwitch.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/PostGA4AutoSwitch',
+};
+
 export default {
 	title: 'Modules/Analytics/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			const setupRegistry = async ( registry ) => {
+				global._googlesitekitDashboardSharingData = {
+					settings: {},
+					roles: [],
+				};
+
 				provideModules( registry, [
 					{
 						slug: 'analytics',
@@ -371,7 +462,7 @@ export default {
 						{ accountID, propertyID: properties[ 1 ].id }
 					);
 
-				registry
+				await registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
 			};

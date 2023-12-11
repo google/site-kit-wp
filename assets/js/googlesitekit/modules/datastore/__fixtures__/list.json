@@ -35,7 +35,7 @@
 		"slug": "adsense",
 		"name": "AdSense",
 		"description": "Earn money by placing ads on your website. It’s free and easy.",
-		"homepage": "https://www.google.com/adsense/start?source=site-kit&url=http://example.com",
+		"homepage": "https://adsense.google.com/start?source=site-kit&url=http://example.com",
 		"internal": false,
 		"order": 2,
 		"active": false,
@@ -61,7 +61,7 @@
 		"active": false,
 		"connected": false,
 		"dependencies": [],
-		"dependants": [ "optimize" ],
+		"dependants": [ "analytics-4" ],
 		"owner": null,
 		"forceActive": false,
 		"shareable": true,
@@ -90,27 +90,6 @@
 		"features": [ "Website performance reports for mobile and desktop" ]
 	},
 	{
-		"slug": "optimize",
-		"name": "Optimize",
-		"description": "Create free A/B tests that help you drive metric-based design solutions to your site.",
-		"homepage": "https://optimize.google.com/optimize/home/",
-		"internal": false,
-		"order": 5,
-		"active": false,
-		"connected": false,
-		"dependencies": [ "analytics" ],
-		"dependants": [],
-		"owner": null,
-		"forceActive": false,
-		"shareable": true,
-		"recoverable": false,
-		"features": [
-			"A/B or multivariate testing",
-			"Improvement tracking",
-			"Probability and confidence calculations"
-		]
-	},
-	{
 		"slug": "tagmanager",
 		"name": "Tag Manager",
 		"description": "Tag Manager creates an easy to manage way to create tags on your site without updating code.",
@@ -126,5 +105,26 @@
 		"shareable": true,
 		"recoverable": false,
 		"features": [ "Create tags without updating code" ]
+	},
+	{
+		"slug": "analytics-4",
+		"name": "Analytics 4",
+		"description": "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.",
+		"homepage": "https://analytics.google.com/analytics/web",
+		"internal": true,
+		"order": 7,
+		"active": false,
+		"connected": false,
+		"dependencies": [ "analytics" ],
+		"dependants": [],
+		"owner": null,
+		"forceActive": false,
+		"shareable": true,
+		"recoverable": false,
+		"features": [
+			"Audience overview",
+			"Top pages",
+			"Top acquisition channels"
+		]
 	}
 ]

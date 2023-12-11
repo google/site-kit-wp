@@ -47,6 +47,8 @@ describe( 'API cache', () => {
 				request.respond( { status: 200, body: '[]' } );
 			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: '{}' } );
+			} else if ( url.match( 'user/data/survey' ) ) {
+				request.respond( { status: 200, body: '{"survey":null}' } );
 			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
 				request.respond( { status: 200, body: '[]' } );
 			} else {
@@ -80,7 +82,8 @@ describe( 'API cache', () => {
 		await goToSiteKitDashboard();
 
 		await page.waitForSelector(
-			`#${ firstTestNotification.id }.googlesitekit-publisher-win--is-open`
+			`#${ firstTestNotification.id }.googlesitekit-publisher-win--is-open`,
+			{ timeout: 10_000 } // Core site notifications are delayed 5s for surveys.
 		);
 
 		await expect( page ).toClick(
@@ -106,7 +109,8 @@ describe( 'API cache', () => {
 
 		// Ensure the second notification is displayed.
 		await page.waitForSelector(
-			`#${ secondTestNotification.id }.googlesitekit-publisher-win--is-open`
+			`#${ secondTestNotification.id }.googlesitekit-publisher-win--is-open`,
+			{ timeout: 10_000 } // Core site notifications are delayed 5s for surveys.
 		);
 
 		await expect( page ).toMatchElement(

@@ -141,7 +141,6 @@ const configTemplate = `<?php
  */
 
 return array(
-	'buildMode' => {{buildMode}},
 	'features' => {{features}},
 );
 `;
@@ -279,7 +278,7 @@ corePackages.forEach( ( name ) => {
 } );
 
 function* webpackConfig( env, argv ) {
-	const { mode, flagMode = mode } = argv;
+	const { mode } = argv;
 	const { ANALYZE } = env || {};
 
 	const rules = createRules( mode );
@@ -310,8 +309,6 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-analytics.js',
 			'googlesitekit-modules-analytics-4':
 				'./assets/js/googlesitekit-modules-analytics-4.js',
-			'googlesitekit-modules-optimize':
-				'./assets/js/googlesitekit-modules-optimize.js',
 			'googlesitekit-modules-pagespeed-insights':
 				'assets/js/googlesitekit-modules-pagespeed-insights.js',
 			'googlesitekit-modules-search-console':
@@ -320,6 +317,8 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
 				'./assets/js/googlesitekit-user-input.js',
+			'googlesitekit-ad-blocking-recovery':
+				'./assets/js/googlesitekit-ad-blocking-recovery.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			'googlesitekit-components-gm2':
 				'./assets/js/googlesitekit-components-gm2.ts',
@@ -373,12 +372,10 @@ function* webpackConfig( env, argv ) {
 			new CreateFileWebpack( {
 				path: './dist',
 				fileName: 'config.php',
-				content: configTemplate
-					.replace( '{{buildMode}}', `'${ flagMode }'` )
-					.replace(
-						'{{features}}',
-						`array( ${ formattedFeaturesToPHPArray } )`
-					),
+				content: configTemplate.replace(
+					'{{features}}',
+					`array( ${ formattedFeaturesToPHPArray } )`
+				),
 			} ),
 			new ManifestPlugin( {
 				...manifestArgs( mode ),

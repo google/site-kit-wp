@@ -12,14 +12,13 @@ namespace Google\Site_Kit\Tests\Modules\Analytics;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
-use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
@@ -203,8 +202,10 @@ class SettingsTest extends SettingsTestCase {
 		$authentication = new Authentication( $context, $options, $user_options );
 		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
 		$analytics      = new Analytics( $context, $options, $user_options, $authentication );
-		$authentication->get_oauth_client()->get_client()->setHttpClient(
-			new FakeHttpClient() // Returns 200 by default.
+
+		// Fake all Google client requests to return 200.
+		FakeHttp::fake_google_http_handler(
+			$authentication->get_oauth_client()->get_client()
 		);
 
 		$adsense->register(); // AdSense is now active.

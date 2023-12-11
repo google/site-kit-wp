@@ -1,7 +1,7 @@
 const path = require( 'path' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const mainConfig = require( '../webpack.config' );
-const mapValues = require( 'lodash/mapValues' );
+const { mapValues } = require( 'lodash' );
 const { ProvidePlugin } = require( 'webpack' );
 
 // eslint-disable-next-line require-await
@@ -55,7 +55,7 @@ module.exports = async ( { config } ) => {
 				{
 					loader: 'postcss-loader',
 					options: {
-						config: {
+						postcssOptions: {
 							path: './',
 						},
 					},

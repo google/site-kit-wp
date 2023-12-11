@@ -30,6 +30,8 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { isValidPropertyID } from '../../util';
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
@@ -39,6 +41,10 @@ export default function OptionalSettingsView() {
 	const canUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
 	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const isUAConnected = isValidPropertyID( propertyID );
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAdsConversionID()
 	);
@@ -48,12 +54,17 @@ export default function OptionalSettingsView() {
 	const trackingDisabled = useSelect(
 		( select ) => select( MODULES_ANALYTICS ).getTrackingDisabled() || []
 	);
+	const useGA4Snippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getUseSnippet()
+	);
 
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
-	const showIPAnonymizationSettings = useSnippet && ampMode !== 'primary';
+	const showIPAnonymizationSettings =
+		useSnippet && ampMode !== 'primary' && isUAConnected;
 
-	const showAdsConversionIDSettings = useSnippet && canUseSnippet;
+	const showAdsConversionIDSettings =
+		canUseSnippet && ( ( isUAConnected && useSnippet ) || useGA4Snippet );
 
 	return (
 		<Fragment>
@@ -62,7 +73,7 @@ export default function OptionalSettingsView() {
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __(
-								'IP Address Anonymization',
+								'Universal Analytics IP Address Anonymization',
 								'google-site-kit'
 							) }
 						</h5>

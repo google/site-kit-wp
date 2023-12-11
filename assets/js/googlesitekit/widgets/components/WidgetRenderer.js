@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import intersection from 'lodash/intersection';
+import { intersection } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -38,23 +38,18 @@ import WidgetRecoverableModules from './WidgetRecoverableModules';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
 import useViewOnly from '../../../hooks/useViewOnly';
-import { useFeature } from '../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
 const WidgetRenderer = ( { slug, OverrideComponent } ) => {
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-
 	const widget = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidget( slug )
 	);
 	const widgetComponentProps = getWidgetComponentProps( slug );
 	const { Widget, WidgetNull } = widgetComponentProps;
 
-	const recoverableModules = useSelect(
-		( select ) =>
-			dashboardSharingEnabled &&
-			select( CORE_MODULES ).getRecoverableModules()
+	const recoverableModules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getRecoverableModules()
 	);
 
 	const viewOnly = useViewOnly();
@@ -66,7 +61,11 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 		[ recoverableModules, widget ]
 	);
 
-	if ( ! widget ) {
+	const isWidgetPreloaded = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetPreloaded( slug )
+	);
+
+	if ( ! widget || widgetRecoverableModules === undefined ) {
 		return <WidgetNull />;
 	}
 
@@ -101,6 +100,11 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 		// Otherwise, wrap the component only if that is requested for this
 		// widget.
 		widgetElement = <Widget>{ widgetElement }</Widget>;
+	}
+
+	if ( isWidgetPreloaded ) {
+		// If the widget is preloaded, hide it.
+		return <div className={ HIDDEN_CLASS }>{ widgetElement }</div>;
 	}
 
 	return widgetElement;

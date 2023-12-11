@@ -103,7 +103,7 @@ MultipleRecoverableModule.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'analytics' }
+				{ slug: 'analytics-4' }
 			);
 	},
 };
@@ -150,7 +150,7 @@ MultipleRecoverableModuleNoAccess.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: 'analytics' }
+				{ slug: 'analytics-4' }
 			);
 	},
 };
@@ -262,10 +262,7 @@ export default {
 			provideModuleRegistrations( registry );
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ [ 'dashboardSharing' ] }
-				>
+				<WithTestRegistry registry={ registry }>
 					<Story />
 				</WithTestRegistry>
 			);

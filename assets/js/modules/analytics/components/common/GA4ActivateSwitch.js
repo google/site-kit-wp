@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -65,17 +65,15 @@ export default function GA4ActivateSwitch( props ) {
 	return (
 		<div className="googlesitekit-settings-module__meta-item">
 			<Switch
-				label={
-					<Fragment>
-						{ __(
-							'Activate Google Analytics 4 and place code on your site.',
-							'google-site-kit'
-						) }{ ' ' }
-						<Link href={ documentationURL } external>
-							{ __( 'Learn more', 'google-site-kit' ) }
-						</Link>
-					</Fragment>
-				}
+				label={ createInterpolateElement(
+					__(
+						'Activate Google Analytics 4 and place code on your site. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: <Link href={ documentationURL } external />,
+					}
+				) }
 				checked={ enableGA4 }
 				disabled={ disabled }
 				onClick={ onChange }

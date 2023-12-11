@@ -23,6 +23,7 @@ import {
 	isValidDimensions,
 	isValidDimensionFilters,
 	isValidMetrics,
+	isValidOrders,
 } from './report-validation';
 
 describe( 'Analytics 4 Reporting API validation', () => {
@@ -75,31 +76,50 @@ describe( 'Analytics 4 Reporting API validation', () => {
 	} );
 
 	describe( 'isValidDimensionFilters', () => {
-		it( 'should return TRUE if a valid object is passed with a valid dimension', () => {
-			expect( isValidDimensionFilters( { test: 'foo' } ) ).toBe( true );
-			expect( isValidDimensionFilters( { foo: [ 'foo', 'bar' ] } ) ).toBe(
-				true
-			);
+		it.each( [
+			[
+				'a string filter is passed using short notation',
+				{ test: 'foo' },
+			],
+			[
+				'an in-list filter is passed using short notation',
+				{ foo: [ 'foo', 'bar' ] },
+			],
+			[ 'an empty object is passed', {} ],
+			[
+				'a filter with expanded notation is used',
+				{ test: { filterType: 'inList', value: [ 'a', 'b', 'c' ] } },
+			],
+		] )( 'should return TRUE if %s', ( _, filters ) => {
+			expect( isValidDimensionFilters( filters ) ).toBe( true );
 		} );
-		it( 'should return TRUE if no dimensionFilters are passed.', () => {
-			expect( isValidDimensionFilters( {} ) ).toBe( true );
-			expect( isValidDimensionFilters( {} ) ).toBe( true );
-		} );
-		it( 'should return FALSE if an invalid dimensionFilters object is passed', () => {
-			expect( isValidDimensionFilters( { foo: false } ) ).toBe( false );
-			expect( isValidDimensionFilters( { foo: 'bar', baz: null } ) ).toBe(
-				false
-			);
-			expect( isValidDimensionFilters( { foo: 3 } ) ).toBe( false );
-			expect( isValidDimensionFilters( { foo: [ 3, 'foo' ] } ) ).toBe(
-				false
-			);
+
+		it.each( [
+			[ 'an invalid filter is passed', { foo: false } ],
+			[
+				'a mixed values are passed in short notation',
+				{ foo: [ 3, 'foo' ] },
+			],
+			[
+				'a filter with the expanded notation misses the filterType property',
+				{ test: { value: [ 'a', 'b', 'c' ] } },
+			],
+			[
+				'a filter with the expanded notation misses the value property',
+				{ test: { filterType: 'inList', values: [ 'a', 'b', 'c' ] } },
+			],
+		] )( 'should return FALSE if %s', ( _, filters ) => {
+			expect( isValidDimensionFilters( filters ) ).toBe( false );
 		} );
 	} );
 
 	describe( 'isValidMetrics', () => {
 		it( 'should return TRUE if a non empty string is passed', () => {
 			expect( isValidMetrics( 'test' ) ).toBe( true );
+		} );
+
+		it( 'should return TRUE if a comma separated list of strings is passed', () => {
+			expect( isValidMetrics( 'test1,test2,test3' ) ).toBe( true );
 		} );
 
 		it( 'should return TRUE if a valid object is passed', () => {
@@ -156,5 +176,178 @@ describe( 'Analytics 4 Reporting API validation', () => {
 				] )
 			).toBe( false );
 		} );
+
+		it( "should return FALSE if a metric name is passed that doesn't match the required regular expression ^[a-zA-Z0-9_]+$", () => {
+			// Test the empty string cases.
+			expect( isValidMetrics( '' ) ).toBe( false );
+			expect( isValidMetrics( ',test' ) ).toBe( false );
+			expect( isValidMetrics( 'test,' ) ).toBe( false );
+			expect( isValidMetrics( { name: '' } ) ).toBe( false );
+			expect( isValidMetrics( [ { name: '' } ] ) ).toBe( false );
+			expect( isValidMetrics( [ { name: 'test' }, '' ] ) ).toBe( false );
+			expect(
+				isValidMetrics( [ { name: '', expression: 'test' } ] )
+			).toBe( false );
+
+			// Test the invalid character cases.
+			// Please note this is not a comprehensive list of invalid characters, as that would be a very long list. This is just a representative sample.
+			const invalidCharacters =
+				' !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïð';
+
+			invalidCharacters.split( '' ).forEach( ( character ) => {
+				const invalidName = `test${ character }`;
+
+				expect( isValidMetrics( invalidName ) ).toBe( false );
+				expect( isValidMetrics( `test,${ invalidName }` ) ).toBe(
+					false
+				);
+				expect( isValidMetrics( { name: invalidName } ) ).toBe( false );
+				expect( isValidMetrics( [ { name: invalidName } ] ) ).toBe(
+					false
+				);
+				expect(
+					isValidMetrics( [ { name: 'test' }, invalidName ] )
+				).toBe( false );
+				expect(
+					isValidMetrics( [
+						{ name: invalidName, expression: 'test' },
+					] )
+				).toBe( false );
+			} );
+		} );
+	} );
+
+	describe( 'isValidOrders', () => {
+		it.each( [
+			[
+				true,
+				'an array of valid order objects is passed',
+				[
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						desc: false,
+					},
+					{
+						metric: {
+							metricName: 'sessions',
+						},
+						desc: true,
+					},
+					{
+						dimension: {
+							dimensionName: 'date',
+						},
+						desc: true,
+					},
+					{
+						dimension: {
+							dimensionName: 'sessionDefaultChannelGrouping',
+						},
+					},
+				],
+			],
+			[ false, 'an array is not passed (null)', null ],
+			[ false, 'an array is not passed (string)', 'test' ],
+
+			[ false, 'an array is not passed (object)', { test: 123 } ],
+			[ false, 'a non-object is passed in the array (null)', [ null ] ],
+			[
+				false,
+				'a non-object is passed in the array (string)',
+				[ 'test' ],
+			],
+			[
+				false,
+				'a non-object is passed in the array (object)',
+				[ { test: 123 } ],
+			],
+			[
+				false,
+				'metric and dimension are both undefined',
+				[
+					{
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'metric and dimension are both defined',
+				[
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						dimension: {
+							dimensionName: 'date',
+						},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'metric is defined but metricName is not',
+				[
+					{
+						metric: {},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'metricName is defined but not a string',
+				[
+					{
+						metric: {
+							metricName: 123,
+						},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'dimension is defined but dimensionName is not',
+				[
+					{
+						dimension: {},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'dimensionName is defined but not a string',
+				[
+					{
+						dimension: {
+							dimensionName: 123,
+						},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'desc is defined but not a boolean',
+				[
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						desc: 'test',
+					},
+				],
+			],
+		] )(
+			'should return %s if %s',
+			( expectedResult, testDescription, order ) => {
+				expect( isValidOrders( order ) ).toBe( expectedResult );
+			}
+		);
 	} );
 } );

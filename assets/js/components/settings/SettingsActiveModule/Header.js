@@ -45,6 +45,10 @@ import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
+import ConnectedIcon from '../../../../svg/icons/connected.svg';
+import WarningIcon from '../../../../svg/icons/warning-v2.svg';
+import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
+import IconWrapper from '../../IconWrapper';
 const { useSelect, useDispatch } = Data;
 
 export default function Header( { slug } ) {
@@ -191,7 +195,7 @@ export default function Header( { slug } ) {
 				</p>
 			);
 		} else {
-			moduleStatus = <ProgressBar height={ 32 } small />;
+			moduleStatus = <ProgressBar height={ 36 } small />;
 		}
 	} else {
 		moduleStatus = (
@@ -247,7 +251,7 @@ export default function Header( { slug } ) {
 										'Experimental',
 										'google-site-kit'
 									) }
-									hasLeftSpacing={ true }
+									hasLeftSpacing
 								/>
 							) }
 						</div>
@@ -286,11 +290,24 @@ export default function Header( { slug } ) {
 											! showAsConnected,
 									}
 								) }
-							/>
+							>
+								{ showAsConnected ? (
+									<ConnectedIcon width={ 10 } height={ 8 } />
+								) : (
+									<WarningIcon width={ 19 } height={ 17 } />
+								) }
+							</span>
 						</div>
 					</Cell>
 				</Row>
 			</Grid>
+			<IconWrapper>
+				<ChevronDown
+					width={ 12 }
+					height={ 8 }
+					className="icon-chevron-down"
+				/>
+			</IconWrapper>
 		</div>
 	);
 }

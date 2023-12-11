@@ -24,16 +24,20 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../../js/modules/analytics/datastore/constants';
+import { CORE_LOCATION } from '../../js/googlesitekit/datastore/location/constants';
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
+import { useDebounce } from '../hooks/useDebounce';
 const { useSelect } = Data;
 
 export default function ActivateAnalyticsCTA( { children } ) {
@@ -44,11 +48,56 @@ export default function ActivateAnalyticsCTA( { children } ) {
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
+	const [ inProgress, setInProgress ] = useState( false );
+
+	const isNavigatingToReauthURL = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return false;
+		}
+
+		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
+
+		if ( ! adminReauthURL ) {
+			return false;
+		}
+
+		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
+	} );
+
+	const isActivating = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return false;
+		}
+
+		return select( CORE_MODULES ).isFetchingSetModuleActivation(
+			'analytics',
+			true
+		);
+	} );
+
+	/*
+	 * Using debounce here because the spinner has to render across two separate calls.
+	 * Rather than risk it flickering on and off in between the activation call completing and
+	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
+	 */
+	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
+
+	useEffect( () => {
+		if ( isActivating || isNavigatingToReauthURL ) {
+			setInProgress( true );
+		} else {
+			debouncedSetInProgress( false );
+		}
+	}, [ isActivating, isNavigatingToReauthURL, debouncedSetInProgress ] );
+
 	const onClickCallback = analyticsModuleActive
 		? completeModuleActivationCallback
 		: activateModuleCallback;
 
-	if ( ! onClickCallback ) {
+	if ( ! analyticsModuleAvailable || ! onClickCallback ) {
 		return null;
 	}
 
@@ -64,11 +113,14 @@ export default function ActivateAnalyticsCTA( { children } ) {
 						'google-site-kit'
 					) }
 				</p>
-				<Button onClick={ onClickCallback }>
+				<SpinnerButton
+					onClick={ onClickCallback }
+					isSaving={ inProgress }
+				>
 					{ analyticsModuleActive
 						? __( 'Complete setup', 'google-site-kit' )
 						: __( 'Set up Google Analytics', 'google-site-kit' ) }
-				</Button>
+				</SpinnerButton>
 			</div>
 		</div>
 	);

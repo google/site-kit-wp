@@ -20,11 +20,8 @@
  * External dependencies
  */
 import memize from 'memize';
-import defaults from 'lodash/defaults';
-import merge from 'lodash/merge';
-import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
-import { sprintf, __ } from '@wordpress/i18n';
+import { defaults, merge, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -32,6 +29,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 // This is used for JSDoc purposes.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { WPComponent } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -48,6 +46,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 import { createValidatedAction } from '../../data/utils';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -562,9 +561,14 @@ export const baseControls = {
 			}
 	),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
-		( { select } ) =>
-			( { payload } ) => {
+		( { select, __experimentalResolveSelect } ) =>
+			async ( { payload } ) => {
 				const { slug } = payload;
+				// Ensure the module is loaded before selecting the store name.
+				await __experimentalResolveSelect( CORE_MODULES ).getModule(
+					slug
+				);
+
 				const storeName =
 					select( CORE_MODULES ).getModuleStoreName( slug );
 
@@ -573,10 +577,10 @@ export const baseControls = {
 					return;
 				}
 
-				const getAdminReauthURL =
-					select( storeName )?.getAdminReauthURL;
-				if ( getAdminReauthURL ) {
-					return getAdminReauthURL();
+				if ( select( storeName )?.getAdminReauthURL ) {
+					return await __experimentalResolveSelect(
+						storeName
+					).getAdminReauthURL();
 				}
 				return select( CORE_SITE ).getAdminURL(
 					'googlesitekit-dashboard'
@@ -751,11 +755,24 @@ const baseResolvers = {
 			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
+		if ( modules?.analytics?.recoverable ) {
+			yield Data.commonActions.await(
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.getSettings()
+			);
+		}
+
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
-				if ( module.recoverable ) {
-					moduleList.push( moduleSlug );
+				if ( module.recoverable && ! module.internal ) {
+					if ( moduleSlug === 'analytics' ) {
+						moduleList.push( 'analytics-4' );
+					} else {
+						moduleList.push( moduleSlug );
+					}
 				}
+
 				return moduleList;
 			},
 			[]
@@ -1172,7 +1189,10 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		return moduleRequirements === true;
+		return (
+			moduleRequirements === true ||
+			moduleRequirements?.canActivate === true
+		);
 	},
 
 	/**
@@ -1191,12 +1211,19 @@ const baseSelectors = {
 		( select ) => ( state, slug ) => {
 			invariant( slug, 'slug is required.' );
 
-			// Need to use registry selector here to ensure resolver is invoked.
-			if ( select( CORE_MODULES ).canActivateModule( slug ) ) {
+			const { checkRequirementsResults } = state;
+			const canActivate =
+				// Need to use registry selector here to ensure resolver is invoked.
+				select( CORE_MODULES ).canActivateModule( slug );
+
+			if (
+				canActivate === undefined ||
+				checkRequirementsResults[ slug ] === true
+			) {
 				return null;
 			}
 
-			return state.checkRequirementsResults[ slug ];
+			return checkRequirementsResults[ slug ];
 		}
 	),
 
@@ -1342,6 +1369,37 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets the list of non-internal shareable modules for dashboard sharing.
+	 *
+	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
+	 *
+	 * @since 1.95.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Non-internal shareable modules available on the site; `undefined` if not loaded.
+	 */
+	getShareableModules: createRegistrySelector( ( select ) => () => {
+		const modules = select( CORE_MODULES ).getModules();
+
+		// Return early if modules are not loaded.
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		return Object.keys( modules ).reduce( ( acc, slug ) => {
+			if ( slug === 'analytics' ) {
+				return acc;
+			}
+
+			if ( modules[ slug ].shareable ) {
+				return { [ slug ]: modules[ slug ], ...acc };
+			}
+
+			return acc;
+		}, {} );
+	} ),
 
 	getRecoveredModules( state ) {
 		return state.recoveredModules;

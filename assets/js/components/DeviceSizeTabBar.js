@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import Tab from '@material/react-tab';
-import TabBar from '@material/react-tab-bar';
 import PropTypes from 'prop-types';
 
 /**
@@ -32,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Tab, TabBar } from 'googlesitekit-components';
 import DeviceSizeMobileIcon from '../../svg/icons/device-size-mobile-icon.svg';
 import DeviceSizeDesktopIcon from '../../svg/icons/device-size-desktop-icon.svg';
 

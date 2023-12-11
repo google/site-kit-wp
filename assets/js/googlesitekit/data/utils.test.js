@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import noop from 'lodash/noop';
+import { noop } from 'lodash';
 
 /**
  * WordPress dependencies

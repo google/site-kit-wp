@@ -49,6 +49,7 @@ describe( 'core/site site info', () => {
 				label: 'Post',
 			},
 		],
+		productPostType: [ 'product' ],
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -58,9 +59,11 @@ describe( 'core/site site info', () => {
 		currentEntityID: '4',
 	};
 	let registry;
+	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ CORE_SITE ].store;
 	} );
 
 	afterEach( () => {
@@ -140,6 +143,50 @@ describe( 'core/site site info', () => {
 						.setSiteKitAutoUpdatesEnabled( false );
 				} ).not.toThrow(
 					'siteKitAutoUpdatesEnabled must be a boolean.'
+				);
+			} );
+		} );
+
+		describe( 'setKeyMetricsSetupCompletedBy', () => {
+			it( 'sets the `keyMetricsSetupCompletedBy` property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 123 );
+
+				expect(
+					store.getState().siteInfo.keyMetricsSetupCompletedBy
+				).toBe( 123 );
+			} );
+
+			it( 'requires a number argument', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompletedBy();
+				} ).toThrow( 'keyMetricsSetupCompletedBy must be a number.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompletedBy( undefined );
+				} ).toThrow( 'keyMetricsSetupCompletedBy must be a number.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompletedBy( true );
+				} ).toThrow( 'keyMetricsSetupCompletedBy must be a number.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompletedBy( 1 );
+
+					registry
+						.dispatch( CORE_SITE )
+						.setKeyMetricsSetupCompletedBy( 0 );
+				} ).not.toThrow(
+					'keyMetricsSetupCompletedBy must be a number.'
 				);
 			} );
 		} );
@@ -318,11 +365,15 @@ describe( 'core/site site info', () => {
 			[ 'getUpdateCoreURL', 'updateCoreURL' ],
 			[ 'getTimezone', 'timezone' ],
 			[ 'getPostTypes', 'postTypes' ],
+			[ 'getKeyMetricsSetupCompletedBy', 'keyMetricsSetupCompletedBy' ],
+			[ 'getKeyMetricsSetupNew', 'keyMetricsSetupNew' ],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],
 			[ 'isSecondaryAMP', 'ampMode' ],
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
+			[ 'getProductPostType', 'productPostType' ],
+			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;

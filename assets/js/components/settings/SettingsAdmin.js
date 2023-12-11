@@ -19,98 +19,41 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
 import ResetButton from '../ResetButton';
-import UserInputPreview from '../user-input/UserInputPreview';
-import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
-import UserInputSettings from '../notifications/UserInputSettings';
 import { useFeature } from '../../hooks/useFeature';
-import { trackEvent } from '../../util';
+import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
-import useViewContext from '../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
+import ConnectedIcon from '../../../svg/icons/connected.svg';
+const { useSelect } = Data;
 
 export default function SettingsAdmin() {
-	const viewContext = useViewContext();
-	const userInputEnabled = useFeature( 'userInput' );
-	const isUserInputCompleted = useSelect(
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
+
+	const showKeyMetricsSettings = useSelect(
 		( select ) =>
-			userInputEnabled && select( CORE_USER ).isUserInputCompleted()
+			keyMetricsEnabled &&
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) &&
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false &&
+			select( MODULES_ANALYTICS_4 ).isGatheringData() === false
 	);
-	const userInputURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
-	);
-
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const goTo = ( questionIndex = 1 ) => {
-		const questionSlug = USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ];
-		if ( questionSlug ) {
-			trackEvent( viewContext, 'question_edit', questionSlug );
-
-			navigateTo(
-				addQueryArgs( userInputURL, {
-					question: questionSlug,
-					redirect_url: global.location.href,
-					single: 'settings', // Allows the user to edit a single question then return to the settings page.
-				} )
-			);
-		}
-	};
-
-	useEffect( () => {
-		if ( isUserInputCompleted ) {
-			trackEvent( viewContext, 'summary_view' );
-		}
-	}, [ isUserInputCompleted, viewContext ] );
 
 	return (
 		<Row>
-			{ userInputEnabled && (
+			{ showKeyMetricsSettings && (
 				<Cell size={ 12 }>
-					{ isUserInputCompleted && (
-						<Layout
-							title={ __( 'Key metrics', 'google-site-kit' ) }
-							header
-							rounded
-						>
-							<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
-								<Grid>
-									<Row>
-										<Cell size={ 12 }>
-											<p className="googlesitekit-settings-user-input__heading">
-												{ __(
-													'Edit your answers for more personalized metrics:',
-													'google-site-kit'
-												) }
-											</p>
-										</Cell>
-									</Row>
-									<UserInputPreview
-										goTo={ goTo }
-										noHeader
-										noFooter
-										showIndividualCTAs
-									/>
-								</Grid>
-							</div>
-						</Layout>
-					) }
-					{ ! isUserInputCompleted && (
-						<UserInputSettings isDismissible={ false } rounded />
-					) }
+					<SettingsCardKeyMetrics />
 				</Cell>
 			) }
 
@@ -130,7 +73,12 @@ export default function SettingsAdmin() {
 												'Site Kit is connected',
 												'google-site-kit'
 											) }
-											<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
+											<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
+												<ConnectedIcon
+													width={ 10 }
+													height={ 8 }
+												/>
+											</span>
 										</p>
 									</div>
 								</Cell>

@@ -28,11 +28,9 @@ class Context {
 	/**
 	 * Primary "standard" AMP website mode.
 	 *
-	 * This mode is currently unused due to Tag Manager setup not showing the Web Container dropdown
-	 * when AMP is in standard mode and some urls have AMP disabled.
-	 *
 	 * @since 1.0.0 Originally introduced.
 	 * @since 1.36.0 Marked as unused, see description.
+	 * @since 1.108.0 Removed the description and reinstated.
 	 * @var string
 	 */
 	const AMP_MODE_PRIMARY = 'primary';
@@ -317,17 +315,36 @@ class Context {
 	 * Gets the current AMP mode.
 	 *
 	 * @since 1.0.0
+	 * @since 1.108.0 Extracted AMP plugin related logic to `get_amp_mode_from_amp_plugin` function.
+	 *
+	 * @return bool|string 'primary' if in standard mode,
+	 *                     'secondary' if in transitional or reader modes, or the Web Stories plugin is active
+	 *                     false if AMP not active, or unknown mode
+	 */
+	public function get_amp_mode() {
+		$amp_mode = $this->get_amp_mode_from_amp_plugin();
+
+		if ( false === $amp_mode ) {
+			// If the Web Stories plugin is enabled, consider the site to be running
+			// in Secondary AMP mode.
+			if ( defined( 'WEBSTORIES_VERSION' ) ) {
+				return self::AMP_MODE_SECONDARY;
+			}
+		}
+
+		return $amp_mode;
+	}
+
+	/**
+	 * Gets the current AMP mode from the AMP plugin.
+	 *
+	 * @since 1.108.0
 	 *
 	 * @return bool|string 'primary' if in standard mode,
 	 *                     'secondary' if in transitional or reader modes
 	 *                     false if AMP not active, or unknown mode
 	 */
-	public function get_amp_mode() {
-		// If the Web Stories plugin is enabled, consider the site to be running
-		// in Secondary AMP mode.
-		if ( defined( 'WEBSTORIES_VERSION' ) ) {
-			return self::AMP_MODE_SECONDARY;
-		}
+	private function get_amp_mode_from_amp_plugin() {
 
 		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
 			return false;
@@ -366,20 +383,19 @@ class Context {
 				$mode = AMP_Theme_Support::get_support_mode();
 			}
 
-			if (
-				in_array(
-					$mode,
-					array(
-						AMP_Theme_Support::STANDARD_MODE_SLUG,
-						AMP_Theme_Support::TRANSITIONAL_MODE_SLUG,
-						AMP_Theme_Support::READER_MODE_SLUG,
-					),
-					true
-				)
-			) {
+			if ( AMP_Theme_Support::STANDARD_MODE_SLUG === $mode ) {
+				return self::AMP_MODE_PRIMARY;
+			}
+
+			if ( in_array( $mode, array( AMP_Theme_Support::TRANSITIONAL_MODE_SLUG, AMP_Theme_Support::READER_MODE_SLUG ), true ) ) {
 				return self::AMP_MODE_SECONDARY;
 			}
 		} elseif ( function_exists( 'amp_is_canonical' ) ) {
+			// On older versions, if it is not primary AMP, it is definitely secondary AMP (transitional or reader mode).
+			if ( amp_is_canonical() ) {
+				return self::AMP_MODE_PRIMARY;
+			}
+
 			return self::AMP_MODE_SECONDARY;
 		}
 

@@ -1,5 +1,5 @@
 /**
- * DashboardAuthAlert component.
+ * UnsatisfiedScopesAlert component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,11 +19,12 @@
 /**
  * External dependencies
  */
-import unique from 'lodash/uniq';
+import { uniq } from 'lodash';
 
 /**
  * WordPress dependencies
  */
+import { useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -32,9 +33,13 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+} from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
@@ -69,26 +74,48 @@ function mapScopesToModuleNames( scopes, modules ) {
 }
 
 export default function UnsatisfiedScopesAlert() {
+	const doingCTARef = useRef();
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo(
-			/(\/o\/oauth2)|(action=googlesitekit_connect)/i
+			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
+		)
+	);
+	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+			'permissionsError'
 		)
 	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getUnsatisfiedScopes()
 	);
+
+	const connectURLData = temporaryPersistedPermissionsError?.data
+		? {
+				additionalScopes:
+					temporaryPersistedPermissionsError.data?.scopes,
+				redirectURL:
+					temporaryPersistedPermissionsError.data?.redirectURL ||
+					global.location.href,
+		  }
+		: {
+				redirectURL: global.location.href,
+		  };
+
 	const connectURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectURL( {
-			redirectURL: global.location.href,
-		} )
+		select( CORE_USER ).getConnectURL( connectURLData )
 	);
 
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 
+	// Some external scenarios where we navigate to the OAuth service or connect URL may coincide with a request which populates the
+	// list of unsatisfied scopes. In these scenarios we want to avoid showing this banner as the user is already being directed to
+	// address the missing scopes. However, we want to ensure we still do show this banner while navigating to the connect URL as a
+	// result of its own CTA.
 	if (
-		isNavigating ||
+		( isNavigating && ! doingCTARef.current ) ||
 		! unsatisfiedScopes?.length ||
 		connectURL === undefined
 	) {
@@ -97,8 +124,8 @@ export default function UnsatisfiedScopesAlert() {
 
 	let messageID;
 	let moduleNames;
-	// Determine if all scopes are in Google API format, otherwise use generic message.
 	if (
+		// Determine if all scopes are in Google API format, otherwise use generic message.
 		unsatisfiedScopes.some(
 			( scope ) =>
 				! scope.match(
@@ -114,13 +141,20 @@ export default function UnsatisfiedScopesAlert() {
 		if ( ! moduleNames || moduleNames.some( ( name ) => name === false ) ) {
 			messageID = MESSAGE_GENERIC;
 		} else {
-			moduleNames = unique( moduleNames );
+			moduleNames = uniq( moduleNames );
 			messageID =
 				1 < moduleNames.length ? MESSAGE_MULTIPLE : MESSAGE_SINGULAR;
 		}
 	}
 
 	let message;
+	const title = __(
+		'Site Kit can’t access necessary data',
+		'google-site-kit'
+	);
+	const ctaLabel = temporaryPersistedPermissionsError?.data
+		? __( 'Grant permission', 'google-site-kit' )
+		: __( 'Redo setup', 'google-site-kit' );
 
 	switch ( messageID ) {
 		case MESSAGE_MULTIPLE:
@@ -154,16 +188,16 @@ export default function UnsatisfiedScopesAlert() {
 	return (
 		<BannerNotification
 			id="authentication error"
-			title={ __(
-				'Site Kit can’t access necessary data',
-				'google-site-kit'
-			) }
+			title={ title }
 			description={ message }
 			format="small"
 			type="win-error"
 			isDismissible={ false }
 			ctaLink={ connectURL }
-			ctaLabel={ __( 'Redo setup', 'google-site-kit' ) }
+			onCTAClick={ () => {
+				doingCTARef.current = true;
+			} }
+			ctaLabel={ ctaLabel }
 		/>
 	);
 }

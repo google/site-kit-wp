@@ -1,0 +1,95 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SetupEnhancedMeasurementSwitch should not render the switch when accountID is not selected yet 1`] = `<div />`;
+
+exports[`SetupEnhancedMeasurementSwitch should not render the switch when enhanced measurement is already enabled 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <p
+      class="googlesitekit-margin-top-0"
+    >
+      Enhanced measurement is enabled for this web data stream
+    </p>
+    <p>
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`SetupEnhancedMeasurementSwitch should render with the switch defaulting to the on position when enhanced measurement is not already enabled 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement"
+  >
+    <div
+      aria-checked="true"
+      class="mdc-switch mdc-switch--checked"
+      role="switch"
+      tabindex="0"
+    >
+      <div
+        class="mdc-switch__track"
+      >
+         
+      </div>
+      <div
+        class="mdc-switch__thumb-underlay"
+      >
+        <div
+          class="mdc-switch__thumb"
+        >
+          <input
+            class="mdc-switch__native-control"
+            id="googlesitekit-switch-0"
+            readonly=""
+            role="switch"
+            type="checkbox"
+          />
+        </div>
+      </div>
+    </div>
+    <label
+      class=""
+      for="googlesitekit-switch-0"
+    >
+      Enable enhanced measurement
+    </label>
+    <p>
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
+      </a>
+    </p>
+  </div>
+</div>
+`;

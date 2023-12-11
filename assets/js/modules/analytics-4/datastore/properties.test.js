@@ -17,26 +17,36 @@
  */
 
 /**
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
-import { enabledFeatures } from '../../../features';
+import * as uaFixtures from '../../analytics/datastore/__fixtures__';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
+	let store;
 
 	const createPropertyEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
@@ -50,6 +60,12 @@ describe( 'modules/analytics-4 properties', () => {
 	const googleTagSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
 	);
+	const ga4SettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
+	const containerLookupEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -57,6 +73,8 @@ describe( 'modules/analytics-4 properties', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
+
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
@@ -146,7 +164,10 @@ describe( 'modules/analytics-4 properties', () => {
 					propertyID: '12345',
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
+					propertyCreateTime: 1662715085968,
 				};
+
+				provideUserAuthentication( registry );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -155,28 +176,34 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectProperty( PROPERTY_CREATE );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( PROPERTY_CREATE );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( WEBDATASTREAM_CREATE );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( '' );
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID: PROPERTY_CREATE,
+					webDataStreamID: WEBDATASTREAM_CREATE,
+					measurementID: '',
+					propertyCreateTime: 0,
+				} );
 			} );
 
-			it( 'should set property ID only and reset datastream with measurement IDs when web data stream is not found', async () => {
+			it( 'should set property ID, property create time and the first web data stream when a matching web data stream is not found', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
+					propertyCreateTime: new Date(
+						'2022-09-09T09:18:05.968Z'
+					).getTime(),
 				};
+
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
 
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.io',
 				} );
+				provideUserAuthentication( registry );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -190,28 +217,88 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectProperty( propertyID );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( propertyID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( WEBDATASTREAM_CREATE );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( '' );
+				const [ webDataStream ] = fixtures.webDataStreams;
+
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: webDataStream._id,
+					// eslint-disable-next-line sitekit/acronym-case
+					measurementID: webDataStream.webStreamData.measurementId,
+					propertyCreateTime: new Date(
+						fixtures.properties[ 0 ].createTime
+					).getTime(),
+				} );
+
+				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID },
+				} );
 			} );
 
-			it( 'should set property, datastream, and measurement IDs when web data stream is found', async () => {
+			it( 'should set property ID and property create time and reset datastream and measurement IDs when no web data streams are available', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
+					propertyCreateTime: new Date(
+						'2022-09-09T09:18:05.968Z'
+					).getTime(),
 				};
+
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
+
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'https://www.example.io',
+				} );
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( [], {
+						// No web data streams are available for this property.
+						propertyID,
+					} );
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectProperty( propertyID );
+
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: WEBDATASTREAM_CREATE,
+					measurementID: '',
+					propertyCreateTime: new Date(
+						fixtures.properties[ 0 ].createTime
+					).getTime(),
+				} );
+			} );
+
+			it( 'should set property, property create time, datastream, and measurement IDs when web data stream is found', async () => {
+				const propertyID = '09876';
+				const settings = {
+					propertyID: '12345',
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+					propertyCreateTime: new Date(
+						'2022-09-09T09:18:05.968Z'
+					).getTime(),
+				};
+
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
 
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
 				} );
+				provideUserAuthentication( registry );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -225,18 +312,16 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectProperty( propertyID );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( propertyID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( fixtures.webDataStreams[ 1 ]._id );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe(
+				const webDataStream = fixtures.webDataStreams[ 1 ];
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: webDataStream._id,
 					// eslint-disable-next-line sitekit/acronym-case
-					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
-				);
+					measurementID: webDataStream.webStreamData.measurementId,
+					propertyCreateTime: new Date(
+						fixtures.properties[ 0 ].createTime
+					).getTime(),
+				} );
 			} );
 
 			it( 'supports asynchronous webdatastream resolution', async () => {
@@ -245,6 +330,9 @@ describe( 'modules/analytics-4 properties', () => {
 					propertyID: '12345',
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
+					propertyCreateTime: new Date(
+						'2022-09-09T09:18:05.968Z'
+					).getTime(),
 				};
 				let resolveResponse;
 				const responsePromise = new Promise( ( resolve ) => {
@@ -256,10 +344,16 @@ describe( 'modules/analytics-4 properties', () => {
 					),
 					responsePromise
 				);
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
 
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
 				} );
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( settings );
@@ -268,15 +362,12 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectProperty( propertyID );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( propertyID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( WEBDATASTREAM_CREATE );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( '' );
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: WEBDATASTREAM_CREATE,
+					measurementID: '',
+					propertyCreateTime: 0,
+				} );
 
 				resolveResponse();
 				await promise;
@@ -286,18 +377,17 @@ describe( 'modules/analytics-4 properties', () => {
 						'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
 					)
 				);
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( propertyID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( fixtures.webDataStreams[ 1 ]._id );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe(
+
+				const webDataStream = fixtures.webDataStreams[ 1 ];
+				expect( store.getState().settings ).toMatchObject( {
+					propertyID,
+					webDataStreamID: webDataStream._id,
 					// eslint-disable-next-line sitekit/acronym-case
-					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
-				);
+					measurementID: webDataStream.webStreamData.measurementId,
+					propertyCreateTime: new Date(
+						fixtures.properties[ 0 ].createTime
+					).getTime(),
+				} );
 			} );
 		} );
 
@@ -382,6 +472,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 
 				const properties = [
 					{
@@ -441,6 +532,20 @@ describe( 'modules/analytics-4 properties', () => {
 					webDataStreamID,
 					measurementID,
 				} );
+			} );
+
+			it( 'should update the isMatchingAccountProperty property', async () => {
+				const promise = registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.matchAndSelectProperty( accountID );
+
+				expect( store.getState().isMatchingAccountProperty ).toBe(
+					true
+				);
+				await promise;
+				expect( store.getState().isMatchingAccountProperty ).toBe(
+					false
+				);
 			} );
 		} );
 
@@ -512,20 +617,24 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 		describe( 'updateSettingsForMeasurementID', () => {
-			it( 'should update the settings with the measurement ID.', () => {
+			it( 'should update the settings with the measurement ID.', async () => {
 				const measurementID = 'G-1A2BCD346E';
-				registry
+
+				provideUserAuthentication( registry );
+
+				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.updateSettingsForMeasurementID( measurementID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getSettings()
-				).toMatchObject( {
+
+				expect( store.getState().settings ).toMatchObject( {
 					measurementID,
 				} );
 			} );
 
 			it( 'dispatches a request to get and populate Google Tag settings', async () => {
-				enabledFeatures.add( 'gteSupport' );
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
 
 				fetchMock.getOnce( googleTagSettingsEndpoint, {
 					body: fixtures.googleTagSettings,
@@ -546,23 +655,25 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.googleTagSettings,
 				} );
 
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagAccountID()
-				).toEqual( fixtures.googleTagSettings.googleTagAccountID );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagContainerID()
-				).toEqual( fixtures.googleTagSettings.googleTagContainerID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( fixtures.googleTagSettings.googleTagID );
+				expect( store.getState().settings ).toMatchObject(
+					fixtures.googleTagSettings
+				);
 			} );
 
-			it( 'empties the Google Tag Settings if measurement ID an empty string', () => {
-				enabledFeatures.add( 'gteSupport' );
+			it( 'requires the GTM readonly scope to dispatch a request for Google Tag settings', async () => {
+				provideUserAuthentication( registry );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( 'G-1A2BCD346E' );
+
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'empties the Google Tag Settings if measurement ID is an empty string', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -574,37 +685,463 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setGoogleTagID( 'GT-123456' );
 
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagAccountID()
-				).toEqual( '123456' );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagContainerID()
-				).toEqual( '321654' );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( 'GT-123456' );
+				expect( store.getState().settings ).toMatchObject( {
+					googleTagAccountID: '123456',
+					googleTagContainerID: '321654',
+					googleTagID: 'GT-123456',
+				} );
 
-				registry
+				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.updateSettingsForMeasurementID( '' );
 
+				expect( store.getState().settings ).toMatchObject( {
+					googleTagAccountID: '',
+					googleTagContainerID: '',
+					googleTagID: '',
+				} );
+			} );
+		} );
+
+		describe( 'setHasMismatchedGoogleTagID', () => {
+			it( 'sets the value of hasMismatchedGoogleTagID', async () => {
+				const hasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				// It is false by default.
+				expect( hasMismatchedGoogleTagID ).toBe( false );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setHasMismatchedGoogleTagID( true );
+
+				const updatedHasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+			} );
+		} );
+
+		describe( 'setIsWebDataStreamAvailable', () => {
+			it( 'sets the value of isWebDataStreamAvailable', async () => {
+				const isWebDataStreamAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamAvailable();
+
+				// It is true by default.
+				expect( isWebDataStreamAvailable ).toBe( true );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setIsWebDataStreamAvailable( false );
+
+				const updatedIsWebDataStreamAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamAvailable();
+
+				expect( updatedIsWebDataStreamAvailable ).toBe( false );
+			} );
+		} );
+
+		describe( 'syncGoogleTagSettings', () => {
+			it( 'should not execute if the Tag Manager readonly scope is not granted', async () => {
+				provideUserAuthentication( registry );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID: 'G-1A2BCD346E',
+					googleTagID: '',
+					googleTagLastSyncedAtMs: 0,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( 0 );
+			} );
+
+			it( 'should not execute if GA4 is not connected', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID: 'G-1A2BCD346E',
+					googleTagID: '',
+					googleTagLastSyncedAtMs: 0,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( 0 );
+			} );
+
+			it( 'should not execute if measurement ID is not set', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					googleTagID: '',
+					googleTagLastSyncedAtMs: 0,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( 0 );
+			} );
+
+			it( 'should not execute if settings were synced less than an hour ago', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID: 'G-1A2BCD346E',
+					googleTagID: '',
+					googleTagLastSyncedAtMs: Date.now() - 1800000, // 30 minutes ago.
+				} );
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( googleTagLastSyncedAtMs );
+			} );
+
+			it( 'dispatches a request to get and populate Google Tag settings', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-1A2BCD346E';
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID: '',
+					googleTagLastSyncedAtMs: 0,
+				} );
+
+				fetchMock.getOnce( googleTagSettingsEndpoint, {
+					body: cloneDeep( fixtures.googleTagSettings ),
+					status: 200,
+				} );
+
+				const {
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				} = fixtures.googleTagSettings;
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
+					query: {
+						measurementID,
+					},
+					body: fixtures.googleTagSettings,
+				} );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getGoogleTagAccountID()
-				).toEqual( '' );
+				).toEqual( googleTagAccountID );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getGoogleTagContainerID()
-				).toEqual( '' );
+				).toEqual( googleTagContainerID );
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( '' );
+				).toEqual( googleTagID );
+			} );
+
+			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const googleTagID = 'GT-NBQN9V3';
+				const containerMock = JSON.stringify( null );
+
+				const { googleTagAccountID, googleTagContainerID } =
+					fixtures.googleTagSettings;
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.getOnce( containerLookupEndpoint, {
+					body: containerMock,
+					status: 200,
+				} );
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
+					query: {
+						destinationID: measurementID,
+					},
+					body: containerMock,
+				} );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isWebDataStreamAvailable()
+				).toBe( false );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasMismatchedGoogleTagID()
+				).toBe( false );
+			} );
+
+			it( 'should check for mismatched Google Tag ID if Google Tag settings already exist', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const googleTagID = 'GT-NBQN9V3';
+				const containerMock = fixtures.container[ measurementID ];
+
+				const { googleTagAccountID, googleTagContainerID } =
+					fixtures.googleTagSettings;
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.getOnce( containerLookupEndpoint, {
+					body: containerMock,
+					status: 200,
+				} );
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
+					query: {
+						destinationID: measurementID,
+					},
+					body: containerMock,
+				} );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+
+				// The web data stream is available.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isWebDataStreamAvailable()
+				).toBe( true );
+
+				// but the Google Tag ID is mismatched.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasMismatchedGoogleTagID()
+				).toBe( true );
 			} );
 		} );
 	} );
@@ -793,6 +1330,297 @@ describe( 'modules/analytics-4 properties', () => {
 					.getProperty( propertyID );
 				expect( property ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getPropertyCreateTime', () => {
+			it( 'should use a resolver to fetch the current property if create time is not set yet', async () => {
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
+
+				const propertyID = '12345';
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+
+				const initalPropertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( initalPropertyCreateTime ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID },
+				} );
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( propertyCreateTime ).toEqual(
+					new Date( fixtures.properties[ 0 ].createTime ).getTime()
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not fetch the property if the propertyCreateTime is already set', async () => {
+				const propertyID = fixtures.properties[ 0 ]._id;
+
+				const settings = {
+					propertyID,
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+					propertyCreateTime: 123456789,
+				};
+
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+
+				registry.select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+				expect( propertyCreateTime ).toBe(
+					settings.propertyCreateTime
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+			} );
+
+			it( 'should not fetch the property if the current property ID is invalid', async () => {
+				const settings = {
+					propertyID: '',
+					webDataStreamID: '',
+					measurementID: '',
+					propertyCreateTime: 0,
+				};
+
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+
+				registry.select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+				expect( propertyCreateTime ).toBe(
+					settings.propertyCreateTime
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+			} );
+		} );
+
+		describe( 'hasMismatchedGoogleTagID', () => {
+			it( 'returns a specific key in state', () => {
+				const hasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				// It is false by default.
+				expect( hasMismatchedGoogleTagID ).toBe( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setHasMismatchedGoogleTagID( true );
+
+				const updatedHasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+			} );
+		} );
+
+		describe( 'isWebDataStreamAvailable', () => {
+			it( 'returns a specific key in state', () => {
+				const isWebDataStreamAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamAvailable();
+
+				// It is true by default.
+				expect( isWebDataStreamAvailable ).toBe( true );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setIsWebDataStreamAvailable( false );
+
+				const updatedIsWebDataStreamAvailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamAvailable();
+
+				expect( updatedIsWebDataStreamAvailable ).toBe( false );
+			} );
+		} );
+
+		describe( 'isLoadingProperties', () => {
+			const { accounts } = uaFixtures.accountsPropertiesProfiles;
+			const { properties } = fixtures;
+			const accountID = accounts[ 0 ].id;
+			const propertyID = properties[ 0 ]._id;
+			const hasModuleAccess = true;
+
+			beforeEach( () => {
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
+				provideModules( registry );
+
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+					accountID,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetAccounts( accounts );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.finishResolution( 'getAccounts', [] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( properties, { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getProperties', [ accountID ] );
+			} );
+
+			it( 'should return false if the required state is already loaded', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( false );
+			} );
+
+			it( 'should return true while matching the account properties', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: properties.map( ( { _id } ) => _id ),
+						}
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.matchAndSelectProperty( accountID );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( true );
+			} );
+
+			it( 'should return true if accounts are not yet loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.startResolution( 'getAccounts', [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( true );
+			} );
+
+			describe( 'while loading properties', () => {
+				beforeEach( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.startResolution( 'getProperties', [ accountID ] );
+				} );
+
+				it( 'should return false when hasModuleAccess is false', () => {
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isLoadingProperties( {
+								hasModuleAccess: false,
+							} )
+					).toBe( false );
+				} );
+
+				it( 'should return true when hasModuleAccess is not false', () => {
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isLoadingProperties( {
+								hasModuleAccess,
+							} )
+					).toBe( true );
+				} );
+			} );
+
+			it( 'should return true while selecting an account', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProperties( [], { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.finishResolution( 'getProperties', [ accountID ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: properties.map( ( { _id } ) => _id ),
+						}
+					);
+
+				// Verify that the selector returns false before selecting an account.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.selectAccount( accountID );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingProperties( {
+							hasModuleAccess,
+						} )
+				).toBe( true );
 			} );
 		} );
 	} );

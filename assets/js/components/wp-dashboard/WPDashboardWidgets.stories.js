@@ -21,6 +21,7 @@
  */
 import WPDashboardWidgets from './WPDashboardWidgets';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -28,24 +29,32 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
+import { setupSearchConsoleZeroData, widgetDecorators } from './common.stories';
 import {
-	setupSearchConsoleAnalyticsMockReports,
+	setupAnalytics4ZeroData,
+	provideAnalytics4ReportTitles,
 	setupSearchConsoleMockReports,
-	setupSearchConsoleAnalyticsZeroData,
-	setupSearchConsoleAnalyticsGatheringData,
-	widgetDecorators,
-} from './common.stories';
+	setupAnalytics4MockReports,
+	setupSearchConsoleGatheringData,
+	setupAnalytics4GatheringData,
+} from './common-GA4.stories';
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WPDashboardWidgets />
-	</WithRegistrySetup>
-);
+const Template = ( { setupRegistry } ) => {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WPDashboardWidgets />
+		</WithRegistrySetup>
+	);
+};
 
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Ready';
-Ready.args = {
-	setupRegistry: setupSearchConsoleAnalyticsMockReports,
+export const ReadyGA4 = Template.bind( {} );
+ReadyGA4.storyName = 'Ready';
+ReadyGA4.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalytics4ReportTitles( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
 };
 
 export const ReadyWithActivateModuleCTA = Template.bind( {} );
@@ -61,6 +70,10 @@ ReadyWithActivateModuleCTA.args = {
 		] );
 		provideSiteInfo( registry );
 		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 		setupSearchConsoleMockReports( registry );
 	},
 };
@@ -78,6 +91,10 @@ ReadyWithActivateAnalyticsCTA.args = {
 		] );
 		provideSiteInfo( registry );
 		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 		setupSearchConsoleMockReports( registry );
 	},
 };
@@ -104,19 +121,28 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 		provideModuleRegistrations( registry );
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
 	},
 };
 
-export const GatheringData = Template.bind( {} );
-GatheringData.storyName = 'Gathering Data';
-GatheringData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
+export const GatheringDataGA4 = Template.bind( {} );
+GatheringDataGA4.storyName = 'Gathering Data';
+GatheringDataGA4.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		setupSearchConsoleGatheringData( registry );
+		setupAnalytics4GatheringData( registry );
+	},
 };
 
-export const ZeroData = Template.bind( {} );
-ZeroData.storyName = 'Zero Data';
-ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+export const ZeroDataGA4 = Template.bind( {} );
+ZeroDataGA4.storyName = 'Zero Data';
+ZeroDataGA4.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		setupSearchConsoleZeroData( registry );
+		setupAnalytics4ZeroData( registry );
+	},
 };
 
 export default {

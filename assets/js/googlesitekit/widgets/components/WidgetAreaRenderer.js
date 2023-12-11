@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -33,7 +32,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
-import { getHeaderHeight } from '../../../util/scroll';
+import { getStickyHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
 import { CORE_UI, ACTIVE_CONTEXT_ID } from '../../datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
@@ -49,6 +48,7 @@ import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import useViewOnly from '../../../hooks/useViewOnly';
 import { CORE_USER } from '../../datastore/user/constants';
+import useLatestIntersection from '../../../hooks/useLatestIntersection';
 const { useSelect } = Data;
 
 /**
@@ -68,9 +68,9 @@ function getRootMargin( breakpoint ) {
 	};
 
 	const gap = gridGaps[ breakpoint ];
-	const top = Math.abs( getHeaderHeight( breakpoint ) + gap );
+	const top = Math.abs( getStickyHeaderHeight( breakpoint ) + gap );
 
-	return `-${ top }px -${ gap }px -${ gap }px -${ gap }px`;
+	return `${ -top }px ${ -gap }px ${ -gap }px ${ -gap }px`;
 }
 
 export default function WidgetAreaRenderer( { slug, contextID } ) {
@@ -87,7 +87,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 	const breakpoint = useBreakpoint();
 
 	const widgetAreaRef = useRef();
-	const intersectionEntry = useIntersection( widgetAreaRef, {
+	const intersectionEntry = useLatestIntersection( widgetAreaRef, {
 		rootMargin: getRootMargin( breakpoint ),
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
@@ -175,75 +175,91 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		</WidgetCellWrapper>
 	) );
 
-	const { Icon, title, style, subtitle } = widgetArea;
-
-	// Here we render the bare output as it is guaranteed to render empty.
-	// This is important compared to returning `null` so that the area
-	// can maybe render later if conditions change for widgets to become active.
-	// Returning `null` here however would have the side-effect of making
-	// all widgets active again, which is why we must return the "null" output.
-	if ( ! isActive ) {
-		return (
-			<Grid
-				className={ classnames(
-					HIDDEN_CLASS,
-					'googlesitekit-widget-area',
-					{
-						[ `googlesitekit-widget-area--${ slug }` ]: !! slug,
-						[ `googlesitekit-widget-area--${ style }` ]: !! style,
-					}
-				) }
-				ref={ widgetAreaRef }
-			>
-				{ widgetsOutput }
-			</Grid>
-		);
-	}
+	const { Icon, title, style, subtitle, CTA } = widgetArea;
 
 	return (
 		<InViewProvider value={ inViewState }>
-			<Grid
-				className={ classnames(
-					'googlesitekit-widget-area',
-					`googlesitekit-widget-area--${ slug }`,
-					`googlesitekit-widget-area--${ style }`
-				) }
-				ref={ widgetAreaRef }
-			>
-				<Row>
-					<Cell
-						className="googlesitekit-widget-area-header"
-						size={ 12 }
-					>
-						{ Icon && <Icon width={ 33 } height={ 33 } /> }
-
-						{ title && (
-							<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-								{ title }
-							</h3>
-						) }
-
-						{ subtitle && (
-							<h4 className="googlesitekit-widget-area-header__subtitle">
-								{ subtitle }
-							</h4>
-						) }
-					</Cell>
-				</Row>
-
-				<div className="googlesitekit-widget-area-widgets">
+			{ !! isActive && (
+				<Grid
+					className={ classnames(
+						'googlesitekit-widget-area',
+						`googlesitekit-widget-area--${ slug }`,
+						`googlesitekit-widget-area--${ style }`
+					) }
+					ref={ widgetAreaRef }
+				>
 					<Row>
-						{ style === WIDGET_AREA_STYLES.BOXES && widgetsOutput }
-						{ style === WIDGET_AREA_STYLES.COMPOSITE && (
-							<Cell size={ 12 }>
-								<Grid>
-									<Row>{ widgetsOutput }</Row>
-								</Grid>
-							</Cell>
-						) }
+						<Cell
+							className="googlesitekit-widget-area-header"
+							size={ 12 }
+						>
+							{ Icon && <Icon width={ 33 } height={ 33 } /> }
+
+							{ title && (
+								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+									{ title }
+								</h3>
+							) }
+
+							{ ( subtitle || CTA ) && (
+								<div className="googlesitekit-widget-area-header__details">
+									{ subtitle && (
+										<h4 className="googlesitekit-widget-area-header__subtitle">
+											{ subtitle }
+										</h4>
+									) }
+
+									{ CTA && (
+										<div className="googlesitekit-widget-area-header__cta">
+											<CTA />
+										</div>
+									) }
+								</div>
+							) }
+						</Cell>
 					</Row>
-				</div>
-			</Grid>
+
+					<div className="googlesitekit-widget-area-widgets">
+						<Row>
+							{ style === WIDGET_AREA_STYLES.BOXES &&
+								widgetsOutput }
+							{ style === WIDGET_AREA_STYLES.COMPOSITE && (
+								<Cell size={ 12 }>
+									<Grid>
+										<Row>{ widgetsOutput }</Row>
+									</Grid>
+								</Cell>
+							) }
+						</Row>
+					</div>
+				</Grid>
+			) }
+			{
+				// Here we render the bare output as it is guaranteed to render empty.
+				// This is important compared to returning `null` so that the area
+				// can maybe render later if conditions change for widgets to become
+				// active.
+				//
+				// Returning `null` here however would have the side-effect of making
+				// all widgets active again, which is why we must return the "null"
+				// output.
+			 }
+			{ ! isActive && (
+				<Grid
+					className={ classnames(
+						HIDDEN_CLASS,
+						'googlesitekit-widget-area',
+						{
+							[ `googlesitekit-widget-area--${ slug }` ]: !! slug,
+							[ `googlesitekit-widget-area--${ style }` ]:
+								!! style,
+						}
+					) }
+					ref={ widgetAreaRef }
+				>
+					{ widgetsOutput }
+				</Grid>
+			) }
 		</InViewProvider>
 	);
 }

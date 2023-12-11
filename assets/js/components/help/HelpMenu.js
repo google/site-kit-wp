@@ -89,6 +89,7 @@ export default function HelpMenu( { children } ) {
 				icon={ <HelpIcon width="20" height="20" /> }
 				onClick={ handleMenu }
 				text
+				tooltipEnterDelayInMS={ 500 }
 			/>
 			<Menu
 				className="googlesitekit-width-auto"

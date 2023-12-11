@@ -52,20 +52,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--modal-dialog',
-		kind: 'Global',
-		name: 'Modal Dialog',
-		story: 'Modal Dialog',
-		parameters: {
-			fileName: './stories/modal-dialog.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 1000,
-			},
-		},
-	},
-	{
 		id: 'adsense-module-components-module-overview-widget--loaded',
 		kind: 'AdSense Module',
 		name: 'Overview Widget',
@@ -77,71 +63,6 @@ module.exports = [
 				hierarchySeparator: {},
 				readySelector:
 					'.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'global-notifications--small-with-image',
-		kind: 'Global/Notifications',
-		name: 'Small with Image',
-		story: 'Small with Image',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global-notifications--small-with-no-image',
-		kind: 'Global/Notifications',
-		name: 'Small with No Image',
-		story: 'Small with No Image',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global-notifications--small-with-error',
-		kind: 'Global/Notifications',
-		name: 'Small with Error',
-		story: 'Small with Error',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global-notifications--small-with-warning',
-		kind: 'Global/Notifications',
-		name: 'Small with Warning',
-		story: 'Small with Warning',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global-notifications--user-input-success-notification',
-		kind: 'Global/Notifications',
-		name: 'User Input Success Notification',
-		story: 'User Input Success Notification',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
 			},
 		},
 	},
@@ -282,19 +203,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--text-fields',
-		kind: 'Global',
-		name: 'Text Fields',
-		story: 'Text Fields',
-		parameters: {
-			fileName: './stories/text-field.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'global--visually-hidden',
 		kind: 'Global',
 		name: 'Visually Hidden',
@@ -304,21 +212,6 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'wordpress--wordpress-dashboard',
-		kind: 'WordPress',
-		name: 'WordPress Dashboard',
-		story: 'WordPress Dashboard',
-		parameters: {
-			fileName: './stories/wp-dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-data-block',
-				delay: 2000,
 			},
 		},
 	},

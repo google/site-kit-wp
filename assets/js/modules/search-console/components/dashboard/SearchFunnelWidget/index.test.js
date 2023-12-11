@@ -24,6 +24,7 @@ import {
 	provideUserInfo,
 	provideUserAuthentication,
 	provideSiteInfo,
+	muteFetch,
 } from '../../../../../../../tests/js/test-utils';
 import coreModulesFixture from '../../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
@@ -66,6 +67,12 @@ describe( 'SearchFunnelWidget', () => {
 					},
 				],
 			}
+		);
+
+		muteFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/data-available'
+			)
 		);
 	} );
 

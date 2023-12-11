@@ -19,14 +19,13 @@
 /**
  * External dependencies
  */
-import castArray from 'lodash/castArray';
-import isPlainObject from 'lodash/isPlainObject';
 import memize from 'memize';
+import { castArray, isPlainObject } from 'lodash';
 
 /**
  * Normalizes report options.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Object} options Report options object.
  * @return {Object} Normalized options object.

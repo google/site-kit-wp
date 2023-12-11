@@ -1,0 +1,214 @@
+/**
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-widget--adBlockingRecovery {
+
+		.googlesitekit-publisher-win,
+		.mdc-layout-grid {
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-widget--adBlockingRecovery__content {
+		margin-bottom: 30px;
+
+		p {
+			margin: 10px 0 0;
+		}
+	}
+
+	.googlesitekit-widget--adBlockingRecovery__graphics {
+		text-align: center;
+
+		p {
+			color: $c-neutral-n-500;
+			font-size: 12px;
+			margin: 0 34px;
+		}
+
+		@media (max-width: $bp-tablet) {
+			text-align: left;
+
+			p {
+				margin: 0;
+			}
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__hero-graphic {
+		margin: 0 2rem;
+		text-align: center;
+
+		svg {
+			max-width: 400px;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__footer {
+		border-top: 1px solid $c-mercury;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		margin: 42px 0 0;
+		padding: 14px $grid-gap-desktop;
+
+		@media (min-width: $bp-desktop) {
+			align-items: center;
+			flex-direction: row;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__footer-nav {
+		align-items: center;
+		column-gap: 20px;
+		display: flex;
+		padding: 17px 17px 33px;
+
+		@media (min-width: $bp-desktop) {
+			flex-direction: reverse;
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__footer-cancel button {
+		color: $c-surfaces-on-background-variant;
+	}
+
+	.googlesitekit-ad-blocking-recovery-notification {
+
+		.googlesitekit-publisher-win__image-small {
+			text-align: center;
+
+			svg {
+				max-width: 233px;
+			}
+		}
+	}
+
+	.googlesitekit-settings-notice-ad-blocking-recovery-cta {
+		align-items: center;
+		flex-wrap: wrap;
+		margin-top: 24px;
+		padding: 24px;
+		row-gap: 15px;
+
+		@media (min-width: $bp-tablet) {
+			flex-wrap: nowrap;
+		}
+
+		.googlesitekit-settings-notice__icon {
+			margin-right: 20px;
+		}
+
+		.googlesitekit-settings-notice__text {
+			font-size: $fs-title-sm;
+			font-weight: $fw-medium;
+			line-height: $lh-title-sm;
+		}
+
+		.googlesitekit-settings-notice__inner-row {
+			flex-wrap: wrap;
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
+			padding-top: 3px;
+		}
+
+		.googlesitekit-settings-notice__button {
+
+			@media (min-width: $bp-tablet) {
+				margin-left: 25px;
+				white-space: nowrap;
+			}
+		}
+	}
+
+	.googlesitekit-settings-module__ad-blocking-recovery-toggles {
+		margin-top: 20px;
+
+		.googlesitekit-settings-module__meta-item {
+			margin-bottom: 0;
+
+			p {
+				left: 42px;
+				margin-top: 10px;
+				position: relative;
+			}
+		}
+
+		.googlesitekit-settings-notice {
+			margin-bottom: 0;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__step {
+
+		.googlesitekit-stepper__step-content {
+
+			> p {
+				color: $c-surfaces-on-surface-variant;
+				font-size: $fs-body-lg;
+				letter-spacing: $ls-s;
+			}
+
+			> p:first-child {
+				margin-top: 0;
+
+				@media (min-width: $bp-tablet) {
+					margin-top: $grid-gap-phone / 2;
+				}
+			}
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__step-place-tags {
+
+		p.googlesitekit-ad-blocking-recovery__error-protection-tag-info {
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
+			margin: 0 0 20px 34px; // Aligns the paragraph with the checkbox.
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__step-create-message {
+
+		.googlesitekit-ad-blocking-recovery__create-message-footer-actions {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			gap: $grid-gap-desktop + 2px; // The reference designs implement a spacing of 26px between the actions.
+
+			.googlesitekit-cta-link {
+				color: $c-surfaces-on-surface-variant;
+				font-weight: $fw-medium;
+			}
+		}
+
+		.googlesitekit-ad-blocking-recovery__create-message-footer {
+			display: inline-block;
+			margin-top: 12px;
+		}
+
+		p.googlesitekit-ad-blocking-recovery__create-message-footer-note {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin-top: $grid-gap-desktop;
+		}
+	}
+}

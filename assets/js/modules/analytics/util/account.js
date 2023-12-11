@@ -49,7 +49,7 @@ export function getAccountDefaults(
 	{ siteName, siteURL, timezone },
 	_fallbackTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 ) {
-	invariant( isURL( siteURL ), 'a valid siteURL is required.' );
+	invariant( isURL( siteURL ), 'A valid siteURL is required.' );
 
 	const { hostname, pathname } = new URL( siteURL );
 	const tz = countryCodesByTimezone[ timezone ]

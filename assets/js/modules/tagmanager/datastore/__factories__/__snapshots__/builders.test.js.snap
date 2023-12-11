@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Google Tag Manager Builder fake data test should create the same data from factory builders on each test run 1`] = `
+Object {
+  "account": Object {
+    "accountId": "101",
+    "name": "eligendi architecto veritatis",
+    "path": "accounts/101",
+  },
+  "ampContainers": Array [
+    Object {
+      "accountId": "101",
+      "containerId": "204",
+      "fingerprint": "1676495375419",
+      "name": "eaque ducimus eveniet",
+      "path": "accounts/101/containers/204",
+      "publicId": "GTM-FAKEBSD",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/204/workspaces?apiLink=container",
+      "usageContext": Array [
+        "amp",
+      ],
+    },
+    Object {
+      "accountId": "101",
+      "containerId": "205",
+      "fingerprint": "1676495375419",
+      "name": "illo qui exercitationem",
+      "path": "accounts/101/containers/205",
+      "publicId": "GTM-FAKEW2G",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/205/workspaces?apiLink=container",
+      "usageContext": Array [
+        "amp",
+      ],
+    },
+    Object {
+      "accountId": "101",
+      "containerId": "206",
+      "fingerprint": "1676495375419",
+      "name": "minus ad veritatis",
+      "path": "accounts/101/containers/206",
+      "publicId": "GTM-FAKEX9G",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/206/workspaces?apiLink=container",
+      "usageContext": Array [
+        "amp",
+      ],
+    },
+  ],
+  "webContainers": Array [
+    Object {
+      "accountId": "101",
+      "containerId": "201",
+      "fingerprint": "1676495375419",
+      "name": "occaecati nam quae",
+      "path": "accounts/101/containers/201",
+      "publicId": "GTM-FAKEKZ3",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/201/workspaces?apiLink=container",
+      "usageContext": Array [
+        "web",
+      ],
+    },
+    Object {
+      "accountId": "101",
+      "containerId": "202",
+      "fingerprint": "1676495375419",
+      "name": "iusto reprehenderit non",
+      "path": "accounts/101/containers/202",
+      "publicId": "GTM-FAKEHDB",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/202/workspaces?apiLink=container",
+      "usageContext": Array [
+        "web",
+      ],
+    },
+    Object {
+      "accountId": "101",
+      "containerId": "203",
+      "fingerprint": "1676495375419",
+      "name": "voluptatem nisi nostrum",
+      "path": "accounts/101/containers/203",
+      "publicId": "GTM-FAKEDOU",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/203/workspaces?apiLink=container",
+      "usageContext": Array [
+        "web",
+      ],
+    },
+  ],
+}
+`;

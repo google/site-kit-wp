@@ -34,7 +34,7 @@ import Header from './Header';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import HelpMenuLink from './help/HelpMenuLink';
-import UserInputSuccessBannerNotification from './notifications/UserInputSuccessBannerNotification';
+import BannerNotification from './notifications/BannerNotification';
 import Null from './Null';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import {
@@ -61,6 +61,20 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
+
+function SubHeaderBannerNotification() {
+	return (
+		<BannerNotification
+			title={ __( 'This is a banner notification', 'google-site-kit' ) }
+			description={ __(
+				'This is a description of the banner notification',
+				'google-site-kit'
+			) }
+			ctaLabel={ __( 'OK, Got it!', 'google-site-kit' ) }
+			ctaLink="#"
+		/>
+	);
+}
 
 const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -144,7 +158,7 @@ HeaderWithCustomHelpMenuLinks.args = {
 export const HeaderWithSubHeader = Template.bind( {} );
 HeaderWithSubHeader.storyName = 'Plugin Header with Sub Header';
 HeaderWithSubHeader.args = {
-	subHeader: <UserInputSuccessBannerNotification />,
+	subHeader: <SubHeaderBannerNotification />,
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 	},
@@ -154,7 +168,7 @@ export const HeaderWithSubHeaderEntityBanner = Template.bind( {} );
 HeaderWithSubHeaderEntityBanner.storyName =
 	'Plugin Header with Sub Header and Entity Header Banner';
 HeaderWithSubHeaderEntityBanner.args = {
-	subHeader: <UserInputSuccessBannerNotification />,
+	subHeader: <SubHeaderBannerNotification />,
 	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, {
@@ -198,9 +212,6 @@ HeaderWithDashboardSharingSettings.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 	},
-};
-HeaderWithDashboardSharingSettings.parameters = {
-	features: [ 'dashboardSharing' ],
 };
 
 export const HeaderViewOnly = Template.bind( {} );
@@ -269,23 +280,17 @@ HeaderViewOnly.args = {
 		);
 	},
 };
-HeaderViewOnly.parameters = {
-	features: [ 'dashboardSharing' ],
-};
 
 export default {
 	title: 'Components/Header',
 	component: Header,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story ) => {
 			const registry = createTestRegistry();
 			provideSiteInfo( registry );
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ parameters.features || [] }
-				>
+				<WithTestRegistry registry={ registry }>
 					<Story />
 				</WithTestRegistry>
 			);

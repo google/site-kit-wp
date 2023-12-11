@@ -27,8 +27,8 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
-import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
-import AdminBarSessions from './AdminBarSessions';
+import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
+import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
 import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Row, Cell } from '../../material-components';
@@ -40,17 +40,19 @@ const WIDGET_IMPRESSIONS = 'adminBarImpressions';
 const WIDGET_CLICKS = 'adminBarClicks';
 const WIDGET_VISITORS = 'adminBarUniqueVisitors';
 const WIDGET_SESSIONS = 'adminBarSessions';
+
 // Search Console widgets.
 const AdminBarImpressionsWidget =
 	withWidgetComponentProps( WIDGET_IMPRESSIONS )( AdminBarImpressions );
 const AdminBarClicksWidget =
 	withWidgetComponentProps( WIDGET_CLICKS )( AdminBarClicks );
-// Analytics Widgets.
-const AdminBarUniqueVisitorsWidget = withWidgetComponentProps(
+
+// Analytics 4 Widgets.
+const AdminBarUniqueVisitorsGA4Widget = withWidgetComponentProps(
 	WIDGET_VISITORS
-)( AdminBarUniqueVisitors );
-const AdminBarSessionsWidget =
-	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessions );
+)( AdminBarUniqueVisitorsGA4 );
+const AdminBarSessionsGA4Widget =
+	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessionsGA4 );
 
 export default function AdminBarWidgets() {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
@@ -75,12 +77,14 @@ export default function AdminBarWidgets() {
 
 				{ analyticsModuleConnected && analyticsModuleActive && (
 					<Fragment>
-						<Cell lgSize={ 3 } mdSize={ 2 }>
-							<AdminBarUniqueVisitorsWidget />
-						</Cell>
-						<Cell lgSize={ 3 } mdSize={ 2 }>
-							<AdminBarSessionsWidget />
-						</Cell>
+						<Fragment>
+							<Cell lgSize={ 3 } mdSize={ 2 }>
+								<AdminBarUniqueVisitorsGA4Widget />
+							</Cell>
+							<Cell lgSize={ 3 } mdSize={ 2 }>
+								<AdminBarSessionsGA4Widget />
+							</Cell>
+						</Fragment>
 					</Fragment>
 				) }
 

@@ -20,8 +20,21 @@
 
 	.googlesitekit-settings-module--analytics {
 
-		.googlesitekit-setup-module__inputs .googlesitekit-analytics-4__select-property {
-			margin-top: $grid-gap-phone / 2;
+		.googlesitekit-settings-module__fields-group-title + .googlesitekit-setup-module__inputs {
+
+			.googlesitekit-analytics__select-account,
+			.googlesitekit-analytics-4__select-property,
+			.googlesitekit-analytics-4__select-webdatastream {
+				margin-top: $grid-gap-phone / 2;
+			}
+		}
+
+		.googlesitekit-analytics-enable + .googlesitekit-setup-module__inputs {
+
+			.googlesitekit-analytics__select-property,
+			.googlesitekit-analytics__select-profile {
+				margin-top: $grid-gap-phone / 2;
+			}
 		}
 	}
 }

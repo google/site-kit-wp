@@ -145,6 +145,40 @@ describe( 'core/modules sharing-settings', () => {
 						.management
 				).toBe( 'all_admins' );
 			} );
+
+			it( 'replicates the new management setting for analytics to analytics-4', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( settingsWithoutManagement );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'analytics', 'owner' );
+
+				expect(
+					store.getState().sharingSettings.analytics.management
+				).toBe( 'owner' );
+				expect(
+					store.getState().sharingSettings[ 'analytics-4' ].management
+				).toBe( 'owner' );
+			} );
+
+			it( 'replicates the new management setting for analytics-4 to analytics', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( settingsWithoutManagement );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'analytics-4', 'owner' );
+
+				expect(
+					store.getState().sharingSettings.analytics.management
+				).toBe( 'owner' );
+				expect(
+					store.getState().sharingSettings[ 'analytics-4' ].management
+				).toBe( 'owner' );
+			} );
 		} );
 
 		describe( 'setSharedRoles', () => {
@@ -193,6 +227,45 @@ describe( 'core/modules sharing-settings', () => {
 					store.getState().sharingSettings[ 'search-console' ]
 						.sharedRoles
 				).toEqual( [ 'subscriber' ] );
+			} );
+
+			it( 'replicates new roles set for analytics to analytics-4', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( settingsWithoutRoles );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'analytics', [ 'editor', 'subscriber' ] );
+
+				expect(
+					store.getState().sharingSettings.analytics.sharedRoles
+				).toEqual( [ 'editor', 'subscriber' ] );
+				expect(
+					store.getState().sharingSettings[ 'analytics-4' ]
+						.sharedRoles
+				).toEqual( [ 'editor', 'subscriber' ] );
+			} );
+
+			it( 'replicates new roles set for analytics-4 to analytics', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( settingsWithoutRoles );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'analytics-4', [
+						'editor',
+						'subscriber',
+					] );
+
+				expect(
+					store.getState().sharingSettings.analytics.sharedRoles
+				).toEqual( [ 'editor', 'subscriber' ] );
+				expect(
+					store.getState().sharingSettings[ 'analytics-4' ]
+						.sharedRoles
+				).toEqual( [ 'editor', 'subscriber' ] );
 			} );
 		} );
 
@@ -457,7 +530,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharingManagement = registry
 					.select( CORE_MODULES )
-					.getSharingManagement( 'optimize' );
+					.getSharingManagement( 'tagmanager' );
 				expect( sharingManagement ).toBeNull();
 			} );
 
@@ -507,7 +580,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharedRoles = registry
 					.select( CORE_MODULES )
-					.getSharedRoles( 'optimize' );
+					.getSharedRoles( 'tagmanager' );
 				expect( sharedRoles ).toBeNull();
 			} );
 

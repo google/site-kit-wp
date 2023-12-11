@@ -27,16 +27,14 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User_Input\User_Input;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Error;
 use WP_Screen;
 use WPDieException;
@@ -207,11 +205,6 @@ class AuthenticationTest extends TestCase {
 		remove_all_actions( 'googlesitekit_reauthorize_user' );
 		$auth->register();
 
-		// We cannot test that the hook has not been added to 'googlesitekit_authorize_user'
-		// since the `register` method also adds another unrelated callback to it unconditionally.
-		// That should be fine though since we're covering the integration below.
-		$this->assertFalse( has_action( 'googlesitekit_reauthorize_user' ) );
-
 		// Response is not used here, so just pass an array.
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		do_action( 'googlesitekit_reauthorize_user', array() );
@@ -292,8 +285,9 @@ class AuthenticationTest extends TestCase {
 				)
 			)
 		);
-		// The FakeHttpClient returns 200 by default.
-		$oauth_client->get_client()->setHttpClient( new FakeHttpClient() );
+		// The FakeHttp handler returns 200 by default.
+		FakeHttp::fake_google_http_handler( $oauth_client->get_client() );
+
 		// Make sure we start with no errors.
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 
@@ -321,26 +315,25 @@ class AuthenticationTest extends TestCase {
 		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
 
 		delete_user_option( $user_id, OAuth_Client::OPTION_ERROR_CODE );
-		$fake_http_client = new FakeHttpClient();
+
 		// Set the request handler to return a response with a new access token.
-		$fake_http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$oauth_client->get_client(),
 			function () {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'access_token' => 'new-test-access-token',
-								'expires_in'   => 3599,
-								'token_type'   => 'Bearer',
-							)
+					json_encode(
+						array(
+							'access_token' => 'new-test-access-token',
+							'expires_in'   => 3599,
+							'token_type'   => 'Bearer',
 						)
 					)
 				);
 			}
 		);
-		$oauth_client->get_client()->setHttpClient( $fake_http_client );
+
 		$oauth_client->refresh_token();
 
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
@@ -348,13 +341,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertEquals( 'new-test-access-token', $oauth_client->get_access_token() );
 	}
 
-	public function test_register_maybe_refresh_token_for_screen__admin_without_shared_modules() {
-		$this->enable_feature( 'dashboardSharing' );
-		$this->test_register_maybe_refresh_token_for_screen__admin();
-	}
-
 	public function test_register_maybe_refresh_token_for_screen__editor_with_shared_modules() {
-		$this->enable_feature( 'dashboardSharing' );
 		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $editor_id );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -375,10 +362,6 @@ class AuthenticationTest extends TestCase {
 		$auth = new Authentication( $context, null, $user_options );
 		$auth->register();
 
-		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		$permissions = new Permissions( $context, $auth, new Modules( $context ), $user_options, new Dismissed_Items( $user_options ) );
-		$permissions->register();
-
 		$oauth_client = $auth->get_oauth_client();
 		// Fake a valid authentication token on the OAuth client.
 		$this->assertTrue(
@@ -389,8 +372,8 @@ class AuthenticationTest extends TestCase {
 				)
 			)
 		);
-		// The FakeHttpClient returns 200 by default.
-		$oauth_client->get_client()->setHttpClient( new FakeHttpClient() );
+		// The FakeHttp handler returns 200 by default.
+		FakeHttp::fake_google_http_handler( $oauth_client->get_client() );
 
 		// Create owners for shareable modules and generate their oauth tokens.
 		$pagespeed_insights_owner_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -411,26 +394,25 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $editor_id ) );
 
 		delete_user_option( $pagespeed_insights_owner_id, OAuth_Client::OPTION_ERROR_CODE );
-		$fake_http_client = new FakeHttpClient();
+
 		// Set the request handler to return a response with a new access token.
-		$fake_http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$oauth_client->get_client(),
 			function () {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'access_token' => 'new-test-access-token',
-								'expires_in'   => 3599,
-								'token_type'   => 'Bearer',
-							)
+					json_encode(
+						array(
+							'access_token' => 'new-test-access-token',
+							'expires_in'   => 3599,
+							'token_type'   => 'Bearer',
 						)
 					)
 				);
 			}
 		);
-		$oauth_client->get_client()->setHttpClient( $fake_http_client );
+
 		$oauth_client->refresh_token();
 
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $pagespeed_insights_owner_id ) );
@@ -870,7 +852,7 @@ class AuthenticationTest extends TestCase {
 				$proxy_server_requests[] = $args;
 
 				$data = array(
-					'userInput'       => array( 'enabled' => true ),
+					'keyMetrics'      => array( 'enabled' => true ),
 					'test.featureOne' => array( 'enabled' => true ),
 					'test.featureTwo' => array( 'enabled' => false ),
 				);
@@ -967,7 +949,7 @@ class AuthenticationTest extends TestCase {
 
 		$this->fake_proxy_site_connection();
 		$test_features = array(
-			'userInput'       => array( 'enabled' => true ),
+			'keyMetrics'      => array( 'enabled' => true ),
 			'test.featureOne' => array( 'enabled' => true ),
 			'test.featureTwo' => array( 'enabled' => false ),
 		);
@@ -1087,6 +1069,41 @@ class AuthenticationTest extends TestCase {
 		$this->assertEquals( '42', $js_inline_wp_version['version'] );
 		$this->assertEquals( '42', $js_inline_wp_version['major'] );
 		$this->assertEquals( '0', $js_inline_wp_version['minor'] );
+	}
+
+	/**
+	 * @param string $site_url
+	 * @param string? $expected_redirect
+	 * @dataProvider data_site_urls
+	 */
+	public function test_allowed_redirect_hosts( $site_url, $expected_redirect ) {
+		remove_all_filters( 'allowed_redirect_hosts' );
+		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$authentication->register();
+
+		if ( null === $expected_redirect ) {
+			$expected_redirect = $site_url;
+		}
+
+		update_option( 'home', $site_url );
+		update_option( 'siteurl', $site_url );
+
+		try {
+			wp_safe_redirect( $site_url ); // phpcs:ignore WordPressVIPMinimum.Security.ExitAfterRedirect.NoExit
+			$this->fail( 'Expected redirection to site URL!' );
+		} catch ( RedirectException $redirect ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// The test will fail if this isn't thrown so we can continue below.
+		}
+
+		$this->assertEquals( $expected_redirect, $redirect->get_location() );
+	}
+
+	public function data_site_urls() {
+		return array(
+			'common ascii'   => array( 'https://example.com', null ),
+			'punycode ascii' => array( 'https://xn--xmpl-loa2a55a.test', null ),
+			'unicode'        => array( 'https://éxämplę.test', 'https://' . rawurlencode( 'éxämplę.test' ) ),
+		);
 	}
 
 	protected function get_user_option_keys() {

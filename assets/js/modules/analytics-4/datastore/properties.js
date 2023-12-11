@@ -26,20 +26,27 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { normalizeURL } from '../../../util';
+import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidPropertySelection } from '../utils/validation';
+import {
+	isValidPropertyID,
+	isValidPropertySelection,
+} from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { isFeatureEnabled } from '../../../features';
+import { createRegistrySelector } from '@wordpress/data';
 const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -159,10 +166,16 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
+const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
+const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
+	hasMismatchedTag: false,
+	isMatchingAccountProperty: false,
+	isWebDataStreamAvailable: true,
 };
 
 const baseActions = {
@@ -182,6 +195,7 @@ const baseActions = {
 				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
 					accountID
 				);
+
 			return { response, error };
 		} )();
 	},
@@ -213,16 +227,41 @@ const baseActions = {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.updateSettingsForMeasurementID( '' );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyCreateTime( 0 );
 
 			if ( PROPERTY_CREATE === propertyID ) {
 				return;
 			}
 
+			if ( propertyID ) {
+				const property = yield Data.commonActions.await(
+					registry
+						.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+						.getProperty( propertyID )
+				);
+
+				if ( property?.createTime ) {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyCreateTime( property.createTime );
+				}
+			}
+
 			yield webDataStreamActions.waitForWebDataStreams( propertyID );
 
-			const webdatastream = registry
+			let webdatastream = registry
 				.select( MODULES_ANALYTICS_4 )
 				.getMatchingWebDataStreamByPropertyID( propertyID );
+
+			if ( ! webdatastream ) {
+				const webdatastreams = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getWebDataStreams( propertyID );
+
+				if ( webdatastreams && webdatastreams.length > 0 ) {
+					webdatastream = webdatastreams[ 0 ];
+				}
+			}
 
 			if ( webdatastream ) {
 				registry
@@ -309,11 +348,21 @@ const baseActions = {
 	 * @return {Object|null} Matched property object on success, otherwise NULL.
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
+		yield {
+			payload: { isMatchingAccountProperty: true },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
+
 		const property = yield baseActions.matchAccountProperty( accountID );
 		const propertyID = property?._id || fallbackPropertyID;
 		if ( propertyID ) {
 			yield baseActions.selectProperty( propertyID );
 		}
+
+		yield {
+			payload: { isMatchingAccountProperty: false },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
 
 		return property;
 	},
@@ -444,29 +493,30 @@ const baseActions = {
 	/**
 	 * Updates settings for a given measurement ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param {string} measurementID Measurement ID.
 	 */
 	*updateSettingsForMeasurementID( measurementID ) {
-		const registry = yield commonActions.getRegistry();
+		const { select, dispatch, __experimentalResolveSelect } =
+			yield commonActions.getRegistry();
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setMeasurementID( measurementID );
+		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( measurementID );
 
-		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
+		// Wait for authentication to be resolved to check scopes.
+		yield commonActions.await(
+			__experimentalResolveSelect( CORE_USER ).getAuthentication()
+		);
+		if ( ! select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE ) ) {
 			return;
 		}
 
 		if ( ! measurementID ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagAccountID( '' );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagContainerID( '' );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( '' );
+			dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				googleTagAccountID: '',
+				googleTagContainerID: '',
+				googleTagID: '',
+			} );
 			return;
 		}
 
@@ -482,13 +532,123 @@ const baseActions = {
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
 			response;
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setGoogleTagAccountID( googleTagAccountID );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setGoogleTagContainerID( googleTagContainerID );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
+		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
+		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
+		// individual setter actions for the `googleTagAccountID`, `googleTagContainerID` and `googleTagID` settings each resulted in a rerender of the
+		// GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with mismatched settings. To mitigate this, we
+		// dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
+		// See issue https://github.com/google/site-kit-wp/issues/6784 and the PR https://github.com/google/site-kit-wp/pull/6814.
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			googleTagAccountID,
+			googleTagContainerID,
+			googleTagID,
+		} );
+	},
+
+	/**
+	 * Sets if GA4 has mismatched Google Tag ID.
+	 *
+	 * @since 1.96.0
+	 *
+	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
+	 * @return {Object} Redux-style action.
+	 */
+	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
+		return {
+			type: SET_HAS_MISMATCHED_TAG,
+			payload: { hasMismatchedTag },
+		};
+	},
+
+	/**
+	 * Sets whether the Web Data Stream is available.
+	 *
+	 * @since 1.99.0
+	 *
+	 * @param {boolean} isWebDataStreamAvailable Whether the Web Data Stream is available.
+	 * @return {Object} Redux-style action.
+	 */
+	*setIsWebDataStreamAvailable( isWebDataStreamAvailable ) {
+		return {
+			type: SET_IS_WEBDATASTREAM_AVAILABLE,
+			payload: { isWebDataStreamAvailable },
+		};
+	},
+
+	/**
+	 * Syncs Google Tag settings.
+	 *
+	 * @since 1.95.0
+	 */
+	*syncGoogleTagSettings() {
+		const { select, dispatch, __experimentalResolveSelect } =
+			yield Data.commonActions.getRegistry();
+
+		const hasTagManagerReadScope = select( CORE_USER ).hasScope(
+			TAGMANAGER_READ_SCOPE
+		);
+
+		if ( ! hasTagManagerReadScope ) {
+			return;
+		}
+
+		// Wait for modules to be available before selecting.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+
+		const { isModuleConnected } = select( CORE_MODULES );
+
+		if ( ! isModuleConnected( 'analytics-4' ) ) {
+			return;
+		}
+
+		// Wait for module settings to be available before selecting.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
+
+		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
+			select( MODULES_ANALYTICS_4 );
+
+		const measurementID = getMeasurementID();
+
+		if ( ! measurementID ) {
+			return;
+		}
+
+		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
+
+		if (
+			!! googleTagLastSyncedAtMs &&
+			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
+		) {
+			return;
+		}
+
+		const googleTagID = getGoogleTagID();
+
+		if ( !! googleTagID ) {
+			const googleTagContainer = yield Data.commonActions.await(
+				__experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getGoogleTagContainer( measurementID )
+			);
+
+			if ( ! googleTagContainer ) {
+				yield baseActions.setIsWebDataStreamAvailable( false );
+			} else if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
+				yield baseActions.setHasMismatchedGoogleTagID( true );
+			}
+		} else {
+			yield baseActions.updateSettingsForMeasurementID( measurementID );
+		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs(
+			Date.now()
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},
 };
 
@@ -505,8 +665,20 @@ const baseControls = {
 	),
 };
 
-function baseReducer( state, { type } ) {
+function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
+		case MATCHING_ACCOUNT_PROPERTY:
+			return { ...state, ...payload };
+		case SET_HAS_MISMATCHED_TAG:
+			return {
+				...state,
+				hasMismatchedTag: payload.hasMismatchedTag,
+			};
+		case SET_IS_WEBDATASTREAM_AVAILABLE:
+			return {
+				...state,
+				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
+			};
 		default:
 			return state;
 	}
@@ -538,6 +710,31 @@ const baseResolvers = {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}
 	},
+	*getPropertyCreateTime() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		const propertyCreateTime = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyCreateTime();
+
+		if ( propertyCreateTime || ! isValidPropertyID( propertyID ) ) {
+			return;
+		}
+
+		const property = yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getProperty( propertyID )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyCreateTime( property?.createTime );
+	},
 };
 
 const baseSelectors = {
@@ -566,6 +763,80 @@ const baseSelectors = {
 	getProperty( state, propertyID ) {
 		return state.propertiesByID[ propertyID ];
 	},
+
+	/**
+	 * Determines whether we are matching account property or not.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if we matching account property right now, otherwise FALSE.
+	 */
+	isMatchingAccountProperty( state ) {
+		return state.isMatchingAccountProperty;
+	},
+
+	/**
+	 * Checks if GA4 has mismatched Google Tag ID.
+	 *
+	 * @since 1.96.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} If GA4 has mismatched Google Tag ID.
+	 */
+	hasMismatchedGoogleTagID( state ) {
+		return state.hasMismatchedTag;
+	},
+
+	/**
+	 * Checks if the Web Data Stream is available.
+	 *
+	 * @since 1.99.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the Web Data Stream is available, otherwise FALSE.
+	 */
+	isWebDataStreamAvailable( state ) {
+		return state.isWebDataStreamAvailable;
+	},
+
+	/**
+	 * Checks if properties are currently being loaded.
+	 *
+	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
+	 * components, initially the `PropertySelect` and `SettingsEnhancedMeasurementSwitch` components.
+	 *
+	 * @since 1.111.0
+	 *
+	 * @param {Object}  state                Data store's state.
+	 * @param {Object}  args                 Arguments object.
+	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 */
+	isLoadingProperties: createRegistrySelector(
+		( select ) =>
+			( state, { hasModuleAccess } ) => {
+				const accountID = select( MODULES_ANALYTICS ).getAccountID();
+
+				const isResolvingProperties =
+					hasModuleAccess === false || ! accountID
+						? false
+						: select( MODULES_ANALYTICS_4 ).isResolving(
+								'getProperties',
+								[ accountID ]
+						  );
+
+				return (
+					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
+					! select( MODULES_ANALYTICS ).hasFinishedResolution(
+						'getAccounts'
+					) ||
+					isResolvingProperties ||
+					select(
+						MODULES_ANALYTICS
+					).hasFinishedSelectingAccount() === false
+				);
+			}
+	),
 };
 
 const store = Data.combineStores(

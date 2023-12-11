@@ -64,6 +64,7 @@
 @import "vendor/mdc-switch";
 @import "vendor/mdc-tab";
 @import "vendor/mdc-text-field";
+@import "vendor/mui-circular-progress";
 
 // GM3 Components
 @import "components-gm3";
@@ -86,6 +87,7 @@
 @import "components/global/googlesitekit-badge";
 @import "components/global/googlesitekit-button-icon";
 @import "components/global/googlesitekit-change-arrow";
+@import "components/global/googlesitekit-change-badge";
 @import "components/global/googlesitekit-chart";
 @import "components/global/googlesitekit-chart-loading";
 @import "components/global/googlesitekit-chip";
@@ -101,15 +103,19 @@
 @import "components/global/googlesitekit-error-handler";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-gathering-data-notice";
-@import "components/global/googlesitekit-googlechart-error-handler";
+@import "components/global/googlesitekit-generic-error-handler-actions";
 @import "components/global/googlesitekit-header";
 @import "components/global/googlesitekit-help-menu-link";
+@import "components/global/googlesitekit-icon-wrapper";
+@import "components/global/googlesitekit-image-radio";
+@import "components/global/googlesitekit-info-tooltip";
 @import "components/global/googlesitekit-layout";
 @import "components/global/googlesitekit-logo";
 @import "components/global/googlesitekit-mini-chart";
 @import "components/global/googlesitekit-module-outro";
 @import "components/global/googlesitekit-module-page";
 @import "components/global/googlesitekit-module-recovery-errors";
+@import "components/global/googlesitekit-new-badge";
 @import "components/global/googlesitekit-noscript";
 @import "components/global/googlesitekit-opt-in";
 @import "components/global/googlesitekit-overlay";
@@ -122,8 +128,11 @@
 @import "components/global/googlesitekit-preview-block";
 @import "components/global/googlesitekit-preview-table";
 @import "components/global/googlesitekit-publisher-wins";
+@import "components/global/googlesitekit-selection-box";
 @import "components/global/googlesitekit-sharing-settings";
+@import "components/global/googlesitekit-side-sheet";
 @import "components/global/googlesitekit-source-link";
+@import "components/global/googlesitekit-stepper";
 @import "components/global/googlesitekit-tab-bar";
 @import "components/global/googlesitekit-table";
 @import "components/global/googlesitekit-table-overflow";
@@ -132,7 +141,6 @@
 @import "components/global/googlesitekit-use-snippet-switch";
 @import "components/global/googlesitekit-user-menu";
 @import "components/global/googlesitekit-view-only-menu";
-@import "components/global/googlesitekit-image-radio";
 
 // Dashboard
 @import "components/dashboard/googlesitekit-signin-box";
@@ -152,6 +160,11 @@
 @import "components/dashboard/wizard/googlesitekit-wizard-progress-step";
 @import "components/dashboard/wizard/googlesitekit-wizard-step";
 
+// Key Metrics
+@import "components/key-metrics/googlesitekit-key-metrics-setup-cta";
+@import "components/key-metrics/googlesitekit-km-selection-panel";
+@import "components/key-metrics/googlesitekit-key-metrics-widgets";
+
 // Setup
 @import "components/setup/googlesitekit-setup";
 @import "components/setup/googlesitekit-setup-module";
@@ -170,7 +183,6 @@
 @import "components/user-input/googlesitekit-user-input-questions";
 @import "components/user-input/googlesitekit-user-input-preview";
 @import "components/user-input/googlesitekit-user-input-controls";
-@import "components/user-input/googlesitekit-user-input-notification";
 
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
@@ -179,7 +191,13 @@
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
 
 // Modules
+@import "components/adsense";
 @import "components/analytics-4";
+
+// Key Metric Widgets Styles
+@import "components/key-metrics/googlesitekit-km-widget-tile";
+@import "components/key-metrics/googlesitekit-km-connect-module-cta-tile";
+@import "components/key-metrics/googlesitekit-km-add-metric-cta-tile";
 
 // User Feedback
 @import "components/surveys";
@@ -191,6 +209,7 @@
 @import "widgets/googlesitekit-widget-adsense-performance";
 @import "widgets/googlesitekit-widget-analyticsAllTraffic";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
+@import "widgets/googlesitekit-widget-overallPageMetrics";
 
 // Utilities
 @import "utilities/alignment";

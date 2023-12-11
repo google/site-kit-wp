@@ -16,17 +16,15 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\FakeHttpClient;
 
 /**
  * @group Modules
@@ -48,7 +46,6 @@ class ModulesTest extends TestCase {
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
-				'optimize'           => 'Google\\Site_Kit\\Modules\\Optimize',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
@@ -82,7 +79,7 @@ class ModulesTest extends TestCase {
 		);
 
 		// Analytics is no longer present due to the filter above.
-		// Analytics-4 and Optimize are no longer present due to their dependency on Analytics.
+		// Analytics-4 is no longer present due to their dependency on Analytics.
 		$this->assertEqualSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
@@ -183,8 +180,8 @@ class ModulesTest extends TestCase {
 	public function test_get_module_dependencies() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertArrayHasKey( 'optimize', $modules->get_available_modules() );
-		$dependencies = $modules->get_module_dependencies( 'optimize' );
+		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
+		$dependencies = $modules->get_module_dependencies( 'analytics-4' );
 
 		$this->assertContains( 'analytics', $dependencies );
 	}
@@ -224,7 +221,7 @@ class ModulesTest extends TestCase {
 		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
 		$dependants = $modules->get_module_dependants( 'analytics' );
 
-		$this->assertContains( 'optimize', $dependants );
+		$this->assertContains( 'analytics-4', $dependants );
 	}
 
 	public function test_get_module_dependants_exception() {
@@ -275,6 +272,61 @@ class ModulesTest extends TestCase {
 		$non_existent_module_slug = 'non-existent-module';
 		$this->assertArrayNotHasKey( $non_existent_module_slug, $modules->get_available_modules() );
 		$this->assertFalse( $modules->is_module_connected( $non_existent_module_slug ) );
+
+		$inactive_module_slug = 'adsense';
+
+		$this->assertArrayHasKey( $inactive_module_slug, $modules->get_available_modules() );
+
+		// Update the AdSense settings to be connected.
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		// It is not possible to connect a module without activating it.
+		$this->assertFalse( $modules->is_module_connected( $inactive_module_slug ) );
+
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'adsense' ) );
+
+		// Activating the module allows it to be connected.
+		$this->assertTrue( $modules->is_module_connected( $inactive_module_slug ) );
+	}
+
+	public function test_is_module_connected_with_ga4_reporting() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// A module being active is a pre-requisite for it to be connected.
+		update_option(
+			Modules::OPTION_ACTIVE_MODULES,
+			array( 'analytics', 'analytics-4' )
+		);
+
+		// Ensure the method returns false when the slug is not `analytics`
+		// and the test module (analytics-4) is not connected.
+		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
+		$this->assertFalse( $modules->is_module_connected( 'analytics-4' ) );
+
+		// Ensure the method returns false when Analytics-4 is not connected.
+		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
+		$this->assertFalse( $modules->is_module_connected( 'analytics' ) );
+
+		// Update the Analytics 4 settings to be connected.
+		update_option(
+			'googlesitekit_analytics-4_settings',
+			array(
+				'propertyID'      => '123',
+				'webDataStreamID' => '456',
+				'measurementID'   => 'G-789',
+				'ownerID'         => '1',
+			)
+		);
+
+		// Ensure the method returns true if all the conditions are met.
+		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
+		$this->assertTrue( $modules->is_module_connected( 'analytics' ) );
 	}
 
 	public function test_activate_module() {
@@ -408,7 +460,6 @@ class ModulesTest extends TestCase {
 			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
-			Optimize::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 		);
 
@@ -518,7 +569,6 @@ class ModulesTest extends TestCase {
 			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
-			Optimize::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 		);
 	}
@@ -526,23 +576,53 @@ class ModulesTest extends TestCase {
 	public function test_get_shareable_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->enable_feature( 'dashboardSharing' );
-
-		$shareable_active_modules = array_map( 'get_class', $modules->get_shareable_modules() );
+		$shareable_modules = array_map( 'get_class', $modules->get_shareable_modules() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
-			$shareable_active_modules
+			$shareable_modules
+		);
+
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'search-console', 'pagespeed-insights', 'adsense' ) );
+
+		$shareable_modules = array_map( 'get_class', $modules->get_shareable_modules() );
+
+		// Only activating a module doesn't make it shareable.
+		$this->assertEqualSetsWithIndex(
+			array(
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			$shareable_modules
+		);
+
+		// Update the AdSense settings to be connected.
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		$shareable_modules = array_map( 'get_class', $modules->get_shareable_modules() );
+
+		// Connecting the activated module makes it shareable.
+		$this->assertEqualSetsWithIndex(
+			array(
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
+			),
+			$shareable_modules
 		);
 	}
 
 	public function test_get_shared_ownership_modules() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-		$this->enable_feature( 'dashboardSharing' );
 
 		// Check shared ownership for modules activated by default.
 		$modules = new Modules( $context );
@@ -572,7 +652,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_is_module_recoverable() {
-		$this->enable_feature( 'dashboardSharing' );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$modules = new Modules( $context );
 
@@ -620,7 +699,6 @@ class ModulesTest extends TestCase {
 	}
 
 	private function setup_all_admin_module_ownership_change() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -791,7 +869,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_non_all_admin_module_ownership_change() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -831,7 +908,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_non_all_admin_module_ownership_change_shared_roles() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -874,7 +950,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_non_all_admin_module_ownership_change_management() {
-		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -917,8 +992,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_shareable_modules_owners() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		// Activate modules.
@@ -942,7 +1015,9 @@ class ModulesTest extends TestCase {
 
 		// Connect the analytics module and give it an owner.
 		$analytics = $modules->get_module( 'analytics' );
-		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
+
+		FakeHttp::fake_google_http_handler( $analytics->get_client() );
+
 		$analytics->get_settings()->merge(
 			array(
 				'accountID'             => '12345678',
@@ -962,8 +1037,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_shared_ownership_module_default_settings() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
 		remove_all_filters( 'default_option_' . Module_Sharing_Settings::OPTION );
 
@@ -985,8 +1058,6 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_delete_dashboard_sharing_settings() {
-		$this->enable_feature( 'dashboardSharing' );
-
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$modules          = new Modules( $context );
 		$sharing_settings = $modules->get_module_sharing_settings();
@@ -1026,6 +1097,63 @@ class ModulesTest extends TestCase {
 			$default_settings,
 			$settings
 		);
+	}
+
+	public function test_get_connected_modules() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$default_connected_modules = array(
+			'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+			'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
+			'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+		);
+
+		$this->assertEqualSetsWithIndex(
+			$default_connected_modules,
+			array_map( 'get_class', $modules->get_connected_modules() )
+		);
+
+		update_option(
+			Modules::OPTION_ACTIVE_MODULES,
+			array( 'pagespeed-insights', 'adsense' )
+		);
+
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		// Connecting a module adds it to the array returned by this method.
+		$this->assertEqualSetsWithIndex(
+			$default_connected_modules + array(
+				'adsense' => 'Google\\Site_Kit\\Modules\\AdSense',
+			),
+			array_map( 'get_class', $modules->get_connected_modules() )
+		);
+	}
+
+	public function test_is_module_shareable() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Deactivate all non-default modules.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array() );
+
+		$default_shareable_module = 'search-console';
+		$this->assertTrue( $modules->is_module_shareable( $default_shareable_module ) );
+
+		// A disconnected module cannot be shareable.
+		$this->assertFalse( $modules->is_module_shareable( 'pagespeed-insights' ) );
+
+		// Connect a module. Note that the PageSpeed Insights module is connected
+		// as soon as it is activated.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'pagespeed-insights' ) );
+
+		// Connecting the module makes it shareable.
+		$this->assertTrue( $modules->is_module_shareable( 'pagespeed-insights' ) );
+
 	}
 
 }

@@ -29,6 +29,7 @@ class Google_Proxy {
 
 	const PRODUCTION_BASE_URL       = 'https://sitekit.withgoogle.com';
 	const STAGING_BASE_URL          = 'https://site-kit-dev.appspot.com';
+	const DEVELOPMENT_BASE_URL      = 'https://site-kit-local.appspot.com';
 	const OAUTH2_SITE_URI           = '/o/oauth2/site/';
 	const OAUTH2_REVOKE_URI         = '/o/oauth2/revoke/';
 	const OAUTH2_TOKEN_URI          = '/o/oauth2/token/';
@@ -36,7 +37,6 @@ class Google_Proxy {
 	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
 	const SETUP_URI                 = '/v2/site-management/setup/';
 	const PERMISSIONS_URI           = '/site-management/permissions/';
-	const USER_INPUT_SETTINGS_URI   = '/site-management/settings/';
 	const FEATURES_URI              = '/site-management/features/';
 	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
 	const SURVEY_EVENT_URI          = '/survey/event/';
@@ -110,19 +110,11 @@ class Google_Proxy {
 		$supports = array(
 			'credentials_retrieval',
 			'short_verification_token',
-			// Informs the proxy the user input feature is generally supported.
-			'user_input_flow',
 		);
 
 		$home_path = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_PATH );
 		if ( ! $home_path || '/' === $home_path ) {
 			$supports[] = 'file_verification';
-		}
-
-		// Informs the proxy the user input feature is already enabled locally.
-		// TODO: Remove once the feature is fully rolled out.
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
-			$supports[] = 'user_input_flow_feature';
 		}
 
 		return $supports;
@@ -206,12 +198,18 @@ class Google_Proxy {
 	 * @return string Complete proxy URL.
 	 */
 	public function url( $path = '' ) {
-		$url = defined( 'GOOGLESITEKIT_PROXY_URL' ) && self::STAGING_BASE_URL === GOOGLESITEKIT_PROXY_URL
-			? self::STAGING_BASE_URL
-			: self::PRODUCTION_BASE_URL;
+		$url          = self::PRODUCTION_BASE_URL;
+		$allowed_urls = array(
+			self::PRODUCTION_BASE_URL,
+			self::STAGING_BASE_URL,
+			self::DEVELOPMENT_BASE_URL,
+		);
+
+		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) && in_array( GOOGLESITEKIT_PROXY_URL, $allowed_urls, true ) ) {
+			$url = GOOGLESITEKIT_PROXY_URL;
+		}
 
 		$url = untrailingslashit( $url );
-
 		if ( $path && is_string( $path ) ) {
 			$url .= '/' . ltrim( $path, '/' );
 		}
@@ -479,36 +477,6 @@ class Google_Proxy {
 	}
 
 	/**
-	 * Synchronizes user input settings with the proxy.
-	 *
-	 * @since 1.27.0
-	 *
-	 * @param Credentials $credentials  Credentials instance.
-	 * @param string      $access_token Access token.
-	 * @param array|null  $settings     Settings array.
-	 * @return array|WP_Error Response of the wp_remote_post request.
-	 */
-	public function sync_user_input_settings( Credentials $credentials, $access_token, $settings = null ) {
-		$body = array();
-		if ( ! empty( $settings ) ) {
-			$body = array(
-				'settings'       => $settings,
-				'client_user_id' => (string) get_current_user_id(),
-			);
-		}
-
-		return $this->request(
-			self::USER_INPUT_SETTINGS_URI,
-			$credentials,
-			array(
-				'json_request' => true,
-				'access_token' => $access_token,
-				'body'         => $body,
-			)
-		);
-	}
-
-	/**
 	 * Exchanges a site code for client credentials from the proxy.
 	 *
 	 * @since 1.1.2
@@ -548,6 +516,7 @@ class Google_Proxy {
 	 * Gets remote features.
 	 *
 	 * @since 1.27.0
+	 * @since 1.104.0 Added `php_version` to request.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.
@@ -563,6 +532,7 @@ class Google_Proxy {
 			'platform'               => $platform . '/google-site-kit',
 			'version'                => GOOGLESITEKIT_VERSION,
 			'platform_version'       => $wp_version,
+			'php_version'            => phpversion(),
 			'user_count'             => $user_count['total_users'],
 			'connectable_user_count' => $connectable_user_count,
 			'connected_user_count'   => $this->count_connected_users(),

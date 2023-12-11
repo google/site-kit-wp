@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import {
+	createTestRegistry,
+	provideModules,
 	render,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -30,8 +32,12 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../../googlesitekit/constants';
 import Footer from './Footer';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import * as analytics4fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
 describe( 'Footer', () => {
+	let registry;
+
 	const metrics = [
 		{
 			id: 'impressions',
@@ -42,17 +48,28 @@ describe( 'Footer', () => {
 		},
 		{
 			id: 'users',
-			color: '#1b9688',
+			color: '#5c9271',
 			label: 'Users',
-			service: 'analytics',
+			service: 'analytics-4',
 		},
 	];
 
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideModules( registry );
+	} );
+
 	it( 'should not make a search console settings requests when the view context is "view only"', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetSettings( analytics4fixtures.defaultSettings );
+
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 0 } />,
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+				registry,
 			}
 		);
 
@@ -63,13 +80,19 @@ describe( 'Footer', () => {
 		);
 		expect( container ).not.toHaveTextContent( 'Search Console' );
 		expect( container.firstChild ).toBeNull();
+		waitForDefaultTimeouts();
 	} );
 
 	it( 'should not make a analytics settings requests when the view context is "view only"', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetSettings( analytics4fixtures.defaultSettings );
+
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 1 } />,
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+				registry,
 			}
 		);
 
@@ -81,52 +104,44 @@ describe( 'Footer', () => {
 	} );
 
 	it( 'should make a search console settings request normally when the view context is NOT "view only"', async () => {
-		fetchMock.getOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/settings'
-			),
-			{ body: {}, status: 200 }
+		const searchConsoleRegExp = new RegExp(
+			'^/google-site-kit/v1/modules/search-console/data/settings'
 		);
+		fetchMock.getOnce( searchConsoleRegExp, { body: {}, status: 200 } );
 
-		const { registry, container } = render(
+		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 0 } />,
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				registry,
 			}
 		);
 
 		await untilResolved( registry, MODULES_SEARCH_CONSOLE ).getSettings();
 
-		expect( fetchMock ).toHaveFetched(
-			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/settings'
-			)
-		);
+		expect( fetchMock ).toHaveFetched( searchConsoleRegExp );
 		expect( container ).toHaveTextContent( 'Search Console' );
 		expect( container.firstChild ).not.toBeNull();
 	} );
 
 	it( 'should make a analytics settings request normally when the view context is NOT "view only"', async () => {
-		fetchMock.getOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics/data/settings'
-			),
-			{ body: {}, status: 200 }
+		const analyticsSettingsRegExp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/settings'
 		);
+		fetchMock.getOnce( analyticsSettingsRegExp, { body: {}, status: 200 } );
 
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 1 } />,
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				registry,
 			}
 		);
 
 		// Wait for resolvers to run.
 		await waitForDefaultTimeouts();
 
-		expect( fetchMock ).toHaveFetched(
-			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
-		);
+		expect( fetchMock ).toHaveFetched( analyticsSettingsRegExp );
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();
 	} );

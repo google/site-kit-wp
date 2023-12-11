@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -43,6 +43,7 @@ import TableOverflowContainer from '../../../../../components/TableOverflowConta
 import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../../components/ReportTable';
 import PreviewTable from '../../../../../components/PreviewTable';
+import UACutoffWarning from '../../common/UACutoffWarning';
 import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
@@ -212,6 +213,7 @@ function ModulePopularPagesWidget( props ) {
 
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
+			<UACutoffWarning />
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ rows }

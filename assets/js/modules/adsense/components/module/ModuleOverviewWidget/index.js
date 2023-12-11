@@ -30,12 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useFeature } from '../../../../../hooks/useFeature';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { isZeroReport } from '../../../util';
-import DashboardZeroData from '../../dashboard/DashboardZeroData';
-import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constants';
+import { SITE_STATUS_ADDED, legacyAccountStatuses } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import whenActive from '../../../../../util/when-active';
 import Header from './Header';
@@ -43,15 +40,31 @@ import Footer from './Footer';
 import Overview from './Overview';
 import Stats from './Stats';
 import Data from 'googlesitekit-data';
+import StatusMigration from './StatusMigration';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-const ModuleOverviewWidget = ( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) => {
+const ModuleOverviewWidget = ( { Widget, WidgetReportError } ) => {
+	const viewOnlyDashboard = useViewOnly();
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
-	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
+
+	const accountStatus = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getAccountStatus();
+	} );
+
+	const siteStatus = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ADSENSE ).getSiteStatus();
+	} );
+
+	const legacyStatus =
+		legacyAccountStatuses.includes( accountStatus ) ||
+		siteStatus === SITE_STATUS_ADDED;
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
 		( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } )
@@ -145,24 +158,9 @@ const ModuleOverviewWidget = ( {
 		);
 	}
 
-	if ( ! adsenseSetupV2Enabled ) {
-		if (
-			isZeroReport( currentRangeData ) ||
-			isZeroReport( currentRangeChartData )
-		) {
-			return (
-				<Widget noPadding>
-					<DashboardZeroData />
-					<div className={ HIDDEN_CLASS }>
-						<WidgetReportZero moduleSlug="adsense" />
-					</div>
-				</Widget>
-			);
-		}
-	}
-
 	return (
 		<Widget noPadding Header={ Header } Footer={ Footer }>
+			{ ! viewOnlyDashboard && legacyStatus && <StatusMigration /> }
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }

@@ -19,10 +19,10 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
+import { throttle } from 'lodash';
 import { useMount } from 'react-use';
 import { Chip } from '@material/react-chips';
-import classnames from 'classnames';
-import throttle from 'lodash/throttle';
 
 /**
  * WordPress dependencies
@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import NavKeyMetricsIcon from '../../../svg/icons/nav-key-metrics-icon.svg';
 import NavTrafficIcon from '../../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../../svg/icons/nav-content-icon.svg';
 import NavSpeedIcon from '../../../svg/icons/nav-speed-icon.svg';
@@ -42,6 +43,7 @@ import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
+	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_TRAFFIC,
 } from '../../googlesitekit/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -55,6 +57,7 @@ import {
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
@@ -68,6 +71,7 @@ import { getContextScrollTop } from '../../util/scroll';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useViewOnly from '../../hooks/useViewOnly';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function Navigation() {
@@ -95,9 +99,31 @@ export default function Navigation() {
 		return select( CORE_USER ).getViewableModules();
 	} );
 
+	const keyMetricsEnabled = useFeature( 'keyMetrics' );
+
+	const isKeyMetricsWidgetHidden = useSelect(
+		( select ) =>
+			keyMetricsEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
+
 	const widgetContextOptions = {
 		modules: viewableModules ? viewableModules : undefined,
 	};
+
+	const showKeyMetrics = useSelect( ( select ) => {
+		if (
+			! keyMetricsEnabled ||
+			dashboardType !== DASHBOARD_TYPE_MAIN ||
+			isKeyMetricsWidgetHidden === true
+		) {
+			return false;
+		}
+
+		return select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+			widgetContextOptions
+		);
+	} );
 
 	const showTraffic = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
@@ -134,7 +160,11 @@ export default function Navigation() {
 			widgetContextOptions
 		)
 	);
-	const getDefaultChipID = () => {
+	const getDefaultChipID = useCallback( () => {
+		if ( showKeyMetrics ) {
+			return ANCHOR_ID_KEY_METRICS;
+		}
+
 		if ( ! viewOnlyDashboard ) {
 			return ANCHOR_ID_TRAFFIC;
 		}
@@ -156,9 +186,20 @@ export default function Navigation() {
 		}
 
 		return '';
-	};
+	}, [
+		showKeyMetrics,
+		showTraffic,
+		showContent,
+		showSpeed,
+		showMonetization,
+		viewOnlyDashboard,
+	] );
 
 	const isValidChipID = ( chipID ) => {
+		if ( showKeyMetrics && chipID === ANCHOR_ID_KEY_METRICS ) {
+			return true;
+		}
+
 		if ( showTraffic && chipID === ANCHOR_ID_TRAFFIC ) {
 			return true;
 		}
@@ -190,7 +231,7 @@ export default function Navigation() {
 
 			global.scrollTo( {
 				top:
-					chipID !== ANCHOR_ID_TRAFFIC
+					chipID !== getDefaultChipID()
 						? getContextScrollTop( `#${ chipID }`, breakpoint )
 						: 0,
 				behavior: 'smooth',
@@ -200,7 +241,7 @@ export default function Navigation() {
 				setValue( ACTIVE_CONTEXT_ID, chipID );
 			}, 50 );
 		},
-		[ breakpoint, viewContext, setValue ]
+		[ breakpoint, viewContext, setValue, getDefaultChipID ]
 	);
 
 	useMount( () => {
@@ -225,11 +266,18 @@ export default function Navigation() {
 		setSelectedID( chipID );
 
 		setTimeout( () => {
+			const scrollTo =
+				chipID !== defaultChipID
+					? getContextScrollTop( `#${ chipID }`, breakpoint )
+					: 0;
+
+			if ( global.scrollY === scrollTo ) {
+				setValue( ACTIVE_CONTEXT_ID, undefined );
+				return;
+			}
+
 			global.scrollTo( {
-				top:
-					chipID !== defaultChipID
-						? getContextScrollTop( `#${ chipID }`, breakpoint )
-						: 0,
+				top: scrollTo,
 				behavior: 'smooth',
 			} );
 		}, 50 );
@@ -252,6 +300,7 @@ export default function Navigation() {
 			const margin = 20;
 
 			const areas = [
+				...( showKeyMetrics ? [ ANCHOR_ID_KEY_METRICS ] : [] ),
 				...( showTraffic ? [ ANCHOR_ID_TRAFFIC ] : [] ),
 				...( showContent ? [ ANCHOR_ID_CONTENT ] : [] ),
 				...( showSpeed ? [ ANCHOR_ID_SPEED ] : [] ),
@@ -259,7 +308,7 @@ export default function Navigation() {
 			];
 
 			let closest;
-			let closestID = ANCHOR_ID_TRAFFIC;
+			let closestID = getDefaultChipID();
 
 			if ( yScrollPosition === 0 ) {
 				setIsSticky( false );
@@ -315,12 +364,14 @@ export default function Navigation() {
 		};
 	}, [
 		isJumpingTo,
+		showKeyMetrics,
 		showTraffic,
 		showContent,
 		showSpeed,
 		showMonetization,
 		viewContext,
 		setValue,
+		getDefaultChipID,
 	] );
 
 	return (
@@ -335,6 +386,16 @@ export default function Navigation() {
 			) }
 			ref={ elementRef }
 		>
+			{ showKeyMetrics && (
+				<Chip
+					id={ ANCHOR_ID_KEY_METRICS }
+					label={ __( 'Key metrics', 'google-site-kit' ) }
+					leadingIcon={ <NavKeyMetricsIcon width="18" height="16" /> }
+					onClick={ handleSelect }
+					selected={ selectedID === ANCHOR_ID_KEY_METRICS }
+					data-context-id={ ANCHOR_ID_KEY_METRICS }
+				/>
+			) }
 			{ showTraffic && (
 				<Chip
 					id={ ANCHOR_ID_TRAFFIC }

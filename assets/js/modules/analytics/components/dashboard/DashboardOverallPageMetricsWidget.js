@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf, _n } from '@wordpress/i18n';
+import { _x, sprintf, _n } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
 /**
@@ -37,27 +37,20 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import SourceLink from '../../../../components/SourceLink';
+import UACutoffWarning from '../common/UACutoffWarning';
 import whenActive from '../../../../util/when-active';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
-import { calculateChange, getURLPath } from '../../../../util';
-import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
+import { calculateOverallPageMetricsData } from '../../util/overall-page-metrics';
+import { getURLPath } from '../../../../util';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-/**
- * Fetches Analytics report data and state for the Overall Page Metrics widget.
- *
- * @since 1.45.0
- *
- * @typedef {Object} OverallPageMetricsReport
- * @property {Array.<Object>|undefined} report     - Analytics report data if exists, otherwise undefined.
- * @property {string}                   serviceURL - Link to relevant Google Analytics page for the report.
- * @property {boolean}                  isLoading  - Loading status for report.
- * @property {(Object|undefined)}       error      - Error object if exists, otherwise undefined.
- * @return {OverallPageMetricsReport} Analytics report data and state.
- */
-function useOverallPageMetricsReport() {
+function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
+	const isGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const viewOnlyDashboard = useViewOnly();
 
 	const dates = useSelect( ( select ) =>
@@ -130,121 +123,6 @@ function useOverallPageMetricsReport() {
 		select( MODULES_ANALYTICS ).getReport( args )
 	);
 
-	return {
-		report,
-		serviceURL,
-		isLoading,
-		error,
-	};
-}
-
-/**
- * Parse Analytics report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
- *
- * @typedef {Object} OverallPageMetricsData
- * @property {string}         metric          - Google Analytics metric identifier.
- * @property {string}         title           - Translated metric title.
- * @property {Array.<Object>} sparkLineData   - Data for rendering the sparkline.
- * @property {string}         [datapointUnit] - Optional datapoint unit, e.g. '%', 's'.
- * @property {number}         total           - Total count for the metric.
- * @property {number}         change          - Monthly change for the metric.
- *
- * @since 1.45.0
- *
- * @param {Object} report Analytics report data.
- * @return {Array.<OverallPageMetricsData>} Array of data for rendering the data blocks in the Overall Page Metrics widget.
- */
-
-function calculateOverallPageMetricsData( report ) {
-	const metricsData = [
-		{
-			metric: 'ga:pageviews',
-			title: __( 'Pageviews', 'google-site-kit' ),
-			sparkLineData: [
-				[
-					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Pageviews' },
-				],
-			],
-			total: 0,
-			change: 0,
-		},
-		{
-			metric: 'ga:uniquePageviews',
-			title: __( 'Unique Pageviews', 'google-site-kit' ),
-			sparkLineData: [
-				[
-					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Unique Pageviews' },
-				],
-			],
-			total: 0,
-			change: 0,
-		},
-		{
-			metric: 'ga:bounceRate',
-			title: __( 'Bounce Rate', 'google-site-kit' ),
-			sparkLineData: [
-				[
-					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Bounce Rate' },
-				],
-			],
-			datapointUnit: '%',
-			datapointDivider: 100,
-			total: 0,
-			change: 0,
-		},
-		{
-			metric: 'ga:avgSessionDuration',
-			title: __( 'Session Duration', 'google-site-kit' ),
-			sparkLineData: [
-				[
-					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Session Duration' },
-				],
-			],
-			datapointUnit: 's',
-			total: 0,
-			change: 0,
-		},
-	];
-
-	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
-
-	const lastMonth = totals[ 0 ]?.values || [];
-	const previousMonth = totals[ 1 ]?.values || [];
-
-	return metricsData.map(
-		( { datapointDivider = 1, ...metricData }, index ) => {
-			// We only want half the date range, having a comparison date range in the query doubles the range.
-			for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
-				const { values } = rows[ i ].metrics[ 0 ];
-				const dateString = rows[ i ].dimensions[ 0 ];
-				const date = parseDimensionStringToDate( dateString );
-
-				metricData.sparkLineData.push( [ date, values[ index ] ] );
-			}
-
-			metricData.total = ( lastMonth[ index ] || 0 ) / datapointDivider;
-			metricData.change = calculateChange(
-				previousMonth[ index ] || 0,
-				lastMonth[ index ] || 0
-			);
-
-			return metricData;
-		}
-	);
-}
-
-function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
-	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
-	);
-
-	const { report, serviceURL, isLoading, error } =
-		useOverallPageMetricsReport();
-
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
@@ -293,6 +171,7 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
+			<UACutoffWarning className="googlesitekit-ua-cutoff-warning--overall-page-metrics" />
 			<Grid>
 				<Row>
 					{ data.map(

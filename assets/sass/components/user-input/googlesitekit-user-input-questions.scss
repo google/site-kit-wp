@@ -32,23 +32,6 @@
 		}
 	}
 
-	.googlesitekit-user-input__question--next::before {
-		background-color: $c-white;
-		content: "";
-		height: 100%;
-		left: 0;
-		opacity: 0.75;
-		position: absolute;
-		top: 0;
-		width: 100%;
-		z-index: 10;
-	}
-
-	.googlesitekit-user-input__question--next {
-		display: none;
-		position: relative;
-	}
-
 	p.googlesitekit-user-input__question-number {
 		color: $c-interactive-on-disable-container;
 		font-family: $f-primary;

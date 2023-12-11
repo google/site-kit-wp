@@ -20,8 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import pick from 'lodash/pick';
-import difference from 'lodash/difference';
+import { pick, difference } from 'lodash';
 
 /**
  * Internal dependencies
@@ -29,6 +28,7 @@ import difference from 'lodash/difference';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -289,11 +289,33 @@ const baseSelectors = {
 	 * @return {(Object|null)} A web data stream object if found, otherwise null.
 	 */
 	getMatchingWebDataStream: createRegistrySelector(
-		( select ) => ( _state, datastreams ) => {
+		( select ) => ( state, datastreams ) => {
+			const matchedWebDataStreams =
+				select( MODULES_ANALYTICS_4 ).getMatchingWebDataStreams(
+					datastreams
+				);
+
+			return matchedWebDataStreams[ 0 ] || null;
+		}
+	),
+
+	/**
+	 * Gets web data streams that match the current reference URL.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @param {Object} state       Data store's state.
+	 * @param {Array}  datastreams A list of web data streams.
+	 * @return {Array.<Object>} An array of found matched web data streams.
+	 */
+	getMatchingWebDataStreams: createRegistrySelector(
+		( select ) => ( state, datastreams ) => {
 			invariant(
 				Array.isArray( datastreams ),
 				'datastreams must be an array.'
 			);
+
+			const matchedWebDataStreams = [];
 
 			for ( const datastream of datastreams ) {
 				if (
@@ -302,11 +324,11 @@ const baseSelectors = {
 						datastream.webStreamData?.defaultUri
 					)
 				) {
-					return datastream;
+					matchedWebDataStreams.push( datastream );
 				}
 			}
 
-			return null;
+			return matchedWebDataStreams;
 		}
 	),
 
@@ -323,7 +345,6 @@ const baseSelectors = {
 		( select ) => ( _state, propertyID ) => {
 			const datastreams =
 				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
-
 			if ( datastreams === undefined ) {
 				return undefined;
 			}
@@ -406,6 +427,176 @@ const baseSelectors = {
 				};
 			}, {} );
 		}
+	),
+
+	/**
+	 * Gets an Analytics config that matches one of provided measurement IDs.
+	 *
+	 * @since 1.94.0
+	 *
+	 * @param {Object}                state        Data store's state.
+	 * @param {string|Array.<string>} measurements Single GA4 measurement ID, or array of GA4 measurement ID strings.
+	 * @return {(Object|null|undefined)} An Analytics config that matches provided one of measurement IDs on success, NULL if no matching config is found, undefined if data hasn't been resolved yet.
+	 */
+	getAnalyticsConfigByMeasurementIDs: createRegistrySelector(
+		( select ) => ( state, measurements ) => {
+			const measurementIDs = Array.isArray( measurements )
+				? measurements
+				: [ measurements ];
+
+			let summaries = select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+			if ( ! Array.isArray( summaries ) ) {
+				return undefined;
+			}
+
+			// Sort summaries to have the current account at the very beginning,
+			// so we can check it first because its more likely that the current
+			// account will contain a measurement ID that we are looking for.
+			const currentAccountID = select( MODULES_ANALYTICS ).getAccountID();
+			// Clone summaries to avoid mutating the original array.
+			summaries = [ ...summaries ].sort( ( { _id: accountID } ) =>
+				accountID === currentAccountID ? -1 : 0
+			);
+
+			const info = {};
+			const propertyIDs = [];
+
+			summaries.forEach( ( { _id: accountID, propertySummaries } ) => {
+				propertySummaries.forEach( ( { _id: propertyID } ) => {
+					propertyIDs.push( propertyID );
+					info[ propertyID ] = {
+						accountID,
+						propertyID,
+					};
+				} );
+			} );
+
+			if ( propertyIDs.length === 0 ) {
+				return null;
+			}
+
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const datastreams =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
+					propertyIDs
+				);
+
+			const resolvedDataStreams = select(
+				MODULES_ANALYTICS_4
+			).hasFinishedResolution( 'getWebDataStreamsBatch', [
+				propertyIDs,
+			] );
+
+			// Return undefined if web data streams haven't been resolved yet.
+			if ( ! resolvedDataStreams ) {
+				return undefined;
+			}
+
+			let firstlyFoundConfig;
+
+			for ( const propertyID in datastreams ) {
+				if ( ! datastreams[ propertyID ]?.length ) {
+					continue;
+				}
+
+				for ( const datastream of datastreams[ propertyID ] ) {
+					const { _id: webDataStreamID, webStreamData } = datastream;
+					const {
+						defaultUri: defaultURI,
+						measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
+					} = webStreamData;
+
+					if ( ! measurementIDs.includes( measurementID ) ) {
+						continue;
+					}
+
+					const config = {
+						...info[ propertyID ],
+						webDataStreamID,
+						measurementID,
+					};
+
+					// Remember the firstly found config to return it at the end
+					// if we don't manage to find the most suitable config.
+					if ( ! firstlyFoundConfig ) {
+						firstlyFoundConfig = config;
+					}
+
+					// If only one measurement ID is provided, then we don't need
+					// to check whether its default URI matches the current
+					// reference URL. Otherwise, if we have many measurement IDs
+					// then we need to find the one that matches the current
+					// reference URL.
+					if (
+						measurementIDs.length === 1 ||
+						select( CORE_SITE ).isSiteURLMatch( defaultURI )
+					) {
+						return config;
+					}
+				}
+			}
+
+			return firstlyFoundConfig || null;
+		}
+	),
+
+	/**
+	 * Checks if web data streams are currently being loaded.
+	 *
+	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
+	 * components, initially the `WebDataStreamSelect` and `SettingsEnhancedMeasurementSwitch` components.
+	 *
+	 * @since 1.111.0
+	 *
+	 * @param {Object}  state                Data store's state.
+	 * @param {Object}  args                 Arguments object.
+	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 */
+	isLoadingWebDataStreams: createRegistrySelector(
+		( select ) =>
+			( state, { hasModuleAccess } ) => {
+				const accountID = select( MODULES_ANALYTICS ).getAccountID();
+
+				const propertyID =
+					select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+				const loadedAccounts =
+					select( MODULES_ANALYTICS ).hasFinishedResolution(
+						'getAccounts'
+					);
+
+				const loadedProperties =
+					hasModuleAccess !== false
+						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+								'getProperties',
+								[ accountID ]
+						  )
+						: true;
+
+				const loadedWebDataStreams =
+					isValidPropertyID( propertyID ) && hasModuleAccess !== false
+						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+								'getWebDataStreams',
+								[ propertyID ]
+						  )
+						: true;
+
+				const finishedSelectingAccount =
+					select(
+						MODULES_ANALYTICS
+					).hasFinishedSelectingAccount() !== false;
+
+				const isMatchingAccountProperty =
+					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty();
+
+				return (
+					isMatchingAccountProperty ||
+					! loadedAccounts ||
+					! loadedProperties ||
+					! loadedWebDataStreams ||
+					! finishedSelectingAccount
+				);
+			}
 	),
 };
 

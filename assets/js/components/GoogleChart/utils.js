@@ -19,9 +19,7 @@
 /**
  * External dependencies
  */
-import set from 'lodash/set';
-import cloneDeep from 'lodash/cloneDeep';
-import merge from 'lodash/merge';
+import { set, cloneDeep, merge } from 'lodash';
 
 /**
  * Internal dependencies
@@ -41,6 +39,7 @@ export const getFilteredChartData = ( data, selectedStats ) => {
 	if ( ! selectedStats?.length ) {
 		return data;
 	}
+
 	// Ensure we don't filter out columns that aren't data, but are things like
 	// tooltips or other content.
 	let nonDataColumns = [];
@@ -149,9 +148,11 @@ export const getChartOptions = (
 		if ( ! options?.vAxis?.viewWindow?.min ) {
 			set( chartOptions, 'vAxis.viewWindow.min', 0 );
 		}
+
 		if ( ! options?.vAxis?.viewWindow?.max ) {
 			set( chartOptions, 'vAxis.viewWindow.max', 100 );
 		}
+
 		if ( ! options?.hAxis?.viewWindow?.min ) {
 			set(
 				chartOptions,
@@ -160,6 +161,7 @@ export const getChartOptions = (
 			);
 			delete chartOptions.hAxis.ticks;
 		}
+
 		if ( ! options?.hAxis?.viewWindow?.max ) {
 			set(
 				chartOptions,
@@ -167,6 +169,14 @@ export const getChartOptions = (
 				stringToDate( endDate )
 			);
 			delete chartOptions.hAxis.ticks;
+		}
+	}
+
+	if ( chartType === 'LineChart' ) {
+		// eslint-disable-next-line sitekit/acronym-case
+		if ( options?.tooltip?.isHtml === undefined ) {
+			set( chartOptions, 'tooltip.isHtml', true );
+			set( chartOptions, 'tooltip.trigger', 'both' );
 		}
 	}
 

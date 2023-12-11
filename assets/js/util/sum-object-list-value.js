@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import sumBy from 'lodash/sumBy';
+import { sumBy } from 'lodash';
 
 /**
  * Returns the sum of a given fieldName in a list.

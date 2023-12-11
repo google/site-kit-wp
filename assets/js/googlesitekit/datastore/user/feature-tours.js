@@ -21,7 +21,7 @@
  */
 import compareVersions from 'compare-versions';
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject, isNull } from 'lodash';
 
 /**
  * Internal dependencies
@@ -29,9 +29,10 @@ import isPlainObject from 'lodash/isPlainObject';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_USER } from './constants';
 import featureTours from '../../../feature-tours';
-import { setItem, getItem } from '../../../googlesitekit/api/cache';
+import { getItem } from '../../../googlesitekit/api/cache';
 import { createValidatedAction } from '../../data/utils';
 
 const { createRegistrySelector, createRegistryControl } = Data;
@@ -51,8 +52,6 @@ const CHECK_ON_DEMAND_TOUR_REQUIREMENTS = 'CHECK_ON_DEMAND_TOUR_REQUIREMENTS';
 const RECEIVE_LAST_DISMISSED_AT = 'RECEIVE_LAST_DISMISSED_AT';
 
 // Controls.
-const CACHE_LAST_DISMISSED_AT = 'CACHE_LAST_DISMISSED_AT';
-
 const fetchGetDismissedToursStore = createFetchStore( {
 	baseName: 'getDismissedTours',
 	controlCallback: () =>
@@ -79,12 +78,10 @@ const fetchDismissTourStore = createFetchStore( {
 
 const baseInitialState = {
 	lastDismissedAt: undefined,
-	// Array of dismissed tour slugs.
 	dismissedTourSlugs: undefined,
-	// Array of tour objects.
 	tours: featureTours,
-	// Current active tour
-	currentTour: null,
+	currentTour: undefined,
+	shownTour: undefined,
 };
 
 const baseActions = {
@@ -124,7 +121,10 @@ const baseActions = {
 	),
 
 	receiveCurrentTour( tour ) {
-		invariant( isPlainObject( tour ), 'tour must be a plain object.' );
+		invariant(
+			isPlainObject( tour ) || isNull( tour ),
+			'tour must be a plain object or null.'
+		);
 		return {
 			payload: { tour },
 			type: RECEIVE_CURRENT_TOUR,
@@ -163,10 +163,14 @@ const baseActions = {
 			invariant( timestamp, 'A timestamp is required.' );
 		},
 		function* ( timestamp ) {
-			yield {
-				type: CACHE_LAST_DISMISSED_AT,
-				payload: { timestamp },
-			};
+			const registry = yield getRegistry();
+
+			yield registry
+				.dispatch( CORE_SITE )
+				.setCacheItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
+					ttl: FEATURE_TOUR_COOLDOWN_SECONDS,
+				} );
+
 			yield {
 				type: RECEIVE_LAST_DISMISSED_AT,
 				payload: { timestamp },
@@ -213,9 +217,14 @@ const baseActions = {
 			};
 
 			if ( tourQualifies ) {
-				return yield baseActions.triggerTour( tour );
+				yield baseActions.triggerTour( tour );
+				return tour;
 			}
 		}
+
+		// Trigger with null here to avoid overriding an on-demand tour.
+		yield baseActions.triggerTour( null );
+		return null;
 	},
 };
 
@@ -288,13 +297,6 @@ const baseControls = {
 				return true;
 			}
 	),
-	[ CACHE_LAST_DISMISSED_AT ]: async ( { payload } ) => {
-		const { timestamp } = payload;
-
-		await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
-			ttl: FEATURE_TOUR_COOLDOWN_SECONDS,
-		} );
-	},
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -317,6 +319,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				currentTour: payload.tour,
+				shownTour: payload.tour,
 			};
 		}
 
@@ -381,6 +384,18 @@ const baseSelectors = {
 	 */
 	getCurrentTour( state ) {
 		return state.currentTour;
+	},
+
+	/**
+	 * Gets the feature tour that has been already shown in the current page view.
+	 *
+	 * @since 1.99.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Shown tour object.
+	 */
+	getShownTour( state ) {
+		return state.shownTour;
 	},
 
 	/**

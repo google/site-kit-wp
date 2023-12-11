@@ -19,15 +19,15 @@
 /**
  * External dependencies
  */
-import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { CORE_USER } from './constants';
+import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 const { createRegistrySelector } = Data;
@@ -39,18 +39,6 @@ const fetchTriggerSurveyStore = createFetchStore( {
 	},
 	argsToParams: ( triggerID ) => {
 		return { triggerID };
-	},
-	// eslint-disable-next-line camelcase
-	reducerCallback: ( state, { survey_payload, session } ) => {
-		// We don't replace survey if we already have one.
-		if ( baseSelectors.getCurrentSurvey( state ) ) {
-			return state;
-		}
-		return {
-			...state,
-			currentSurvey: survey_payload,
-			currentSurveySession: session,
-		};
 	},
 	validateParams: ( { triggerID } = {} ) => {
 		invariant(
@@ -115,9 +103,28 @@ const fetchSetSurveyTimeoutStore = createFetchStore( {
 	},
 } );
 
+const fetchGetSurveyStore = createFetchStore( {
+	baseName: 'getSurvey',
+	controlCallback() {
+		return API.get( 'core', 'user', 'survey', {} );
+	},
+	reducerCallback: ( state, { survey } ) => {
+		const {
+			survey_payload: currentSurvey = null,
+			session: currentSurveySession = null,
+		} = survey ? survey : {};
+
+		return {
+			...state,
+			currentSurvey,
+			currentSurveySession,
+		};
+	},
+} );
+
 const baseInitialState = {
-	currentSurvey: null,
-	currentSurveySession: null,
+	currentSurvey: undefined,
+	currentSurveySession: undefined,
 	surveyTimeouts: undefined,
 };
 
@@ -177,11 +184,6 @@ const baseActions = {
 			const { ttl = 0 } = options;
 			const { select, dispatch, __experimentalResolveSelect } =
 				yield Data.commonActions.getRegistry();
-
-			// Bail if there is already a current survey.
-			if ( select( CORE_USER ).getCurrentSurvey() ) {
-				return {};
-			}
 
 			// Wait for user authentication state to be available before selecting.
 			yield Data.commonActions.await(
@@ -272,6 +274,14 @@ const baseActions = {
 };
 
 const baseResolvers = {
+	*getCurrentSurvey() {
+		const { select } = yield Data.commonActions.getRegistry();
+		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
+		if ( currentSurvey === undefined ) {
+			yield fetchGetSurveyStore.actions.fetchGetSurvey();
+		}
+	},
+
 	*getSurveyTimeouts() {
 		const { select } = yield Data.commonActions.getRegistry();
 		const surveyTimeouts = select( CORE_USER ).getSurveyTimeouts();
@@ -367,7 +377,7 @@ const baseSelectors = {
 	 * @param {Object} state   Data store's state.
 	 * @param {string} slug    Survey slug.
 	 * @param {number} timeout Timeout for survey.
-	 * @return {(boolean|undefined)} True if the survey is being timed out, otherwise false.
+	 * @return {(boolean|undefined)} TRUE if the survey is being timed out, otherwise FALSE.
 	 */
 	isTimingOutSurvey: createRegistrySelector(
 		( select ) => ( state, slug, timeout ) => {
@@ -377,6 +387,19 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Determines whether surveys are on cooldown or not.
+	 *
+	 * @since 1.98.0
+	 *
+	 * @return {(boolean|undefined)} TRUE if surveys are on cooldown, otherwise FALSE, `undefined` if not resolved yet.
+	 */
+	areSurveysOnCooldown: createRegistrySelector( ( select ) => () => {
+		return select( CORE_USER ).isSurveyTimedOut(
+			GLOBAL_SURVEYS_TIMEOUT_SLUG
+		);
+	} ),
 };
 
 const store = Data.combineStores(
@@ -384,6 +407,7 @@ const store = Data.combineStores(
 	fetchSendSurveyEventStore,
 	fetchGetSurveyTimeoutsStore,
 	fetchSetSurveyTimeoutStore,
+	fetchGetSurveyStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

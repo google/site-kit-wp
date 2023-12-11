@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import omit from 'lodash/omit';
+import { omit } from 'lodash';
 
 /**
  * Internal dependencies
@@ -50,6 +50,16 @@ const pagespeedMobileNoFieldDataNoStackPacks = omit(
 	pagespeedMobileNoFieldData,
 	'lighthouseResult.stackPacks'
 );
+const pagespeedDesktopPartialFieldData = omit( pagespeedDesktop, [
+	'loadingExperience.metrics.LARGEST_CONTENTFUL_PAINT_MS',
+	'loadingExperience.metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE',
+	'loadingExperience.metrics.FIRST_INPUT_DELAY_MS',
+] );
+const pagespeedMobilePartialFieldData = omit( pagespeedMobile, [
+	'loadingExperience.metrics.LARGEST_CONTENTFUL_PAINT_MS',
+	'loadingExperience.metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE',
+	'loadingExperience.metrics.FIRST_INPUT_DELAY_MS',
+] );
 
 export {
 	pagespeedDesktop,
@@ -60,4 +70,6 @@ export {
 	pagespeedMobileNoFieldData,
 	pagespeedMobileNoStackPacks,
 	pagespeedMobileNoFieldDataNoStackPacks,
+	pagespeedDesktopPartialFieldData,
+	pagespeedMobilePartialFieldData,
 };

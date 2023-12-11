@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 // Constants relevant to the special formatting of the arguments URL segment.
 const SLASH_ENCODED = encodeURIComponent( '/' );

@@ -24,18 +24,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+import {
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+} from '../../googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
-import { SetupMain as SetupMainV2 } from './components/setup/v2';
 import {
 	SettingsEdit,
 	SettingsSetupIncomplete,
 	SettingsView,
 } from './components/settings';
 import {
-	DashboardTopEarningPagesWidget,
+	AdBlockingRecoverySetupCTAWidget,
 	AdBlockerWarningWidget,
 	AdSenseConnectCTAWidget,
+	DashboardTopEarningPagesWidgetGA4,
 } from './components/dashboard';
 import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/graphics/adsense.svg';
@@ -45,6 +48,11 @@ import {
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
 import { isFeatureEnabled } from '../../features';
+import { TopEarningContentWidget } from './components/widgets';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+} from '../../googlesitekit/datastore/user/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -53,9 +61,7 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
-		SetupComponent: isFeatureEnabled( 'adsenseSetupV2' )
-			? SetupMainV2
-			: SetupMain,
+		SetupComponent: SetupMain,
 		Icon: AdSenseIcon,
 		features: [
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
@@ -85,6 +91,39 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
+		'adBlockingRecovery',
+		{
+			Component: AdBlockingRecoverySetupCTAWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'adsense' ],
+		},
+		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+	);
+
+	if ( isFeatureEnabled( 'keyMetrics' ) ) {
+		/*
+		 * Key metrics widgets.
+		 */
+		widgets.registerWidget(
+			KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+			{
+				Component: TopEarningContentWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'adsense', 'analytics-4' ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
+					),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
+
 	widgets.registerWidget(
 		'adBlockerWarning',
 		{
@@ -121,14 +160,15 @@ export const registerWidgets = ( widgets ) => {
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
 
+	// Register widget reliant on Analytics 4 (GA4).
 	widgets.registerWidget(
-		'adsenseTopEarningPages',
+		'adsenseTopEarningPagesGA4',
 		{
-			Component: DashboardTopEarningPagesWidget,
+			Component: DashboardTopEarningPagesWidgetGA4,
 			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,
-			modules: [ 'adsense', 'analytics' ],
+			modules: [ 'adsense', 'analytics-4' ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
