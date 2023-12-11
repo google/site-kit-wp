@@ -138,10 +138,11 @@ const KEY_METRICS_WIDGETS = {
 			'Products that brought in the most visitors',
 			'google-site-kit'
 		),
+		requiredCustomDimensions: [ 'googlesitekit_post_type' ],
 		displayInList: ( select ) =>
 			select( CORE_USER ).isKeyMetricActive(
 				KM_ANALYTICS_POPULAR_PRODUCTS
-			) || select( CORE_SITE ).getProductBasePaths()?.length > 0,
+			) || select( CORE_SITE ).getProductPostType(),
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
 		title: __( 'Pages per visit', 'google-site-kit' ),

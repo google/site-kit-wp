@@ -49,7 +49,7 @@ describe( 'core/site site info', () => {
 				label: 'Post',
 			},
 		],
-		productBasePaths: [ '^/product/' ],
+		productPostType: [ 'product' ],
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -366,12 +366,13 @@ describe( 'core/site site info', () => {
 			[ 'getTimezone', 'timezone' ],
 			[ 'getPostTypes', 'postTypes' ],
 			[ 'getKeyMetricsSetupCompletedBy', 'keyMetricsSetupCompletedBy' ],
+			[ 'getKeyMetricsSetupNew', 'keyMetricsSetupNew' ],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],
 			[ 'isSecondaryAMP', 'ampMode' ],
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
-			[ 'getProductBasePaths', 'productBasePaths' ],
+			[ 'getProductPostType', 'productPostType' ],
 			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {

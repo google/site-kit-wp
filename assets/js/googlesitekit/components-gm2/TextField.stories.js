@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import TextField from './TextField';
+import WarningIcon from '../../../svg/icons/warning-v2.svg';
 
 const Template = () => (
 	<div>
@@ -64,7 +65,9 @@ const Template = () => (
 				outlined
 				value="https://www.sitekitbygoogle.com"
 				trailingIcon={
-					<span className="googlesitekit-text-field-icon--error" />
+					<span className="googlesitekit-text-field-icon--error">
+						<WarningIcon width={ 14 } height={ 12 } />
+					</span>
 				}
 			/>
 		</div>

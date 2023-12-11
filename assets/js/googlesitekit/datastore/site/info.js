@@ -161,8 +161,9 @@ export const reducer = ( state, { payload, type } ) => {
 				changePluginAutoUpdatesCapacity,
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
-				productBasePaths,
+				productPostType,
 				keyMetricsSetupCompletedBy,
+				keyMetricsSetupNew,
 			} = payload.siteInfo;
 
 			return {
@@ -193,8 +194,9 @@ export const reducer = ( state, { payload, type } ) => {
 					changePluginAutoUpdatesCapacity,
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
-					productBasePaths,
+					productPostType,
 					keyMetricsSetupCompletedBy,
+					keyMetricsSetupNew,
 				},
 			};
 		}
@@ -270,8 +272,9 @@ export const resolvers = {
 			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
-			productBasePaths,
+			productPostType,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupNew,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -307,8 +310,9 @@ export const resolvers = {
 			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
-			productBasePaths,
+			productPostType,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupNew,
 		} );
 	},
 };
@@ -782,6 +786,15 @@ export const selectors = {
 	),
 
 	/**
+	 * Gets the state of whether or not Key Metrics was recently set up.
+	 *
+	 * @since 1.115.0
+	 *
+	 * @return {boolean} `true` if recently set up, otherwise `false`.
+	 */
+	getKeyMetricsSetupNew: getSiteInfoProperty( 'keyMetricsSetupNew' ),
+
+	/**
 	 * Determines whether the current WordPress site has the minimum required version.
 	 * Currently, the minimum required version is 5.2.
 	 *
@@ -811,13 +824,13 @@ export const selectors = {
 	),
 
 	/**
-	 * Gets base paths for products found in WordPress.
+	 * Gets product post type.
 	 *
-	 * @since 1.106.0
+	 * @since n.e.x.t
 	 *
-	 * @return {Array.<string>} The list of product base paths.
+	 * @return {string|null} The product post type or null if not present.
 	 */
-	getProductBasePaths: getSiteInfoProperty( 'productBasePaths' ),
+	getProductPostType: getSiteInfoProperty( 'productPostType' ),
 
 	/**
 	 * Checks if the Key Metrics widget has been setup either if at least one user

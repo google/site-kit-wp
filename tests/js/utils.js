@@ -247,8 +247,9 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 				label: 'Media',
 			},
 		],
-		productBasePaths: [ '^/product/' ],
+		productPostType: 'product',
 		keyMetricsSetupCompletedBy: 0,
+		keyMetricsSetupNew: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
