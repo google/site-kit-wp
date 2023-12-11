@@ -17,7 +17,6 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { useMountedState } from 'react-use';
 
 /*
@@ -34,7 +33,17 @@ import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constan
 import Link from '../../Link';
 const { useSelect } = Data;
 
-export default function BannerActions( props ) {
+interface BannerActionsProps {
+	ctaLink?: string;
+	ctaLabel?: string;
+	ctaComponent?: React.ReactElement;
+	ctaTarget?: string;
+	ctaCallback?: ( ...args: any[] ) => Promise< any > | void;
+	dismissLabel?: string;
+	dismissCallback?: ( ...args: any[] ) => Promise< any > | void;
+}
+
+export default function BannerActions( props: BannerActionsProps ) {
 	const {
 		ctaLink,
 		ctaLabel,
@@ -52,7 +61,7 @@ export default function BannerActions( props ) {
 
 	const isNavigatingToCTALink = useSelect( ( select ) =>
 		ctaLink ? select( CORE_LOCATION ).isNavigatingTo( ctaLink ) : false
-	);
+	) as boolean;
 
 	const handleCTAClick = async ( ...params ) => {
 		setIsAwaitingCTAResponse( true );
@@ -98,13 +107,3 @@ export default function BannerActions( props ) {
 		</div>
 	);
 }
-
-BannerActions.propTypes = {
-	ctaLink: PropTypes.string,
-	ctaLabel: PropTypes.string,
-	ctaComponent: PropTypes.element,
-	ctaTarget: PropTypes.string,
-	ctaCallback: PropTypes.func,
-	dismissLabel: PropTypes.string,
-	dismissCallback: PropTypes.func,
-};
