@@ -25,8 +25,9 @@ import PropTypes from 'prop-types';
 import Warning from '../../../../svg/icons/warning.svg';
 import ErrorIcon from '../../../../svg/icons/error.svg';
 import { Cell } from '../../../material-components';
+import { BannerIconProps } from './types';
 
-export default function BannerIcon( props ) {
+export default function BannerIcon( props: BannerIconProps ) {
 	const { type } = props;
 
 	if ( 'win-error' !== type && 'win-warning' !== type ) {

@@ -80,3 +80,7 @@ export type BannerDescriptionProps = {
 	learnMoreTarget?: LEARN_MORE_TARGET;
 	onLearnMoreClick?: () => void;
 };
+
+export type BannerIconProps = {
+	type?: string;
+};
