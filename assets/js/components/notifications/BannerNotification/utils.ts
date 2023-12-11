@@ -36,7 +36,16 @@ export function getContentCellSizeProperties( {
 	hasErrorOrWarning,
 	hasSmallImageSVG,
 	hasWinImageSVG,
-} ) {
+}: {
+	format?: 'small' | 'large' | 'larger';
+	hasErrorOrWarning: boolean;
+	hasSmallImageSVG: boolean;
+	hasWinImageSVG: boolean;
+} ): {
+	smSize: number;
+	mdSize: number;
+	lgSize: number;
+} {
 	const sizes = {
 		smSize: 4,
 		mdSize: 8,
@@ -72,7 +81,13 @@ export function getContentCellSizeProperties( {
  * @param {string} format The format of the notification. Can be either small or larger.
  * @return {Object} The cell order for each breakpoint denoted by the smOrder, mdOrder and lgOrder keys.
  */
-export const getContentCellOrderProperties = ( format ) => {
+export const getContentCellOrderProperties = (
+	format: 'small' | 'larger'
+): {
+	smOrder?: number;
+	mdOrder?: number;
+	lgOrder?: number;
+} => {
 	switch ( format ) {
 		case 'small':
 			return {};
@@ -98,7 +113,11 @@ export const getContentCellOrderProperties = ( format ) => {
  * @param {string} format The format of the notification. Can be either smaller or larger.
  * @return {Object} The cell size for each breakpoint denoted by the smSize, mdSize and lgSize keys.
  */
-export const getImageCellSizeProperties = ( format ) => {
+export function getImageCellSizeProperties( format: 'smaller' | 'larger' ): {
+	smSize: number;
+	mdSize: number;
+	lgSize: number;
+} {
 	switch ( format ) {
 		case 'smaller':
 			return {
@@ -119,7 +138,7 @@ export const getImageCellSizeProperties = ( format ) => {
 				lgSize: 4,
 			};
 	}
-};
+}
 
 /**
  * Gets the cell order for the image area within BannerNotification.
@@ -129,7 +148,11 @@ export const getImageCellSizeProperties = ( format ) => {
  * @param {string} format The format of the notification. Can be larger.
  * @return {Object} The cell size for each breakpoint denoted by the smOrder, mdOrder and lgOrder keys.
  */
-export const getImageCellOrderProperties = ( format ) => {
+export function getImageCellOrderProperties( format: 'larger' ): {
+	smOrder: number;
+	mdOrder: number;
+	lgOrder?: number;
+} {
 	switch ( format ) {
 		case 'larger':
 			return {
@@ -143,4 +166,4 @@ export const getImageCellOrderProperties = ( format ) => {
 				mdOrder: 2,
 			};
 	}
-};
+}
