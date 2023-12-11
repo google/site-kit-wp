@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { Fragment, isValidElement } from '@wordpress/element';
@@ -30,8 +25,9 @@ import { Fragment, isValidElement } from '@wordpress/element';
 import { sanitizeHTML } from '../../../util/sanitize';
 import Link from '../../Link';
 import { LEARN_MORE_TARGET } from './constants';
+import { BannerDescriptionProps } from './types';
 
-export default function BannerDescription( props ) {
+export default function BannerDescription( props: BannerDescriptionProps ) {
 	const {
 		description,
 		learnMoreLabel,
@@ -45,12 +41,15 @@ export default function BannerDescription( props ) {
 		return null;
 	}
 
-	const handleLearnMore = ( event ) => {
+	const handleLearnMore = (
+		// eslint-disable-next-line sitekit/acronym-case
+		event: React.MouseEvent< HTMLAnchorElement >
+	) => {
 		event.persist();
 		onLearnMoreClick?.();
 	};
 
-	let learnMore;
+	let learnMore: React.ReactNode;
 	if ( learnMoreLabel ) {
 		learnMore = (
 			<Fragment>
@@ -87,12 +86,3 @@ export default function BannerDescription( props ) {
 		</div>
 	);
 }
-
-BannerDescription.propTypes = {
-	description: PropTypes.node,
-	learnMoreURL: PropTypes.string,
-	learnMoreDescription: PropTypes.string,
-	learnMoreLabel: PropTypes.string,
-	learnMoreTarget: PropTypes.oneOf( Object.values( LEARN_MORE_TARGET ) ),
-	onLearnMoreClick: PropTypes.func,
-};
