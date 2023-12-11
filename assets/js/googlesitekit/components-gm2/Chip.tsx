@@ -21,16 +21,24 @@
  */
 import { Chip as MuiChip, ChipCheckmark } from '@material/react-chips';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 
-export default function Chip( {
+type ChipProps = {
+	id: string;
+	label: string;
+	onClick?: () => void;
+	selected?: boolean;
+	className?: string;
+	[ key: string ]: any;
+};
+
+const Chip: React.FC< ChipProps > = ( {
 	id,
 	label,
 	onClick,
 	selected,
 	className,
 	...props
-} ) {
+} ) => {
 	return (
 		<MuiChip
 			chipCheckmark={ <ChipCheckmark /> }
@@ -43,12 +51,6 @@ export default function Chip( {
 			{ ...props }
 		/>
 	);
-}
-
-Chip.propTypes = {
-	id: PropTypes.string.isRequired,
-	label: PropTypes.string.isRequired,
-	onClick: PropTypes.func,
-	selected: PropTypes.bool,
-	className: PropTypes.string,
 };
+
+export default Chip;
