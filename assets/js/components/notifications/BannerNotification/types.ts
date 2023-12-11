@@ -89,3 +89,12 @@ export type BannerLogoProps = {
 	module?: string;
 	moduleName?: string;
 };
+
+export type BannerTitleProps = {
+	title?: string;
+	badgeLabel?: string;
+	WinImageSVG?: React.ElementType;
+	winImageFormat?: string;
+	smallWinImageSVGWidth?: number;
+	smallWinImageSVGHeight?: number;
+};

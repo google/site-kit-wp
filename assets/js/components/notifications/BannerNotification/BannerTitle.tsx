@@ -17,15 +17,15 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /*
  * Internal dependencies
  */
 import Badge from '../../Badge';
+import { BannerTitleProps } from './types';
 
-export default function BannerTitle( props ) {
+export default function BannerTitle( props: BannerTitleProps ) {
 	const {
 		title,
 		badgeLabel,
@@ -62,12 +62,3 @@ export default function BannerTitle( props ) {
 		</div>
 	);
 }
-
-BannerTitle.propTypes = {
-	title: PropTypes.string,
-	badgeLabel: PropTypes.string,
-	WinImageSVG: PropTypes.elementType,
-	winImageFormat: PropTypes.string,
-	smallWinImageSVGWidth: PropTypes.number,
-	smallWinImageSVGHeight: PropTypes.number,
-};
