@@ -33,7 +33,7 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {Object} Tag src as scriptTagSrc property.
+	 * @return {boolean|Object} Tag src as scriptTagSrc property.
 	 */
 	return function initializeSnippet() {
 		const { document } = global;
