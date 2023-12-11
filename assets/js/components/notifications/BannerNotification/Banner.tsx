@@ -17,7 +17,6 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
@@ -30,7 +29,14 @@ import { Fragment, forwardRef } from '@wordpress/element';
  */
 import { Cell, Grid, Row } from '../../../material-components';
 
-const Banner = forwardRef(
+// eslint-disable-next-line sitekit/acronym-case
+type BannerProps = React.HTMLProps< HTMLElement > & {
+	id?: string;
+	secondaryPane?: React.ReactNode;
+};
+
+// eslint-disable-next-line sitekit/acronym-case
+const Banner = forwardRef< HTMLElement, BannerProps >(
 	( { id, className, children, secondaryPane }, ref ) => (
 		<section
 			id={ id }
@@ -61,11 +67,5 @@ const Banner = forwardRef(
 );
 
 Banner.displayName = 'Banner';
-
-Banner.propTypes = {
-	id: PropTypes.string,
-	className: PropTypes.string,
-	secondaryPane: PropTypes.node,
-};
 
 export default Banner;
