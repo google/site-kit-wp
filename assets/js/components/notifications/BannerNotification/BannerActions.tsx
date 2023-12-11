@@ -31,17 +31,8 @@ import Data from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import Link from '../../Link';
+import { BannerActionsProps } from './types';
 const { useSelect } = Data;
-
-interface BannerActionsProps {
-	ctaLink?: string;
-	ctaLabel?: string;
-	ctaComponent?: React.ReactElement;
-	ctaTarget?: string;
-	ctaCallback?: ( ...args: any[] ) => Promise< any > | void;
-	dismissLabel?: string;
-	dismissCallback?: ( ...args: any[] ) => Promise< any > | void;
-}
 
 export default function BannerActions( props: BannerActionsProps ) {
 	const {

@@ -53,54 +53,10 @@ import {
 import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import BannerDescription from './BannerDescription';
+import { BannerNotificationProps } from './types';
 const { useSelect, useDispatch } = Data;
 
 export * from './constants';
-
-type LEARN_MORE_TARGET = {
-	EXTERNAL: 'external';
-	INTERNAL: 'internal';
-};
-
-type BannerNotificationProps = {
-	id: string;
-	className?: string;
-	children?: React.ReactNode;
-	title: string;
-	description?: React.ReactNode;
-	learnMoreURL?: string;
-	learnMoreDescription?: string;
-	learnMoreLabel?: string;
-	learnMoreTarget?: LEARN_MORE_TARGET;
-	WinImageSVG?: React.ElementType;
-	SmallImageSVG?: React.ElementType;
-	format?: string;
-	ctaLink?: string;
-	ctaLabel?: string;
-	ctaTarget?: string;
-	type?: string;
-	dismiss?: string;
-	isDismissible?: boolean;
-	logo?: boolean;
-	module?: string;
-	moduleName?: string;
-	dismissExpires?: number;
-	showOnce?: boolean;
-	onCTAClick?: ( event: React.MouseEvent ) => void | Promise< any >;
-	onView?: () => void;
-	onDismiss?: ( event: React.MouseEvent ) => void | Promise< any >;
-	onLearnMoreClick?: ( event: React.MouseEvent ) => void | Promise< any >;
-	badgeLabel?: string;
-	rounded?: boolean;
-	footer?: React.ReactNode;
-	secondaryPane?: React.ReactNode;
-	showSmallWinImage?: boolean;
-	smallWinImageSVGWidth?: number;
-	smallWinImageSVGHeight?: number;
-	mediumWinImageSVGWidth?: number;
-	mediumWinImageSVGHeight?: number;
-	ctaComponent?: React.ReactNode;
-};
 
 export default function BannerNotification( props: BannerNotificationProps ) {
 	const {
@@ -259,7 +215,7 @@ export default function BannerNotification( props: BannerNotificationProps ) {
 			const expiration = new Date( dismissed );
 
 			expiration.setSeconds(
-				expiration.getSeconds() + parseInt( dismissExpires, 10 )
+				expiration.getSeconds() + parseInt( String(dismissExpires), 10 )
 			);
 
 			if ( expiration < new Date() ) {

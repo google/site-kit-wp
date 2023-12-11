@@ -28,12 +28,7 @@ import { Fragment, forwardRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '../../../material-components';
-
-// eslint-disable-next-line sitekit/acronym-case
-type BannerProps = React.HTMLProps< HTMLElement > & {
-	id?: string;
-	secondaryPane?: React.ReactNode;
-};
+import { BannerProps } from './types';
 
 // eslint-disable-next-line sitekit/acronym-case
 const Banner = forwardRef< HTMLElement, BannerProps >(
