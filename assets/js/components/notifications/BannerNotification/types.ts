@@ -84,3 +84,8 @@ export type BannerDescriptionProps = {
 export type BannerIconProps = {
 	type?: string;
 };
+
+export type BannerLogoProps = {
+	module?: string;
+	moduleName?: string;
+};

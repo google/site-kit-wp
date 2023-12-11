@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
 /*
  * Internal dependencies
  */
 import { Cell } from '../../../material-components';
 import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import ModuleIcon from '../../ModuleIcon';
+import { BannerLogoProps } from './types';
 
-export default function BannerLogo( props ) {
+export default function BannerLogo( props: BannerLogoProps ) {
 	const { module, moduleName } = props;
 
 	return (
@@ -43,8 +39,3 @@ export default function BannerLogo( props ) {
 		</Cell>
 	);
 }
-
-BannerLogo.propTypes = {
-	module: PropTypes.string,
-	moduleName: PropTypes.string,
-};

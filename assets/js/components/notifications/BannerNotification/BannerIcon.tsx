@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import Warning from '../../../../svg/icons/warning.svg';
@@ -47,7 +42,3 @@ export default function BannerIcon( props: BannerIconProps ) {
 		</Cell>
 	);
 }
-
-BannerIcon.propTypes = {
-	type: PropTypes.string,
-};
