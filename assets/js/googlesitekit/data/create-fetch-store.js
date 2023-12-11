@@ -157,7 +157,6 @@ export const createFetchStore = ( {
 			type: START_FETCH,
 		};
 
-		// @TODO: remove clearMatchingLegacyError usage once all instances of the legacy behavior have been removed.
 		yield clearError( baseName, args );
 
 		try {
