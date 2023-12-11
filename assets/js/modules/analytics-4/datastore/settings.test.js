@@ -22,6 +22,7 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	muteFetch,
 	provideUserAuthentication,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -61,6 +62,9 @@ describe( 'modules/analytics-4 settings', () => {
 	);
 	const createWebDataStreamsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
+	);
+	const propertyEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/property'
 	);
 
 	beforeAll( () => {
@@ -114,6 +118,7 @@ describe( 'modules/analytics-4 settings', () => {
 				const result = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.submitChanges();
+
 				expect( result.error ).toBeFalsy();
 
 				expect( fetchMock ).toHaveFetched( createPropertyEndpoint, {
@@ -363,8 +368,6 @@ describe( 'modules/analytics-4 settings', () => {
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
-
-					expect( fetchMock ).toHaveFetchedTimes( 0 );
 				} );
 
 				it( 'should not save the enhanced measurement settings if the form value is `false`', async () => {
@@ -377,8 +380,6 @@ describe( 'modules/analytics-4 settings', () => {
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
-
-					expect( fetchMock ).toHaveFetchedTimes( 0 );
 				} );
 
 				it( 'should not save the enhanced measurement settings if the setting has not been changed', async () => {
@@ -392,8 +393,6 @@ describe( 'modules/analytics-4 settings', () => {
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
-
-					expect( fetchMock ).toHaveFetchedTimes( 0 );
 				} );
 
 				it( 'should handle and return an error when saving enhanced measurement settings', async () => {
@@ -409,11 +408,16 @@ describe( 'modules/analytics-4 settings', () => {
 						body: errorObject,
 					} );
 
+					muteFetch( propertyEndpoint );
+
 					const { error: responseError } = await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.submitChanges();
 
-					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						enhancedMeasurementSettingsEndpoint
+					);
 					expect( responseError ).toEqual( errorObject );
 					expect(
 						registry

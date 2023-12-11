@@ -32,6 +32,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -52,6 +53,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
 use WP_Query;
 use WP_User;
 use ReflectionMethod;
@@ -305,6 +307,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -324,6 +327,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => $google_tag_container_id,
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -440,6 +444,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -492,13 +497,15 @@ class Analytics_4Test extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1beta/properties':
+						$property = new GoogleAnalyticsAdminV1betaProperty();
+						$property->setCreateTime( '2022-09-09T09:18:05.968Z' );
+						$property->setName( "properties/{$property_id}" );
+
 						return new Response(
 							200,
 							array(),
 							json_encode(
-								array(
-									'name' => "properties/{$property_id}",
-								)
+								$property
 							)
 						);
 					case "/v1beta/properties/{$property_id}/dataStreams":
@@ -553,6 +560,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -574,6 +582,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => Synchronize_Property::convert_time_to_unix_ms( '2022-09-09T09:18:05.968Z' ),
 			),
 			$options->get( Settings::OPTION )
 		);
