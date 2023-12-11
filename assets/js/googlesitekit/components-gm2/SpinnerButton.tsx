@@ -26,7 +26,16 @@ import classnames from 'classnames';
 import Button from './Button';
 import CircularProgress from './CircularProgress';
 
-export default function SpinnerButton( props ) {
+type SpinnerButtonProps = {
+	className?: string;
+	onClick?: () => void;
+	isSaving?: boolean;
+	[ key: string ]: any;
+};
+
+export default function SpinnerButton(
+	props: SpinnerButtonProps
+): JSX.Element {
 	const {
 		className,
 		onClick = () => {},
