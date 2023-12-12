@@ -1498,7 +1498,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAccountSummaries( accounts );
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getAccountSummaries', [] );
 
 				registry
