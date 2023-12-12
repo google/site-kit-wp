@@ -50,7 +50,7 @@
       "type": "WEB_DATA_STREAM",
       "webStreamData": {
         "measurementId": "155BC2366E",
-        "defaultUri": "http://example.net"
+        "defaultUri": "http://example.com"
       },
       "createTime": "2015-05-12T12:31:07Z",
       "updateTime": "2015-05-12T12:31:07Z",
