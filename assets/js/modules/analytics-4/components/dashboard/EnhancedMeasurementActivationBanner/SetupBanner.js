@@ -59,7 +59,13 @@ import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( props ) {
-	const { isDismissed, onSubmitSuccess, onDismiss, children } = props;
+	const {
+		isDismissed,
+		onSubmitSuccess,
+		onSetupInProgress,
+		onDismiss,
+		children,
+	} = props;
 
 	const viewContext = useViewContext();
 
@@ -106,6 +112,8 @@ export default function SetupBanner( props ) {
 	}, [ setValues, submitChanges, onSubmitSuccess ] );
 
 	const handleSubmitChanges = useCallback( async () => {
+		onSetupInProgress();
+
 		const scopes = [];
 
 		if ( hasEditScope === false ) {
@@ -146,6 +154,7 @@ export default function SetupBanner( props ) {
 		commonSubmitChanges,
 		setPermissionScopeError,
 		setValues,
+		onSetupInProgress,
 	] );
 
 	const handleDismiss = useCallback( () => {

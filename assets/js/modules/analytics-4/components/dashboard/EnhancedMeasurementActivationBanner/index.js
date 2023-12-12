@@ -30,6 +30,7 @@ import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/con
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import {
+	ACTIVATION_STEP_IN_PROGRESS,
 	ACTIVATION_STEP_SETUP,
 	ACTIVATION_STEP_SUCCESS,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
@@ -40,6 +41,7 @@ import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useSh
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
+import InProgressBanner from './InProgressBanner';
 import { getTimeInSeconds } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import {
@@ -116,6 +118,12 @@ function EnhancedMeasurementActivationBanner() {
 		}
 	}, [ step ] );
 
+	const handleSetupInProgress = useCallback( () => {
+		if ( step === ACTIVATION_STEP_SETUP ) {
+			setStep( ACTIVATION_STEP_IN_PROGRESS );
+		}
+	}, [ step ] );
+
 	useEffect( () => {
 		if (
 			isEnhancedMeasurementStreamEnabled === false &&
@@ -154,10 +162,15 @@ function EnhancedMeasurementActivationBanner() {
 	if ( step === ACTIVATION_STEP_SETUP ) {
 		return (
 			<SetupBanner
+				onSetupInProgress={ handleSetupInProgress }
 				onSubmitSuccess={ handleSubmit }
 				onDismiss={ handleDismiss }
 			/>
 		);
+	}
+
+	if ( step === ACTIVATION_STEP_IN_PROGRESS ) {
+		return <InProgressBanner />;
 	}
 
 	if ( step === ACTIVATION_STEP_SUCCESS ) {
