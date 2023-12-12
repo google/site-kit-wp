@@ -135,15 +135,12 @@ final class Analytics extends Module
 		( new Advanced_Tracking( $this->context ) )->register();
 
 		// Ensure that the data available state is reset when the property changes.
-		add_action(
-			'update_option_googlesitekit_analytics_settings',
+		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
 					$this->reset_data_available();
 				}
-			},
-			10,
-			2
+			}
 		);
 
 		add_filter(
