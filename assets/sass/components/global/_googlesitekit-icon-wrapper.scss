@@ -21,6 +21,9 @@
 	.googlesitekit-icon-wrapper {
 		align-items: center;
 		display: inline-flex;
-		position: relative;
+	}
+
+	.googlesitekit-cta-link .googlesitekit-icon-wrapper {
+		vertical-align: text-bottom;
 	}
 }
