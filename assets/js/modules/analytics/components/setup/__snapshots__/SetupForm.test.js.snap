@@ -183,7 +183,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 1`] = 
           Learn more
           <span
             class="googlesitekit-icon-wrapper"
-            style="margin-left: 5px; top: 3.5px;"
+            style="margin-left: 5px;"
           >
             <svg />
           </span>

@@ -39,7 +39,7 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                   Learn more
                   <span
                     class="googlesitekit-icon-wrapper"
-                    style="margin-left: 5px; top: 3.5px;"
+                    style="margin-left: 5px;"
                   >
                     <svg />
                   </span>
@@ -108,7 +108,7 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                   Learn more
                   <span
                     class="googlesitekit-icon-wrapper"
-                    style="margin-left: 5px; top: 3.5px;"
+                    style="margin-left: 5px;"
                   >
                     <svg />
                   </span>
@@ -177,7 +177,7 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                   Learn more
                   <span
                     class="googlesitekit-icon-wrapper"
-                    style="margin-left: 5px; top: 3.5px;"
+                    style="margin-left: 5px;"
                   >
                     <svg />
                   </span>
@@ -246,7 +246,7 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                   Learn more
                   <span
                     class="googlesitekit-icon-wrapper"
-                    style="margin-left: 5px; top: 3.5px;"
+                    style="margin-left: 5px;"
                   >
                     <svg />
                   </span>

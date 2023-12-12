@@ -167,7 +167,7 @@ exports[`SearchFunnelWidget should not render the Activate Analytics CTA when th
           Search Console
           <span
             class="googlesitekit-icon-wrapper"
-            style="margin-left: 5px; top: 3.5px;"
+            style="margin-left: 5px;"
           >
             <svg />
           </span>
@@ -427,7 +427,7 @@ exports[`SearchFunnelWidget should render the Search Funnel Widget, including th
           Search Console
           <span
             class="googlesitekit-icon-wrapper"
-            style="margin-left: 5px; top: 3.5px;"
+            style="margin-left: 5px;"
           >
             <svg />
           </span>

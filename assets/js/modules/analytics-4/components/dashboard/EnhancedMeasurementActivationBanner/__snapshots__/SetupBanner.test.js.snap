@@ -47,7 +47,7 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
                 Learn more
                 <span
                   class="googlesitekit-icon-wrapper"
-                  style="margin-left: 5px; top: 3.5px;"
+                  style="margin-left: 5px;"
                 >
                   <svg />
                 </span>
@@ -136,7 +136,7 @@ exports[`SetupBanner should render correctly when the user does not have the edi
                 Learn more
                 <span
                   class="googlesitekit-icon-wrapper"
-                  style="margin-left: 5px; top: 3.5px;"
+                  style="margin-left: 5px;"
                 >
                   <svg />
                 </span>
