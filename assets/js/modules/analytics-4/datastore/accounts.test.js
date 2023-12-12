@@ -23,9 +23,15 @@ import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { FORM_ACCOUNT_CREATE } from '../../analytics/datastore/constants';
+import {
+	FORM_ACCOUNT_CREATE,
+	MODULES_ANALYTICS,
+} from '../../analytics/datastore/constants';
 import {
 	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -169,6 +175,121 @@ describe( 'modules/analytics-4 accounts', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getAccounts', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( accountSummariesEndpoint, {
+					body: fixtures.accountSummaries,
+					status: 200,
+				} );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+
+				const initialAccounts = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAccounts();
+				expect( initialAccounts ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAccountSummaries();
+				expect( fetchMock ).toHaveFetched( accountSummariesEndpoint );
+
+				const accounts = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAccounts();
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( accounts ).toEqual( fixtures.accountSummaries );
+				expect( accounts ).toHaveLength(
+					fixtures.accountSummaries.length
+				);
+			} );
+
+			it( 'should not make a network request if properties for this account are already present', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+
+				const accounts = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAccounts();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAccountSummaries();
+
+				expect( fetchMock ).not.toHaveFetched(
+					accountSummariesEndpoint
+				);
+				expect( accounts ).toEqual( fixtures.accountSummaries );
+				expect( accounts ).toHaveLength(
+					fixtures.accountSummaries.length
+				);
+			} );
+
+			it( 'should select correct GA4 property', async () => {
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: false,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				const properties =
+					fixtures.accountSummaries[ 1 ].propertySummaries;
+				const accountID = fixtures.accountSummaries[ 1 ]._id;
+				const propertyID = properties[ 0 ]._id;
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( properties, { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: [ propertyID ],
+						}
+					);
+
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+					accountID,
+				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					propertyID,
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( properties[ 0 ], {
+						propertyID,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetExistingTag( null );
+
+				registry.select( MODULES_ANALYTICS_4 ).getAccounts();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAccountSummaries();
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
+				).toBe( propertyID );
+			} );
+		} );
+
 		describe( 'getAccountSummaries', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.get( accountSummariesEndpoint, {
