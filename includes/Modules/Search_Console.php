@@ -102,15 +102,12 @@ final class Search_Console extends Module
 		);
 
 		// Ensure that the data available state is reset when the property changes.
-		add_action(
-			'update_option_googlesitekit_search-console_settings',
+		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
 					$this->reset_data_available();
 				}
-			},
-			10,
-			2
+			}
 		);
 
 		// Ensure that a Search Console property must be set at all times.
