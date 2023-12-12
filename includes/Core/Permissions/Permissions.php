@@ -30,7 +30,7 @@ use WP_User;
  * @access private
  * @ignore
  */
-final class Permissions {
+final class Permissions implements \Google\Site_Kit\Core\Contracts\Registerable {
 	/*
 	 * Custom base capabilities.
 	 */

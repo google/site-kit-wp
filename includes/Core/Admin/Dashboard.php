@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
  * @access private
  * @ignore
  */
-final class Dashboard {
+final class Dashboard implements \Google\Site_Kit\Core\Contracts\Registerable {
 	use Requires_Javascript_Trait;
 
 	/**

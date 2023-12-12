@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\CLI;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Contracts\Registerable;
 use WP_CLI;
 
 /**
@@ -20,7 +21,7 @@ use WP_CLI;
  * @access private
  * @ignore
  */
-class CLI_Commands {
+class CLI_Commands implements Registerable {
 
 	/**
 	 * Plugin context.

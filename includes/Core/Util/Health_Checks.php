@@ -25,7 +25,7 @@ use WP_REST_Server;
  * @access private
  * @ignore
  */
-class Health_Checks {
+class Health_Checks implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	/**
 	 * Authentication instance.

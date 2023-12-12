@@ -21,7 +21,7 @@ use Google\Site_Kit\Core\Util\Reset;
  * @access private
  * @ignore
  */
-class Available_Tools {
+class Available_Tools implements \Google\Site_Kit\Core\Contracts\Registerable {
 	use Method_Proxy_Trait;
 
 	/**

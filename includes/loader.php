@@ -10,9 +10,22 @@
 
 namespace Google\Site_Kit;
 
+use Google\Site_Kit\Core\Contracts\Registerable;
+
 // Define global constants.
 define( 'GOOGLESITEKIT_PLUGIN_BASENAME', plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 define( 'GOOGLESITEKIT_PLUGIN_DIR_PATH', plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+// Load Composer autoloader, if present.
+// Only load in non-production environments to avoid checking for
+// a missing file.
+if (
+	function_exists( 'wp_get_environment_type' )
+	&& 'production' !== wp_get_environment_type() // Added in WP 5.5
+	&& file_exists( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'vendor/autoload.php' )
+) {
+	require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'vendor/autoload.php';
+}
 
 /**
  * Loads generated class maps for autoloading.
@@ -62,7 +75,13 @@ function autoload_vendor_files() {
 		require_once $file;
 	}
 }
-autoload_vendor_files();
+//autoload_vendor_files();
+
+function register( Registerable ...$instances ) {
+	foreach ( $instances as $instance ) {
+		$instance->register();
+	}
+}
 
 // Initialize the plugin.
 Plugin::load( GOOGLESITEKIT_PLUGIN_MAIN_FILE );

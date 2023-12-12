@@ -28,7 +28,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
  * @access private
  * @ignore
  */
-class Debug_Data {
+class Debug_Data implements \Google\Site_Kit\Core\Contracts\Registerable {
 	/**
 	 * Context instance.
 	 *

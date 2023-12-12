@@ -26,7 +26,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
  * @access private
  * @ignore
  */
-final class Screens {
+final class Screens implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	const PREFIX           = 'googlesitekit-';
 	const PARENT_SLUG_NULL = self::PREFIX . 'null';

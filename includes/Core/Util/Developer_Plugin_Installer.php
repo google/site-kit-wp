@@ -22,7 +22,7 @@ use WP_REST_Response;
  *
  * @since 1.3.0
  */
-class Developer_Plugin_Installer {
+class Developer_Plugin_Installer implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	const SLUG = 'google-site-kit-dev-settings';
 

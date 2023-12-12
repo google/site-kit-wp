@@ -26,7 +26,7 @@ use WP_REST_Response;
  * @access private
  * @ignore
  */
-class Reset {
+class Reset implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	/**
 	 * MySQL key pattern for all Site Kit keys.

@@ -19,7 +19,7 @@ use Google\Site_Kit\Context;
  * @access private
  * @ignore
  */
-final class REST_Routes {
+final class REST_Routes implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	const REST_ROOT = 'google-site-kit/v1';
 

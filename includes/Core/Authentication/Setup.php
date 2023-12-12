@@ -25,7 +25,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
  * @access private
  * @ignore
  */
-class Setup {
+class Setup implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	/**
 	 * Context instance.

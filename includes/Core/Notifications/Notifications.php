@@ -31,7 +31,7 @@ use WP_REST_Server;
  * @access private
  * @ignore
  */
-class Notifications {
+class Notifications implements \Google\Site_Kit\Core\Contracts\Registerable {
 	/**
 	 * Context instance.
 	 *

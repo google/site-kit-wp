@@ -29,7 +29,7 @@ use WP_REST_Request;
  * @access private
  * @ignore
  */
-final class Admin_Bar {
+final class Admin_Bar implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	use Requires_Javascript_Trait, Method_Proxy_Trait;
 

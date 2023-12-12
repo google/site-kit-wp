@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Contracts\Registerable;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
@@ -24,7 +25,7 @@ use Exception;
  * @access private
  * @ignore
  */
-class Uninstallation {
+class Uninstallation implements Registerable {
 
 	/**
 	 * Plugin context.

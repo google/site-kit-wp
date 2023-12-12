@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @access private
  * @ignore
  */
-class Feature_Tours {
+class Feature_Tours implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	/**
 	 * Dismissed_Tours instance.

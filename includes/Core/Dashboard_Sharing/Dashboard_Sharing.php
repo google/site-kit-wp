@@ -21,7 +21,7 @@ use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
  * @access private
  * @ignore
  */
-class Dashboard_Sharing {
+class Dashboard_Sharing implements \Google\Site_Kit\Core\Contracts\Registerable {
 
 	/**
 	 * Plugin context.

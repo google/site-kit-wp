@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Contracts\Registerable;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -40,7 +41,7 @@ use Google\Site_Kit\Core\Util\Auto_Updates;
  * @access private
  * @ignore
  */
-final class Authentication {
+final class Authentication implements Registerable {
 
 	use Method_Proxy_Trait;
 
