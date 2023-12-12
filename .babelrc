@@ -1,9 +1,8 @@
 {
 	"presets": [
 		"@babel/preset-env",
-		"@wordpress/default"
+		"@wordpress/default",
+		"@babel/preset-typescript"
 	],
-	"plugins": [
-		"@babel/plugin-transform-runtime"
-	]
+	"plugins": [ "@babel/plugin-transform-runtime" ]
 }

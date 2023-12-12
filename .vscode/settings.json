@@ -23,8 +23,8 @@
 		"editor.defaultFormatter": "stylelint.vscode-stylelint"
 	},
 	"editor.codeActionsOnSave": {
-		"source.fixAll": true,
-		"source.fixAll.eslint": true
+		"source.fixAll": "explicit",
+		"source.fixAll.eslint": "explicit"
 	},
 	"phpcs.enable": true,
 	"phpcs.executablePath": "vendor/bin/phpcs",
