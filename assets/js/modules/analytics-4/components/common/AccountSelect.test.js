@@ -25,25 +25,25 @@ import {
 	freezeFetch,
 	render,
 	waitFor,
-	// act,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import {
 	MODULES_ANALYTICS_4,
-	// PROPERTY_CREATE,
+	PROPERTY_CREATE,
 } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-// import { muteFetch, provideSiteInfo } from '../../../../../../tests/js/utils';
+import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
+import * as uaFixtures from '../../../analytics/datastore/__fixtures__';
 import {
 	ACCOUNT_CREATE,
 	MODULES_ANALYTICS,
 } from '../../../analytics/datastore/constants';
 
 const setupRegistry = ( registry ) => {
-	// provideSiteInfo( registry, {
-	// 	referenceSiteURL:
-	// 		fixtures.accountsPropertiesProfiles.properties[ 0 ].websiteUrl, // eslint-disable-line sitekit/acronym-case
-	// } );
+	provideSiteInfo( registry, {
+		referenceSiteURL: 'http://googlekitlocal.10uplabs.com',
+	} );
 
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
@@ -156,72 +156,85 @@ describe( 'AccountSelect', () => {
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
 	} );
 
-	// it( 'should reset the property and profile IDs when changed', () => {
-	// 	jest.useFakeTimers();
+	it( 'should reset the property ID when the account is changed', () => {
+		jest.useFakeTimers();
 
-	// 	fetchMock.getOnce(
-	// 		new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
-	// 		{ body: [] }
-	// 	);
-	// 	fetchMock.getOnce(
-	// 		new RegExp(
-	// 			'^/google-site-kit/v1/modules/analytics-4/data/properties'
-	// 		),
-	// 		{ body: [] }
-	// 	);
-	// 	fetchMock.getOnce(
-	// 		new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
-	// 		{
-	// 			authenticated: true,
-	// 		}
-	// 	);
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+			{ body: [] }
+		);
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			{
+				authenticated: true,
+			}
+		);
 
-	// 	const { accounts, properties, profiles } =
-	// 		fixtures.accountsPropertiesProfiles;
-	// 	const { getByText, container, registry } = render( <AccountSelect />, {
-	// 		setupRegistry,
-	// 	} );
-	// 	const propertyID = properties[ 0 ].id;
-	// 	// eslint-disable-next-line sitekit/acronym-case
-	// 	const accountID = properties[ 0 ].accountId;
+		const { getByText, container, registry } = render( <AccountSelect />, {
+			setupRegistry,
+		} );
 
-	// 	registry
-	// 		.dispatch( MODULES_ANALYTICS )
-	// 		.receiveGetProperties( properties, { accountID } );
-	// 	registry
-	// 		.dispatch( MODULES_ANALYTICS )
-	// 		.receiveGetProfiles( profiles, { accountID, propertyID } );
+		const accountID = fixtures.accountSummaries[ 1 ]._id;
+		const properties = fixtures.accountSummaries[ 1 ].propertySummaries.map(
+			( property ) => {
+				return {
+					...property,
+					id: `UA-${ property._id }-1`,
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: accountID,
+				};
+			}
+		);
+		const propertyID = properties[ 0 ].id;
+		const profiles = uaFixtures.profiles.map( ( profile ) => {
+			return {
+				...profile,
+				accountId: accountID, // eslint-disable-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
+				webPropertyId: propertyID,
+			};
+		} );
 
-	// 	act( () => {
-	// 		// Click the label to expose the elements in the menu.
-	// 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-	// 		// Click this element to select it and fire the onChange event.
-	// 		const account = accounts.find(
-	// 			// eslint-disable-next-line sitekit/acronym-case
-	// 			( acct ) => acct.id === properties[ 0 ].accountId
-	// 		);
-	// 		fireEvent.click( getByText( account.name ) );
-	// 	} );
+		// We still need to mock the UA properties and profiles, as they're used in the `selectAccount` action.
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( properties, { accountID } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+			accountID,
+			propertyID,
+		} );
 
-	// 	act( () => {
-	// 		jest.runAllTimers();
-	// 	} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, {
+				propertyIDs: [ properties[ 0 ]._id ],
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getWebDataStreamsBatch', [
+				properties[ 0 ]._id,
+			] );
 
-	// 	const newPropertyID = registry
-	// 		.select( MODULES_ANALYTICS )
-	// 		.getPropertyID();
-	// 	const newGA4PropertyID = registry
-	// 		.select( MODULES_ANALYTICS_4 )
-	// 		.getPropertyID();
-	// 	const newWebPropertyID = registry
-	// 		.select( MODULES_ANALYTICS )
-	// 		.getInternalWebPropertyID();
-	// 	const newProfileID = registry
-	// 		.select( MODULES_ANALYTICS )
-	// 		.getProfileID();
-	// 	expect( newPropertyID ).toBe( '' );
-	// 	expect( newWebPropertyID ).toBe( '' );
-	// 	expect( newProfileID ).toBe( '' );
-	// 	expect( newGA4PropertyID ).toBe( PROPERTY_CREATE );
-	// } );
+		act( () => {
+			// Click the label to expose the elements in the menu.
+			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+			// Click this element to select it and fire the onChange event.
+			const account = fixtures.accountSummaries.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( acct ) => acct._id === properties[ 0 ]._accountID
+			);
+
+			fireEvent.click( getByText( account.displayName ) );
+		} );
+
+		act( () => {
+			jest.runAllTimers();
+		} );
+
+		const newGA4PropertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		expect( newGA4PropertyID ).toBe( PROPERTY_CREATE );
+	} );
 } );
