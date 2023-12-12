@@ -447,41 +447,33 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'matchAndSelectProperty', () => {
-			const accountID = '123';
-			const propertyID = '1001';
-			const webDataStreamID = '2001';
-			const measurementID = 'G-ABCD12345';
+			const accountID = fixtures.accountSummaries[ 1 ]._id;
+			const propertyID =
+				fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id;
+			const webDataStreamID = '4000';
+			const measurementID = '155BC2366E';
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
 				provideUserAuthentication( registry );
 
-				const properties = [
-					{
-						_id: propertyID,
-					},
-				];
-
-				const webDataStreams = {
-					[ propertyID ]: [
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties(
+						fixtures.accountSummaries[ 1 ].propertySummaries,
+						{ accountID }
+					);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
 						{
-							_id: webDataStreamID,
-							webStreamData: {
-								measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
-								defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-							},
-						},
-					],
-				};
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( properties, { accountID } );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreamsBatch( webDataStreams, {
-						propertyIDs: Object.keys( webDataStreams ),
-					} );
+							propertyIDs: [ propertyID ],
+						}
+					);
 			} );
 
 			it( 'should select the fallback property if the matching property is not found', async () => {
