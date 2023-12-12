@@ -42,7 +42,6 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
-import * as uaFixtures from '../../analytics/datastore/__fixtures__';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -1473,10 +1472,10 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
-		describe.skip( 'isLoadingProperties', () => {
-			const { accounts } = uaFixtures.accountsPropertiesProfiles;
-			const { properties } = fixtures;
-			const accountID = accounts[ 0 ].id;
+		describe( 'isLoadingPropertySummaries', () => {
+			const accounts = fixtures.accountSummaries;
+			const properties = accounts[ 1 ].propertySummaries;
+			const accountID = accounts[ 1 ]._id;
 			const propertyID = properties[ 0 ]._id;
 			const hasModuleAccess = true;
 
@@ -1496,25 +1495,22 @@ describe( 'modules/analytics-4 properties', () => {
 					} );
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetAccounts( accounts );
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accounts );
 				registry
 					.dispatch( MODULES_ANALYTICS )
-					.finishResolution( 'getAccounts', [] );
+					.finishResolution( 'getAccountSummaries', [] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties( properties, { accountID } );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getProperties', [ accountID ] );
 			} );
 
 			it( 'should return false if the required state is already loaded', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( false );
@@ -1537,52 +1533,24 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( true );
 			} );
 
-			it( 'should return true if accounts are not yet loaded', () => {
+			it( 'should return true if account summaries are not yet loaded', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.startResolution( 'getAccounts', [] );
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getAccountSummaries', [] );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( true );
-			} );
-
-			describe( 'while loading properties', () => {
-				beforeEach( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.startResolution( 'getProperties', [ accountID ] );
-				} );
-
-				it( 'should return false when hasModuleAccess is false', () => {
-					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.isLoadingProperties( {
-								hasModuleAccess: false,
-							} )
-					).toBe( false );
-				} );
-
-				it( 'should return true when hasModuleAccess is not false', () => {
-					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.isLoadingProperties( {
-								hasModuleAccess,
-							} )
-					).toBe( true );
-				} );
 			} );
 
 			it( 'should return true while selecting an account', () => {
@@ -1606,7 +1574,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( false );
@@ -1618,7 +1586,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( true );
