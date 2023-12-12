@@ -1229,6 +1229,33 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
+		describe( 'getPropertySummaries', () => {
+			it( 'should return an empty array if no properties are present for the account', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
+
+				const propertySummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertySummaries( '12345' );
+				expect( propertySummaries ).toEqual( [] );
+			} );
+
+			it( 'should return an array of property summaries if present', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
+
+				const accountID = fixtures.accountSummaries[ 1 ]._id;
+				const propertySummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertySummaries( accountID );
+				expect( propertySummaries ).toEqual(
+					fixtures.accountSummaries[ 1 ].propertySummaries
+				);
+			} );
+		} );
+
 		describe( 'getProperty', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.get( propertyEndpoint, {
