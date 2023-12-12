@@ -112,8 +112,6 @@ export default function SetupBanner( props ) {
 	}, [ setValues, submitChanges, onSubmitSuccess ] );
 
 	const handleSubmitChanges = useCallback( async () => {
-		onSetupInProgress();
-
 		const scopes = [];
 
 		if ( hasEditScope === false ) {
@@ -154,7 +152,6 @@ export default function SetupBanner( props ) {
 		commonSubmitChanges,
 		setPermissionScopeError,
 		setValues,
-		onSetupInProgress,
 	] );
 
 	const handleDismiss = useCallback( () => {
@@ -187,6 +184,8 @@ export default function SetupBanner( props ) {
 			// Auto-submit should only auto-invoke once.
 			setValues( FORM_SETUP, { autoSubmit: false } );
 
+			onSetupInProgress();
+
 			await commonSubmitChanges();
 		}
 
@@ -199,6 +198,7 @@ export default function SetupBanner( props ) {
 		commonSubmitChanges,
 		onSubmitSuccess,
 		autoSubmit,
+		onSetupInProgress,
 	] );
 
 	const description = hasEditScope
