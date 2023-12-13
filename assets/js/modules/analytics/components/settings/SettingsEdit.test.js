@@ -83,25 +83,9 @@ describe( 'SettingsEdit', () => {
 			status: 200,
 		} );
 
-		const { accounts, properties, profiles } =
-			fixtures.accountsPropertiesProfiles;
-
-		const existingTag = {
-			/* eslint-disable sitekit/acronym-case */
-			accountID: profiles[ 0 ].accountId,
-			propertyID: profiles[ 0 ].webPropertyId,
-			/* eslint-enable */
-		};
-
-		const { accountID, propertyID } = existingTag;
-
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProperties( properties, { accountID } );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProfiles( profiles, { accountID, propertyID } );
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 
 		const { container, waitForRegistry } = render( <SettingsEdit />, {
 			registry,
@@ -130,12 +114,6 @@ describe( 'SettingsEdit', () => {
 	it( 'does not set the account ID or property ID of an existing tag when present', async () => {
 		provideModuleRegistrations( registry );
 		fetchMock.get( new RegExp( 'tagmanager/data/settings' ), { body: {} } );
-		fetchMock.getOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/properties'
-			),
-			{ body: [] }
-		);
 		fetchMock.get(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
@@ -145,23 +123,13 @@ describe( 'SettingsEdit', () => {
 				status: 200,
 			}
 		);
-		fetchMock.get(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
-			),
-			{
-				body: ga4Fixtures.webDataStreamsBatch,
-				status: 200,
-			}
-		);
 
 		fetchMock.get( new RegExp( 'example\\.com' ), {
 			body: [],
 			status: 200,
 		} );
 
-		const { accounts, properties, profiles } =
-			fixtures.accountsPropertiesProfiles;
+		const { profiles } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			/* eslint-disable sitekit/acronym-case */
 			accountID: profiles[ 0 ].accountId,
@@ -169,20 +137,11 @@ describe( 'SettingsEdit', () => {
 			/* eslint-enable */
 		};
 
-		const { accountID, propertyID } = existingTag;
-
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProperties( properties, { accountID } );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProfiles( profiles, { accountID, propertyID } );
 
 		registry
 			.dispatch( MODULES_ANALYTICS )
