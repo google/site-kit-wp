@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Authentication\Exception\Exchange_Site_Code_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Missing_Verification_Exception;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Base class for authentication setup.
