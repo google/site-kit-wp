@@ -56,13 +56,13 @@ export default function FeatureTours( { _testDashboardElement } ) {
 			_testDashboardElement ??
 			document.getElementById( 'js-googlesitekit-main-dashboard' );
 
-		const observer = new ResizeObserver( () => {
-			global.dispatchEvent( new Event( 'resize' ) );
-		} );
-
 		if ( ! dashboardElement ) {
 			return;
 		}
+
+		const observer = new ResizeObserver( () => {
+			global.dispatchEvent( new Event( 'resize' ) );
+		} );
 
 		observer.observe( dashboardElement );
 
