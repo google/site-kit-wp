@@ -24,8 +24,7 @@ import {
 	createTestRegistry,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import * as fixtures from '../../../analytics/datastore/__fixtures__';
-import * as ga4Fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '../../datastore/__fixtures__';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import {
@@ -38,9 +37,10 @@ import {
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 describe( 'SettingsEnhancedMeasurementSwitch', () => {
-	const { accounts } = fixtures.accountsPropertiesProfiles;
-	const { properties, webDataStreams } = ga4Fixtures;
-	const accountID = accounts[ 0 ].id;
+	const { webDataStreams, accountSummaries } = fixtures;
+	const accounts = accountSummaries;
+	const properties = accounts[ 1 ].propertySummaries;
+	const accountID = accounts[ 1 ]._id;
 	const propertyID = properties[ 0 ]._id;
 	const webDataStreamID = webDataStreams[ 0 ]._id;
 
@@ -72,17 +72,16 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			webDataStreamID,
 		} );
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		registry
-			.dispatch( MODULES_ANALYTICS )
-			.finishResolution( 'getAccounts', [] );
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccountSummaries', [] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( properties, { accountID } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getProperties', [ accountID ] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -256,11 +255,11 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			},
 		],
 		[
-			'properties are loading',
+			'property summaries are loading',
 			() => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.invalidateResolution( 'getProperties', [ accountID ] );
+					.invalidateResolution( 'getAccountSummaries', [] );
 			},
 		],
 		[
@@ -540,7 +539,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 		it( 'should not attempt to retrieve enhanced measurement settings when properties are loading', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.invalidateResolution( 'getProperties', [ accountID ] );
+				.invalidateResolution( 'getAccountSummaries', [] );
 
 			const { waitForRegistry } = render(
 				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
