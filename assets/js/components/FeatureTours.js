@@ -69,7 +69,7 @@ export default function FeatureTours() {
 		return () => {
 			observer.disconnect();
 		};
-	} );
+	}, [ tour ] );
 
 	if ( ! tour ) {
 		return null;
