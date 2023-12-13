@@ -536,7 +536,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			} );
 		} );
 
-		it( 'should not attempt to retrieve enhanced measurement settings when properties are loading', async () => {
+		it( 'should not attempt to retrieve enhanced measurement settings when property summaries are loading', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.invalidateResolution( 'getAccountSummaries', [] );
