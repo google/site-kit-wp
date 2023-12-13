@@ -72,6 +72,11 @@ module.exports = {
 			Identifier( node ) {
 				const name = node.name;
 
+				// Ignore this rule on TypeScript type references.
+				if ( node.parent.type === 'TSTypeReference' ) {
+					return;
+				}
+
 				// Ignore imports, because they may not respect our rules.
 				if ( isImported( node ) ) {
 					importedNames.push( node.name );

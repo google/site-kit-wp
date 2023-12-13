@@ -16,12 +16,16 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
+interface Props {
+	marginLeft?: number;
+	marginRight?: number;
+}
 
-export default function IconWrapper( { children, marginLeft, marginRight } ) {
+export default function IconWrapper( {
+	children,
+	marginLeft,
+	marginRight,
+}: React.PropsWithChildren< Props > ) {
 	return (
 		<span
 			className="googlesitekit-icon-wrapper"
@@ -34,9 +38,3 @@ export default function IconWrapper( { children, marginLeft, marginRight } ) {
 		</span>
 	);
 }
-
-IconWrapper.propTypes = {
-	children: PropTypes.node.isRequired,
-	marginLeft: PropTypes.number,
-	marginRight: PropTypes.number,
-};

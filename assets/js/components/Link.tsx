@@ -20,7 +20,6 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
 
 /**
@@ -44,7 +43,29 @@ const EXTERNAL_LINK = 'EXTERNAL_LINK';
 const LINK = 'LINK';
 const ROUTER_LINK = 'ROUTER_LINK';
 
-const Link = forwardRef( ( props, ref ) => {
+export interface LinkProps {
+	'aria-label'?: string;
+	secondary?: boolean;
+	arrow?: boolean;
+	back?: boolean;
+	caps?: boolean;
+	className?: string;
+	danger?: boolean;
+	disabled?: boolean;
+	external?: boolean;
+	hideExternalIndicator?: boolean;
+	href?: string;
+	inverse?: boolean;
+	onClick?: ( event: React.MouseEvent< HTMLButtonElement > ) => void;
+	small?: boolean;
+	standalone?: boolean;
+	linkButton?: boolean;
+	to?: string;
+	// Allows passing any other props to the component.
+	[ key: string ]: any;
+}
+
+const Link = forwardRef< HTMLAnchorElement, LinkProps >( ( props, ref ) => {
 	const {
 		'aria-label': ariaLabelProp,
 		secondary = false,
@@ -199,24 +220,5 @@ const Link = forwardRef( ( props, ref ) => {
 		</LinkComponent>
 	);
 } );
-
-Link.propTypes = {
-	arrow: PropTypes.bool,
-	back: PropTypes.bool,
-	caps: PropTypes.bool,
-	children: PropTypes.node,
-	className: PropTypes.string,
-	danger: PropTypes.bool,
-	disabled: PropTypes.bool,
-	external: PropTypes.bool,
-	hideExternalIndicator: PropTypes.bool,
-	href: PropTypes.string,
-	inverse: PropTypes.bool,
-	onClick: PropTypes.func,
-	small: PropTypes.bool,
-	standalone: PropTypes.bool,
-	linkButton: PropTypes.bool,
-	to: PropTypes.string,
-};
 
 export default Link;
