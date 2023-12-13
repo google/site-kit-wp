@@ -197,6 +197,58 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
 </div>
 `;
 
+exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch in the loading state when property summaries are loading 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
+  >
+    <div
+      class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      role="progressbar"
+    >
+      <div
+        class="mdc-linear-progress__buffering-dots"
+      />
+      <div
+        class="mdc-linear-progress__buffer"
+      />
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+    </div>
+    <p>
+      This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+      <a
+        aria-label="Learn more (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Learn more
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
 exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch in the loading state when web data streams are loading 1`] = `
 <div>
   <div
