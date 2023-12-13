@@ -187,28 +187,4 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	public function set_home_domain( $domain ) {
 		$this->home_domain = $domain;
 	}
-
-	/**
-	 * Sets whether or not to anonymize IP addresses.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param bool $anonymize_ip Whether to anonymize IP addresses or not.
-	 */
-	public function set_anonymize_ip( $anonymize_ip ) {
-		// Not used by GA4.
-	}
-
-
-
-	/**
-	 * Sets the ads conversion ID.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $ads_conversion_id Ads ID.
-	 */
-	public function set_ads_conversion_id( $ads_conversion_id ) {
-		// Not used by GA4.
-	}
 }
