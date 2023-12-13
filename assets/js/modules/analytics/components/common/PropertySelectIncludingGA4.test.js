@@ -158,6 +158,14 @@ const setupAdvancedRegistry = ( registry ) => {
 		{ accountID, propertyID: propertyIDua }
 	);
 
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
+		analytics4Fixtures.accountSummaries
+	);
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'getAccountSummaries',
+		[]
+	);
+
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 		[
 			{
@@ -272,12 +280,6 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 	} );
 
 	it( 'should set the primary property type to UA when the UA property is selected', async () => {
-		fetchMock.getOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
-			),
-			{ body: [] }
-		);
 		const { getByText, container, registry, findByText } = render(
 			<PropertySelectIncludingGA4 />,
 			{
