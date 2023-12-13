@@ -154,6 +154,12 @@ describe( 'AccountSelect', () => {
 		);
 		fetchMock.getOnce(
 			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+			),
+			{ body: [] }
+		);
+		fetchMock.getOnce(
+			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/properties'
 			),
 			{ body: [] }
