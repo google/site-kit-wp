@@ -56,6 +56,10 @@ export default function FeatureTours() {
 			'js-googlesitekit-main-dashboard'
 		);
 
+		if ( ! dashboardElement ) {
+			return;
+		}
+
 		const observer = new ResizeObserver( () => {
 			global.dispatchEvent( new Event( 'resize' ) );
 		} );
