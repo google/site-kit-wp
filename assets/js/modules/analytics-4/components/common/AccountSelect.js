@@ -1,5 +1,5 @@
 /**
- * Analytics Account Select component.
+ * Analytics-4 Account Select component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
