@@ -35,6 +35,7 @@ import ResetButton from '../ResetButton';
 import { useFeature } from '../../hooks/useFeature';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
+import ConnectedIcon from '../../../svg/icons/connected.svg';
 const { useSelect } = Data;
 
 export default function SettingsAdmin() {
@@ -72,7 +73,12 @@ export default function SettingsAdmin() {
 												'Site Kit is connected',
 												'google-site-kit'
 											) }
-											<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
+											<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
+												<ConnectedIcon
+													width={ 10 }
+													height={ 8 }
+												/>
+											</span>
 										</p>
 									</div>
 								</Cell>

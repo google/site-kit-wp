@@ -38,7 +38,7 @@ export default function GetHelpLink( { linkURL } ) {
 		__( 'Trouble getting access? <HelpLink />', 'google-site-kit' ),
 		{
 			HelpLink: (
-				<Link href={ linkURL } external>
+				<Link href={ linkURL } external hideExternalIndicator>
 					{ __( 'Get help', 'google-site-kit' ) }
 				</Link>
 			),

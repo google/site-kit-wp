@@ -33,13 +33,7 @@ import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import TagManagerIcon from '../../../../../svg/graphics/tagmanager.svg';
 import SetupForm from './SetupForm';
-import {
-	MODULES_TAGMANAGER,
-	ACCOUNT_CREATE,
-	FORM_SETUP,
-} from '../../datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import { AccountCreate } from '../common';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
@@ -55,17 +49,8 @@ export default function SetupMain( { finishSetup } ) {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).isDoingSubmitChanges()
-	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
-	);
-	const submitInProgress = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' )
-	);
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
@@ -77,13 +62,7 @@ export default function SetupMain( { finishSetup } ) {
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if (
-		isDoingSubmitChanges ||
-		! hasResolvedAccounts ||
-		isNavigating ||
-		submitInProgress ||
-		hasExistingTag === undefined
-	) {
+	if ( ! hasResolvedAccounts || hasExistingTag === undefined ) {
 		viewComponent = <ProgressBar />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;

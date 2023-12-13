@@ -32,6 +32,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -52,6 +53,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
 use WP_Query;
 use WP_User;
 use ReflectionMethod;
@@ -305,6 +307,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -324,6 +327,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => $google_tag_container_id,
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -440,6 +444,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -458,7 +463,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_handle_provisioning_callback__with_enhancedMeasurement_streamEnabled() {
-		$this->enable_feature( 'enhancedMeasurement' );
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
@@ -493,13 +497,15 @@ class Analytics_4Test extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1beta/properties':
+						$property = new GoogleAnalyticsAdminV1betaProperty();
+						$property->setCreateTime( '2022-09-09T09:18:05.968Z' );
+						$property->setName( "properties/{$property_id}" );
+
 						return new Response(
 							200,
 							array(),
 							json_encode(
-								array(
-									'name' => "properties/{$property_id}",
-								)
+								$property
 							)
 						);
 					case "/v1beta/properties/{$property_id}/dataStreams":
@@ -554,6 +560,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -575,6 +582,7 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => Synchronize_Property::convert_time_to_unix_ms( '2022-09-09T09:18:05.968Z' ),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -692,11 +700,12 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->register();
 		$data = array(
-			'displayName'    => $account_display_name,
-			'regionCode'     => $region_code,
-			'propertyName'   => $property_display_name,
-			'dataStreamName' => $stream_display_name,
-			'timezone'       => $timezone,
+			'displayName'                      => $account_display_name,
+			'regionCode'                       => $region_code,
+			'propertyName'                     => $property_display_name,
+			'dataStreamName'                   => $stream_display_name,
+			'timezone'                         => $timezone,
+			'enhancedMeasurementStreamEnabled' => true,
 		);
 
 		$response = $this->analytics->set_data( 'create-account-ticket', $data );
@@ -728,41 +737,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'] );
 		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'] );
 		$this->assertEquals( $timezone, $account_ticket_params['timezone'] );
-	}
-
-	public function test_create_account_ticket__with_enhancedMeasurement() {
-		// TODO: Merge with above test or keep separate when feature flag is removed.
-		$this->enable_feature( 'enhancedMeasurement' );
-		$this->analytics->register();
-		$data = array(
-			'displayName'                      => 'test account name',
-			'regionCode'                       => 'US',
-			'propertyName'                     => 'test property name',
-			'dataStreamName'                   => 'test stream name',
-			'timezone'                         => 'UTC',
-			'enhancedMeasurementStreamEnabled' => true,
-		);
-
-		// Required scopes are tested above.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
-			)
-		);
-
-		// No need to control response again.
-		FakeHttp::fake_google_http_handler( $this->analytics->get_client() );
-
-		$response = $this->analytics->set_data( 'create-account-ticket', $data );
-		// Assert request was made with expected arguments.
-		$this->assertNotWPError( $response );
-
-		// Assert transient is set with params.
-		$account_ticket_params = get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
-		$this->assertEquals( 'test property name', $account_ticket_params['property_name'] );
-		$this->assertEquals( 'test stream name', $account_ticket_params['data_stream_name'] );
-		$this->assertEquals( 'UTC', $account_ticket_params['timezone'] );
 		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'] );
 	}
 

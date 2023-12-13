@@ -122,6 +122,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'googleTagContainerID'      => '',
 			'googleTagLastSyncedAtMs'   => 0,
 			'availableCustomDimensions' => null,
+			'propertyCreateTime'        => 0,
 		);
 	}
 

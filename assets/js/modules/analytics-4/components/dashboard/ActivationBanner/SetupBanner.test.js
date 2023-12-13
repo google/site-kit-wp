@@ -134,6 +134,7 @@ describe( 'SetupBanner', () => {
 			body: withConnected( 'analytics', 'analytics-4' ),
 			status: 200,
 		} );
+
 		const onSubmitSuccess = jest.fn();
 
 		const { dispatch } = registry;

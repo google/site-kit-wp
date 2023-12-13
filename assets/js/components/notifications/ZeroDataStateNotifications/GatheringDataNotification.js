@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
@@ -35,7 +35,10 @@ import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
 import { getTimeInSeconds, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 
-export default function GatheringDataNotification( { title } ) {
+export default function GatheringDataNotification( {
+	title,
+	gatheringDataWaitTimeInHours,
+} ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_gathering-data-notification`;
 	const handleOnView = useCallback( () => {
@@ -45,7 +48,9 @@ export default function GatheringDataNotification( { title } ) {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
 
-	const gatheringDataWaitTime = '72';
+	if ( ! gatheringDataWaitTimeInHours ) {
+		return null;
+	}
 
 	return (
 		<BannerNotification
@@ -53,11 +58,13 @@ export default function GatheringDataNotification( { title } ) {
 			title={ title }
 			description={ sprintf(
 				/* translators: %s: the number of hours the site can be in a gathering data state */
-				__(
+				_n(
+					'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
 					'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+					gatheringDataWaitTimeInHours,
 					'google-site-kit'
 				),
-				gatheringDataWaitTime
+				gatheringDataWaitTimeInHours
 			) }
 			format="small"
 			onView={ handleOnView }
@@ -72,4 +79,5 @@ export default function GatheringDataNotification( { title } ) {
 
 GatheringDataNotification.propTypes = {
 	title: PropTypes.string,
+	gatheringDataWaitTimeInHours: PropTypes.number,
 };
