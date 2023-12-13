@@ -35,7 +35,7 @@ import useViewContext from '../hooks/useViewContext';
 import TourTooltips from './TourTooltips';
 const { useSelect, useDispatch } = Data;
 
-export default function FeatureTours( { _testDashboardElement } ) {
+export default function FeatureTours() {
 	const viewContext = useViewContext();
 	const { triggerTourForView } = useDispatch( CORE_USER );
 
@@ -52,9 +52,9 @@ export default function FeatureTours( { _testDashboardElement } ) {
 			return;
 		}
 
-		const dashboardElement =
-			_testDashboardElement ??
-			document.getElementById( 'js-googlesitekit-main-dashboard' );
+		const dashboardElement = document.getElementById(
+			'js-googlesitekit-main-dashboard'
+		);
 
 		if ( ! dashboardElement ) {
 			return;

@@ -34,15 +34,14 @@ describe( 'FeatureTours', () => {
 	let registry;
 	let observeMock;
 	let disconnectMock;
-	const testDashboardElement = 'test-dashboard-element';
-	const dashboardElementClassName = 'js-googlesitekit-main-dashboard';
+	const dashboardElementID = 'js-googlesitekit-main-dashboard';
 
 	const TourTooltipsWithMockUI = () => (
 		<div>
-			<div className={ dashboardElementClassName }>
+			<div id={ dashboardElementID }>
 				<div className="test-tour-step-1-target" />
 			</div>
-			<FeatureTours _testDashboardElement={ testDashboardElement } />
+			<FeatureTours />
 		</div>
 	);
 
@@ -95,13 +94,18 @@ describe( 'FeatureTours', () => {
 	} );
 
 	it( 'dispatches resize event on dashboard element resize', async () => {
-		const { waitForRegistry } = render( <TourTooltipsWithMockUI />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<TourTooltipsWithMockUI />,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
-		expect( observeMock ).toHaveBeenCalledWith( testDashboardElement );
+		expect( observeMock ).toHaveBeenCalledWith(
+			container.querySelector( `#${ dashboardElementID }` )
+		);
 	} );
 
 	it( 'cleans up ResizeObserver on unmount', async () => {
