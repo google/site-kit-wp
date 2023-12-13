@@ -33,16 +33,16 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
-import * as fixtures from '../../../analytics/datastore/__fixtures__';
-import * as ga4Fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '../../datastore/__fixtures__';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 
 describe( 'SetupEnhancedMeasurementSwitch', () => {
 	let registry;
 
-	const { accounts } = fixtures.accountsPropertiesProfiles;
-	const { properties, webDataStreams } = ga4Fixtures;
-	const accountID = accounts[ 0 ].id;
+	const { webDataStreams, accountSummaries } = fixtures;
+	const accounts = accountSummaries;
+	const properties = accounts[ 1 ].propertySummaries;
+	const accountID = accounts[ 1 ]._id;
 	const propertyID = properties[ 0 ]._id;
 	const webDataStreamID = webDataStreams[ 0 ]._id;
 
@@ -71,17 +71,16 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 			webDataStreamID,
 		} );
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		registry
-			.dispatch( MODULES_ANALYTICS )
-			.finishResolution( 'getAccounts', [] );
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccountSummaries', [] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperties( properties, { accountID } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getProperties', [ accountID ] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
