@@ -1067,7 +1067,7 @@ final class Assets {
 	/**
 	 * Gets the product post type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.116.0
 	 *
 	 * @return string|null The product post type name or null if not present on the website.
 	 */
@@ -1075,7 +1075,7 @@ final class Assets {
 		/**
 		 * Filters the product post type.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.116.0
 		 *
 		 * @param string $product_post_type The product post type name.
 		 */
