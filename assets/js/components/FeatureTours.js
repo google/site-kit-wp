@@ -60,14 +60,16 @@ export default function FeatureTours() {
 			global.dispatchEvent( new Event( 'resize' ) );
 		} );
 
-		if ( dashboardElement ) {
-			observer.observe( dashboardElement );
+		if ( dashboardElement === undefined ) {
+			return;
 		}
+
+		observer.observe( dashboardElement );
 
 		return () => {
 			observer.disconnect();
 		};
-	}, [ tour ] );
+	} );
 
 	if ( ! tour ) {
 		return null;
