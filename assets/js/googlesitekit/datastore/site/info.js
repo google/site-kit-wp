@@ -826,7 +826,7 @@ export const selectors = {
 	/**
 	 * Gets product post type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.116.0
 	 *
 	 * @return {string|null} The product post type or null if not present.
 	 */
