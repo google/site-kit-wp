@@ -60,7 +60,9 @@ export default function FeatureTours() {
 			global.dispatchEvent( new Event( 'resize' ) );
 		} );
 
-		observer.observe( dashboardElement );
+		if ( dashboardElement ) {
+			observer.observe( dashboardElement );
+		}
 
 		return () => {
 			observer.disconnect();
