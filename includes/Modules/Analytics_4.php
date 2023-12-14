@@ -172,8 +172,7 @@ final class Analytics_4 extends Module
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 
 		// Ensure that the data available state is reset when the measurement ID changes.
-		add_action(
-			'update_option_googlesitekit_analytics-4_settings',
+		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
@@ -182,9 +181,7 @@ final class Analytics_4 extends Module
 						$this->custom_dimensions_data_available->reset_data_available();
 					}
 				}
-			},
-			10,
-			2
+			}
 		);
 
 		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
