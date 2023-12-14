@@ -212,10 +212,10 @@ final class Analytics_4 extends Module
 			'option_' . Settings::OPTION,
 			function ( $option ) {
 				if ( is_array( $option ) ) {
-					$recovered_settings = $this->maybe_recover_analytics_module_settings( $option );
+					$missing_settings = $this->retrieve_missing_analytics_4_settings( $option );
 
-					if ( ! empty( $recovered_settings ) ) {
-						return $option + $recovered_settings;
+					if ( ! empty( $missing_settings ) ) {
+						return $option + $missing_settings;
 					}
 				}
 
@@ -1810,7 +1810,7 @@ final class Analytics_4 extends Module
 	 * @param array $option Analytics 4 settings.
 	 * @return array Missing Analytics 4 settings array, or empty array if no setting is missing.
 	 */
-	protected function maybe_recover_analytics_module_settings( $option ) {
+	protected function retrieve_missing_analytics_4_settings( $option ) {
 		$analytics_settings = get_option( 'googlesitekit_analytics_settings' );
 		$recovered_settings = array();
 		$keys_to_check      = array(

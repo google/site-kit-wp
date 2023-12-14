@@ -3102,7 +3102,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_maybe_recover_analytics_module_settings() {
+	public function test_retrieve_missing_analytics_4_settings() {
 		delete_option( Settings::OPTION );
 
 		$analytics_settings = new Analytics_Settings( $this->options );
