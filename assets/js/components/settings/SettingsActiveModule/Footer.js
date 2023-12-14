@@ -176,7 +176,7 @@ export default function Footer( props ) {
 	// premature interactions by the user.
 	const isLoading = useSelect( ( select ) => {
 		const resolutionMapping = {
-			analytics: 'getAccountSummaries',
+			analytics: 'getAccounts',
 			tagmanager: 'getAccounts',
 			'search-console': 'getMatchedProperties',
 		};

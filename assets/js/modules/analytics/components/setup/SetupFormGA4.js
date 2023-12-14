@@ -26,7 +26,6 @@ import { Fragment, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	AccountSelect,
@@ -39,8 +38,9 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
 	const accounts =
-		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
-		[];
+		useSelect( ( select ) =>
+			select( MODULES_ANALYTICS_4 ).getAccounts()
+		) || [];
 	const hasExistingGA4Tag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);

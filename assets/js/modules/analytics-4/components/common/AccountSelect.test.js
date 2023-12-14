@@ -55,7 +55,7 @@ const setupRegistry = ( registry ) => {
 		.receiveGetAccountSummaries( fixtures.accountSummaries );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getAccountSummaries', [] );
+		.finishResolution( 'getAccounts', [] );
 };
 
 const setupLoadingRegistry = ( registry ) => {
@@ -74,7 +74,7 @@ const setupEmptyRegistry = ( registry ) => {
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( [] );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getAccountSummaries', [] );
+		.finishResolution( 'getAccounts', [] );
 };
 
 describe( 'AccountSelect', () => {

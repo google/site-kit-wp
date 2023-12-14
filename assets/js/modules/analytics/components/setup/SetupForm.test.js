@@ -142,9 +142,6 @@ describe( 'SetupForm', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetAccountSummaries( accountSummaries );
 		registry
@@ -251,9 +248,6 @@ describe( 'SetupForm', () => {
 	it( 'auto-submits the form', async () => {
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
@@ -377,9 +371,6 @@ describe( 'SetupForm', () => {
 	it( 'auto-submits the form only once in the case of an error', async () => {
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );

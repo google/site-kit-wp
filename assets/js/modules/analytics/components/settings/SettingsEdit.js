@@ -43,9 +43,7 @@ export default function SettingsEdit() {
 		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getAccountSummaries'
-		)
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getAccounts' )
 	);
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()

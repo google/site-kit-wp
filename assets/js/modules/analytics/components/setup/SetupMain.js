@@ -43,15 +43,13 @@ const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccounts()
+		select( MODULES_ANALYTICS_4 ).getAccounts()
 	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getAccountSummaries'
-		)
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getAccounts' )
 	);
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()

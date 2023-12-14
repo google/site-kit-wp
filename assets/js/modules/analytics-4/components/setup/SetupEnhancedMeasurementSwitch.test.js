@@ -76,11 +76,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 			.receiveGetAccountSummaries( accounts );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getAccountSummaries', [] );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( properties, { accountID } );
+			.finishResolution( 'getAccounts', [] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -255,12 +251,6 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					accountID: '1001',
 				} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( properties, { accountID: '1001' } );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getProperties', [ '1001' ] );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetEnhancedMeasurementSettings(

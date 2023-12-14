@@ -1499,11 +1499,13 @@ describe( 'modules/analytics-4 properties', () => {
 					.receiveGetAccountSummaries( accounts );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getAccountSummaries', [] );
+					.finishResolution( 'getAccounts', [] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( properties, { accountID } );
+					.receiveGetProperty( properties[ 0 ], {
+						propertyID,
+					} );
 			} );
 
 			it( 'should return false if the required state is already loaded', () => {
@@ -1539,10 +1541,10 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( true );
 			} );
 
-			it( 'should return true if account summaries are not yet loaded', () => {
+			it( 'should return true if property summaries are not yet loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.startResolution( 'getAccountSummaries', [] );
+					.startResolution( 'getAccounts', [] );
 
 				expect(
 					registry

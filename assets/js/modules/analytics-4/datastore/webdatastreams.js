@@ -558,9 +558,10 @@ const baseSelectors = {
 				const propertyID =
 					select( MODULES_ANALYTICS_4 ).getPropertyID();
 
-				const loadedAccounts = select(
-					MODULES_ANALYTICS_4
-				).hasFinishedResolution( 'getAccountSummaries' );
+				const loadedAccounts =
+					select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getAccounts'
+					);
 
 				const loadedWebDataStreams =
 					isValidPropertyID( propertyID ) && hasModuleAccess !== false

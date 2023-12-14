@@ -77,12 +77,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			.receiveGetAccountSummaries( accounts );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getAccountSummaries', [] );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( properties, { accountID } );
-
+			.finishResolution( 'getAccounts', [] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetWebDataStreams( webDataStreams, {
@@ -259,7 +254,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			() => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.invalidateResolution( 'getAccountSummaries', [] );
+					.invalidateResolution( 'getAccounts', [] );
 			},
 		],
 		[
@@ -539,7 +534,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 		it( 'should not attempt to retrieve enhanced measurement settings when property summaries are loading', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.invalidateResolution( 'getAccountSummaries', [] );
+				.invalidateResolution( 'getAccounts', [] );
 
 			const { waitForRegistry } = render(
 				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,

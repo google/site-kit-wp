@@ -842,7 +842,7 @@ const baseSelectors = {
 					hasModuleAccess === false
 						? false
 						: select( MODULES_ANALYTICS_4 ).isResolving(
-								'getAccountSummaries',
+								'getAccounts',
 								[]
 						  );
 

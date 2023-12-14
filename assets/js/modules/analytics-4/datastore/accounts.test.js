@@ -181,7 +181,19 @@ describe( 'modules/analytics-4 accounts', () => {
 					body: fixtures.accountSummaries,
 					status: 200,
 				} );
+
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: [
+								fixtures.accountSummaries[ 1 ]
+									.propertySummaries[ 0 ]._id,
+							],
+						}
+					);
 
 				const initialAccounts = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -191,7 +203,7 @@ describe( 'modules/analytics-4 accounts', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAccountSummaries();
+				).getAccounts();
 				expect( fetchMock ).toHaveFetched( accountSummariesEndpoint );
 
 				const accounts = registry
@@ -204,10 +216,21 @@ describe( 'modules/analytics-4 accounts', () => {
 				);
 			} );
 
-			it( 'should not make a network request if properties for this account are already present', async () => {
+			it( 'should not make a network request if account summaries are already present', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAccountSummaries( fixtures.accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: [
+								fixtures.accountSummaries[ 1 ]
+									.propertySummaries[ 0 ]._id,
+							],
+						}
+					);
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 
 				const accounts = registry
@@ -216,7 +239,7 @@ describe( 'modules/analytics-4 accounts', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAccountSummaries();
+				).getAccounts();
 
 				expect( fetchMock ).not.toHaveFetched(
 					accountSummariesEndpoint
@@ -228,6 +251,23 @@ describe( 'modules/analytics-4 accounts', () => {
 			} );
 
 			it( 'should select correct GA4 property', async () => {
+				[
+					[
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+						),
+						fixtures.accountSummaries,
+					],
+					[
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+						),
+						fixtures.webDataStreamsBatch,
+					],
+				].forEach( ( [ endpoint, body ] ) => {
+					fetchMock.get( endpoint, { body } );
+				} );
+
 				provideSiteInfo( registry );
 				provideUserAuthentication( registry );
 				provideModules( registry, [
@@ -245,30 +285,12 @@ describe( 'modules/analytics-4 accounts', () => {
 
 				const properties =
 					fixtures.accountSummaries[ 1 ].propertySummaries;
-				const accountID = fixtures.accountSummaries[ 1 ]._id;
 				const propertyID = properties[ 0 ]._id;
 
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( fixtures.accountSummaries );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( properties, { accountID } );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreamsBatch(
-						fixtures.webDataStreamsBatch,
-						{
-							propertyIDs: [ propertyID ],
-						}
-					);
-
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					accountID,
-				} );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					propertyID,
-				} );
+					.receiveGetSettings( {} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperty( properties[ 0 ], {
@@ -279,11 +301,9 @@ describe( 'modules/analytics-4 accounts', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetExistingTag( null );
 
-				registry.select( MODULES_ANALYTICS_4 ).getAccounts();
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAccountSummaries();
+				await registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getAccounts();
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
 				).toBe( propertyID );
