@@ -250,5 +250,4 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
 		return $config;
 	}
-
 }
