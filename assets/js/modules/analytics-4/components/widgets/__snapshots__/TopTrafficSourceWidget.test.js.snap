@@ -111,7 +111,9 @@ exports[`TopTrafficSourceWidget retries both reports when an error is encountere
             rel="noopener noreferrer"
             target="_blank"
           >
-            Get help
+            <span>
+              Get help
+            </span>
           </a>
         </span>
       </div>
