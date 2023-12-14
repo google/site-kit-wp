@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
