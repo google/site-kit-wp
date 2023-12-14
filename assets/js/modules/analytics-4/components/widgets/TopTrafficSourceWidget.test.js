@@ -200,6 +200,8 @@ describe( 'TopTrafficSourceWidget', () => {
 			}
 		);
 
+		await waitForRegistry();
+
 		act( () => {
 			fireEvent.click( getByText( 'Retry' ) );
 		} );
