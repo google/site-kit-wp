@@ -32,8 +32,8 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	ownedSettingsSlugs: [
 		// TODO: These can be uncommented when Analytics and Analytics 4
 		// modules are officially separated.
-		// 'accountID',
 		// 'adsConversionID',
+		'accountID',
 		'propertyID',
 		'webDataStreamID',
 		'measurementID',
@@ -43,13 +43,14 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	],
 	storeName: MODULES_ANALYTICS_4,
 	settingSlugs: [
-		// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-		// 'accountID',
-		// 'adsConversionID',
+		'accountID',
+		'adsConversionID',
+		'adsenseLinked',
 		'propertyID',
 		'webDataStreamID',
 		'measurementID',
 		'useSnippet',
+		'canUseSnippet',
 		'ownerID',
 		'googleTagID',
 		'googleTagAccountID',
@@ -57,6 +58,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'googleTagLastSyncedAtMs',
 		'availableCustomDimensions',
 		'propertyCreateTime',
+		'trackingDisabled',
 	],
 	submitChanges,
 	rollbackChanges,
