@@ -301,7 +301,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => '',
 				'measurementID'             => '',
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -321,7 +325,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => $webdatastream_id,
 				'measurementID'             => $measurement_id,
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => 'GT-123',
 				'googleTagAccountID'        => $google_tag_account_id,
 				'googleTagContainerID'      => $google_tag_container_id,
@@ -438,7 +446,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => '',
 				'measurementID'             => '',
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -554,7 +566,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => '',
 				'measurementID'             => '',
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -576,7 +592,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => $webdatastream_id,
 				'measurementID'             => $measurement_id,
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -3080,6 +3100,44 @@ class Analytics_4Test extends TestCase {
 			),
 			$custom_dimensions_data_available->get_data_availability()
 		);
+	}
+
+	public function test_maybe_recover_analytics_module_settings() {
+		delete_option( Settings::OPTION );
+
+		$analytics_settings = new Analytics_Settings( $this->options );
+		$analytics_settings->register();
+
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'propertyID'                => '123',
+				'webDataStreamID'           => '456',
+				'measurementID'             => 'G-789',
+				'useSnippet'                => true,
+				'ownerID'                   => $this->user->ID,
+				'googleTagID'               => 'GT-123',
+				'googleTagAccountID'        => '123',
+				'googleTagContainerID'      => '456',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
+			)
+		);
+
+		$keys_to_check = array(
+			'accountID',
+			'adsConversionID',
+			'adsenseLinked',
+			'canUseSnippet',
+			'trackingDisabled',
+		);
+		$settings      = $options->get( Settings::OPTION );
+
+		foreach ( $keys_to_check as $key ) {
+			$this->assertArrayHasKey( $key, $settings );
+		}
 	}
 
 	/**
