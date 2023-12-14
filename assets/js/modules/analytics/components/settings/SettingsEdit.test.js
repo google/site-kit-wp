@@ -35,10 +35,17 @@ import {
 	waitForDefaultTimeouts,
 	provideUserInfo,
 	provideModuleRegistrations,
+	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
 describe( 'SettingsEdit', () => {
+	const { accountSummaries, webDataStreamsBatch } = ga4Fixtures;
+	const accounts = accountSummaries;
+	const properties = accounts[ 1 ].propertySummaries;
+	const accountID = accounts[ 1 ]._id;
+	const propertyID = properties[ 0 ]._id;
+
 	let registry;
 
 	beforeEach( () => {
@@ -50,6 +57,7 @@ describe( 'SettingsEdit', () => {
 
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
@@ -86,6 +94,23 @@ describe( 'SettingsEdit', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccounts', [] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( [], { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( properties[ 0 ], {
+				propertyID,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
+			} );
 
 		const { container, waitForRegistry } = render( <SettingsEdit />, {
 			registry,
@@ -119,7 +144,7 @@ describe( 'SettingsEdit', () => {
 				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 			),
 			{
-				body: ga4Fixtures.accountSummaries,
+				body: [],
 				status: 200,
 			}
 		);

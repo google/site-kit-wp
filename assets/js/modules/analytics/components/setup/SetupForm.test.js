@@ -35,8 +35,7 @@ import {
 	MODULES_ANALYTICS,
 	SETUP_FLOW_MODE_GA4,
 } from '../../datastore/constants';
-import * as fixtures from '../../datastore/__fixtures__';
-import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import * as fixtures from '../../../analytics-4/datastore/__fixtures__';
 import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../analytics-4/constants';
@@ -46,7 +45,7 @@ const {
 	defaultEnhancedMeasurementSettings,
 	webDataStreamsBatch,
 	webDataStreams,
-} = analytics4Fixtures;
+} = fixtures;
 const accounts = accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
@@ -83,9 +82,6 @@ describe( 'SetupForm', () => {
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetAccountSummaries( accountSummaries );
