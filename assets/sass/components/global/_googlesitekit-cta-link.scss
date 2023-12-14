@@ -32,6 +32,10 @@
 		fill: currentColor;
 	}
 
+	> span > svg {
+		vertical-align: bottom;
+	}
+
 	&:hover {
 		color: $c-link;
 		text-decoration: underline;
