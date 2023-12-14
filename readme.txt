@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.4
 Requires PHP:      5.6
-Stable tag:        1.115.0
+Stable tag:        1.116.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, tag-manager, site-kit
@@ -109,11 +109,29 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
+= 1.116.0 =
+
+**Enhanced**
+
+* Show a loading state in the navigation bar to reduce layout shifts. See [#7916](https://github.com/google/site-kit-wp/issues/7916).
+* Remove feature tours for old features. See [#7886](https://github.com/google/site-kit-wp/issues/7886).
+* Improve the "Gathering data" notifications to show the correct time based on the connected modules. See [#7876](https://github.com/google/site-kit-wp/issues/7876).
+* Update Analytics to avoid frequently requesting connected property on the dashboard. See [#7734](https://github.com/google/site-kit-wp/issues/7734).
+* Update the "Most popular products by pageviews" Key Metric tile to utilize a custom dimension in Analytics. See [#7611](https://github.com/google/site-kit-wp/issues/7611).
+* Improve styling of icons associated with links. See [#7542](https://github.com/google/site-kit-wp/issues/7542).
+* Remove the Ad Blocking Recovery setup graphic on mobile viewports. See [#7299](https://github.com/google/site-kit-wp/issues/7299).
+* Display a spinner button rather than a progress bar to prevent a "flicker" on the AdSense, Analytics and Tag Manager setup screens. See [#6584](https://github.com/google/site-kit-wp/issues/6584).
+
+**Fixed**
+
+* Fix bug that caused the Dashboard Sharing settings to crash on a new site when viewing the dashboard for a specific page/post. See [#7979](https://github.com/google/site-kit-wp/issues/7979).
+* Fix whitespace issue in Analytics and Tag Manager settings. See [#7968](https://github.com/google/site-kit-wp/issues/7968).
+* Fix bug that caused console warnings to appear and requests to fail in certain module recovery scenarios. See [#7891](https://github.com/google/site-kit-wp/issues/7891).
+
 = 1.115.0 =
 
 **Enhanced**
 
-* Update timeouts for Key Metrics survey triggers to be one week. See [#7911](https://github.com/google/site-kit-wp/issues/7911).
 * Update version used for GA4 feature tour. See [#7879](https://github.com/google/site-kit-wp/issues/7879).
 * Update CircularProgress component to use correct material design colors. See [#7863](https://github.com/google/site-kit-wp/issues/7863).
 * Improve styles for some link-styled buttons. See [#7776](https://github.com/google/site-kit-wp/issues/7776).
@@ -129,7 +147,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 **Changed**
 
 * Allow the IP version to be specified for server-side requests. See [#7864](https://github.com/google/site-kit-wp/issues/7864).
-* Remove infrastructure code that is no longer being used. See [#7808](https://github.com/google/site-kit-wp/issues/7808).
 
 **Fixed**
 

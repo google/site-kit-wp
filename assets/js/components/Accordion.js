@@ -28,6 +28,12 @@ import classnames from 'classnames';
 import { useState, useCallback, useEffect } from '@wordpress/element';
 import { ENTER, SPACE } from '@wordpress/keycodes';
 
+/**
+ * Internal dependencies
+ */
+import ChevronDown from '../../svg/icons/chevron-down-v2.svg';
+import IconWrapper from './IconWrapper';
+
 export default function Accordion( {
 	title,
 	children,
@@ -85,6 +91,9 @@ export default function Accordion( {
 				role="button"
 			>
 				{ title }
+				<IconWrapper>
+					<ChevronDown width={ 12 } height={ 12 } />
+				</IconWrapper>
 			</div>
 			<div
 				className={ classnames( 'googlesitekit-accordion__content', {

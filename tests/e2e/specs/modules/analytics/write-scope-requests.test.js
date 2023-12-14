@@ -90,6 +90,14 @@ describe( 'Analytics write scope requests', () => {
 					body: JSON.stringify( {} ),
 				} );
 			} else if (
+				request
+					.url()
+					.match(
+						'/wp-json/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					)
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
 				request.url().match( 'analytics-4/data/create-property' )
 			) {
 				if ( interceptCreatePropertyRequest ) {

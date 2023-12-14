@@ -29,17 +29,26 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
+import Data from 'googlesitekit-data';
+import { SpinnerButton } from 'googlesitekit-components';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { ErrorNotices } from '../../common';
 import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
 import Link from '../../../../../components/Link';
-
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+const { useSelect } = Data;
 export default function SetupAccountSiteUI( {
 	heading,
 	description,
 	primaryButton,
 	secondaryButton,
 } ) {
+	const isSaving = useSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).isDoingSubmitChanges() ||
+			select( CORE_LOCATION ).isNavigating()
+	);
+
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
@@ -53,12 +62,14 @@ export default function SetupAccountSiteUI( {
 			<SetupUseSnippetSwitch />
 
 			<div className="googlesitekit-setup-module__action">
-				<Button
+				<SpinnerButton
 					onClick={ primaryButton.onClick }
 					href={ primaryButton.href }
+					disabled={ isSaving }
+					isSaving={ isSaving }
 				>
 					{ primaryButton.label }
-				</Button>
+				</SpinnerButton>
 				{ secondaryButton && (
 					<div className="googlesitekit-setup-module__sub-action">
 						<Link onClick={ secondaryButton.onClick }>

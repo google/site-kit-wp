@@ -25,6 +25,7 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 import { widgetDecorators } from './common.stories';
 import {
+	provideAnalytics4ReportTitles,
 	setupAnalytics4MockReports,
 	setupAnalytics4ZeroData,
 	setupAnalytics4Loading,
@@ -46,7 +47,10 @@ function Template( { setupRegistry = () => {}, ...args } ) {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupAnalytics4MockReports,
+	setupRegistry: ( registry ) => {
+		provideAnalytics4ReportTitles( registry );
+		setupAnalytics4MockReports( registry );
+	},
 };
 
 export const GatheringData = Template.bind( {} );

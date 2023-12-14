@@ -96,6 +96,13 @@
     "curly": [
       "error",
       "all"
+    ],
+    "prettier/prettier": [
+      "error",
+      {},
+      {
+        "usePrettierrc": true
+      }
     ]
   },
   "settings": {

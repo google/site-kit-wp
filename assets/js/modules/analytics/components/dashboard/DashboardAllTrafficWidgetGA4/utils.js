@@ -53,7 +53,7 @@ export function createZeroDataRow( date ) {
 /**
  * Gets HTML string for a tooltip help link.
  *
- * @since n.e.x.t
+ * @since 1.116.0
  *
  * @param {string} url      The URL to link to.
  * @param {string} label    The label for the link.
