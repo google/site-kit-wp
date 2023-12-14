@@ -551,11 +551,15 @@ describe( 'core/widgets Widget areas', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget1', {
-						Component: () => <div>Test Widget 1</div>,
+						Component() {
+							return <div>Test Widget 1</div>;
+						},
 						modules: [ 'test-module-1', 'test-module-2' ],
 					} );
 
-				const Component = () => <div>Test Widget 2</div>;
+				function Component() {
+					return <div>Test Widget 2</div>;
+				}
 
 				// Register an active widget with state set to a component other than the `Null` component.
 				registry

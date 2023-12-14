@@ -33,7 +33,9 @@ describe( 'useWidgetStateEffect', () => {
 
 	it( 'should set and unset widget state data', () => {
 		const widgetSlug = 'testWidget';
-		const Component = () => null;
+		function Component() {
+			return null;
+		}
 		let metadata = { importantProp: 'testPropValue' };
 
 		// Initially widget state should be `null`.

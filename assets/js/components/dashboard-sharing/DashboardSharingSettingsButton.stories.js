@@ -38,11 +38,13 @@ import {
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<DashboardSharingSettingsButton { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry = () => {}, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<DashboardSharingSettingsButton { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const DefaultDashboardSharingSettingsButton = Template.bind( {} );
 DefaultDashboardSharingSettingsButton.storyName = 'Default';

@@ -73,19 +73,21 @@ function QuarterWidgetInGrid( props ) {
 }
 
 function getRegularWidget( textContent ) {
-	return () => <div>{ textContent || 'Regular Widget' }</div>;
+	return function () {
+		return <div>{ textContent || 'Regular Widget' }</div>;
+	};
 }
 
 function getReportZeroWidget( moduleSlug ) {
-	return ( { WidgetReportZero } ) => (
-		<WidgetReportZero moduleSlug={ moduleSlug } />
-	);
+	return function ( { WidgetReportZero } ) {
+		return <WidgetReportZero moduleSlug={ moduleSlug } />;
+	};
 }
 
 function getRecoverableModulesWidget( moduleSlugs ) {
-	return ( { WidgetRecoverableModules } ) => (
-		<WidgetRecoverableModules moduleSlugs={ moduleSlugs } />
-	);
+	return function ( { WidgetRecoverableModules } ) {
+		return <WidgetRecoverableModules moduleSlugs={ moduleSlugs } />;
+	};
 }
 
 function createWidgetAreasFromWidths( registry, ...widgetAreaWidgetWidths ) {

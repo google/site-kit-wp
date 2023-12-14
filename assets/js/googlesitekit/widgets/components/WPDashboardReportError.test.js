@@ -32,26 +32,28 @@ describe( 'WPDashboardReportError', () => {
 			},
 		};
 
-		const TestRender = () => (
-			<div>
-				<WPDashboardReportError
-					moduleSlug="search-console"
-					error={ error }
-				/>
-				<WPDashboardReportError
-					moduleSlug="search-console"
-					error={ error }
-				/>
-				<WPDashboardReportError
-					moduleSlug="analytics-4"
-					error={ error }
-				/>
-				<WPDashboardReportError
-					moduleSlug="analytics-4"
-					error={ error }
-				/>
-			</div>
-		);
+		function TestRender() {
+			return (
+				<div>
+					<WPDashboardReportError
+						moduleSlug="search-console"
+						error={ error }
+					/>
+					<WPDashboardReportError
+						moduleSlug="search-console"
+						error={ error }
+					/>
+					<WPDashboardReportError
+						moduleSlug="analytics-4"
+						error={ error }
+					/>
+					<WPDashboardReportError
+						moduleSlug="analytics-4"
+						error={ error }
+					/>
+				</div>
+			);
+		}
 
 		const { container } = render( <TestRender />, {
 			setupRegistry: ( registry ) => {

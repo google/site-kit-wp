@@ -43,7 +43,7 @@ import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardClicks = ( { WPDashboardReportError } ) => {
+function WPDashboardClicks( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -114,7 +114,7 @@ const WPDashboardClicks = ( { WPDashboardReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
-};
+}
 
 WPDashboardClicks.propTypes = {
 	WPDashboardReportError: PropTypes.elementType.isRequired,

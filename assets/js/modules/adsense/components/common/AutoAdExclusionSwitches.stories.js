@@ -28,17 +28,19 @@ import {
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<div className="googlesitekit-setup">
-			<section className="googlesitekit-setup__wrapper">
-				<div className="googlesitekit-setup-module">
-					<AutoAdExclusionSwitches { ...args } />
-				</div>
-			</section>
-		</div>
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<div className="googlesitekit-setup">
+				<section className="googlesitekit-setup__wrapper">
+					<div className="googlesitekit-setup-module">
+						<AutoAdExclusionSwitches { ...args } />
+					</div>
+				</section>
+			</div>
+		</WithRegistrySetup>
+	);
+}
 
 export const AdExclusionDefault = Template.bind( {} );
 AdExclusionDefault.storyName = 'Ad exclusions (default)';

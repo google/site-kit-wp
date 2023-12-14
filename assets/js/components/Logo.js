@@ -28,7 +28,7 @@ import GoogleLogoIcon from '../../svg/graphics/logo-g.svg';
 import SiteKitLogoIcon from '../../svg/graphics/logo-sitekit.svg';
 import VisuallyHidden from './VisuallyHidden';
 
-const Logo = () => {
+function Logo() {
 	return (
 		<div className="googlesitekit-logo" aria-hidden="true">
 			<GoogleLogoIcon
@@ -46,6 +46,6 @@ const Logo = () => {
 			</VisuallyHidden>
 		</div>
 	);
-};
+}
 
 export default Logo;

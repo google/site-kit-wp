@@ -33,7 +33,7 @@ import { useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 const { useRegistry } = Data;
 
-const WithRegistrySetup = ( { func, children } ) => {
+function WithRegistrySetup( { func, children } ) {
 	const registry = useRegistry();
 	const [ ready, setReady ] = useState( false );
 
@@ -49,6 +49,6 @@ const WithRegistrySetup = ( { func, children } ) => {
 	}
 
 	return null;
-};
+}
 
 export default WithRegistrySetup;

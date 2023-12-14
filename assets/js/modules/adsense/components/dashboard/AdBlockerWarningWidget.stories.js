@@ -29,7 +29,9 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'adBlockerWarning' )(
 	AdBlockerWarningWidget
 );
 
-const Template = () => <WidgetWithComponentProps />;
+function Template() {
+	return <WidgetWithComponentProps />;
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';

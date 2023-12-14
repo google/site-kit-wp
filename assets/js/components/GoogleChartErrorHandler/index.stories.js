@@ -22,11 +22,13 @@
 import ErrorComponent from '../../../../tests/js/ThrowErrorComponent';
 import GoogleChartErrorHandler from './';
 
-const Template = () => (
-	<GoogleChartErrorHandler>
-		<ErrorComponent throwErrorOnMount />
-	</GoogleChartErrorHandler>
-);
+function Template() {
+	return (
+		<GoogleChartErrorHandler>
+			<ErrorComponent throwErrorOnMount />
+		</GoogleChartErrorHandler>
+	);
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

@@ -30,7 +30,7 @@ import MaterialTextField, {
  */
 import { useInstanceId } from '@wordpress/compose';
 
-const TextField = ( {
+function TextField( {
 	className,
 	name,
 	label,
@@ -48,7 +48,7 @@ const TextField = ( {
 	disabled,
 	onChange,
 	onKeyDown,
-} ) => {
+} ) {
 	// For accessibility, provide a generated id fallback if an id
 	// is not supplied. Adding an id is mandatory because otherwise the label
 	// is not able to associate with the input.
@@ -80,7 +80,7 @@ const TextField = ( {
 			/>
 		</MaterialTextField>
 	);
-};
+}
 
 TextField.propTypes = {
 	className: PropTypes.string,

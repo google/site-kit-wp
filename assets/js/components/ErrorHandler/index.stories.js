@@ -22,11 +22,13 @@
 import ThrowErrorComponent from '../../../../tests/js/ThrowErrorComponent';
 import ErrorHandler from './';
 
-const Template = () => (
-	<ErrorHandler>
-		<ThrowErrorComponent throwErrorOnMount />
-	</ErrorHandler>
-);
+function Template() {
+	return (
+		<ErrorHandler>
+			<ThrowErrorComponent throwErrorOnMount />
+		</ErrorHandler>
+	);
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

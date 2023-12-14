@@ -41,7 +41,7 @@ import useViewOnly from '../../../hooks/useViewOnly';
 
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug, OverrideComponent } ) => {
+function WidgetRenderer( { slug, OverrideComponent } ) {
 	const widget = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidget( slug )
 	);
@@ -108,7 +108,7 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 	}
 
 	return widgetElement;
-};
+}
 
 WidgetRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,

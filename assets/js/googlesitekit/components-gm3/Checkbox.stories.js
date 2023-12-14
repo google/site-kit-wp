@@ -35,7 +35,7 @@ const defaultProps = {
 	},
 };
 
-const InteractiveCheckbox = ( { children, ...props } ) => {
+function InteractiveCheckbox( { children, ...props } ) {
 	const [ checked, setChecked ] = useState( false );
 	return (
 		<Checkbox
@@ -50,96 +50,98 @@ const InteractiveCheckbox = ( { children, ...props } ) => {
 			{ children }
 		</Checkbox>
 	);
-};
+}
 
-export const Checkboxes = () => (
-	<div>
+export function Checkboxes() {
+	return (
 		<div>
-			<Checkbox
-				id="googlesitekit-checkbox-1"
-				name="googlesitekit__checkbox"
-				value="value-1"
-				{ ...defaultProps }
-			>
-				Default Checkbox
-			</Checkbox>
-		</div>
+			<div>
+				<Checkbox
+					id="googlesitekit-checkbox-1"
+					name="googlesitekit__checkbox"
+					value="value-1"
+					{ ...defaultProps }
+				>
+					Default Checkbox
+				</Checkbox>
+			</div>
 
-		<div>
-			<Checkbox
-				checked
-				name="googlesitekit__checkbox"
-				id="googlesitekit-checkbox-2"
-				value="value-2"
-				{ ...defaultProps }
-			>
-				Checked Checkbox
-			</Checkbox>
-		</div>
+			<div>
+				<Checkbox
+					checked
+					name="googlesitekit__checkbox"
+					id="googlesitekit-checkbox-2"
+					value="value-2"
+					{ ...defaultProps }
+				>
+					Checked Checkbox
+				</Checkbox>
+			</div>
 
-		<div>
-			<Checkbox
-				disabled
-				id="googlesitekit-checkbox-3"
-				name="googlesitekit__checkbox"
-				value="value-3"
-				{ ...defaultProps }
-			>
-				Disabled Checkbox
-			</Checkbox>
-		</div>
+			<div>
+				<Checkbox
+					disabled
+					id="googlesitekit-checkbox-3"
+					name="googlesitekit__checkbox"
+					value="value-3"
+					{ ...defaultProps }
+				>
+					Disabled Checkbox
+				</Checkbox>
+			</div>
 
-		<div>
-			<Checkbox
-				id="googlesitekit-checkbox-4"
-				name="googlesitekit__checkbox"
-				value="value-4"
-				loading
-				{ ...defaultProps }
-			>
-				Loading Checkbox
-			</Checkbox>
-		</div>
+			<div>
+				<Checkbox
+					id="googlesitekit-checkbox-4"
+					name="googlesitekit__checkbox"
+					value="value-4"
+					loading
+					{ ...defaultProps }
+				>
+					Loading Checkbox
+				</Checkbox>
+			</div>
 
-		<div>
-			<Checkbox
-				id="googlesitekit-checkbox-5"
-				name="googlesitekit__checkbox"
-				value="value-5"
-				{ ...defaultProps }
-			>
-				<div>
-					<span>
-						Complex <span> Label</span>
-					</span>
-					<span>&nbsp;Checkbox</span>
-				</div>
-			</Checkbox>
-		</div>
+			<div>
+				<Checkbox
+					id="googlesitekit-checkbox-5"
+					name="googlesitekit__checkbox"
+					value="value-5"
+					{ ...defaultProps }
+				>
+					<div>
+						<span>
+							Complex <span> Label</span>
+						</span>
+						<span>&nbsp;Checkbox</span>
+					</div>
+				</Checkbox>
+			</div>
 
-		<div>
-			<InteractiveCheckbox
-				id="googlesitekit-checkbox-6"
-				name="googlesitekit__checkbox"
-				value="value-6"
-			>
-				Interactive Checkbox
-			</InteractiveCheckbox>
-		</div>
+			<div>
+				<InteractiveCheckbox
+					id="googlesitekit-checkbox-6"
+					name="googlesitekit__checkbox"
+					value="value-6"
+				>
+					Interactive Checkbox
+				</InteractiveCheckbox>
+			</div>
 
-		<div>
-			<Checkbox
-				id="googlesitekit-checkbox-7"
-				name="googlesitekit__checkbox"
-				value="value-7"
-				description="This is a checkbox with a description."
-				{ ...defaultProps }
-			>
-				Checkbox with description
-			</Checkbox>
+			<div>
+				<Checkbox
+					id="googlesitekit-checkbox-7"
+					name="googlesitekit__checkbox"
+					value="value-7"
+					description="This is a checkbox with a description."
+					{ ...defaultProps }
+				>
+					Checkbox with description
+				</Checkbox>
+			</div>
 		</div>
-	</div>
-);
+	);
+}
 
 export default {
 	title: 'Components/Material 3/Checkbox',

@@ -26,7 +26,9 @@ import {
 } from '../../../../tests/js/utils';
 import UserMenu from '.';
 
-const Template = ( args ) => <UserMenu { ...args } />;
+function Template( args ) {
+	return <UserMenu { ...args } />;
+}
 
 export const DefaultUserMenu = Template.bind( {} );
 

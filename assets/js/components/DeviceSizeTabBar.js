@@ -34,7 +34,7 @@ import { Tab, TabBar } from 'googlesitekit-components';
 import DeviceSizeMobileIcon from '../../svg/icons/device-size-mobile-icon.svg';
 import DeviceSizeDesktopIcon from '../../svg/icons/device-size-desktop-icon.svg';
 
-const DeviceSizeTabBar = ( {
+function DeviceSizeTabBar( {
 	activeTab,
 	disabled = false,
 	handleDeviceSizeUpdate,
@@ -50,7 +50,7 @@ const DeviceSizeTabBar = ( {
 			icon: <DeviceSizeDesktopIcon width="23" height="17" />,
 		},
 	],
-} ) => {
+} ) {
 	const onUpdate = useCallback(
 		( index ) => {
 			const device = deviceSizes[ index ];
@@ -87,7 +87,7 @@ const DeviceSizeTabBar = ( {
 			} ) }
 		</TabBar>
 	);
-};
+}
 
 DeviceSizeTabBar.propTypes = {
 	activeTab: PropTypes.string,

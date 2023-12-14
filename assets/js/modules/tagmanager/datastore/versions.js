@@ -181,48 +181,52 @@ const baseSelectors = {
 	 * @return {(string|null|undefined)} Analytics property ID if present and valid, `null` if none exists or not valid, or `undefined` if not loaded yet.
 	 */
 	getLiveContainerAnalyticsPropertyID: createRegistrySelector(
-		( select ) => ( state, accountID, internalContainerID ) => {
-			const analyticsTag = select(
-				MODULES_TAGMANAGER
-			).getLiveContainerAnalyticsTag( accountID, internalContainerID );
+		( select ) =>
+			function ( state, accountID, internalContainerID ) {
+				const analyticsTag = select(
+					MODULES_TAGMANAGER
+				).getLiveContainerAnalyticsTag(
+					accountID,
+					internalContainerID
+				);
 
-			if ( analyticsTag === undefined ) {
-				return undefined;
-			}
-
-			if ( analyticsTag?.parameter ) {
-				// Check if property ID is provided directly on the tag first.
-				let propertyID = analyticsTag.parameter.find(
-					( { key } ) => key === 'trackingId'
-				)?.value;
-				// If not, check if there is a gaSettings variable referenced.
-				if ( ! propertyID ) {
-					propertyID = analyticsTag.parameter.find(
-						( { key } ) => key === 'gaSettings'
-					)?.value;
+				if ( analyticsTag === undefined ) {
+					return undefined;
 				}
-				// If the propertyID is a variable, parse out the name and look up its value.
-				if ( propertyID?.startsWith( '{{' ) ) {
-					propertyID = propertyID.replace( /(\{\{|\}\})/g, '' );
-					const gaSettingsVariable = select(
-						MODULES_TAGMANAGER
-					).getLiveContainerVariable(
-						accountID,
-						internalContainerID,
-						propertyID
-					);
-					propertyID = gaSettingsVariable?.parameter.find(
+
+				if ( analyticsTag?.parameter ) {
+					// Check if property ID is provided directly on the tag first.
+					let propertyID = analyticsTag.parameter.find(
 						( { key } ) => key === 'trackingId'
 					)?.value;
+					// If not, check if there is a gaSettings variable referenced.
+					if ( ! propertyID ) {
+						propertyID = analyticsTag.parameter.find(
+							( { key } ) => key === 'gaSettings'
+						)?.value;
+					}
+					// If the propertyID is a variable, parse out the name and look up its value.
+					if ( propertyID?.startsWith( '{{' ) ) {
+						propertyID = propertyID.replace( /(\{\{|\}\})/g, '' );
+						const gaSettingsVariable = select(
+							MODULES_TAGMANAGER
+						).getLiveContainerVariable(
+							accountID,
+							internalContainerID,
+							propertyID
+						);
+						propertyID = gaSettingsVariable?.parameter.find(
+							( { key } ) => key === 'trackingId'
+						)?.value;
+					}
+					// Finally, check that whatever was found is a valid ID.
+					if ( isValidPropertyID( propertyID ) ) {
+						return propertyID;
+					}
 				}
-				// Finally, check that whatever was found is a valid ID.
-				if ( isValidPropertyID( propertyID ) ) {
-					return propertyID;
-				}
-			}
 
-			return null;
-		}
+				return null;
+			}
 	),
 
 	/**
@@ -236,30 +240,31 @@ const baseSelectors = {
 	 * @return {(Object|null|undefined)} Live container Universal Analytics tag object, `null` if none exists, or `undefined` if not loaded yet.
 	 */
 	getLiveContainerAnalyticsTag: createRegistrySelector(
-		( select ) => ( state, accountID, internalContainerID ) => {
-			const liveContainerVersion = select(
-				MODULES_TAGMANAGER
-			).getLiveContainerVersion( accountID, internalContainerID );
+		( select ) =>
+			function ( state, accountID, internalContainerID ) {
+				const liveContainerVersion = select(
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( accountID, internalContainerID );
 
-			if ( liveContainerVersion === undefined ) {
-				return undefined;
+				if ( liveContainerVersion === undefined ) {
+					return undefined;
+				}
+
+				if ( liveContainerVersion?.tag ) {
+					const tagType =
+						liveContainerVersion.container.usageContext[ 0 ] ===
+						CONTEXT_WEB
+							? 'ua'
+							: 'ua_amp';
+					return (
+						liveContainerVersion.tag.find(
+							( { type } ) => type === tagType
+						) || null
+					);
+				}
+
+				return null;
 			}
-
-			if ( liveContainerVersion?.tag ) {
-				const tagType =
-					liveContainerVersion.container.usageContext[ 0 ] ===
-					CONTEXT_WEB
-						? 'ua'
-						: 'ua_amp';
-				return (
-					liveContainerVersion.tag.find(
-						( { type } ) => type === tagType
-					) || null
-				);
-			}
-
-			return null;
-		}
 	),
 
 	/**
@@ -274,25 +279,26 @@ const baseSelectors = {
 	 * @return {(Object|null|undefined)} Live container version object, `null` if none exists, or `undefined` if not loaded yet.
 	 */
 	getLiveContainerVariable: createRegistrySelector(
-		( select ) => ( state, accountID, internalContainerID, variableName ) => {
-			const liveContainerVersion = select(
-				MODULES_TAGMANAGER
-			).getLiveContainerVersion( accountID, internalContainerID );
+		( select ) =>
+			function ( state, accountID, internalContainerID, variableName ) {
+				const liveContainerVersion = select(
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( accountID, internalContainerID );
 
-			if ( liveContainerVersion === undefined ) {
-				return undefined;
+				if ( liveContainerVersion === undefined ) {
+					return undefined;
+				}
+
+				if ( liveContainerVersion?.variable ) {
+					return (
+						liveContainerVersion.variable.find(
+							( { name } ) => name === variableName
+						) || null
+					);
+				}
+
+				return null;
 			}
-
-			if ( liveContainerVersion?.variable ) {
-				return (
-					liveContainerVersion.variable.find(
-						( { name } ) => name === variableName
-					) || null
-				);
-			}
-
-			return null;
-		}
 	),
 
 	/**

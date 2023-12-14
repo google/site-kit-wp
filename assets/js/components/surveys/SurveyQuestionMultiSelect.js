@@ -43,7 +43,7 @@ import SurveyHeader from './SurveyHeader';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
-const SurveyQuestionMultiSelect = ( {
+function SurveyQuestionMultiSelect( {
 	question,
 	choices,
 	answerQuestion,
@@ -51,7 +51,7 @@ const SurveyQuestionMultiSelect = ( {
 	minChoices = 1,
 	maxChoices,
 	submitButtonText,
-} ) => {
+} ) {
 	const instanceID = useInstanceId(
 		SurveyQuestionMultiSelect,
 		'SurveyQuestionMultiSelect'
@@ -246,7 +246,7 @@ const SurveyQuestionMultiSelect = ( {
 			</div>
 		</div>
 	);
-};
+}
 
 SurveyQuestionMultiSelect.propTypes = {
 	question: PropTypes.string.isRequired,

@@ -31,7 +31,9 @@ import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import MetricsSelectionPanel from './';
 
-const Template = () => <MetricsSelectionPanel />;
+function Template() {
+	return <MetricsSelectionPanel />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'MetricsSelectionPanel';

@@ -142,7 +142,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			title: __( 'Title', 'google-site-kit' ),
 			description: __( 'Page Title', 'google-site-kit' ),
 			primary: true,
-			Component: ( { row } ) => {
+			Component( { row } ) {
 				const [ { value: title }, { value: url } ] =
 					row.dimensionValues;
 				const serviceURL = useSelect( ( select ) => {
@@ -172,9 +172,11 @@ function ModulePopularPagesWidgetGA4( props ) {
 			title: __( 'Pageviews', 'google-site-kit' ),
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return (
+					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+				);
+			},
 		},
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
@@ -182,9 +184,11 @@ function ModulePopularPagesWidgetGA4( props ) {
 			hideOnMobile: true,
 			field: 'metricValues.1.value',
 			className: 'googlesitekit-table__head-item--sessions',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return (
+					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+				);
+			},
 		},
 		{
 			title: __( 'Engagement Rate', 'google-site-kit' ),
@@ -192,18 +196,18 @@ function ModulePopularPagesWidgetGA4( props ) {
 			hideOnMobile: true,
 			field: 'metricValues.2.value',
 			className: 'googlesitekit-table__head-item--engagement-rate',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, '%' ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return <span>{ numFmt( fieldValue, '%' ) }</span>;
+			},
 		},
 		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metricValues.3.value',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, 's' ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return <span>{ numFmt( fieldValue, 's' ) }</span>;
+			},
 		},
 	];
 
@@ -213,7 +217,9 @@ function ModulePopularPagesWidgetGA4( props ) {
 	// while data is still loading.
 	if ( loading && isGA4ReportingTourActive ) {
 		rows = [];
-		ZeroState = () => <PreviewTable rows={ rows.length || 10 } />;
+		ZeroState = function () {
+			return <PreviewTable rows={ rows.length || 10 } />;
+		};
 	} else {
 		// Combine the titles from the pageTitles with the rows from the metrics report.
 		rows.forEach( ( row ) => {

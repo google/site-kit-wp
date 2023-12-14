@@ -90,7 +90,7 @@ function TopCountriesWidget( { Widget } ) {
 	const columns = [
 		{
 			field: 'dimensionValues',
-			Component: ( { fieldValue } ) => {
+			Component( { fieldValue } ) {
 				const [ title ] = fieldValue;
 
 				return <MetricTileTablePlainText content={ title.value } />;
@@ -98,14 +98,16 @@ function TopCountriesWidget( { Widget } ) {
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<strong>
-					{ numFmt( fieldValue / totalUsers, {
-						style: 'percent',
-						maximumFractionDigits: 1,
-					} ) }
-				</strong>
-			),
+			Component( { fieldValue } ) {
+				return (
+					<strong>
+						{ numFmt( fieldValue / totalUsers, {
+							style: 'percent',
+							maximumFractionDigits: 1,
+						} ) }
+					</strong>
+				);
+			},
 		},
 	];
 

@@ -22,67 +22,119 @@
 import TextField from './TextField';
 import WarningIcon from '../../../svg/icons/warning-v2.svg';
 
-const Template = () => (
-	<div>
-		<div style={ { marginBottom: '50px' } }>
-			<TextField label="Text Field" name="textfield" outlined />
-		</div>
-
-		<div style={ { marginBottom: '50px' } }>
-			<TextField
-				label="Text Field with Value"
-				name="textfield"
-				outlined
-				value="https://www.sitekitbygoogle.com"
-			/>
-		</div>
-
-		<div style={ { marginBottom: '50px' } }>
-			<TextField
-				label="Disabled Text Field"
-				name="textfield"
-				outlined
-				value="https://www.sitekitbygoogle.com"
-				disabled
-			/>
-		</div>
-
-		<div style={ { marginBottom: '50px' } }>
-			<TextField
-				label="With Helper Text"
-				name="textfield"
-				outlined
-				value="https://www.sitekitbygoogle.com"
-				helperText="Helper Text"
-				helperTextPersistent
-			/>
-		</div>
-
-		<div style={ { marginBottom: '50px' } }>
-			<TextField
-				label="With Icon"
-				name="textfield"
-				outlined
-				value="https://www.sitekitbygoogle.com"
-				trailingIcon={
-					<span className="googlesitekit-text-field-icon--error">
-						<WarningIcon width={ 14 } height={ 12 } />
-					</span>
-				}
-			/>
-		</div>
-
+function Template() {
+	return (
 		<div>
-			<TextField
-				label="Textarea"
-				name="textfield"
-				outlined
-				textarea
-				value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl"
-			/>
+			<div style={ { marginBottom: '50px' } }>
+				<TextField label="Text Field" name="textfield" outlined />
+			</div>
+
+			<div style={ { marginBottom: '50px' } }>
+				<TextField
+					label="Text Field with Value"
+					name="textfield"
+					outlined
+					value="https://www.sitekitbygoogle.com"
+				/>
+			</div>
+
+			<div style={ { marginBottom: '50px' } }>
+				<TextField
+					label="Disabled Text Field"
+					name="textfield"
+					outlined
+					value="https://www.sitekitbygoogle.com"
+					disabled
+				/>
+			</div>
+
+			<div style={ { marginBottom: '50px' } }>
+				<TextField
+					label="With Helper Text"
+					name="textfield"
+					outlined
+					value="https://www.sitekitbygoogle.com"
+					helperText="Helper Text"
+					helperTextPersistent
+				/>
+			</div>
+
+			<div style={ { marginBottom: '50px' } }>
+				<TextField
+					label="With Icon"
+					name="textfield"
+					outlined
+					value="https://www.sitekitbygoogle.com"
+					trailingIcon={
+						<span className="googlesitekit-text-field-icon--error">
+							<WarningIcon width={ 14 } height={ 12 } />
+						</span>
+					}
+				/>
+			</div>
+
+			<div>
+				<div style={ { marginBottom: '50px' } }>
+					<TextField label="Text Field" name="textfield" outlined />
+				</div>
+
+				<div style={ { marginBottom: '50px' } }>
+					<TextField
+						label="Text Field with Value"
+						name="textfield"
+						outlined
+						value="https://www.sitekitbygoogle.com"
+					/>
+				</div>
+
+				<div style={ { marginBottom: '50px' } }>
+					<TextField
+						label="Disabled Text Field"
+						name="textfield"
+						outlined
+						value="https://www.sitekitbygoogle.com"
+						disabled
+					/>
+				</div>
+
+				<div style={ { marginBottom: '50px' } }>
+					<TextField
+						label="With Helper Text"
+						name="textfield"
+						outlined
+						value="https://www.sitekitbygoogle.com"
+						helperText="Helper Text"
+						helperTextPersistent
+					/>
+				</div>
+
+				<div style={ { marginBottom: '50px' } }>
+					<TextField
+						label="With Icon"
+						name="textfield"
+						outlined
+						value="https://www.sitekitbygoogle.com"
+						trailingIcon={
+							<span className="googlesitekit-text-field-icon--error">
+								<WarningIcon width={ 14 } height={ 12 } />
+							</span>
+						}
+					/>
+				</div>
+
+				<div>
+					<TextField
+						label="Textarea"
+						name="textfield"
+						outlined
+						textarea
+						value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl"
+					/>
+				</div>
+			</div>
 		</div>
-	</div>
-);
+	);
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Text Fields';

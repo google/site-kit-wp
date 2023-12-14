@@ -24,7 +24,9 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { provideSiteConnection } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
-const Template = () => <SetupUsingProxyViewOnly />;
+function Template() {
+	return <SetupUsingProxyViewOnly />;
+}
 
 export const Start = Template.bind( {} );
 Start.storyName = 'Start';
