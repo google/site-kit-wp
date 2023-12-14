@@ -206,6 +206,24 @@ final class Analytics_4 extends Module
 			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 		}
 
+		// Since migration of Analytics module settings into Analytics 4 settings,
+		// if data was saved previously, it needs to be recovered.
+		add_filter(
+			'option_' . Settings::OPTION,
+			function ( $option ) {
+				if ( is_array( $option ) ) {
+					$recovered_settings = $this->maybe_recover_analytics_module_settings( $option );
+
+					if ( ! empty( $recovered_settings ) ) {
+						return $option + $recovered_settings;
+					}
+				}
+
+				return $option;
+			},
+			10
+		);
+
 		// Replicate Analytics settings for Analytics-4 if not set.
 		add_filter(
 			'option_' . Module_Sharing_Settings::OPTION,
@@ -1775,5 +1793,46 @@ final class Analytics_4 extends Module
 		}
 
 		return $allowed;
+	}
+
+
+
+	/**
+	 * Sync settings migrated from `Analytics` module if they are not
+	 * present in `Analytics_4` settings.
+	 *
+	 * This ensures backward compatibility for the users who had Site Kit installed
+	 * before migrating to the singular Analytics module. As some settings were defined
+	 * in old `Analtyics` module and re-used here.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $option Analytics 4 settings.
+	 * @return array Missing Analytics 4 settings array, or empty array if no setting is missing.
+	 */
+	protected function maybe_recover_analytics_module_settings( $option ) {
+		$analytics_settings = get_option( 'googlesitekit_analytics_settings' );
+		$recovered_settings = array();
+		$keys_to_check      = array(
+			'accountID',
+			'adsConversionID',
+			'adsenseLinked',
+			'canUseSnippet',
+			'trackingDisabled',
+		);
+		$missing_settings   = array_diff( $keys_to_check, array_keys( $option ) );
+
+		if ( empty( $missing_settings ) ) {
+			return $recovered_settings;
+		}
+
+		array_walk(
+			$missing_settings,
+			function( $setting ) use ( &$recovered_settings, $analytics_settings ) {
+				$recovered_settings[ $setting ] = $analytics_settings[ $setting ];
+			}
+		);
+
+		return $recovered_settings;
 	}
 }
