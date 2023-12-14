@@ -36,6 +36,7 @@ import {
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
+	PROPERTY_TYPE_GA4,
 } from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -157,6 +158,30 @@ const baseResolvers = {
 			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
 		}
 
+		const accountID = registry.select( MODULES_ANALYTICS ).getAccountID();
+
+		if ( ! accountID ) {
+			const matchedGA4Property = yield Data.commonActions.await(
+				registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty()
+			);
+			if ( matchedGA4Property?._accountID ) {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( matchedGA4Property?._accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
+
+				yield Data.commonActions.await(
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.selectProperty( matchedGA4Property._id )
+				);
+
+				return;
+			}
+		}
+
 		let ga4Property;
 		const ga4PropertyID = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -166,8 +191,6 @@ const baseResolvers = {
 		if ( ga4PropertyID === PROPERTY_CREATE ) {
 			return;
 		}
-
-		const accountID = registry.select( MODULES_ANALYTICS ).getAccountID();
 
 		if ( ga4PropertyID ) {
 			ga4Property = yield Data.commonActions.await(
