@@ -34,11 +34,11 @@ describe( 'FeatureTours', () => {
 	let registry;
 	let observeMock;
 	let disconnectMock;
-	const dashboardElementClassName = 'js-googlesitekit-main-dashboard';
+	const dashboardElementID = 'js-googlesitekit-main-dashboard';
 
 	const TourTooltipsWithMockUI = () => (
 		<div>
-			<div className={ dashboardElementClassName }>
+			<div id={ dashboardElementID }>
 				<div className="test-tour-step-1-target" />
 			</div>
 			<FeatureTours />
@@ -104,7 +104,7 @@ describe( 'FeatureTours', () => {
 		await waitForRegistry();
 
 		expect( observeMock ).toHaveBeenCalledWith(
-			container.querySelector( dashboardElementClassName )
+			container.querySelector( `#${ dashboardElementID }` )
 		);
 	} );
 

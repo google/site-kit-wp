@@ -26,6 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import PencilIcon from '../assets/svg/icons/pencil-alt.svg';
 import Link from '../assets/js/components/Link';
+import VisuallyHidden from '../assets/js/components/VisuallyHidden';
 
 storiesOf( 'Global', module ).add(
 	'Links',
@@ -131,6 +132,12 @@ storiesOf( 'Global', module ).add(
 				<p>
 					<Link href="http://google.com" external>
 						External Link
+					</Link>
+				</p>
+				<p>
+					<Link href="http://google.com" external>
+						External <VisuallyHidden>I am hiding </VisuallyHidden>
+						Link with VisuallyHidden content
 					</Link>
 				</p>
 				<p>
