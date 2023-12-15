@@ -193,10 +193,11 @@ export default function UserInputPreviewGroup( {
 							( !! currentlyEditingSlug && ! isEditing )
 						}
 						linkButton
+						trailingIcon={
+							<ChevronDownIcon width={ 20 } height={ 20 } />
+						}
 					>
 						{ __( 'Edit', 'google-site-kit' ) }
-
-						<ChevronDownIcon width={ 20 } height={ 20 } />
 					</Link>
 				</LoadingWrapper>
 			</div>

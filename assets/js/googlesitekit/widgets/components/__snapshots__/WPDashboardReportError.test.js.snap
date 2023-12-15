@@ -36,7 +36,9 @@ exports[`WPDashboardReportError should only render one error per module when the
             rel="noopener noreferrer"
             target="_blank"
           >
-            <span>
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
               Get help
             </span>
           </a>
@@ -76,7 +78,9 @@ exports[`WPDashboardReportError should only render one error per module when the
             rel="noopener noreferrer"
             target="_blank"
           >
-            <span>
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
               Get help
             </span>
           </a>
