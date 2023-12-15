@@ -38,54 +38,52 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constant
 describe( 'ReportError', () => {
 	let registry;
 	let invalidateResolutionSpy;
-	const moduleName = 'test-module';
+	const moduleName = 'analytics';
 
-	const errors = [
+	const newErrors = [
 		{
-			code: 'test-error-code',
-			message: 'Test error message one',
-			data: {
-				reason: 'Data Error',
+			error: {
+				code: 'test-error-code',
+				message: 'Test error message one',
+				data: {
+					reason: 'Data Error',
+				},
 			},
-			selectorData: {
-				args: [
-					{
-						dimensions: [ 'ga:date' ],
-						metrics: [ { expression: 'ga:users' } ],
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-					},
-				],
-				name: 'getReport',
-				storeName: MODULES_ANALYTICS,
-			},
+			baseName: 'getReport',
+			args: [
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			],
 		},
 		{
-			code: 'test-error-code',
-			message: 'Test error message two',
-			data: {
-				reason: 'Data Error',
+			error: {
+				code: 'test-error-code',
+				message: 'Test error message two',
+				data: {
+					reason: 'Data Error',
+				},
 			},
-			selectorData: {
-				args: [
-					{
-						dimensions: [ 'ga:date' ],
-						metrics: [ { expression: 'ga:users' } ],
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-					},
-				],
-				name: 'getReport',
-				storeName: MODULES_ANALYTICS,
-			},
+			baseName: 'getReport',
+			args: [
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-09-12',
+					endDate: '2020-09-25',
+				},
+			],
 		},
 	];
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideModules( registry, [
-			{ slug: moduleName, name: 'Test Module' },
-		] );
+		provideModules( registry );
+		provideModuleRegistrations( registry );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 		invalidateResolutionSpy = jest.spyOn(
 			registry.dispatch( MODULES_ANALYTICS ),
 			'invalidateResolution'
@@ -160,7 +158,7 @@ describe( 'ReportError', () => {
 		await waitForRegistry();
 
 		expect( container.querySelector( 'h3' ).textContent ).toEqual(
-			'Insufficient permissions in Test Module'
+			'Insufficient permissions in Analytics'
 		);
 	} );
 
@@ -178,7 +176,6 @@ describe( 'ReportError', () => {
 				slug: 'analytics',
 			},
 		] );
-		provideModuleRegistrations( registry );
 		provideUserInfo( registry, userData );
 
 		const [ accountID, internalWebPropertyID, profileID ] = [
@@ -266,7 +263,7 @@ describe( 'ReportError', () => {
 		await waitForRegistry();
 
 		expect( container.querySelector( 'h3' ).textContent ).toEqual(
-			'Access lost to Test Module'
+			'Access lost to Analytics'
 		);
 	} );
 
@@ -284,7 +281,6 @@ describe( 'ReportError', () => {
 				slug: 'analytics',
 			},
 		] );
-		provideModuleRegistrations( registry );
 		provideUserInfo( registry, userData );
 
 		const [ accountID, internalWebPropertyID, profileID ] = [
@@ -323,22 +319,22 @@ describe( 'ReportError', () => {
 	} );
 
 	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", async () => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+				},
+			},
+			'getAccountID',
+			[]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+
 		const { queryByText, waitForRegistry } = render(
-			<ReportError
-				moduleSlug="analytics"
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-					},
-					selectorData: {
-						args: [],
-						name: 'getAccountID',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
+			<ReportError moduleSlug="analytics" error={ errors } />,
 			{
 				registry,
 			}
@@ -350,22 +346,22 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should not render the `Retry` button if the error reason is `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', async () => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+				},
+			},
+			'getAccountID',
+			[]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+
 		const { queryByText, waitForRegistry } = render(
-			<ReportError
-				moduleSlug="analytics"
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-					},
-					selectorData: {
-						args: [],
-						name: 'getAccountID',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
+			<ReportError moduleSlug="analytics" error={ errors } />,
 			{
 				registry,
 			}
@@ -377,22 +373,22 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should not render the `Retry` button if the error reason is `ERROR_CODE_MISSING_REQUIRED_SCOPE`', async () => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			'getAccountID',
+			[]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+
 		const { queryByText, waitForRegistry } = render(
-			<ReportError
-				moduleSlug="analytics"
-				error={ {
-					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-					message: 'Test error message',
-					data: {
-						reason: '',
-					},
-					selectorData: {
-						args: [],
-						name: 'getAccountID',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
+			<ReportError moduleSlug="analytics" error={ errors } />,
 			{
 				registry,
 			}
@@ -404,23 +400,23 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should not render the `Retry` button if the error is an auth error', async () => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+					reconnectURL: 'example.com',
+				},
+			},
+			'getAccountID',
+			[]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+
 		const { queryByText, waitForRegistry } = render(
-			<ReportError
-				moduleSlug="analytics"
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: '',
-						reconnectURL: 'example.com',
-					},
-					selectorData: {
-						args: [],
-						name: 'getAccountID',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
+			<ReportError moduleSlug="analytics" error={ errors } />,
 			{
 				registry,
 			}
@@ -432,29 +428,29 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render the `Retry` button if the error selector name is `getReport`', async () => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			'getReport',
+			[
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+
 		const { getByRole, waitForRegistry } = render(
-			<ReportError
-				moduleSlug="analytics"
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: '',
-					},
-					selectorData: {
-						args: [
-							{
-								dimensions: [ 'ga:date' ],
-								metrics: [ { expression: 'ga:users' } ],
-								startDate: '2020-08-11',
-								endDate: '2020-09-07',
-							},
-						],
-						name: 'getReport',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
+			<ReportError moduleSlug="analytics" error={ errors } />,
 			{
 				registry,
 			}
@@ -466,28 +462,28 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should dispatch the `invalidateResolution` action for each retry-able error', async () => {
+		for ( const { error, baseName, args } of newErrors ) {
+			await registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveError( error, baseName, args );
+		}
+		// The following error object is not retry-able.
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			'getAccountID',
+			[]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+
 		const { getByRole, waitForRegistry } = render(
-			<ReportError
-				moduleSlug="analytics"
-				error={ [
-					...errors,
-					// The following error object is not retry-able.
-					...[
-						{
-							code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-							message: 'Test error message',
-							data: {
-								reason: '',
-							},
-							selectorData: {
-								args: [],
-								name: 'getAccountID',
-								storeName: MODULES_ANALYTICS,
-							},
-						},
-					],
-				] }
-			/>,
+			<ReportError moduleSlug="analytics" error={ errors } />,
 			{
 				registry,
 			}
@@ -506,6 +502,14 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should list all the error descriptions one by one if errors are different', async () => {
+		for ( const { error, baseName, args } of newErrors ) {
+			await registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveError( error, baseName, args );
+		}
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+
 		const { queryByText, getByRole, waitForRegistry } = render(
 			<ReportError moduleSlug="analytics" error={ errors } />,
 			{
@@ -527,6 +531,14 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should list only the unique error descriptions', async () => {
+		for ( const { error, baseName, args } of newErrors ) {
+			await registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveError( error, baseName, args );
+		}
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+
 		const { container, queryByText, getByRole, waitForRegistry } = render(
 			<ReportError
 				moduleSlug="analytics"
@@ -558,22 +570,25 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render `Get help` link without prefix text on non-retryable error', async () => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			'getAccountID',
+			[]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+
 		const { getByRole, queryByText, waitForRegistry } = render(
 			<ReportError
 				moduleSlug="analytics"
 				// Non-Retryable Error
-				error={ {
-					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-					message: 'Test error message',
-					data: {
-						reason: '',
-					},
-					selectorData: {
-						args: [],
-						name: 'getAccountID',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
+				error={ errors }
 			/>,
 			{
 				registry,
@@ -589,29 +604,31 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render `Get help` link with prefix text on retryable error', async () => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			'getReport',
+			[
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
 		const { getByRole, queryByText, waitForRegistry } = render(
 			<ReportError
 				moduleSlug="analytics"
 				// Retryable Error
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: '',
-					},
-					selectorData: {
-						args: [
-							{
-								dimensions: [ 'ga:date' ],
-								metrics: [ { expression: 'ga:users' } ],
-								startDate: '2020-08-11',
-								endDate: '2020-09-07',
-							},
-						],
-						name: 'getReport',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
+				error={ errors }
 			/>,
 			{
 				registry,
