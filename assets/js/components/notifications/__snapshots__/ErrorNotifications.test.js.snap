@@ -237,7 +237,9 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <span>
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
                   Learn more
                 </span>
                 <span

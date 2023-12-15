@@ -245,13 +245,15 @@ export default function Footer( props ) {
 					__( 'Edit %s settings', 'google-site-kit' ),
 					name
 				) }
+				trailingIcon={
+					<PencilIcon
+						className="googlesitekit-settings-module__edit-button-icon"
+						width={ 10 }
+						height={ 10 }
+					/>
+				}
 			>
 				{ __( 'Edit', 'google-site-kit' ) }
-				<PencilIcon
-					className="googlesitekit-settings-module__edit-button-icon"
-					width="10"
-					height="10"
-				/>
 			</Link>
 		);
 	}
@@ -262,17 +264,19 @@ export default function Footer( props ) {
 				className="googlesitekit-settings-module__remove-button"
 				onClick={ handleDialog }
 				danger
+				trailingIcon={
+					<TrashIcon
+						className="googlesitekit-settings-module__remove-button-icon"
+						width={ 13 }
+						height={ 13 }
+					/>
+				}
 			>
 				{ sprintf(
 					/* translators: %s: module name */
 					__( 'Disconnect %s from Site Kit', 'google-site-kit' ),
 					name
 				) }
-				<TrashIcon
-					className="googlesitekit-settings-module__remove-button-icon"
-					width="13"
-					height="13"
-				/>
 			</Link>
 		);
 	} else if ( ! isEditing && moduleHomepage ) {
