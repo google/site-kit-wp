@@ -39,6 +39,24 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		parent::register();
 
 		$this->register_owned_keys();
+
+		// Since migration of Analytics module settings into Analytics 4 settings,
+		// if data was saved previously, it needs to be recovered.
+		add_filter(
+			'option_' . self::OPTION,
+			function ( $option ) {
+				if ( is_array( $option ) ) {
+					$missing_settings = $this->retrieve_missing_analytics_4_settings( $option );
+
+					if ( ! empty( $missing_settings ) ) {
+						return $option + $missing_settings;
+					}
+				}
+
+				return $option;
+			},
+			10
+		);
 	}
 
 	/**
@@ -50,8 +68,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	public function get_owned_keys() {
 		return array(
-			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-			/* 'adsConversionID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			'accountID',
 			'propertyID',
 			'webDataStreamID',
@@ -165,6 +181,46 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 
 			return $option;
 		};
+	}
+
+	/**
+	 * Sync settings migrated from `Analytics` module if they are not
+	 * present in `Analytics_4` settings.
+	 *
+	 * This ensures backward compatibility for the users who had Site Kit installed
+	 * before migrating to the singular Analytics module. As some settings were defined
+	 * in old `Analtyics` module and re-used here.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $option Analytics 4 settings.
+	 * @return array Missing Analytics 4 settings array, or empty array if no setting is missing.
+	 */
+	protected function retrieve_missing_analytics_4_settings( $option ) {
+		$recovered_settings = array();
+		$keys_to_check      = array(
+			'accountID',
+			'adsConversionID',
+			'adsenseLinked',
+			'canUseSnippet',
+			'trackingDisabled',
+		);
+		$missing_settings   = array_diff( $keys_to_check, array_keys( $option ) );
+
+		if ( empty( $missing_settings ) ) {
+			return $recovered_settings;
+		}
+
+		$analytics_settings = get_option( 'googlesitekit_analytics_settings' );
+
+		array_walk(
+			$missing_settings,
+			function( $setting ) use ( &$recovered_settings, $analytics_settings ) {
+				$recovered_settings[ $setting ] = $analytics_settings[ $setting ];
+			}
+		);
+
+		return $recovered_settings;
 	}
 
 }

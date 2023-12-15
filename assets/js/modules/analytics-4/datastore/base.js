@@ -30,9 +30,6 @@ import { convertDateStringToUNIXTimestamp } from '../../../util';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	ownedSettingsSlugs: [
-		// TODO: These can be uncommented when Analytics and Analytics 4
-		// modules are officially separated.
-		// 'adsConversionID',
 		'accountID',
 		'propertyID',
 		'webDataStreamID',

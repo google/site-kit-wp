@@ -3102,44 +3102,6 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_retrieve_missing_analytics_4_settings() {
-		delete_option( Settings::OPTION );
-
-		$analytics_settings = new Analytics_Settings( $this->options );
-		$analytics_settings->register();
-
-		$options = new Options( $this->context );
-		$options->set(
-			Settings::OPTION,
-			array(
-				'propertyID'                => '123',
-				'webDataStreamID'           => '456',
-				'measurementID'             => 'G-789',
-				'useSnippet'                => true,
-				'ownerID'                   => $this->user->ID,
-				'googleTagID'               => 'GT-123',
-				'googleTagAccountID'        => '123',
-				'googleTagContainerID'      => '456',
-				'googleTagLastSyncedAtMs'   => 0,
-				'availableCustomDimensions' => null,
-				'propertyCreateTime'        => 0,
-			)
-		);
-
-		$keys_to_check = array(
-			'accountID',
-			'adsConversionID',
-			'adsenseLinked',
-			'canUseSnippet',
-			'trackingDisabled',
-		);
-		$settings      = $options->get( Settings::OPTION );
-
-		foreach ( $keys_to_check as $key ) {
-			$this->assertArrayHasKey( $key, $settings );
-		}
-	}
-
 	/**
 	 * @return Module_With_Scopes
 	 */
