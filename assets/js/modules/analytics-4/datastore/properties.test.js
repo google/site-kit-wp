@@ -450,7 +450,10 @@ describe( 'modules/analytics-4 properties', () => {
 			const propertyID =
 				fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id;
 			const webDataStreamID = '4000';
-			const measurementID = '155BC2366E';
+			const measurementID = fixtures.webDataStreams.find(
+				( stream ) => stream._propertyID === propertyID
+				// eslint-disable-next-line sitekit/acronym-case
+			).webStreamData.measurementId;
 
 			beforeEach( () => {
 				provideSiteInfo( registry );

@@ -109,7 +109,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 1`] = 
           class="mdc-select__selected-text"
           tabindex="0"
         >
-          Main datastream (155BC2366E)
+          Main datastream (G-155BC2366E)
         </div>
         <div
           class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
