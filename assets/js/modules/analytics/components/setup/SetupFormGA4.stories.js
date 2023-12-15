@@ -31,12 +31,15 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
+const { accountSummaries, webDataStreamsBatch } = ga4Fixtures;
+const accounts = accountSummaries;
+const properties = accounts[ 1 ].propertySummaries;
+const accountID = accounts[ 1 ]._id;
+const propertyID = properties[ 0 ]._id;
+
 function Template() {
 	return <ModuleSetup moduleSlug="analytics" />;
 }
-
-const { accounts } = fixtures.accountsPropertiesProfiles;
-const accountID = accounts[ 0 ].id;
 
 export const WithoutEnableUAToggle = Template.bind( null );
 WithoutEnableUAToggle.storyName = 'Without Enable UA Toggle';
@@ -96,22 +99,6 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetExistingTag( null );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( ga4Fixtures.properties, {
-						accountID,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreamsBatch(
-						ga4Fixtures.webDataStreamsBatchSetup,
-						{
-							propertyIDs: Object.keys(
-								ga4Fixtures.webDataStreamsBatchSetup
-							),
-						}
-					);
-
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					adsConversionID: '',
 					canUseSnippet: true,
@@ -121,10 +108,20 @@ export default {
 					.receiveGetExistingTag( null );
 				registry
 					.dispatch( MODULES_ANALYTICS )
-					.receiveGetAccounts( accounts );
-				registry
-					.dispatch( MODULES_ANALYTICS )
 					.receiveGetProperties( [], { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( properties[ 0 ], {
+						propertyID,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+						propertyIDs: [ propertyID ],
+					} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS )

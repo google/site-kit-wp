@@ -34,12 +34,12 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../../analytics-4/datastore/__fixtures__';
 
-const { accountSummaries, webDataStreamsBatch } = fixtures;
+const { accountSummaries, webDataStreamsBatch, webDataStreams } = fixtures;
 const accounts = accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
-const measurementID = fixtures.webDataStreams.find(
+const measurementID = webDataStreams.find(
 	( stream ) => stream._propertyID === propertyID
 	// eslint-disable-next-line sitekit/acronym-case
 ).webStreamData.measurementId;
