@@ -93,7 +93,7 @@ describe( 'SettingsEdit', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
+			.receiveGetAccountSummaries( accountSummaries );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getAccounts', [] );
