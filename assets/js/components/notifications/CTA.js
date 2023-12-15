@@ -28,7 +28,7 @@ import classnames from 'classnames';
 import { Button } from 'googlesitekit-components';
 import Link from '../Link';
 
-const CTA = ( {
+function CTA( {
 	title,
 	headerText,
 	headerContent,
@@ -41,55 +41,59 @@ const CTA = ( {
 	onClick,
 	'aria-label': ariaLabel,
 	children,
-} ) => (
-	<div
-		className={ classnames( 'googlesitekit-cta', {
-			'googlesitekit-cta--error': error,
-		} ) }
-	>
-		{ ( headerText || headerContent ) && (
-			<div className="googlesitekit-cta__header">
-				{ headerText && (
-					<h2 className="googlesitekit-cta__header_text">
-						{ headerText }
-					</h2>
-				) }
-				{ headerContent }
-			</div>
-		) }
-		{ title && <h3 className="googlesitekit-cta__title">{ title }</h3> }
-		{ description && typeof description === 'string' && (
-			<p className="googlesitekit-cta__description">{ description }</p>
-		) }
-		{ description && typeof description !== 'string' && (
-			<div className="googlesitekit-cta__description">
-				{ description }
-			</div>
-		) }
-		{ ctaLabel && ctaType === 'button' && (
-			<Button
-				aria-label={ ariaLabel }
-				href={ ctaLink }
-				onClick={ onClick }
-			>
-				{ ctaLabel }
-			</Button>
-		) }
-		{ ctaLabel && ctaType === 'link' && (
-			<Link
-				href={ ctaLink }
-				onClick={ onClick }
-				aria-label={ ariaLabel }
-				external={ ctaLinkExternal }
-				hideExternalIndicator={ ctaLinkExternal }
-				arrow
-			>
-				{ ctaLabel }
-			</Link>
-		) }
-		{ children }
-	</div>
-);
+} ) {
+	return (
+		<div
+			className={ classnames( 'googlesitekit-cta', {
+				'googlesitekit-cta--error': error,
+			} ) }
+		>
+			{ ( headerText || headerContent ) && (
+				<div className="googlesitekit-cta__header">
+					{ headerText && (
+						<h2 className="googlesitekit-cta__header_text">
+							{ headerText }
+						</h2>
+					) }
+					{ headerContent }
+				</div>
+			) }
+			{ title && <h3 className="googlesitekit-cta__title">{ title }</h3> }
+			{ description && typeof description === 'string' && (
+				<p className="googlesitekit-cta__description">
+					{ description }
+				</p>
+			) }
+			{ description && typeof description !== 'string' && (
+				<div className="googlesitekit-cta__description">
+					{ description }
+				</div>
+			) }
+			{ ctaLabel && ctaType === 'button' && (
+				<Button
+					aria-label={ ariaLabel }
+					href={ ctaLink }
+					onClick={ onClick }
+				>
+					{ ctaLabel }
+				</Button>
+			) }
+			{ ctaLabel && ctaType === 'link' && (
+				<Link
+					href={ ctaLink }
+					onClick={ onClick }
+					aria-label={ ariaLabel }
+					external={ ctaLinkExternal }
+					hideExternalIndicator={ ctaLinkExternal }
+					arrow
+				>
+					{ ctaLabel }
+				</Link>
+			) }
+			{ children }
+		</div>
+	);
+}
 
 CTA.propTypes = {
 	title: PropTypes.string.isRequired,

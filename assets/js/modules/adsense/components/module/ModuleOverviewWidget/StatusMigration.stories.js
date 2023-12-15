@@ -28,7 +28,9 @@ import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import * as fixtures from '../../../datastore/__fixtures__';
 
-const Template = () => <StatusMigration />;
+function Template() {
+	return <StatusMigration />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

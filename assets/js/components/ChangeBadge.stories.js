@@ -21,11 +21,13 @@
  */
 import ChangeBadge from './ChangeBadge';
 
-const Template = ( args ) => (
-	<div style={ { display: 'flex' } }>
-		<ChangeBadge { ...args } />
-	</div>
-);
+function Template( args ) {
+	return (
+		<div style={ { display: 'flex' } }>
+			<ChangeBadge { ...args } />
+		</div>
+	);
+}
 
 export const Positive = Template.bind( {} );
 Positive.storyName = 'Positive';

@@ -35,7 +35,7 @@ import { calculateChange } from '../../util';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 const { useSelect } = Data;
 
-const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
+function AdminBarSessionsGA4( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
@@ -107,6 +107,6 @@ const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
-};
+}
 
 export default AdminBarSessionsGA4;

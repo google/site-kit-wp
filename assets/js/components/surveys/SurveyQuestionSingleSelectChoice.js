@@ -34,13 +34,13 @@ import { Radio, TextField } from 'googlesitekit-components';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
-const SurveyQuestionSingleSelectChoice = ( {
+function SurveyQuestionSingleSelectChoice( {
 	value,
 	setValue,
 	writeIn,
 	setWriteIn,
 	choice,
-} ) => {
+} ) {
 	const { answer_ordinal, text, write_in } = choice; // eslint-disable-line camelcase
 	const isChecked = value === answer_ordinal; // eslint-disable-line camelcase
 	const uniqueID = `googlesitekit-survey__multi-select-${ answer_ordinal }-${ text }`; // eslint-disable-line camelcase
@@ -87,7 +87,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 			) }
 		</div>
 	);
-};
+}
 
 SurveyQuestionSingleSelectChoice.propTypes = {
 	choice: PropTypes.shape( {

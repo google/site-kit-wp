@@ -159,7 +159,9 @@ describe( 'Dashboard Navigation', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'SpeedWidget', {
-						Component: () => <div>Speed Widget</div>,
+						Component() {
+							return <div>Speed Widget</div>;
+						},
 					} );
 				registry
 					.dispatch( CORE_WIDGETS )

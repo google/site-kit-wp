@@ -146,7 +146,7 @@ const tableColumns = [
 		title: __( 'Title', 'google-site-kit' ),
 		description: __( 'Page Title', 'google-site-kit' ),
 		primary: true,
-		Component: ( { row } ) => {
+		Component( { row } ) {
 			const [ title, path ] = row.dimensions;
 			return <DetailsPermaLinks title={ title } path={ path } />;
 		},
@@ -155,8 +155,8 @@ const tableColumns = [
 		title: __( 'Pageviews', 'google-site-kit' ),
 		description: __( 'Pageviews', 'google-site-kit' ),
 		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => (
-			<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
-		),
+		Component( { fieldValue } ) {
+			return <span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>;
+		},
 	},
 ];

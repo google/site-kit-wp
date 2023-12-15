@@ -35,7 +35,9 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 
-const Template = () => <SetupUsingProxyWithSignIn />;
+function Template() {
+	return <SetupUsingProxyWithSignIn />;
+}
 
 export const Start = Template.bind( {} );
 Start.storyName = 'Start';

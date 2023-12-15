@@ -88,7 +88,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 	const columns = [
 		{
 			field: 'keys.0',
-			Component: ( { fieldValue } ) => {
+			Component( { fieldValue } ) {
 				const searchAnalyticsURL = useSelect( ( select ) => {
 					return ! viewOnlyDashboard
 						? select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
@@ -119,15 +119,17 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		},
 		{
 			field: 'ctr',
-			Component: ( { fieldValue } ) => (
-				<strong>
-					{ sprintf(
-						/* translators: %s: clickthrough rate value */
-						__( '%s CTR', 'google-site-kit' ),
-						numFmt( fieldValue, '%' )
-					) }
-				</strong>
-			),
+			Component( { fieldValue } ) {
+				return (
+					<strong>
+						{ sprintf(
+							/* translators: %s: clickthrough rate value */
+							__( '%s CTR', 'google-site-kit' ),
+							numFmt( fieldValue, '%' )
+						) }
+					</strong>
+				);
+			},
 		},
 	];
 

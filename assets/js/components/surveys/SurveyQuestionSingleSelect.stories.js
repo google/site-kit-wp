@@ -21,11 +21,13 @@
  */
 import SurveyQuestionSingleSelect from './SurveyQuestionSingleSelect';
 
-const Template = ( args ) => (
-	<div className="googlesitekit-survey">
-		<SurveyQuestionSingleSelect { ...args } />
-	</div>
-);
+function Template( args ) {
+	return (
+		<div className="googlesitekit-survey">
+			<SurveyQuestionSingleSelect { ...args } />
+		</div>
+	);
+}
 
 export const SurveyQuestionSingleSelectStory = Template.bind( {} );
 SurveyQuestionSingleSelectStory.storyName = 'SurveyQuestionSingleSelect';

@@ -50,7 +50,7 @@ function Setup() {
 	return <ModuleSetup moduleSlug="analytics" />;
 }
 
-const WithRegistry = ( Story ) => {
+function WithRegistry( Story ) {
 	const registry = useRegistry();
 	provideModules( registry, [
 		{
@@ -62,7 +62,7 @@ const WithRegistry = ( Story ) => {
 	provideModuleRegistrations( registry );
 
 	return <Story registry={ registry } />;
-};
+}
 
 storiesOf( 'Analytics Module/Setup', module )
 	.add(

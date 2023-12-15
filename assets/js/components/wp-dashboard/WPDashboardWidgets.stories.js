@@ -39,13 +39,13 @@ import {
 	setupAnalytics4GatheringData,
 } from './common-GA4.stories';
 
-const Template = ( { setupRegistry } ) => {
+function Template( { setupRegistry } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<WPDashboardWidgets />
 		</WithRegistrySetup>
 	);
-};
+}
 
 export const ReadyGA4 = Template.bind( {} );
 ReadyGA4.storyName = 'Ready';

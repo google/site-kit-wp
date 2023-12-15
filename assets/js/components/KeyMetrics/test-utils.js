@@ -51,7 +51,9 @@ export const provideKeyMetricsWidgetRegistrations = ( registry, widgets ) => {
 
 	Object.keys( widgets ).forEach( ( slug ) => {
 		registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
-			Component: () => <div>Hello test.</div>,
+			Component() {
+				return <div>Hello test.</div>;
+			},
 			...widgets[ slug ],
 		} );
 

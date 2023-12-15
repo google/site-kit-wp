@@ -29,7 +29,7 @@ import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/W
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-const Header = () => {
+function Header() {
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
@@ -48,6 +48,6 @@ const Header = () => {
 			) }
 		/>
 	);
-};
+}
 
 export default Header;

@@ -26,7 +26,9 @@ import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import UACutoffWarning from './UACutoffWarning';
 
-const Template = () => <UACutoffWarning />;
+function Template() {
+	return <UACutoffWarning />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
