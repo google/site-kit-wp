@@ -64,6 +64,8 @@ const Link = forwardRef( ( props, ref ) => {
 		standalone = false,
 		linkButton = false,
 		to,
+		iconPrefix,
+		iconSuffix,
 		...otherProps
 	} = props;
 
@@ -151,6 +153,27 @@ const Link = forwardRef( ( props, ref ) => {
 	const LinkComponent = getLinkComponent();
 	const ariaLabel = getAriaLabel();
 
+	// Set the prefix/suffix icons, based on the type of link this is and
+	// the props supplied.
+	let iconPrefixToUse = iconPrefix;
+	let iconSuffixToUse = iconSuffix;
+
+	if ( back ) {
+		iconPrefixToUse = <BackIcon width={ 14 } height={ 14 } />;
+	}
+
+	if ( external && ! hideExternalIndicator ) {
+		iconSuffixToUse = <ExternalIcon width={ 14 } height={ 14 } />;
+	}
+
+	if ( arrow && ! inverse ) {
+		iconSuffixToUse = <ArrowIcon width={ 14 } height={ 14 } />;
+	}
+
+	if ( arrow && inverse ) {
+		iconSuffixToUse = <ArrowInverseIcon width={ 14 } height={ 14 } />;
+	}
+
 	return (
 		<LinkComponent
 			aria-label={ ariaLabel }
@@ -177,24 +200,12 @@ const Link = forwardRef( ( props, ref ) => {
 			to={ to }
 			{ ...otherProps }
 		>
-			{ back && (
-				<IconWrapper marginRight={ 5 }>
-					<BackIcon width={ 14 } height={ 14 } />
-				</IconWrapper>
+			{ !! iconPrefixToUse && (
+				<IconWrapper marginRight={ 5 }>{ iconPrefixToUse }</IconWrapper>
 			) }
 			{ children }
-			{ external && ! hideExternalIndicator && (
-				<IconWrapper marginLeft={ 5 }>
-					<ExternalIcon width={ 14 } height={ 14 } />
-				</IconWrapper>
-			) }
-			{ arrow && (
-				<IconWrapper marginLeft={ 5 }>
-					{ ! inverse && <ArrowIcon width={ 14 } height={ 14 } /> }
-					{ inverse && (
-						<ArrowInverseIcon width={ 14 } height={ 14 } />
-					) }
-				</IconWrapper>
+			{ !! iconSuffixToUse && (
+				<IconWrapper marginLeft={ 5 }>{ iconSuffixToUse }</IconWrapper>
 			) }
 		</LinkComponent>
 	);
@@ -217,6 +228,8 @@ Link.propTypes = {
 	standalone: PropTypes.bool,
 	linkButton: PropTypes.bool,
 	to: PropTypes.string,
+	iconPrefix: PropTypes.node,
+	iconSuffix: PropTypes.node,
 };
 
 export default Link;
