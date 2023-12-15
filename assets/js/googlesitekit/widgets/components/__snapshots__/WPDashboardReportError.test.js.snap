@@ -36,7 +36,9 @@ exports[`WPDashboardReportError should only render one error per module when the
             rel="noopener noreferrer"
             target="_blank"
           >
-            Get help
+            <span>
+              Get help
+            </span>
           </a>
         </div>
       </div>
@@ -74,7 +76,9 @@ exports[`WPDashboardReportError should only render one error per module when the
             rel="noopener noreferrer"
             target="_blank"
           >
-            Get help
+            <span>
+              Get help
+            </span>
           </a>
         </div>
       </div>
