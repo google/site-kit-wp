@@ -27,6 +27,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import {
 	provideKeyMetrics,
+	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import {
@@ -40,6 +41,8 @@ import {
 } from '../../../../googlesitekit/datastore/user/constants';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
 import WidgetNull from '../../../../googlesitekit/widgets/components/WidgetNull';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 describe( 'TopTrafficSourceWidget', () => {
 	const { Widget } = getWidgetComponentProps(
@@ -134,19 +137,26 @@ describe( 'TopTrafficSourceWidget', () => {
 				WidgetNull={ WidgetNull }
 			/>,
 			{
-				setupRegistry: ( registryToSetup ) => {
-					registryToSetup
+				setupRegistry: ( registry ) => {
+					registry
 						.dispatch( CORE_USER )
 						.setReferenceDate( '2020-09-08' );
 
-					provideModules( registryToSetup, [
+					provideModules( registry, [
 						{
 							slug: 'analytics-4',
 							active: true,
 							connected: true,
 						},
 					] );
-					provideKeyMetrics( registryToSetup );
+					provideModuleRegistrations( registry );
+					registry
+						.dispatch( MODULES_ANALYTICS )
+						.receiveGetSettings( {} );
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
+					provideKeyMetrics( registry );
 				},
 			}
 		);
