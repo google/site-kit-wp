@@ -32,8 +32,8 @@
 		fill: currentColor;
 	}
 
-	> span > svg {
-		vertical-align: bottom;
+	.googlesitekit-cta-link__text-wrapper > svg {
+		vertical-align: text-bottom;
 	}
 
 	&:hover {

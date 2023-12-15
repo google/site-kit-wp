@@ -48,4 +48,14 @@
 		padding-left: 6px; // Tweak the padding to ensure the link is aligned in its focus state.
 		white-space: nowrap;
 	}
+
+	.googlesitekit-km-change-metrics-cta .googlesitekit-cta-link__text-wrapper {
+		position: relative;
+		top: -6px;
+	}
+
+	.googlesitekit-km-change-metrics-cta svg {
+		position: relative;
+		top: 6px;
+	}
 }

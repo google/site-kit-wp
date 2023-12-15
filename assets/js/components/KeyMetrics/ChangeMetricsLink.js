@@ -67,7 +67,9 @@ export default function ChangeMetricsLink() {
 				className="googlesitekit-km-change-metrics-cta"
 				onClick={ openMetricsSelectionPanel }
 			>
-				<PencilIcon width={ 22 } height={ 22 } />
+				<span className="googlesitekit-km-change-metrics-cta__icon-wrapper">
+					<PencilIcon width={ 22 } height={ 22 } />
+				</span>
 				{ __( 'Change Metrics', 'google-site-kit' ) }
 			</Link>
 			<SetupCompletedSurveyTrigger />

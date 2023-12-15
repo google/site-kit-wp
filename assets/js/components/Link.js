@@ -182,7 +182,9 @@ const Link = forwardRef( ( props, ref ) => {
 					<BackIcon width={ 14 } height={ 14 } />
 				</IconWrapper>
 			) }
-			<span>{ children }</span>
+			<span className="googlesitekit-cta-link__text-wrapper">
+				{ children }
+			</span>
 			{ external && ! hideExternalIndicator && (
 				<IconWrapper marginLeft={ 5 }>
 					<ExternalIcon width={ 14 } height={ 14 } />
