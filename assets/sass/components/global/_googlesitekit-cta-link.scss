@@ -28,21 +28,8 @@
 	text-align: left;
 	text-decoration: none;
 
-	.screen-reader-text {
-		display: inline-block;
-		height: 0.2rem;
-		margin: 0;
-		opacity: 0;
-		position: static;
-		width: 0.2rem;
-	}
-
 	svg {
 		fill: currentColor;
-	}
-
-	> span > svg {
-		vertical-align: bottom;
 	}
 
 	&:hover {

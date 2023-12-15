@@ -205,7 +205,9 @@ const Link = forwardRef( ( props, ref ) => {
 					{ leadingIconToUse }
 				</IconWrapper>
 			) }
-			{ children }
+			<span className="googlesitekit-cta-link__contents">
+				{ children }
+			</span>
 			{ !! trailingIconToUse && (
 				<IconWrapper marginLeft={ 5 }>
 					{ trailingIconToUse }
