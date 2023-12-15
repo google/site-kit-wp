@@ -267,8 +267,8 @@ export default function Footer( props ) {
 				iconSuffix={
 					<TrashIcon
 						className="googlesitekit-settings-module__remove-button-icon"
-						width="13"
-						height="13"
+						width={ 13 }
+						height={ 13 }
 					/>
 				}
 			>
