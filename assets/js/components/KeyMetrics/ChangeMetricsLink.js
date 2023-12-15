@@ -66,7 +66,7 @@ export default function ChangeMetricsLink() {
 				linkButton
 				className="googlesitekit-km-change-metrics-cta"
 				onClick={ openMetricsSelectionPanel }
-				iconPrefix={ <PencilIcon width={ 22 } height={ 22 } /> }
+				leadingIcon={ <PencilIcon width={ 22 } height={ 22 } /> }
 			>
 				{ __( 'Change Metrics', 'google-site-kit' ) }
 			</Link>

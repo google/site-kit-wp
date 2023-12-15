@@ -245,7 +245,7 @@ export default function Footer( props ) {
 					__( 'Edit %s settings', 'google-site-kit' ),
 					name
 				) }
-				iconSuffix={
+				trailingIcon={
 					<PencilIcon
 						className="googlesitekit-settings-module__edit-button-icon"
 						width={ 10 }
@@ -264,7 +264,7 @@ export default function Footer( props ) {
 				className="googlesitekit-settings-module__remove-button"
 				onClick={ handleDialog }
 				danger
-				iconSuffix={
+				trailingIcon={
 					<TrashIcon
 						className="googlesitekit-settings-module__remove-button-icon"
 						width={ 13 }

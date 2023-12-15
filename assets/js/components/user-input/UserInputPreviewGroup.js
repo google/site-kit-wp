@@ -193,7 +193,7 @@ export default function UserInputPreviewGroup( {
 							( !! currentlyEditingSlug && ! isEditing )
 						}
 						linkButton
-						iconSuffix={
+						trailingIcon={
 							<ChevronDownIcon width={ 20 } height={ 20 } />
 						}
 					>

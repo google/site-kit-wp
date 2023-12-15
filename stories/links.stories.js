@@ -72,7 +72,9 @@ storiesOf( 'Global', module ).add(
 				<p>
 					<Link
 						onClick={ () => {} }
-						iconPrefix={ <PencilIcon width={ 18 } height={ 18 } /> }
+						leadingIcon={
+							<PencilIcon width={ 18 } height={ 18 } />
+						}
 					>
 						Default Link Button With Icon Prefix
 					</Link>
@@ -81,7 +83,9 @@ storiesOf( 'Global', module ).add(
 					<Link
 						onClick={ () => {} }
 						className="googlesitekit-cta-link--hover"
-						iconPrefix={ <PencilIcon width={ 18 } height={ 18 } /> }
+						leadingIcon={
+							<PencilIcon width={ 18 } height={ 18 } />
+						}
 					>
 						VRT: Default Link Button With Icon Prefix Hovered
 					</Link>
@@ -89,7 +93,9 @@ storiesOf( 'Global', module ).add(
 				<p>
 					<Link
 						onClick={ () => {} }
-						iconSuffix={ <PencilIcon width={ 18 } height={ 18 } /> }
+						trailingIcon={
+							<PencilIcon width={ 18 } height={ 18 } />
+						}
 					>
 						Default Link Button With Icon Suffix
 					</Link>
@@ -98,7 +104,9 @@ storiesOf( 'Global', module ).add(
 					<Link
 						onClick={ () => {} }
 						className="googlesitekit-cta-link--hover"
-						iconSuffix={ <PencilIcon width={ 18 } height={ 18 } /> }
+						trailingIcon={
+							<PencilIcon width={ 18 } height={ 18 } />
+						}
 					>
 						VRT: Default Link Button With Icon Suffix Hovered
 					</Link>
@@ -121,7 +129,9 @@ storiesOf( 'Global', module ).add(
 					<Link
 						onClick={ () => {} }
 						secondary
-						iconPrefix={ <PencilIcon width={ 18 } height={ 18 } /> }
+						leadingIcon={
+							<PencilIcon width={ 18 } height={ 18 } />
+						}
 					>
 						Secondary Link Button With Icon
 					</Link>
@@ -131,7 +141,9 @@ storiesOf( 'Global', module ).add(
 						onClick={ () => {} }
 						className="googlesitekit-cta-link--hover"
 						secondary
-						iconPrefix={ <PencilIcon width={ 18 } height={ 18 } /> }
+						leadingIcon={
+							<PencilIcon width={ 18 } height={ 18 } />
+						}
 					>
 						VRT: Secondary Link Button With Icon Hovered
 					</Link>

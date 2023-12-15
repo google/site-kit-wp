@@ -64,8 +64,8 @@ const Link = forwardRef( ( props, ref ) => {
 		standalone = false,
 		linkButton = false,
 		to,
-		iconPrefix,
-		iconSuffix,
+		leadingIcon,
+		trailingIcon,
 		...otherProps
 	} = props;
 
@@ -155,23 +155,23 @@ const Link = forwardRef( ( props, ref ) => {
 
 	// Set the prefix/suffix icons, based on the type of link this is and
 	// the props supplied.
-	let iconPrefixToUse = iconPrefix;
-	let iconSuffixToUse = iconSuffix;
+	let leadingIconToUse = leadingIcon;
+	let trailingIconToUse = trailingIcon;
 
 	if ( back ) {
-		iconPrefixToUse = <BackIcon width={ 14 } height={ 14 } />;
+		leadingIconToUse = <BackIcon width={ 14 } height={ 14 } />;
 	}
 
 	if ( external && ! hideExternalIndicator ) {
-		iconSuffixToUse = <ExternalIcon width={ 14 } height={ 14 } />;
+		trailingIconToUse = <ExternalIcon width={ 14 } height={ 14 } />;
 	}
 
 	if ( arrow && ! inverse ) {
-		iconSuffixToUse = <ArrowIcon width={ 14 } height={ 14 } />;
+		trailingIconToUse = <ArrowIcon width={ 14 } height={ 14 } />;
 	}
 
 	if ( arrow && inverse ) {
-		iconSuffixToUse = <ArrowInverseIcon width={ 14 } height={ 14 } />;
+		trailingIconToUse = <ArrowInverseIcon width={ 14 } height={ 14 } />;
 	}
 
 	return (
@@ -200,12 +200,16 @@ const Link = forwardRef( ( props, ref ) => {
 			to={ to }
 			{ ...otherProps }
 		>
-			{ !! iconPrefixToUse && (
-				<IconWrapper marginRight={ 5 }>{ iconPrefixToUse }</IconWrapper>
+			{ !! leadingIconToUse && (
+				<IconWrapper marginRight={ 5 }>
+					{ leadingIconToUse }
+				</IconWrapper>
 			) }
 			{ children }
-			{ !! iconSuffixToUse && (
-				<IconWrapper marginLeft={ 5 }>{ iconSuffixToUse }</IconWrapper>
+			{ !! trailingIconToUse && (
+				<IconWrapper marginLeft={ 5 }>
+					{ trailingIconToUse }
+				</IconWrapper>
 			) }
 		</LinkComponent>
 	);
@@ -223,13 +227,13 @@ Link.propTypes = {
 	hideExternalIndicator: PropTypes.bool,
 	href: PropTypes.string,
 	inverse: PropTypes.bool,
+	leadingIcon: PropTypes.node,
+	linkButton: PropTypes.bool,
 	onClick: PropTypes.func,
 	small: PropTypes.bool,
 	standalone: PropTypes.bool,
-	linkButton: PropTypes.bool,
 	to: PropTypes.string,
-	iconPrefix: PropTypes.node,
-	iconSuffix: PropTypes.node,
+	trailingIcon: PropTypes.node,
 };
 
 export default Link;
