@@ -25,7 +25,9 @@ exports[`ConnectAdSenseCTATileWidget should render the Connect AdSense CTA tile 
             <button
               class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
             >
-              <span>
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
                 Connect AdSense
               </span>
             </button>
