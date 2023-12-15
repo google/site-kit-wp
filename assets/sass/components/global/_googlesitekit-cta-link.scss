@@ -20,7 +20,7 @@
 	align-items: center;
 	color: $c-link;
 	cursor: pointer;
-	display: inline-block;
+	display: inline-flex;
 	font-family: inherit;
 	font-size: inherit;
 	font-weight: inherit;
@@ -30,6 +30,10 @@
 
 	svg {
 		fill: currentColor;
+	}
+
+	> span > svg {
+		vertical-align: bottom;
 	}
 
 	&:hover {

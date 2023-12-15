@@ -44,7 +44,9 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                Learn more
+                <span>
+                  Learn more
+                </span>
                 <span
                   class="googlesitekit-icon-wrapper"
                   style="margin-left: 5px;"
@@ -70,7 +72,9 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
             <button
               class="googlesitekit-cta-link"
             >
-              Maybe later
+              <span>
+                Maybe later
+              </span>
             </button>
           </div>
           <div
@@ -133,7 +137,9 @@ exports[`EnhancedMeasurementActivationBanner should render the success step when
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                Learn more
+                <span>
+                  Learn more
+                </span>
                 <span
                   class="googlesitekit-icon-wrapper"
                   style="margin-left: 5px;"
