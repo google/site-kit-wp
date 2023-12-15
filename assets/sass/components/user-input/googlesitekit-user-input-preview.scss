@@ -146,6 +146,8 @@
 
 			svg {
 				fill: none;
+				margin-left: 4px;
+				margin-top: 4px;
 				transition: transform $t-default ease-out;
 			}
 
@@ -162,6 +164,8 @@
 
 			button {
 				svg {
+					margin-left: 4px;
+					margin-top: 4px;
 					transform: rotate(180deg);
 				}
 			}
