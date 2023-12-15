@@ -182,7 +182,7 @@ const Link = forwardRef( ( props, ref ) => {
 					<BackIcon width={ 14 } height={ 14 } />
 				</IconWrapper>
 			) }
-			{ children }
+			<span>{ children }</span>
 			{ external && ! hideExternalIndicator && (
 				<IconWrapper marginLeft={ 5 }>
 					<ExternalIcon width={ 14 } height={ 14 } />
