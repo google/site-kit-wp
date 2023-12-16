@@ -37,7 +37,7 @@ import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-stor
 import Portal from '../Portal';
 const { useSelect, useDispatch, useRegistry } = Data;
 
-const AuthenticatedPermissionsModal = () => {
+function AuthenticatedPermissionsModal() {
 	const registry = useRegistry();
 	const permissionsError = useSelect( ( select ) =>
 		select( CORE_USER ).getPermissionScopeError()
@@ -130,6 +130,6 @@ const AuthenticatedPermissionsModal = () => {
 			/>
 		</Portal>
 	);
-};
+}
 
 export default AuthenticatedPermissionsModal;

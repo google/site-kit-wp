@@ -26,7 +26,9 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import ChangeMetricsLink from './ChangeMetricsLink';
 
-const Template = () => <ChangeMetricsLink />;
+function Template() {
+	return <ChangeMetricsLink />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ChangeMetricsLink';

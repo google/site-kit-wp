@@ -75,41 +75,44 @@ export function generateReportBasedWidgetStories( args ) {
 
 	const stories = storiesOf( group, module );
 
-	const withRegistry = ( variantName ) => ( StoryComponent ) => {
-		const registry = createTestRegistry();
-		// Activate the module.
-		provideModules(
-			registry,
-			moduleSlugs.map( ( module ) => {
-				return {
-					slug: module,
-					active: true,
-					connected: true,
-				};
-			} )
-		);
+	const withRegistry = ( variantName ) =>
+		function ( StoryComponent ) {
+			const registry = createTestRegistry();
+			// Activate the module.
+			provideModules(
+				registry,
+				moduleSlugs.map( ( module ) => {
+					return {
+						slug: module,
+						active: true,
+						connected: true,
+					};
+				} )
+			);
 
-		let currentEntityURL = null;
-		if ( Array.isArray( options ) && options[ 0 ].url ) {
-			currentEntityURL = options[ 0 ].url;
-		} else if ( options.url ) {
-			currentEntityURL = options.url;
-		}
+			let currentEntityURL = null;
+			if ( Array.isArray( options ) && options[ 0 ].url ) {
+				currentEntityURL = options[ 0 ].url;
+			} else if ( options.url ) {
+				currentEntityURL = options.url;
+			}
 
-		// Set some site information.
-		provideSiteInfo( registry, {
-			currentEntityURL,
-		} );
+			// Set some site information.
+			provideSiteInfo( registry, {
+				currentEntityURL,
+			} );
 
-		if ( referenceDate ) {
-			registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
-		}
+			if ( referenceDate ) {
+				registry
+					.dispatch( CORE_USER )
+					.setReferenceDate( referenceDate );
+			}
 
-		// Call the optional setup function.
-		setup( registry, variantName );
+			// Call the optional setup function.
+			setup( registry, variantName );
 
-		return <StoryComponent registry={ registry } />;
-	};
+			return <StoryComponent registry={ registry } />;
+		};
 
 	if ( Array.isArray( options ) ) {
 		// 	If options is an array, so must data.

@@ -35,7 +35,7 @@ import Data from 'googlesitekit-data';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
-const Footer = () => {
+function Footer() {
 	const viewOnlyDashboard = useViewOnly();
 
 	const dateRangeDates = useSelect( ( select ) =>
@@ -60,6 +60,6 @@ const Footer = () => {
 			external
 		/>
 	);
-};
+}
 
 export default Footer;

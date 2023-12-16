@@ -50,7 +50,7 @@ export const convertSecondsToArray = ( seconds ) => {
  *
  * For example, passing "2014-10-02T15:01:23Z" returns 1412262083000.
  *
- * @since n.e.x.t
+ * @since 1.116.0
  *
  * @param {string} dateStringValue The date time string.
  * @return {number} UNIX timestamp in milliseconds.

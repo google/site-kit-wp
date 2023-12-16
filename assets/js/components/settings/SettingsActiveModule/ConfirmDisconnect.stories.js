@@ -24,7 +24,9 @@ import { provideModules } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 
-const Template = ( args ) => <ConfirmDisconnect { ...args } />;
+function Template( args ) {
+	return <ConfirmDisconnect { ...args } />;
+}
 
 export const ConfirmDisconnectWithFeatures = Template.bind( {} );
 ConfirmDisconnectWithFeatures.storyName =

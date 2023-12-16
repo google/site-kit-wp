@@ -33,13 +33,13 @@ import { Button } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
 import SurveyQuestionSingleSelectChoice from './SurveyQuestionSingleSelectChoice';
 
-const SurveyQuestionSingleSelect = ( {
+function SurveyQuestionSingleSelect( {
 	question,
 	choices,
 	answerQuestion,
 	dismissSurvey,
 	submitButtonText,
-} ) => {
+} ) {
 	const [ value, setValue ] = useState( '' );
 	const [ writeIn, setWriteIn ] = useState( '' );
 
@@ -97,7 +97,7 @@ const SurveyQuestionSingleSelect = ( {
 			</div>
 		</div>
 	);
-};
+}
 
 SurveyQuestionSingleSelect.propTypes = {
 	question: PropTypes.string.isRequired,

@@ -57,9 +57,9 @@ const widgetComponentProps = getWidgetComponentProps(
 	'analyticsAllTraffic-widget'
 );
 
-const Template = () => (
-	<DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />
-);
+function Template() {
+	return <DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />;
+}
 
 const baseAllTrafficOptions = {
 	startDate: '2020-12-09',

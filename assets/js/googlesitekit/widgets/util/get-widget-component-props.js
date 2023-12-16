@@ -57,9 +57,9 @@ export const getWidgetComponentProps = memize( ( widgetSlug ) => {
 
 function withWidgetSlug( widgetSlug ) {
 	return ( WrappedComponent ) => {
-		const WithWidgetSlug = ( props ) => (
-			<WrappedComponent { ...props } widgetSlug={ widgetSlug } />
-		);
+		function WithWidgetSlug( props ) {
+			return <WrappedComponent { ...props } widgetSlug={ widgetSlug } />;
+		}
 		WithWidgetSlug.displayName = 'WithWidgetSlug';
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
 			WithWidgetSlug.displayName += `(${
@@ -81,9 +81,11 @@ function withWidgetSlug( widgetSlug ) {
 export const withWidgetComponentProps = ( widgetSlug ) => {
 	const widgetComponentProps = getWidgetComponentProps( widgetSlug );
 	return ( WrappedComponent ) => {
-		const DecoratedComponent = ( props ) => (
-			<WrappedComponent { ...props } { ...widgetComponentProps } />
-		);
+		function DecoratedComponent( props ) {
+			return (
+				<WrappedComponent { ...props } { ...widgetComponentProps } />
+			);
+		}
 		DecoratedComponent.displayName = 'WithWidgetComponentProps';
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
 			DecoratedComponent.displayName += `(${
@@ -105,14 +107,16 @@ export const withWidgetComponentProps = ( widgetSlug ) => {
  */
 export const withWPDashboardWidgetComponentProps = ( widgetSlug ) => {
 	return ( WrappedComponent ) => {
-		const DecoratedComponent = ( props ) => (
-			<WrappedComponent
-				{ ...props }
-				WPDashboardReportError={ withWidgetSlug( widgetSlug )(
-					WPDashboardReportError
-				) }
-			/>
-		);
+		function DecoratedComponent( props ) {
+			return (
+				<WrappedComponent
+					{ ...props }
+					WPDashboardReportError={ withWidgetSlug( widgetSlug )(
+						WPDashboardReportError
+					) }
+				/>
+			);
+		}
 		DecoratedComponent.displayName = 'WithWPDashboardWidgetComponentProps';
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
 			DecoratedComponent.displayName += `(${

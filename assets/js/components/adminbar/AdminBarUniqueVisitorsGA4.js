@@ -37,7 +37,7 @@ import {
 } from '../../modules/analytics-4/datastore/constants';
 const { useSelect } = Data;
 
-const AdminBarUniqueVisitorsGA4 = ( { WidgetReportError } ) => {
+function AdminBarUniqueVisitorsGA4( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
@@ -101,6 +101,6 @@ const AdminBarUniqueVisitorsGA4 = ( { WidgetReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
-};
+}
 
 export default AdminBarUniqueVisitorsGA4;

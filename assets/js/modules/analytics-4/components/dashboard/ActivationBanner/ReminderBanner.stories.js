@@ -34,7 +34,9 @@ import {
 	provideUserInfo,
 } from '../../../../../../../tests/js/utils';
 
-const Template = () => <ReminderBanner onSubmitSuccess={ () => {} } />;
+function Template() {
+	return <ReminderBanner onSubmitSuccess={ () => {} } />;
+}
 
 export const InitialNotice = Template.bind( {} );
 InitialNotice.storyName = 'Before 1 June 2023';

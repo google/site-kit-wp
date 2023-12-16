@@ -19,18 +19,22 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
             class="googlesitekit-cta-link googlesitekit-header__logo-link"
             href=""
           >
-            <div
-              aria-hidden="true"
-              class="googlesitekit-logo"
+            <span
+              class="googlesitekit-cta-link__contents"
             >
-              <svg />
-              <svg />
-              <span
-                class="screen-reader-text"
+              <div
+                aria-hidden="true"
+                class="googlesitekit-logo"
               >
-                Site Kit by Google Logo
-              </span>
-            </div>
+                <svg />
+                <svg />
+                <span
+                  class="screen-reader-text"
+                >
+                  Site Kit by Google Logo
+                </span>
+              </div>
+            </span>
           </a>
         </div>
         <div
@@ -75,7 +79,11 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                     tabindex="-1"
                     target="_blank"
                   >
-                    Fix common issues
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Fix common issues
+                    </span>
                   </a>
                 </li>
                 <li
@@ -92,7 +100,11 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                     tabindex="-1"
                     target="_blank"
                   >
-                    Read help docs
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Read help docs
+                    </span>
                   </a>
                 </li>
                 <li
@@ -109,7 +121,11 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                     tabindex="-1"
                     target="_blank"
                   >
-                    Get support
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Get support
+                    </span>
                   </a>
                 </li>
               </ul>
@@ -278,7 +294,11 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                               rel="noopener noreferrer"
                               target="_blank"
                             >
-                              Google Privacy Policy.
+                              <span
+                                class="googlesitekit-cta-link__contents"
+                              >
+                                Google Privacy Policy.
+                              </span>
                               <span
                                 class="googlesitekit-icon-wrapper"
                                 style="margin-left: 5px;"
@@ -336,18 +356,22 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
             class="googlesitekit-cta-link googlesitekit-header__logo-link"
             href=""
           >
-            <div
-              aria-hidden="true"
-              class="googlesitekit-logo"
+            <span
+              class="googlesitekit-cta-link__contents"
             >
-              <svg />
-              <svg />
-              <span
-                class="screen-reader-text"
+              <div
+                aria-hidden="true"
+                class="googlesitekit-logo"
               >
-                Site Kit by Google Logo
-              </span>
-            </div>
+                <svg />
+                <svg />
+                <span
+                  class="screen-reader-text"
+                >
+                  Site Kit by Google Logo
+                </span>
+              </div>
+            </span>
           </a>
         </div>
         <div
@@ -392,7 +416,11 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                     tabindex="-1"
                     target="_blank"
                   >
-                    Fix common issues
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Fix common issues
+                    </span>
                   </a>
                 </li>
                 <li
@@ -409,7 +437,11 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                     tabindex="-1"
                     target="_blank"
                   >
-                    Read help docs
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Read help docs
+                    </span>
                   </a>
                 </li>
                 <li
@@ -426,7 +458,11 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                     tabindex="-1"
                     target="_blank"
                   >
-                    Get support
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Get support
+                    </span>
                   </a>
                 </li>
               </ul>
@@ -649,7 +685,11 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                               rel="noopener noreferrer"
                               target="_blank"
                             >
-                              Google Privacy Policy.
+                              <span
+                                class="googlesitekit-cta-link__contents"
+                              >
+                                Google Privacy Policy.
+                              </span>
                               <span
                                 class="googlesitekit-icon-wrapper"
                                 style="margin-left: 5px;"

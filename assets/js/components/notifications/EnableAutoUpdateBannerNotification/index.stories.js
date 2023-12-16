@@ -29,7 +29,9 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import EnableAutoUpdateBannerNotification from '.';
 
-const Template = () => <EnableAutoUpdateBannerNotification />;
+function Template() {
+	return <EnableAutoUpdateBannerNotification />;
+}
 
 export const Notification = Template.bind( {} );
 
