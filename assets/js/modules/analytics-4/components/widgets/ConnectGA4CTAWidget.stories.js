@@ -35,7 +35,9 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectGA4CTA'
 )( ConnectGA4CTAWidget );
 
-const Template = () => <WidgetWithComponentProps />;
+function Template() {
+	return <WidgetWithComponentProps />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConnectGA4CTAWidget';

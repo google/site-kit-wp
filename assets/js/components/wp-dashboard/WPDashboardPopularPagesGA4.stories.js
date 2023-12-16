@@ -36,11 +36,13 @@ const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
 	'widget-slug'
 )( WPDashboardPopularPagesGA4 );
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry = () => {}, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WidgetWithComponentProps { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';

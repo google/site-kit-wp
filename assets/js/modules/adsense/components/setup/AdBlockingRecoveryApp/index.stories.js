@@ -29,7 +29,9 @@ import {
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import AdBlockingRecoveryApp from '.';
 
-const Template = () => <AdBlockingRecoveryApp />;
+function Template() {
+	return <AdBlockingRecoveryApp />;
+}
 
 export const StepOne = Template.bind( {} );
 StepOne.storyName = 'Step 1';

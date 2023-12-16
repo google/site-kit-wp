@@ -49,7 +49,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
@@ -173,8 +172,7 @@ final class Analytics_4 extends Module
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 
 		// Ensure that the data available state is reset when the measurement ID changes.
-		add_action(
-			'update_option_googlesitekit_analytics-4_settings',
+		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
@@ -183,9 +181,7 @@ final class Analytics_4 extends Module
 						$this->custom_dimensions_data_available->reset_data_available();
 					}
 				}
-			},
-			10,
-			2
+			}
 		);
 
 		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
@@ -1387,12 +1383,6 @@ final class Analytics_4 extends Module
 
 		$home_domain = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST );
 		$tag->set_home_domain( $home_domain );
-
-		// Here we need to retrieve the ads conversion ID from the
-		// classic/UA Analytics settings as it does not exist yet for this module.
-		// TODO: Update the value to be sourced from GA4 module settings once decoupled.
-		$ua_settings = ( new Analytics_Settings( $this->options ) )->get();
-		$tag->set_ads_conversion_id( $ua_settings['adsConversionID'] );
 
 		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
 			$custom_dimensions_data = $this->get_custom_dimensions_data();

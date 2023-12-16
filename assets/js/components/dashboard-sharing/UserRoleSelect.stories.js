@@ -53,13 +53,15 @@ const dashboardSharingData = {
 	roles: shareableRoles,
 };
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<div style={ { padding: '40px 20px', backgroundColor: '#fff' } }>
-			<UserRoleSelect { ...args } />
-		</div>
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry = () => {}, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<div style={ { padding: '40px 20px', backgroundColor: '#fff' } }>
+				<UserRoleSelect { ...args } />
+			</div>
+		</WithRegistrySetup>
+	);
+}
 
 export const DefaultUserRoleSelect = Template.bind( {} );
 DefaultUserRoleSelect.storyName = 'Default';

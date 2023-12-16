@@ -21,7 +21,9 @@
  */
 import Chip from './Chip';
 
-const Template = ( args ) => <Chip { ...args } />;
+function Template( args ) {
+	return <Chip { ...args } />;
+}
 
 export const DefaultChip = Template.bind( {} );
 DefaultChip.storyName = 'Default Chip';

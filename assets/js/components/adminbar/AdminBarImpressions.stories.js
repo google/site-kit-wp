@@ -32,11 +32,13 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'widget-slug' )( AdminBarImpressions );
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry = () => {}, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WidgetWithComponentProps { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';

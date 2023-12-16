@@ -35,11 +35,13 @@ import { Dialog, DialogContent } from '../../../material-components';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { sharingSettings, modules, roles } from './__fixtures__';
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<DashboardSharingSettings { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry = () => {}, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<DashboardSharingSettings { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const SingleAdminDefault = Template.bind( {} );
 SingleAdminDefault.storyName = 'Single Admin Default';

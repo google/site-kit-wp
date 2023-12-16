@@ -26,13 +26,15 @@ import PropTypes from 'prop-types';
  */
 import Link from '../../../components/Link';
 
-const WidgetHeaderCTA = ( { href, label, external } ) => (
-	<div className="googlesitekit-widget__header--cta">
-		<Link href={ href } external={ external }>
-			{ label }
-		</Link>
-	</div>
-);
+function WidgetHeaderCTA( { href, label, external } ) {
+	return (
+		<div className="googlesitekit-widget__header--cta">
+			<Link href={ href } external={ external }>
+				{ label }
+			</Link>
+		</div>
+	);
+}
 
 WidgetHeaderCTA.propTypes = {
 	href: PropTypes.string,

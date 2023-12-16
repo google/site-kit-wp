@@ -306,26 +306,27 @@ export function createErrorStore( storeName ) {
 		 * @return {Object|null} Selector data for the given error object, or null if no selector data is available.
 		 */
 		getSelectorDataForError: createRegistrySelector(
-			( select ) => ( state, error ) => {
-				const metaData =
-					select( storeName ).getMetaDataForError( error );
+			( select ) =>
+				function ( state, error ) {
+					const metaData =
+						select( storeName ).getMetaDataForError( error );
 
-				if ( metaData ) {
-					const { baseName: name, args } = metaData;
+					if ( metaData ) {
+						const { baseName: name, args } = metaData;
 
-					const isSelector = !! select( storeName )[ name ];
+						const isSelector = !! select( storeName )[ name ];
 
-					if ( isSelector ) {
-						return {
-							storeName,
-							name,
-							args,
-						};
+						if ( isSelector ) {
+							return {
+								storeName,
+								name,
+								args,
+							};
+						}
 					}
-				}
 
-				return null;
-			}
+					return null;
+				}
 		),
 
 		/**

@@ -46,7 +46,7 @@ export default function whenActive( {
 	IncompleteComponent,
 } ) {
 	return ( WrappedComponent ) => {
-		const WhenActiveComponent = ( props ) => {
+		function WhenActiveComponent( props ) {
 			const module = useSelect(
 				( select ) => select( CORE_MODULES ).getModule( moduleName ),
 				[ moduleName ]
@@ -85,7 +85,7 @@ export default function whenActive( {
 
 			// Return the active and connected component.
 			return <WrappedComponent { ...props } />;
-		};
+		}
 
 		WhenActiveComponent.displayName = `When${ hyphenCaseToPascalCase(
 			moduleName

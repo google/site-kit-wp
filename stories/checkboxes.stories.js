@@ -31,7 +31,7 @@ import { storiesOf } from '@storybook/react';
  */
 import { Checkbox } from 'googlesitekit-components';
 
-const InteractiveCheckbox = ( props ) => {
+function InteractiveCheckbox( props ) {
 	const [ checked, setChecked ] = useState( false );
 	return (
 		<Checkbox
@@ -45,7 +45,7 @@ const InteractiveCheckbox = ( props ) => {
 			Interactive Checkbox
 		</Checkbox>
 	);
-};
+}
 
 storiesOf( 'Global', module ).add(
 	'Checkboxes',

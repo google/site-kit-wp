@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
+import LoadingWrapper from '../LoadingWrapper';
 import Navigation from './Navigation';
 import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
@@ -46,9 +47,16 @@ export default function DashboardNavigation() {
 	// The Navigation component relies on the resolution of the above selectors to check if individual
 	// widgetContexts are active. The results of these checks are used to determine the `defaultChipID`
 	// which 'highlights' the first chip and sets the corresponding hash on page load.
-	if ( viewableModules === undefined || keyMetrics === undefined ) {
-		return null;
-	}
-
-	return <Navigation />;
+	return (
+		<LoadingWrapper
+			loading={
+				viewableModules === undefined || keyMetrics === undefined
+			}
+			width="100%"
+			smallHeight="59px"
+			height="71px"
+		>
+			<Navigation />
+		</LoadingWrapper>
+	);
 }

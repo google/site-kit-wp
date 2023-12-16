@@ -39,11 +39,13 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<AdminBarWidgets { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry = () => {}, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<AdminBarWidgets { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';

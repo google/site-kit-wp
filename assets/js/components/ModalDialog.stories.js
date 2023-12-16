@@ -21,23 +21,25 @@
  */
 import ModalDialog from './ModalDialog';
 
-const Template = () => (
-	<ModalDialog
-		dialogActive
-		title="Modal Dialog Title"
-		subtitle="Modal Dialog Subtitle"
-		provides={ [
-			'Audience overview',
-			'Top pages',
-			'Top acquisition channels',
-		] }
-		handleConfirm={ global.console.log.bind(
-			null,
-			'Dialog::handleConfirm'
-		) }
-		danger
-	/>
-);
+function Template() {
+	return (
+		<ModalDialog
+			dialogActive
+			title="Modal Dialog Title"
+			subtitle="Modal Dialog Subtitle"
+			provides={ [
+				'Audience overview',
+				'Top pages',
+				'Top acquisition channels',
+			] }
+			handleConfirm={ global.console.log.bind(
+				null,
+				'Dialog::handleConfirm'
+			) }
+			danger
+		/>
+	);
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

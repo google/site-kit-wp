@@ -37,7 +37,7 @@ import {
 import { calculateChange } from '../../util';
 const { useSelect } = Data;
 
-const AdminBarSessions = ( { WidgetReportError } ) => {
+function AdminBarSessions( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -109,6 +109,6 @@ const AdminBarSessions = ( { WidgetReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
-};
+}
 
 export default AdminBarSessions;

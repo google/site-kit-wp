@@ -19,7 +19,11 @@ exports[`EnhancedMeasurementSwitch should render correctly in the already enable
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -79,7 +83,11 @@ exports[`EnhancedMeasurementSwitch should render correctly in the default state 
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -140,7 +148,11 @@ exports[`EnhancedMeasurementSwitch should render correctly in the disabled state
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -192,7 +204,11 @@ exports[`EnhancedMeasurementSwitch should render correctly in the loading state 
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
