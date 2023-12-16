@@ -28,6 +28,11 @@ final class Remote_Features {
 	use Method_Proxy_Trait;
 
 	/**
+	 * Option key in options table to store remote features.
+	 */
+	const OPTION = 'googlesitekitpersistent_remote_features';
+
+	/**
 	 * Authentication object.
 	 *
 	 * @since n.e.x.t
@@ -112,8 +117,7 @@ final class Remote_Features {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
-		$remote_features_option = 'googlesitekitpersistent_remote_features';
-		$features               = $this->options->get( $remote_features_option );
+		$features = $this->options->get( self::OPTION );
 
 		if ( false === $features ) {
 			// Don't attempt to fetch features if the site is not connected yet.
@@ -141,7 +145,7 @@ final class Remote_Features {
 	 * @return array|WP_Error Array of features or a WP_Error object if the fetch errored.
 	 */
 	public function fetch_remote_features() {
-		$remote_features_option = 'googlesitekitpersistent_remote_features';
+		$remote_features_option = self::OPTION;
 		$features               = $this->google_proxy->get_features( $this->credentials );
 		if ( ! is_wp_error( $features ) && is_array( $features ) ) {
 			$this->options->set( $remote_features_option, $features );
