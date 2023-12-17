@@ -82,27 +82,6 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	public function test_register__setup_transient_features_cron() {
-		remove_all_actions( 'googlesitekit_cron_update_remote_features' );
-		wp_clear_scheduled_hook( 'googlesitekit_cron_update_remote_features' );
-
-		$this->assertFalse( has_action( 'googlesitekit_cron_update_remote_features' ) );
-		$this->assertFalse(
-			wp_next_scheduled( 'googlesitekit_cron_update_remote_features' )
-		);
-
-		$current_time = time();
-
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$auth->register();
-
-		$this->assertTrue( has_action( 'googlesitekit_cron_update_remote_features' ) );
-		$this->assertGreaterThanOrEqual(
-			$current_time,
-			wp_next_scheduled( 'googlesitekit_cron_update_remote_features' )
-		);
-	}
-
 	public function test_register__googlesitekit_user_data() {
 		remove_all_filters( 'googlesitekit_user_data' );
 		$user_id      = $this->factory()->user->create();
