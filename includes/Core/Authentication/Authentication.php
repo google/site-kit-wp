@@ -24,7 +24,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\User_Input\User_Input;
 use Google\Site_Kit\Plugin;
-use WP_Error;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
