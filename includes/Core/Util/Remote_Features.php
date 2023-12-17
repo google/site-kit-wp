@@ -98,7 +98,7 @@ final class Remote_Features {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
+		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features' ), 10, 2 );
 
 		add_action( 'googlesitekit_cron_update_remote_features', $this->get_method_proxy( 'cron_update_remote_features' ) );
 		if ( ! wp_next_scheduled( 'googlesitekit_cron_update_remote_features' ) && ! wp_installing() ) {
@@ -107,26 +107,18 @@ final class Remote_Features {
 	}
 
 	/**
-	 * Filters feature flags using features received from the proxy server.
+	 * Filters feature flags using features stored in options.
 	 *
-	 * @since 1.27.0
-	 * @since n.e.x.t Moved here from the Authentication class.
+	 * @since n.e.x.t
 	 *
 	 * @param boolean $feature_enabled Original value of the feature.
 	 * @param string  $feature_name    Feature name.
-	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
+	 * @return boolean State flag from options if it is available, otherwise the original value.
 	 */
-	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
+	private function filter_features( $feature_enabled, $feature_name ) {
 		$features = $this->options->get( self::OPTION );
 
-		if ( false === $features ) {
-			// Don't attempt to fetch features if the site is not connected yet.
-			if ( ! $this->credentials->has() ) {
-				return $feature_enabled;
-			}
-		}
-
-		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
+		if ( isset( $features[ $feature_name ]['enabled'] ) ) {
 			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
 		}
 
