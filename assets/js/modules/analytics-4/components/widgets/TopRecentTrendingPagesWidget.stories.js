@@ -187,11 +187,6 @@ Error.args = {
 				status: 400,
 				reason: 'test-error-reason',
 			},
-			selectorData: {
-				storeName: 'modules/analytics-4',
-				name: 'getReport',
-				args: [ reportOptions ],
-			},
 		};
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveError(
