@@ -28,7 +28,9 @@ exports[`SettingsUACutoffWarning should render the UA cutoff warning notice when
           rel="noopener noreferrer"
           target="_blank"
         >
-          <span>
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
             Learn more
           </span>
           <span
@@ -73,7 +75,9 @@ exports[`SettingsUACutoffWarning should render the UA cutoff warning notice when
           rel="noopener noreferrer"
           target="_blank"
         >
-          <span>
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
             Learn more
           </span>
           <span
@@ -118,7 +122,9 @@ exports[`SettingsUACutoffWarning should render the UA cutoff warning notice when
           rel="noopener noreferrer"
           target="_blank"
         >
-          <span>
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
             Learn more
           </span>
           <span

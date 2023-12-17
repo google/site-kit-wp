@@ -282,7 +282,9 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
             rel="noopener noreferrer"
             target="_blank"
           >
-            <span>
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
               Learn more
             </span>
             <span
