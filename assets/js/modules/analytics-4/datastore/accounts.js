@@ -87,12 +87,27 @@ const fetchCreateAccountStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
+
 const baseInitialState = {
 	accountSummaries: undefined,
 	accountTicketID: undefined,
 };
 
 const baseActions = {
+	*resetAccounts() {
+		const { dispatch } = yield Data.commonActions.getRegistry();
+
+		yield {
+			payload: {},
+			type: RESET_ACCOUNTS,
+		};
+
+		return dispatch(
+			MODULES_ANALYTICS_4
+		).invalidateResolutionForStoreSelector( 'getAccounts' );
+	},
 	/**
 	 * Creates a new Analytics (GA4) account.
 	 *
@@ -132,6 +147,13 @@ const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
+		case RESET_ACCOUNTS: {
+			return {
+				...state,
+				accountSummaries: undefined,
+			};
+		}
+
 		default: {
 			return state;
 		}
