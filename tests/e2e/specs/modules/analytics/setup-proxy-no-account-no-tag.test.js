@@ -33,6 +33,7 @@ import {
 	resetSiteKit,
 	useRequestInterception,
 	setSearchConsoleProperty,
+	pageWait,
 } from '../../../utils';
 
 describe( 'setting up the Analytics module with no existing account and no existing tag via proxy', () => {
@@ -68,6 +69,8 @@ describe( 'setting up the Analytics module with no existing account and no exist
 				request.url().match( 'analytics-4/data/create-account-ticket' )
 			) {
 				request.respond( { status: 200 } ); // Do nothing for now, return 200 to prevent error.
+			} else {
+				request.continue();
 			}
 		} );
 	} );
@@ -101,9 +104,9 @@ describe( 'setting up the Analytics module with no existing account and no exist
 	} );
 
 	it( 'displays account creation form when user has no Analytics account', async () => {
+		await pageWait( 3000 );
 		await expect( page ).toMatchElement( '.googlesitekit-heading-4', {
 			text: /Create your Analytics account/i,
-			timeout: 5000,
 		} );
 		await expect( page ).toMatchElement( '.mdc-button', {
 			text: /create account/i,
