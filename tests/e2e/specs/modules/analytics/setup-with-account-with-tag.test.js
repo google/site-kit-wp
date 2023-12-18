@@ -25,7 +25,7 @@ async function proceedToSetUpAnalytics() {
 		} ),
 		page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
 		page.waitForResponse( ( res ) =>
-			res.url().match( 'analytics/data/accounts-properties-profiles' )
+			res.url().match( 'analytics-4/data/account-summaries' )
 		),
 	] );
 }
@@ -183,11 +183,11 @@ describe( 'setting up the Analytics module with an existing account and existing
 
 		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
-			{ text: /test account a/i }
+			{ text: /example com/i }
 		);
 		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics-4__select-property .mdc-select__selected-text',
-			{ text: /test ga4 property/i }
+			{ text: /example property/i }
 		);
 		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics-4__select-webdatastream .mdc-select__selected-text',

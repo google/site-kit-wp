@@ -38,10 +38,10 @@ describe( 'setting up the Analytics module with no existing account and with an 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'analytics-4/data/account-summaries' ) ) {
+			if ( request.url().match( 'analytics-4/data/container-lookup' ) ) {
 				request.respond( {
+					body: '{}',
 					status: 200,
-					body: JSON.stringify( {} ),
 				} );
 			} else {
 				request.continue();

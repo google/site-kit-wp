@@ -68,15 +68,6 @@ describe( 'setting up the Analytics module with no existing account and no exist
 				request.url().match( 'analytics-4/data/create-account-ticket' )
 			) {
 				request.respond( { status: 200 } ); // Do nothing for now, return 200 to prevent error.
-			} else if (
-				request.url().match( 'analytics-4/data/account-summaries' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {} ),
-				} );
-			} else {
-				request.continue();
 			}
 		} );
 	} );

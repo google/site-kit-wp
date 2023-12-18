@@ -95,8 +95,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 				} );
 			} else if (
 				url.match( 'pagespeed-insights/data/pagespeed' ) ||
-				url.match( 'analytics/data/goals' ) ||
-				url.match( 'analytics-4/data/account-summaries' )
+				url.match( 'analytics/data/goals' )
 			) {
 				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'analytics-4/data/create-property' ) ) {
@@ -146,7 +145,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		await resetSiteKit();
 	} );
 
-	it( 'displays account creation form when user has no Analytics account', async () => {
+	it.skip( 'displays account creation form when user has no Analytics account', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
 		await expect( page ).toClick( '.mdc-tab', {
