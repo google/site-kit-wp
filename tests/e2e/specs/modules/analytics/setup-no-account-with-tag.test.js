@@ -24,7 +24,7 @@ async function proceedToSetUpAnalytics() {
 		} ),
 		page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
 		page.waitForResponse( ( res ) =>
-			res.url().match( 'analytics/data/accounts-properties-profiles' )
+			res.url().match( 'analytics-4/data/account-summaries' )
 		),
 	] );
 }
