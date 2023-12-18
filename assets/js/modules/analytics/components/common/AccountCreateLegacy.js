@@ -33,14 +33,15 @@ import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4Notice from './GA4Notice';
 import useViewContext from '../../../../hooks/useViewContext';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
 	const accounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccounts()
+		select( MODULES_ANALYTICS_4 ).getAccounts()
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getAccounts' )
 	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -66,7 +67,7 @@ export default function AccountCreateLegacy() {
 		[ createAccountURL, viewContext ]
 	);
 
-	const { resetAccounts } = useDispatch( MODULES_ANALYTICS );
+	const { resetAccounts } = useDispatch( MODULES_ANALYTICS_4 );
 	const refetchAccountsHandler = useCallback( () => {
 		resetAccounts();
 	}, [ resetAccounts ] );
