@@ -120,11 +120,6 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					body: JSON.stringify( containerMock ),
 					status: 200,
 				} );
-			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
-				request.respond( {
-					body: JSON.stringify( fixtures.properties[ 1 ] ),
-					status: 200,
-				} );
 			} else {
 				request.continue();
 			}
@@ -145,7 +140,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		await resetSiteKit();
 	} );
 
-	it.skip( 'displays account creation form when user has no Analytics account', async () => {
+	it( 'displays account creation form when user has no Analytics account', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
 		await expect( page ).toClick( '.mdc-tab', {
@@ -175,6 +170,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		} );
 
 		await pageWait( 1000 );
+
 		// Clicking Create Account button will switch API mock plugins on the server to the one that has accounts.
 		await Promise.all( [
 			page.waitForResponse( ( res ) =>
@@ -191,7 +187,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 
 		await Promise.all( [
 			page.waitForResponse( ( req ) =>
-				req.url().match( 'analytics/data/accounts-properties-profiles' )
+				req.url().match( 'analytics-4/data/account-summaries' )
 			),
 			expect( page ).toClick( '.googlesitekit-cta-link', {
 				text: /Re-fetch My Account/i,
@@ -212,7 +208,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		await expect( page ).toClick(
 			'.mdc-menu-surface--open .mdc-list-item',
 			{
-				text: /test account a/i,
+				text: /example com/i,
 			}
 		);
 
