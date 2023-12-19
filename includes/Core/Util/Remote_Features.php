@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
  * @ignore
  */
 final class Remote_Features {
+
 	use Method_Proxy_Trait;
 
 	/**
@@ -45,6 +46,7 @@ final class Remote_Features {
 	 * Plugin context.
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @var Context
 	 */
 	private $context;
@@ -61,7 +63,8 @@ final class Remote_Features {
 	/**
 	 * OAuth credentials instance.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
+	 *
 	 * @var Credentials
 	 */
 	private $credentials;
@@ -151,7 +154,7 @@ final class Remote_Features {
 	 * from the Google Proxy server, if Site Kit has been setup.
 	 *
 	 * @since 1.71.0
-	 * @since Moved here from the Authentication class.
+	 * @since n.e.x.t Moved here from the Authentication class.
 	 *
 	 * @return void
 	 */
