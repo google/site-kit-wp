@@ -66,10 +66,11 @@ final class Advanced_Tracking {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.18.0.
+	 * @since n.e.x.t Renamed hooks to target Analytics 4 module.
 	 */
 	public function register() {
 		add_action(
-			'googlesitekit_analytics_init_tag',
+			'googlesitekit_analytics_4_init_tag',
 			function() {
 				$this->register_event_lists();
 				add_action(
@@ -81,7 +82,7 @@ final class Advanced_Tracking {
 			}
 		);
 		add_action(
-			'googlesitekit_analytics_init_tag_amp',
+			'googlesitekit_analytics_4_init_tag_amp',
 			function() {
 				$this->register_event_lists();
 				add_filter(
