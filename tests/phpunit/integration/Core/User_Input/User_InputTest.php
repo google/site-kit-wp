@@ -225,29 +225,32 @@ class User_InputTest extends TestCase {
 
 		$this->user_options->switch_user( $second_admin_id );
 
-		$this->user_input->set_answers(
-			array(
-				'purpose'       => array( 'publish_blog' ),
-				'postFrequency' => array( 'weekly' ),
-				'goals'         => array( 'improving_performance' ),
-			)
+		$answers = array(
+			'purpose'       => array( 'publish_blog' ),
+			'postFrequency' => array( 'weekly' ),
+			'goals'         => array( 'improving_performance' ),
 		);
+		$this->user_input->set_answers( $answers );
 
 		$existing_answers = $this->user_input->get_answers();
 		// Since purpose answer didn't change, it should still be attributed to admin 1.
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
+
+		$this->user_input->set_answers( $answers );
+		$existing_answers = $this->user_input->get_answers();
+		// Since no answer changed, purposr answer should still be attributed to admin 1.
 		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
 	}
 
 	public function test_set_answers__assigns_correct_user_attribution_on_purpose_answer_change() {
 		$second_admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
-		$this->user_input->set_answers(
-			array(
-				'purpose'       => array( 'publish_blog' ),
-				'postFrequency' => array( 'daily' ),
-				'goals'         => array( 'growing_audience', 'finding_new_topics' ),
-			)
+		$admin_1_answers = array(
+			'purpose'       => array( 'publish_blog' ),
+			'postFrequency' => array( 'daily' ),
+			'goals'         => array( 'growing_audience', 'finding_new_topics' ),
 		);
+		$this->user_input->set_answers( $admin_1_answers );
 
 		$existing_answers = $this->user_input->get_answers();
 
@@ -255,16 +258,24 @@ class User_InputTest extends TestCase {
 
 		$this->user_options->switch_user( $second_admin_id );
 
-		$this->user_input->set_answers(
-			array(
-				'purpose'       => array( 'other' ),
-				'postFrequency' => array( 'weekly' ),
-				'goals'         => array( 'improving_performance' ),
-			)
+		$admin_2_answers = array(
+			'purpose'       => array( 'other' ),
+			'postFrequency' => array( 'weekly' ),
+			'goals'         => array( 'improving_performance' ),
 		);
+		$this->user_input->set_answers( $admin_2_answers );
 
 		$existing_answers = $this->user_input->get_answers();
 		// Since purpose answer changed, it should be attributed to admin 2.
 		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $second_admin_id );
+		// User specific answers should be properly added for admin 2.
+		$this->assertEquals( $existing_answers['postFrequency']['values'], $admin_2_answers['postFrequency'] );
+		$this->assertEquals( $existing_answers['goals']['values'], $admin_2_answers['goals'] );
+
+		$this->user_options->switch_user( $this->user_id );
+		$admin_1_answers = $this->user_input->get_answers();
+		// Original answers done by admin 1 should remain unchanged.
+		$this->assertNotEquals( $admin_1_answers['postFrequency']['values'], $admin_2_answers['postFrequency'] );
+		$this->assertNotEquals( $admin_1_answers['goals']['values'], $admin_2_answers['goals'] );
 	}
 }

@@ -229,17 +229,24 @@ class User_Input {
 			if ( 'site' === $setting_data['scope'] ) {
 				$existing_answers = $this->get_answers();
 				$answered_by      = $this->user_options->get_user_id();
-				if ( ! empty( $existing_answers['purpose']['answeredBy'] ) ) {
-					// If answers are not saved for the first time, keep original attribution.
-					$answered_by = $existing_answers['purpose']['answeredBy'];
-				}
 
-				if ( ! empty( $existing_answers['purpose']['values'] ) ) {
-					$answer_differs = array_diff( $existing_answers['purpose']['values'], $answers );
-					// If purpose answer changed, attribute it to the current user.
-					if ( ! empty( $answer_differs ) ) {
-						$answered_by = $this->user_options->get_user_id();
-					}
+				if (
+					// If the answer to the "purpose" question changed,
+					// attribute the answer to the current user changing the
+					// answer.
+					(
+						! empty( $existing_answers['purpose']['values'] ) &&
+						! empty( array_diff( $existing_answers['purpose']['values'], $answers ) )
+					) ||
+					// If the answer to the "purpose" question was empty,
+					// attribute the answer to the current user.
+					empty( $existing_answers['purpose']['answeredBy'] )
+				) {
+					$answered_by = $this->user_options->get_user_id();
+				} else {
+					// Otherwise, attribute the answer to the user who answered
+					// the question previously.
+					$answered_by = $existing_answers['purpose']['answeredBy'];
 				}
 
 				$setting_data['answeredBy']    = $answered_by;
