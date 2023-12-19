@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for Analytics 4 settings.
@@ -27,6 +27,7 @@ use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interface, Setting_With_ViewOnly_Keys_Interface {
 
 	use Setting_With_Owned_Keys_Trait;
+	use Method_Proxy_Trait;
 
 	const OPTION = 'googlesitekit_analytics-4_settings';
 
@@ -44,17 +45,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		// if data was saved previously, it needs to be recovered.
 		add_filter(
 			'option_' . self::OPTION,
-			function ( $option ) {
-				if ( is_array( $option ) ) {
-					$missing_settings = $this->retrieve_missing_analytics_4_settings( $option );
-
-					if ( ! empty( $missing_settings ) ) {
-						return $option + $missing_settings;
-					}
-				}
-
-				return $option;
-			},
+			$this->get_method_proxy( 'retrieve_missing_settings' ),
 			10
 		);
 	}
@@ -196,7 +187,11 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @param array $option Analytics 4 settings.
 	 * @return array Missing Analytics 4 settings array, or empty array if no setting is missing.
 	 */
-	protected function retrieve_missing_analytics_4_settings( $option ) {
+	protected function retrieve_missing_settings( $option ) {
+		if ( ! is_array( $option ) ) {
+			return;
+		}
+
 		$recovered_settings = array();
 		$keys_to_check      = array(
 			'accountID',
@@ -208,7 +203,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		$missing_settings   = array_diff( $keys_to_check, array_keys( $option ) );
 
 		if ( empty( $missing_settings ) ) {
-			return $recovered_settings;
+			return $option;
 		}
 
 		$analytics_settings = get_option( 'googlesitekit_analytics_settings' );
@@ -220,7 +215,11 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			}
 		);
 
-		return $recovered_settings;
+		if ( ! empty( $recovered_settings ) ) {
+			return $option + $recovered_settings;
+		}
+
+		return $option;
 	}
 
 }
