@@ -113,6 +113,7 @@ export default function DashboardMainApp() {
 		)
 	);
 	const hasReceivedGrantedScopes =
+		grantedScopes !== undefined &&
 		temporaryPersistedPermissionsError?.data?.scopes?.some( ( scope ) =>
 			grantedScopes.includes( scope )
 		);
@@ -122,13 +123,22 @@ export default function DashboardMainApp() {
 			// Render the current survey portal in 5 seconds after the initial rendering.
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
 		}
+	} );
 
-		if ( hasReceivedGrantedScopes ) {
+	useEffect( () => {
+		if (
+			temporaryPersistedPermissionsError !== undefined &&
+			hasReceivedGrantedScopes
+		) {
 			setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
 				permissionsError: {},
 			} );
 		}
-	} );
+	}, [
+		hasReceivedGrantedScopes,
+		setValues,
+		temporaryPersistedPermissionsError,
+	] );
 
 	const createDimensionsAndUpdateForm = useCallback( async () => {
 		await createCustomDimensions();
