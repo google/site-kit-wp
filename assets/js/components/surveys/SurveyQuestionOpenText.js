@@ -35,14 +35,14 @@ import SurveyHeader from './SurveyHeader';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
-const SurveyQuestionOpenText = ( {
+function SurveyQuestionOpenText( {
 	question,
 	answerQuestion,
 	placeholder,
 	subtitle,
 	dismissSurvey,
 	submitButtonText,
-} ) => {
+} ) {
 	const [ value, setValue ] = useState( '' );
 
 	const handleSubmit = () => {
@@ -91,7 +91,7 @@ const SurveyQuestionOpenText = ( {
 			</div>
 		</div>
 	);
-};
+}
 
 SurveyQuestionOpenText.propTypes = {
 	question: PropTypes.string.isRequired,

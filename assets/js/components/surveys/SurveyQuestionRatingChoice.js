@@ -44,7 +44,7 @@ const ordinalIconMap = {
 	5: IconSurveyDelighted,
 };
 
-const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
+function SurveyQuestionRatingChoice( { choice, answerQuestion } ) {
 	const handleButtonClick = useCallback( () => {
 		if ( typeof answerQuestion === 'function' ) {
 			answerQuestion( {
@@ -70,7 +70,7 @@ const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
 			<p>{ choice.text }</p>
 		</div>
 	);
-};
+}
 
 SurveyQuestionRatingChoice.propTypes = {
 	choice: PropTypes.shape( {

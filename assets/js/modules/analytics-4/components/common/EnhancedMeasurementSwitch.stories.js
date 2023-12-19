@@ -21,7 +21,9 @@
  */
 import EnhancedMeasurementSwitch from './EnhancedMeasurementSwitch';
 
-const Template = ( args ) => <EnhancedMeasurementSwitch { ...args } />;
+function Template( args ) {
+	return <EnhancedMeasurementSwitch { ...args } />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

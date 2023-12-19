@@ -292,6 +292,11 @@
 		text-align: center;
 	}
 
+	.googlesitekit-widget--analyticsAllTraffic__legend .googlesitekit-cta-link__contents {
+		align-items: center;
+		display: inline-flex;
+	}
+
 	.googlesitekit-widget--analyticsAllTraffic__legend-slice {
 		align-items: center;
 		border-radius: 4px;
@@ -315,7 +320,7 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__label {
-		display: flex;
+		display: inline-flex;
 		flex-direction: column;
 
 		&::after {

@@ -34,7 +34,7 @@ import useViewOnly from '../../../hooks/useViewOnly';
 
 const { useSelect } = Data;
 
-const WidgetContextRenderer = ( props ) => {
+function WidgetContextRenderer( props ) {
 	const { id, slug, className, Header, Footer } = props;
 
 	const viewOnlyDashboard = useViewOnly();
@@ -107,7 +107,7 @@ const WidgetContextRenderer = ( props ) => {
 			) }
 		</div>
 	);
-};
+}
 
 WidgetContextRenderer.propTypes = {
 	id: PropTypes.string,

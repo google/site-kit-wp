@@ -76,15 +76,17 @@ function SubHeaderBannerNotification() {
 	);
 }
 
-const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider
-			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
-		>
-			<Header { ...args } />
-		</ViewContextProvider>
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ViewContextProvider
+				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+			>
+				<Header { ...args } />
+			</ViewContextProvider>
+		</WithRegistrySetup>
+	);
+}
 
 export const PluginHeader = Template.bind( {} );
 PluginHeader.storyName = 'Plugin Header';

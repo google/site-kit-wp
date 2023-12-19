@@ -27,14 +27,18 @@ describe( 'whenActive', () => {
 	let registry;
 	const slug = 'test-module';
 
-	const TestComponent = () => <div data-testid="component" />;
-	const TestFallbackComponent = () => (
-		<div data-testid="fallback-component" />
-	);
-	const TestIncompleteComponent = () => (
-		<div data-testid="incomplete-component" />
-	);
-	const FakeWidgetNull = () => <div data-testid="widget-null" />;
+	function TestComponent() {
+		return <div data-testid="component" />;
+	}
+	function TestFallbackComponent() {
+		return <div data-testid="fallback-component" />;
+	}
+	function TestIncompleteComponent() {
+		return <div data-testid="incomplete-component" />;
+	}
+	function FakeWidgetNull() {
+		return <div data-testid="widget-null" />;
+	}
 
 	beforeEach( () => {
 		registry = createTestRegistry();

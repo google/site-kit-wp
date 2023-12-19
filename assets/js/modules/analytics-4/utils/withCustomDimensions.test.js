@@ -42,7 +42,9 @@ describe( 'withCustomDimensions', () => {
 	let registry;
 	const customDimension = 'test_custom_dimension';
 	const propertyID = '123456789';
-	const TestComponent = () => <div data-testid="component" />;
+	function TestComponent() {
+		return <div data-testid="component" />;
+	}
 	const WithCustomDimensionsComponent = withCustomDimensions( {
 		dimensions: [ customDimension ],
 	} )( TestComponent );

@@ -139,7 +139,7 @@ function ModulePopularPagesWidget( props ) {
 			title: __( 'Title', 'google-site-kit' ),
 			description: __( 'Page Title', 'google-site-kit' ),
 			primary: true,
-			Component: ( { row } ) => {
+			Component( { row } ) {
 				const [ title, url ] = row.dimensions;
 				const serviceURL = useSelect( ( select ) => {
 					if ( viewOnlyDashboard ) {
@@ -169,36 +169,42 @@ function ModulePopularPagesWidget( props ) {
 			title: __( 'Pageviews', 'google-site-kit' ),
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return (
+					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+				);
+			},
 		},
 		{
 			title: __( 'Unique Pageviews', 'google-site-kit' ),
 			description: __( 'Unique Pageviews', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metrics.0.values.1',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return (
+					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+				);
+			},
 		},
 		{
 			title: __( 'Bounce Rate', 'google-site-kit' ),
 			description: __( 'Bounce Rate', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metrics.0.values.2',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( Number( fieldValue ) / 100, '%' ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return (
+					<span>{ numFmt( Number( fieldValue ) / 100, '%' ) }</span>
+				);
+			},
 		},
 		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metrics.0.values.3',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, 's' ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return <span>{ numFmt( fieldValue, 's' ) }</span>;
+			},
 		},
 	];
 

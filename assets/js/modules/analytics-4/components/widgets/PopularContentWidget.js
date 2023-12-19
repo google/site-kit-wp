@@ -101,7 +101,7 @@ function PopularContentWidget( props ) {
 	const columns = [
 		{
 			field: 'dimensionValues.0.value',
-			Component: ( { fieldValue } ) => {
+			Component( { fieldValue } ) {
 				const url = fieldValue;
 				const title = titles[ url ];
 				// Utilizing `useSelect` inside the component rather than
@@ -141,9 +141,9 @@ function PopularContentWidget( props ) {
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<strong>{ numFmt( fieldValue ) }</strong>
-			),
+			Component( { fieldValue } ) {
+				return <strong>{ numFmt( fieldValue ) }</strong>;
+			},
 		},
 	];
 

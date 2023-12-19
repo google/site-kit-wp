@@ -18,7 +18,7 @@ export const ThrowError = ( event ) => {
 	);
 };
 
-const ThrowErrorComponent = ( { throwErrorOnMount = false } ) => {
+function ThrowErrorComponent( { throwErrorOnMount = false } ) {
 	const [ shouldThrow, setShouldThrow ] = useState( throwErrorOnMount );
 
 	if ( shouldThrow ) {
@@ -35,6 +35,6 @@ const ThrowErrorComponent = ( { throwErrorOnMount = false } ) => {
 			Simulate an error
 		</Button>
 	);
-};
+}
 
 export default ThrowErrorComponent;

@@ -44,7 +44,7 @@ import StatusMigration from './StatusMigration';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-const ModuleOverviewWidget = ( { Widget, WidgetReportError } ) => {
+function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	const viewOnlyDashboard = useViewOnly();
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
@@ -177,7 +177,7 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportError } ) => {
 			/>
 		</Widget>
 	);
-};
+}
 
 ModuleOverviewWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,

@@ -32,7 +32,7 @@ import CoreSiteBannerNotification from './CoreSiteBannerNotification';
 
 const MAX_SECONDS_FOR_SURVEY = 5;
 
-const CoreSiteBannerNotifications = () => {
+function CoreSiteBannerNotifications() {
 	const [ ready, setReady ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
 	const startTime = useRef( Date.now() );
@@ -92,6 +92,6 @@ const CoreSiteBannerNotifications = () => {
 			/>
 		);
 	} );
-};
+}
 
 export default CoreSiteBannerNotifications;

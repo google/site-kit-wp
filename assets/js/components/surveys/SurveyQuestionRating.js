@@ -27,28 +27,30 @@ import PropTypes from 'prop-types';
 import SurveyHeader from './SurveyHeader';
 import SurveyQuestionRatingChoice from './SurveyQuestionRatingChoice';
 
-const SurveyQuestionRating = ( {
+function SurveyQuestionRating( {
 	question,
 	choices,
 	answerQuestion,
 	dismissSurvey,
-} ) => (
-	<div className="googlesitekit-survey__question-rating">
-		<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
+} ) {
+	return (
+		<div className="googlesitekit-survey__question-rating">
+			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
 
-		<div className="googlesitekit-survey__body">
-			<div className="googlesitekit-survey__choices">
-				{ choices.map( ( choice, index ) => (
-					<SurveyQuestionRatingChoice
-						key={ index }
-						choice={ choice }
-						answerQuestion={ answerQuestion }
-					/>
-				) ) }
+			<div className="googlesitekit-survey__body">
+				<div className="googlesitekit-survey__choices">
+					{ choices.map( ( choice, index ) => (
+						<SurveyQuestionRatingChoice
+							key={ index }
+							choice={ choice }
+							answerQuestion={ answerQuestion }
+						/>
+					) ) }
+				</div>
 			</div>
 		</div>
-	</div>
-);
+	);
+}
 
 SurveyQuestionRating.propTypes = {
 	question: PropTypes.string.isRequired,

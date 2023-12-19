@@ -25,7 +25,9 @@ import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'test' )( MetricTileNumeric );
 
-const Template = ( { ...args } ) => <WidgetWithComponentProps { ...args } />;
+function Template( { ...args } ) {
+	return <WidgetWithComponentProps { ...args } />;
+}
 
 export const Positive = Template.bind( {} );
 Positive.storyName = 'Positive';
