@@ -1128,7 +1128,7 @@ final class Analytics_4 extends Module
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
 			case 'GET:account-summaries':
-				return array_map(
+				$account_summaries = array_map(
 					function( $account ) {
 						$obj                    = self::filter_account_with_ids( $account, 'account' );
 						$obj->propertySummaries = array_map( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -1141,6 +1141,10 @@ final class Analytics_4 extends Module
 						return $obj;
 					},
 					$response->getAccountSummaries()
+				);
+				return Sort::case_insensitive_list_sort(
+					$account_summaries,
+					'displayName'
 				);
 			case 'POST:create-account-ticket':
 				$account_ticket = new Account_Ticket();
