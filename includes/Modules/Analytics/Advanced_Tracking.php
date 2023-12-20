@@ -15,7 +15,6 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Script_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\AMP_Config_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
 
 /**
  * Class for Google Analytics Advanced Event Tracking.
