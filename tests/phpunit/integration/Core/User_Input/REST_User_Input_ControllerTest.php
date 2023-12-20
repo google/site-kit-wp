@@ -112,8 +112,9 @@ class REST_User_Input_ControllerTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'purpose'       => array(
-					'scope'  => 'site',
-					'values' => array( 'purpose1' ),
+					'scope'      => 'site',
+					'values'     => array( 'purpose1' ),
+					'answeredBy' => get_current_user_id(),
 				),
 				'postFrequency' => array(
 					'scope'  => 'user',
@@ -171,8 +172,9 @@ class REST_User_Input_ControllerTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'purpose'       => array(
-					'scope'  => 'site',
-					'values' => array( 'purpose1' ),
+					'scope'      => 'site',
+					'values'     => array( 'purpose1' ),
+					'answeredBy' => get_current_user_id(),
 				),
 				'postFrequency' => array(
 					'scope'  => 'user',
