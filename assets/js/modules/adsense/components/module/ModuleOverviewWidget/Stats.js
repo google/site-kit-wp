@@ -24,10 +24,10 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import { getCurrencyPattern } from '../../../../../components/GoogleChart/utils';
 import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import GoogleChart from '../../../../../components/GoogleChart';
-import { getCurrencyPattern } from '../../../../../components/GoogleChart/utils';
 
 export default function Stats( props ) {
 	const { metrics, currentRangeData, previousRangeData, selectedStats } =
@@ -43,17 +43,19 @@ export default function Stats( props ) {
 
 	const dates = dataMap.slice( 1 ).map( ( [ date ] ) => date );
 	const colors = [ '#6380b8', '#bed4ff', '#5c9271', '#6e48ab' ];
-	const formats = {
-		METRIC_TALLY: undefined,
-		METRIC_RATIO: 'percent',
-		METRIC_DECIMAL: 'decimal',
-		METRIC_MILLISECONDS: undefined,
-	};
 
 	function getFormat( { type, currencyCode } = {} ) {
 		if ( type === 'METRIC_CURRENCY' ) {
 			return getCurrencyPattern( currencyCode );
 		}
+
+		const formats = {
+			METRIC_TALLY: undefined,
+			METRIC_RATIO: 'percent',
+			METRIC_DECIMAL: 'decimal',
+			METRIC_MILLISECONDS: undefined,
+		};
+
 		return formats[ type ];
 	}
 

@@ -206,7 +206,7 @@ export const getChartOptions = (
 };
 
 /**
- * Returnes the Google Charts currency pattern for a given currency code and locale.
+ * Returns the Google Charts currency pattern for a given currency code and locale.
  *
  * @since n.e.x.t
  *
@@ -222,12 +222,14 @@ export const getCurrencyPattern = ( currencyCode, locale = getLocale() ) => {
 
 	const parts = formatter.formatToParts( 1000000 );
 
-	const currencyPattern = parts.reduce( ( pattern, part ) => {
+	return parts.reduce( ( pattern, part ) => {
 		const { value } = part;
 
 		switch ( part.type ) {
 			case 'group':
-				// The group and decimal separators will be replaced with the locale-specific versions by the chart, see https://groups.google.com/g/google-visualization-api/c/hBF9daxe8qY/m/_aPk3EfQLgAJ
+				// The group and decimal separators will be replaced with the
+				// locale-specific versions by the chart.
+				// See: https://groups.google.com/g/google-visualization-api/c/hBF9daxe8qY/m/_aPk3EfQLgAJ
 				return pattern + ',';
 			case 'decimal':
 				return pattern + '.';
@@ -254,6 +256,4 @@ export const getCurrencyPattern = ( currencyCode, locale = getLocale() ) => {
 				return pattern;
 		}
 	}, '' );
-
-	return currencyPattern;
 };
