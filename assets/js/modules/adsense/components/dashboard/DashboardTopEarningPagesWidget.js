@@ -130,14 +130,16 @@ function DashboardTopEarningPagesWidget( props ) {
 		);
 	} );
 
-	const Footer = () => (
-		<SourceLink
-			className="googlesitekit-data-block__source"
-			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			href={ analyticsMainURL }
-			external
-		/>
-	);
+	function Footer() {
+		return (
+			<SourceLink
+				className="googlesitekit-data-block__source"
+				name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				href={ analyticsMainURL }
+				external
+			/>
+		);
+	}
 
 	if ( isAdblockerActive ) {
 		return (
@@ -182,7 +184,7 @@ function DashboardTopEarningPagesWidget( props ) {
 			title: __( 'Top Earning Pages', 'google-site-kit' ),
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
-			Component: ( { row } ) => {
+			Component( { row } ) {
 				const [ title, url ] = row.dimensions;
 				return (
 					<Link
@@ -198,9 +200,9 @@ function DashboardTopEarningPagesWidget( props ) {
 			title: __( 'Earnings', 'google-site-kit' ),
 			tooltip: __( 'Earnings', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, currencyFormat ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return <span>{ numFmt( fieldValue, currencyFormat ) }</span>;
+			},
 		},
 	];
 

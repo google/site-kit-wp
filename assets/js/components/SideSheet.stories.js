@@ -27,7 +27,7 @@ import { Fragment, useState } from '@wordpress/element';
 import { Button } from 'googlesitekit-components';
 import SideSheet from './SideSheet';
 
-const Template = ( args ) => {
+function Template( args ) {
 	const [ isOpen, setIsOpen ] = useState( true );
 
 	return (
@@ -45,7 +45,7 @@ const Template = ( args ) => {
 			</SideSheet>
 		</Fragment>
 	);
-};
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'SideSheet';

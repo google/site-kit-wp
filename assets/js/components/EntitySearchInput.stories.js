@@ -21,7 +21,9 @@
  */
 import EntitySearchInput from './EntitySearchInput';
 
-const Template = ( args ) => <EntitySearchInput { ...args } />;
+function Template( args ) {
+	return <EntitySearchInput { ...args } />;
+}
 
 export const DefaultEntitySearchInput = Template.bind( {} );
 DefaultEntitySearchInput.storyName = 'Entity Search Input';

@@ -31,7 +31,9 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectAdSenseCTATile'
 )( ConnectAdSenseCTATileWidget );
 
-const Template = () => <WidgetWithComponentProps />;
+function Template() {
+	return <WidgetWithComponentProps />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConnectAdSenseCTATileWidget';

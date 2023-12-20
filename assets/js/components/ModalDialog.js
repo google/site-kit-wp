@@ -40,7 +40,7 @@ import {
 } from 'googlesitekit-components';
 import Link from './Link';
 
-const ModalDialog = ( {
+function ModalDialog( {
 	dialogActive,
 	handleDialog,
 	title,
@@ -51,7 +51,7 @@ const ModalDialog = ( {
 	dependentModules,
 	danger,
 	inProgress = false,
-} ) => {
+} ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
 	const hasProvides = !! ( provides && provides.length );
@@ -121,7 +121,7 @@ const ModalDialog = ( {
 			</DialogFooter>
 		</Dialog>
 	);
-};
+}
 
 ModalDialog.displayName = 'Dialog';
 

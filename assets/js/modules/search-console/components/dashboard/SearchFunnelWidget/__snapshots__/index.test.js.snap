@@ -164,7 +164,11 @@ exports[`SearchFunnelWidget should not render the Activate Analytics CTA when th
           rel="noopener noreferrer"
           target="_blank"
         >
-          Search Console
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Search Console
+          </span>
           <span
             class="googlesitekit-icon-wrapper"
             style="margin-left: 5px;"
@@ -424,7 +428,11 @@ exports[`SearchFunnelWidget should render the Search Funnel Widget, including th
           rel="noopener noreferrer"
           target="_blank"
         >
-          Search Console
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Search Console
+          </span>
           <span
             class="googlesitekit-icon-wrapper"
             style="margin-left: 5px;"

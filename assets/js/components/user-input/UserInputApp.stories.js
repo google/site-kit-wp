@@ -29,7 +29,9 @@ import UserInputApp from './UserInputApp';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../../../../tests/js/utils';
 
-const Template = () => <UserInputApp />;
+function Template() {
+	return <UserInputApp />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

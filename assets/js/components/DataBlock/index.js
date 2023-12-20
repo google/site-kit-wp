@@ -37,7 +37,7 @@ import Badge from '../Badge';
 import Change from './Change';
 import SourceLink from '../SourceLink';
 
-const DataBlock = ( {
+function DataBlock( {
 	stat = null,
 	className = '',
 	title = '',
@@ -55,7 +55,7 @@ const DataBlock = ( {
 	gatheringData = false,
 	gatheringDataNoticeStyle = NOTICE_STYLE.DEFAULT,
 	badge,
-} ) => {
+} ) {
 	const handleClick = useCallback( () => {
 		if ( ! gatheringData && handleStatSelection ) {
 			handleStatSelection( stat );
@@ -159,7 +159,7 @@ const DataBlock = ( {
 			) }
 		</div>
 	);
-};
+}
 
 DataBlock.propTypes = {
 	stat: PropTypes.number,

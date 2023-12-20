@@ -42,24 +42,26 @@ import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/uti
 import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
 
-const Template = () => (
-	<header className="googlesitekit-header">
-		<Grid>
-			<Row>
-				<Cell size={ 12 }>
-					<div
-						style={ {
-							display: 'flex',
-							justifyContent: 'flex-end',
-						} }
-					>
-						<ViewOnlyMenu />
-					</div>
-				</Cell>
-			</Row>
-		</Grid>
-	</header>
-);
+function Template() {
+	return (
+		<header className="googlesitekit-header">
+			<Grid>
+				<Row>
+					<Cell size={ 12 }>
+						<div
+							style={ {
+								display: 'flex',
+								justifyContent: 'flex-end',
+							} }
+						>
+							<ViewOnlyMenu />
+						</div>
+					</Cell>
+				</Row>
+			</Grid>
+		</header>
+	);
+}
 
 const commonModuleCapabilities = {
 	[ getMetaCapabilityPropertyName(

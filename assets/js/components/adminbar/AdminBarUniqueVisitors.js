@@ -37,7 +37,7 @@ import {
 import { calculateChange } from '../../util';
 const { useSelect } = Data;
 
-const AdminBarUniqueVisitors = ( { WidgetReportError } ) => {
+function AdminBarUniqueVisitors( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -104,6 +104,6 @@ const AdminBarUniqueVisitors = ( { WidgetReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
-};
+}
 
 export default AdminBarUniqueVisitors;

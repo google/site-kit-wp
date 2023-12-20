@@ -21,7 +21,9 @@
  */
 import SuccessBanner from './SuccessBanner';
 
-const Template = ( args ) => <SuccessBanner { ...args } />;
+function Template( args ) {
+	return <SuccessBanner { ...args } />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

@@ -122,8 +122,12 @@ describe( 'data utils', () => {
 		it( 'should combine multiple stores into one', () => {
 			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
 			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
-			const CONTROL_ONE = () => null;
-			const CONTROL_TWO = () => null;
+			function CONTROL_ONE() {
+				return null;
+			}
+			function CONTROL_TWO() {
+				return null;
+			}
 			const getOne = ( state ) => state.one;
 			const getTwo = ( state ) => state.two;
 			function* getActionOne() {
@@ -224,8 +228,12 @@ describe( 'data utils', () => {
 		it( 'should modify combined state', () => {
 			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
 			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
-			const CONTROL_ONE = () => null;
-			const CONTROL_TWO = () => null;
+			function CONTROL_ONE() {
+				return null;
+			}
+			function CONTROL_TWO() {
+				return null;
+			}
 			const getOne = ( state ) => state.one;
 			const getTwo = ( state ) => state.two;
 			function* getActionOne() {
@@ -416,8 +424,12 @@ describe( 'data utils', () => {
 			// Define actions, controls, resolvers and selectors
 			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
 			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
-			const CONTROL_ONE = () => null;
-			const CONTROL_TWO = () => null;
+			function CONTROL_ONE() {
+				return null;
+			}
+			function CONTROL_TWO() {
+				return null;
+			}
 			const getOne = ( state ) => state.one;
 			const getTwo = ( state ) => state.two;
 			function* getActionOne() {
@@ -627,14 +639,14 @@ describe( 'data utils', () => {
 				combineStores(
 					{
 						controls: {
-							CONTROL_ONE: () => {
+							CONTROL_ONE() {
 								return null;
 							},
 						},
 					},
 					{
 						controls: {
-							CONTROL_ONE: () => {
+							CONTROL_ONE() {
 								return null;
 							},
 						},
