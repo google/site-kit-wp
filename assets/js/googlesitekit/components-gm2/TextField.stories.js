@@ -25,54 +25,6 @@ import WarningIcon from '../../../svg/icons/warning-v2.svg';
 function Template() {
 	return (
 		<div>
-			<div style={ { marginBottom: '50px' } }>
-				<TextField label="Text Field" name="textfield" outlined />
-			</div>
-
-			<div style={ { marginBottom: '50px' } }>
-				<TextField
-					label="Text Field with Value"
-					name="textfield"
-					outlined
-					value="https://www.sitekitbygoogle.com"
-				/>
-			</div>
-
-			<div style={ { marginBottom: '50px' } }>
-				<TextField
-					label="Disabled Text Field"
-					name="textfield"
-					outlined
-					value="https://www.sitekitbygoogle.com"
-					disabled
-				/>
-			</div>
-
-			<div style={ { marginBottom: '50px' } }>
-				<TextField
-					label="With Helper Text"
-					name="textfield"
-					outlined
-					value="https://www.sitekitbygoogle.com"
-					helperText="Helper Text"
-					helperTextPersistent
-				/>
-			</div>
-
-			<div style={ { marginBottom: '50px' } }>
-				<TextField
-					label="With Icon"
-					name="textfield"
-					outlined
-					value="https://www.sitekitbygoogle.com"
-					trailingIcon={
-						<span className="googlesitekit-text-field-icon--error">
-							<WarningIcon width={ 14 } height={ 12 } />
-						</span>
-					}
-				/>
-			</div>
-
 			<div>
 				<div style={ { marginBottom: '50px' } }>
 					<TextField label="Text Field" name="textfield" outlined />
