@@ -49,7 +49,9 @@ describe( 'core/widgets Widget contexts', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget1', {
-						Component: () => <div>Test Widget 1</div>,
+						Component() {
+							return <div>Test Widget 1</div>;
+						},
 						modules: [ 'test-module-1', 'test-module-2' ],
 					} );
 
@@ -73,7 +75,9 @@ describe( 'core/widgets Widget contexts', () => {
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget2', {
-						Component: () => <div>Test Widget 2</div>,
+						Component() {
+							return <div>Test Widget 2</div>;
+						},
 						modules: [ 'test-module-3' ],
 					} );
 

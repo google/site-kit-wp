@@ -37,11 +37,13 @@ const validSettings = {
 	siteStatus: SITE_STATUS_ADDED,
 };
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<SetupUseSnippetSwitch />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<SetupUseSnippetSwitch />
+		</WithRegistrySetup>
+	);
+}
 
 export const SameExistingTagAndClientID = Template.bind( {} );
 SameExistingTagAndClientID.storyName = 'Same ExistingTag and ClientID';

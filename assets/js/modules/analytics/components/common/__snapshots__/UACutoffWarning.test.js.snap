@@ -36,7 +36,11 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Learn more
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Learn more
+                  </span>
                   <span
                     class="googlesitekit-icon-wrapper"
                     style="margin-left: 5px;"
@@ -105,7 +109,11 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Learn more
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Learn more
+                  </span>
                   <span
                     class="googlesitekit-icon-wrapper"
                     style="margin-left: 5px;"
@@ -174,7 +182,11 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Learn more
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Learn more
+                  </span>
                   <span
                     class="googlesitekit-icon-wrapper"
                     style="margin-left: 5px;"
@@ -243,7 +255,11 @@ exports[`UACutoffWarning should render the UA cutoff warning notice when Analyti
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Learn more
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Learn more
+                  </span>
                   <span
                     class="googlesitekit-icon-wrapper"
                     style="margin-left: 5px;"

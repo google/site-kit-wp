@@ -43,7 +43,7 @@ import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardImpressions = ( { WPDashboardReportError } ) => {
+function WPDashboardImpressions( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -120,7 +120,7 @@ const WPDashboardImpressions = ( { WPDashboardReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
-};
+}
 
 WPDashboardImpressions.propTypes = {
 	WPDashboardReportError: PropTypes.elementType.isRequired,

@@ -41,7 +41,7 @@ import DataBlock from '../DataBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardUniqueVisitors = ( { WPDashboardReportError } ) => {
+function WPDashboardUniqueVisitors( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -108,7 +108,7 @@ const WPDashboardUniqueVisitors = ( { WPDashboardReportError } ) => {
 			{ ...gatheringDataProps }
 		/>
 	);
-};
+}
 
 WPDashboardUniqueVisitors.propTypes = {
 	WPDashboardReportError: PropTypes.elementType.isRequired,

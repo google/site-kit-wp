@@ -39,7 +39,9 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	'adBlockingRecovery'
 )( AdBlockingRecoverySetupCTAWidget );
 
-const Template = () => <WidgetWithComponentProps />;
+function Template() {
+	return <WidgetWithComponentProps />;
+}
 
 const validSettings = {
 	accountID: 'pub-12345678',

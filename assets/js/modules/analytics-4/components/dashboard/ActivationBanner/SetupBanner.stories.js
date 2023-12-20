@@ -42,7 +42,9 @@ const { accounts, properties: uaProps } = fixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
 const propertyID = createWebDataStream._propertyID;
 
-const Template = ( args ) => <SetupBanner { ...args } />;
+function Template( args ) {
+	return <SetupBanner { ...args } />;
+}
 
 export const NoPropertyNoTag = Template.bind( {} );
 NoPropertyNoTag.storyName = 'No GA4 Property - No Existing Tag';

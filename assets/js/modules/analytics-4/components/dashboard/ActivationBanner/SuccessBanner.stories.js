@@ -23,7 +23,9 @@ import { provideSiteInfo } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import SuccessBanner from './SuccessBanner';
 
-const Template = () => <SuccessBanner />;
+function Template() {
+	return <SuccessBanner />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'SuccessBanner';

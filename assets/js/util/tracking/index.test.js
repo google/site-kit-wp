@@ -82,7 +82,7 @@ describe( 'trackEvent', () => {
 		const config = {
 			referenceSiteURL: 'https://www.example.com/',
 			userIDHash: 'a1b2c3',
-			trackingID: 'UA-12345678-1',
+			trackingID_GA4: 'G-EQDN3BWDSD',
 			activeModules: [],
 			trackingEnabled: true,
 			userRoles: [ 'administrator' ],
@@ -96,7 +96,12 @@ describe( 'trackEvent', () => {
 				push: ( ...args ) => ( pushArgs = args ),
 			},
 		};
-		const { trackEvent } = createTracking( config, dataLayer );
+		const { trackEvent, initializeSnippet } = createTracking(
+			config,
+			dataLayer
+		);
+
+		const { scriptTagSrc } = await initializeSnippet();
 
 		// Ignore warning (see below) since irrelevant for this test.
 		await fakeTimeouts( () =>
@@ -118,20 +123,15 @@ describe( 'trackEvent', () => {
 		expect( eventName ).toEqual( 'name' );
 		expect( eventData ).toEqual(
 			expect.objectContaining( {
-				send_to: config.trackingID,
+				send_to: 'site_kit',
 				event_category: 'category',
 				event_label: 'label',
 				value: 'value',
-				dimension1: 'https://www.example.com',
-				dimension2: 'administrator',
-				dimension3: config.userIDHash,
-				dimension4: '1.2.3',
-				dimension5: 'feature1,feature2',
-				dimension6: '',
-				dimension7: '1',
 			} )
 		);
 		expect( pushArgs[ 0 ][ 2 ] ).toHaveProperty( 'event_callback' );
+		const expectedTagSrc = `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID_GA4 }&l=${ DATA_LAYER }`;
+		expect( scriptTagSrc ).toEqual( expectedTagSrc );
 	} );
 
 	it( 'does not push to dataLayer when tracking is disabled', async () => {

@@ -1,5 +1,5 @@
 /**
- * EnhancedMeasurementActivationBanner > SuccessBanner Component Stories.
+ * Google Chart utilities tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -19,18 +19,23 @@
 /**
  * Internal dependencies
  */
-import SuccessBanner from './SuccessBanner';
+import { getCurrencyPattern } from './utils';
 
-function Template( args ) {
-	return <SuccessBanner { ...args } />;
-}
-
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SuccessBanner/Default',
-};
-
-export default {
-	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SuccessBanner',
-};
+describe( 'Google chart utils', () => {
+	describe( 'getCurrencyPattern', () => {
+		it( 'should return valid Google chart format pattern', () => {
+			expect( getCurrencyPattern( 'USD', 'en-US' ) ).toBe(
+				'$#,###,##0.00'
+			);
+			expect( getCurrencyPattern( 'EUR', 'en-US' ) ).toBe(
+				'€#,###,##0.00'
+			);
+			expect( getCurrencyPattern( 'EUR', 'de-DE' ) ).toBe(
+				'#,###,##0.00 €'
+			);
+			expect( getCurrencyPattern( 'USD', 'es-ES' ) ).toBe(
+				'#,###,##0.00 US$'
+			);
+		} );
+	} );
+} );

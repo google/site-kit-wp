@@ -38,7 +38,7 @@ import useViewContext from '../../hooks/useViewContext';
 
 const { useDispatch } = Data;
 
-const CoreSiteBannerNotification = ( {
+function CoreSiteBannerNotification( {
 	content,
 	ctaLabel,
 	ctaTarget,
@@ -49,7 +49,7 @@ const CoreSiteBannerNotification = ( {
 	learnMoreLabel,
 	learnMoreURL,
 	title,
-} ) => {
+} ) {
 	const { dismissNotification, acceptNotification } =
 		useDispatch( CORE_SITE );
 	const viewContext = useViewContext();
@@ -107,7 +107,7 @@ const CoreSiteBannerNotification = ( {
 			onLearnMoreClick={ onLearnMoreClick }
 		/>
 	);
-};
+}
 
 CoreSiteBannerNotification.propTypes = {
 	content: PropTypes.string,

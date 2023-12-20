@@ -22,7 +22,9 @@
 import { Button } from 'googlesitekit-components';
 import JoyrideTooltip from './JoyrideTooltip';
 
-const Template = ( args ) => <JoyrideTooltip { ...args } />;
+function Template( args ) {
+	return <JoyrideTooltip { ...args } />;
+}
 
 export const DefaultTooltip = Template.bind( {} );
 DefaultTooltip.storyName = 'Default Tooltip';

@@ -29,11 +29,13 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WPDashboardActivateAnalyticsCTA />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WPDashboardActivateAnalyticsCTA />
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
