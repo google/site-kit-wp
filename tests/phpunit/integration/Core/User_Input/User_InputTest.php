@@ -233,12 +233,7 @@ class User_InputTest extends TestCase {
 		$this->user_input->set_answers( $answers );
 
 		$existing_answers = $this->user_input->get_answers();
-		// Since purpose answer didn't change, it should still be attributed to admin 1.
-		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
-
-		$this->user_input->set_answers( $answers );
-		$existing_answers = $this->user_input->get_answers();
-		// Since no answer changed, purposr answer should still be attributed to admin 1.
+		// Since the "purpose" answer didn't change, it should still be attributed to admin 1.
 		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
 	}
 
@@ -266,7 +261,7 @@ class User_InputTest extends TestCase {
 		$this->user_input->set_answers( $admin_2_answers );
 
 		$existing_answers = $this->user_input->get_answers();
-		// Since purpose answer changed, it should be attributed to admin 2.
+		// Since the "purpose" answer changed, it should be attributed to admin 2.
 		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $second_admin_id );
 		// User specific answers should be properly added for admin 2.
 		$this->assertEquals( $existing_answers['postFrequency']['values'], $admin_2_answers['postFrequency'] );
@@ -277,5 +272,24 @@ class User_InputTest extends TestCase {
 		// Original answers done by admin 1 should remain unchanged.
 		$this->assertNotEquals( $admin_1_answers['postFrequency']['values'], $admin_2_answers['postFrequency'] );
 		$this->assertNotEquals( $admin_1_answers['goals']['values'], $admin_2_answers['goals'] );
+	}
+
+	public function test_set_answers__keep_original_attribution_when_no_answers_change() {
+		$second_admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		$answers = array(
+			'purpose'       => array( 'publish_blog' ),
+			'postFrequency' => array( 'weekly' ),
+			'goals'         => array( 'improving_performance' ),
+		);
+		$this->user_input->set_answers( $answers );
+
+		$this->user_options->switch_user( $second_admin_id );
+
+		$this->user_input->set_answers( $answers );
+
+		$existing_answers = $this->user_input->get_answers();
+		// Since no answer changed, the "purpose" answer should still be attributed to admin 1.
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
 	}
 }
