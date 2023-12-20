@@ -19,12 +19,13 @@
 /**
  * External dependencies
  */
-import { set, cloneDeep, merge } from 'lodash';
+import { set, cloneDeep, merge, findLast } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { stringToDate } from '../../util/date-range/string-to-date';
+import { getLocale } from '../../util';
 
 /**
  * Returns the Google chart data, filtered by selected stats if present.
@@ -202,4 +203,57 @@ export const getChartOptions = (
 	} );
 
 	return chartOptions;
+};
+
+/**
+ * Returns the Google Charts currency pattern for a given currency code and locale.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} currencyCode ISO 4217 currency code.
+ * @param {string} locale       Locale to use for formatting.
+ * @return {string} The currency pattern.
+ */
+export const getCurrencyPattern = ( currencyCode, locale = getLocale() ) => {
+	const formatter = Intl.NumberFormat( locale, {
+		style: 'currency',
+		currency: currencyCode,
+	} );
+
+	const parts = formatter.formatToParts( 1000000 );
+
+	return parts.reduce( ( pattern, part ) => {
+		const { value } = part;
+
+		switch ( part.type ) {
+			case 'group':
+				// The group and decimal separators will be replaced with the
+				// locale-specific versions by the chart.
+				// See: https://groups.google.com/g/google-visualization-api/c/hBF9daxe8qY/m/_aPk3EfQLgAJ
+				return pattern + ',';
+			case 'decimal':
+				return pattern + '.';
+			case 'currency':
+				return pattern + value;
+			case 'literal':
+				const sanitizedValue = /^\s*$/.test( value ) ? value : '';
+				return pattern + sanitizedValue;
+			case 'integer':
+				const integerPattern = value.replace( /\d/g, '#' );
+				const isLastIntegerGroup =
+					findLast( parts, ( { type } ) => 'integer' === type ) ===
+					part;
+
+				return (
+					pattern +
+					( isLastIntegerGroup
+						? integerPattern.replace( /#$/, '0' )
+						: integerPattern )
+				);
+			case 'fraction':
+				return pattern + value.replace( /\d/g, '0' );
+			default:
+				return pattern;
+		}
+	}, '' );
 };
