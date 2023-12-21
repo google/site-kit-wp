@@ -100,10 +100,15 @@ export default function SetupBanner( props ) {
 			return;
 		}
 
+		trackEvent(
+			`${ viewContext }_enhanced-measurement-notification`,
+			'confirm_notification'
+		);
+
 		// Ask the parent component to show the success banner.
 		// This should be called last because it will unmount this component.
 		onSubmitSuccess();
-	}, [ setValues, submitChanges, onSubmitSuccess ] );
+	}, [ setValues, submitChanges, viewContext, onSubmitSuccess ] );
 
 	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
@@ -134,14 +139,8 @@ export default function SetupBanner( props ) {
 			return;
 		}
 
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'confirm_notification'
-		);
-
 		await commonSubmitChanges();
 	}, [
-		viewContext,
 		hasEditScope,
 		commonSubmitChanges,
 		setPermissionScopeError,
