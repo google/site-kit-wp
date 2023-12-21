@@ -113,7 +113,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			if ( ! error ) {
 				if ( isEnhancedMeasurementEnabled === true ) {
-					trackEvent(
+					await trackEvent(
 						`${ viewContext }_analytics`,
 						'ga4_setup_enhanced_measurement_enabled'
 					);
