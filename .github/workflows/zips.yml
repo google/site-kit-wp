@@ -231,9 +231,9 @@ jobs:
         run: |
           unzip google-site-kit.zip
           mv google-site-kit/* .
-          rm -rf google-site-kit *.zip
+          rm -rf google-site-kit ./*.zip
           echo .distignore > .distignore
-      - uses: 10up/action-wordpress-plugin-deploy@stable
+      - uses: 10up/action-wordpress-plugin-deploy@2.2.2
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
