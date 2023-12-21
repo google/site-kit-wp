@@ -189,7 +189,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function retrieve_missing_settings( $option ) {
 		if ( ! is_array( $option ) ) {
-			return;
+			return $option;
 		}
 
 		$recovered_settings = array();
