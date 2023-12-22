@@ -234,6 +234,8 @@ jobs:
           rm -rf google-site-kit ./*.zip
           echo .distignore > .distignore
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
+        with:
+          dry-run: true
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
