@@ -21,7 +21,9 @@
  */
 import ReportErrorButton from './';
 
-const Template = () => <ReportErrorButton />;
+function Template() {
+	return <ReportErrorButton />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

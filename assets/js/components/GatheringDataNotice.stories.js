@@ -21,7 +21,9 @@
  */
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 
-const Template = ( args ) => <GatheringDataNotice { ...args } />;
+function Template( args ) {
+	return <GatheringDataNotice { ...args } />;
+}
 
 export const GatheringDataNoticeUnstyled = Template.bind( {} );
 GatheringDataNoticeUnstyled.storyName = 'Unstyled';

@@ -66,17 +66,17 @@ const createTestRegistryWithArea = (
 	return registry;
 };
 
-const WidgetComponent = () => {
+function WidgetComponent() {
 	const isConnected = useSelect( ( select ) =>
 		select( CORE_SITE ).isConnected()
 	);
 
 	return <div>Foo bar! Connected: { isConnected ? ' yes' : 'no' }.</div>;
-};
+}
 
-const WidgetComponentEmpty = ( { WidgetNull } ) => {
+function WidgetComponentEmpty( { WidgetNull } ) {
 	return <WidgetNull />;
-};
+}
 
 const createWidgets = ( registry, areaName, widgets ) => {
 	widgets.forEach( ( { Component, modules, slug, width } ) => {
@@ -154,7 +154,9 @@ describe( 'WidgetAreaRenderer', () => {
 				width: WIDGET_WIDTHS.FULL,
 			},
 			{
-				Component: () => <div>AdSense is here</div>,
+				Component() {
+					return <div>AdSense is here</div>;
+				},
 				modules: 'adsense',
 				slug: 'three',
 				width: WIDGET_WIDTHS.FULL,
@@ -211,7 +213,9 @@ describe( 'WidgetAreaRenderer', () => {
 				width: WIDGET_WIDTHS.FULL,
 			},
 			{
-				Component: () => <div>AdSense is here</div>,
+				Component() {
+					return <div>AdSense is here</div>;
+				},
 				modules: 'adsense',
 				slug: 'three',
 				width: WIDGET_WIDTHS.FULL,

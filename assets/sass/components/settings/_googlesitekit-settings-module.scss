@@ -39,39 +39,21 @@
 		}
 
 		.googlesitekit-settings-module__status-icon {
-			color: $c-utility-success;
+			align-items: center;
+			background-color: $c-utility-success;
+			border-radius: 50%;
+			color: $c-white;
+			display: flex;
+			height: 19px;
+			justify-content: center;
 			margin-left: $grid-gap-phone;
-
-			&::before {
-				background-position: center center;
-				background-repeat: no-repeat;
-				border-radius: 50%;
-				content: "";
-				display: inline-block;
-				height: 19px;
-				vertical-align: middle;
-				width: 19px;
-			}
+			width: 19px;
 		}
 
-		.googlesitekit-settings-module__status-icon--connected::before {
-			background-color: $c-success;
-			background-image: $icon-checked;
-			background-size: 10px 8px;
-		}
-
-		.googlesitekit-settings-module__status-icon--not-connected::before,
-		.googlesitekit-settings-module__status-icon--warning::before {
+		.googlesitekit-settings-module__status-icon--not-connected,
+		.googlesitekit-settings-module__status-icon--warning {
 			background-color: $c-white;
-
-			/**
-						 * This is the warning icon (a solid triangle with a
-						 * transparent exclamation mark in the middle),
-						 * in the color #FECE72 ($c-yellow-y-100).
-						 */
-			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2222%22%20height%3D%2219%22%20viewBox%3D%220%200%2022%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%2019h22L11%200%200%2019zm12-3h-2v-2h2v2zm0-4h-2V8h2v4z%22%20fill%3D%22%23FECE72%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
-			background-position: center 3px;
-			background-size: 19px 17px;
+			color: $c-selective-yellow;
 			height: 26px;
 			width: 26px;
 		}
@@ -242,11 +224,6 @@
 			font-size: 0.75rem;
 		}
 
-		.googlesitekit-settings-module__edit-button-icon,
-		.googlesitekit-settings-module__remove-button-icon {
-			margin-left: $grid-gap-phone;
-		}
-
 		.googlesitekit-settings-module__edit-button-icon {
 
 			svg {
@@ -290,19 +267,20 @@
 				outline-offset: 0;
 			}
 
-			&::after {
-				// This is the expand_more icon (arrow/chevron down), in the color #5B5B61.
-				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%235B5B61%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
-				background-position: center center;
-				background-repeat: no-repeat;
-				content: "";
-				display: block;
+			.googlesitekit-icon-wrapper {
 				height: 20px;
+				justify-content: center;
 				position: absolute;
 				right: $grid-gap-phone;
 				top: 50%;
 				transform: translateY(-50%);
 				width: 20px;
+
+				svg {
+					color: $c-davys-grey;
+					height: 8px;
+					width: 12px;
+				}
 			}
 
 			.mdc-button {
@@ -333,8 +311,11 @@
 			}
 		}
 
-		.googlesitekit-settings-module__header--open::after {
-			transform: translateY(-50%) rotate(180deg);
+		.googlesitekit-settings-module__header--open {
+
+			.googlesitekit-icon-wrapper {
+				transform: translateY(-50%) rotate(180deg);
+			}
 		}
 	}
 

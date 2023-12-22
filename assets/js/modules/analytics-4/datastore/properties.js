@@ -39,7 +39,10 @@ import {
 } from './constants';
 import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidPropertySelection } from '../utils/validation';
+import {
+	isValidPropertyID,
+	isValidPropertySelection,
+} from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -192,6 +195,7 @@ const baseActions = {
 				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
 					accountID
 				);
+
 			return { response, error };
 		} )();
 	},
@@ -223,9 +227,24 @@ const baseActions = {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.updateSettingsForMeasurementID( '' );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyCreateTime( 0 );
 
 			if ( PROPERTY_CREATE === propertyID ) {
 				return;
+			}
+
+			if ( propertyID ) {
+				const property = yield Data.commonActions.await(
+					registry
+						.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+						.getProperty( propertyID )
+				);
+
+				if ( property?.createTime ) {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyCreateTime( property.createTime );
+				}
 			}
 
 			yield webDataStreamActions.waitForWebDataStreams( propertyID );
@@ -690,6 +709,31 @@ const baseResolvers = {
 		if ( property === undefined ) {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}
+	},
+	*getPropertyCreateTime() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		const propertyCreateTime = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyCreateTime();
+
+		if ( propertyCreateTime || ! isValidPropertyID( propertyID ) ) {
+			return;
+		}
+
+		const property = yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getProperty( propertyID )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyCreateTime( property?.createTime );
 	},
 };
 

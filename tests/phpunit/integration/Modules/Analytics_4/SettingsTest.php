@@ -65,19 +65,22 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-				// 'accountID'              => '',
-				// 'adsConversionID'        => '',
+				'accountID'                 => '',
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
 				'propertyID'                => '',
 				'webDataStreamID'           => '',
 				'measurementID'             => '',
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'ownerID'                   => 0,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -122,25 +125,11 @@ class SettingsTest extends SettingsTestCase {
 		return Settings::OPTION;
 	}
 
-	public function test_owner_id_is_taken_from_analytics_settings() {
-		delete_option( Analytics_Settings::OPTION );
-
-		$this->settings->register();
-
-		$analytics_settings = new Analytics_Settings( $this->options );
-		$analytics_settings->register();
-		$analytics_settings->merge( array( 'ownerID' => $this->user_id ) );
-		$this->assertEquals( $this->user_id, $analytics_settings->get()['ownerID'] );
-
-		$options = $this->settings->get();
-		$this->assertEquals( $this->user_id, $options['ownerID'] );
-	}
-
 	/**
 	 * @dataProvider data_owned_keys
 	 */
-	public function test_owner_id_is_set_in_analytics_settings_when_owned_keys_are_changed_in_analytics_4( $property_name, $property_value ) {
-		delete_option( Analytics_Settings::OPTION );
+	public function test_owner_id_is_set_in_settings_when_owned_keys_are_changed( $property_name, $property_value ) {
+		delete_option( $this->get_option_name() );
 
 		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		add_filter(
@@ -155,14 +144,49 @@ class SettingsTest extends SettingsTestCase {
 			2
 		);
 
-		$analytics_settings = new Analytics_Settings( $this->options );
-		$analytics_settings->register();
-		$this->assertEquals( 0, $analytics_settings->get()['ownerID'] );
-
 		$this->settings->register();
 		$this->settings->merge( array( $property_name => $property_value ) );
 
-		$this->assertEquals( $this->user_id, $analytics_settings->get()['ownerID'] );
+		$this->assertEquals( $this->user_id, $this->settings->get()['ownerID'] );
+	}
+
+	public function test_retrieve_missing_analytics_4_settings() {
+		delete_option( Settings::OPTION );
+
+		$analytics_settings = new Analytics_Settings( $this->options );
+		$analytics_settings->register();
+		$this->settings->register();
+
+		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'propertyID'                => '123',
+				'webDataStreamID'           => '456',
+				'measurementID'             => 'G-789',
+				'useSnippet'                => true,
+				'ownerID'                   => $this->user_id,
+				'googleTagID'               => 'GT-123',
+				'googleTagAccountID'        => '123',
+				'googleTagContainerID'      => '456',
+				'googleTagLastSyncedAtMs'   => 0,
+				'availableCustomDimensions' => null,
+				'propertyCreateTime'        => 0,
+			)
+		);
+
+		$keys_to_check = array(
+			'accountID',
+			'adsConversionID',
+			'adsenseLinked',
+			'canUseSnippet',
+			'trackingDisabled',
+		);
+		$settings      = $options->get( Settings::OPTION );
+
+		foreach ( $keys_to_check as $key ) {
+			$this->assertArrayHasKey( $key, $settings );
+		}
 	}
 
 	public function data_owned_keys() {

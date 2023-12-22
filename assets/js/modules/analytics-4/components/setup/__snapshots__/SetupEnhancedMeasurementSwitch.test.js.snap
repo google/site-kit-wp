@@ -21,7 +21,11 @@ exports[`SetupEnhancedMeasurementSwitch should not render the switch when enhanc
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -81,7 +85,11 @@ exports[`SetupEnhancedMeasurementSwitch should render with the switch defaulting
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"

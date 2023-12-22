@@ -93,11 +93,13 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
 	DashboardOverallPageMetricsWidgetGA4
 );
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WidgetWithComponentProps { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -186,6 +188,10 @@ ZeroData.args = {
 	setupRegistry: ( { dispatch } ) => {
 		const propertyID = properties[ 0 ]._id;
 		dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+
+		dispatch( MODULES_ANALYTICS_4 ).setPropertyCreateTime(
+			properties[ 0 ].createTime
+		);
 
 		for ( const options of reportOptions ) {
 			const report = getAnalytics4MockResponse( options );
@@ -336,6 +342,10 @@ ZeroDataEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		const propertyID = properties[ 0 ]._id;
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyCreateTime( properties[ 0 ].createTime );
 
 		provideSiteInfo( registry, { currentEntityURL } );
 		provideAnalytics4MockReport( registry, {

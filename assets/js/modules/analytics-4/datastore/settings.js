@@ -75,6 +75,7 @@ export async function submitChanges( { select, dispatch } ) {
 		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID(
 			WEBDATASTREAM_CREATE
 		);
+
 		await dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID(
 			''
 		);

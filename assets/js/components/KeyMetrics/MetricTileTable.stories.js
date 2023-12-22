@@ -23,19 +23,23 @@ import MetricTileTable from './MetricTileTable';
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'test' )( MetricTileTable );
 
-const Template = ( { ...args } ) => <WidgetWithComponentProps { ...args } />;
+function Template( { ...args } ) {
+	return <WidgetWithComponentProps { ...args } />;
+}
 
 const title = 'Metric tile table';
 const columns = [
 	{
 		field: 'field1.0',
-		Component: ( { fieldValue } ) => (
-			<a href="http://example.com">{ fieldValue }</a>
-		),
+		Component( { fieldValue } ) {
+			return <a href="http://example.com">{ fieldValue }</a>;
+		},
 	},
 	{
 		field: 'field2',
-		Component: ( { fieldValue } ) => <strong>{ fieldValue }</strong>,
+		Component( { fieldValue } ) {
+			return <strong>{ fieldValue }</strong>;
+		},
 	},
 ];
 
@@ -96,7 +100,9 @@ ZeroData.args = {
 	title,
 	rows: [],
 	columns,
-	ZeroState: () => <div>No data available</div>,
+	ZeroState() {
+		return <div>No data available</div>;
+	},
 };
 ZeroData.scenario = {
 	label: 'KeyMetrics/MetricTileTable/ZeroData',

@@ -68,7 +68,7 @@ export default function withCustomDimensions( options = {} ) {
 	} = options;
 
 	return ( WrappedComponent ) => {
-		const WithCustomDimensionsComponent = ( props ) => {
+		function WithCustomDimensionsComponent( props ) {
 			const isViewOnly = useViewOnly();
 
 			const { Widget, widgetSlug } = props;
@@ -414,7 +414,7 @@ export default function withCustomDimensions( options = {} ) {
 			}
 
 			return <WrappedComponent { ...props } />;
-		};
+		}
 
 		WithCustomDimensionsComponent.displayName = 'WithCustomDimensions';
 

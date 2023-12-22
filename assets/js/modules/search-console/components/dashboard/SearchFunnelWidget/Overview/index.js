@@ -57,7 +57,7 @@ function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	};
 }
 
-const Overview = ( {
+function Overview( {
 	analyticsData,
 	analyticsGoalsData,
 	analyticsVisitorsData,
@@ -68,7 +68,7 @@ const Overview = ( {
 	error,
 	WidgetReportError,
 	showRecoverableAnalytics,
-} ) => {
+} ) {
 	const dashboardType = useDashboardType();
 
 	const viewOnly = useViewOnly();
@@ -319,7 +319,7 @@ const Overview = ( {
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Overview.propTypes = {
 	analyticsData: PropTypes.oneOfType( [

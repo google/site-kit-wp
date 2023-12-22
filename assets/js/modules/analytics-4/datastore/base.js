@@ -26,13 +26,11 @@ import {
 	validateCanSubmitChanges,
 	rollbackChanges,
 } from './settings';
+import { convertDateStringToUNIXTimestamp } from '../../../util';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	ownedSettingsSlugs: [
-		// TODO: These can be uncommented when Analytics and Analytics 4
-		// modules are officially separated.
-		// 'accountID',
-		// 'adsConversionID',
+		'accountID',
 		'propertyID',
 		'webDataStreamID',
 		'measurementID',
@@ -42,23 +40,35 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	],
 	storeName: MODULES_ANALYTICS_4,
 	settingSlugs: [
-		// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-		// 'accountID',
-		// 'adsConversionID',
+		'accountID',
+		'adsConversionID',
+		'adsenseLinked',
 		'propertyID',
 		'webDataStreamID',
 		'measurementID',
 		'useSnippet',
+		'canUseSnippet',
 		'ownerID',
 		'googleTagID',
 		'googleTagAccountID',
 		'googleTagContainerID',
 		'googleTagLastSyncedAtMs',
 		'availableCustomDimensions',
+		'propertyCreateTime',
+		'trackingDisabled',
 	],
 	submitChanges,
 	rollbackChanges,
 	validateCanSubmitChanges,
 } );
+
+const originalSetPropertyCreateTime =
+	baseModuleStore.actions.setPropertyCreateTime;
+
+baseModuleStore.actions.setPropertyCreateTime = ( value ) => {
+	return originalSetPropertyCreateTime(
+		convertDateStringToUNIXTimestamp( value )
+	);
+};
 
 export default baseModuleStore;

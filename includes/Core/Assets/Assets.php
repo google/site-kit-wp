@@ -724,7 +724,7 @@ final class Assets {
 			'postTypes'        => $this->get_post_types(),
 			'storagePrefix'    => $this->get_storage_prefix(),
 			'referenceDate'    => apply_filters( 'googlesitekit_reference_date', null ),
-			'productBasePaths' => $this->get_product_base_paths(),
+			'productPostType'  => $this->get_product_post_type(),
 		);
 
 		/**
@@ -1065,51 +1065,28 @@ final class Assets {
 	}
 
 	/**
-	 * Returns an array of product base paths.
+	 * Gets the product post type.
 	 *
-	 * @since 1.106.0
+	 * @since 1.116.0
 	 *
-	 * @return array The array of product base paths.
+	 * @return string|null The product post type name or null if not present on the website.
 	 */
-	private function get_product_base_paths() {
-		if ( ! Feature_Flags::enabled( 'keyMetrics' ) ) {
-			return array();
-		}
-
-		// Return early if permalinks are not used.
-		if ( ! get_option( 'permalink_structure' ) ) {
-			return array();
-		}
-
-		$product_base_paths = array();
-		$product_type       = get_post_type_object( 'product' );
-
-		// Check whether the product post type is available and public.
-		if ( $product_type instanceof WP_Post_Type && $product_type->public ) {
-			global $wp_rewrite;
-			$permastruct               = $wp_rewrite->get_extra_permastruct( 'product' );
-			$permalink_template        = home_url( $permastruct );
-			$product_url_path          = URL::parse( $permalink_template, PHP_URL_PATH );
-			list( $product_base_path ) = explode( '%product%', $product_url_path, 2 );
-			$product_base_path         = str_replace( $wp_rewrite->rewritecode, $wp_rewrite->rewritereplace, $product_base_path );
-			if ( strpos( $product_base_path, '^' ) !== 0 ) {
-				$product_base_path = '^' . $product_base_path;
-			}
-			$product_base_paths[] = $product_base_path;
-		}
-
+	protected function get_product_post_type() {
 		/**
-		 * Filters product base paths found in WordPress. By default the array contains
-		 * the base path for the "product" post type if it is available in WordPress
-		 * and public.
+		 * Filters the product post type.
 		 *
-		 * @since 1.106.0
+		 * @since 1.116.0
 		 *
-		 * @param array $product_base_paths Array of existing product base paths.
+		 * @param string $product_post_type The product post type name.
 		 */
-		$product_base_paths = apply_filters( 'googlesitekit_product_base_paths', $product_base_paths );
+		$product_post_type = apply_filters( 'googlesitekit_product_post_type', 'product' );
+		$product_type      = get_post_type_object( $product_post_type );
 
-		return $product_base_paths;
+		if ( $product_type instanceof WP_Post_Type && $product_type->public ) {
+			return $product_post_type;
+		}
+
+		return null;
 	}
 
 }

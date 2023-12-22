@@ -1,7 +1,7 @@
 /**
  * ESLint rules: custom rules for Site Kit.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,4 +25,5 @@ module.exports = {
 	'jsdoc-tag-grouping': require( './jsdoc-tag-grouping' ),
 	'jsdoc-tag-order': require( './jsdoc-tag-order' ),
 	'jsdoc-third-person': require( './jsdoc-third-person' ),
+	'no-yield-dispatch': require( './no-yield-dispatch' ),
 };

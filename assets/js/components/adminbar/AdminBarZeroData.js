@@ -21,7 +21,7 @@
  */
 import { __ } from '@wordpress/i18n';
 
-const AdminBarZeroData = () => {
+function AdminBarZeroData() {
 	return (
 		<div>
 			<div className="googlesitekit-adminbar__subtitle googlesitekit-font-weight-bold">
@@ -35,6 +35,6 @@ const AdminBarZeroData = () => {
 			</div>
 		</div>
 	);
-};
+}
 
 export default AdminBarZeroData;

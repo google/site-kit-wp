@@ -28,7 +28,9 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 
-const Template = () => <AdBlockingRecoverySetupCTANotice />;
+function Template() {
+	return <AdBlockingRecoverySetupCTANotice />;
+}
 
 const validSettings = {
 	accountID: 'pub-12345678',

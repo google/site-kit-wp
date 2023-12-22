@@ -34,7 +34,7 @@ import { ENTER } from '@wordpress/keycodes';
  */
 import { MDCSwitch } from '../../material-components';
 
-const Switch = ( { onClick, label, checked, disabled, hideLabel } ) => {
+function Switch( { onClick, label, checked, disabled, hideLabel } ) {
 	// eslint-disable-next-line sitekit/acronym-case
 	const instanceID = useInstanceId( Switch );
 	const switchRef = useCallback( ( el ) => {
@@ -91,7 +91,7 @@ const Switch = ( { onClick, label, checked, disabled, hideLabel } ) => {
 			</label>
 		</Fragment>
 	);
-};
+}
 
 Switch.propTypes = {
 	id: PropTypes.string,
