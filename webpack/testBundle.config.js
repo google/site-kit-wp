@@ -26,28 +26,26 @@ const WebpackBar = require( 'webpackbar' );
  */
 const { rootDir, externals, resolve, createRules } = require( './common' );
 
-module.exports = ( mode ) => {
-	return {
-		entry: {
-			'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
-			'e2e-redux-logger': './tests/e2e/assets/e2e-redux-logger.js',
-		},
-		output: {
-			filename: '[name].js',
-			path: rootDir + '/dist/assets/js',
-			chunkFilename: '[name].js',
-			publicPath: '',
-		},
-		module: {
-			rules: createRules( mode ),
-		},
-		plugins: [
-			new WebpackBar( {
-				name: 'Test files',
-				color: '#34a853',
-			} ),
-		],
-		externals,
-		resolve,
-	};
-};
+module.exports = ( mode ) => ( {
+	entry: {
+		'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
+		'e2e-redux-logger': './tests/e2e/assets/e2e-redux-logger.js',
+	},
+	output: {
+		filename: '[name].js',
+		path: rootDir + '/dist/assets/js',
+		chunkFilename: '[name].js',
+		publicPath: '',
+	},
+	module: {
+		rules: createRules( mode ),
+	},
+	plugins: [
+		new WebpackBar( {
+			name: 'Test files',
+			color: '#34a853',
+		} ),
+	],
+	externals,
+	resolve,
+} );

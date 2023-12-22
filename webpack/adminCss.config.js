@@ -28,55 +28,53 @@ const WebpackBar = require( 'webpackbar' );
  */
 const { manifestArgs } = require( './common' );
 
-module.exports = ( mode ) => {
-	return {
-		entry: {
-			'googlesitekit-admin-css': './assets/sass/admin.scss',
-			'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
-			'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
-		},
-		module: {
-			rules: [
-				{
-					test: /\.scss$/,
-					use: [
-						MiniCssExtractPlugin.loader,
-						'css-loader',
-						'postcss-loader',
-						{
-							loader: 'sass-loader',
-							options: {
-								implementation: require( 'sass' ),
-								sassOptions: {
-									includePaths: [ 'node_modules' ],
-								},
+module.exports = ( mode ) => ( {
+	entry: {
+		'googlesitekit-admin-css': './assets/sass/admin.scss',
+		'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
+		'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
+	},
+	module: {
+		rules: [
+			{
+				test: /\.scss$/,
+				use: [
+					MiniCssExtractPlugin.loader,
+					'css-loader',
+					'postcss-loader',
+					{
+						loader: 'sass-loader',
+						options: {
+							implementation: require( 'sass' ),
+							sassOptions: {
+								includePaths: [ 'node_modules' ],
 							},
 						},
-					],
-				},
-				{
-					test: /\.(png|woff|woff2|eot|ttf|gif)$/,
-					use: { loader: 'url-loader?limit=100000' },
-				},
-			],
-		},
-		plugins: [
-			new MiniCssExtractPlugin( {
-				filename:
-					'production' === mode
-						? '/assets/css/[name]-[contenthash].min.css'
-						: '/assets/css/[name].css',
-			} ),
-			new WebpackBar( {
-				name: 'Plugin CSS',
-				color: '#4285f4',
-			} ),
-			new ManifestPlugin( {
-				...manifestArgs( mode ),
-				filter( file ) {
-					return ( file.name || '' ).match( /\.css$/ );
-				},
-			} ),
+					},
+				],
+			},
+			{
+				test: /\.(png|woff|woff2|eot|ttf|gif)$/,
+				use: { loader: 'url-loader?limit=100000' },
+			},
 		],
-	};
-};
+	},
+	plugins: [
+		new MiniCssExtractPlugin( {
+			filename:
+				'production' === mode
+					? '/assets/css/[name]-[contenthash].min.css'
+					: '/assets/css/[name].css',
+		} ),
+		new WebpackBar( {
+			name: 'Plugin CSS',
+			color: '#4285f4',
+		} ),
+		new ManifestPlugin( {
+			...manifestArgs( mode ),
+			filter( file ) {
+				return ( file.name || '' ).match( /\.css$/ );
+			},
+		} ),
+	],
+} );

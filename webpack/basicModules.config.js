@@ -33,39 +33,37 @@ const {
 	rules,
 } = require( './common' );
 
-module.exports = ( mode ) => {
-	return {
-		entry: {
-			'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
-			// Analytics advanced tracking script to be injected in the frontend.
-			'analytics-advanced-tracking':
-				'./assets/js/analytics-advanced-tracking.js',
-		},
-		externals,
-		output: {
-			filename:
-				mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
-			path: rootDir + '/dist/assets/js',
-			publicPath: '',
-		},
-		module: {
-			rules,
-		},
-		plugins: [
-			new WebpackBar( {
-				name: 'Basic Modules',
-				color: '#fb1105',
-			} ),
-			new ManifestPlugin( {
-				...manifestArgs( mode ),
-				filter( file ) {
-					return ( file.name || '' ).match( /\.js$/ );
-				},
-			} ),
-		],
-		optimization: {
-			concatenateModules: true,
-		},
-		resolve,
-	};
-};
+module.exports = ( mode ) => ( {
+	entry: {
+		'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
+		// Analytics advanced tracking script to be injected in the frontend.
+		'analytics-advanced-tracking':
+			'./assets/js/analytics-advanced-tracking.js',
+	},
+	externals,
+	output: {
+		filename:
+			mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
+		path: rootDir + '/dist/assets/js',
+		publicPath: '',
+	},
+	module: {
+		rules,
+	},
+	plugins: [
+		new WebpackBar( {
+			name: 'Basic Modules',
+			color: '#fb1105',
+		} ),
+		new ManifestPlugin( {
+			...manifestArgs( mode ),
+			filter( file ) {
+				return ( file.name || '' ).match( /\.js$/ );
+			},
+		} ),
+	],
+	optimization: {
+		concatenateModules: true,
+	},
+	resolve,
+} );
