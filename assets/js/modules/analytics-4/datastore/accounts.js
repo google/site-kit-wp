@@ -27,17 +27,24 @@ import { isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { ENHANCED_MEASUREMENT_ENABLED, MODULES_ANALYTICS_4 } from './constants';
+import {
+	ACCOUNT_CREATE,
+	ENHANCED_MEASUREMENT_ENABLED,
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from './constants';
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
 } from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { isValidAccountSelection } from '../utils/validation';
 
 const { createRegistrySelector } = Data;
-const { receiveError, clearError } = errorStoreActions;
+const { receiveError, clearError, clearErrors } = errorStoreActions;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
@@ -82,6 +89,10 @@ const fetchCreateAccountStore = createFetchStore( {
 	},
 } );
 
+// Actions.
+const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
+const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
+
 const baseInitialState = {
 	accountSummaries: undefined,
 	accountTicketID: undefined,
@@ -121,12 +132,66 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	selectAccount: createValidatedAction(
+		( accountID ) => {
+			invariant(
+				isValidAccountSelection( accountID ),
+				'A valid accountID is required to select.'
+			);
+		},
+		function* ( accountID ) {
+			const registry = yield Data.commonActions.getRegistry();
+			const finishSelectingAccountAction = {
+				type: FINISH_SELECTING_ACCOUNT,
+				payload: {},
+			};
+
+			yield {
+				type: START_SELECTING_ACCOUNT,
+				payload: {},
+			};
+
+			yield clearErrors();
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				accountID,
+			} );
+
+			if ( ACCOUNT_CREATE === accountID ) {
+				yield finishSelectingAccountAction;
+				return;
+			}
+
+			yield Data.commonActions.await(
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.matchAndSelectProperty( accountID, PROPERTY_CREATE )
+			);
+
+			yield finishSelectingAccountAction;
+		}
+	),
 };
 
 const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
+		case START_SELECTING_ACCOUNT: {
+			return {
+				...state,
+				finishedSelectingAccount: false,
+			};
+		}
+
+		case FINISH_SELECTING_ACCOUNT: {
+			return {
+				...state,
+				finishedSelectingAccount: true,
+			};
+		}
+
 		default: {
 			return state;
 		}
