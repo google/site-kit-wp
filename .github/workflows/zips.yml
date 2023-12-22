@@ -64,6 +64,11 @@ on:
         description: Release version
         required: false
         default: ''
+      dry_run:
+        type: boolean
+        description: Run the publishing process without committing.
+        required: false
+        default: false
 
 concurrency:
   group: zips-${{ github.event_name }}-${{ github.ref }}
@@ -235,7 +240,7 @@ jobs:
           echo .distignore > .distignore
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
         with:
-          dry-run: true
+          dry-run: ${{ inputs.dry_run }}
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
