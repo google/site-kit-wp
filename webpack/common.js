@@ -30,7 +30,9 @@ const features = require( '../feature-flags.json' );
 
 const rootDir = path.resolve( __dirname, '..' );
 
-const formattedFeaturesToPHPArray = features
+exports.rootDir = rootDir;
+
+exports.formattedFeaturesToPHPArray = features
 	.map( ( feature ) => `'${ feature }'` )
 	.join( ',' );
 
@@ -38,7 +40,9 @@ const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
 
-const resolve = {
+exports.projectPath = projectPath;
+
+exports.resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve(
 			'@wordpress/api-fetch'
@@ -65,7 +69,9 @@ return array(
 );
 `;
 
-const configTemplate = `<?php
+exports.manifestTemplate = manifestTemplate;
+
+exports.configTemplate = `<?php
 /**
  * @package   Google\\Site_Kit
  * @copyright ${ new Date().getFullYear() } Google LLC
@@ -79,7 +85,7 @@ return array(
 `;
 
 const manifestSeed = {};
-const manifestArgs = ( mode ) => ( {
+exports.manifestArgs = ( mode ) => ( {
 	fileName: path.resolve( rootDir, 'dist/manifest.php' ),
 	seed: manifestSeed,
 	generate( seedObj, files ) {
@@ -163,9 +169,13 @@ const siteKitExternals = {
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
-const externals = { ...siteKitExternals };
+exports.siteKitExternals = siteKitExternals;
+
+exports.externals = { ...siteKitExternals };
 
 const noAMDParserRule = { parser: { amd: false } };
+
+exports.noAMDParserRule = noAMDParserRule;
 
 const svgRule = {
 	test: /\.svg$/,
@@ -180,7 +190,9 @@ const svgRule = {
 	],
 };
 
-const createRules = ( mode ) => [
+exports.svgRule = svgRule;
+
+exports.createRules = ( mode ) => [
 	noAMDParserRule,
 	svgRule,
 	{
@@ -218,7 +230,7 @@ const createRules = ( mode ) => [
 	},
 ];
 
-const createMinimizerRules = ( mode ) => [
+exports.createMinimizerRules = ( mode ) => [
 	new TerserPlugin( {
 		parallel: true,
 		sourceMap: mode !== 'production',
@@ -244,7 +256,7 @@ const googleSiteKitFile = fs.readFileSync(
 const googleSiteKitVersion = googleSiteKitFile.match(
 	/(?<='GOOGLESITEKIT_VERSION',\s+')\d+.\d+.\d+(?=')/gi
 );
-const GOOGLESITEKIT_VERSION = googleSiteKitVersion
+exports.GOOGLESITEKIT_VERSION = googleSiteKitVersion
 	? googleSiteKitVersion[ 0 ]
 	: '';
 
@@ -259,9 +271,13 @@ const corePackages = [
 	'url',
 ];
 
+exports.corePackages = corePackages;
+
 const gutenbergExternals = {
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
+
+exports.gutenbergExternals = gutenbergExternals;
 
 corePackages.forEach( ( name ) => {
 	gutenbergExternals[ `@wordpress-core/${ name }` ] = [
@@ -269,22 +285,3 @@ corePackages.forEach( ( name ) => {
 		name.replace( /-([a-z])/g, ( match, letter ) => letter.toUpperCase() ),
 	];
 } );
-
-module.exports = {
-	rootDir,
-	formattedFeaturesToPHPArray,
-	resolve,
-	manifestTemplate,
-	configTemplate,
-	manifestArgs,
-	siteKitExternals,
-	externals,
-	gutenbergExternals,
-	noAMDParserRule,
-	svgRule,
-	createMinimizerRules,
-	createRules,
-	GOOGLESITEKIT_VERSION,
-	corePackages,
-	projectPath,
-};
