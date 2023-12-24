@@ -85,7 +85,7 @@ NoExistingTags.args = {
 };
 
 export default {
-	title: 'Modules/AdSense/Components/Setup/V2/SetupUseSnippetSwitch',
+	title: 'Modules/AdSense/Components/Setup/SetupUseSnippetSwitch',
 	component: SetupUseSnippetSwitch,
 	decorators: [
 		( Story ) => {
