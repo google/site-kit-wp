@@ -33,7 +33,12 @@ export const ENHANCED_MEASUREMENT_ENABLED = 'enhanced-measurement-enabled';
 export const ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER =
 	'enhanced-measurement-should-dismiss-activation-banner';
 
+// Form ID for the account creation form.
+export const FORM_ACCOUNT_CREATE = 'analytics4AccountCreate';
+
 export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analytics4CustomDimensionsCreate';
+
+export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
 
 // Note: names and descriptions are not translated as these are not surfaced in Site Kit
 // and are also subject to hard limits on the length which would be unpredictable if translated.
