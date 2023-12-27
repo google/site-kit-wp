@@ -38,6 +38,9 @@ export const FORM_ACCOUNT_CREATE = 'analytics4AccountCreate';
 
 export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analytics4CustomDimensionsCreate';
 
+// OAuth scope required for provisioning a Google Analytics account.
+export const PROVISIONING_SCOPE =
+	'https://www.googleapis.com/auth/analytics.provision';
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
 
 // Note: names and descriptions are not translated as these are not surfaced in Site Kit
