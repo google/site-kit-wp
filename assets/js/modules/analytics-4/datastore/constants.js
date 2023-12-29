@@ -18,6 +18,9 @@
 
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
+// A special Account ID value used for the "Set up a new account" option.
+export const ACCOUNT_CREATE = 'account_create';
+
 export const PROPERTY_CREATE = 'property_create';
 export const WEBDATASTREAM_CREATE = 'webdatastream_create';
 
