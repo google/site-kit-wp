@@ -841,9 +841,8 @@ const baseSelectors = {
 				const isResolvingAccountSummaries =
 					hasModuleAccess === false
 						? false
-						: select( MODULES_ANALYTICS_4 ).isResolving(
-								'getAccounts',
-								[]
+						: ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+								'getAccountSummaries'
 						  );
 
 				return (

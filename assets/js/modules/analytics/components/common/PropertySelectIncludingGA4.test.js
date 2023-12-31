@@ -161,7 +161,10 @@ const setupAdvancedRegistry = ( registry ) => {
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
 		analytics4Fixtures.accountSummaries
 	);
-	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getAccounts', [] );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'getAccountSummaries',
+		[]
+	);
 
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 		[

@@ -39,7 +39,7 @@ const { useSelect, useDispatch } = Data;
 export default function SetupFormGA4() {
 	const accounts =
 		useSelect( ( select ) =>
-			select( MODULES_ANALYTICS_4 ).getAccounts()
+			select( MODULES_ANALYTICS_4 ).getAccountSummaries()
 		) || [];
 	const hasExistingGA4Tag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()

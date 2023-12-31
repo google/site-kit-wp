@@ -51,10 +51,12 @@ export default function AccountSelect( { hasModuleAccess } ) {
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const accounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAccounts()
+		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getAccounts' )
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getAccountSummaries'
+		)
 	);
 
 	const { setPropertyID } = useDispatch( MODULES_ANALYTICS_4 );

@@ -558,10 +558,9 @@ const baseSelectors = {
 				const propertyID =
 					select( MODULES_ANALYTICS_4 ).getPropertyID();
 
-				const loadedAccounts =
-					select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getAccounts'
-					);
+				const loadedAccounts = select(
+					MODULES_ANALYTICS_4
+				).hasFinishedResolution( 'getAccountSummaries' );
 
 				const loadedWebDataStreams =
 					isValidPropertyID( propertyID ) && hasModuleAccess !== false
@@ -579,11 +578,16 @@ const baseSelectors = {
 				const isMatchingAccountProperty =
 					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty();
 
+				const isPropertyLoading = select(
+					MODULES_ANALYTICS_4
+				).isResolving( 'getProperty', [ propertyID ] );
+
 				return (
 					isMatchingAccountProperty ||
 					! loadedAccounts ||
 					! loadedWebDataStreams ||
-					! finishedSelectingAccount
+					! finishedSelectingAccount ||
+					isPropertyLoading
 				);
 			}
 	),

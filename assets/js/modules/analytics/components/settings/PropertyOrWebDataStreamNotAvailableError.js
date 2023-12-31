@@ -71,7 +71,10 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	);
 
 	const getPropertiesError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getAccounts', [] )
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+			'getAccountSummaries',
+			[]
+		)
 	);
 
 	if (

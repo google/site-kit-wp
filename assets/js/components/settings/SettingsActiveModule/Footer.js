@@ -176,7 +176,7 @@ export default function Footer( props ) {
 	// premature interactions by the user.
 	const isLoading = useSelect( ( select ) => {
 		const resolutionMapping = {
-			analytics: 'getAccounts',
+			analytics: 'getAccountSummaries',
 			tagmanager: 'getAccounts',
 			'search-console': 'getMatchedProperties',
 		};
@@ -187,7 +187,7 @@ export default function Footer( props ) {
 		}
 
 		// Since the GA4 accounts are loaded from `account-summaries` of the `analytics-4` store
-		// for the `getAccounts` selector, we need to use the `analytics-4` store name
+		// for the `getAccountSummaries` selector, we need to use the `analytics-4` store name
 		// instead of the module store name.
 		const storeName =
 			slug === 'analytics' ? MODULES_ANALYTICS_4 : module.storeName;

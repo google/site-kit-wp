@@ -34,7 +34,7 @@ const { useSelect } = Data;
 export default function SettingsEdit() {
 	const accounts =
 		useSelect( ( select ) =>
-			select( MODULES_ANALYTICS_4 ).getAccounts()
+			select( MODULES_ANALYTICS_4 ).getAccountSummaries()
 		) || [];
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -43,7 +43,9 @@ export default function SettingsEdit() {
 		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getAccounts' )
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getAccountSummaries'
+		)
 	);
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
