@@ -1502,7 +1502,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.receiveGetAccountSummaries( accounts );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getAccounts', [] );
+					.finishResolution( 'getAccountSummaries', [] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -1547,7 +1547,7 @@ describe( 'modules/analytics-4 properties', () => {
 			it( 'should return true if property summaries are not yet loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.startResolution( 'getAccounts', [] );
+					.startResolution( 'getAccountSummaries', [] );
 
 				expect(
 					registry

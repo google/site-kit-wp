@@ -941,7 +941,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.receiveGetAccountSummaries( accounts );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getAccounts', [] );
+					.finishResolution( 'getAccountSummaries', [] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -986,7 +986,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			it( 'should return true if accounts are not yet loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.startResolution( 'getAccounts', [] );
+					.startResolution( 'getAccountSummaries', [] );
 
 				expect(
 					registry
