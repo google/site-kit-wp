@@ -76,7 +76,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 			.receiveGetAccountSummaries( accounts );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getAccounts', [] );
+			.finishResolution( 'getAccountSummaries', [] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
