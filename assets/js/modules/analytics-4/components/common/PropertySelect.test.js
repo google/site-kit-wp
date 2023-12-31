@@ -54,7 +54,10 @@ const setupRegistry = ( registry ) => {
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
 		fixtures.accountSummaries
 	);
-	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getAccounts', [] );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'getAccountSummaries',
+		[]
+	);
 
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( properties, {
 		accountID,
@@ -87,7 +90,10 @@ const setupEmptyRegistry = ( registry ) => {
 			propertySummaries: [],
 		} ) )
 	);
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'getAccountSummaries',
+		[]
+	);
 };
 
 describe( 'PropertySelect', () => {
