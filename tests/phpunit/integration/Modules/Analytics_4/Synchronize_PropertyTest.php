@@ -87,6 +87,8 @@ class Synchronize_PropertyTest extends TestCase {
 		// Clear user context which was only needed for setting values for the module owner.
 		$this->user_options->switch_user( 0 );
 
+		$this->analytics_4->get_settings()->register();
+
 		// Ensure Analytics 4 module is connected.
 		$this->analytics_4->get_settings()->merge(
 			array(
@@ -96,10 +98,6 @@ class Synchronize_PropertyTest extends TestCase {
 				'measurementID'   => 'G-A1B2C3D4E5',
 				'ownerID'         => $user_id,
 			)
-		);
-		// GA4 currently sources the ownerID from the original module settings.
-		( new Analytics_Settings( $this->options ) )->merge(
-			array( 'ownerID' => $user_id )
 		);
 
 		$this->synchronize_property = new Synchronize_Property(
