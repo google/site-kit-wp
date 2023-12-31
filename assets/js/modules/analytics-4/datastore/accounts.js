@@ -83,7 +83,7 @@ const fetchCreateAccountStore = createFetchStore( {
 } );
 
 // Actions
-const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
+const RESET_ACCOUNT_SUMMARIES = 'RESET_ACCOUNT_SUMMARIES';
 
 const baseInitialState = {
 	accountSummaries: undefined,
@@ -91,17 +91,24 @@ const baseInitialState = {
 };
 
 const baseActions = {
-	*resetAccounts() {
+	/**
+	 * Resets the account summaries.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*resetAccountSummaries() {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
 		yield {
 			payload: {},
-			type: RESET_ACCOUNTS,
+			type: RESET_ACCOUNT_SUMMARIES,
 		};
 
 		return dispatch(
 			MODULES_ANALYTICS_4
-		).invalidateResolutionForStoreSelector( 'getAccounts' );
+		).invalidateResolutionForStoreSelector( 'getAccountSummaries' );
 	},
 	/**
 	 * Creates a new Analytics (GA4) account.
@@ -166,7 +173,7 @@ const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
-		case RESET_ACCOUNTS: {
+		case RESET_ACCOUNT_SUMMARIES: {
 			return {
 				...state,
 				accountSummaries: undefined,

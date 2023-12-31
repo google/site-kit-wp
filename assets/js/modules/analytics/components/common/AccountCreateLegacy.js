@@ -67,16 +67,16 @@ export default function AccountCreateLegacy() {
 		[ createAccountURL, viewContext ]
 	);
 
-	const { resetAccounts } = useDispatch( MODULES_ANALYTICS_4 );
+	const { resetAccountSummaries } = useDispatch( MODULES_ANALYTICS_4 );
 	const { resetAccounts: resetUAAccounts } = useDispatch( MODULES_ANALYTICS );
 	const refetchAccountsHandler = useCallback( () => {
-		resetAccounts();
+		resetAccountSummaries();
 		// Backward compatibility until Anlytics 4 is decoupled fully from Analytics module
-		// as accountID is still in Analytics datastore, and it is not reset with Analytics 4 resetAccounts
-		// action. So when re-fething the accounts accountID will remain `account_create`
-		// and hence not render the `SetupForm` component.
+		// as accountID is still in Analytics datastore, and it is not reset with Analytics 4
+		// `resetAccountSummaries` action. So when re-fething the accounts `accountID` will remain
+		// `account_create` and hence not render the `SetupForm` component.
 		resetUAAccounts();
-	}, [ resetAccounts, resetUAAccounts ] );
+	}, [ resetAccountSummaries, resetUAAccounts ] );
 
 	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar />;
