@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { _x } from '@wordpress/i18n';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,17 +40,19 @@ import useExistingTagEffectUA from '../../hooks/useExistingTagEffect';
 import useExistingTagEffectGA4 from '../../../analytics-4/hooks/useExistingTagEffect';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { AccountCreate, AccountCreateLegacy } from '../common';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAccounts()
+		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
 	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getAccounts' )
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getAccountSummaries'
+		)
 	);
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
@@ -57,6 +60,36 @@ export default function SetupMain( { finishSetup } ) {
 	const setupFlowMode = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
+
+	const { setAccountID } = useDispatch( MODULES_ANALYTICS );
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+	const [ isMatchedAccount, setIsMatchedAccount ] = useState( false );
+	const { findMatchedAccount } = useDispatch( MODULES_ANALYTICS_4 );
+	useEffect( () => {
+		if ( ! accounts ) {
+			return;
+		}
+
+		const fetchMatchedAccount = async () => {
+			setIsMatchedAccount( true );
+			const matchedAccount = await findMatchedAccount();
+			setIsMatchedAccount( false );
+			if ( matchedAccount ) {
+				setAccountID( matchedAccount._accountID );
+				selectProperty( matchedAccount._id );
+			}
+		};
+
+		if ( ! accountID ) {
+			fetchMatchedAccount();
+		}
+	}, [
+		findMatchedAccount,
+		accounts,
+		setAccountID,
+		accountID,
+		selectProperty,
+	] );
 
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffectUA();
@@ -67,7 +100,11 @@ export default function SetupMain( { finishSetup } ) {
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( ! hasResolvedAccounts || setupFlowMode === undefined ) {
+	if (
+		! hasResolvedAccounts ||
+		isMatchedAccount ||
+		setupFlowMode === undefined
+	) {
 		viewComponent = <ProgressBar />;
 	} else if (
 		isCreateAccount ||
