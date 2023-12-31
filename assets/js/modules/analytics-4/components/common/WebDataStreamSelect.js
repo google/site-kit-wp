@@ -144,8 +144,6 @@ export default function WebDataStreamSelect( props ) {
 		);
 	}
 
-	global.console.log( { webDataStreamID } );
-
 	return (
 		<Select
 			className={ classnames(
