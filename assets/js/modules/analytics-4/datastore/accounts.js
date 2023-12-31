@@ -28,15 +28,10 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import {
-	ENHANCED_MEASUREMENT_ENABLED,
-	MODULES_ANALYTICS_4,
-	PROPERTY_CREATE,
-} from './constants';
+import { ENHANCED_MEASUREMENT_ENABLED, MODULES_ANALYTICS_4 } from './constants';
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
-	PROPERTY_TYPE_GA4,
 } from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -141,6 +136,30 @@ const baseActions = {
 
 		return { response, error };
 	},
+	/**
+	 * Finds a matching account and property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object|null} Matching account and property on success, otherwise NULL.
+	 */
+	*findMatchedAccount() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const accounts = yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getAccountSummaries()
+		);
+
+		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
+			return null;
+		}
+
+		return yield Data.commonActions.await(
+			registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty()
+		);
+	},
 };
 
 const baseControls = {};
@@ -170,82 +189,9 @@ const baseResolvers = {
 			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
 		}
 	},
-	*getAccounts() {
-		const registry = yield Data.commonActions.getRegistry();
-		const accountSummaries = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAccountSummaries();
-
-		if ( accountSummaries === undefined ) {
-			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
-		}
-
-		const accountID = registry.select( MODULES_ANALYTICS ).getAccountID();
-
-		if ( ! accountID ) {
-			const matchedGA4Property = yield Data.commonActions.await(
-				registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty()
-			);
-			if ( matchedGA4Property?._accountID ) {
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setAccountID( matchedGA4Property?._accountID );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
-
-				yield Data.commonActions.await(
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.selectProperty( matchedGA4Property._id )
-				);
-
-				return;
-			}
-		}
-
-		let ga4Property;
-		const ga4PropertyID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyID();
-
-		// Bail out if the analytics-4 propertyID is already set to create a new property.
-		if ( ga4PropertyID === PROPERTY_CREATE ) {
-			return;
-		}
-
-		if ( ga4PropertyID ) {
-			ga4Property = yield Data.commonActions.await(
-				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-					.getProperty( ga4PropertyID )
-			);
-		}
-
-		// Try to find a new matched ga4 property if the current one has a different accountID.
-		if ( accountID && ga4Property?._accountID !== accountID ) {
-			yield Data.commonActions.await(
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.matchAndSelectProperty( accountID, PROPERTY_CREATE )
-			);
-		}
-	},
 };
 
 const baseSelectors = {
-	/**
-	 * Gets all Google Analytics 4 account summaries with their properties.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {Array.<Object>|undefined} An array of account summaries; `undefined` if not loaded.
-	 */
-	getAccounts( state ) {
-		return state.accountSummaries;
-	},
-
 	/**
 	 * Gets account summaries.
 	 *
