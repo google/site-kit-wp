@@ -45,6 +45,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+      - name: Install Dbus
+        run: sudo apk add --no-cache dbus
+      - name: Start Dbus Service
+        run: sudo service dbus start
       - name: npm install
         run: npm ci
       - name: Run Backstopjs
