@@ -20,12 +20,6 @@
  * External dependencies
  */
 import { getByText } from '@testing-library/dom';
-import invariant from 'invariant';
-
-/*
- * WordPress dependencies
- */
-import * as urlLibrary from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -38,15 +32,12 @@ import {
 	waitFor,
 } from '../../../../../tests/js/test-utils';
 
-// Mock `isURL` to return true for the `#` URL.
-jest.mock( '@wordpress/url' );
 // Mock `invariant` to prevent it from throwing errors when `#` is passed as a URL.
 jest.mock( 'invariant', () => jest.fn() );
 
 describe( 'BannerNotification', () => {
 	afterAll( () => {
-		urlLibrary.mockRestore();
-		invariant.mockRestore();
+		jest.restoreAllMocks();
 	} );
 
 	it( 'should wrap the description in a paragraph when the description is not a React element', () => {
@@ -103,7 +94,7 @@ describe( 'BannerNotification', () => {
 					id="fake"
 					title="Hey there!"
 					description="This is a test notification"
-					ctaLink="#"
+					ctaLink="#banner-notification-cta-link"
 					ctaLabel="Click me"
 					isDismissible
 				/>

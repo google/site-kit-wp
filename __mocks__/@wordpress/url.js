@@ -20,9 +20,12 @@ const lib = jest.requireActual( '@wordpress/url' );
 
 const wordpressURL = {
 	...lib,
-	isURL: jest.fn().mockImplementation(
-		( url ) => lib.isURL( url ) || url === '#' // Allow `#` URLs.
-	),
+	isURL: jest
+		.fn()
+		.mockImplementation(
+			( url ) =>
+				lib.isURL( url ) || url === '#banner-notification-cta-link'
+		),
 };
 
 module.exports = wordpressURL;
