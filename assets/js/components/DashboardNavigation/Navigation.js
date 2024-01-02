@@ -71,7 +71,6 @@ import { getContextScrollTop } from '../../util/scroll';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useViewOnly from '../../hooks/useViewOnly';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function Navigation() {
@@ -99,11 +98,8 @@ export default function Navigation() {
 		return select( CORE_USER ).getViewableModules();
 	} );
 
-	const keyMetricsEnabled = useFeature( 'keyMetrics' );
-
-	const isKeyMetricsWidgetHidden = useSelect(
-		( select ) =>
-			keyMetricsEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+	const isKeyMetricsWidgetHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
 	const widgetContextOptions = {
@@ -112,7 +108,6 @@ export default function Navigation() {
 
 	const showKeyMetrics = useSelect( ( select ) => {
 		if (
-			! keyMetricsEnabled ||
 			dashboardType !== DASHBOARD_TYPE_MAIN ||
 			isKeyMetricsWidgetHidden === true
 		) {
