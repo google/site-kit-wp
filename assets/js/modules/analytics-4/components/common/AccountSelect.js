@@ -68,7 +68,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 			if ( accountID !== newAccountID ) {
 				selectAccount( newAccountID );
 
-				// Reset the property ID.
+				// Reset the property ID to prevent the property not available error.
 				setPropertyID( PROPERTY_CREATE );
 				const action =
 					newAccountID === ACCOUNT_CREATE
