@@ -30,10 +30,13 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import BannerNotification from '../BannerNotification';
 import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
+const { useSelect } = Data;
 
 export default function GatheringDataNotification( {
 	title,
@@ -47,6 +50,10 @@ export default function GatheringDataNotification( {
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
+
+	const settingsAdminURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
 
 	if ( ! gatheringDataWaitTimeInHours ) {
 		return null;
@@ -68,7 +75,9 @@ export default function GatheringDataNotification( {
 			) }
 			format="small"
 			onView={ handleOnView }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+			ctaLabel={ __( 'See other services', 'google-site-kit' ) }
+			ctaLink={ `${ settingsAdminURL }#/connect-more-services` }
+			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) }
 			SmallImageSVG={ GatheringDataIcon }
 			onDismiss={ handleOnDismiss }
