@@ -838,16 +838,17 @@ const baseSelectors = {
 	isLoadingPropertySummaries: createRegistrySelector(
 		( select ) =>
 			( state, { hasModuleAccess } ) => {
-				const isResolvingAccountSummaries =
-					hasModuleAccess === false
-						? false
-						: ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-								'getAccountSummaries'
-						  );
+				if (
+					hasModuleAccess &&
+					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getAccountSummaries'
+					)
+				) {
+					return true;
+				}
 
 				return (
 					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-					isResolvingAccountSummaries ||
 					select(
 						MODULES_ANALYTICS
 					).hasFinishedSelectingAccount() === false
