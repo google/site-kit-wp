@@ -10,7 +10,7 @@ RUN apk upgrade --no-cache --available && \
     npm cache clean -f && \
     rm -rf /root/.cache
 
-RUN apk add --no-cache openrc
+RUN apk add --no-cache openrc dbus
 RUN rc-update add dbus
 
 WORKDIR /src
