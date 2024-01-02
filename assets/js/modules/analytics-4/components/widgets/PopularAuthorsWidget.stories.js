@@ -80,9 +80,6 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.parameters = {
-	features: [ 'keyMetrics' ],
-};
 Ready.scenario = {
 	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
 };
@@ -139,9 +136,6 @@ ErrorMissingCustomDimensions.args = {
 		} );
 	},
 };
-ErrorMissingCustomDimensions.parameters = {
-	features: [ 'keyMetrics' ],
-};
 
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
 ErrorCustomDimensionsInsufficientPermissions.storyName =
@@ -164,9 +158,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 		} );
 	},
 };
-ErrorCustomDimensionsInsufficientPermissions.parameters = {
-	features: [ 'keyMetrics' ],
-};
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
 ErrorCustomDimensionsGeneric.storyName =
@@ -188,9 +179,6 @@ ErrorCustomDimensionsGeneric.args = {
 			error,
 		} );
 	},
-};
-ErrorCustomDimensionsGeneric.parameters = {
-	features: [ 'keyMetrics' ],
 };
 
 export default {
