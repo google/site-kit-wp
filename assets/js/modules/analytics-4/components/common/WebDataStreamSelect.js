@@ -49,13 +49,6 @@ const { useSelect, useDispatch } = Data;
 export default function WebDataStreamSelect( props ) {
 	const { hasModuleAccess, isDisabled, className } = props;
 
-	// Analytics accounts need to be loaded in order to load the properties,
-	// otherwise this component will stay in a loading state forever.
-	// eslint-disable-next-line no-unused-vars
-	// useSelect( ( select ) =>
-	// 	select( MODULES_ANALYTICS_4 ).getAccountSummaries()
-	// );
-
 	// TODO: Update this select hook to pull accountID from the modules/analytics-4
 	// datastore when GA4 module becomes separated from the Analytics one.
 	const accountID = useSelect( ( select ) =>
