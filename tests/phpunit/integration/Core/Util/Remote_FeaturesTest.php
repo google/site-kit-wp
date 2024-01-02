@@ -90,7 +90,7 @@ class Remote_FeaturesTest extends TestCase {
 
 		// Update option with feature flag data.
 		$feature_flags = array(
-			'keyMetrics'      => array( 'enabled' => true ),
+			'gm3Components'   => array( 'enabled' => true ),
 			'test.featureOne' => array( 'enabled' => true ),
 			'test.featureTwo' => array( 'enabled' => false ),
 		);
@@ -157,7 +157,7 @@ class Remote_FeaturesTest extends TestCase {
 
 		$this->fake_proxy_site_connection();
 		$test_features = array(
-			'keyMetrics'      => array( 'enabled' => true ),
+			'gm3Components'   => array( 'enabled' => true ),
 			'test.featureOne' => array( 'enabled' => true ),
 			'test.featureTwo' => array( 'enabled' => false ),
 		);
