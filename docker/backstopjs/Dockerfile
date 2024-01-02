@@ -5,11 +5,10 @@ ARG BACKSTOPJS_VERSION=6.1.1
 ENV BACKSTOPJS_VERSION=$BACKSTOPJS_VERSION
 
 RUN apk upgrade --no-cache --available && \
-    apk add --no-cache chromium nodejs npm dbus && \
+    apk add --no-cache chromium nodejs npm && \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm i -g backstopjs@${BACKSTOPJS_VERSION} && \
     npm cache clean -f && \
-    rm -rf /root/.cache && \
-    sudo service dbus start
+    rm -rf /root/.cache
 
 WORKDIR /src
 
