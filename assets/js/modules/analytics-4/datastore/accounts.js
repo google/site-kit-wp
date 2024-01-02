@@ -152,20 +152,25 @@ const baseActions = {
 	 */
 	*findMatchedAccount() {
 		const registry = yield Data.commonActions.getRegistry();
-
-		const accounts = yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-				.getAccountSummaries()
+		const matchedProperty = yield Data.commonActions.await(
+			registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty()
 		);
 
-		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
+		if ( ! matchedProperty ) {
 			return null;
 		}
 
-		return yield Data.commonActions.await(
-			registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty()
+		const accountSummaries = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAccountSummaries();
+
+		const matchedAccount = accountSummaries.find( ( account ) =>
+			account.propertySummaries.some(
+				( { _id } ) => _id === matchedProperty._id
+			)
 		);
+
+		return matchedAccount || null;
 	},
 };
 
