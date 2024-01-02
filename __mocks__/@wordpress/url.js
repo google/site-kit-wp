@@ -20,8 +20,9 @@ const lib = jest.requireActual( '@wordpress/url' );
 
 const wordpressURL = {
 	...lib,
-	// eslint-disable-next-line sitekit/acronym-case
-	isURL: jest.fn( lib.isURL ),
+	isURL: jest.fn().mockImplementation(
+		( url ) => lib.isURL( url ) || url === '#' // Allow `#` URLs.
+	),
 };
 
 module.exports = wordpressURL;
