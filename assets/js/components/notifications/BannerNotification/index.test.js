@@ -32,6 +32,11 @@ import {
 	waitFor,
 } from '../../../../../tests/js/test-utils';
 
+// Mock `@wordpress/url` to return `true` for `isURL` when `#` is passed as a URL.
+jest.mock( '@wordpress/url', () => ( {
+	...jest.requireActual( '@wordpress/url' ),
+	isURL: jest.fn().mockImplementation( ( url ) => url === '#' ),
+} ) );
 // Mock `invariant` to prevent it from throwing errors when `#` is passed as a URL.
 jest.mock( 'invariant', () => jest.fn() );
 
@@ -94,7 +99,7 @@ describe( 'BannerNotification', () => {
 					id="fake"
 					title="Hey there!"
 					description="This is a test notification"
-					ctaLink="#banner-notification-cta-link"
+					ctaLink="#"
 					ctaLabel="Click me"
 					isDismissible
 				/>
