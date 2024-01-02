@@ -62,9 +62,9 @@ export default function SetupMain( { finishSetup } ) {
 	);
 
 	const { setAccountID } = useDispatch( MODULES_ANALYTICS );
-	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+	const { findMatchedAccount, matchAndSelectProperty } =
+		useDispatch( MODULES_ANALYTICS_4 );
 	const [ isMatchedAccount, setIsMatchedAccount ] = useState( false );
-	const { findMatchedAccount } = useDispatch( MODULES_ANALYTICS_4 );
 	useEffect( () => {
 		if ( ! accounts ) {
 			return;
@@ -75,8 +75,8 @@ export default function SetupMain( { finishSetup } ) {
 			const matchedAccount = await findMatchedAccount();
 			setIsMatchedAccount( false );
 			if ( matchedAccount ) {
-				setAccountID( matchedAccount._accountID );
-				selectProperty( matchedAccount._id );
+				setAccountID( matchedAccount._id );
+				matchAndSelectProperty( matchedAccount._id );
 			}
 		};
 
@@ -88,7 +88,7 @@ export default function SetupMain( { finishSetup } ) {
 		accounts,
 		setAccountID,
 		accountID,
-		selectProperty,
+		matchAndSelectProperty,
 	] );
 
 	// Set the accountID and containerID if there is an existing tag.
