@@ -110,6 +110,13 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					body: JSON.stringify( [] ),
 				} );
 			} else if (
+				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
+			) {
+				request.respond( {
+					status: 200,
+					body: '[]',
+				} );
+			} else if (
 				request
 					.url()
 					.match(
