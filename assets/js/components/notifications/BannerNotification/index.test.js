@@ -39,10 +39,7 @@ import {
 } from '../../../../../tests/js/test-utils';
 
 // Mock `isURL` to return true for the `#` URL.
-jest.mock( '@wordpress/url', () => ( {
-	...jest.requireActual( '@wordpress/url' ),
-	isURL: jest.fn().mockImplementation( ( url ) => url === '#' ),
-} ) );
+jest.mock( '@wordpress/url' );
 // Mock `invariant` to prevent it from throwing errors when `#` is passed as a URL.
 jest.mock( 'invariant', () => jest.fn() );
 
