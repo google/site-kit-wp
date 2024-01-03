@@ -144,11 +144,11 @@ const baseActions = {
 		return { response, error };
 	},
 	/**
-	 * Finds a matching account and property.
+	 * Finds a matching account summary.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {Object|null} Matching account and property on success, otherwise NULL.
+	 * @return {Object|null} Matching account summary on success, otherwise NULL.
 	 */
 	*findMatchedAccount() {
 		const registry = yield Data.commonActions.getRegistry();
