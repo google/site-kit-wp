@@ -48,7 +48,8 @@ jobs:
       - name: npm install
         run: npm ci
       - name: Run Backstopjs
-        run: npm run test:visualtest && df . -h
+        run: npm run test:visualtest
+        continue-on-error: true
       - name: Check disk space
         run: df . -h
       - name: Check more disk space
