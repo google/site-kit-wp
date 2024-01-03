@@ -35,6 +35,9 @@ class Setup_Test extends TestCase {
 	 * @dataProvider data_actions
 	 */
 	public function test_action_handlers_die_on_invalid_nonce( $action ) {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
 		$setup->register();

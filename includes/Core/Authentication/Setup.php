@@ -311,6 +311,7 @@ class Setup {
 
 		$credentials = $this->credentials->get();
 		$site_id     = ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '';
+		$step        = $input->filter( INPUT_GET, 'step' );
 
 		$this->redirect_to_proxy( $code, compact( 'site_id', 'step' ) );
 	}
