@@ -104,7 +104,9 @@ final class WP_Query_Factory {
 	private static function get_url_path_vars( $url ) {
 		global $wp_rewrite;
 
-		$url_path = URL::parse( $url, PHP_URL_PATH );
+		$url_path = ! empty( $url )
+			? URL::parse( $url, PHP_URL_PATH )
+			: '';
 
 		// Strip potential home URL path segment from URL path.
 		$home_path = untrailingslashit( URL::parse( home_url( '/' ), PHP_URL_PATH ) );
@@ -113,7 +115,9 @@ final class WP_Query_Factory {
 		}
 
 		// Strip leading and trailing slashes.
-		$url_path = trim( $url_path, '/' );
+		if ( ! empty( $url_parh ) ) {
+			$url_path = trim( $url_path, '/' );
+		}
 
 		// Fetch the rewrite rules.
 		$rewrite = $wp_rewrite->wp_rewrite_rules();

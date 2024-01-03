@@ -102,15 +102,17 @@ class Report {
 		$start_date  = $data['startDate'];
 		$end_date    = $data['endDate'];
 		if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
-			$compare_start_date = $data['compareStartDate'];
-			$compare_end_date   = $data['compareEndDate'];
-			$date_ranges[]      = array( $start_date, $end_date );
+			$date_ranges[] = array( $start_date, $end_date );
 
 			// When using multiple date ranges, it changes the structure of the response:
 			// Aggregate properties (minimum, maximum, totals) will have an entry per date range.
 			// The rows property will have additional row entries for each date range.
-			if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
-				$date_ranges[] = array( $compare_start_date, $compare_end_date );
+			if ( ! empty( $data['compareStartDate'] ) && ! empty( $data['compareEndDate'] ) ) {
+				$compare_start_date = $data['compareStartDate'];
+				$compare_end_date   = $data['compareEndDate'];
+				if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
+					$date_ranges[] = array( $compare_start_date, $compare_end_date );
+				}	
 			}
 		} else {
 			// Default the date range to the last 28 days.
