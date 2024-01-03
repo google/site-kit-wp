@@ -32,10 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import {
-	MODULES_ANALYTICS_4,
-	PROPERTY_CREATE,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 import {
@@ -59,8 +56,6 @@ export default function AccountSelect( { hasModuleAccess } ) {
 		)
 	);
 
-	const { setPropertyID } = useDispatch( MODULES_ANALYTICS_4 );
-
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
 		( index, item ) => {
@@ -68,8 +63,6 @@ export default function AccountSelect( { hasModuleAccess } ) {
 			if ( accountID !== newAccountID ) {
 				selectAccount( newAccountID );
 
-				// Reset the property ID to prevent the property not available error.
-				setPropertyID( PROPERTY_CREATE );
 				const action =
 					newAccountID === ACCOUNT_CREATE
 						? 'change_account_new'
@@ -77,7 +70,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 				trackEvent( `${ viewContext }_analytics`, action );
 			}
 		},
-		[ accountID, selectAccount, setPropertyID, viewContext ]
+		[ accountID, selectAccount, viewContext ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
