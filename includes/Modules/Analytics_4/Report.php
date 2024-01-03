@@ -112,7 +112,7 @@ class Report {
 				$compare_end_date   = $data['compareEndDate'];
 				if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
 					$date_ranges[] = array( $compare_start_date, $compare_end_date );
-				}	
+				}
 			}
 		} else {
 			// Default the date range to the last 28 days.

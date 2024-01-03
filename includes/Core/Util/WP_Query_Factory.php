@@ -115,7 +115,7 @@ final class WP_Query_Factory {
 		}
 
 		// Strip leading and trailing slashes.
-		if ( ! empty( $url_parh ) ) {
+		if ( ! empty( $url_path ) ) {
 			$url_path = trim( $url_path, '/' );
 		}
 
