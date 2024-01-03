@@ -28,10 +28,13 @@ import {
 } from '../../../../../../tests/js/utils';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '../../datastore/__fixtures__';
+import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
-const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-const accountID = accounts[ 0 ].id;
+const { accountSummaries, webDataStreamsBatch } = ga4Fixtures;
+const accounts = accountSummaries;
+const properties = accounts[ 1 ].propertySummaries;
+const accountID = accounts[ 1 ]._id;
+const propertyID = properties[ 0 ]._id;
 
 function Template() {
 	return <ModuleSetup moduleSlug="analytics" />;
@@ -39,19 +42,6 @@ function Template() {
 
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tag';
-WithoutExistingTag.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
 WithoutExistingTag.scenario = {
 	label: 'Modules/Analytics/Setup/SetupFormUA/WithoutExistingTag',
 	delay: 250,
@@ -78,39 +68,38 @@ export default {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetExistingTag( null );
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					adsConversionID: '',
 					canUseSnippet: true,
 				} );
 				registry
 					.dispatch( MODULES_ANALYTICS )
-					.receiveGetAccounts( accounts.slice( 0, 1 ) );
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
-					properties.slice( 0, 2 ).map( ( property ) => ( {
-						...property,
-						// eslint-disable-next-line sitekit/acronym-case
-						websiteUrl: 'http://example.com',
-					} ) ),
-					{ accountID }
-				);
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProfiles( profiles, {
-						accountID,
-						propertyID: properties[ 0 ].id,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProfiles( profiles, {
-						accountID,
-						propertyID: properties[ 1 ].id,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( MODULES_ANALYTICS )
 					.receiveGetProperties( [], { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( properties[ 0 ], {
+						propertyID,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+						propertyIDs: [ propertyID ],
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.selectAccount( accountID );
 			};
 
 			return (

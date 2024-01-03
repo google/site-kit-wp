@@ -48,7 +48,7 @@ async function proceedToSetUpAnalytics() {
 			} ),
 			page.waitForSelector( '.googlesitekit-setup-module__inputs' ),
 			page.waitForRequest( ( req ) =>
-				req.url().match( 'analytics/data' )
+				req.url().match( 'analytics-4/data' )
 			),
 		] )
 	);
@@ -180,11 +180,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					body: JSON.stringify( containerMock ),
 					status: 200,
 				} );
-			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
-				request.respond( {
-					body: JSON.stringify( fixtures.properties[ 0 ] ),
-					status: 200,
-				} );
 			} else {
 				request.continue();
 			}
@@ -218,10 +213,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await proceedToSetUpAnalytics();
 
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test account a/i,
+				text: /example com/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /example.com/i,
+				text: /example property/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
 				text: /test ga4 webdatastream/i,
@@ -230,13 +225,13 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			// Select Test Account B
 			await step( 'select test account B', async () => {
 				await expect( page ).toClick( '.mdc-select', {
-					text: /test account a/i,
+					text: /example com/i,
 				} );
 				await Promise.all( [
 					expect( page ).toClick(
 						'.mdc-menu-surface--open .mdc-list-item',
 						{
-							text: /test account b/i,
+							text: /example net/i,
 						}
 					),
 					page.waitForResponse( ( res ) =>
@@ -248,13 +243,13 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /test account b/i,
+						text: /example net/i,
 					}
 				);
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /example.net/i,
+						text: /example property/i,
 					}
 				);
 				await expect( page ).toMatchElement(
@@ -268,13 +263,13 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			// Select Property Z
 			await step( 'select property Z', async () => {
 				await expect( page ).toClick( '.mdc-select', {
-					text: /example.net/i,
+					text: /example net/i,
 				} );
 				await Promise.all( [
 					expect( page ).toClick(
 						'.mdc-menu-surface--open .mdc-list-item',
 						{
-							text: /example.org/i,
+							text: /example org/i,
 						}
 					),
 					page.waitForResponse( ( res ) =>
@@ -286,13 +281,13 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /test account b/i,
+						text: /example org/i,
 					}
 				);
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /example.org/i,
+						text: /example property z/i,
 					}
 				);
 				await expect( page ).toMatchElement(
@@ -345,23 +340,18 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					'.googlesitekit-analytics__select-account .mdc-select__selected-text'
 				);
 
-				await Promise.all( [
-					await expect( page ).toClick(
-						'.mdc-menu-surface--open .mdc-list-item',
-						{
-							text: /test account a/i,
-						}
-					),
-					page.waitForResponse( ( res ) =>
-						res.url().match( 'modules/analytics-4/data' )
-					),
-				] );
+				await expect( page ).toClick(
+					'.mdc-menu-surface--open .mdc-list-item',
+					{
+						text: /example com/i,
+					}
+				);
 
 				// See the selects populate
 				await expect( page ).toMatchElement(
 					'.mdc-select__selected-text',
 					{
-						text: /test account a/i,
+						text: /example com/i,
 					}
 				);
 				// Property dropdown should not select anything because there is no property associated with the current reference URL.
@@ -410,10 +400,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await proceedToSetUpAnalytics();
 
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test account a/i,
+				text: /example com/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /example.com/i,
+				text: /example property/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
 				text: /test ga4 webdatastream/i,
@@ -446,10 +436,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 			// Dropdowns are revealed and reset on refetch.
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /test account a/i,
+				text: /example com/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
-				text: /example.com/i,
+				text: /example property/i,
 			} );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
 				text: /test ga4 webdatastream/i,

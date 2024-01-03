@@ -351,8 +351,9 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick(
 			'.googlesitekit-analytics__select-account'
 		);
+
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
-			text: /test account a/i,
+			text: /example com/i,
 		} );
 
 		// Select "example.com" property.
@@ -360,7 +361,7 @@ describe( 'Analytics write scope requests', () => {
 			'.googlesitekit-analytics-4__select-property'
 		);
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
-			text: /example.com/i,
+			text: /example property/i,
 		} );
 
 		// Select "Set up a new web data stream" option.

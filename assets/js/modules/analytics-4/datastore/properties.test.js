@@ -42,7 +42,6 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
-import * as uaFixtures from '../../analytics/datastore/__fixtures__';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -392,18 +391,21 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'matchAccountProperty', () => {
-			const accountID = '12345';
-			const properties = [
-				{ _id: '1001' },
-				{ _id: '1002' },
-				{ _id: '1003' },
-			];
+			const accountID = fixtures.accountSummaries[ 1 ]._id;
+			const propertyID =
+				fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id;
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( properties, { accountID } );
+					.receiveGetProperties(
+						fixtures.accountSummaries[ 1 ].propertySummaries,
+						{ accountID }
+					);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
 			} );
 
 			it( 'should return NULL if no property matches the current site', async () => {
@@ -413,10 +415,10 @@ describe( 'modules/analytics-4 properties', () => {
 						{
 							1001: [],
 							1002: [],
-							1003: [],
+							[ propertyID ]: [],
 						},
 						{
-							propertyIDs: properties.map( ( { _id } ) => _id ),
+							propertyIDs: [ propertyID ],
 						}
 					);
 
@@ -430,76 +432,50 @@ describe( 'modules/analytics-4 properties', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
 						{
-							1001: [
-								{
-									webStreamData: {
-										defaultUri: 'http://example.net', // eslint-disable-line sitekit/acronym-case
-									},
-								},
-								{
-									webStreamData: {
-										defaultUri: 'http://example.org', // eslint-disable-line sitekit/acronym-case
-									},
-								},
-							],
-							1002: [],
-							1003: [
-								{
-									webStreamData: {
-										defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-									},
-								},
-							],
-						},
-						{
-							propertyIDs: properties.map( ( { _id } ) => _id ),
+							propertyIDs: [ propertyID ],
 						}
 					);
 
 				const property = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchAccountProperty( accountID );
-				expect( property ).toMatchObject( { _id: '1003' } );
+				expect( property ).toMatchObject( { _id: propertyID } );
 			} );
 		} );
 
 		describe( 'matchAndSelectProperty', () => {
-			const accountID = '123';
-			const propertyID = '1001';
-			const webDataStreamID = '2001';
-			const measurementID = 'G-ABCD12345';
+			const accountID = fixtures.accountSummaries[ 1 ]._id;
+			const propertyID =
+				fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id;
+			const webDataStreamID = '4000';
+			const measurementID = fixtures.webDataStreams.find(
+				( stream ) => stream._propertyID === propertyID
+				// eslint-disable-next-line sitekit/acronym-case
+			).webStreamData.measurementId;
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
 				provideUserAuthentication( registry );
 
-				const properties = [
-					{
-						_id: propertyID,
-					},
-				];
-
-				const webDataStreams = {
-					[ propertyID ]: [
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties(
+						fixtures.accountSummaries[ 1 ].propertySummaries,
+						{ accountID }
+					);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
 						{
-							_id: webDataStreamID,
-							webStreamData: {
-								measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
-								defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-							},
-						},
-					],
-				};
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( properties, { accountID } );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreamsBatch( webDataStreams, {
-						propertyIDs: Object.keys( webDataStreams ),
-					} );
+							propertyIDs: [ propertyID ],
+						}
+					);
 			} );
 
 			it( 'should select the fallback property if the matching property is not found', async () => {
@@ -1229,6 +1205,33 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
+		describe( 'getPropertySummaries', () => {
+			it( 'should return an empty array if no properties are present for the account', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
+
+				const propertySummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertySummaries( '12345' );
+				expect( propertySummaries ).toEqual( [] );
+			} );
+
+			it( 'should return an array of property summaries if present', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
+
+				const accountID = fixtures.accountSummaries[ 1 ]._id;
+				const propertySummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertySummaries( accountID );
+				expect( propertySummaries ).toEqual(
+					fixtures.accountSummaries[ 1 ].propertySummaries
+				);
+			} );
+		} );
+
 		describe( 'getProperty', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.get( propertyEndpoint, {
@@ -1472,10 +1475,10 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
-		describe( 'isLoadingProperties', () => {
-			const { accounts } = uaFixtures.accountsPropertiesProfiles;
-			const { properties } = fixtures;
-			const accountID = accounts[ 0 ].id;
+		describe( 'isLoadingPropertySummaries', () => {
+			const accounts = fixtures.accountSummaries;
+			const properties = accounts[ 1 ].propertySummaries;
+			const accountID = accounts[ 1 ]._id;
 			const propertyID = properties[ 0 ]._id;
 			const hasModuleAccess = true;
 
@@ -1495,25 +1498,24 @@ describe( 'modules/analytics-4 properties', () => {
 					} );
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetAccounts( accounts );
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accounts );
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.finishResolution( 'getAccounts', [] );
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getAccountSummaries', [] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( properties, { accountID } );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getProperties', [ accountID ] );
+					.receiveGetProperty( properties[ 0 ], {
+						propertyID,
+					} );
 			} );
 
 			it( 'should return false if the required state is already loaded', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( false );
@@ -1536,52 +1538,24 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( true );
 			} );
 
-			it( 'should return true if accounts are not yet loaded', () => {
+			it( 'should return true if property summaries are not yet loaded', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.startResolution( 'getAccounts', [] );
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getAccountSummaries', [] );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( true );
-			} );
-
-			describe( 'while loading properties', () => {
-				beforeEach( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.startResolution( 'getProperties', [ accountID ] );
-				} );
-
-				it( 'should return false when hasModuleAccess is false', () => {
-					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.isLoadingProperties( {
-								hasModuleAccess: false,
-							} )
-					).toBe( false );
-				} );
-
-				it( 'should return true when hasModuleAccess is not false', () => {
-					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.isLoadingProperties( {
-								hasModuleAccess,
-							} )
-					).toBe( true );
-				} );
 			} );
 
 			it( 'should return true while selecting an account', () => {
@@ -1605,7 +1579,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( false );
@@ -1617,7 +1591,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingProperties( {
+						.isLoadingPropertySummaries( {
 							hasModuleAccess,
 						} )
 				).toBe( true );

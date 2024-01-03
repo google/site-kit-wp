@@ -95,8 +95,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 				} );
 			} else if (
 				url.match( 'pagespeed-insights/data/pagespeed' ) ||
-				url.match( 'analytics/data/goals' ) ||
-				url.match( 'analytics-4/data/account-summaries' )
+				url.match( 'analytics/data/goals' )
 			) {
 				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'analytics-4/data/create-property' ) ) {
@@ -183,6 +182,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		} );
 
 		await pageWait( 1000 );
+
 		// Clicking Create Account button will switch API mock plugins on the server to the one that has accounts.
 		await Promise.all( [
 			page.waitForResponse( ( res ) =>
@@ -199,7 +199,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 
 		await Promise.all( [
 			page.waitForResponse( ( req ) =>
-				req.url().match( 'analytics/data/accounts-properties-profiles' )
+				req.url().match( 'analytics-4/data/account-summaries' )
 			),
 			expect( page ).toClick( '.googlesitekit-cta-link', {
 				text: /Re-fetch My Account/i,
@@ -220,7 +220,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		await expect( page ).toClick(
 			'.mdc-menu-surface--open .mdc-list-item',
 			{
-				text: /test account a/i,
+				text: /example com/i,
 			}
 		);
 
