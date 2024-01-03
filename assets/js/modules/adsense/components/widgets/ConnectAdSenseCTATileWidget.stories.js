@@ -41,9 +41,6 @@ Default.scenario = {
 	label: 'KeyMetrics/ConnectAdSenseCTATileWidget',
 	delay: 250,
 };
-Default.parameters = {
-	features: [ 'keyMetrics' ],
-};
 
 export default {
 	title: 'Key Metrics/ConnectAdSenseCTATileWidget',

@@ -89,6 +89,8 @@ describe( 'Site Kit set up flow for the first time', () => {
 		} );
 		await page.waitForNavigation();
 
+		await page.waitForSelector( '#js-googlesitekit-main-dashboard' );
+
 		await expect( page ).toMatchElement(
 			'#js-googlesitekit-main-dashboard'
 		);

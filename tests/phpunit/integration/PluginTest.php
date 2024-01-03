@@ -96,11 +96,6 @@ class PluginTest extends TestCase {
 	public function test_register__init_keyMetrics() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_actions( 'init' );
-		$features = array(
-			'keyMetrics' => array( 'enabled' => true ),
-		);
-		// Set feature flag only in database.
-		update_option( 'googlesitekitpersistent_remote_features', $features );
 
 		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$plugin->register();

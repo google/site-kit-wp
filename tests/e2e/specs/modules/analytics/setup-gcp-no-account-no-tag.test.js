@@ -126,6 +126,13 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					body: JSON.stringify( fixtures.properties[ 1 ] ),
 					status: 200,
 				} );
+			} else if (
+				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
+			) {
+				request.respond( {
+					status: 200,
+					body: '[]',
+				} );
 			} else {
 				request.continue();
 			}
