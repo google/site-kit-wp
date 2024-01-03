@@ -49,6 +49,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
@@ -153,6 +154,8 @@ final class Analytics_4 extends Module
 			$this->user_options
 		);
 		$synchronize_property->register();
+
+		( new Advanced_Tracking( $this->context ) )->register();
 
 		add_action(
 			'admin_init',
