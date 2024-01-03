@@ -780,7 +780,7 @@ final class Assets {
 			return admin_url( 'widgets.php' );
 		}
 
-		return null;
+		return '';
 	}
 
 	/**
