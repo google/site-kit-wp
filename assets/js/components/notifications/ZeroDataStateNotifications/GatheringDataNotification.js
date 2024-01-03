@@ -50,6 +50,9 @@ export default function GatheringDataNotification( {
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
+	const handleCTAClick = useCallback( () => {
+		trackEvent( eventCategory, 'confirm_notification' );
+	}, [ eventCategory ] );
 
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
@@ -77,6 +80,7 @@ export default function GatheringDataNotification( {
 			onView={ handleOnView }
 			ctaLabel={ __( 'See other services', 'google-site-kit' ) }
 			ctaLink={ `${ settingsAdminURL }#/connect-more-services` }
+			onCTAClick={ handleCTAClick }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) }
 			SmallImageSVG={ GatheringDataIcon }
