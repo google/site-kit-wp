@@ -64,13 +64,9 @@ export const actions = {
 	},
 
 	clearError( baseName, args = [] ) {
-		if ( baseName ) {
-			invariant( baseName, 'baseName is required.' );
-			invariant(
-				args && Array.isArray( args ),
-				'args must be an array.'
-			);
-		}
+		invariant( baseName, 'baseName is required.' );
+
+		invariant( args && Array.isArray( args ), 'args must be an array.' );
 
 		return {
 			type: CLEAR_ERROR,

@@ -89,6 +89,12 @@ describe( 'createErrorStore store', () => {
 				} ).toThrow( 'error is required.' );
 			} );
 
+			it( 'requires the baseName param', () => {
+				expect( () => {
+					dispatch.receiveError( errorNotFound );
+				} ).toThrow( 'baseName is required.' );
+			} );
+
 			it( 'receives and sets value for an error with `baseName` only', () => {
 				dispatch.receiveError( errorNotFound, baseName, [] );
 				expect(
@@ -107,11 +113,29 @@ describe( 'createErrorStore store', () => {
 		} );
 
 		describe( 'clearError', () => {
-			it( 'does not clear any error when called without any arguments', () => {
+			it( 'requires the baseName param', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
+
+				expect( () => {
+					dispatch.clearError();
+				} ).toThrow( 'baseName is required.' );
+			} );
+
+			it( 'requires the args param to be an array', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
+
+				expect( () => {
+					dispatch.clearError( baseName, null );
+				} ).toThrow( 'args must be an array.' );
+			} );
+
+			it( 'does not clear the error when called without baseName param', () => {
 				dispatch.receiveError( errorForbidden, baseName, args );
 				const errorsBefore = store.getState().errors;
 
-				dispatch.clearError();
+				expect( () => {
+					dispatch.clearError();
+				} ).toThrow();
 
 				expect( store.getState().errors ).toEqual( errorsBefore );
 			} );
