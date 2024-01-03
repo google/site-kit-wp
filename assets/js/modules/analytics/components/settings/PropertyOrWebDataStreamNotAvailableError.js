@@ -87,7 +87,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 		properties === undefined ||
 		webDataStreams === undefined ||
 		! isValidPropertyID( propertyID ) ||
-		! finishedSelectingAccount
+		finishedSelectingAccount === false
 	) {
 		return null;
 	}
