@@ -158,6 +158,13 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 				} );
 			} else if (
+				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
+			) {
+				request.respond( {
+					status: 200,
+					body: '[]',
+				} );
+			} else if (
 				// Intercept request to GA TOS URL and redirect to gatoscallback.
 				request
 					.url()
