@@ -57,6 +57,10 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 			: []
 	);
 
+	const finishedSelectingAccount = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedSelectingAccount()
+	);
+
 	const webDataStreams = useSelect( ( select ) =>
 		isValidPropertyID( propertyID ) && hasModuleAccess !== false
 			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
@@ -82,7 +86,8 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 		isDisabled ||
 		properties === undefined ||
 		webDataStreams === undefined ||
-		! isValidPropertyID( propertyID )
+		! isValidPropertyID( propertyID ) ||
+		! finishedSelectingAccount
 	) {
 		return null;
 	}
