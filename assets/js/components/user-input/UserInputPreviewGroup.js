@@ -197,7 +197,8 @@ export default function UserInputPreviewGroup( {
 							<ChevronDownIcon width={ 20 } height={ 20 } />
 						}
 					>
-						{ __( 'Edit', 'google-site-kit' ) }
+						{ isEditing && __( 'Close', 'google-site-kit' ) }
+						{ ! isEditing && __( 'Edit', 'google-site-kit' ) }
 					</Link>
 				</LoadingWrapper>
 			</div>
