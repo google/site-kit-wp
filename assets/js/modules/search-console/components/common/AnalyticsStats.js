@@ -239,7 +239,7 @@ AnalyticsStats.chartOptions = {
 		},
 	},
 	hAxis: {
-		format: 'M/d/yy',
+		format: 'MMM d',
 		gridlines: {
 			color: '#fff',
 		},

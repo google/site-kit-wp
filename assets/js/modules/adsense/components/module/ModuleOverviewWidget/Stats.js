@@ -76,7 +76,7 @@ export default function Stats( props ) {
 			},
 		},
 		hAxis: {
-			format: 'M/d/yy',
+			format: 'MMM d',
 			gridlines: {
 				color: '#fff',
 			},
