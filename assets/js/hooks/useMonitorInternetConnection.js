@@ -66,9 +66,9 @@ export function useMonitorInternetConnection( intervalValues = null ) {
 				path: '/google-site-kit/v1/core/site/data/health-checks',
 			} );
 
-			const canReachInternetURL =
-				onlineResponse.checks.googleAPI.pass &&
-				onlineResponse.checks.skService.pass;
+			// We are only intersted if the request was successfull, to
+			// confirm online status.
+			const canReachInternetURL = onlineResponse.checks;
 
 			if ( canReachInternetURL ) {
 				setValue( 'isOnline', true );
