@@ -45,7 +45,6 @@ import {
 	EDIT_SCOPE,
 	FORM_SETUP,
 } from '../../../../analytics/datastore/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
@@ -70,7 +69,6 @@ function EnhancedMeasurementActivationBanner() {
 		isEnhancedMeasurementInitiallyDisabled,
 		setIsEnhancedMeasurementInitiallyDisabled,
 	] = useState( undefined );
-	const [ isEnabling, setIsEnabling ] = useState( false );
 	const [ errorNotice, setErrorNotice ] = useState( null );
 
 	const propertyID = useSelect( ( select ) =>
@@ -116,7 +114,7 @@ function EnhancedMeasurementActivationBanner() {
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { dismissItem, setPermissionScopeError } = useDispatch( CORE_USER );
+	const { dismissItem } = useDispatch( CORE_USER );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const { isTooltipVisible } = useTooltipState(
@@ -137,19 +135,20 @@ function EnhancedMeasurementActivationBanner() {
 		);
 	}
 
-	const commonSubmitChanges = useCallback( async () => {
-		setIsEnabling( true );
-
+	const handleSubmit = useCallback( async () => {
 		setValues( ENHANCED_MEASUREMENT_FORM, {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
 		} );
 
 		const { error } = await submitChanges();
 
-		setIsEnabling( false );
-
 		if ( error ) {
 			setErrorNotice( error );
+
+			if ( step !== ACTIVATION_STEP_SETUP ) {
+				setStep( ACTIVATION_STEP_SETUP );
+			}
+
 			return;
 		}
 
@@ -158,47 +157,8 @@ function EnhancedMeasurementActivationBanner() {
 			'confirm_notification'
 		);
 
-		if ( step === ACTIVATION_STEP_SETUP ) {
-			setStep( ACTIVATION_STEP_SUCCESS );
-		}
+		setStep( ACTIVATION_STEP_SUCCESS );
 	}, [ setValues, submitChanges, viewContext, step ] );
-
-	const handleSubmitChanges = useCallback( async () => {
-		const scopes = [];
-
-		if ( hasEditScope === false ) {
-			scopes.push( EDIT_SCOPE );
-		}
-
-		// If scope not granted, trigger scope error right away. These are
-		// typically handled automatically based on API responses, but
-		// this particular case has some special handling to improve UX.
-		if ( scopes.length > 0 ) {
-			setValues( FORM_SETUP, { autoSubmit: true } );
-
-			setPermissionScopeError( {
-				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-				message: __(
-					'Additional permissions are required to enable enhanced measurement for the selected web data stream.',
-					'google-site-kit'
-				),
-				data: {
-					status: 403,
-					scopes,
-					skipModal: true,
-					redirectURL: global.location.href,
-				},
-			} );
-			return;
-		}
-
-		await commonSubmitChanges();
-	}, [
-		hasEditScope,
-		commonSubmitChanges,
-		setPermissionScopeError,
-		setValues,
-	] );
 
 	useEffect( () => {
 		if (
@@ -219,17 +179,15 @@ function EnhancedMeasurementActivationBanner() {
 			// Auto-submit should only auto-invoke once.
 			setValues( FORM_SETUP, { autoSubmit: false } );
 
-			if ( step === ACTIVATION_STEP_SETUP ) {
-				setStep( ACTIVATION_STEP_IN_PROGRESS );
-			}
+			setStep( ACTIVATION_STEP_IN_PROGRESS );
 
-			await commonSubmitChanges();
+			await handleSubmit();
 		}
 
 		if ( autoSubmit && hasEditScope ) {
 			handleAutoSubmit();
 		}
-	}, [ hasEditScope, setValues, commonSubmitChanges, autoSubmit, step ] );
+	}, [ hasEditScope, setValues, handleSubmit, autoSubmit, step ] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -258,9 +216,8 @@ function EnhancedMeasurementActivationBanner() {
 		return (
 			<SetupBanner
 				errorNotice={ errorNotice }
-				isSaving={ isEnabling }
 				onDismiss={ handleDismiss }
-				onSubmit={ handleSubmitChanges }
+				onSubmit={ handleSubmit }
 			/>
 		);
 	}

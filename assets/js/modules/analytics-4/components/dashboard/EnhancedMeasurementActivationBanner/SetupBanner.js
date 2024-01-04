@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,9 +32,14 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
+import {
+	EDIT_SCOPE,
+	FORM_SETUP,
+} from '../../../../analytics/datastore/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import {
 	DAY_IN_SECONDS,
 	getTimeInSeconds,
@@ -46,19 +51,14 @@ import ErrorNotice from '../../../../../components/ErrorNotice';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
 import useViewContext from '../../../../../hooks/useViewContext';
 
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( props ) {
-	const {
-		children,
-		errorNotice,
-		isDismissed,
-		isSaving,
-		onDismiss,
-		onSubmit,
-	} = props;
+	const { children, errorNotice, isDismissed, onDismiss, onSubmit } = props;
 
 	const viewContext = useViewContext();
+
+	const [ isSaving, setIsSaving ] = useState( false );
 
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -69,6 +69,43 @@ export default function SetupBanner( props ) {
 			path: '/analytics/answer/9216061',
 		} )
 	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
+
+	const handleSubmitChanges = useCallback( async () => {
+		setIsSaving( true );
+
+		const scopes = [];
+
+		if ( hasEditScope === false ) {
+			scopes.push( EDIT_SCOPE );
+		}
+
+		// If scope not granted, trigger scope error right away. These are
+		// typically handled automatically based on API responses, but
+		// this particular case has some special handling to improve UX.
+		if ( scopes.length > 0 ) {
+			setValues( FORM_SETUP, { autoSubmit: true } );
+
+			setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: __(
+					'Additional permissions are required to enable enhanced measurement for the selected web data stream.',
+					'google-site-kit'
+				),
+				data: {
+					status: 403,
+					scopes,
+					skipModal: true,
+					redirectURL: global.location.href,
+				},
+			} );
+			return;
+		}
+
+		await onSubmit();
+	}, [ hasEditScope, onSubmit, setPermissionScopeError, setValues ] );
 
 	const handleDismiss = useCallback( () => {
 		trackEvent(
@@ -116,7 +153,10 @@ export default function SetupBanner( props ) {
 			learnMoreURL={ documentationURL }
 			onLearnMoreClick={ handleLearnMore }
 			ctaComponent={
-				<SpinnerButton onClick={ onSubmit } isSaving={ isSaving }>
+				<SpinnerButton
+					onClick={ handleSubmitChanges }
+					isSaving={ isSaving }
+				>
 					{ __( 'Enable now', 'google-site-kit' ) }
 				</SpinnerButton>
 			}
