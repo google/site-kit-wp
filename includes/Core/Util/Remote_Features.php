@@ -10,11 +10,11 @@
 
 namespace Google\Site_Kit\Core\Util;
 
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Storage\Options;
+use WP_Error;
 
 /**
  * Class handling the fetching of Site Kit's currently
@@ -34,31 +34,22 @@ final class Remote_Features {
 	const OPTION = 'googlesitekitpersistent_remote_features';
 
 	/**
-	 * Authentication object.
+	 * Options instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
+	 * Authentication instance.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @var Authentication
 	 */
 	private $authentication;
-
-	/**
-	 * Plugin context.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Options object.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @var Options
-	 */
-	private $options = null;
 
 	/**
 	 * OAuth credentials instance.
@@ -83,14 +74,12 @@ final class Remote_Features {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param Options        $options        Options instance.
 	 * @param Authentication $authentication Authentication instance.
-	 * @param Context        $context        Plugin context.
-	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Authentication $authentication, Context $context, Options $options = null ) {
+	public function __construct( Options $options, Authentication $authentication ) {
+		$this->options        = $options;
 		$this->authentication = $authentication;
-		$this->context        = $context;
-		$this->options        = $options ?: new Options( $this->context );
 		$this->credentials    = $authentication->credentials();
 		$this->google_proxy   = $authentication->get_google_proxy();
 	}

@@ -161,7 +161,7 @@ final class Plugin {
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients, $user_input );
 				$authentication->register();
 
-				$remote_features = new Core\Util\Remote_Features( $authentication, $this->context, $options );
+				$remote_features = new Core\Util\Remote_Features( $options, $authentication );
 				$remote_features->register();
 
 				$user_input->register();
