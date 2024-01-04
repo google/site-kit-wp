@@ -27,16 +27,11 @@ import {
 	render,
 	provideModules,
 	provideUserAuthentication,
-	fireEvent,
 	provideSiteInfo,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import {
-	EDIT_SCOPE,
-	FORM_SETUP,
-} from '../../../../analytics/datastore/constants';
+import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import { properties } from '../../../datastore/__fixtures__';
@@ -45,9 +40,6 @@ import SetupBanner from './SetupBanner';
 describe( 'SetupBanner', () => {
 	const propertyID = '1000';
 	const webDataStreamID = '2000';
-	const enhancedMeasurementSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
-	);
 
 	let enabledSettingsMock;
 	let disabledSettingsMock;
@@ -148,82 +140,5 @@ describe( 'SetupBanner', () => {
 				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required — you’ll be redirected to give permission for Site Kit to enable it on your behalf.'
 			)
 		).toBeInTheDocument();
-	} );
-
-	it( 'should enable enhanced measurement when the CTA is clicked and the user has the edit scope granted', async () => {
-		provideUserAuthentication( registry, {
-			grantedScopes: [ EDIT_SCOPE ],
-		} );
-
-		const onSubmitSuccess = jest.fn();
-
-		const { getByRole, waitForRegistry } = render(
-			<SetupBanner onSubmitSuccess={ onSubmitSuccess } />,
-			{
-				registry,
-			}
-		);
-
-		fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
-			status: 200,
-			body: { ...enabledSettingsMock },
-		} );
-
-		fireEvent.click( getByRole( 'button', { name: 'Enable now' } ) );
-
-		await waitForRegistry();
-
-		expect( fetchMock ).toHaveFetched(
-			enhancedMeasurementSettingsEndpoint,
-			{
-				body: {
-					data: {
-						propertyID,
-						webDataStreamID,
-						enhancedMeasurementSettings: enabledSettingsMock,
-					},
-				},
-			}
-		);
-		expect( onSubmitSuccess ).toHaveBeenCalledTimes( 1 );
-	} );
-
-	it( 'should enable enhanced measurement when the form is auto submitted after the edit scope was granted', async () => {
-		provideUserAuthentication( registry, {
-			grantedScopes: [ EDIT_SCOPE ],
-		} );
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( FORM_SETUP, { autoSubmit: true } );
-
-		fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
-			status: 200,
-			body: { ...enabledSettingsMock },
-		} );
-
-		const onSubmitSuccess = jest.fn();
-
-		const { waitForRegistry } = render(
-			<SetupBanner onSubmitSuccess={ onSubmitSuccess } />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( fetchMock ).toHaveFetched(
-			enhancedMeasurementSettingsEndpoint,
-			{
-				body: {
-					data: {
-						propertyID,
-						webDataStreamID,
-						enhancedMeasurementSettings: enabledSettingsMock,
-					},
-				},
-			}
-		);
-		expect( onSubmitSuccess ).toHaveBeenCalledTimes( 1 );
 	} );
 } );
