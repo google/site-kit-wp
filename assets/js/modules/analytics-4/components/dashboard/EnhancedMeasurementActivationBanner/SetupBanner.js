@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -66,6 +67,13 @@ export default function SetupBanner( props ) {
 
 	const viewContext = useViewContext();
 
+	// The `enhanced_measurement` query value is arbitrary and serves two purposes:
+	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
+	// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
+	const redirectURL = addQueryArgs( global.location.href, {
+		notification: 'enhanced_measurement',
+	} );
+
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
@@ -79,7 +87,7 @@ export default function SetupBanner( props ) {
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
 		const OAuthURL = select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ EDIT_SCOPE ],
-			redirectURL: global.location.href,
+			redirectURL,
 		} );
 
 		if ( ! OAuthURL ) {
@@ -115,14 +123,20 @@ export default function SetupBanner( props ) {
 					status: 403,
 					scopes,
 					skipModal: true,
-					redirectURL: global.location.href,
+					redirectURL,
 				},
 			} );
 			return;
 		}
 
 		await onSubmit();
-	}, [ hasEditScope, onSubmit, setPermissionScopeError, setValues ] );
+	}, [
+		hasEditScope,
+		onSubmit,
+		redirectURL,
+		setPermissionScopeError,
+		setValues,
+	] );
 
 	const handleDismiss = useCallback( () => {
 		trackEvent(
