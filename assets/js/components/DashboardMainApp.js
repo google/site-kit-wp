@@ -72,6 +72,8 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../modules/analytics-4/datastore/constants';
 import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
+import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
+import OfflineNotification from './notifications/OfflineNotification';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
@@ -124,6 +126,8 @@ export default function DashboardMainApp() {
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
 		}
 	} );
+
+	useMonitorInternetConnection();
 
 	useEffect( () => {
 		if (
@@ -309,6 +313,8 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			{ keyMetricsEnabled && <MetricsSelectionPanel /> }
+
+			<OfflineNotification />
 		</Fragment>
 	);
 }
