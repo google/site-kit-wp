@@ -312,9 +312,11 @@ UserCountGraph.chartOptions = {
 			targetAxisIndex: 1,
 		},
 	},
+	focusTarget: 'category',
 	crosshair: {
 		color: '#3c7251',
 		opacity: 0.1,
 		orientation: 'vertical',
+		trigger: 'both',
 	},
 };
