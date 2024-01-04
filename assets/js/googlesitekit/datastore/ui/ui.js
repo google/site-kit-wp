@@ -33,6 +33,7 @@ const SET_VALUE = 'SET_VALUE';
 
 export const initialState = {
 	useInViewResetCount: 0,
+	isOnline: true,
 };
 
 export const actions = {
