@@ -252,13 +252,11 @@ export default function UserInputPreviewGroup( {
 
 							<div className="googlesitekit-user-input__preview-actions">
 								<SpinnerButton
-									disabled={
-										! hasSettingChanged || answerHasError
-									}
+									disabled={ answerHasError }
 									onClick={
 										hasSettingChanged
 											? submitChanges
-											: undefined
+											: toggleEditMode
 									}
 									isSaving={ isScreenLoading }
 								>
