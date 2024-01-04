@@ -111,7 +111,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -151,7 +150,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -204,7 +202,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -246,7 +243,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -309,7 +305,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			/>,
 			{
 				registry,
-				features: [ 'keyMetrics' ],
 			}
 		);
 		await waitForRegistry();
@@ -366,7 +361,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			</div>,
 			{
 				registry,
-				features: [ 'keyMetrics' ],
 			}
 		);
 

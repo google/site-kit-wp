@@ -30,21 +30,20 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 
-const accountID = fixtures.properties[ 0 ]._accountID;
-const propertyID = fixtures.properties[ 0 ]._id;
+const accountID = fixtures.accountSummaries[ 1 ]._id;
+const properties = fixtures.accountSummaries[ 1 ].propertySummaries;
+const propertyID = properties[ 0 ]._id;
 const measurementID =
-	fixtures.webDataStreamsBatchSetup[ 1000 ][ 0 ].webStreamData.measurementId; // eslint-disable-line sitekit/acronym-case
+	fixtures.webDataStreamsBatch[ propertyID ][ 0 ].webStreamData.measurementId; // eslint-disable-line sitekit/acronym-case
 
 const provideGA4PropertyAndWebDataStream = ( registry ) => {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetProperties( fixtures.properties, {
-			accountID,
-		} );
+		.receiveGetAccountSummaries( fixtures.accountSummaries );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatchSetup, {
-			propertyIDs: Object.keys( fixtures.webDataStreamsBatchSetup ),
+		.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, {
+			propertyIDs: [ propertyID ],
 		} );
 };
 
@@ -66,14 +65,14 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 	it( 'should not render when properties are not loaded yet', () => {
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/properties'
+				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 			)
 		);
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatchSetup, {
-				propertyIDs: Object.keys( fixtures.webDataStreamsBatchSetup ),
+			.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
 			} );
 
 		const { container } = render(
@@ -96,9 +95,7 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( fixtures.properties, {
-				accountID,
-			} );
+			.receiveGetAccountSummaries( fixtures.accountSummaries );
 
 		const { container } = render(
 			<PropertyOrWebDataStreamNotAvailableError
@@ -156,13 +153,11 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 	it( 'should render error message when selected Web Data Stream is not available', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( fixtures.properties, {
-				accountID,
-			} );
+			.receiveGetAccountSummaries( fixtures.accountSummaries );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreamsBatch(
-			{ 1000: [] },
+			{ [ propertyID ]: [] },
 			{
-				propertyIDs: [ '1000' ],
+				propertyIDs: [ propertyID ],
 			}
 		);
 
@@ -180,13 +175,13 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 	} );
 
 	it( 'should render error message when selected property is not available', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
-			accountID,
-		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatchSetup, {
-				propertyIDs: Object.keys( fixtures.webDataStreamsBatchSetup ),
+			.receiveGetAccountSummaries( [] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
 			} );
 
 		const { container } = render(

@@ -24,7 +24,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { enableFeature, setupSiteKit } from '../../utils';
+import { setupSiteKit } from '../../utils';
 
 describe( 'screens', () => {
 	describe( 'googlesitekit-splash', () => {
@@ -39,8 +39,6 @@ describe( 'screens', () => {
 
 	describe( 'googlesitekit-user-input', () => {
 		it( 'exists with the expected page title', async () => {
-			await enableFeature( 'keyMetrics' );
-
 			await setupSiteKit();
 
 			await visitAdminPage(

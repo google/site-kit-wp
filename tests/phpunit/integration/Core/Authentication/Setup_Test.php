@@ -6,7 +6,9 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Setup;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Remote_Features;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
@@ -35,8 +37,9 @@ class Setup_Test extends TestCase {
 	 * @dataProvider data_actions
 	 */
 	public function test_action_handlers_die_on_invalid_nonce( $action ) {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$authentication = new Authentication( $context );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication, new Remote_Features( new Options( $context ), $authentication ) );
 		$setup->register();
 
 		// Ensure that wp_die is called if nonce verification fails.
@@ -67,8 +70,9 @@ class Setup_Test extends TestCase {
 	public function test_handle_action_setup_start__dies_if_insufficient_permissions() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$authentication = new Authentication( $context );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication, new Remote_Features( new Options( $context ), $authentication ) );
 		$setup->register();
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_SETUP_START );
@@ -91,8 +95,9 @@ class Setup_Test extends TestCase {
 		$this->fake_site_connection();
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$authentication = new Authentication( $context );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication, new Remote_Features( new Options( $context ), $authentication ) );
 		$setup->register();
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_SETUP_START );
@@ -120,8 +125,9 @@ class Setup_Test extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$authentication = new Authentication( $context );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication, new Remote_Features( new Options( $context ), $authentication ) );
 		$setup->register();
 
 		if ( $has_credentials ) {
@@ -167,8 +173,9 @@ class Setup_Test extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$authentication = new Authentication( $context );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication, new Remote_Features( new Options( $context ), $authentication ) );
 		$setup->register();
 
 		if ( $has_credentials ) {
@@ -227,8 +234,9 @@ class Setup_Test extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$authentication = new Authentication( $context );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication, new Remote_Features( new Options( $context ), $authentication ) );
 		$setup->register();
 
 		if ( $has_credentials ) {
@@ -288,8 +296,9 @@ class Setup_Test extends TestCase {
 	public function test_handle_action_verify( $token ) {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$authentication = new Authentication( $context );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication, new Remote_Features( new Options( $context ), $authentication ) );
 		$setup->register();
 
 		$this->fake_proxy_site_connection();
@@ -339,7 +348,7 @@ class Setup_Test extends TestCase {
 		wp_set_current_user( $user_id );
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$authentication = new Authentication( $context );
-		$setup          = new Setup( $context, new User_Options( $context ), $authentication );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication, new Remote_Features( new Options( $context ), $authentication ) );
 		$setup->register();
 
 		$_GET['nonce']                                 = wp_create_nonce( Google_Proxy::NONCE_ACTION );
@@ -375,7 +384,7 @@ class Setup_Test extends TestCase {
 		wp_set_current_user( $user_id );
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$authentication = new Authentication( $context );
-		$setup          = new Setup( $context, new User_Options( $context ), $authentication );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication, new Remote_Features( new Options( $context ), $authentication ) );
 		$setup->register();
 
 		$_GET['googlesitekit_code']      = $code;
