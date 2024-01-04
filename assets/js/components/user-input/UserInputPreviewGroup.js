@@ -262,10 +262,13 @@ export default function UserInputPreviewGroup( {
 									}
 									isSaving={ isScreenLoading }
 								>
-									{ __(
-										'Confirm Changes',
-										'google-site-kit'
-									) }
+									{ hasSettingChanged &&
+										__(
+											'Apply changes',
+											'google-site-kit'
+										) }
+									{ ! hasSettingChanged &&
+										__( 'Save', 'google-site-kit' ) }
 								</SpinnerButton>
 								<Link
 									disabled={ isScreenLoading }
