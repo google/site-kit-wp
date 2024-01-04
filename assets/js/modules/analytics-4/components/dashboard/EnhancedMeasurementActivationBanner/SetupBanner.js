@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
@@ -54,11 +55,16 @@ import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( props ) {
-	const { children, errorNotice, isDismissed, onDismiss, onSubmit } = props;
+	const {
+		children,
+		errorNotice,
+		isDismissed,
+		isSaving,
+		onDismiss,
+		onSubmit,
+	} = props;
 
 	const viewContext = useViewContext();
-
-	const [ isSaving, setIsSaving ] = useState( false );
 
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -70,12 +76,23 @@ export default function SetupBanner( props ) {
 		} )
 	);
 
+	const isNavigatingToOAuthURL = useSelect( ( select ) => {
+		const OAuthURL = select( CORE_USER ).getConnectURL( {
+			additionalScopes: [ EDIT_SCOPE ],
+			redirectURL: global.location.href,
+		} );
+
+		if ( ! OAuthURL ) {
+			return false;
+		}
+
+		return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
+	} );
+
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 	const handleSubmitChanges = useCallback( async () => {
-		setIsSaving( true );
-
 		const scopes = [];
 
 		if ( hasEditScope === false ) {
@@ -155,7 +172,7 @@ export default function SetupBanner( props ) {
 			ctaComponent={
 				<SpinnerButton
 					onClick={ handleSubmitChanges }
-					isSaving={ isSaving }
+					isSaving={ isSaving || isNavigatingToOAuthURL }
 				>
 					{ __( 'Enable now', 'google-site-kit' ) }
 				</SpinnerButton>

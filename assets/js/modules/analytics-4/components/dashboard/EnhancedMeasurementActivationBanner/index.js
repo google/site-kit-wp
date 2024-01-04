@@ -69,6 +69,7 @@ function EnhancedMeasurementActivationBanner() {
 		isEnhancedMeasurementInitiallyDisabled,
 		setIsEnhancedMeasurementInitiallyDisabled,
 	] = useState( undefined );
+	const [ isSaving, setIsSaving ] = useState( false );
 	const [ errorNotice, setErrorNotice ] = useState( null );
 
 	const propertyID = useSelect( ( select ) =>
@@ -136,11 +137,15 @@ function EnhancedMeasurementActivationBanner() {
 	}
 
 	const handleSubmit = useCallback( async () => {
+		setIsSaving( true );
+
 		setValues( ENHANCED_MEASUREMENT_FORM, {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
 		} );
 
 		const { error } = await submitChanges();
+
+		setIsSaving( false );
 
 		if ( error ) {
 			setErrorNotice( error );
@@ -216,6 +221,7 @@ function EnhancedMeasurementActivationBanner() {
 		return (
 			<SetupBanner
 				errorNotice={ errorNotice }
+				isSaving={ isSaving }
 				onDismiss={ handleDismiss }
 				onSubmit={ handleSubmit }
 			/>
