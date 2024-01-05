@@ -89,9 +89,6 @@ LoadingDashboardNavigation.args = {
 		);
 	},
 };
-LoadingDashboardNavigation.parameters = {
-	features: [ 'keyMetrics' ],
-};
 
 export default {
 	title: 'Components/DashboardNavigation',

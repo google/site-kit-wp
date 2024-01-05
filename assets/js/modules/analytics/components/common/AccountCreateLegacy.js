@@ -33,14 +33,17 @@ import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4Notice from './GA4Notice';
 import useViewContext from '../../../../hooks/useViewContext';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
 	const accounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccounts()
+		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getAccountSummaries'
+		)
 	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -66,10 +69,16 @@ export default function AccountCreateLegacy() {
 		[ createAccountURL, viewContext ]
 	);
 
-	const { resetAccounts } = useDispatch( MODULES_ANALYTICS );
+	const { resetAccountSummaries } = useDispatch( MODULES_ANALYTICS_4 );
+	const { resetAccounts: resetUAAccounts } = useDispatch( MODULES_ANALYTICS );
 	const refetchAccountsHandler = useCallback( () => {
-		resetAccounts();
-	}, [ resetAccounts ] );
+		resetAccountSummaries();
+		// Backward compatibility until Anlytics 4 is decoupled fully from Analytics module
+		// as accountID is still in Analytics datastore, and it is not reset with Analytics 4
+		// `resetAccountSummaries` action. So when re-fething the accounts `accountID` will remain
+		// `account_create` and hence not render the `SetupForm` component.
+		resetUAAccounts();
+	}, [ resetAccountSummaries, resetUAAccounts ] );
 
 	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar />;

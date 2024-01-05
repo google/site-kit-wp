@@ -24,7 +24,7 @@ async function proceedToSetUpAnalytics() {
 		} ),
 		page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
 		page.waitForResponse( ( res ) =>
-			res.url().match( 'analytics/data/accounts-properties-profiles' )
+			res.url().match( 'analytics-4/data/account-summaries' )
 		),
 	] );
 }
@@ -38,10 +38,10 @@ describe( 'setting up the Analytics module with no existing account and with an 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'analytics-4/data/account-summaries' ) ) {
+			if ( request.url().match( 'analytics-4/data/container-lookup' ) ) {
 				request.respond( {
+					body: '{}',
 					status: 200,
-					body: JSON.stringify( {} ),
 				} );
 			} else {
 				request.continue();
@@ -51,7 +51,6 @@ describe( 'setting up the Analytics module with no existing account and with an 
 
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await activatePlugin( 'e2e-tests-analytics-existing-tag' );
 		await activatePlugin(
 			'e2e-tests-module-setup-analytics-api-mock-no-account'
 		);

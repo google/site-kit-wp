@@ -14,9 +14,24 @@
       {
         "displayName": "Example Property",
         "property": "properties/1122334455",
-        "_id": "1122334455"
+        "_id": "1122334455",
+        "_accountID": "987654321"
       }
     ],
     "_id": "987654321"
+  },
+  {
+    "account": "accounts/152925174",
+    "displayName": "Example Net",
+    "name": "accountSummaries/152925174",
+    "propertySummaries": [
+      {
+        "displayName": "Example Property",
+        "property": "properties/1122334455",
+        "_id": "1122334455",
+        "_accountID": "152925174"
+      }
+    ],
+    "_id": "152925174"
   }
 ]

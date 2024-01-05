@@ -158,32 +158,15 @@ export default function CompatibilityErrorNotice( { error } ) {
 			);
 		case ERROR_GOOGLE_API_CONNECTION_FAIL:
 			return (
-				<p
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						`
-						${ __(
-							'Looks like your site is having a technical issue with requesting data from Google services.',
+				<p>
+					{ createInterpolateElement(
+						__(
+							'Looks like your site is having a technical issue with requesting data from Google services. <GetHelpLink />',
 							'google-site-kit'
-						) }
-						<br/>
-						${
-							sprintf(
-								/* translators: 1: Support Forum URL, 2: Error message */ // eslint-disable-line indent
-								__(
-									'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s',
-									'google-site-kit'
-								), // eslint-disable-line indent
-								'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-								`<br/>${ error }` // eslint-disable-line indent
-							) /* eslint-disable-line indent */
-						}
-						`,
-						{
-							ALLOWED_TAGS: [ 'a', 'br' ],
-							ALLOWED_ATTR: [ 'href' ],
-						}
+						),
+						{ GetHelpLink: <GetHelpLink errorCode={ error } /> }
 					) }
-				/>
+				</p>
 			);
 		case ERROR_AMP_CDN_RESTRICTED:
 			return (

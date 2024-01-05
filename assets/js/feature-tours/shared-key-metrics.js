@@ -28,7 +28,6 @@ import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
-import { isFeatureEnabled } from '../features';
 
 const sharedKeyMetrics = {
 	slug: 'sharedKeyMetrics',
@@ -39,7 +38,6 @@ const sharedKeyMetrics = {
 		VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	],
 	gaEventCategory: ( viewContext ) => `${ viewContext }_shared_key-metrics`,
-	checkRequirements: () => isFeatureEnabled( 'keyMetrics' ),
 	steps: [
 		{
 			target: '.googlesitekit-km-change-metrics-cta',

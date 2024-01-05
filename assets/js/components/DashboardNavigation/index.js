@@ -24,7 +24,6 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import LoadingWrapper from '../LoadingWrapper';
 import Navigation from './Navigation';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function DashboardNavigation() {
@@ -38,10 +37,8 @@ export default function DashboardNavigation() {
 		return select( CORE_USER ).getViewableModules();
 	} );
 
-	const keyMetricsEnabled = useFeature( 'keyMetrics' );
-
-	const keyMetrics = useSelect(
-		( select ) => keyMetricsEnabled && select( CORE_USER ).getKeyMetrics()
+	const keyMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetrics()
 	);
 
 	// The Navigation component relies on the resolution of the above selectors to check if individual

@@ -80,8 +80,6 @@ class REST_User_Input_ControllerTest extends TestCase {
 	}
 
 	public function test_register() {
-		$this->enable_feature( 'keyMetrics' );
-
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
@@ -92,7 +90,6 @@ class REST_User_Input_ControllerTest extends TestCase {
 	}
 
 	public function test_get_answers() {
-		$this->enable_feature( 'keyMetrics' );
 		$this->user_input->register();
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
@@ -130,7 +127,6 @@ class REST_User_Input_ControllerTest extends TestCase {
 	}
 
 	public function test_set_answers() {
-		$this->enable_feature( 'keyMetrics' );
 		$this->user_input->register();
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
