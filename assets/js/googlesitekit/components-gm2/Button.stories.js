@@ -69,6 +69,13 @@ IconButton.args = {
 	className: 'googlesitekit-button--icon',
 };
 
+export const TertiaryButton = Template.bind( {} );
+TertiaryButton.storyName = 'Tertiary Button';
+TertiaryButton.args = {
+	children: 'Tertiary Button',
+	tertiary: true,
+};
+
 export function VRTStory() {
 	return (
 		<div>
@@ -86,6 +93,9 @@ export function VRTStory() {
 			</p>
 			<p>
 				<IconButton { ...IconButton.args } />
+			</p>
+			<p>
+				<TertiaryButton { ...TertiaryButton.args } />
 			</p>
 		</div>
 	);
