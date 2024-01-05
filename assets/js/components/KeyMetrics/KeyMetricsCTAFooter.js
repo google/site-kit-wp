@@ -29,16 +29,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { Cell, Row } from '../../material-components';
-import Link from '../Link';
 
 export default function KeyMetricsCTAFooter( { onActionClick = () => {} } ) {
 	return (
 		<Row className="googlesitekit-widget-key-metrics-footer">
 			<Cell size={ 12 }>
-				<Link onClick={ onActionClick }>
+				<Button tertiary onClick={ onActionClick }>
 					{ __( 'Maybe later', 'google-site-kit' ) }
-				</Link>
+				</Button>
 			</Cell>
 		</Row>
 	);
