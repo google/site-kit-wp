@@ -61,7 +61,13 @@ export default function SetupMain( { finishSetup } ) {
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
 
-	const { setAccountID } = useDispatch( MODULES_ANALYTICS );
+	const { setAccountID } = useDispatch( MODULES_ANALYTICS_4 );
+	// Temporary added so settings and module setup can work in the meantime before
+	// #7932 is merged. The check access is still connected to analytics module and will
+	// fail to display property and webdatastream options otherwise.
+	const { setAccountID: setAnalyticsAccountID } =
+		useDispatch( MODULES_ANALYTICS );
+
 	const { findMatchedAccount, matchAndSelectProperty } =
 		useDispatch( MODULES_ANALYTICS_4 );
 	const [ isMatchedAccount, setIsMatchedAccount ] = useState( false );
@@ -76,6 +82,7 @@ export default function SetupMain( { finishSetup } ) {
 			setIsMatchedAccount( false );
 			if ( matchedAccount ) {
 				setAccountID( matchedAccount._id );
+				setAnalyticsAccountID( matchedAccount._id );
 				matchAndSelectProperty( matchedAccount._id );
 			}
 		};
@@ -87,6 +94,7 @@ export default function SetupMain( { finishSetup } ) {
 		findMatchedAccount,
 		accounts,
 		setAccountID,
+		setAnalyticsAccountID,
 		accountID,
 		matchAndSelectProperty,
 	] );
