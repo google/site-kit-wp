@@ -22,13 +22,12 @@
 import {
 	render,
 	createTestRegistry,
-	waitFor,
 	act,
 } from '../../../../tests/js/test-utils';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import OfflineNotification from './OfflineNotification';
 
-describe( 'InternalServerError', () => {
+describe( 'OfflineNotification', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -38,7 +37,7 @@ describe( 'InternalServerError', () => {
 	it( 'should display the notification when offline', async () => {
 		registry.dispatch( CORE_UI ).setValue( 'isOnline', false );
 
-		const { container, waitForRegistry } = render(
+		const { queryByText, waitForRegistry } = render(
 			<OfflineNotification />,
 			{
 				registry,
@@ -48,14 +47,12 @@ describe( 'InternalServerError', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-settings-notice-offline-notice'
-			)
-		).not.toBeNull();
+			queryByText( /you are currently offline/i )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should not display the notification when online', async () => {
-		const { container, waitForRegistry } = render(
+		const { queryByText, waitForRegistry } = render(
 			<OfflineNotification />,
 			{
 				registry,
@@ -65,16 +62,14 @@ describe( 'InternalServerError', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-settings-notice-offline-notice'
-			)
-		).toBeNull();
+			queryByText( /you are currently offline/i )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should dismiss the notification when connection is back', async () => {
 		registry.dispatch( CORE_UI ).setValue( 'isOnline', false );
 
-		const { container, waitForRegistry } = render(
+		const { queryByText, waitForRegistry } = render(
 			<OfflineNotification />,
 			{
 				registry,
@@ -84,22 +79,15 @@ describe( 'InternalServerError', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-settings-notice-offline-notice'
-			)
-		).not.toBeNull();
+			queryByText( /you are currently offline/i )
+		).toBeInTheDocument();
 
-		// eslint-disable-next-line require-await
-		await act( async () => {
+		act( () => {
 			registry.dispatch( CORE_UI ).setValue( 'isOnline', true );
 		} );
 
-		await waitFor( () => {
-			expect(
-				container.querySelector(
-					'.googlesitekit-settings-notice-offline-notice'
-				)
-			).toBeNull();
-		} );
+		expect(
+			queryByText( /you are currently offline/i )
+		).not.toBeInTheDocument();
 	} );
 } );
