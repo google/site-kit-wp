@@ -26,6 +26,9 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import { FORM_ACCOUNT_CREATE } from '../../analytics/datastore/constants';
 import {
 	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -243,6 +246,80 @@ describe( 'modules/analytics-4 accounts', () => {
 					.getAccountSummaries();
 				expect( accountSummaries ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'selectAccount', () => {
+			const accountID = fixtures.accountSummaries[ 1 ]._id;
+
+			beforeEach( () => {
+				[
+					[
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+						),
+						fixtures.accountSummaries,
+					],
+					[
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/property?'
+						),
+						fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ],
+					],
+					[
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+						),
+						fixtures.webDataStreamsBatch,
+					],
+				].forEach( ( [ endpoint, body ] ) => {
+					fetchMock.get( endpoint, { body } );
+				} );
+
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties(
+						fixtures.accountSummaries[ 1 ].propertySummaries,
+						{
+							accountID,
+						}
+					);
+			} );
+
+			it( 'should set accountID', async () => {
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectAccount( accountID );
+
+				expect( store.getState().settings.accountID ).toEqual(
+					accountID
+				);
+			} );
+
+			it( 'should select the correct property', async () => {
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectAccount( accountID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
+				).toBe(
+					fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id
+				);
 			} );
 		} );
 

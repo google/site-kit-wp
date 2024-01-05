@@ -134,7 +134,7 @@ describe( 'AccountSelect', () => {
 			setupRegistry,
 		} );
 		const originalAccountID = registry
-			.select( MODULES_ANALYTICS )
+			.select( MODULES_ANALYTICS_4 )
 			.getAccountID();
 
 		// Click the label to expose the elements in the menu.
@@ -145,7 +145,7 @@ describe( 'AccountSelect', () => {
 		// as these are pre-selected when this changed (see next test).
 
 		const newAccountID = registry
-			.select( MODULES_ANALYTICS )
+			.select( MODULES_ANALYTICS_4 )
 			.getAccountID();
 		expect( originalAccountID ).not.toEqual( newAccountID );
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
