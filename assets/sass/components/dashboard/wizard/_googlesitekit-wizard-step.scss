@@ -92,10 +92,6 @@
 	}
 
 	.googlesitekit-wizard-step__back {
-		margin-left: $grid-gap-phone;
-
-		@media (min-width: $bp-desktop) {
-			margin-left: $grid-gap-desktop;
-		}
+		margin-left: $grid-gap-phone / 2;
 	}
 }
