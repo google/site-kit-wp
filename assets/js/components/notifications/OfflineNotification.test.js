@@ -35,7 +35,7 @@ describe( 'OfflineNotification', () => {
 	} );
 
 	it( 'should display the notification when offline', async () => {
-		registry.dispatch( CORE_UI ).setValue( 'isOnline', false );
+		registry.dispatch( CORE_UI ).setIsOnline( false );
 
 		const { queryByText, waitForRegistry } = render(
 			<OfflineNotification />,
@@ -67,7 +67,7 @@ describe( 'OfflineNotification', () => {
 	} );
 
 	it( 'should dismiss the notification when connection is back', async () => {
-		registry.dispatch( CORE_UI ).setValue( 'isOnline', false );
+		registry.dispatch( CORE_UI ).setIsOnline( false );
 
 		const { queryByText, waitForRegistry } = render(
 			<OfflineNotification />,
@@ -83,7 +83,7 @@ describe( 'OfflineNotification', () => {
 		).toBeInTheDocument();
 
 		act( () => {
-			registry.dispatch( CORE_UI ).setValue( 'isOnline', true );
+			registry.dispatch( CORE_UI ).setIsOnline( true );
 		} );
 
 		expect(

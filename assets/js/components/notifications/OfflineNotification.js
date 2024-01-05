@@ -40,9 +40,7 @@ const { useSelect } = Data;
 function OfflineNotification() {
 	const [ dismissed, setDismissed ] = useState( false );
 
-	const isOnline = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( 'isOnline' )
-	);
+	const isOnline = useSelect( ( select ) => select( CORE_UI ).getIsOnline() );
 
 	useEffect( () => {
 		if ( isOnline && dismissed ) {

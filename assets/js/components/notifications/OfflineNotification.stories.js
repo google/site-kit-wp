@@ -43,7 +43,7 @@ export default {
 		( Story ) => {
 			const registry = createTestRegistry();
 
-			registry.dispatch( CORE_UI ).setValue( 'isOnline', false );
+			registry.dispatch( CORE_UI ).setIsOnline( false );
 
 			return (
 				<WithTestRegistry registry={ registry }>
