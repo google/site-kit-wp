@@ -39,21 +39,17 @@ const { useDispatch, useSelect } = Data;
  * Monitors the user's internet connection status.
  *
  * @since n.e.x.t
- *
- * @param {Array|null} intervalValues           Optional. Custom values for interval.
- * @param {number}     intervalValues.isOnline  Interval when user is online.
- * @param {number}     intervalValues.isOffline Interval when user is offline.
  */
-export function useMonitorInternetConnection( intervalValues = null ) {
-	const { setValue } = useDispatch( CORE_UI );
+export function useMonitorInternetConnection() {
+	const { setIsOnline } = useDispatch( CORE_UI );
 
 	const isOnline = useSelect( ( select ) => {
-		return select( CORE_UI ).getValue( 'isOnline' );
+		return select( CORE_UI ).getIsOnline();
 	} );
 
 	const checkInternetConnection = useCallback( async () => {
 		if ( ! navigator.onLine ) {
-			setValue( 'isOnline', false );
+			setIsOnline( false );
 			return;
 		}
 
@@ -66,28 +62,22 @@ export function useMonitorInternetConnection( intervalValues = null ) {
 				path: '/google-site-kit/v1/core/site/data/health-checks',
 			} );
 
-			// We are only intersted if the request was successfull, to
+			// We are only interested if the request was successful, to
 			// confirm online status.
-			const canReachInternetURL = onlineResponse.checks;
+			const canReachInternetURL = !! onlineResponse.checks;
 
-			if ( canReachInternetURL ) {
-				setValue( 'isOnline', true );
-			}
-
-			if ( ! canReachInternetURL ) {
-				setValue( 'isOnline', false );
-			}
+			setIsOnline( canReachInternetURL );
 		} catch ( err ) {
-			setValue( 'isOnline', false );
+			setIsOnline( false );
 		}
-	}, [ setValue ] );
+	}, [ setIsOnline ] );
 
 	useLifecycles(
-		async () => {
+		() => {
 			global.addEventListener( 'online', checkInternetConnection );
 			global.addEventListener( 'offline', checkInternetConnection );
 
-			await checkInternetConnection();
+			checkInternetConnection();
 		},
 		() => {
 			global.removeEventListener( 'online', checkInternetConnection );
@@ -95,14 +85,10 @@ export function useMonitorInternetConnection( intervalValues = null ) {
 		}
 	);
 
-	let intervalTime = isOnline ? 120000 : 15000;
-	if ( intervalValues ) {
-		intervalTime = isOnline
-			? intervalValues.isOnline
-			: intervalValues.isOffline;
-	}
-
-	useInterval( async () => {
-		await checkInternetConnection();
-	}, intervalTime );
+	useInterval(
+		() => {
+			checkInternetConnection();
+		},
+		isOnline ? 120000 : 15000
+	);
 }

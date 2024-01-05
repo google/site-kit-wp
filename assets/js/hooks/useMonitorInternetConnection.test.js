@@ -31,6 +31,7 @@ import { useMonitorInternetConnection } from './useMonitorInternetConnection';
 describe( 'useMonitorInternetConnection', () => {
 	let registry;
 	let store;
+	let originalNavigatorOnline;
 
 	const mockOnlineStatus = ( status = true ) => {
 		Object.defineProperty( navigator, 'onLine', {
@@ -64,6 +65,17 @@ describe( 'useMonitorInternetConnection', () => {
 
 	afterEach( () => {
 		mockOnlineStatus();
+	} );
+
+	beforeAll( () => {
+		originalNavigatorOnline = Object.getOwnPropertyDescriptor(
+			navigator,
+			'onLine'
+		);
+	} );
+
+	afterAll( () => {
+		Object.defineProperty( navigator, 'onLine', originalNavigatorOnline );
 	} );
 
 	it( 'should set online status correctly', () => {
@@ -126,44 +138,5 @@ describe( 'useMonitorInternetConnection', () => {
 
 		expect( store.getState().isOnline ).toBe( true );
 		expect( fetchMock ).toHaveFetched( healthCheckEndpoint );
-	} );
-
-	it( 'should check online status in correct intervals', async () => {
-		fetchMock.get( healthCheckEndpoint, {
-			body: healthCheckResponse,
-		} );
-
-		renderHook(
-			() =>
-				useMonitorInternetConnection( {
-					isOnline: 100,
-					isOffline: 50,
-				} ),
-			{ registry }
-		);
-
-		expect( store.getState().isOnline ).toBe( true );
-
-		expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-		// Wait for 100ms interval x2 + 50ms so the responses can be processed.
-		await waitForTimeouts( 250 );
-
-		// It should have fetched 2 more times.
-		expect( fetchMock ).toHaveFetchedTimes( 3 );
-
-		// eslint-disable-next-line require-await
-		await act( async () => {
-			// Simulate going offline, so the interval can adapt the offline value.
-			mockOnlineStatus( false );
-			// Go back online so that fetch request can be made, within interval value
-			// for when isOnline is false.
-			mockOnlineStatus();
-		} );
-
-		// Wait for 50ms interval, + 20ms so the response can be processed.
-		await waitForTimeouts( 70 );
-
-		expect( fetchMock ).toHaveFetchedTimes( 4 );
 	} );
 } );
