@@ -40,16 +40,13 @@ export default {
 	title: 'Components/OfflineNotification',
 	component: OfflineNotification,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story ) => {
 			const registry = createTestRegistry();
 
 			registry.dispatch( CORE_UI ).setValue( 'isOnline', false );
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ parameters.features || [] }
-				>
+				<WithTestRegistry registry={ registry }>
 					<Story />
 				</WithTestRegistry>
 			);
