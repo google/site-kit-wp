@@ -20,12 +20,7 @@
  * Internal dependencies
  */
 import PropertySelectIncludingGA4 from './PropertySelectIncludingGA4';
-import {
-	MODULES_ANALYTICS,
-	ACCOUNT_CREATE,
-	PROPERTY_TYPE_UA,
-	PROPERTY_TYPE_GA4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
@@ -254,52 +249,6 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 		expect( listItems[ 0 ].textContent ).toMatch(
 			/set up a new property/i
 		);
-	} );
-
-	it( 'should set the primary property type to GA4 when the GA4 property is selected', async () => {
-		const { getByText, container, registry, findByText } = render(
-			<PropertySelectIncludingGA4 />,
-			{
-				setupRegistry: setupAdvancedRegistry,
-			}
-		);
-
-		expect(
-			container.querySelector( '.mdc-select__selected-text' )
-		).toHaveTextContent( '' );
-
-		await act( async () => {
-			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-			fireEvent.click( getByText( `GA4 Property (${ propertyIDga4 })` ) );
-			await findByText( `GA4 Property (${ propertyIDga4 })` );
-		} );
-
-		expect(
-			registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType()
-		).toBe( PROPERTY_TYPE_GA4 );
-	} );
-
-	it( 'should set the primary property type to UA when the UA property is selected', async () => {
-		const { getByText, container, registry, findByText } = render(
-			<PropertySelectIncludingGA4 />,
-			{
-				setupRegistry: setupAdvancedRegistry,
-			}
-		);
-
-		expect(
-			container.querySelector( '.mdc-select__selected-text' )
-		).toHaveTextContent( '' );
-
-		await act( async () => {
-			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-			fireEvent.click( getByText( `UA Property (${ propertyIDua })` ) );
-			await findByText( `UA Property (${ propertyIDua })` );
-		} );
-
-		expect(
-			registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType()
-		).toBe( PROPERTY_TYPE_UA );
 	} );
 
 	it( 'should correctly set UA settings when the GA4 property is selected', async () => {
