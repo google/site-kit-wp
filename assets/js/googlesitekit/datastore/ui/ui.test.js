@@ -34,7 +34,7 @@ describe( 'core/ui store', () => {
 			it( 'increments the value of core/ui useInViewResetCount', async () => {
 				const resetCount = registry
 					.select( CORE_UI )
-					.getInViewResetHook();
+					.getInViewResetCount();
 
 				// The reset count starts at zero.
 				expect( resetCount ).toBe( 0 );
@@ -43,7 +43,7 @@ describe( 'core/ui store', () => {
 
 				const updatedResetCount = registry
 					.select( CORE_UI )
-					.getInViewResetHook();
+					.getInViewResetCount();
 
 				expect( updatedResetCount ).toBe( 1 );
 			} );
@@ -253,11 +253,11 @@ describe( 'core/ui store', () => {
 			} );
 		} );
 
-		describe( 'getInViewResetHook', () => {
+		describe( 'getInViewResetCount', () => {
 			it( 'returns a specific key in state', () => {
 				const resetCount = registry
 					.select( CORE_UI )
-					.getInViewResetHook();
+					.getInViewResetCount();
 
 				// The reset count starts at zero.
 				expect( resetCount ).toBe( 0 );
@@ -268,7 +268,7 @@ describe( 'core/ui store', () => {
 
 				const updatedResetCount = registry
 					.select( CORE_UI )
-					.getInViewResetHook();
+					.getInViewResetCount();
 
 				expect( updatedResetCount ).toBe( 2 );
 			} );
