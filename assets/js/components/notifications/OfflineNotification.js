@@ -38,21 +38,21 @@ import { Button } from 'googlesitekit-components';
 const { useSelect } = Data;
 
 function OfflineNotification() {
-	const [ dissmised, setDissmised ] = useState( false );
+	const [ dismissed, setDismissed ] = useState( false );
 
 	const isOnline = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'isOnline' )
 	);
 
 	useEffect( () => {
-		if ( isOnline && dissmised ) {
-			setDissmised( false );
+		if ( isOnline && dismissed ) {
+			setDismissed( false );
 		}
-	}, [ isOnline, dissmised ] );
+	}, [ isOnline, dismissed ] );
 
 	return (
 		<div aria-live="polite">
-			{ ! isOnline && ! dissmised && (
+			{ ! isOnline && ! dismissed && (
 				<div
 					className={ classnames(
 						'googlesitekit-margin-top-0',
@@ -74,7 +74,7 @@ function OfflineNotification() {
 					<div className="googlesitekit-settings-notice__button">
 						<Button
 							onClick={ () => {
-								setDissmised( true );
+								setDismissed( true );
 							} }
 						>
 							{ __( 'OK, Got it!', 'google-site-kit' ) }
