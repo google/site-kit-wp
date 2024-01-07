@@ -69,16 +69,18 @@ describe( 'AccountCreate', () => {
 		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccounts( [] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getAccounts', [] );
+			.receiveGetAccountSummaries( [] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccountSummaries', [] );
 	} );
 
 	it( 'renders correctly in a loading state', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.invalidateResolution( 'getAccounts', [] );
+			.invalidateResolution( 'getAccountSummaries', [] );
 
 		const { container, getByRole, waitForRegistry } = render(
 			<AccountCreate />,
