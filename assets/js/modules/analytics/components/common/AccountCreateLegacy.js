@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
-import Link from '../../../../components/Link';
 import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -124,9 +123,9 @@ export default function AccountCreateLegacy() {
 				</Button>
 
 				<div className="googlesitekit-setup-module__sub-action">
-					<Link onClick={ refetchAccountsHandler }>
+					<Button tertiary onClick={ refetchAccountsHandler }>
 						{ __( 'Re-fetch My Account', 'google-site-kit' ) }
-					</Link>
+					</Button>
 				</div>
 			</div>
 		</div>

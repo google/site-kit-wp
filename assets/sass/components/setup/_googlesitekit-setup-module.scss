@@ -173,12 +173,8 @@
 			margin-top: $grid-gap-phone;
 
 			@media (min-width: $bp-tablet) {
-				margin-left: $grid-gap-phone;
+				margin-left: $grid-gap-phone / 2;
 				margin-top: 0;
-			}
-
-			@media (min-width: $bp-desktop) {
-				margin-left: $grid-gap-desktop;
 			}
 		}
 
