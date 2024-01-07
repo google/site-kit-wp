@@ -61,19 +61,19 @@ DisabledButton.args = {
 	disabled: true,
 };
 
+export const TertiaryButton = Template.bind( {} );
+TertiaryButton.storyName = 'Tertiary Button';
+TertiaryButton.args = {
+	children: 'Tertiary Button',
+	tertiary: true,
+};
+
 export const IconButton = Template.bind( {} );
 IconButton.storyName = 'Icon Button with Tooltip';
 IconButton.args = {
 	icon: <HelpIcon width="20" height="20" />,
 	'aria-label': 'Help',
 	className: 'googlesitekit-button--icon',
-};
-
-export const TertiaryButton = Template.bind( {} );
-TertiaryButton.storyName = 'Tertiary Button';
-TertiaryButton.args = {
-	children: 'Tertiary Button',
-	tertiary: true,
 };
 
 export function VRTStory() {
