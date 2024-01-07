@@ -98,18 +98,18 @@ class Setup {
 	 * @param Context         $context         Context instance.
 	 * @param User_Options    $user_options    User_Options instance.
 	 * @param Authentication  $authentication  Authentication instance.
-	 * @param Remote_Features $remote_features Remote_Features instance. Optional.
+	 * @param Remote_Features $remote_features Remote_Features instance.
 	 */
 	public function __construct(
 		Context $context,
 		User_Options $user_options,
 		Authentication $authentication,
-		Remote_Features $remote_features = null
+		Remote_Features $remote_features
 	) {
 		$this->context                = $context;
 		$this->user_options           = $user_options;
 		$this->authentication         = $authentication;
-		$this->remote_features        = $remote_features ?: new Remote_Features( $authentication, $context );
+		$this->remote_features        = $remote_features;
 		$this->credentials            = $authentication->credentials();
 		$this->google_proxy           = $authentication->get_google_proxy();
 		$this->proxy_support_link_url = $authentication->get_proxy_support_link_url();
