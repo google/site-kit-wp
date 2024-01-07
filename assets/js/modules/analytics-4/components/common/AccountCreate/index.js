@@ -57,10 +57,13 @@ const { useDispatch, useSelect } = Data;
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAccounts()
+		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
 	);
+
 	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getAccounts' )
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getAccountSummaries'
+		)
 	);
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountTicketTermsOfServiceURL()
