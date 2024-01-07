@@ -52,7 +52,7 @@ class Remote_FeaturesTest extends TestCase {
 		$this->context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options         = new Options( $this->context );
 		$this->authentication  = new Authentication( $this->context, $this->options );
-		$this->remote_features = new Remote_Features( $this->authentication, $this->context, $this->options );
+		$this->remote_features = new Remote_Features( $this->options, $this->authentication );
 	}
 
 	public function test_register__setup_remote_features_cron() {
@@ -90,7 +90,7 @@ class Remote_FeaturesTest extends TestCase {
 
 		// Update option with feature flag data.
 		$feature_flags = array(
-			'keyMetrics'      => array( 'enabled' => true ),
+			'gm3Components'   => array( 'enabled' => true ),
 			'test.featureOne' => array( 'enabled' => true ),
 			'test.featureTwo' => array( 'enabled' => false ),
 		);
@@ -157,7 +157,7 @@ class Remote_FeaturesTest extends TestCase {
 
 		$this->fake_proxy_site_connection();
 		$test_features = array(
-			'keyMetrics'      => array( 'enabled' => true ),
+			'gm3Components'   => array( 'enabled' => true ),
 			'test.featureOne' => array( 'enabled' => true ),
 			'test.featureTwo' => array( 'enabled' => false ),
 		);

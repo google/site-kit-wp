@@ -55,7 +55,7 @@ export default function GettingReady() {
 	const heading = __( 'Your site is getting ready', 'google-site-kit' );
 
 	const description = __(
-		'This usually takes a few days, but in some cases can take up to 2 weeks. You’ll get an email from AdSense as soon as they have run some checks on your site.',
+		'This usually takes a few days, but in some cases can take a few weeks. You’ll get an email from AdSense as soon as they have run some checks on your site.',
 		'google-site-kit'
 	);
 

@@ -165,7 +165,7 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 } );
 
 // Actions
-const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const WAIT_FOR_PROPERTY_SUMMARIES = 'WAIT_FOR_PROPERTY_SUMMARIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
@@ -323,15 +323,15 @@ const baseActions = {
 	*matchAccountProperty( accountID ) {
 		const registry = yield Data.commonActions.getRegistry();
 
-		yield baseActions.waitForProperties( accountID );
+		yield baseActions.waitForPropertySummaries( accountID );
 
 		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
-		const properties = registry
+		const propertySummaries = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getProperties( accountID );
+			.getPropertySummaries( accountID );
 
 		const property = yield baseActions.matchPropertyByURL(
-			( properties || [] ).map( ( { _id } ) => _id ),
+			( propertySummaries || [] ).map( ( { _id } ) => _id ),
 			referenceURL
 		);
 
@@ -477,16 +477,14 @@ const baseActions = {
 	},
 
 	/**
-	 * Waits for properties to be loaded for an account.
+	 * Waits for property summaries to be loaded for an account.
 	 *
-	 * @since 1.34.0
-	 *
-	 * @param {string} accountID GA4 account ID.
+	 * @since n.e.x.t
 	 */
-	*waitForProperties( accountID ) {
+	*waitForPropertySummaries() {
 		yield {
-			payload: { accountID },
-			type: WAIT_FOR_PROPERTIES,
+			payload: {},
+			type: WAIT_FOR_PROPERTY_SUMMARIES,
 		};
 	},
 
@@ -653,13 +651,12 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_PROPERTIES ]: createRegistryControl(
+	[ WAIT_FOR_PROPERTY_SUMMARIES ]: createRegistryControl(
 		( { __experimentalResolveSelect } ) => {
-			return async ( { payload } ) => {
-				const { accountID } = payload;
+			return async () => {
 				await __experimentalResolveSelect(
 					MODULES_ANALYTICS_4
-				).getProperties( accountID );
+				).getAccountSummaries();
 			};
 		}
 	),
@@ -765,6 +762,32 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Gets all GA4 properties from the account summaries this account can access.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID The GA4 Account ID to fetch properties for.
+	 * @return {(Array.<Object>|undefined)} An array of GA4 properties; `undefined` if not loaded.
+	 */
+	getPropertySummaries: createRegistrySelector(
+		( select ) => ( state, accountID ) => {
+			const accountSummaries =
+				select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+
+			if ( accountSummaries === undefined ) {
+				return undefined;
+			}
+
+			const account = accountSummaries.find(
+				( summary ) => summary._id === accountID
+			);
+
+			return account ? account.propertySummaries : [];
+		}
+	),
+
+	/**
 	 * Determines whether we are matching account property or not.
 	 *
 	 * @since 1.98.0
@@ -801,36 +824,31 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks if properties are currently being loaded.
+	 * Checks if properties summaries are currently being loaded.
 	 *
 	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
 	 * components, initially the `PropertySelect` and `SettingsEnhancedMeasurementSwitch` components.
 	 *
-	 * @since 1.111.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object}  state                Data store's state.
 	 * @param {Object}  args                 Arguments object.
 	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
 	 */
-	isLoadingProperties: createRegistrySelector(
+	isLoadingPropertySummaries: createRegistrySelector(
 		( select ) =>
 			( state, { hasModuleAccess } ) => {
-				const accountID = select( MODULES_ANALYTICS ).getAccountID();
-
-				const isResolvingProperties =
-					hasModuleAccess === false || ! accountID
-						? false
-						: select( MODULES_ANALYTICS_4 ).isResolving(
-								'getProperties',
-								[ accountID ]
-						  );
+				if (
+					hasModuleAccess &&
+					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getAccountSummaries'
+					)
+				) {
+					return true;
+				}
 
 				return (
 					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-					! select( MODULES_ANALYTICS ).hasFinishedResolution(
-						'getAccounts'
-					) ||
-					isResolvingProperties ||
 					select(
 						MODULES_ANALYTICS
 					).hasFinishedSelectingAccount() === false

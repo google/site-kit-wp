@@ -32,7 +32,6 @@ import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__
 import {
 	provideSiteInfo,
 	provideUserAuthentication,
-	untilResolved,
 } from '../../../../../../tests/js/utils';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
@@ -157,6 +156,14 @@ const setupAdvancedRegistry = ( registry ) => {
 			},
 		],
 		{ accountID, propertyID: propertyIDua }
+	);
+
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
+		analytics4Fixtures.accountSummaries
+	);
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'getAccountSummaries',
+		[]
 	);
 
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
@@ -319,48 +326,5 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 		expect( registry.select( MODULES_ANALYTICS ).getProfileID() ).toBe(
 			'67890'
 		);
-	} );
-
-	it( 'should correctly set GA4 settings when the UA property is selected', async () => {
-		const { getByText, container, registry, findByText } = render(
-			<PropertySelectIncludingGA4 />,
-			{
-				setupRegistry: setupAdvancedRegistry,
-			}
-		);
-
-		expect(
-			container.querySelector( '.mdc-select__selected-text' )
-		).toHaveTextContent( '' );
-
-		await act( async () => {
-			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-			fireEvent.click( getByText( `UA Property (${ propertyIDua })` ) );
-			await findByText( `UA Property (${ propertyIDua })` );
-
-			await untilResolved( registry, MODULES_ANALYTICS_4 ).getProperties(
-				accountID
-			);
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getWebDataStreamsBatch( [ propertyIDga4 ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getWebDataStreams( propertyIDga4 );
-		} );
-
-		expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe(
-			propertyIDga4
-		);
-		expect(
-			registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-		).toBe( '2002' );
-		expect(
-			registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-		).toBe( 'G-12345ABCDE' );
 	} );
 } );

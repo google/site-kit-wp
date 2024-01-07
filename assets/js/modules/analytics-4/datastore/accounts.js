@@ -83,12 +83,34 @@ const fetchCreateAccountStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const RESET_ACCOUNT_SUMMARIES = 'RESET_ACCOUNT_SUMMARIES';
+
 const baseInitialState = {
 	accountSummaries: undefined,
 	accountTicketID: undefined,
 };
 
 const baseActions = {
+	/**
+	 * Resets the account summaries.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*resetAccountSummaries() {
+		const { dispatch } = yield Data.commonActions.getRegistry();
+
+		yield {
+			payload: {},
+			type: RESET_ACCOUNT_SUMMARIES,
+		};
+
+		return dispatch(
+			MODULES_ANALYTICS_4
+		).invalidateResolutionForStoreSelector( 'getAccountSummaries' );
+	},
 	/**
 	 * Creates a new Analytics (GA4) account.
 	 *
@@ -122,12 +144,48 @@ const baseActions = {
 
 		return { response, error };
 	},
+	/**
+	 * Finds a matching account summary.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object|null} Matching account summary on success, otherwise NULL.
+	 */
+	*findMatchedAccount() {
+		const registry = yield Data.commonActions.getRegistry();
+		const matchedProperty = yield Data.commonActions.await(
+			registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty()
+		);
+
+		if ( ! matchedProperty ) {
+			return null;
+		}
+
+		const accountSummaries = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAccountSummaries();
+
+		const matchedAccount = accountSummaries.find( ( account ) =>
+			account.propertySummaries.some(
+				( { _id } ) => _id === matchedProperty._id
+			)
+		);
+
+		return matchedAccount || null;
+	},
 };
 
 const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
+		case RESET_ACCOUNT_SUMMARIES: {
+			return {
+				...state,
+				accountSummaries: undefined,
+			};
+		}
+
 		default: {
 			return state;
 		}

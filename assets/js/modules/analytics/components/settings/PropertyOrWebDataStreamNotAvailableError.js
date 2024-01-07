@@ -53,8 +53,12 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 
 	const properties = useSelect( ( select ) =>
 		hasModuleAccess !== false && ! isDisabled
-			? select( MODULES_ANALYTICS_4 ).getProperties( accountID )
+			? select( MODULES_ANALYTICS_4 ).getPropertySummaries( accountID )
 			: []
+	);
+
+	const finishedSelectingAccount = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedSelectingAccount()
 	);
 
 	const webDataStreams = useSelect( ( select ) =>
@@ -71,9 +75,10 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	);
 
 	const getPropertiesError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getProperties', [
-			accountID,
-		] )
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+			'getAccountSummaries',
+			[]
+		)
 	);
 
 	if (
@@ -81,7 +86,8 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 		isDisabled ||
 		properties === undefined ||
 		webDataStreams === undefined ||
-		! isValidPropertyID( propertyID )
+		! isValidPropertyID( propertyID ) ||
+		finishedSelectingAccount === false
 	) {
 		return null;
 	}

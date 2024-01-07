@@ -197,7 +197,8 @@ export default function UserInputPreviewGroup( {
 							<ChevronDownIcon width={ 20 } height={ 20 } />
 						}
 					>
-						{ __( 'Edit', 'google-site-kit' ) }
+						{ isEditing && __( 'Close', 'google-site-kit' ) }
+						{ ! isEditing && __( 'Edit', 'google-site-kit' ) }
 					</Link>
 				</LoadingWrapper>
 			</div>
@@ -251,20 +252,21 @@ export default function UserInputPreviewGroup( {
 
 							<div className="googlesitekit-user-input__preview-actions">
 								<SpinnerButton
-									disabled={
-										! hasSettingChanged || answerHasError
-									}
+									disabled={ answerHasError }
 									onClick={
 										hasSettingChanged
 											? submitChanges
-											: undefined
+											: toggleEditMode
 									}
 									isSaving={ isScreenLoading }
 								>
-									{ __(
-										'Confirm Changes',
-										'google-site-kit'
-									) }
+									{ hasSettingChanged &&
+										__(
+											'Apply changes',
+											'google-site-kit'
+										) }
+									{ ! hasSettingChanged &&
+										__( 'Save', 'google-site-kit' ) }
 								</SpinnerButton>
 								<Link
 									disabled={ isScreenLoading }

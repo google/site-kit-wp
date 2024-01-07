@@ -99,7 +99,6 @@ export default {
 							.dispatch( CORE_USER )
 							.receiveIsUserInputCompleted( false );
 					} }
-					features={ [ 'keyMetrics' ] }
 				>
 					<Story />
 				</WithTestRegistry>

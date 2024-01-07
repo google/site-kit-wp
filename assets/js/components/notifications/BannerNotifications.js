@@ -25,7 +25,6 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
@@ -52,7 +51,6 @@ import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsS
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
-	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 	const viewOnly = useViewOnly();
 
 	const isAuthenticated = useSelect( ( select ) =>
@@ -75,10 +73,8 @@ export default function BannerNotifications() {
 	const hasMismatchedGoogleTagID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID()
 	);
-	const keyMetricsSetupCTARendered = useSelect(
-		( select ) =>
-			keyMetricsEnabled &&
-			select( CORE_UI ).getValue( UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED )
+	const keyMetricsSetupCTARendered = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED )
 	);
 
 	const isGA4ModuleOwner = useSelect( ( select ) => {

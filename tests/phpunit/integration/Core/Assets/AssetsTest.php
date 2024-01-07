@@ -228,13 +228,11 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_base_data__product_post_type__no_products() {
-		$this->enable_feature( 'keyMetrics' );
 		$data = $this->get_inline_base_data();
 		$this->assertTrue( empty( $data['productPostType'] ) );
 	}
 
 	public function test_base_data__product_post_type__hidden_post_type() {
-		$this->enable_feature( 'keyMetrics' );
 		$this->set_permalink_structure( '/%postname%/' );
 
 		register_post_type( 'product', array( 'public' => false ) );
@@ -244,7 +242,6 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_base_data__product_post_type__filter_change_product_post() {
-		$this->enable_feature( 'keyMetrics' );
 		register_post_type( 'digital_product', array( 'public' => true ) );
 
 		add_filter(
@@ -260,8 +257,6 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_base_data__product_post_type__invalid_post_type() {
-		$this->enable_feature( 'keyMetrics' );
-
 		add_filter(
 			'googlesitekit_product_post_type',
 			function() {
@@ -275,7 +270,6 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_base_data__product_post_type() {
-		$this->enable_feature( 'keyMetrics' );
 		register_post_type( 'product', array( 'public' => true ) );
 
 		$data = $this->get_inline_base_data();

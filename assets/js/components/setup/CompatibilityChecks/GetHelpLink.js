@@ -36,12 +36,14 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	ERROR_AMP_CDN_RESTRICTED,
 	ERROR_API_UNAVAILABLE,
+	ERROR_GOOGLE_API_CONNECTION_FAIL,
 	ERROR_TOKEN_MISMATCH,
 } from './constants';
 
 const errorCodes = {
 	[ ERROR_AMP_CDN_RESTRICTED ]: 'amp_cdn_restricted',
 	[ ERROR_API_UNAVAILABLE ]: 'check_api_unavailable',
+	[ ERROR_GOOGLE_API_CONNECTION_FAIL ]: 'google_api_connection_fail',
 	[ ERROR_TOKEN_MISMATCH ]: 'setup_token_mismatch',
 };
 
