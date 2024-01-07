@@ -37,9 +37,9 @@ export const ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER =
 	'enhanced-measurement-should-dismiss-activation-banner';
 
 // Form ID for the account creation form.
-export const FORM_ACCOUNT_CREATE = 'analytics4AccountCreate';
+export const FORM_ACCOUNT_CREATE = 'analyticsAccountCreate';
 
-export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analytics4CustomDimensionsCreate';
+export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analyticsCustomDimensionsCreate';
 
 // OAuth scope required for provisioning a Google Analytics account.
 export const PROVISIONING_SCOPE =
