@@ -145,12 +145,15 @@ export default function AnalyticsStats( props ) {
 		chartDataFormats
 	);
 
-	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
+	const [ , ...ticks ] = googleChartData
+		.slice( 1 )
+		.map( ( [ date ] ) => date );
+
 	const options = {
 		...AnalyticsStats.chartOptions,
 		hAxis: {
 			...AnalyticsStats.chartOptions.hAxis,
-			ticks: dates,
+			ticks,
 		},
 		vAxis: {
 			...AnalyticsStats.chartOptions.vAxis,

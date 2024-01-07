@@ -49,7 +49,9 @@ export default function SearchConsoleStats( props ) {
 		dateRangeLength
 	);
 
-	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
+	const [ , ...ticks ] = googleChartData
+		.slice( 1 )
+		.map( ( [ date ] ) => date );
 
 	const options = {
 		...SearchConsoleStats.chartOptions,
@@ -62,7 +64,7 @@ export default function SearchConsoleStats( props ) {
 				color: '#616161',
 				fontSize: 12,
 			},
-			ticks: dates,
+			ticks,
 		},
 		series: {
 			0: {
