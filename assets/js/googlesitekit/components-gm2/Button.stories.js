@@ -92,10 +92,10 @@ export function VRTStory() {
 				<DisabledButton { ...DisabledButton.args } />
 			</p>
 			<p>
-				<IconButton { ...IconButton.args } />
+				<TertiaryButton { ...TertiaryButton.args } />
 			</p>
 			<p>
-				<TertiaryButton { ...TertiaryButton.args } />
+				<IconButton { ...IconButton.args } />
 			</p>
 		</div>
 	);
