@@ -139,7 +139,6 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget
-			className="googlesitekit-widget-key-metrics-cta"
 			noPadding
 			Footer={ () => (
 				<KeyMetricsCTAFooter

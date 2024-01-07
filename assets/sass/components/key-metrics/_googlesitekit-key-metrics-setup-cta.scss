@@ -136,11 +136,10 @@
 		}
 	}
 
-	.googlesitekit-widget-key-metrics-cta {
+	.googlesitekit-widget-key-metrics-footer {
 
-		.googlesitekit-widget__footer {
-			padding-bottom: 14px;
-			padding-top: 14px;
+		button.googlesitekit-cta-link {
+			color: $c-surfaces-on-background-variant;
 		}
 	}
 
