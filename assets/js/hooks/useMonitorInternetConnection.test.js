@@ -135,7 +135,6 @@ describe( 'useMonitorInternetConnection', () => {
 
 	it( 'should check online status in correct interval when online', () => {
 		jest.useFakeTimers();
-		jest.spyOn( global, 'setInterval' );
 
 		fetchMock.get( healthCheckEndpoint, {
 			body: healthCheckResponse,
@@ -145,12 +144,16 @@ describe( 'useMonitorInternetConnection', () => {
 
 		expect( store.getState().isOnline ).toBe( true );
 
-		jest.advanceTimersByTime( 120000 );
+		// The initial fetch will happen immediately.
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-		expect( setInterval ).toHaveBeenCalledTimes( 1 );
+		jest.advanceTimersByTime( 119999 );
 
-		// When online endpoint will be fetched, and then second time when
-		// interval value passes.
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+		jest.advanceTimersByTime( 1 );
+
+		// The second fetch will happen after 120000ms.
 		expect( fetchMock ).toHaveFetchedTimes( 2 );
 	} );
 
