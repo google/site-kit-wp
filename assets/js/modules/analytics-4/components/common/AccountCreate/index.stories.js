@@ -24,23 +24,43 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 } from '../../../../../../../tests/js/utils';
 import {
 	ACCOUNT_CREATE,
+	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
+import { Cell, Grid, Row } from '../../../../../material-components';
+
+const { accountSummaries } = fixtures;
 
 function Template( args ) {
-	return <AccountCreate { ...args } />;
+	return (
+		<div className="googlesitekit-layout">
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
+				<div className="googlesitekit-setup-module">
+					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
+						<Grid>
+							<Row>
+								<Cell size={ 12 }>
+									<AccountCreate { ...args } />
+								</Cell>
+							</Row>
+						</Grid>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
 
-export const Loading = Template.bind( {} );
-Loading.args = {
-	loading: true,
-};
-Loading.scenario = {
-	label: 'Modules/Analytics4/Components/AccountCreate/Loading',
+export const Default = Template.bind( {} );
+Default.storyName = 'AccountCreate';
+Default.scenario = {
+	label: 'Modules/Analytics4/Components/AccountCreate',
 };
 
 export default {
@@ -58,6 +78,13 @@ export default {
 				] );
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
+				provideUserAuthentication( registry, {
+					grantedScopes: [ EDIT_SCOPE ],
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID: ACCOUNT_CREATE,
