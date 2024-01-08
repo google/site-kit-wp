@@ -19,7 +19,9 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use WP_REST_Server;
 
 /**
  * Class for integrating debug information with Site Health.
@@ -29,6 +31,8 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
  * @ignore
  */
 class Debug_Data {
+	use Method_Proxy_Trait;
+
 	/**
 	 * Context instance.
 	 *
@@ -122,6 +126,37 @@ class Debug_Data {
 				return $info;
 			}
 		);
+
+		add_filter(
+			'site_status_tests',
+			function ( $tests ) {
+				global $wp_version;
+				$test_type = 'async';
+
+				if ( version_compare( $wp_version, '6.5', '<' ) ) {
+					$test_type = 'direct';
+				}
+
+				$tests[ $test_type ]['tag_placement'] = array(
+					'label'             => __( 'Tag Placement', 'google-site-kit' ),
+					'test'              => rest_url( 'google-site-kit/v1/core/site/data/tags-placement-test' ),
+					'has_rest'          => true,
+					'async_direct_test' => $this->get_method_proxy( 'tags_placement_test' ),
+				);
+
+				return $tests;
+			}
+		);
+	}
+
+
+	/**
+	 * Checks if the modules tags are placed on the website.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function tags_placement_test() {
+
 	}
 
 	/**
