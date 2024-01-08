@@ -223,7 +223,7 @@ export default function SetupForm( { finishSetup } ) {
 							) }
 						</SpinnerButton>
 						{ /*
-						This <button> below but should not trigger a form submit
+						This <button> below should not trigger a form submit
 						when clicked, hence the `type="button"`.
 						*/ }
 						<Button
