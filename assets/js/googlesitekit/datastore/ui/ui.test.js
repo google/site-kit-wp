@@ -49,6 +49,23 @@ describe( 'core/ui store', () => {
 			} );
 		} );
 
+		describe( 'setIsOnline', () => {
+			it( 'sets the isOnline value', async () => {
+				const isOnline = registry.select( CORE_UI ).getIsOnline();
+
+				// isOnline has initial state set to true.
+				expect( isOnline ).toBe( true );
+
+				await registry.dispatch( CORE_UI ).setIsOnline( false );
+
+				const updatedIsOnline = registry
+					.select( CORE_UI )
+					.getIsOnline();
+
+				expect( updatedIsOnline ).toBe( false );
+			} );
+		} );
+
 		describe( 'setValues', () => {
 			it( 'requires the values param', () => {
 				expect( () => {
@@ -271,6 +288,23 @@ describe( 'core/ui store', () => {
 					.getInViewResetCount();
 
 				expect( updatedResetCount ).toBe( 2 );
+			} );
+		} );
+
+		describe( 'getIsOnline', () => {
+			it( 'returns isOnline value from the state', () => {
+				const isOnline = registry.select( CORE_UI ).getIsOnline();
+
+				// isOnline has initial state set to true.
+				expect( isOnline ).toBe( true );
+
+				registry.dispatch( CORE_UI ).setValue( 'isOnline', false );
+
+				const updatedIsOnline = registry
+					.select( CORE_UI )
+					.getIsOnline();
+
+				expect( updatedIsOnline ).toBe( false );
 			} );
 		} );
 	} );
