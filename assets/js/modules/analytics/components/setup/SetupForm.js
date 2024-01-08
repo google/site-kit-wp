@@ -152,10 +152,6 @@ export default function SetupForm( { finishSetup } ) {
 			onSubmit={ submitForm }
 		>
 			<StoreErrorNotices
-				moduleSlug="analytics"
-				storeName={ MODULES_ANALYTICS }
-			/>
-			<StoreErrorNotices
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
