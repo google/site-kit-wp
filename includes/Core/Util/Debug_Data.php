@@ -128,6 +128,15 @@ class Debug_Data {
 		);
 
 		add_filter(
+			'googlesitekit_rest_routes',
+			function ( $rest_routes ) {
+				$health_check_routes = $this->get_rest_routes();
+
+				return array_merge( $rest_routes, $health_check_routes );
+			}
+		);
+
+		add_filter(
 			'site_status_tests',
 			function ( $tests ) {
 				global $wp_version;
@@ -149,6 +158,31 @@ class Debug_Data {
 		);
 	}
 
+	/**
+	 * Gets all REST routes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return REST_Route[]
+	 */
+	private function get_rest_routes() {
+		return array(
+			new REST_Route(
+				'core/site/data/tags-placement-test',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function() {
+							return $this->tags_placement_test();
+						},
+						'permission_callback' => function () {
+							return current_user_can( Permissions::SETUP );
+						},
+					),
+				)
+			),
+		);
+	}
 
 	/**
 	 * Checks if the modules tags are placed on the website.
