@@ -37,7 +37,7 @@ describe( 'OfflineNotification', () => {
 	it( 'should display the notification when offline', async () => {
 		registry.dispatch( CORE_UI ).setIsOnline( false );
 
-		const { queryByText, waitForRegistry } = render(
+		const { getByText, waitForRegistry } = render(
 			<OfflineNotification />,
 			{
 				registry,
@@ -46,9 +46,7 @@ describe( 'OfflineNotification', () => {
 
 		await waitForRegistry();
 
-		expect(
-			queryByText( /you are currently offline/i )
-		).toBeInTheDocument();
+		expect( getByText( /you are currently offline/i ) ).toBeInTheDocument();
 	} );
 
 	it( 'should not display the notification when online', async () => {
