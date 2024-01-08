@@ -101,16 +101,9 @@ describe( 'useMonitorInternetConnection', () => {
 			body: healthCheckResponse,
 		} );
 
-		renderHook(
-			() =>
-				useMonitorInternetConnection( {
-					isOnline: 100,
-					isOffline: 50,
-				} ),
-			{
-				registry,
-			}
-		);
+		renderHook( () => useMonitorInternetConnection(), {
+			registry,
+		} );
 
 		// Wait for fetch to complete.
 		await waitForTimeouts( 100 );
@@ -138,5 +131,47 @@ describe( 'useMonitorInternetConnection', () => {
 
 		expect( store.getState().isOnline ).toBe( true );
 		expect( fetchMock ).toHaveFetched( healthCheckEndpoint );
+	} );
+
+	it( 'should check online status in correct interval when online', () => {
+		jest.useFakeTimers();
+		jest.spyOn( global, 'setInterval' );
+
+		fetchMock.get( healthCheckEndpoint, {
+			body: healthCheckResponse,
+		} );
+
+		renderHook( () => useMonitorInternetConnection(), { registry } );
+
+		expect( store.getState().isOnline ).toBe( true );
+
+		jest.advanceTimersByTime( 120000 );
+
+		expect( setInterval ).toHaveBeenCalledTimes( 1 );
+
+		// When online endpoint will be fetched, and then second time when
+		// interval value passes.
+		expect( fetchMock ).toHaveFetchedTimes( 2 );
+	} );
+
+	it( 'should check online status in correct interval when offline', () => {
+		jest.useFakeTimers();
+		jest.spyOn( global, 'setInterval' );
+
+		fetchMock.get( healthCheckEndpoint, {
+			body: healthCheckResponse,
+		} );
+
+		mockOnlineStatus( false );
+
+		renderHook( () => useMonitorInternetConnection(), { registry } );
+
+		expect( store.getState().isOnline ).toBe( false );
+
+		jest.advanceTimersByTime( 15000 );
+
+		// Interval will be called initially, and then for the second time after
+		// interval value passes.
+		expect( setInterval ).toHaveBeenCalledTimes( 2 );
 	} );
 } );
