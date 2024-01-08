@@ -67,10 +67,10 @@ export const actions = {
 	 * @param {boolean} value `isOnline` status.
 	 * @return {Object} Redux-style action.
 	 */
-	*setIsOnline( value ) {
+	setIsOnline( value ) {
 		invariant( isBoolean( value ), 'value must be boolean.' );
 
-		return yield actions.setValue( 'isOnline', value );
+		return actions.setValue( 'isOnline', value );
 	},
 
 	/**
