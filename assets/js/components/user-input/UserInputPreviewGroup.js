@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -268,12 +268,13 @@ export default function UserInputPreviewGroup( {
 									{ ! hasSettingChanged &&
 										__( 'Save', 'google-site-kit' ) }
 								</SpinnerButton>
-								<Link
+								<Button
+									tertiary
 									disabled={ isScreenLoading }
 									onClick={ handleOnCancelClick }
 								>
 									{ __( 'Cancel', 'google-site-kit' ) }
-								</Link>
+								</Button>
 							</div>
 						</Fragment>
 					) }

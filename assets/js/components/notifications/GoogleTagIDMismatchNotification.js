@@ -28,9 +28,8 @@ import { Fragment, useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { isValidMeasurementID } from '../../modules/analytics-4/utils/validation';
-import { SpinnerButton, ProgressBar } from 'googlesitekit-components';
+import { Button, SpinnerButton, ProgressBar } from 'googlesitekit-components';
 import BannerNotification from './BannerNotification';
-import Link from '../Link';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import { getBestTagID } from '../../modules/analytics-4/utils/google-tag';
@@ -194,12 +193,12 @@ export default function GoogleTagIDMismatchNotification() {
 						>
 							{ __( 'Use new property', 'google-site-kit' ) }
 						</SpinnerButton>
-						<Link onClick={ updateGoogleTagConfig }>
+						<Button tertiary onClick={ updateGoogleTagConfig }>
 							{ __(
 								'Keep existing property',
 								'google-site-kit'
 							) }
-						</Link>
+						</Button>
 					</Fragment>
 				}
 				isDismissible={ false }
