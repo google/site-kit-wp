@@ -140,13 +140,17 @@ class Debug_Data {
 			'site_status_tests',
 			function ( $tests ) {
 				global $wp_version;
-				$test_type = 'async';
 
 				if ( version_compare( $wp_version, '6.5', '<' ) ) {
-					$test_type = 'direct';
+					$tests['direct']['tag_placement'] = array(
+						'label' => __( 'Tag Placement', 'google-site-kit' ),
+						'test'  => 'tag_placement',
+					);
+
+					return $tests;
 				}
 
-				$tests[ $test_type ]['tag_placement'] = array(
+				$tests['async']['tag_placement'] = array(
 					'label'             => __( 'Tag Placement', 'google-site-kit' ),
 					'test'              => rest_url( 'google-site-kit/v1/core/site/data/tags-placement-test' ),
 					'has_rest'          => true,
@@ -188,9 +192,32 @@ class Debug_Data {
 	 * Checks if the modules tags are placed on the website.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return string
 	 */
 	protected function tags_placement_test() {
+		global $wp_version;
 
+		if ( version_compare( $wp_version, '6.5', '<' ) ) {
+			return ''; // @TODO implement the return array.
+		}
+
+		$result = array(
+			'label'       => __( 'Tags Placement', 'google-site-kit' ),
+			'status'      => 'good',
+			'badge'       => array(
+				'label' => __( 'Site Kit', 'google-site-kit' ),
+				'color' => 'blue',
+			),
+			'description' => sprintf(
+				'<p>%s</p>',
+				__( 'Description', 'google-site-kit' )
+			),
+			'actions'     => '',
+			'test'        => 'tag_placement',
+		);
+
+		return $result;
 	}
 
 	/**
