@@ -172,6 +172,11 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
+
+		.googlesitekit-table__body-zero-data {
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
+		}
 	}
 
 	.googlesitekit-km-widget-tile__loading {
