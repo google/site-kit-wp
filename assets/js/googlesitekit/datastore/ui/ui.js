@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isPlainObject, isBoolean } from 'lodash';
 
 /**
  * Internal dependencies
@@ -33,6 +33,7 @@ const SET_VALUE = 'SET_VALUE';
 
 export const initialState = {
 	useInViewResetCount: 0,
+	isOnline: true,
 };
 
 export const actions = {
@@ -55,6 +56,21 @@ export const actions = {
 			'useInViewResetCount',
 			useInViewResetCount + 1
 		);
+	},
+
+	/**
+	 * Sets `isOnline` state.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {boolean} value `isOnline` status.
+	 * @return {Object} Redux-style action.
+	 */
+	setIsOnline( value ) {
+		invariant( isBoolean( value ), 'value must be boolean.' );
+
+		return actions.setValue( 'isOnline', value );
 	},
 
 	/**
@@ -149,8 +165,21 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {number} Number of times `useInView` hooks have been reset.
 	 */
-	getInViewResetHook( state ) {
+	getInViewResetCount( state ) {
 		return state.useInViewResetCount;
+	},
+
+	/**
+	 * Gets the `isOnline` status.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} `isOnline` value.
+	 */
+	getIsOnline( state ) {
+		return state.isOnline;
 	},
 };
 
