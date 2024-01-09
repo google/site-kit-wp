@@ -29,7 +29,6 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
  * @ignore
  */
 class Debug_Data {
-	use Method_Proxy_Trait;
 
 	/**
 	 * Context instance.
