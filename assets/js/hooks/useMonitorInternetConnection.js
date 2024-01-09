@@ -85,10 +85,5 @@ export function useMonitorInternetConnection() {
 		}
 	);
 
-	useInterval(
-		() => {
-			checkInternetConnection();
-		},
-		isOnline ? 120000 : 15000
-	);
+	useInterval( checkInternetConnection, isOnline ? 120000 : 15000 );
 }

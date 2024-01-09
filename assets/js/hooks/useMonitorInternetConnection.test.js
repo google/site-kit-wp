@@ -157,7 +157,7 @@ describe( 'useMonitorInternetConnection', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 2 );
 	} );
 
-	it( 'should check online status in correct interval when offline', () => {
+	it( 'should check online status in correct interval when offline', async () => {
 		jest.useFakeTimers();
 
 		fetchMock.get( healthCheckEndpoint, {
@@ -170,10 +170,20 @@ describe( 'useMonitorInternetConnection', () => {
 
 		expect( store.getState().isOnline ).toBe( false );
 
-		jest.advanceTimersByTime( 15000 );
+		// The interval should be 15000ms when offline.
+		jest.advanceTimersByTime( 14999 );
 
-		// When `isOnline` is `false`, request should not be made,
-		// only state is updated.
+		// Enable online status so we can verify the interval via the fetch.
+		mockOnlineStatus( true );
+
+		// No fetch should happen when offline until the interval is reached.
 		expect( fetchMock ).toHaveBeenCalledTimes( 0 );
+
+		await act( async () => {
+			jest.advanceTimersByTime( 1 );
+			await new Promise( ( resolve ) => resolve() );
+		} );
+
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
 	} );
 } );
