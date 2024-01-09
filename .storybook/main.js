@@ -33,7 +33,17 @@ function vrtHead() {
 
 module.exports = {
 	stories: [ '../stories/**/*.stories.js', '../assets/js/**/*.stories.js' ],
-	addons: [ '@storybook/addon-viewport', '@storybook/addon-postcss' ],
+	addons: [
+		'@storybook/addon-viewport',
+		{
+			name: '@storybook/addon-postcss',
+			options: {
+				postcssLoaderOptions: {
+					implementation: require( 'postcss' ),
+				},
+			},
+		},
+	],
 	previewHead: ( head ) => {
 		if ( process.env.VRT === '1' ) {
 			return `${ head }\n${ vrtHead() }`;
