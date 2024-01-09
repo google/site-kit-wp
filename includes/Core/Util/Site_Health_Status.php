@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Util;
 
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Modules\AdSense;
@@ -25,7 +26,26 @@ use WP_REST_Server;
  * @ignore
  */
 class Site_Health_Status {
+	use Method_Proxy_Trait;
 
+	/**
+	 * Modules instance.
+	 *
+	 * @since 1.5.0
+	 * @var Modules
+	 */
+	private $modules;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param Modules $modules Modules instance.
+	 */
+	public function __construct( Modules $modules ) {
+		$this->modules = $modules;
+	}
 
 	/**
 	 * Registers information with Site Health Status tab.
