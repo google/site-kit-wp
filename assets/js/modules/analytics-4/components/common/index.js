@@ -20,4 +20,5 @@ export { default as AccountSelect } from './AccountSelect';
 export { default as EnhancedMeasurementSwitch } from './EnhancedMeasurementSwitch';
 export { default as WebDataStreamSelect } from './WebDataStreamSelect';
 export { default as PropertySelect } from './PropertySelect';
+export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';

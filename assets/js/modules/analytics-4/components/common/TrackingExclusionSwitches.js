@@ -34,3 +34,8 @@ export const trackingExclusionLabels = {
 		'google-site-kit'
 	),
 };
+
+export default function TrackingExclusionSwitches() {
+	// TODO This function is created to add a default export. The contents
+	// of this function will be filled in when migrating the GA4 Setup and Edit forms.
+}
