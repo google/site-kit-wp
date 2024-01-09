@@ -18,7 +18,9 @@
 
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
+// A special Property ID value used for the "Set up a new property" option.
 export const PROPERTY_CREATE = 'property_create';
+
 export const WEBDATASTREAM_CREATE = 'webdatastream_create';
 
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
