@@ -8,8 +8,9 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Modules\Tags;
+namespace Google\Site_Kit\Core\Modules\AdSense;
 
+use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Tags\Tag_Matchers_Interface;
 
 /**
