@@ -37,6 +37,7 @@
 
 		.googlesitekit-km-widget-tile__title {
 			color: $c-neutral-n-500;
+			flex: 1;
 			font-family: $f-primary;
 			font-size: $fs-label-sm;
 			font-weight: $fw-normal;
@@ -156,17 +157,6 @@
 			margin: 0;
 			overflow: hidden;
 			text-overflow: ellipsis;
-		}
-	}
-
-	.googlesitekit-km-widget-tile--numeric,
-	.googlesitekit-km-widget-tile--text {
-		.googlesitekit-km-widget-tile__title-container {
-			flex-direction: column;
-
-			@media (min-width: $bp-nonMobile) {
-				flex-direction: row;
-			}
 		}
 	}
 
