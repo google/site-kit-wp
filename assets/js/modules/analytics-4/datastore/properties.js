@@ -723,11 +723,13 @@ const baseResolvers = {
 			return;
 		}
 
-		const hasModuleAccess = registry
-			.select( CORE_MODULES )
-			.hasModuleAccess( 'analytics-4' );
+		const hasModuleAccess = yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( CORE_MODULES )
+				.hasModuleAccess( 'analytics-4' )
+		);
 
-		if ( ! hasModuleAccess ) {
+		if ( hasModuleAccess === false ) {
 			return;
 		}
 
