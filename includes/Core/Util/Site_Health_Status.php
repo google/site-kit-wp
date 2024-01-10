@@ -194,7 +194,7 @@ class Site_Health_Status {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array Filtered active modules array.
+	 * @return array Filtered active modules instances.
 	 */
 	protected function get_active_modules() {
 		$active_modules = $this->modules->get_active_modules();
@@ -214,7 +214,14 @@ class Site_Health_Status {
 			}
 		);
 
-		return $active_modules;
+		/**
+		 * Filtered list of active modules.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $active_modules An array of active module instances.
+		 */
+		return apply_filters( 'googlesitekit_site_status_get_active_modules', $active_modules );
 	}
 
 	/**
@@ -241,6 +248,16 @@ class Site_Health_Status {
 		}
 
 		$search_string = 'Google ' . $module_name . ' snippet added by Site Kit';
+		/**
+		 * Filters the search string used to check if a specific Google service tag exists in the content.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $search_string The initial search string constructed for tag detection.
+		 * @param string $module_slug   The slug of the module whose tag is being checked.
+		 * @param string $content       The content in which the tag is being searched for.
+		 */
+		$search_string = apply_filters( 'googlesitekit_site_status_check_if_tag_exists', $search_string, $module_slug, $content );
 
 		if ( strpos( $content, $search_string ) !== false ) {
 			return sprintf(
