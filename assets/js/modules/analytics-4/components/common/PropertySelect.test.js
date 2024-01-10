@@ -74,6 +74,14 @@ const setupRegistry = ( registry ) => {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getWebDataStreamsBatch', [ properties[ 0 ]._id ] );
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetWebDataStreams( fixtures.webDataStreams, {
+			propertyID: properties[ 0 ]._id,
+		} );
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getWebDataStreams', [ properties[ 0 ]._id ] );
 };
 
 const setupEmptyRegistry = ( registry ) => {
