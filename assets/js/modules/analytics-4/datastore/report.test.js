@@ -34,6 +34,7 @@ import {
 import { DAY_IN_SECONDS } from '../../../util';
 import { isZeroReport } from '../utils';
 import * as fixtures from './__fixtures__';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 describe( 'modules/analytics-4 report', () => {
 	let registry;
@@ -44,6 +45,13 @@ describe( 'modules/analytics-4 report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics-4' }
+			);
 	} );
 
 	afterEach( () => {

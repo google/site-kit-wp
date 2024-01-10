@@ -23,6 +23,7 @@ import { properties } from './__fixtures__';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { getPreviousDate, stringToDate } from '../../../util';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 let {
 	createTestRegistry,
@@ -49,6 +50,13 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: [ customDimension ],
 		} );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics-4' }
+			);
 	}
 
 	let registry;

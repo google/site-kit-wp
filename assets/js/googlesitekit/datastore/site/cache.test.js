@@ -22,9 +22,8 @@
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-	untilResolved,
 } from '../../../../../tests/js/utils';
-import { clearCache, getItem, setItem } from '../../../googlesitekit/api/cache';
+import { clearCache, getItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from './constants';
 
 describe( 'core/site client side cache', () => {
@@ -41,14 +40,6 @@ describe( 'core/site client side cache', () => {
 	describe( 'actions', () => {
 		beforeEach( async () => {
 			await clearCache();
-		} );
-
-		describe( 'getCacheItem', () => {
-			it( 'requires key param', async () => {
-				await expect( async () => {
-					await registry.dispatch( CORE_SITE ).getCacheItem();
-				} ).rejects.toThrow( 'key is required' );
-			} );
 		} );
 
 		describe( 'setCacheItem', () => {
@@ -80,71 +71,6 @@ describe( 'core/site client side cache', () => {
 
 				expect( result.cacheHit ).toEqual( true );
 				expect( result.value ).toEqual( 'value' );
-			} );
-		} );
-	} );
-
-	describe( 'selectors', () => {
-		beforeEach( async () => {
-			await clearCache();
-		} );
-
-		describe( 'getCacheItem', () => {
-			it( 'returns a cached result', async () => {
-				await setItem( 'cache-set-key', 'value', {
-					timestamp: Date.now(),
-				} );
-
-				registry.select( CORE_SITE ).getCacheItem( 'cache-set-key' );
-
-				await untilResolved( registry, CORE_SITE ).getCacheItem(
-					'cache-set-key'
-				);
-
-				const result = registry
-					.select( CORE_SITE )
-					.getCacheItem( 'cache-set-key' );
-
-				expect( result.cacheHit ).toEqual( true );
-				expect( result.value ).toEqual( 'value' );
-			} );
-
-			it( 'returns undefined while loading, then return a result', async () => {
-				await setItem( 'cache-set-key', 'value', {
-					timestamp: Date.now(),
-				} );
-
-				const initialResult = registry
-					.select( CORE_SITE )
-					.getCacheItem( 'cache-set-key' );
-
-				expect( initialResult ).toBeUndefined();
-
-				await untilResolved( registry, CORE_SITE ).getCacheItem(
-					'cache-set-key'
-				);
-
-				const result = registry
-					.select( CORE_SITE )
-					.getCacheItem( 'cache-set-key' );
-
-				expect( result.cacheHit ).toEqual( true );
-				expect( result.value ).toEqual( 'value' );
-			} );
-
-			it( 'returns no cache hit if no value exists in the cache', async () => {
-				registry.select( CORE_SITE ).getCacheItem( 'cache-set-key' );
-
-				await untilResolved( registry, CORE_SITE ).getCacheItem(
-					'cache-set-key'
-				);
-
-				const result = registry
-					.select( CORE_SITE )
-					.getCacheItem( 'cache-set-key' );
-
-				expect( result.cacheHit ).toEqual( false );
-				expect( result.value ).toEqual( undefined );
 			} );
 		} );
 	} );

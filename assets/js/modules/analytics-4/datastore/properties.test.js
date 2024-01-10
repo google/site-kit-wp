@@ -42,6 +42,8 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -1338,6 +1340,13 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'getPropertyCreateTime', () => {
 			it( 'should use a resolver to fetch the current property if create time is not set yet', async () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: true },
+						{ slug: 'analytics-4' }
+					);
+
 				fetchMock.get( propertyEndpoint, {
 					body: fixtures.properties[ 0 ],
 					status: 200,
@@ -1370,6 +1379,85 @@ describe( 'modules/analytics-4 properties', () => {
 					new Date( fixtures.properties[ 0 ].createTime ).getTime()
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should cache the current property when fetched', async () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: true },
+						{ slug: 'analytics-4' }
+					);
+
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
+
+				const propertyID = '12345';
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+
+				const initalPropertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( initalPropertyCreateTime ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID },
+				} );
+
+				const propertyCreateTimeInCache = await getItem(
+					`ga4-property-create-time-${ propertyID }`
+				);
+
+				expect( propertyCreateTimeInCache.cacheHit ).toBe( true );
+				expect( propertyCreateTimeInCache.value ).toEqual(
+					fixtures.properties[ 0 ].createTime
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not make a request to the API if the property is cached', async () => {
+				const propertyID = fixtures.properties[ 0 ]._id;
+
+				const settings = {
+					propertyID,
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+					propertyCreateTime: 123456789,
+				};
+
+				await setItem(
+					`ga4-property-create-time-${ propertyID }`,
+					settings
+				);
+
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+
+				registry.select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+				expect( propertyCreateTime ).toBe(
+					settings.propertyCreateTime
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
 			} );
 
 			it( 'should not fetch the property if the propertyCreateTime is already set', async () => {

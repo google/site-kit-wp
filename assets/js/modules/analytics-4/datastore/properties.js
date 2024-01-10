@@ -47,6 +47,7 @@ import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { createRegistrySelector } from '@wordpress/data';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
 const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -722,10 +723,38 @@ const baseResolvers = {
 			return;
 		}
 
+		const hasModuleAccess = registry
+			.select( CORE_MODULES )
+			.hasModuleAccess( 'analytics-4' );
+
+		if ( ! hasModuleAccess ) {
+			return;
+		}
+
+		const cachedPropertyCreateTime = yield Data.commonActions.await(
+			getItem( `ga4-property-create-time-${ propertyID }` )
+		);
+
+		if ( cachedPropertyCreateTime.cacheHit ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyCreateTime( cachedPropertyCreateTime.value );
+
+			return;
+		}
+
 		const property = yield Data.commonActions.await(
 			registry
 				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 				.getProperty( propertyID )
+		);
+
+		// Cache this value for 1 hour (the default cache time).
+		yield Data.commonActions.await(
+			setItem(
+				`ga4-property-create-time-${ propertyID }`,
+				property?.createTime
+			)
 		);
 
 		registry

@@ -37,6 +37,7 @@ import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
 import withCustomDimensions from './withCustomDimensions';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 describe( 'withCustomDimensions', () => {
 	let registry;
@@ -60,6 +61,14 @@ describe( 'withCustomDimensions', () => {
 				connected: true,
 			},
 		] );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics-4' }
+			);
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
