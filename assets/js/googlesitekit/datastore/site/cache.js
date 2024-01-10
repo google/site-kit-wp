@@ -25,14 +25,47 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { setItem } from '../../../googlesitekit/api/cache';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
+import { CORE_SITE } from './constants';
+
+const { createReducer } = Data;
 
 // Actions.
+const CACHE_GET_ITEM = 'CACHE_GET_ITEM';
+const CACHE_GET_ITEM_SAVE_TO_STORE = 'CACHE_GET_ITEM_SAVE_TO_STORE';
 const CACHE_SET_ITEM = 'CACHE_SET_ITEM';
 
-const baseInitialState = {};
+const baseInitialState = {
+	getItemCacheResults: {},
+};
 
 const baseActions = {
+	/**
+	 * Yields to cache `getItem` which fetches cached data using a key.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} key Name of cache key.
+	 * @return {Object} Redux-style action.
+	 */
+	*getCacheItem( key ) {
+		invariant( key, 'key is required' );
+
+		const result = yield {
+			type: CACHE_GET_ITEM,
+			payload: {
+				key,
+			},
+		};
+
+		return {
+			type: CACHE_GET_ITEM_SAVE_TO_STORE,
+			payload: {
+				key,
+				result,
+			},
+		};
+	},
 	/**
 	 * Yields to setItem function which sets cached data using a key.
 	 *
@@ -64,6 +97,13 @@ const baseActions = {
 
 // Base Controls
 export const baseControls = {
+	[ CACHE_GET_ITEM ]: async ( { payload } ) => {
+		const { key } = payload;
+
+		const result = await getItem( key );
+
+		return result;
+	},
 	[ CACHE_SET_ITEM ]: async ( { payload } ) => {
 		const { key, value, args } = payload;
 
@@ -71,12 +111,51 @@ export const baseControls = {
 	},
 };
 
-const baseSelectors = {};
+export const baseReducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
+		case CACHE_GET_ITEM_SAVE_TO_STORE: {
+			const { key, result } = payload;
+
+			state.getItemCacheResults[ key ] = result;
+
+			return state;
+		}
+
+		default: {
+			return state;
+		}
+	}
+} );
+
+const baseResolvers = {
+	*getCacheItem( key ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield registry.dispatch( CORE_SITE ).getCacheItem( key );
+	},
+};
+
+const baseSelectors = {
+	/**
+	 * Returns a cached item from the cache.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} key   Cache key to get cached data for.
+	 * @return {Object|undefined} The returned value from `getItem` function. `undefined` while loading.
+	 */
+	getCacheItem: ( state, key ) => {
+		return state.getItemCacheResults[ key ];
+	},
+};
 
 const store = Data.combineStores( {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,
+	resolvers: baseResolvers,
+	reducer: baseReducer,
 	selectors: baseSelectors,
 } );
 
