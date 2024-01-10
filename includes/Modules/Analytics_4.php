@@ -35,6 +35,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
@@ -84,7 +85,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Analytics_4 extends Module
+class Analytics_4 extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
@@ -92,6 +93,12 @@ final class Analytics_4 extends Module
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
+
+	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
+
+	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
+	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
 
 	/**
 	 * Module slug name.
@@ -147,6 +154,8 @@ final class Analytics_4 extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 
 		$synchronize_property = new Synchronize_Property(
 			$this,
@@ -532,6 +541,91 @@ final class Analytics_4 extends Module
 			return;
 		}
 		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
+	}
+
+	/**
+	 * Handles the provisioning callback after the user completes the terms of service.
+	 *
+	 * @since 1.9.0
+	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
+	 * @since n.e.x.t Migrated method from original Analytics class to Analytics_4 class.
+	 */
+	protected function handle_provisioning_callback() {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
+
+		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+			return;
+		}
+
+		$input = $this->context->input();
+
+		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
+			return;
+		}
+
+		// First check that the accountTicketId matches one stored for the user.
+		// This is always provided, even in the event of an error.
+		$account_ticket_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountTicketId' ) );
+		// The create-account-ticket request stores the created account ticket in a transient before
+		// sending the user off to the terms of service page.
+		$account_ticket_transient_key = self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id();
+		$account_ticket_params        = $this->transients->get( $account_ticket_transient_key );
+		$account_ticket               = new Account_Ticket( $account_ticket_params );
+
+		// Backwards compat for previous storage type which stored ID only.
+		if ( is_scalar( $account_ticket_params ) ) {
+			$account_ticket->set_id( $account_ticket_params );
+		}
+
+		if ( $account_ticket->get_id() !== $account_ticket_id ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'dashboard', array( 'error_code' => 'account_ticket_id_mismatch' ) )
+			);
+			exit;
+		}
+
+		// At this point, the accountTicketId is a match and params are loaded, so we can safely delete the transient.
+		$this->transients->delete( $account_ticket_transient_key );
+
+		// Next, check for a returned error.
+		$error = $input->filter( INPUT_GET, 'error' );
+		if ( ! empty( $error ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'dashboard', array( 'error_code' => htmlspecialchars( $error ) ) )
+			);
+			exit;
+		}
+
+		$account_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountId' ) );
+
+		if ( empty( $account_id ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
+			);
+			exit;
+		}
+
+		$new_settings = array();
+
+		// At this point, account creation was successful.
+		$new_settings['accountID'] = $account_id;
+
+		$this->get_settings()->merge( $new_settings );
+
+		$this->provision_property_webdatastream( $account_id, $account_ticket );
+
+		wp_safe_redirect(
+			$this->context->admin_url(
+				'dashboard',
+				array(
+					'notification' => 'authentication_success',
+					'slug'         => 'analytics',
+				)
+			)
+		);
+		exit;
 	}
 
 	/**
