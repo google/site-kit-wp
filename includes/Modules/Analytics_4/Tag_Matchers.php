@@ -30,28 +30,27 @@ class Tag_Matchers extends Module_Tag_Matchers implements Tag_Matchers_Interface
 	 * @return array Array of regex matchers.
 	 */
 	public function regex_matchers() {
-		return array(
-			// Detect gtag script calls.
-			"/<script [^>]*src=['|\"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(UA-.*?)['|\"][^>]*><\/script>/",
-
-			// Detect common analytics code usage.
-			'/<script[^>]*>[^<]+google-analytics\.com\/analytics\.js[^<]+(UA-\d+-\d+)/',
-
-			// Detect __gaTracker create calls.
-			"/__gaTracker\( ?['|\"]create['|\"]\, ?['|\"](UA-.*?)['|\"]\, ?['|\"]auto['|\"] ?\)/",
-
-			// Detect ga create calls.
-			"/ga\( ?['|\"]create['|\"]\, ?['|\"](UA-.*?)['|\"]\, ?['|\"]auto['|\"] ?\)/",
-
-			// Detect _gaq.push calls.
-			"/_gaq.push\( ?\[ ?['|\"]_setAccount['|\"]\, ?['|\"](UA-.*?)['|\"] ?\] ?\)/",
-
-			// Detect amp-analytics gtag.
-			'/<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"(UA-[^""]+)"/',
-
-			// Detect amp-analytics googleanalytics.
-			'/<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"(UA-[^""]+)"/',
+		$tag_matchers = array(
+			"/__gaTracker\s*\(\s*['|\"]create['|\"]\s*,\s*['|\"](G-[a-zA-Z0-9]+)['|\"]\, ?['|\"]auto['|\"]\s*\)/i",
+			"/_gaq\.push\s*\(\s*\[\s*['|\"][^_]*_setAccount['|\"]\s*,\s*['|\"](G-[a-zA-Z0-9]+)['|\"]\s*],?\s*\)/i",
+			'/<amp-analytics\s+[^>]*type="gtag"[^>]*>[^<]*<script\s+type="application\/json">[^<]*"gtag_id"\s*:\s*"(G-[a-zA-Z0-9]+)"/i',
+			'/<amp-analytics\s+[^>]*type="googleanalytics"[^>]*>[^<]*<script\s+type="application\/json">[^<]*"account"\s*:\s*"(G-[a-zA-Z0-9]+)"/i',
 		);
+
+		$subdomains = array( '', 'www\\.' );
+		foreach ( $subdomains as $subdomain ) {
+			$tag_matchers[] = "/<script\\s+[^>]*src=['|\"]https?:\/\/" . $subdomain . "googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|\"][^>]*><\/script>/i";
+			$tag_matchers[] = "/<script\\s+[^>]*src=['|\"]https?:\/\/" . $subdomain . "googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|\"][^\\/]*\/>/i";
+		}
+
+		$funcs = array( '__gaTracker', 'ga', 'gtag' );
+		foreach ( $funcs as $func ) {
+			$tag_matchers[] = "/$func\\s*\\(\\s*['|\"]create['|\"]\\s*,\\s*['|\"](G-[a-zA-Z0-9]+)['|\"]\\,\\s*['|\"]auto['|\"]\\s*\\)/i";
+			$tag_matchers[] = "/$func\\s*\\(\\s*['|\"]config['|\"]\\s*,\\s*['|\"](G-[a-zA-Z0-9]+)['|\"]\\s*\\)/i";
+			$tag_matchers[] = "/$func\\s*\\(\\s*['|\"]config['|\"]\\s*,\\s*['|\"](GT-[a-zA-Z0-9]+)['|\"]\\s*\\)/i";
+		}
+
+		return $tag_matchers;
 	}
 
 }
