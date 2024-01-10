@@ -54,6 +54,7 @@ const Button = forwardRef(
 			inverse,
 			hideTooltipTitle = false,
 			tooltipEnterDelayInMS = 100,
+			tertiary = false,
 			...extraProps
 		},
 		ref
@@ -95,9 +96,10 @@ const Button = forwardRef(
 		const ButtonComponent = (
 			<SemanticButton
 				className={ classnames( 'mdc-button', className, {
-					'mdc-button--raised': ! text,
+					'mdc-button--raised': ! text && ! tertiary,
 					'mdc-button--danger': danger,
 					'mdc-button--inverse': inverse,
+					'mdc-button--tertiary': tertiary,
 				} ) }
 				href={ disabled ? undefined : href }
 				ref={ mergedRefs }

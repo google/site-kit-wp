@@ -86,19 +86,17 @@ class REST_User_Input_Controller {
 			}
 		);
 
-		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-			add_filter(
-				'googlesitekit_apifetch_preload_paths',
-				function ( $paths ) {
-					return array_merge(
-						$paths,
-						array(
-							'/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings',
-						)
-					);
-				}
-			);
-		}
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings',
+					)
+				);
+			}
+		);
 	}
 
 	/**

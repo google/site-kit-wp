@@ -30,7 +30,7 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
@@ -145,9 +145,9 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 					) }
 
 				<div className="googlesitekit-dashboard-sharing-settings__footer-actions-right">
-					<Link onClick={ onCancel }>
+					<Button tertiary onClick={ onCancel }>
 						{ __( 'Cancel', 'google-site-kit' ) }
-					</Link>
+					</Button>
 
 					{ settingsDialogOpen && (
 						<SpinnerButton

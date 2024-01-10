@@ -157,7 +157,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
 </div>
 `;
 
-exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch in the loading state when properties are loading 1`] = `
+exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch in the loading state when property summaries are loading 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"

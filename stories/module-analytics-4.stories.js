@@ -27,8 +27,9 @@ import { storiesOf } from '@storybook/react';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
-import AccountSelect from '../assets/js/modules/analytics/components/common/AccountSelect';
+import AccountSelect from '../assets/js/modules/analytics-4/components/common/AccountSelect';
 import PropertySelect from '../assets/js/modules/analytics-4/components/common/PropertySelect';
+import * as fixtures from '../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 function SetupWrap( { children } ) {
 	return (
@@ -48,35 +49,13 @@ storiesOf( 'Analytics-4 Module', module ).add(
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
-			const account = {
-				id: '1000',
-				name: 'Account A',
-			};
-
-			const propertyA = {
-				_id: '2000',
-				_accountID: account.id,
-				name: 'properties/2000',
-				displayName: 'Property A',
-			};
-
-			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ account ] );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
-
-			dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], {
-				accountID: account.id,
-			} );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [
-				account.id,
-			] );
-
-			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
-				[ propertyA ],
-				{ accountID: account.id }
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
+				fixtures.accountSummaries
 			);
-			dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
-				account.id,
-			] );
+			dispatch( MODULES_ANALYTICS ).finishResolution(
+				'getAccountSummaries',
+				[]
+			);
 		};
 
 		return (

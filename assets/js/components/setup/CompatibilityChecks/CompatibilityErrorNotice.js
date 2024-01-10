@@ -94,6 +94,11 @@ export default function CompatibilityErrorNotice( { error } ) {
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'staging' );
 	} );
+	const googleAPIConnectionFailHelpURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+			code: ERROR_GOOGLE_API_CONNECTION_FAIL,
+		} )
+	);
 
 	switch ( error ) {
 		case ERROR_API_UNAVAILABLE:
@@ -158,15 +163,31 @@ export default function CompatibilityErrorNotice( { error } ) {
 			);
 		case ERROR_GOOGLE_API_CONNECTION_FAIL:
 			return (
-				<p>
-					{ createInterpolateElement(
-						__(
-							'Looks like your site is having a technical issue with requesting data from Google services. <GetHelpLink />',
+				<p
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						`
+						${ __(
+							'Looks like your site is having a technical issue with requesting data from Google services.',
 							'google-site-kit'
-						),
-						{ GetHelpLink: <GetHelpLink errorCode={ error } /> }
+						) }
+						<br/>
+						${ sprintf(
+							/* translators: 1: Help URL, 2: Support Forum URL, 3: Error message */
+							__(
+								'<a href="%1$s">Click here</a> for more information, or to get more help, ask a question on our <a href="%2$s">support forum</a> and include the text of the original error message: %3$s',
+								'google-site-kit'
+							),
+							googleAPIConnectionFailHelpURL,
+							'https://wordpress.org/support/plugin/google-site-kit/',
+							`<br/>${ error }`
+						) }
+						`,
+						{
+							ALLOWED_TAGS: [ 'a', 'br' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
 					) }
-				</p>
+				/>
 			);
 		case ERROR_AMP_CDN_RESTRICTED:
 			return (
