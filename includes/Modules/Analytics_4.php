@@ -163,12 +163,6 @@ final class Analytics_4 extends Module
 			}
 		);
 
-		add_action(
-			'googlesitekit_analytics_handle_provisioning_callback',
-			$this->get_method_proxy( 'handle_provisioning_callback' ),
-			10,
-			2
-		);
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
@@ -549,7 +543,7 @@ final class Analytics_4 extends Module
 	 * @param string         $account_id     Account ID.
 	 * @param Account_Ticket $account_ticket Account ticket instance.
 	 */
-	private function handle_provisioning_callback( $account_id, $account_ticket ) {
+	private function provision_property_webdatastream( $account_id, $account_ticket ) {
 		// Reset the current GA4 settings.
 		$this->get_settings()->merge(
 			array(
