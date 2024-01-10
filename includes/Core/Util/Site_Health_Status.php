@@ -34,7 +34,7 @@ class Site_Health_Status {
 	/**
 	 * Modules instance.
 	 *
-	 * @since 1.5.0
+	 * @since n.e.x.t
 	 * @var Modules
 	 */
 	private $modules;
@@ -42,7 +42,7 @@ class Site_Health_Status {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.5.0
+	 * @since n.e.x.t
 	 *
 	 * @param Modules $modules Modules instance.
 	 */
@@ -150,26 +150,17 @@ class Site_Health_Status {
 		$response = wp_remote_get( site_url() ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 
 		if ( is_wp_error( $response ) ) {
-			return $response;
+			$result['description'] = sprintf(
+				'<p>%s</p>',
+				__( 'There was an error while trying to get the status, please try again later.', 'google-site-kit' )
+			);
+
+			return $result;
 		}
 
 		$response = wp_remote_retrieve_body( $response );
 
-		$active_modules = $this->modules->get_active_modules();
-		$active_modules = array_filter(
-			$active_modules,
-			function( $module ) {
-				return in_array(
-					$module->slug,
-					array(
-						Analytics_4::MODULE_SLUG,
-						AdSense::MODULE_SLUG,
-						Tag_Manager::MODULE_SLUG,
-					),
-					true
-				);
-			}
-		);
+		$active_modules = $this->get_active_modules();
 
 		if ( empty( $active_modules ) ) {
 			$result['description'] = sprintf(
@@ -195,6 +186,35 @@ class Site_Health_Status {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Gets active modules filtered to account only for
+	 * Analytics, AdSense and Tag Manager.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Filtered active modules array.
+	 */
+	protected function get_active_modules() {
+		$active_modules = $this->modules->get_active_modules();
+
+		$active_modules = array_filter(
+			$active_modules,
+			function( $module ) {
+				return in_array(
+					$module->slug,
+					array(
+						Analytics_4::MODULE_SLUG,
+						AdSense::MODULE_SLUG,
+						Tag_Manager::MODULE_SLUG,
+					),
+					true
+				);
+			}
+		);
+
+		return $active_modules;
 	}
 
 	/**
@@ -224,20 +244,24 @@ class Site_Health_Status {
 
 		if ( strpos( $content, $search_string ) !== false ) {
 			return sprintf(
-				'<li>%s: %s</li>',
+				'<li><strong>%s</strong>: %s</li>',
 				$module_name,
 				__( 'Tag detected and placed by Site Kit', 'google-site-kit' )
 			);
 		} else {
 			if ( $tag_matcher->has_tag( $content ) ) {
 				return sprintf(
-					'<li>%s: %s</li>',
+					'<li><strong>%s</strong>: %s</li>',
 					$module_name,
 					__( 'Tag detected but could not verify that Site Kit placed the tag.', 'google-site-kit' )
 				);
 			}
 		}
 
-		return null;
+		return sprintf(
+			'<li><strong>%s</strong>: %s</li>',
+			$module_name,
+			__( 'No tag detected.', 'google-site-kit' )
+		);
 	}
 }
