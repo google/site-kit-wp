@@ -209,6 +209,30 @@
 	}
 }
 
+.googlesitekit-settings-notice-offline-notice {
+	align-items: center;
+	bottom: 0;
+	gap: $grid-gap-phone;
+	position: fixed;
+	right: 0;
+	z-index: 9; // 9 to ensure it goes over all other elements.
+
+	@media (max-width: $bp-tablet) {
+		flex-direction: column;
+		gap: 10px;
+		text-align: center;
+		width: 100%;
+	}
+
+	.googlesitekit-settings-notice__text {
+		font-size: $fs-body-md;
+	}
+
+	.mdc-button {
+		min-height: 35px;
+	}
+}
+
 .googlesitekit-settings-notice-ua-cutoff-warning__notice {
 	margin: 0 14px 0 0;
 }

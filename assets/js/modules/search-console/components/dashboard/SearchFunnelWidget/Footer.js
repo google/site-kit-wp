@@ -134,7 +134,7 @@ function SourceLinkSearch( { metric } ) {
 	);
 }
 
-const Footer = ( { metrics, selectedStats } ) => {
+function Footer( { metrics, selectedStats } ) {
 	if ( ! metrics?.[ selectedStats ] ) {
 		return null;
 	}
@@ -146,7 +146,7 @@ const Footer = ( { metrics, selectedStats } ) => {
 
 	// If the service is not Search Console, it must be Analytics.
 	return <SourceLinkAnalytics4 />;
-};
+}
 
 Footer.propTypes = {
 	metrics: PropTypes.arrayOf( PropTypes.object ).isRequired,

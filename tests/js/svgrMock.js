@@ -20,4 +20,6 @@ export default function () {
 	return <svg />;
 }
 
-export const ReactComponent = () => <svg />;
+export function ReactComponent() {
+	return <svg />;
+}

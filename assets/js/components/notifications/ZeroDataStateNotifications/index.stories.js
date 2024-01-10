@@ -102,11 +102,13 @@ const analyticsArgs = [
 	},
 ];
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<ZeroDataStateNotifications />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ZeroDataStateNotifications />
+		</WithRegistrySetup>
+	);
+}
 
 export const NoNotificationsAvailable = Template.bind( {} );
 NoNotificationsAvailable.storyName = 'No Notifications Available';

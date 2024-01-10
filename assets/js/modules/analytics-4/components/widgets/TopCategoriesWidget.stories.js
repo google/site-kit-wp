@@ -69,11 +69,13 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_CATEGORIES
 )( TopCategoriesWidget );
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WidgetWithComponentProps { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -256,9 +258,7 @@ ErrorMissingCustomDimensions.args = {
 		} );
 	},
 };
-ErrorMissingCustomDimensions.parameters = {
-	features: [ 'keyMetrics' ],
-};
+
 ErrorMissingCustomDimensions.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ErrorMissingCustomDimensions',
 	delay: 250,
@@ -293,9 +293,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 		} );
 	},
 };
-ErrorCustomDimensionsInsufficientPermissions.parameters = {
-	features: [ 'keyMetrics' ],
-};
 ErrorCustomDimensionsInsufficientPermissions.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsInsufficientPermissions',
 	delay: 250,
@@ -329,9 +326,6 @@ ErrorCustomDimensionsGeneric.args = {
 			error,
 		} );
 	},
-};
-ErrorCustomDimensionsGeneric.parameters = {
-	features: [ 'keyMetrics' ],
 };
 ErrorCustomDimensionsGeneric.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsGeneric',

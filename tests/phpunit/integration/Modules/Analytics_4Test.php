@@ -301,7 +301,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => '',
 				'measurementID'             => '',
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -321,7 +325,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => $webdatastream_id,
 				'measurementID'             => $measurement_id,
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => 'GT-123',
 				'googleTagAccountID'        => $google_tag_account_id,
 				'googleTagContainerID'      => $google_tag_container_id,
@@ -438,7 +446,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => '',
 				'measurementID'             => '',
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -554,7 +566,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => '',
 				'measurementID'             => '',
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -576,7 +592,11 @@ class Analytics_4Test extends TestCase {
 				'webDataStreamID'           => $webdatastream_id,
 				'measurementID'             => $measurement_id,
 				'ownerID'                   => 0,
+				'adsConversionID'           => '',
+				'adsenseLinked'             => false,
+				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
+				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -831,7 +851,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_available_custom_dimensions_reset_on_property_id_change() {
-		$this->enable_feature( 'keyMetrics' );
 		// Given: Analytics 4 is registered with a specific propertyID.
 		$this->analytics->register();
 		$this->analytics->get_settings()->register();
@@ -858,7 +877,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_only_googlesitekit_prefixed_dimensions_are_retained() {
-		$this->enable_feature( 'keyMetrics' );
 		// Given: Analytics 4 is registered with a mixture of valid and invalid custom dimensions.
 		$this->analytics->register();
 		$this->analytics->get_settings()->register();
@@ -934,13 +952,15 @@ class Analytics_4Test extends TestCase {
 				'webdatastreams-batch',
 				'create-account-ticket',
 				'enhanced-measurement-settings',
+				'create-custom-dimension',
+				'sync-custom-dimensions',
+				'custom-dimension-data-available',
 			),
 			$this->analytics->get_datapoints()
 		);
 	}
 
 	public function test_get_datapoints__news_key_metrics() {
-		$this->enable_feature( 'keyMetrics' );
 		$this->assertEqualSets(
 			array(
 				'account-summaries',
@@ -976,8 +996,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_debug_fields__keyMetrics_enabled() {
-		$this->enable_feature( 'keyMetrics' );
-
 		// Given: Analytics 4 is registered with a specific propertyID.
 		$this->analytics->register();
 		$this->analytics->get_settings()->register();
@@ -2216,7 +2234,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_custom_dimension__required_params() {
-		$this->enable_feature( 'keyMetrics' );
 		$property_id = '123456789';
 
 		FakeHttp::fake_google_http_handler(
@@ -2323,7 +2340,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_custom_dimension() {
-		$this->enable_feature( 'keyMetrics' );
 		$property_id = '123456789';
 
 		FakeHttp::fake_google_http_handler(
@@ -2381,7 +2397,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_sync_custom_dimensions() {
-		$this->enable_feature( 'keyMetrics' );
 		$property_id = 'sync-custom-dimension-property-id';
 
 		$this->analytics->get_settings()->merge(
@@ -2868,7 +2883,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_inline_custom_dimension_data_initial_state__module_not_connected() {
-		$this->enable_feature( 'keyMetrics' );
 		$this->analytics->register();
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
@@ -2877,7 +2891,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_inline_custom_dimension_data_initial_state__module_connected() {
-		$this->enable_feature( 'keyMetrics' );
 		$this->analytics->register();
 
 		// Ensure the module is connected.
@@ -2908,8 +2921,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_set_custom_dimension_data_available() {
-		$this->enable_feature( 'keyMetrics' );
-
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
@@ -2957,8 +2968,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_custom_dimension_data_available_reset_on_measurement_id_change() {
-		$this->enable_feature( 'keyMetrics' );
-
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
@@ -3024,8 +3033,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_custom_dimension_data_available_reset_on_deactivation() {
-		$this->enable_feature( 'keyMetrics' );
-
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );

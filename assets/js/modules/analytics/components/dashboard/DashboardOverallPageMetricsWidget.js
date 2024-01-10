@@ -127,29 +127,33 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 
-	const Header = () => (
-		<WidgetHeaderTitle
-			title={ sprintf(
-				/* translators: %s: number of days */
-				_n(
-					'Overall page metrics over the last %s day',
-					'Overall page metrics over the last %s days',
-					currentDayCount,
-					'google-site-kit'
-				),
-				currentDayCount
-			) }
-		/>
-	);
+	function Header() {
+		return (
+			<WidgetHeaderTitle
+				title={ sprintf(
+					/* translators: %s: number of days */
+					_n(
+						'Overall page metrics over the last %s day',
+						'Overall page metrics over the last %s days',
+						currentDayCount,
+						'google-site-kit'
+					),
+					currentDayCount
+				) }
+			/>
+		);
+	}
 
-	const Footer = () => (
-		<SourceLink
-			className="googlesitekit-data-block__source"
-			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			href={ serviceURL }
-			external
-		/>
-	);
+	function Footer() {
+		return (
+			<SourceLink
+				className="googlesitekit-data-block__source"
+				name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				href={ serviceURL }
+				external
+			/>
+		);
+	}
 
 	if ( isLoading || isGatheringData === undefined ) {
 		return (

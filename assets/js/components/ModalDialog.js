@@ -32,15 +32,15 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	SpinnerButton,
+	Button,
 	Dialog,
-	DialogTitle,
 	DialogContent,
 	DialogFooter,
+	DialogTitle,
+	SpinnerButton,
 } from 'googlesitekit-components';
-import Link from './Link';
 
-const ModalDialog = ( {
+function ModalDialog( {
 	dialogActive,
 	handleDialog,
 	title,
@@ -51,7 +51,7 @@ const ModalDialog = ( {
 	dependentModules,
 	danger,
 	inProgress = false,
-} ) => {
+} ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
 	const hasProvides = !! ( provides && provides.length );
@@ -111,17 +111,18 @@ const ModalDialog = ( {
 				>
 					{ confirmButton || __( 'Disconnect', 'google-site-kit' ) }
 				</SpinnerButton>
-				<Link
+				<Button
 					className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
+					tertiary
 					onClick={ handleDialog }
 					disabled={ inProgress }
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }
-				</Link>
+				</Button>
 			</DialogFooter>
 		</Dialog>
 	);
-};
+}
 
 ModalDialog.displayName = 'Dialog';
 

@@ -46,7 +46,13 @@ import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
+	MODULES_ANALYTICS_4,
+} from '../../../analytics-4/datastore/constants';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -80,9 +86,17 @@ export default function SetupForm( { finishSetup } ) {
 			select( MODULES_ANALYTICS ).isDoingSubmitChanges() ||
 			select( CORE_LOCATION ).isNavigating()
 	);
+	const viewContext = useViewContext();
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS );
+
+	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			ENHANCED_MEASUREMENT_FORM,
+			ENHANCED_MEASUREMENT_ENABLED
+		)
+	);
 
 	const submitForm = useCallback(
 		async ( event ) => {
@@ -98,10 +112,22 @@ export default function SetupForm( { finishSetup } ) {
 			}
 
 			if ( ! error ) {
+				if ( isEnhancedMeasurementEnabled === true ) {
+					await trackEvent(
+						`${ viewContext }_analytics`,
+						'ga4_setup_enhanced_measurement_enabled'
+					);
+				}
 				finishSetup();
 			}
 		},
-		[ finishSetup, setValues, submitChanges ]
+		[
+			finishSetup,
+			isEnhancedMeasurementEnabled,
+			setValues,
+			submitChanges,
+			viewContext,
+		]
 	);
 
 	const gtmContainersResolved = useSelect( ( select ) =>

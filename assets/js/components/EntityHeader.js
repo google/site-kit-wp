@@ -44,7 +44,7 @@ import useDashboardType, {
 import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-const EntityHeader = () => {
+function EntityHeader() {
 	const viewContext = useViewContext();
 	const dashboardType = useDashboardType();
 	const currentEntityTitle = useSelect( ( select ) =>
@@ -140,6 +140,6 @@ const EntityHeader = () => {
 			</div>
 		</div>
 	);
-};
+}
 
 export default EntityHeader;

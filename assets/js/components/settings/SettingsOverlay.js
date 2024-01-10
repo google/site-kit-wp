@@ -32,27 +32,29 @@ import { __ } from '@wordpress/i18n';
  */
 import LockIcon from '../../../svg/icons/lock.svg';
 
-const SettingsOverlay = ( { compress } ) => (
-	<div
-		className={ classnames( 'googlesitekit-overlay', {
-			'googlesitekit-overlay--compress': compress,
-		} ) }
-	>
-		<div className="googlesitekit-overlay__wrapper">
-			<div className="googlesitekit-overlay__icon">
-				<LockIcon width="22" height="30" />
-			</div>
-			<h3
-				className="
+function SettingsOverlay( { compress } ) {
+	return (
+		<div
+			className={ classnames( 'googlesitekit-overlay', {
+				'googlesitekit-overlay--compress': compress,
+			} ) }
+		>
+			<div className="googlesitekit-overlay__wrapper">
+				<div className="googlesitekit-overlay__icon">
+					<LockIcon width="22" height="30" />
+				</div>
+				<h3
+					className="
 				googlesitekit-heading-2
 				googlesitekit-overlay__title
 			"
-			>
-				{ __( 'Section locked while editing', 'google-site-kit' ) }
-			</h3>
+				>
+					{ __( 'Section locked while editing', 'google-site-kit' ) }
+				</h3>
+			</div>
 		</div>
-	</div>
-);
+	);
+}
 
 SettingsOverlay.propTypes = {
 	compress: PropTypes.bool,

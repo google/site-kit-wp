@@ -24,11 +24,13 @@ import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<CoreSiteBannerNotifications />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<CoreSiteBannerNotifications />
+		</WithRegistrySetup>
+	);
+}
 
 const notification1 = {
 	id: 'test-notification',

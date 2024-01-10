@@ -157,11 +157,7 @@
 
 	.googlesitekit-publisher-win__actions {
 		display: flex;
-		gap: $grid-gap-phone;
-
-		@media (min-width: $bp-desktop) {
-			gap: $grid-gap-desktop;
-		}
+		gap: $grid-gap-phone / 2;
 	}
 
 	.googlesitekit-publisher-win__title-image-wrapper {

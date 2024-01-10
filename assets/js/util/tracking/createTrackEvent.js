@@ -2,7 +2,6 @@
  * Internal dependencies
  */
 import createDataLayerPush from './createDataLayerPush';
-import { enabledFeatures } from '../../features/index';
 
 /**
  * Returns a function which, when invoked tracks a single event.
@@ -36,16 +35,7 @@ export default function createTrackEvent(
 	 */
 	// eslint-disable-next-line require-await
 	return async function trackEvent( category, action, label, value ) {
-		const {
-			activeModules,
-			referenceSiteURL,
-			trackingEnabled,
-			trackingID,
-			userIDHash,
-			userRoles = [],
-			isAuthenticated,
-			pluginVersion,
-		} = config;
+		const { trackingEnabled } = config;
 
 		if ( ! trackingEnabled ) {
 			// Resolve immediately if tracking is disabled.
@@ -55,17 +45,10 @@ export default function createTrackEvent(
 		initializeSnippet();
 
 		const eventData = {
-			send_to: trackingID,
+			send_to: 'site_kit',
 			event_category: category,
 			event_label: label,
 			value,
-			dimension1: referenceSiteURL,
-			dimension2: userRoles.join( ',' ),
-			dimension3: userIDHash,
-			dimension4: pluginVersion || '',
-			dimension5: Array.from( enabledFeatures ).join( ',' ),
-			dimension6: activeModules.join( ',' ),
-			dimension7: isAuthenticated ? '1' : '0',
 		};
 
 		return new Promise( ( resolve ) => {

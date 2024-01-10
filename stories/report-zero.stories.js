@@ -27,7 +27,9 @@ import {
 import { createModuleStore } from '../assets/js/googlesitekit/modules/create-module-store';
 import ReportZero from '../assets/js/components/ReportZero';
 
-export const ReportZeroStory = () => <ReportZero moduleSlug="test-module" />;
+export function ReportZeroStory() {
+	return <ReportZero moduleSlug="test-module" />;
+}
 ReportZeroStory.storyName = 'Report Zero';
 ReportZeroStory.decorators = [
 	( Story ) => {

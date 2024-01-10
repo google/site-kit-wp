@@ -59,6 +59,7 @@ import {
 	getChartOptions,
 } from './utils';
 import { stringToDate, getDateString } from '../../util/date-range';
+import { getLocale } from '../../util';
 const { useDispatch, useSelect } = Data;
 
 export default function GoogleChart( props ) {
@@ -391,6 +392,7 @@ export default function GoogleChart( props ) {
 				<Chart
 					className="googlesitekit-chart__inner"
 					chartEvents={ combinedChartEvents }
+					chartLanguage={ getLocale() }
 					chartType={ chartType }
 					chartVersion="49"
 					data={ filteredData }

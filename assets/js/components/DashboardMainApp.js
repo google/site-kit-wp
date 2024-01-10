@@ -62,7 +62,6 @@ import {
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
-import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
 import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
@@ -72,12 +71,12 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../modules/analytics-4/datastore/constants';
 import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
+import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
+import OfflineNotification from './notifications/OfflineNotification';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
-
-	const keyMetricsEnabled = useFeature( 'keyMetrics' );
 
 	const viewOnlyDashboard = useViewOnly();
 
@@ -113,6 +112,7 @@ export default function DashboardMainApp() {
 		)
 	);
 	const hasReceivedGrantedScopes =
+		grantedScopes !== undefined &&
 		temporaryPersistedPermissionsError?.data?.scopes?.some( ( scope ) =>
 			grantedScopes.includes( scope )
 		);
@@ -122,13 +122,24 @@ export default function DashboardMainApp() {
 			// Render the current survey portal in 5 seconds after the initial rendering.
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
 		}
+	} );
 
-		if ( hasReceivedGrantedScopes ) {
+	useMonitorInternetConnection();
+
+	useEffect( () => {
+		if (
+			temporaryPersistedPermissionsError !== undefined &&
+			hasReceivedGrantedScopes
+		) {
 			setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
 				permissionsError: {},
 			} );
 		}
-	} );
+	}, [
+		hasReceivedGrantedScopes,
+		setValues,
+		temporaryPersistedPermissionsError,
+	] );
 
 	const createDimensionsAndUpdateForm = useCallback( async () => {
 		await createCustomDimensions();
@@ -139,7 +150,6 @@ export default function DashboardMainApp() {
 
 	useEffect( () => {
 		if (
-			keyMetricsEnabled &&
 			isKeyMetricsSetupCompleted &&
 			isGA4Connected &&
 			hasAnalyticsEditScope &&
@@ -156,7 +166,6 @@ export default function DashboardMainApp() {
 		createCustomDimensions,
 		hasAnalyticsEditScope,
 		isKeyMetricsSetupCompleted,
-		keyMetricsEnabled,
 		isGA4Connected,
 		setValues,
 		createDimensionsAndUpdateForm,
@@ -209,9 +218,8 @@ export default function DashboardMainApp() {
 		)
 	);
 
-	const isKeyMetricsWidgetHidden = useSelect(
-		( select ) =>
-			keyMetricsEnabled && select( CORE_USER ).isKeyMetricsWidgetHidden()
+	const isKeyMetricsWidgetHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
 	let lastWidgetAnchor = null;
@@ -238,17 +246,7 @@ export default function DashboardMainApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			{ /*
-				This isn't *strictly* required, but provides a safety net against
-				accidentally rendering the widget area if any child widgets accidentally
-				render when `keyMetricsEnabled` is false.
-
-				The keyMetricsEnabled check can be removed once the User Input feature is fully launched
-				and we remove this feature flag.
-
-				See: https://github.com/google/site-kit-wp/pull/6630#discussion_r1127229162
-			*/ }
-			{ keyMetricsEnabled && isKeyMetricsWidgetHidden !== true && (
+			{ isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
 					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
@@ -298,7 +296,9 @@ export default function DashboardMainApp() {
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
-			{ keyMetricsEnabled && <MetricsSelectionPanel /> }
+			<MetricsSelectionPanel />
+
+			<OfflineNotification />
 		</Fragment>
 	);
 }

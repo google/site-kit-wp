@@ -33,7 +33,7 @@ import { sprintf } from '@wordpress/i18n';
 import { numFmt } from '../../util';
 import ChangeArrow from '../ChangeArrow';
 
-const Change = ( { change, changeDataUnit, period, invertChangeColor } ) => {
+function Change( { change, changeDataUnit, period, invertChangeColor } ) {
 	let changeFormatted = change;
 
 	// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
@@ -74,7 +74,7 @@ const Change = ( { change, changeDataUnit, period, invertChangeColor } ) => {
 			</span>
 		</div>
 	);
-};
+}
 
 Change.propTypes = {
 	change: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),

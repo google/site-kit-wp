@@ -37,7 +37,9 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	'adSenseConnectCTA'
 )( AdSenseConnectCTAWidget );
 
-const Template = () => <WidgetWithComponentProps />;
+function Template() {
+	return <WidgetWithComponentProps />;
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';

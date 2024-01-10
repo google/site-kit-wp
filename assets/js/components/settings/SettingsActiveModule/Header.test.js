@@ -48,7 +48,7 @@ describe( 'Header', () => {
 	const history = createHashHistory();
 	let registry;
 
-	const HeaderAwareRouter = () => {
+	function HeaderAwareRouter() {
 		return (
 			<Switch>
 				<Route
@@ -61,7 +61,7 @@ describe( 'Header', () => {
 				</Route>
 			</Switch>
 		);
-	};
+	}
 
 	beforeEach( () => {
 		global.location.hash = '';

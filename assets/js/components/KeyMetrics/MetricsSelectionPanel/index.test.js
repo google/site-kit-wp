@@ -469,7 +469,6 @@ describe( 'MetricsSelectionPanel', () => {
 			const { container, getByText, findByLabelText, waitForRegistry } =
 				render( <MetricsSelectionPanel />, {
 					registry,
-					features: [ 'keyMetrics' ],
 				} );
 
 			await waitForRegistry();
@@ -499,7 +498,6 @@ describe( 'MetricsSelectionPanel', () => {
 			const { container, getByText, findByLabelText, waitForRegistry } =
 				render( <MetricsSelectionPanel />, {
 					registry,
-					features: [ 'keyMetrics' ],
 				} );
 
 			await waitForRegistry();
@@ -633,7 +631,6 @@ describe( 'MetricsSelectionPanel', () => {
 					<MetricsSelectionPanel />,
 					{
 						registry,
-						features: [ 'keyMetrics' ],
 					}
 				);
 
