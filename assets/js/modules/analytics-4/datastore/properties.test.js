@@ -1414,7 +1414,7 @@ describe( 'modules/analytics-4 properties', () => {
 				} );
 
 				const propertyCreateTimeInCache = await getItem(
-					`analytics4-properties-getPropertyCreateTime${ propertyID }`
+					`analytics4-properties-getPropertyCreateTime-${ propertyID }`
 				);
 
 				expect( propertyCreateTimeInCache.cacheHit ).toBe( true );
@@ -1435,7 +1435,7 @@ describe( 'modules/analytics-4 properties', () => {
 				};
 
 				await setItem(
-					`analytics4-properties-getPropertyCreateTime${ propertyID }`,
+					`analytics4-properties-getPropertyCreateTime-${ propertyID }`,
 					settings
 				);
 
