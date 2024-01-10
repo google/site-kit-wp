@@ -32,6 +32,7 @@ import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { isValidDateString } from '../../../util';
 import { stringToDate } from '../../../util/date-range/string-to-date';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 export const STRATEGY_CARTESIAN = 'cartesian';
 export const STRATEGY_ZIP = 'zip';
@@ -691,6 +692,10 @@ export function getAnalytics4MockResponse(
  * @param {Object}           options  Report options.
  */
 export function provideAnalytics4MockReport( registry, options ) {
+	registry
+		.dispatch( CORE_MODULES )
+		.receiveCheckModuleAccess( { access: true }, { slug: 'analytics-4' } );
+
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveGetReport( getAnalytics4MockResponse( options ), { options } );

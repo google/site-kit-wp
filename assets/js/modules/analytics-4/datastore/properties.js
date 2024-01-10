@@ -732,7 +732,9 @@ const baseResolvers = {
 		}
 
 		const cachedPropertyCreateTime = yield Data.commonActions.await(
-			getItem( `ga4-property-create-time-${ propertyID }` )
+			getItem(
+				`analytics4-properties-getPropertyCreateTime${ propertyID }`
+			)
 		);
 
 		if ( cachedPropertyCreateTime.cacheHit ) {
@@ -752,7 +754,7 @@ const baseResolvers = {
 		// Cache this value for 1 hour (the default cache time).
 		yield Data.commonActions.await(
 			setItem(
-				`ga4-property-create-time-${ propertyID }`,
+				`analytics4-properties-getPropertyCreateTime${ propertyID }`,
 				property?.createTime
 			)
 		);
