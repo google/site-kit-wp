@@ -154,6 +154,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget
+			className="googlesitekit-widget-key-metrics-cta"
 			noPadding
 			Footer={ () => (
 				<KeyMetricsCTAFooter onActionClick={ dismissCallback } />

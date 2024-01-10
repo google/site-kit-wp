@@ -136,10 +136,16 @@
 		}
 	}
 
-	.googlesitekit-widget-key-metrics-footer {
+	.googlesitekit-widget-key-metrics-cta {
 
-		button.googlesitekit-cta-link {
-			color: $c-surfaces-on-background-variant;
+		.googlesitekit-widget__footer {
+			padding-bottom: 6px;
+			padding-top: 6px;
+
+			@media (min-width: $bp-desktop) {
+				padding-bottom: 14px;
+				padding-top: 14px;
+			}
 		}
 	}
 
