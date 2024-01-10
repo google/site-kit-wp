@@ -191,10 +191,19 @@ const baseActions = {
 		invariant( accountID, 'accountID is required.' );
 
 		return ( function* () {
+			const { dispatch } = yield Data.commonActions.getRegistry();
+
 			const { response, error } =
 				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
 					accountID
 				);
+
+			if ( response ) {
+				// Refresh account summaries to load the new property.
+				yield dispatch(
+					MODULES_ANALYTICS_4
+				).fetchGetAccountSummaries();
+			}
 
 			return { response, error };
 		} )();
@@ -838,12 +847,14 @@ const baseSelectors = {
 	isLoadingPropertySummaries: createRegistrySelector(
 		( select ) =>
 			( state, { hasModuleAccess } ) => {
-				if (
-					hasModuleAccess &&
-					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getAccountSummaries'
-					)
-				) {
+				const loadedAccountSummaries =
+					hasModuleAccess === false
+						? false
+						: select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+								'getAccountSummaries'
+						  );
+
+				if ( ! loadedAccountSummaries ) {
 					return true;
 				}
 
