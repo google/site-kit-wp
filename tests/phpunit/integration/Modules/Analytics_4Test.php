@@ -215,7 +215,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_handle_provisioning_callback() {
+	public function test_provision_property_webdatastream() {
 		$account_id              = '12345678';
 		$property_id             = '1001';
 		$webdatastream_id        = '2001';
@@ -287,8 +287,6 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
-
 		$this->analytics->register();
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->authentication->get_oauth_client()->get_required_scopes()
@@ -316,7 +314,9 @@ class Analytics_4Test extends TestCase {
 			$options->get( Settings::OPTION )
 		);
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
+		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
+		$method->setAccessible( true );
+		$method->invoke( $this->analytics, $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -341,7 +341,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_handle_provisioning_callback__with_failing_container_lookup() {
+	public function test_provision_property_webdatastream__with_failing_container_lookup() {
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
@@ -430,8 +430,6 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
-
 		$this->analytics->register();
 		// Here we're providing all the required scopes which is necessary to make sure
 		// the Google API request is made now, for the purpose of testing an error.
@@ -461,7 +459,9 @@ class Analytics_4Test extends TestCase {
 			$options->get( Settings::OPTION )
 		);
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
+		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
+		$method->setAccessible( true );
+		$method->invoke( $this->analytics, $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertArrayIntersection(
 			array(
@@ -474,7 +474,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_handle_provisioning_callback__with_enhancedMeasurement_streamEnabled() {
+	public function test_provision_property_webdatastream__with_enhancedMeasurement_streamEnabled() {
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
@@ -549,8 +549,6 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
-
 		$this->analytics->register();
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
@@ -583,7 +581,10 @@ class Analytics_4Test extends TestCase {
 
 		$account_ticket = new Analytics\Account_Ticket();
 		$account_ticket->set_enhanced_measurement_stream_enabled( true );
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, $account_ticket );
+
+		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
+		$method->setAccessible( true );
+		$method->invoke( $this->analytics, $account_id, $account_ticket );
 
 		$this->assertEqualSetsWithIndex(
 			array(
