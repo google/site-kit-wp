@@ -263,7 +263,7 @@ class Site_Health_Status {
 			return sprintf(
 				'<li><strong>%s</strong>: %s</li>',
 				$module_name,
-				__( 'Tag detected and placed by Site Kit', 'google-site-kit' )
+				__( 'Tag detected and placed by Site Kit.', 'google-site-kit' )
 			);
 		} else {
 			if ( $tag_matcher->has_tag( $content ) ) {

@@ -39,8 +39,8 @@ class Tag_Matchers extends Module_Tag_Matchers implements Tag_Matchers_Interface
 
 		$subdomains = array( '', 'www\\.' );
 		foreach ( $subdomains as $subdomain ) {
-			$tag_matchers[] = "/<script\\s+[^>]*src=['|\"]https?:\/\/" . $subdomain . "googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|\"][^>]*><\/script>/i";
-			$tag_matchers[] = "/<script\\s+[^>]*src=['|\"]https?:\/\/" . $subdomain . "googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|\"][^\\/]*\/>/i";
+			$tag_matchers[] = "/<script\\s+[^>]*src=['|\"]https?:\\/\\/" . $subdomain . "googletagmanager\\.com\\/gtag\\/js\\?id=(G-[a-zA-Z0-9]+)['|\"][^>]*><\\/script>/i";
+			$tag_matchers[] = "/<script\\s+[^>]*src=['|\"]https?:\/\/" . $subdomain . "googletagmanager\\.com\\/gtag\\/js\\?id=(G-[a-zA-Z0-9]+)['|\"][^\\/]*\/>/i";
 		}
 
 		$funcs = array( '__gaTracker', 'ga', 'gtag' );
