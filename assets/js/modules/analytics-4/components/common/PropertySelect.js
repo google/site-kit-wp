@@ -75,9 +75,7 @@ export default function PropertySelect( props ) {
 		}
 
 		return (
-			select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries( {
-				hasModuleAccess,
-			} ) ||
+			select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries() ||
 			select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
 				hasModuleAccess,
 			} )

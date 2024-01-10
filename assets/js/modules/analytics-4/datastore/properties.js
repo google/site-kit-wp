@@ -840,32 +840,17 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}  state                Data store's state.
-	 * @param {Object}  args                 Arguments object.
-	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 * @return {boolean} TRUE if the properties summaries are currently being loaded, otherwise FALSE.
 	 */
-	isLoadingPropertySummaries: createRegistrySelector(
-		( select ) =>
-			( state, { hasModuleAccess } ) => {
-				const loadedAccountSummaries =
-					hasModuleAccess === false
-						? false
-						: select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-								'getAccountSummaries'
-						  );
-
-				if ( ! loadedAccountSummaries ) {
-					return true;
-				}
-
-				return (
-					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-					select(
-						MODULES_ANALYTICS
-					).hasFinishedSelectingAccount() === false
-				);
-			}
-	),
+	isLoadingPropertySummaries: createRegistrySelector( ( select ) => () => {
+		return (
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getAccountSummaries'
+			) ||
+			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
+		);
+	} ),
 };
 
 const store = Data.combineStores(
