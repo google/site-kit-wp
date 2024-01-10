@@ -74,9 +74,14 @@ export default function PropertySelect( props ) {
 			return false;
 		}
 
-		return select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries( {
-			hasModuleAccess,
-		} );
+		return (
+			select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries( {
+				hasModuleAccess,
+			} ) ||
+			select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
+				hasModuleAccess,
+			} )
+		);
 	} );
 
 	const viewContext = useViewContext();
