@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Core\Util;
 
+use Google\Site_Kit\Core\Modules\AdSense\Tag_Matchers as AdSense_Tag_Matchers;
+use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers as Analytics_Tag_Matchers;
+use Google\Site_Kit\Core\Modules\Tag_Manager\Tag_Matchers as Tag_Manager_Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
@@ -180,20 +183,10 @@ class Site_Health_Status {
 		$description = array();
 
 		foreach ( $active_modules as $module ) {
-			$module_name = $module->slug;
-			if ( 'adsense' === $module_name ) {
-				$module_name = 'AdSense';
-			}
-			if ( 'analytics-4' === $module_name ) {
-				$module_name = 'Analytics';
-			}
-			if ( 'tagmanager' === $module_name ) {
-				$module_name = 'Tag Manager';
-			}
+			$tag_found = $this->check_if_tag_exists( $module->slug, $response );
 
-			$search_string = 'Google ' . $module_name . ' snippet added by Site Kit';
-			if ( strpos( $response, $search_string ) !== false ) {
-				$description[] = "<li>{$module_name}: Tag detected and placed by Site Kit.</li>";
+			if ( $tag_found ) {
+				$description[] = $tag_found;
 			}
 		}
 
@@ -204,4 +197,47 @@ class Site_Health_Status {
 		return $result;
 	}
 
+	/**
+	 * Checks if tag exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $module_slug Module slug.
+	 * @param string $content     Content to search for the tags.
+	 * @return bool TRUE if tag is found, FALSE if not.
+	 */
+	protected function check_if_tag_exists( $module_slug, $content ) {
+		if ( 'adsense' === $module_slug ) {
+			$module_name = 'AdSense';
+			$tag_matcher = new AdSense_Tag_Matchers();
+		}
+		if ( 'analytics-4' === $module_slug ) {
+			$module_name = 'Analytics';
+			$tag_matcher = new Analytics_Tag_Matchers();
+		}
+		if ( 'tagmanager' === $module_slug ) {
+			$module_name = 'Tag Manager';
+			$tag_matcher = new Tag_Manager_Tag_Matchers();
+		}
+
+		$search_string = 'Google ' . $module_name . ' snippet added by Site Kit';
+
+		if ( strpos( $content, $search_string ) !== false ) {
+			return sprintf(
+				'<li>%s: %s</li>',
+				$module_name,
+				__( 'Tag detected and placed by Site Kit', 'google-site-kit' )
+			);
+		} else {
+			if ( $tag_matcher->has_tag( $content ) ) {
+				return sprintf(
+					'<li>%s: %s</li>',
+					$module_name,
+					__( 'Tag detected but could not verify that Site Kit placed the tag.', 'google-site-kit' )
+				);
+			}
+		}
+
+		return null;
+	}
 }
