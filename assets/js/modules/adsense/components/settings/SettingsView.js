@@ -114,14 +114,13 @@ export default function SettingsView() {
 	const autoAdsDisabledMessage = getAutoAdsDisabledMessage( autoAdsDisabled );
 
 	const loading = useSelect( ( select ) => {
-		// Ensure that `getUserInputSettings()` is called here in order to trigger its resolver, which we
-		// want to track for the loading state. Invoking the selector here rather than relying on one of
-		// the child components to call it avoids a brief flicker of the loaded state.
+		// Ensure that `getSettings()` is called here in order to trigger its resolver, which we
+		// want to track for the loading state.
 		select( MODULES_ADSENSE ).getSettings();
 
 		return select( MODULES_ADSENSE ).isResolving( 'getSettings', [] );
-		// return true;
 	} );
+
 	const hasExistingAdBlockingRecoveryTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasExistingAdBlockingRecoveryTag()
 	);
