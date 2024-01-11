@@ -201,14 +201,14 @@ export const EntityDashboardDataUnavailable = Template.bind( {} );
 EntityDashboardDataUnavailable.storyName = 'Data Unavailable';
 EntityDashboardDataUnavailable.args = {
 	setupRegistry: ( registry ) => {
-		allTrafficReportOptions.forEach( ( options ) => {
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveCheckModuleAccess(
-					{ access: true },
-					{ slug: 'analytics-4' }
-				);
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics-4' }
+			);
 
+		allTrafficReportOptions.forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport( {}, { options } );
@@ -235,20 +235,21 @@ EntityDashboardDataUnavailable.args = {
 };
 EntityDashboardDataUnavailable.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/DataUnavailable',
+	delay: 200,
 };
 
 export const EntityDashboardZeroData = Template.bind( {} );
 EntityDashboardZeroData.storyName = 'Zero Data';
 EntityDashboardZeroData.args = {
 	setupRegistry: ( registry ) => {
-		allTrafficReportOptions.forEach( ( options ) => {
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveCheckModuleAccess(
-					{ access: true },
-					{ slug: 'analytics-4' }
-				);
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics-4' }
+			);
 
+		allTrafficReportOptions.forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
@@ -282,6 +283,7 @@ EntityDashboardZeroData.args = {
 };
 EntityDashboardZeroData.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/ZeroData',
+	delay: 200,
 };
 
 export const EntityDashboardError = Template.bind( {} );

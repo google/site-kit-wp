@@ -204,14 +204,14 @@ export const MainDashboardDataUnavailable = Template.bind( {} );
 MainDashboardDataUnavailable.storyName = 'Data Unavailable';
 MainDashboardDataUnavailable.args = {
 	setupRegistry: ( registry ) => {
-		allTrafficReportOptions.forEach( ( options ) => {
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveCheckModuleAccess(
-					{ access: true },
-					{ slug: 'analytics-4' }
-				);
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics-4' }
+			);
 
+		allTrafficReportOptions.forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport( {}, { options } );
@@ -240,20 +240,21 @@ MainDashboardDataUnavailable.args = {
 };
 MainDashboardDataUnavailable.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/DataUnavailable',
+	delay: 200,
 };
 
 export const MainDashboardZeroData = Template.bind( {} );
 MainDashboardZeroData.storyName = 'Zero Data';
 MainDashboardZeroData.args = {
 	setupRegistry: ( registry ) => {
-		allTrafficReportOptions.forEach( ( options ) => {
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveCheckModuleAccess(
-					{ access: true },
-					{ slug: 'analytics-4' }
-				);
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics-4' }
+			);
 
+		allTrafficReportOptions.forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
@@ -287,6 +288,7 @@ MainDashboardZeroData.args = {
 };
 MainDashboardZeroData.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/ZeroData',
+	delay: 200,
 };
 
 export const MainDashboardError = Template.bind( {} );
