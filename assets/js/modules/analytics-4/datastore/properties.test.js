@@ -1383,7 +1383,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should cache the current property when fetched', async () => {
+			it( 'should cache the current property creation time when fetched', async () => {
 				fetchMock.get( propertyEndpoint, {
 					body: fixtures.properties[ 0 ],
 					status: 200,
@@ -1419,19 +1419,19 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should not make a request to the API if the property is cached', async () => {
+			it( 'should not make a request to the API if the property creation time is cached', async () => {
 				const propertyID = fixtures.properties[ 0 ]._id;
+				const expectedPropertyCreateTime = 123456789;
 
 				const settings = {
 					propertyID,
 					webDataStreamID: '1000',
 					measurementID: 'abcd',
-					propertyCreateTime: 123456789,
 				};
 
 				await setItem(
 					`analytics4-properties-getPropertyCreateTime-${ propertyID }`,
-					settings
+					expectedPropertyCreateTime
 				);
 
 				provideUserAuthentication( registry );
@@ -1449,9 +1449,7 @@ describe( 'modules/analytics-4 properties', () => {
 				const propertyCreateTime = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getPropertyCreateTime();
-				expect( propertyCreateTime ).toBe(
-					settings.propertyCreateTime
-				);
+				expect( propertyCreateTime ).toBe( expectedPropertyCreateTime );
 				expect( fetchMock ).toHaveFetchedTimes( 0 );
 			} );
 
