@@ -43,7 +43,6 @@ import {
 } from './constants';
 import * as fixtures from './__fixtures__';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -1340,13 +1339,6 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'getPropertyCreateTime', () => {
 			it( 'should use a resolver to fetch the current property if create time is not set yet', async () => {
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveCheckModuleAccess(
-						{ access: true },
-						{ slug: 'analytics-4' }
-					);
-
 				fetchMock.get( propertyEndpoint, {
 					body: fixtures.properties[ 0 ],
 					status: 200,
@@ -1382,13 +1374,6 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should cache the current property when fetched', async () => {
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveCheckModuleAccess(
-						{ access: true },
-						{ slug: 'analytics-4' }
-					);
-
 				fetchMock.get( propertyEndpoint, {
 					body: fixtures.properties[ 0 ],
 					status: 200,

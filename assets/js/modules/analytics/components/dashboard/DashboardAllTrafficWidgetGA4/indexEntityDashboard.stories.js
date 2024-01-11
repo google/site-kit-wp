@@ -37,7 +37,6 @@ import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants
 import * as __fixtures__ from '../../../../analytics-4/datastore/__fixtures__';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from '.';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 
 function limitResponseToSingleDate( analyticsResponse ) {
 	const findFirstDateRangeRow = ( dateRange ) =>
@@ -201,13 +200,6 @@ export const EntityDashboardDataUnavailable = Template.bind( {} );
 EntityDashboardDataUnavailable.storyName = 'Data Unavailable';
 EntityDashboardDataUnavailable.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveCheckModuleAccess(
-				{ access: true },
-				{ slug: 'analytics-4' }
-			);
-
 		allTrafficReportOptions.forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -235,20 +227,12 @@ EntityDashboardDataUnavailable.args = {
 };
 EntityDashboardDataUnavailable.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/DataUnavailable',
-	delay: 200,
 };
 
 export const EntityDashboardZeroData = Template.bind( {} );
 EntityDashboardZeroData.storyName = 'Zero Data';
 EntityDashboardZeroData.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveCheckModuleAccess(
-				{ access: true },
-				{ slug: 'analytics-4' }
-			);
-
 		allTrafficReportOptions.forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -283,7 +267,6 @@ EntityDashboardZeroData.args = {
 };
 EntityDashboardZeroData.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/ZeroData',
-	delay: 200,
 };
 
 export const EntityDashboardError = Template.bind( {} );
@@ -315,13 +298,6 @@ EntityDashboardOneRowOfData.storyName = 'One row of data';
 EntityDashboardOneRowOfData.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.slice( 0, 3 ).forEach( ( options ) => {
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveCheckModuleAccess(
-					{ access: true },
-					{ slug: 'analytics-4' }
-				);
-
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
