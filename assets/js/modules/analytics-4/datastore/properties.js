@@ -710,6 +710,12 @@ const baseResolvers = {
 	},
 	*getPropertyCreateTime() {
 		const registry = yield Data.commonActions.getRegistry();
+		// Ensure settings are available to select.
+		yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getSettings()
+		);
 
 		const propertyID = registry
 			.select( MODULES_ANALYTICS_4 )
