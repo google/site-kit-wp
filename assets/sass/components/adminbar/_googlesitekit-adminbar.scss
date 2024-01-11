@@ -43,6 +43,7 @@
 	}
 
 	.googlesitekit-plugin .googlesitekit-adminbar {
+		@include elevation-3;
 		background: $c-base;
 		color: $c-black;
 		left: 0;
