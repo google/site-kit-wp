@@ -65,8 +65,8 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
-	const isLoadingProperties = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
+	const isLoadingPropertySummaries = useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries( {
 			hasModuleAccess: hasAnalytics4Access,
 		} );
 	} );
@@ -78,7 +78,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 	} );
 
 	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
-		if ( isLoadingProperties || isLoadingWebDataStreams ) {
+		if ( isLoadingPropertySummaries || isLoadingWebDataStreams ) {
 			return undefined;
 		}
 
@@ -97,7 +97,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
 		if (
-			isLoadingProperties ||
+			isLoadingPropertySummaries ||
 			isLoadingWebDataStreams ||
 			isEnhancedMeasurementStreamEnabled === undefined
 		) {
@@ -123,7 +123,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		if (
 			! isValidPropertySelection( propertyID ) ||
 			! isValidWebDataStreamSelection( webDataStreamID ) ||
-			isLoadingProperties ||
+			isLoadingPropertySummaries ||
 			isLoadingWebDataStreams
 		) {
 			return true;

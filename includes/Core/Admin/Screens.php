@@ -462,16 +462,14 @@ final class Screens {
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-			$screens[] = new Screen(
-				self::PREFIX . 'user-input',
-				array(
-					'title'       => __( 'User Input', 'google-site-kit' ),
-					'capability'  => Permissions::MANAGE_OPTIONS,
-					'parent_slug' => self::PARENT_SLUG_NULL,
-				)
-			);
-		}
+		$screens[] = new Screen(
+			self::PREFIX . 'user-input',
+			array(
+				'title'       => __( 'User Input', 'google-site-kit' ),
+				'capability'  => Permissions::MANAGE_OPTIONS,
+				'parent_slug' => self::PARENT_SLUG_NULL,
+			)
+		);
 
 		$screens[] = new Screen(
 			self::PREFIX . 'ad-blocking-recovery',

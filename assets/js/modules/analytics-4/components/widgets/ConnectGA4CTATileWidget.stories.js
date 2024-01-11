@@ -43,9 +43,6 @@ Default.scenario = {
 	label: 'KeyMetrics/ConnectGA4CTATileWidget',
 	delay: 250,
 };
-Default.parameters = {
-	features: [ 'keyMetrics' ],
-};
 
 export default {
 	title: 'Key Metrics/ConnectGA4CTATileWidget',

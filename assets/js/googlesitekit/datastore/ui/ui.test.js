@@ -34,7 +34,7 @@ describe( 'core/ui store', () => {
 			it( 'increments the value of core/ui useInViewResetCount', async () => {
 				const resetCount = registry
 					.select( CORE_UI )
-					.getInViewResetHook();
+					.getInViewResetCount();
 
 				// The reset count starts at zero.
 				expect( resetCount ).toBe( 0 );
@@ -43,9 +43,26 @@ describe( 'core/ui store', () => {
 
 				const updatedResetCount = registry
 					.select( CORE_UI )
-					.getInViewResetHook();
+					.getInViewResetCount();
 
 				expect( updatedResetCount ).toBe( 1 );
+			} );
+		} );
+
+		describe( 'setIsOnline', () => {
+			it( 'sets the isOnline value', async () => {
+				const isOnline = registry.select( CORE_UI ).getIsOnline();
+
+				// isOnline has initial state set to true.
+				expect( isOnline ).toBe( true );
+
+				await registry.dispatch( CORE_UI ).setIsOnline( false );
+
+				const updatedIsOnline = registry
+					.select( CORE_UI )
+					.getIsOnline();
+
+				expect( updatedIsOnline ).toBe( false );
 			} );
 		} );
 
@@ -253,11 +270,11 @@ describe( 'core/ui store', () => {
 			} );
 		} );
 
-		describe( 'getInViewResetHook', () => {
+		describe( 'getInViewResetCount', () => {
 			it( 'returns a specific key in state', () => {
 				const resetCount = registry
 					.select( CORE_UI )
-					.getInViewResetHook();
+					.getInViewResetCount();
 
 				// The reset count starts at zero.
 				expect( resetCount ).toBe( 0 );
@@ -268,9 +285,26 @@ describe( 'core/ui store', () => {
 
 				const updatedResetCount = registry
 					.select( CORE_UI )
-					.getInViewResetHook();
+					.getInViewResetCount();
 
 				expect( updatedResetCount ).toBe( 2 );
+			} );
+		} );
+
+		describe( 'getIsOnline', () => {
+			it( 'returns isOnline value from the state', () => {
+				const isOnline = registry.select( CORE_UI ).getIsOnline();
+
+				// isOnline has initial state set to true.
+				expect( isOnline ).toBe( true );
+
+				registry.dispatch( CORE_UI ).setValue( 'isOnline', false );
+
+				const updatedIsOnline = registry
+					.select( CORE_UI )
+					.getIsOnline();
+
+				expect( updatedIsOnline ).toBe( false );
 			} );
 		} );
 	} );

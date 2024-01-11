@@ -31,21 +31,14 @@ import {
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '../../datastore/__fixtures__';
-import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import * as fixtures from '../../../analytics-4/datastore/__fixtures__';
+import * as uaFixtures from '../../../analytics/datastore/__fixtures__';
 
-const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
-const properties = [
-	{
-		...fixtures.accountsPropertiesProfiles.properties[ 0 ],
-		websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-	},
-	{
-		...fixtures.accountsPropertiesProfiles.properties[ 1 ],
-	},
-];
-
-const accountID = accounts[ 0 ].id;
+const { accountSummaries, webDataStreamsBatch } = fixtures;
+const accounts = accountSummaries;
+const properties = accounts[ 1 ].propertySummaries;
+const accountID = accounts[ 1 ]._id;
+const propertyID = properties[ 0 ]._id;
 
 function Template( { setupRegistry = () => {}, ...args } ) {
 	return (
@@ -84,12 +77,19 @@ export const PostGA4AutoSwitch = Template.bind( null );
 PostGA4AutoSwitch.storyName = 'Settings post GA4 auto-switch';
 PostGA4AutoSwitch.args = {
 	setupRegistry: ( registry ) => {
+		const uaPropertyID = `UA-${ propertyID }-1`;
 		// Ensure UA is in a connected state so that the Dashboard View section would ordinarily be shown.
-		registry.dispatch( MODULES_ANALYTICS ).selectProperty(
-			properties[ 0 ].id,
-			// eslint-disable-next-line sitekit/acronym-case
-			properties[ 0 ].internalWebPropertyId
-		);
+		registry.dispatch( MODULES_ANALYTICS ).selectProperty( uaPropertyID );
+
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProfiles(
+				uaFixtures.accountsPropertiesProfiles.profiles,
+				{
+					accountID,
+					propertyID: uaPropertyID,
+				}
+			);
 
 		// Set the reference date to the GA4 auto-switch date, to demonstrate that the Dashboard View section is hidden
 		// in this case.
@@ -128,16 +128,21 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetExistingTag( null );
 				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProperties( [], { accountID } );
+				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( ga4Fixtures.properties, {
-						accountID,
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( properties[ 0 ], {
+						propertyID,
 					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreams( ga4Fixtures.webDataStreams, {
-						propertyID: ga4Fixtures.properties[ 0 ]._id,
+					.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+						propertyIDs: [ propertyID ],
 					} );
-
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					useSnippet: true,
 					canUseSnippet: true,
@@ -145,25 +150,6 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetAccounts( accounts );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProperties( properties, { accountID } );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProfiles(
-						fixtures.accountsPropertiesProfiles.profiles,
-						{ accountID, propertyID: properties[ 0 ].id }
-					);
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProfiles(
-						fixtures.accountsPropertiesProfiles.profiles,
-						{ accountID, propertyID: properties[ 1 ].id }
-					);
-
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );

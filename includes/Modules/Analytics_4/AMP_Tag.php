@@ -35,7 +35,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	/**
 	 * Home domain name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 * @var string
 	 */
 	private $home_domain;
@@ -180,7 +180,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	/**
 	 * Sets the current home domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param string $domain Domain name.
 	 */

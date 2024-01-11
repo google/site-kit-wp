@@ -66,9 +66,6 @@ StartUserInput.args = {
 		] );
 	},
 };
-StartUserInput.parameters = {
-	features: [ 'keyMetrics' ],
-};
 
 export const StartUserInputError = Template.bind( {} );
 StartUserInputError.storyName = 'Start – with error [User Input]';
@@ -86,9 +83,6 @@ StartUserInputError.args = {
 			},
 		] );
 	},
-};
-StartUserInputError.parameters = {
-	features: [ 'keyMetrics' ],
 };
 
 export const DisconnectedURLMismatch = Template.bind( {} );
@@ -119,9 +113,6 @@ DisconnectedURLMismatchUserInput.args = {
 			},
 		] );
 	},
-};
-DisconnectedURLMismatchUserInput.parameters = {
-	features: [ 'keyMetrics' ],
 };
 
 export const AnalyticsActive = Template.bind( {} );

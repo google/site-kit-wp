@@ -30,7 +30,6 @@ import { Button, ProgressBar } from 'googlesitekit-components';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import Link from '../../../../components/Link';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -92,9 +91,9 @@ export default function AccountCreate() {
 				</Button>
 
 				<div className="googlesitekit-setup-module__sub-action">
-					<Link onClick={ refetchAccountsHandler }>
+					<Button tertiary onClick={ refetchAccountsHandler }>
 						{ __( 'Re-fetch My Account', 'google-site-kit' ) }
-					</Link>
+					</Button>
 				</div>
 			</div>
 		</div>

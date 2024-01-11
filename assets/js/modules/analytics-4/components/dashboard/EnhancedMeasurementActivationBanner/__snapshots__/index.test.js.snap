@@ -72,10 +72,11 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
               </span>
             </button>
             <button
-              class="googlesitekit-cta-link"
+              class="mdc-button mdc-button--tertiary"
+              target="_self"
             >
               <span
-                class="googlesitekit-cta-link__contents"
+                class="mdc-button__label"
               >
                 Maybe later
               </span>

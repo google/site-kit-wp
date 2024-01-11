@@ -77,11 +77,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array An array of keys for view-only settings.
 	 */
 	public function get_view_only_keys() {
-		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-			return array( 'availableCustomDimensions' );
-		}
-
-		return array();
+		return array( 'availableCustomDimensions' );
 	}
 
 	/**
@@ -154,7 +150,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					}
 				}
 
-				if ( Feature_Flags::enabled( 'keyMetrics' ) && isset( $option['availableCustomDimensions'] ) ) {
+				if ( isset( $option['availableCustomDimensions'] ) ) {
 					if ( is_array( $option['availableCustomDimensions'] ) ) {
 						$valid_dimensions = array_filter(
 							$option['availableCustomDimensions'],
@@ -182,7 +178,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * before migrating to the singular Analytics module. As some settings were defined
 	 * in old `Analtyics` module and re-used here.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param array $option Analytics 4 settings.
 	 * @return array Missing Analytics 4 settings array, or empty array if no setting is missing.

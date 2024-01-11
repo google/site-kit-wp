@@ -91,6 +91,8 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 
 		await page.waitForNavigation();
 
+		await page.waitForSelector( '#js-googlesitekit-main-dashboard' );
+
 		await expect( page ).toMatchElement(
 			'#js-googlesitekit-main-dashboard'
 		);
@@ -129,6 +131,8 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		);
 
 		await page.waitForNavigation();
+
+		await page.waitForSelector( '#js-googlesitekit-main-dashboard' );
 
 		await expect( page ).toMatchElement(
 			'#js-googlesitekit-main-dashboard'

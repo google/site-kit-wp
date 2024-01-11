@@ -41,5 +41,20 @@
       "updateTime": "2015-05-12T12:31:07Z",
       "displayName": "Main datastream"
     }
+  ],
+  "1122334455": [
+    {
+      "_id": "4000",
+      "_propertyID": "1122334455",
+      "name": "properties/1122334455/dataStreams/4000",
+      "type": "WEB_DATA_STREAM",
+      "webStreamData": {
+        "measurementId": "G-155BC2366E",
+        "defaultUri": "http://example.com"
+      },
+      "createTime": "2015-05-12T12:31:07Z",
+      "updateTime": "2015-05-12T12:31:07Z",
+      "displayName": "Main datastream"
+    }
   ]
 }
