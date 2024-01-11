@@ -191,10 +191,19 @@ const baseActions = {
 		invariant( accountID, 'accountID is required.' );
 
 		return ( function* () {
+			const { dispatch } = yield Data.commonActions.getRegistry();
+
 			const { response, error } =
 				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
 					accountID
 				);
+
+			if ( response ) {
+				// Refresh account summaries to load the new property.
+				yield dispatch(
+					MODULES_ANALYTICS_4
+				).fetchGetAccountSummaries();
+			}
 
 			return { response, error };
 		} )();
@@ -831,30 +840,17 @@ const baseSelectors = {
 	 *
 	 * @since 1.118.0
 	 *
-	 * @param {Object}  state                Data store's state.
-	 * @param {Object}  args                 Arguments object.
-	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 * @return {boolean} TRUE if the properties summaries are currently being loaded, otherwise FALSE.
 	 */
-	isLoadingPropertySummaries: createRegistrySelector(
-		( select ) =>
-			( state, { hasModuleAccess } ) => {
-				if (
-					hasModuleAccess &&
-					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getAccountSummaries'
-					)
-				) {
-					return true;
-				}
-
-				return (
-					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-					select(
-						MODULES_ANALYTICS
-					).hasFinishedSelectingAccount() === false
-				);
-			}
-	),
+	isLoadingPropertySummaries: createRegistrySelector( ( select ) => () => {
+		return (
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getAccountSummaries'
+			) ||
+			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
+		);
+	} ),
 };
 
 const store = Data.combineStores(

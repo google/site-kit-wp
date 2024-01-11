@@ -96,6 +96,16 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+					),
+					{
+						body: [],
+						status: 200,
+					}
+				);
+
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.createProperty( accountID );
@@ -1480,7 +1490,6 @@ describe( 'modules/analytics-4 properties', () => {
 			const properties = accounts[ 1 ].propertySummaries;
 			const accountID = accounts[ 1 ]._id;
 			const propertyID = properties[ 0 ]._id;
-			const hasModuleAccess = true;
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
@@ -1515,9 +1524,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingPropertySummaries( {
-							hasModuleAccess,
-						} )
+						.isLoadingPropertySummaries()
 				).toBe( false );
 			} );
 
@@ -1538,9 +1545,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingPropertySummaries( {
-							hasModuleAccess,
-						} )
+						.isLoadingPropertySummaries()
 				).toBe( true );
 			} );
 
@@ -1552,9 +1557,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingPropertySummaries( {
-							hasModuleAccess,
-						} )
+						.isLoadingPropertySummaries()
 				).toBe( true );
 			} );
 
@@ -1579,9 +1582,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingPropertySummaries( {
-							hasModuleAccess,
-						} )
+						.isLoadingPropertySummaries()
 				).toBe( false );
 
 				registry
@@ -1591,9 +1592,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingPropertySummaries( {
-							hasModuleAccess,
-						} )
+						.isLoadingPropertySummaries()
 				).toBe( true );
 			} );
 		} );

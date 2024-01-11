@@ -134,6 +134,15 @@ describe( 'SetupBanner', () => {
 			body: withConnected( 'analytics', 'analytics-4' ),
 			status: 200,
 		} );
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+			),
+			{
+				body: [],
+				status: 200,
+			}
+		);
 
 		const onSubmitSuccess = jest.fn();
 
@@ -196,6 +205,15 @@ describe( 'SetupBanner', () => {
 			body: withConnected( 'analytics', 'analytics-4' ),
 			status: 200,
 		} );
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+			),
+			{
+				body: [],
+				status: 200,
+			}
+		);
 		const onSubmitSuccess = jest.fn();
 
 		const { dispatch } = registry;
