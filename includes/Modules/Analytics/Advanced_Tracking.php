@@ -65,7 +65,7 @@ final class Advanced_Tracking {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.18.0.
-	 * @since n.e.x.t Renamed hooks to target Analytics 4 module.
+	 * @since 1.118.0 Renamed hooks to target Analytics 4 module.
 	 */
 	public function register() {
 		add_action(

@@ -178,7 +178,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * before migrating to the singular Analytics module. As some settings were defined
 	 * in old `Analtyics` module and re-used here.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param array $option Analytics 4 settings.
 	 * @return array Missing Analytics 4 settings array, or empty array if no setting is missing.

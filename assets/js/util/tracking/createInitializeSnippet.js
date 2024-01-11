@@ -31,7 +31,7 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 	/**
 	 * Injects the necessary script tag if not present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @return {boolean|Object} Tag src as scriptTagSrc property.
 	 */

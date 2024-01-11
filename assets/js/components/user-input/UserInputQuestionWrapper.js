@@ -36,7 +36,6 @@ import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import ErrorNotice from '../ErrorNotice';
 import CancelUserInputButton from './CancelUserInputButton';
-import Link from '../Link';
 import { hasErrorForAnswer } from './util/validation';
 const { useSelect } = Data;
 
@@ -90,12 +89,13 @@ export default function UserInputQuestionWrapper( props ) {
 						</Button>
 					) }
 					{ back && (
-						<Link
+						<Button
+							tertiary
 							className="googlesitekit-user-input__buttons--back"
 							onClick={ back }
 						>
 							{ __( 'Back', 'google-site-kit' ) }
-						</Link>
+						</Button>
 					) }
 				</div>
 				<div className="googlesitekit-user-input__footer-cancel">
