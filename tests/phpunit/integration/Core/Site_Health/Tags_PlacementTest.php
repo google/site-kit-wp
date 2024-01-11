@@ -1,31 +1,42 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Util\Site_Health_StatusTest
+ * Class Google\Site_Kit\Tests\Core\Site_Health\Tags_PlacementTest
  *
- * @package   Google\Site_Kit\Tests\Core\Util
+ * @package   Google\Site_Kit\Tests\Core\Site_Health
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Util;
+namespace Google\Site_Kit\Tests\Core\Site_Health;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Site_Health\Tags_Placement;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Site_Health_Status;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Util
  */
-class Site_Health_StatusTest extends TestCase {
+class Tags_PlacementTest extends TestCase {
 
 	protected $original_wp_version;
 
+	protected $context;
+
 	protected $modules;
+
+	protected $options;
+
+	protected $user_options;
+
+	protected $authentication;
+
+	protected $analytics_4;
 
 	public function set_up() {
 		parent::set_up();
@@ -33,6 +44,13 @@ class Site_Health_StatusTest extends TestCase {
 		global $wp_version;
 
 		$this->original_wp_version = $wp_version;
+
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options        = new Options( $this->context );
+		$this->user_options   = new User_Options( $this->context );
+		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->modules        = new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->analytics_4    = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
 	}
 
 	public function tear_down() {
@@ -43,13 +61,7 @@ class Site_Health_StatusTest extends TestCase {
 	}
 
 	public function new_site_status() {
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options        = new Options( $context );
-		$user_options   = new User_Options( $context );
-		$authentication = new Authentication( $context, $options, $user_options );
-		$this->modules  = new Modules( $context, $options, $user_options, $authentication );
-
-		return new Site_Health_Status( $this->modules );
+		return new Tags_Placement( $this->modules );
 	}
 
 	public function test_register() {
@@ -161,7 +173,7 @@ class Site_Health_StatusTest extends TestCase {
 		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
 		$check_if_tag_exists->setAccessible( true );
 
-		$result = $check_if_tag_exists->invokeArgs( $site_status, array( 'analytics-4', 'body content' ) );
+		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, 'body content' ) );
 
 		$this->assertEquals( '<li><strong>Analytics</strong>: No tag detected.</li>', $result );
 	}
@@ -188,7 +200,7 @@ class Site_Health_StatusTest extends TestCase {
 		";
 		// phpcs:enable
 
-		$result = $check_if_tag_exists->invokeArgs( $site_status, array( 'analytics-4', $response_body ) );
+		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 
 		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected and placed by Site Kit.</li>', $result );
 	}
@@ -214,7 +226,7 @@ class Site_Health_StatusTest extends TestCase {
 		";
 		// phpcs:enable
 
-		$result = $check_if_tag_exists->invokeArgs( $site_status, array( 'analytics-4', $response_body ) );
+		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 
 		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected but could not verify that Site Kit placed the tag.</li>', $result );
 	}

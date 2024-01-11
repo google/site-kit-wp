@@ -21,6 +21,10 @@ use Google\Site_Kit\Core\Tags\Tag_Matchers_Interface;
  */
 abstract class Module_Tag_Matchers implements Tag_Matchers_Interface {
 
+	const NO_TAG_FOUND             = 0;
+	const TAG_EXISTS               = 1;
+	const TAG_EXISTS_WITH_COMMENTS = 2;
+
 	/**
 	 * Holds array of regex tag matchers.
 	 *
@@ -28,28 +32,6 @@ abstract class Module_Tag_Matchers implements Tag_Matchers_Interface {
 	 *
 	 * @return array Array of regex matchers.
 	 */
-	public function regex_matchers() {
-		return array();
-	}
+	abstract public function regex_matchers();
 
-	/**
-	 * Checks if module tag is found in the provided content.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $content Content to search for the tags.
-	 * @return bool TRUE if tag is found, FALSE if not.
-	 */
-	public function has_tag( $content ) {
-		$tag_matchers = $this->regex_matchers();
-
-		$matches = array_filter(
-			$tag_matchers,
-			function( $pattern ) use ( $content ) {
-				return preg_match( $pattern, $content );
-			}
-		);
-
-		return ! empty( $matches );
-	}
 }

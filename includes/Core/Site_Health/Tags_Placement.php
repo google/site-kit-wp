@@ -1,24 +1,21 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\Site_Health_Status
+ * Class Google\Site_Kit\Core\Site_Health\Tags_Placement
  *
- * @package   Google\Site_Kit\Core\Util
+ * @package   Google\Site_Kit\Core\Site_Health
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Util;
+namespace Google\Site_Kit\Core\Site_Health;
 
-use Google\Site_Kit\Core\Modules\AdSense\Tag_Matchers as AdSense_Tag_Matchers;
-use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers as Analytics_Tag_Matchers;
-use Google\Site_Kit\Core\Modules\Tag_Manager\Tag_Matchers as Tag_Manager_Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
-use Google\Site_Kit\Modules\AdSense;
-use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Tag_Manager;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_REST_Server;
 
 /**
@@ -28,7 +25,7 @@ use WP_REST_Server;
  * @access private
  * @ignore
  */
-class Site_Health_Status {
+class Tags_Placement {
 	use Method_Proxy_Trait;
 
 	/**
@@ -72,7 +69,7 @@ class Site_Health_Status {
 
 				if ( version_compare( $wp_version, '5.6', '<' ) ) {
 					$tests['direct']['tag_placement'] = array(
-						'label' => __( 'Tag Placement', 'google-site-kit' ),
+						'label' => __( 'Tags Placement', 'google-site-kit' ),
 						'test'  => $this->get_method_proxy( 'tags_placement_test' ),
 					);
 
@@ -80,7 +77,7 @@ class Site_Health_Status {
 				}
 
 				$tests['async']['tag_placement'] = array(
-					'label'             => __( 'Tag Placement', 'google-site-kit' ),
+					'label'             => __( 'Tags Placement', 'google-site-kit' ),
 					'test'              => rest_url( 'google-site-kit/v1/core/site/data/tags-placement-test' ),
 					'has_rest'          => true,
 					'async_direct_test' => $this->get_method_proxy( 'tags_placement_test' ),
@@ -105,9 +102,7 @@ class Site_Health_Status {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
-							return $this->tags_placement_test();
-						},
+						'callback'            => $this->get_method_proxy( 'tags_placement_test' ),
 						'permission_callback' => function () {
 							return current_user_can( Permissions::SETUP );
 						},
@@ -147,7 +142,24 @@ class Site_Health_Status {
 			return $result;
 		}
 
-		$response = wp_remote_get( site_url() ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+		$active_modules = $this->get_active_modules();
+		if ( empty( $active_modules ) ) {
+			$result['description'] = sprintf(
+				'<p>%s</p>',
+				__( 'Tag status not available: AdSense, Tag Manager, and Analytics modules are not connected.', 'google-site-kit' )
+			);
+
+			return $result;
+		}
+
+		// Generate random page name that will result in 404 page, to prevent receiving
+		// cached page and target page with smaller content.
+		$random_page = substr(
+			str_shuffle( '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' ),
+			0,
+			10
+		);
+		$response    = wp_remote_get( site_url( $random_page ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 
 		if ( is_wp_error( $response ) ) {
 			$result['description'] = sprintf(
@@ -160,21 +172,9 @@ class Site_Health_Status {
 
 		$response = wp_remote_retrieve_body( $response );
 
-		$active_modules = $this->get_active_modules();
-
-		if ( empty( $active_modules ) ) {
-			$result['description'] = sprintf(
-				'<p>%s</p>',
-				__( 'Tag status not available: AdSense, Tag Manager, and Analytics modules are not connected.', 'google-site-kit' )
-			);
-
-			return $result;
-		}
-
 		$description = array();
-
 		foreach ( $active_modules as $module ) {
-			$tag_found = $this->check_if_tag_exists( $module->slug, $response );
+			$tag_found = $this->check_if_tag_exists( $module, $response );
 
 			if ( $tag_found ) {
 				$description[] = $tag_found;
@@ -202,26 +202,11 @@ class Site_Health_Status {
 		$active_modules = array_filter(
 			$active_modules,
 			function( $module ) {
-				return in_array(
-					$module->slug,
-					array(
-						Analytics_4::MODULE_SLUG,
-						AdSense::MODULE_SLUG,
-						Tag_Manager::MODULE_SLUG,
-					),
-					true
-				);
+				return $module instanceof Module_With_Tag;
 			}
 		);
 
-		/**
-		 * Filtered list of active modules.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param array $active_modules An array of active module instances.
-		 */
-		return apply_filters( 'googlesitekit_site_status_get_active_modules', $active_modules );
+		return $active_modules;
 	}
 
 	/**
@@ -229,56 +214,42 @@ class Site_Health_Status {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $module_slug Module slug.
-	 * @param string $content     Content to search for the tags.
+	 * @param Module_With_Tag $module  Module instance.
+	 * @param string          $content Content to search for the tags.
 	 * @return bool TRUE if tag is found, FALSE if not.
 	 */
-	protected function check_if_tag_exists( $module_slug, $content ) {
-		if ( 'adsense' === $module_slug ) {
-			$module_name = 'AdSense';
-			$tag_matcher = new AdSense_Tag_Matchers();
-		}
-		if ( 'analytics-4' === $module_slug ) {
-			$module_name = 'Analytics';
-			$tag_matcher = new Analytics_Tag_Matchers();
-		}
-		if ( 'tagmanager' === $module_slug ) {
-			$module_name = 'Tag Manager';
-			$tag_matcher = new Tag_Manager_Tag_Matchers();
-		}
+	protected function check_if_tag_exists( $module, $content ) {
+		$check_tag   = $module->has_tag( $content );
+		$module_name = $module->get_module_name_from_slug();
 
-		$search_string = 'Google ' . $module_name . ' snippet added by Site Kit';
-		/**
-		 * Filters the search string used to check if a specific Google service tag exists in the content.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param string $search_string The initial search string constructed for tag detection.
-		 * @param string $module_slug   The slug of the module whose tag is being checked.
-		 * @param string $content       The content in which the tag is being searched for.
-		 */
-		$search_string = apply_filters( 'googlesitekit_site_status_check_if_tag_exists', $search_string, $module_slug, $content );
+		switch ( $check_tag ) {
+			case Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS:
+				return sprintf(
+					'<li><strong>%s</strong>: %s</li>',
+					$module_name,
+					__( 'Tag detected and placed by Site Kit.', 'google-site-kit' )
+				);
 
-		if ( strpos( $content, $search_string ) !== false ) {
-			return sprintf(
-				'<li><strong>%s</strong>: %s</li>',
-				$module_name,
-				__( 'Tag detected and placed by Site Kit.', 'google-site-kit' )
-			);
-		} else {
-			if ( $tag_matcher->has_tag( $content ) ) {
+			case Module_Tag_Matchers::TAG_EXISTS:
 				return sprintf(
 					'<li><strong>%s</strong>: %s</li>',
 					$module_name,
 					__( 'Tag detected but could not verify that Site Kit placed the tag.', 'google-site-kit' )
 				);
-			}
-		}
 
-		return sprintf(
-			'<li><strong>%s</strong>: %s</li>',
-			$module_name,
-			__( 'No tag detected.', 'google-site-kit' )
-		);
+			case Module_Tag_Matchers::NO_TAG_FOUND:
+				return sprintf(
+					'<li><strong>%s</strong>: %s</li>',
+					$module_name,
+					__( 'No tag detected.', 'google-site-kit' )
+				);
+
+			default:
+				return sprintf(
+					'<li><strong>%s</strong>: %s</li>',
+					$module_name,
+					__( 'No tag detected.', 'google-site-kit' )
+				);
+		}
 	}
 }

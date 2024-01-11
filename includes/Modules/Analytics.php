@@ -36,8 +36,8 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Site_Health\General_Data;
 use Google\Site_Kit\Core\Util\Date;
-use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Sort;
@@ -247,17 +247,17 @@ final class Analytics extends Module
 			'analytics_account_id'  => array(
 				'label' => __( 'Analytics account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_property_id' => array(
 				'label' => __( 'Analytics property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
+				'debug' => General_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_profile_id'  => array(
 				'label' => __( 'Analytics view ID', 'google-site-kit' ),
 				'value' => $settings['profileID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['profileID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['profileID'] ),
 			),
 			'analytics_use_snippet' => array(
 				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),

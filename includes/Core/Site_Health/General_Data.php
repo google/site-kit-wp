@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\Debug_Data
+ * Class Google\Site_Kit\Core\Site_Health\General_Data
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2021 Google LLC
@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Util;
+namespace Google\Site_Kit\Core\Site_Health;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Scopes;
 
 /**
  * Class for integrating debug information with Site Health.
@@ -28,7 +29,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
  * @access private
  * @ignore
  */
-class Debug_Data {
+class General_Data {
 
 	/**
 	 * Context instance.

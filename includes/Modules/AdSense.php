@@ -33,8 +33,6 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Date;
-use Google\Site_Kit\Core\Util\Debug_Data;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -52,6 +50,10 @@ use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\AdSense\Tag_Matchers;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
+use Google\Site_Kit\Core\Site_Health\General_Data;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -69,12 +71,13 @@ use WP_REST_Response;
  * @ignore
  */
 final class AdSense extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
+	use Module_With_Tag_Trait;
 
 	/**
 	 * Module slug name.
@@ -204,12 +207,12 @@ final class AdSense extends Module
 			'adsense_account_id'                       => array(
 				'label' => __( 'AdSense account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['accountID'], 7 ),
+				'debug' => General_Data::redact_debug_value( $settings['accountID'], 7 ),
 			),
 			'adsense_client_id'                        => array(
 				'label' => __( 'AdSense client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['clientID'], 10 ),
+				'debug' => General_Data::redact_debug_value( $settings['clientID'], 10 ),
 			),
 			'adsense_account_status'                   => array(
 				'label' => __( 'AdSense account status', 'google-site-kit' ),
@@ -790,8 +793,9 @@ final class AdSense extends Module
 	 * Registers the AdSense tag.
 	 *
 	 * @since 1.24.0
+	 * @since n.e.x.t Method made public.
 	 */
-	private function register_tag() {
+	public function register_tag() {
 		// TODO: 'amp_story' support can be phased out in the long term.
 		if ( is_singular( array( 'amp_story' ) ) ) {
 			return;
@@ -833,6 +837,17 @@ final class AdSense extends Module
 				$ad_blocking_recovery_web_tag->register();
 			}
 		}
+	}
+
+	/**
+	 * Returns the module Tag_Matchers instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Tag_Matchers Instance of Module_Tag_Matchers.
+	 */
+	public function get_tag_matchers() {
+		return new Tag_Matchers();
 	}
 
 	/**
