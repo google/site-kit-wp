@@ -729,16 +729,6 @@ const baseResolvers = {
 			return;
 		}
 
-		const hasModuleAccess = yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( CORE_MODULES )
-				.hasModuleAccess( 'analytics-4' )
-		);
-
-		if ( hasModuleAccess === false ) {
-			return;
-		}
-
 		const cachedPropertyCreateTime = yield Data.commonActions.await(
 			getItem(
 				`analytics4-properties-getPropertyCreateTime-${ propertyID }`
