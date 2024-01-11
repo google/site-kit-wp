@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 
 const ACCOUNT_ID_A = '100';
 const ACCOUNT_ID_B = '101';
+const ACCOUNT_ID_C = '102';
 
 const GA4_PROPERTY_ID_X = '1000';
 const GA4_PROPERTY_ID_Y = '1001';
@@ -128,6 +129,14 @@ add_action(
 						'property'    => 'properties/' . GA4_PROPERTY_ID_Y,
 						'_id'         => GA4_PROPERTY_ID_Y,
 					),
+				),
+			),
+			array(
+				'account'           => 'accounts/' . ACCOUNT_ID_C,
+				'displayName'       => 'Example Org',
+				'name'              => 'accountSummaries/' . ACCOUNT_ID_C,
+				'_id'               => ACCOUNT_ID_C,
+				'propertySummaries' => array(
 					array(
 						'displayName' => 'Example Property Z',
 						'property'    => 'properties/' . GA4_PROPERTY_ID_Z,
@@ -189,7 +198,7 @@ add_action(
 					'_propertyID'   => GA4_PROPERTY_ID_Z,
 					'webStreamData' => array(
 						'measurementId' => GA4_MEASUREMENT_ID_Z,
-						'defaultUri'    => 'example.org',
+						'defaultUri'    => get_reference_url(),
 					),
 					'displayName'   => 'Third WebDataStream',
 				),

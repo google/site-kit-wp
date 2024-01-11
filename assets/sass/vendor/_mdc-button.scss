@@ -109,4 +109,33 @@
 
 		@include mdc-button-filled-accessible($c-surfaces-inverse-surface);
 	}
+
+	.mdc-button--tertiary {
+
+		@include mdc-button-ink-color( $c-surfaces-on-surface-variant );
+
+		font-family: $f-primary;
+		font-weight: $fw-medium;
+		height: auto;
+		letter-spacing: normal;
+		min-height: $mdc-button-min-height;
+		padding: 8px 16px;
+
+		&:hover {
+
+			@include mdc-button-filled-accessible( $c-interactive-tertiary-hover );
+			@include mdc-button-ink-color( $c-surfaces-on-surface );
+
+			text-decoration: none;
+		}
+
+		&:active,
+		&:focus {
+
+			@include mdc-button-filled-accessible( $c-interactive-tertiary-focus );
+			@include mdc-button-ink-color( $c-surfaces-on-surface );
+
+			outline: none;
+		}
+	}
 }

@@ -15,7 +15,6 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Script_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\AMP_Config_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
 
 /**
  * Class for Google Analytics Advanced Event Tracking.
@@ -66,10 +65,11 @@ final class Advanced_Tracking {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.18.0.
+	 * @since 1.118.0 Renamed hooks to target Analytics 4 module.
 	 */
 	public function register() {
 		add_action(
-			'googlesitekit_analytics_init_tag',
+			'googlesitekit_analytics_4_init_tag',
 			function() {
 				$this->register_event_lists();
 				add_action(
@@ -81,7 +81,7 @@ final class Advanced_Tracking {
 			}
 		);
 		add_action(
-			'googlesitekit_analytics_init_tag_amp',
+			'googlesitekit_analytics_4_init_tag_amp',
 			function() {
 				$this->register_event_lists();
 				add_filter(

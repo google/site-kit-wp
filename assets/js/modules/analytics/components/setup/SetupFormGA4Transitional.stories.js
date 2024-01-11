@@ -29,21 +29,17 @@ import {
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { createBuildAndReceivers } from '../../../../modules/tagmanager/datastore/__factories__/utils';
-import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
-const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
-const properties = [
-	{
-		...fixtures.accountsPropertiesProfiles.properties[ 0 ],
-		websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-	},
-	{
-		...fixtures.accountsPropertiesProfiles.properties[ 1 ],
-	},
-];
-
-const accountID = accounts[ 0 ].id;
+const { accountSummaries, webDataStreamsBatch, webDataStreams } = ga4Fixtures;
+const accounts = accountSummaries;
+const properties = accounts[ 1 ].propertySummaries;
+const accountID = accounts[ 1 ]._id;
+const propertyID = properties[ 0 ]._id;
+const measurementID = webDataStreams.find(
+	( stream ) => stream._propertyID === propertyID
+	// eslint-disable-next-line sitekit/acronym-case
+).webStreamData.measurementId;
 
 function Template() {
 	return <ModuleSetup moduleSlug="analytics" />;
@@ -63,13 +59,10 @@ WithGA4ExistingTag.decorators = [
 		const setupRegistry = ( registry ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.selectProperty( ga4Fixtures.properties[ 1 ]._id );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
-				// eslint-disable-next-line sitekit/acronym-case
-				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
-			);
-
+				.selectProperty( propertyID );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetExistingTag( measurementID );
 			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( true );
 		};
 
@@ -89,11 +82,10 @@ WithGA4AndUAExistingTag.decorators = [
 		const setupRegistry = ( registry ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( properties[ 0 ].id );
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
-				// eslint-disable-next-line sitekit/acronym-case
-				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
-			);
+				.receiveGetExistingTag( propertyID );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetExistingTag( measurementID );
 
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
 			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( false );
@@ -117,8 +109,6 @@ WithExistingGTMPropertyNonMatching.storyName =
 WithExistingGTMPropertyNonMatching.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const propertyID = properties[ 1 ].id;
-
 			const { buildAndReceiveWebAndAMP } =
 				createBuildAndReceivers( registry );
 			buildAndReceiveWebAndAMP( {
@@ -142,8 +132,6 @@ WithExistingGTMPropertyMatching.storyName =
 WithExistingGTMPropertyMatching.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const propertyID = properties[ 0 ].id;
-
 			const { buildAndReceiveWebAndAMP } =
 				createBuildAndReceivers( registry );
 			buildAndReceiveWebAndAMP( {
@@ -192,22 +180,6 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetExistingTag( null );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( ga4Fixtures.properties, {
-						accountID,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreamsBatch(
-						ga4Fixtures.webDataStreamsBatchSetup,
-						{
-							propertyIDs: Object.keys(
-								ga4Fixtures.webDataStreamsBatchSetup
-							),
-						}
-					);
-
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					adsConversionID: '',
 					canUseSnippet: true,
@@ -217,23 +189,20 @@ export default {
 					.receiveGetExistingTag( null );
 				registry
 					.dispatch( MODULES_ANALYTICS )
-					.receiveGetAccounts( accounts );
+					.receiveGetProperties( [], { accountID } );
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProperties( properties, { accountID } );
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProfiles(
-						fixtures.accountsPropertiesProfiles.profiles,
-						{ accountID, propertyID: properties[ 0 ].id }
-					);
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( properties[ 0 ], {
+						propertyID,
+					} );
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProfiles(
-						fixtures.accountsPropertiesProfiles.profiles,
-						{ accountID, propertyID: properties[ 1 ].id }
-					);
-
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+						propertyIDs: [ propertyID ],
+					} );
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );

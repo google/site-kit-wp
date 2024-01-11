@@ -36,8 +36,9 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { AccountSelect, GA4ActivateSwitch } from '../common';
+import { GA4ActivateSwitch } from '../common';
 import {
+	AccountSelect,
 	PropertySelect,
 	WebDataStreamSelect,
 } from '../../../analytics-4/components/common';

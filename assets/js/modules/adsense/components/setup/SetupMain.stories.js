@@ -245,7 +245,7 @@ ErrorNotice.args = {
 };
 
 export default {
-	title: 'Modules/AdSense/Components/Setup/V2/SetupMain',
+	title: 'Modules/AdSense/Components/Setup/SetupMain',
 	component: SetupMain,
 	decorators: [
 		( Story ) => {

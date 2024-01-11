@@ -215,6 +215,15 @@ describe( 'modules/analytics accounts', () => {
 					),
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
+				fetchMock.get(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+					),
+					{
+						body: [],
+						status: 200,
+					}
+				);
 				fetchMock.getOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/properties'
@@ -385,6 +394,15 @@ describe( 'modules/analytics accounts', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: [] }
 				);
+				fetchMock.get(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+					),
+					{
+						body: [],
+						status: 200,
+					}
+				);
 				fetchMock.getOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/properties'
@@ -418,8 +436,7 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			describe( 'analytics-4', () => {
-				const accountID =
-					fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = ga4Fixtures.accountSummaries[ 1 ]._id;
 
 				beforeEach( () => {
 					[
@@ -431,9 +448,9 @@ describe( 'modules/analytics accounts', () => {
 						],
 						[
 							new RegExp(
-								'^/google-site-kit/v1/modules/analytics-4/data/properties'
+								'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 							),
-							ga4Fixtures.properties,
+							ga4Fixtures.accountSummaries,
 						],
 						[
 							new RegExp(
@@ -459,6 +476,15 @@ describe( 'modules/analytics accounts', () => {
 							connected: true,
 						},
 					] );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetProperties(
+							ga4Fixtures.accountSummaries[ 1 ].propertySummaries,
+							{
+								accountID,
+							}
+						);
 				} );
 
 				it( 'should select the correct GA4 property', async () => {
@@ -467,7 +493,10 @@ describe( 'modules/analytics accounts', () => {
 						.selectAccount( accountID );
 					expect(
 						registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-					).toBe( ga4Fixtures.properties[ 0 ]._id );
+					).toBe(
+						ga4Fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]
+							._id
+					);
 				} );
 
 				it( 'should reset the UA property', async () => {
@@ -745,7 +774,7 @@ describe( 'modules/analytics accounts', () => {
 						'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
 					)
 				);
-				expect( fetchMock ).toHaveFetchedTimes( 4 );
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
 			} );
 
 			it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {
@@ -834,9 +863,9 @@ describe( 'modules/analytics accounts', () => {
 					],
 					[
 						new RegExp(
-							'^/google-site-kit/v1/modules/analytics-4/data/properties'
+							'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 						),
-						ga4Fixtures.properties,
+						ga4Fixtures.accountSummaries,
 					],
 					[
 						new RegExp(
@@ -869,6 +898,14 @@ describe( 'modules/analytics accounts', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties(
+						ga4Fixtures.accountSummaries[ 2 ].propertySummaries,
+						{
+							accountID: ga4Fixtures.accountSummaries[ 2 ]._id,
+						}
+					);
 			} );
 
 			// instead is "property create"
@@ -878,7 +915,9 @@ describe( 'modules/analytics accounts', () => {
 					.getAccounts();
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe( ga4Fixtures.properties[ 0 ]._id );
+				).toBe(
+					ga4Fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id
+				);
 			} );
 		} );
 
