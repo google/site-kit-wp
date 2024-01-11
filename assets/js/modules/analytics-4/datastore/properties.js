@@ -749,17 +749,21 @@ const baseResolvers = {
 				.getProperty( propertyID )
 		);
 
+		if ( ! property?.createTime ) {
+			return;
+		}
+
 		// Cache this value for 1 hour (the default cache time).
 		yield Data.commonActions.await(
 			setItem(
 				`analytics4-properties-getPropertyCreateTime-${ propertyID }`,
-				property?.createTime
+				property.createTime
 			)
 		);
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setPropertyCreateTime( property?.createTime );
+			.setPropertyCreateTime( property.createTime );
 	},
 };
 
