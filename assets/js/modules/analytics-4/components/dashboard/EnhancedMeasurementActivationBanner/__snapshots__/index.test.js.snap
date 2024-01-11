@@ -1,5 +1,89 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`EnhancedMeasurementActivationBanner should render the in progress step when enhanced measurement is being enabled after the user returns from the OAuth flow 1`] = `
+<div>
+  <section
+    class="googlesitekit-enhanced-measurement-success-banner googlesitekit-publisher-win--small googlesitekit-publisher-win--win-success googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
+    id="googlesitekit-enhanced-measurement-activation-banner"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
+        >
+          <div
+            class="googlesitekit-publisher-win__title-image-wrapper"
+          >
+            <h3
+              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+            >
+              Setup in progress
+            </h3>
+            <div
+              class="googlesitekit-publisher-win__image-small"
+            >
+              <svg />
+            </div>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__desc"
+          >
+            <p>
+              <span>
+                Enhanced measurement is being enabled.
+              </span>
+               
+              <a
+                aria-label="Learn more (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Learn more
+                </span>
+                <span
+                  class="googlesitekit-icon-wrapper"
+                  style="margin-left: 5px;"
+                >
+                  <svg />
+                </span>
+              </a>
+            </p>
+          </div>
+          <div
+            class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+            role="progressbar"
+            style="width: 20px; height: 20px;"
+          >
+            <svg
+              class="MuiCircularProgress-svg"
+              viewBox="22 22 44 44"
+            >
+              <circle
+                class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+                cx="44"
+                cy="44"
+                fill="none"
+                r="20.2"
+                stroke-width="3.6"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;
+
 exports[`EnhancedMeasurementActivationBanner should render the setup step when enhanced measurement is initially false and the banner is not dismissed 1`] = `
 <div>
   <section
