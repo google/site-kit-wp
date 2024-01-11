@@ -82,6 +82,9 @@ class Site_Health_StatusTest extends TestCase {
 	public function test_site_status_tests__wp_version_5_6_or_over() {
 		global $wp_version;
 
+		// Mock a version higher than 5.6.
+		$wp_version = '6.0';
+
 		remove_all_filters( 'site_status_tests' );
 		$site_status = $this->new_site_status();
 		$site_status->register();
