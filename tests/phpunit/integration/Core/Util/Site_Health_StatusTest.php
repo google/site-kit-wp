@@ -35,8 +35,8 @@ class Site_Health_StatusTest extends TestCase {
 		$this->original_wp_version = $wp_version;
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		global $wp_version;
 
 		$wp_version = $this->original_wp_version;
