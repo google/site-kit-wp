@@ -64,7 +64,7 @@ abstract class Setting {
 	/**
 	 * Subscribes to updates for this setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param callable $callback Function taking $old_value & $new_value parameters that gets called when option value updates.
 	 * @return \Closure Function to remove added listeners.
