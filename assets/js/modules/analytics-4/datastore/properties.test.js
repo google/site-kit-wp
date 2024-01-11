@@ -42,6 +42,7 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -1380,6 +1381,76 @@ describe( 'modules/analytics-4 properties', () => {
 					new Date( fixtures.properties[ 0 ].createTime ).getTime()
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should cache the current property creation time when fetched', async () => {
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
+
+				const propertyID = '12345';
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+
+				const initalPropertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+
+				expect( initalPropertyCreateTime ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
+					query: { propertyID },
+				} );
+
+				const propertyCreateTimeInCache = await getItem(
+					`analytics4-properties-getPropertyCreateTime-${ propertyID }`
+				);
+
+				expect( propertyCreateTimeInCache.cacheHit ).toBe( true );
+				expect( propertyCreateTimeInCache.value ).toEqual(
+					fixtures.properties[ 0 ].createTime
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not make a request to the API if the property creation time is cached', async () => {
+				const propertyID = fixtures.properties[ 0 ]._id;
+				const expectedPropertyCreateTime = 123456789;
+
+				const settings = {
+					propertyID,
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+				};
+
+				await setItem(
+					`analytics4-properties-getPropertyCreateTime-${ propertyID }`,
+					expectedPropertyCreateTime
+				);
+
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( settings );
+
+				registry.select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+
+				const propertyCreateTime = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyCreateTime();
+				expect( propertyCreateTime ).toBe( expectedPropertyCreateTime );
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
 			} );
 
 			it( 'should not fetch the property if the propertyCreateTime is already set', async () => {

@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -46,7 +51,7 @@ import {
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { createRegistrySelector } from '@wordpress/data';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
 const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -718,6 +723,12 @@ const baseResolvers = {
 	},
 	*getPropertyCreateTime() {
 		const registry = yield Data.commonActions.getRegistry();
+		// Ensure settings are available to select.
+		yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getSettings()
+		);
 
 		const propertyID = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -731,15 +742,41 @@ const baseResolvers = {
 			return;
 		}
 
+		const cachedPropertyCreateTime = yield Data.commonActions.await(
+			getItem(
+				`analytics4-properties-getPropertyCreateTime-${ propertyID }`
+			)
+		);
+
+		if ( cachedPropertyCreateTime.cacheHit ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyCreateTime( cachedPropertyCreateTime.value );
+
+			return;
+		}
+
 		const property = yield Data.commonActions.await(
 			registry
 				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 				.getProperty( propertyID )
 		);
 
+		if ( ! property?.createTime ) {
+			return;
+		}
+
+		// Cache this value for 1 hour (the default cache time).
+		yield Data.commonActions.await(
+			setItem(
+				`analytics4-properties-getPropertyCreateTime-${ propertyID }`,
+				property.createTime
+			)
+		);
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setPropertyCreateTime( property?.createTime );
+			.setPropertyCreateTime( property.createTime );
 	},
 };
 
