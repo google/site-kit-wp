@@ -22,7 +22,7 @@ use Google\Site_Kit\Modules\Tag_Manager;
 use WP_REST_Server;
 
 /**
- * Class for integrating debug information with Site Health.
+ * Class for integrating status tab information with Site Health.
  *
  * @since n.e.x.t
  * @access private
@@ -51,7 +51,7 @@ class Site_Health_Status {
 	}
 
 	/**
-	 * Registers information with Site Health Status tab.
+	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t
 	 */
