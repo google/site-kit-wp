@@ -192,10 +192,19 @@ const baseActions = {
 		invariant( accountID, 'accountID is required.' );
 
 		return ( function* () {
+			const { dispatch } = yield Data.commonActions.getRegistry();
+
 			const { response, error } =
 				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
 					accountID
 				);
+
+			if ( response ) {
+				// Refresh account summaries to load the new property.
+				yield dispatch(
+					MODULES_ANALYTICS_4
+				).fetchGetAccountSummaries();
+			}
 
 			return { response, error };
 		} )();
@@ -480,7 +489,7 @@ const baseActions = {
 	/**
 	 * Waits for property summaries to be loaded for an account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 */
 	*waitForPropertySummaries() {
 		yield {
@@ -797,7 +806,7 @@ const baseSelectors = {
 	/**
 	 * Gets all GA4 properties from the account summaries this account can access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The GA4 Account ID to fetch properties for.
@@ -862,32 +871,19 @@ const baseSelectors = {
 	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
 	 * components, initially the `PropertySelect` and `SettingsEnhancedMeasurementSwitch` components.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
-	 * @param {Object}  state                Data store's state.
-	 * @param {Object}  args                 Arguments object.
-	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 * @return {boolean} TRUE if the properties summaries are currently being loaded, otherwise FALSE.
 	 */
-	isLoadingPropertySummaries: createRegistrySelector(
-		( select ) =>
-			( state, { hasModuleAccess } ) => {
-				if (
-					hasModuleAccess &&
-					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getAccountSummaries'
-					)
-				) {
-					return true;
-				}
-
-				return (
-					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-					select(
-						MODULES_ANALYTICS
-					).hasFinishedSelectingAccount() === false
-				);
-			}
-	),
+	isLoadingPropertySummaries: createRegistrySelector( ( select ) => () => {
+		return (
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getAccountSummaries'
+			) ||
+			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
+		);
+	} ),
 };
 
 const store = Data.combineStores(
