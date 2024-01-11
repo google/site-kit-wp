@@ -37,6 +37,7 @@ import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants
 import * as __fixtures__ from '../../../../analytics-4/datastore/__fixtures__';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from '.';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 
 function limitResponseToSingleDate( analyticsResponse ) {
 	const findFirstDateRangeRow = ( dateRange ) =>
@@ -202,6 +203,13 @@ EntityDashboardDataUnavailable.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
 			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: true },
+					{ slug: 'analytics-4' }
+				);
+
+			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport( {}, { options } );
 		} );
@@ -234,6 +242,13 @@ EntityDashboardZeroData.storyName = 'Zero Data';
 EntityDashboardZeroData.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: true },
+					{ slug: 'analytics-4' }
+				);
+
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
@@ -298,6 +313,13 @@ EntityDashboardOneRowOfData.storyName = 'One row of data';
 EntityDashboardOneRowOfData.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.slice( 0, 3 ).forEach( ( options ) => {
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: true },
+					{ slug: 'analytics-4' }
+				);
+
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
