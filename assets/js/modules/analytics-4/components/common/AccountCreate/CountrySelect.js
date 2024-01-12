@@ -62,7 +62,7 @@ export default function CountrySelect() {
 	return (
 		<Select
 			className="googlesitekit-analytics__select-country"
-			label={ __( 'Countries', 'google-site-kit' ) }
+			label={ __( 'Country', 'google-site-kit' ) }
 			value={ value }
 			onEnhancedChange={ onEnhancedChange }
 			enhanced
