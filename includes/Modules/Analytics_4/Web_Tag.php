@@ -42,14 +42,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	private $home_domain;
 
 	/**
-	 * Whether or not to anonymize IP addresses.
-	 *
-	 * @since 1.24.0
-	 * @var bool
-	 */
-	private $anonymize_ip;
-
-	/**
 	 * Ads conversion ID.
 	 *
 	 * @since 1.32.0
@@ -66,17 +58,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 */
 	public function set_home_domain( $domain ) {
 		$this->home_domain = $domain;
-	}
-
-	/**
-	 * Sets whether or not to anonymize IP addresses.
-	 *
-	 * @since 1.24.0
-	 *
-	 * @param bool $anonymize_ip Whether to anonymize IP addresses or not.
-	 */
-	public function set_anonymize_ip( $anonymize_ip ) {
-		$this->anonymize_ip = (bool) $anonymize_ip;
 	}
 
 	/**
@@ -230,11 +211,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
 		if ( ! empty( $this->home_domain ) ) {
 			$config['linker'] = array( 'domains' => array( $this->home_domain ) );
-		}
-
-		if ( $this->anonymize_ip ) {
-			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
-			$config['anonymize_ip'] = true;
 		}
 
 		// Do not add custom dimensions if UA is enabled because they will be
