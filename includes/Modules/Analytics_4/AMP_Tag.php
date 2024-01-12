@@ -49,6 +49,17 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	private $ads_conversion_id;
 
 	/**
+	 * Sets the current home domain.
+	 *
+	 * @since 1.118.0
+	 *
+	 * @param string $domain Domain name.
+	 */
+	public function set_home_domain( $domain ) {
+		$this->home_domain = $domain;
+	}
+
+	/**
 	 * Sets the ads conversion ID.
 	 *
 	 * @since 1.32.0
@@ -94,11 +105,6 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
 
 		$this->do_init_tag_action();
-
-		// If the UA AMP tag is being placed, extend it, otherwise there's nothing more to do.
-		if ( did_action( 'googlesitekit_analytics_init_tag_amp' ) ) {
-			add_filter( 'googlesitekit_amp_gtag_opt', $this->get_method_proxy( 'extend_gtag_opt' ) );
-		}
 	}
 
 	/**
@@ -200,16 +206,5 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 		}
 
 		return $config;
-	}
-
-	/**
-	 * Sets the current home domain.
-	 *
-	 * @since 1.118.0
-	 *
-	 * @param string $domain Domain name.
-	 */
-	public function set_home_domain( $domain ) {
-		$this->home_domain = $domain;
 	}
 }
