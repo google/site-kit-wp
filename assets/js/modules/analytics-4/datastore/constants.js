@@ -18,6 +18,7 @@
 
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
+export const ACCOUNT_CREATE = 'account_create';
 export const PROPERTY_CREATE = 'property_create';
 export const WEBDATASTREAM_CREATE = 'webdatastream_create';
 
