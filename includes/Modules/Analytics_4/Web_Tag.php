@@ -224,12 +224,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			$config['linker'] = array( 'domains' => array( $this->home_domain ) );
 		}
 
-		// Do not add custom dimensions if UA is enabled because they will be
-		// added to the UA property instead of to the GA4 measurement ID.
-		if ( did_action( 'googlesitekit_analytics_init_tag' ) ) {
-			return $config;
-		}
-
 		if ( ! empty( $this->custom_dimensions ) ) {
 			$config = array_merge( $config, $this->custom_dimensions );
 		}

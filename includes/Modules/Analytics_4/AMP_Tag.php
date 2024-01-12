@@ -122,7 +122,8 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 		}
 
 		$gtag_amp_opt = array(
-			'vars' => array(
+			'optoutElementId' => '__gaOptOutExtension',
+			'vars'            => array(
 				'gtag_id' => $this->tag_id,
 				'config'  => $config,
 			),
