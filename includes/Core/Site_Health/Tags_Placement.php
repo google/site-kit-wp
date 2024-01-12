@@ -118,7 +118,7 @@ class Tags_Placement {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string
+	 * @return array Site health status results.
 	 */
 	protected function tags_placement_test() {
 		global $wp_version;
