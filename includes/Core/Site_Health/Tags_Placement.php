@@ -220,8 +220,8 @@ class Tags_Placement {
 	 * @return bool TRUE if tag is found, FALSE if not.
 	 */
 	protected function check_if_tag_exists( $module, $content ) {
-		$check_tag   = $module->has_tag( $content );
-		$module_name = $module->get_module_name_from_slug();
+		$check_tag   = $module->has_placed_tag_on_frontend( $content );
+		$module_name = $this->get_module_name_from_slug( $module->slug );
 
 		switch ( $check_tag ) {
 			case Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS:
@@ -253,4 +253,27 @@ class Tags_Placement {
 				);
 		}
 	}
+
+	/**
+	 * Returns formated module string name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Module slug.
+	 * @return string Formatted module name.
+	 */
+	public function get_module_name_from_slug( $slug ) {
+		if ( 'adsense' === $slug ) {
+			$module_name = 'AdSense';
+		}
+		if ( 'analytics-4' === $slug ) {
+			$module_name = 'Analytics';
+		}
+		if ( 'tagmanager' === $slug ) {
+			$module_name = 'Tag Manager';
+		}
+
+		return $module_name;
+	}
+
 }
