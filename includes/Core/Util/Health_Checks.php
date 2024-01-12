@@ -72,7 +72,7 @@ class Health_Checks {
 	 *
 	 * @since 1.14.0
 	 *
-	 * @return REST_Route[]
+	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
 		return array(
