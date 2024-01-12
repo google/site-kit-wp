@@ -50,6 +50,17 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	private $ads_conversion_id;
 
 	/**
+	 * Sets custom dimensions data.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @param string $custom_dimensions Custom dimensions data.
+	 */
+	public function set_custom_dimensions( $custom_dimensions ) {
+		$this->custom_dimensions = $custom_dimensions;
+	}
+
+	/**
 	 * Sets the current home domain.
 	 *
 	 * @since 1.24.0
