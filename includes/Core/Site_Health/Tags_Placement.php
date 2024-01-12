@@ -26,6 +26,7 @@ use WP_REST_Server;
  * @ignore
  */
 class Tags_Placement {
+
 	use Method_Proxy_Trait;
 
 	/**
