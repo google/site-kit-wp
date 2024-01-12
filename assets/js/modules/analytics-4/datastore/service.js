@@ -39,9 +39,46 @@ import {
 	generateReportDetailArgs,
 	generateReportFilterArgs,
 } from '../utils/report-args';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 const { createRegistrySelector } = Data;
 
 export const selectors = {
+	/**
+	 * Gets a URL to the service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {Object} [args]       Object containing optional path and query args.
+	 * @param {string} [args.path]  A path to append to the base url.
+	 * @param {Object} [args.query] Object of query params to be added to the URL.
+	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
+	 */
+	getServiceURL: createRegistrySelector(
+		( select ) =>
+			( state, { path, query } = {} ) => {
+				let serviceURL = 'https://analytics.google.com/analytics/web/';
+
+				if ( query ) {
+					serviceURL = addQueryArgs( serviceURL, query );
+				}
+
+				if ( path ) {
+					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+					serviceURL = `${ serviceURL }#${ sanitizedPath }`;
+				}
+
+				const accountChooserBaseURI =
+					select( CORE_USER ).getAccountChooserURL( serviceURL );
+
+				if ( accountChooserBaseURI === undefined ) {
+					return undefined;
+				}
+
+				return accountChooserBaseURI;
+			}
+	),
+
 	/**
 	 * Gets a URL for a specific Analytics 4 reporting view on the service.
 	 *
