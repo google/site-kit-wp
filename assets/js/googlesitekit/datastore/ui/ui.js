@@ -61,7 +61,7 @@ export const actions = {
 	/**
 	 * Sets `isOnline` state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 * @private
 	 *
 	 * @param {boolean} value `isOnline` status.
@@ -172,7 +172,7 @@ export const selectors = {
 	/**
 	 * Gets the `isOnline` status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
