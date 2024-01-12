@@ -41,6 +41,25 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	private $home_domain;
 
 	/**
+	 * Ads conversion ID.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $ads_conversion_id;
+
+	/**
+	 * Sets the ads conversion ID.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @param string $ads_conversion_id Ads ID.
+	 */
+	public function set_ads_conversion_id( $ads_conversion_id ) {
+		$this->ads_conversion_id = $ads_conversion_id;
+	}
+
+	/**
 	 * Sets custom dimensions data.
 	 *
 	 * @since 1.113.0
@@ -89,6 +108,12 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	 */
 	protected function render() {
 		$config = $this->get_tag_config();
+
+		if ( ! empty( $this->ads_conversion_id ) ) {
+			$config[ $this->ads_conversion_id ] = array(
+				'groups' => 'default',
+			);
+		}
 
 		$gtag_amp_opt = array(
 			'vars' => array(
