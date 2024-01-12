@@ -15,13 +15,11 @@ use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 interface Module_With_Tag {
 
 	/**
-	 * Returns the module Tag_Matchers instance.
+	 * Registers the tag.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @return Module_Tag_Matchers Instance of Module_Tag_Matchers.
 	 */
-	public function get_tag_matchers();
+	public function register_tag();
 
 	/**
 	 * Checks if the module tag is found in the provided content.
@@ -31,14 +29,6 @@ interface Module_With_Tag {
 	 * @param string $content Content to search for the tags.
 	 * @return bool TRUE if tag is found, FALSE if not.
 	 */
-	public function has_tag( $content );
+	public function has_placed_tag_on_frontend( $content );
 
-	/**
-	 * Checks if the module tag is found in the provided content.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Formatted module name.
-	 */
-	public function get_module_name_from_slug();
 }
