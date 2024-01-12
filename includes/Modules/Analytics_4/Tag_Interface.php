@@ -21,7 +21,7 @@ interface Tag_Interface {
 	/**
 	 * Sets the current home domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param string $domain Domain name.
 	 */
@@ -31,7 +31,7 @@ interface Tag_Interface {
 	/**
 	 * Sets the ads conversion ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param string $ads_conversion_id Ads ID.
 	 */

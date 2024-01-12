@@ -43,7 +43,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	/**
 	 * Ads conversion ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 * @var string
 	 */
 	private $ads_conversion_id;
