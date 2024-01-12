@@ -95,7 +95,7 @@ const baseActions = {
 	/**
 	 * Resets the account summaries.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -147,7 +147,7 @@ const baseActions = {
 	/**
 	 * Finds a matching account summary.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @return {Object|null} Matching account summary on success, otherwise NULL.
 	 */

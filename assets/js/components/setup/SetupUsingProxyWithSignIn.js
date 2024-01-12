@@ -398,7 +398,8 @@ export default function SetupUsingProxyWithSignIn() {
 																	isSecondAdmin &&
 																	hasViewableModules &&
 																	complete && (
-																		<Link
+																		<Button
+																			tertiary
 																			onClick={
 																				goToSharedDashboard
 																			}
@@ -407,7 +408,7 @@ export default function SetupUsingProxyWithSignIn() {
 																				'Skip sign-in and view limited dashboard',
 																				'google-site-kit'
 																			) }
-																		</Link>
+																		</Button>
 																	) }
 																{ ! isSecondAdmin &&
 																	isResettable &&

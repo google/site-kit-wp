@@ -144,7 +144,7 @@ describe( 'Tag Manager module setup', () => {
 				page.waitForResponse( ( req ) =>
 					req.url().match( 'tagmanager/data/accounts' )
 				),
-				expect( page ).toClick( '.googlesitekit-cta-link', {
+				expect( page ).toClick( '.mdc-button', {
 					text: /Re-fetch My Account/i,
 				} ),
 			] );
@@ -353,7 +353,7 @@ describe( 'Tag Manager module setup', () => {
 				}
 			);
 			await expect( page ).toMatchElement(
-				'.googlesitekit-setup-module .googlesitekit-cta-link',
+				'.googlesitekit-setup-module .mdc-button',
 				{ text: /re-fetch my account/i }
 			);
 		} );

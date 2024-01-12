@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { SpinnerButton } from 'googlesitekit-components';
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
@@ -51,7 +51,6 @@ import {
 	WebContainerSelect,
 	TagCheckProgress,
 } from '../common';
-import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 const { useSelect, useDispatch } = Data;
@@ -224,10 +223,11 @@ export default function SetupForm( { finishSetup } ) {
 							) }
 						</SpinnerButton>
 						{ /*
-						This "link" below will be rendered as a <button> but should not
-						trigger a form submit when clicked, hence the `type="button"`.
+						This <button> below should not trigger a form submit
+						when clicked, hence the `type="button"`.
 						*/ }
-						<Link
+						<Button
+							tertiary
 							className="googlesitekit-setup-module__sub-action"
 							type="button"
 							onClick={ onSetupWithoutAnalytics }
@@ -237,7 +237,7 @@ export default function SetupForm( { finishSetup } ) {
 								'Complete setup without Analytics',
 								'google-site-kit'
 							) }
-						</Link>
+						</Button>
 					</Fragment>
 				) }
 				{ ! isSetupWithAnalytics && (

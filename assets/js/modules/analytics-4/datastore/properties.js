@@ -479,7 +479,7 @@ const baseActions = {
 	/**
 	 * Waits for property summaries to be loaded for an account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 */
 	*waitForPropertySummaries() {
 		yield {
@@ -764,7 +764,7 @@ const baseSelectors = {
 	/**
 	 * Gets all GA4 properties from the account summaries this account can access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The GA4 Account ID to fetch properties for.
@@ -829,7 +829,7 @@ const baseSelectors = {
 	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
 	 * components, initially the `PropertySelect` and `SettingsEnhancedMeasurementSwitch` components.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param {Object}  state                Data store's state.
 	 * @param {Object}  args                 Arguments object.

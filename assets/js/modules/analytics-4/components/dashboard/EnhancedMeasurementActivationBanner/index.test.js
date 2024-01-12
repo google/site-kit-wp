@@ -29,11 +29,16 @@ import {
 	fireEvent,
 	waitFor,
 	waitForElementToBeRemoved,
+	freezeFetch,
 } from '../../../../../../../tests/js/test-utils';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import {
+	EDIT_SCOPE,
+	FORM_SETUP,
+} from '../../../../analytics/datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import * as analytics4Fixtures from '../../../datastore/__fixtures__';
 import EnhancedMeasurementActivationBanner from './index';
@@ -43,7 +48,12 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 	const propertyID = '1000';
 	const webDataStreamID = '2000';
 
+	const enhancedMeasurementSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+	);
+
 	let enhancedMeasurementSettingsMock;
+	let enhancedMeasurementEnabledSettingsMock;
 	let registry;
 
 	beforeEach( () => {
@@ -58,6 +68,11 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			streamEnabled: false,
 			uriQueryParameter: null,
 			videoEngagementEnabled: null,
+		};
+
+		enhancedMeasurementEnabledSettingsMock = {
+			...enhancedMeasurementSettingsMock,
+			streamEnabled: true,
 		};
 
 		registry = createTestRegistry();
@@ -113,11 +128,26 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		);
 	} );
 
-	it( 'should render the success step when the the setup form is successfully submitted', async () => {
-		const enhancedMeasurementSettingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+	it( 'should render the in progress step when enhanced measurement is being enabled after the user returns from the OAuth flow', async () => {
+		freezeFetch( enhancedMeasurementSettingsEndpoint );
+
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_SETUP, { autoSubmit: true } );
+
+		const { container, getByText } = render(
+			<EnhancedMeasurementActivationBanner />,
+			{
+				registry,
+			}
 		);
 
+		await waitFor( () => expect( container ).toMatchSnapshot() );
+
+		expect( getByText( 'Setup in progress' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the success step when the the setup form is successfully submitted', async () => {
 		fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
 			status: 200,
 			body: analytics4Fixtures.defaultEnhancedMeasurementSettings,
@@ -219,5 +249,71 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should enable enhanced measurement when the CTA in SetupBanner is clicked and the user has the edit scope granted', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<EnhancedMeasurementActivationBanner />,
+			{
+				registry,
+			}
+		);
+
+		fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
+			status: 200,
+			body: { ...enhancedMeasurementEnabledSettingsMock },
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Enable now' } ) );
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetched(
+			enhancedMeasurementSettingsEndpoint,
+			{
+				body: {
+					data: {
+						propertyID,
+						webDataStreamID,
+						enhancedMeasurementSettings:
+							enhancedMeasurementEnabledSettingsMock,
+					},
+				},
+			}
+		);
+	} );
+
+	it( 'should enable enhanced measurement when the form is auto submitted after the edit scope was granted', async () => {
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_SETUP, { autoSubmit: true } );
+
+		fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
+			status: 200,
+			body: { ...enhancedMeasurementEnabledSettingsMock },
+		} );
+
+		const { waitForRegistry } = render(
+			<EnhancedMeasurementActivationBanner />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetched(
+			enhancedMeasurementSettingsEndpoint,
+			{
+				body: {
+					data: {
+						propertyID,
+						webDataStreamID,
+						enhancedMeasurementSettings:
+							enhancedMeasurementEnabledSettingsMock,
+					},
+				},
+			}
+		);
 	} );
 } );
