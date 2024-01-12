@@ -75,6 +75,22 @@ class Site_Health {
 	private $permissions;
 
 	/**
+	 * General_Data instance.
+	 *
+	 * @since n.e.x.t
+	 * @var General_data
+	 */
+	private $general_data;
+
+	/**
+	 * Tags_Placement instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Tags_Placement
+	 */
+	private $tags_placement;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -100,6 +116,9 @@ class Site_Health {
 		$this->authentication = $authentication;
 		$this->modules        = $modules;
 		$this->permissions    = $permissions;
+
+		$this->general_data   = new General_Data( $this->context, $this->options, $this->user_options, $this->authentication, $this->modules, $this->permissions );
+		$this->tags_placement = new Tags_Placement( $this->modules );
 	}
 
 	/**
@@ -108,8 +127,8 @@ class Site_Health {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		( new General_Data( $this->context, $this->options, $this->user_options, $this->authentication, $this->modules, $this->permissions ) )->register();
-		( new Tags_Placement( $this->modules ) )->register();
+		$this->general_data->register();
+		$this->tags_placement->register();
 	}
 
 }
