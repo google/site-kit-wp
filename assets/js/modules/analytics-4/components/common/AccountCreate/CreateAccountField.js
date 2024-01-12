@@ -17,10 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * Internal dependencies
  */
 import { TextField } from 'googlesitekit-components';
-import classnames from 'classnames';
 
 export default function CreateAccountField( {
 	hasError,
