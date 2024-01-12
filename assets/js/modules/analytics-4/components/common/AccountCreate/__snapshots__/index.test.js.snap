@@ -185,7 +185,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
               for="googlesitekit-select-0"
               style=""
             >
-              Countries
+              Country
             </label>
           </div>
           <div
@@ -274,7 +274,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
           Enable enhanced measurement
         </label>
         <p>
-          This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
+          This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).
           <a
             aria-label="Learn more (opens in a new tab)"
             class="googlesitekit-cta-link"
