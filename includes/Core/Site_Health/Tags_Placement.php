@@ -94,7 +94,7 @@ class Tags_Placement {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return REST_Route[]
+	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
 		return array(
