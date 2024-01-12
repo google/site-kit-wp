@@ -21,6 +21,11 @@ export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 export const PROPERTY_CREATE = 'property_create';
 export const WEBDATASTREAM_CREATE = 'webdatastream_create';
 
+export const FORM_SETUP = 'analyticsSetup';
+
+// OAuth scope required for provisioning a Google Analytics account.
+export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
+
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
 // Date range offset days for Analytics 4 report requests.
