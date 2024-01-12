@@ -126,7 +126,6 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Publisher ID', 'google-site-kit' ) }
 					</h5>
-
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ accountID } />
 					</p>
@@ -135,7 +134,6 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Account Status', 'google-site-kit' ) }
 					</h5>
-
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ accountStatusLabel }
 					</p>
@@ -144,7 +142,6 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Site Status', 'google-site-kit' ) }
 					</h5>
-
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ siteStatusLabel + ' ' }
 						<Link
@@ -167,7 +164,6 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'AdSense Code', 'google-site-kit' ) }
 					</h5>
-
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ snippetLabel }
 					</p>
@@ -179,7 +175,6 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Excluded from ads', 'google-site-kit' ) }
 					</h5>
-
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ autoAdsDisabledMessage }
 					</p>
@@ -192,7 +187,6 @@ export default function SettingsView() {
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
 						</h5>
-
 						<p className="googlesitekit-settings-module__meta-item-data">
 							{ ! webStoriesAdUnit && (
 								<span>{ __( 'None', 'google-site-kit' ) }</span>
