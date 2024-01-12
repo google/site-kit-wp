@@ -117,8 +117,6 @@ final class Analytics extends Module
 		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// For Web Stories plugin.
 		add_action( 'web_stories_story_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
-		// Analytics tag placement logic.
-		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 
 		add_filter(
 			'googlesitekit_proxy_setup_mode',
@@ -1256,6 +1254,9 @@ final class Analytics extends Module
 
 	/**
 	 * Registers the Analytics tag.
+	 *
+	 * This method is currently unused and is kept for reference until this module
+	 * is entirely removed.
 	 *
 	 * @since 1.24.0
 	 */

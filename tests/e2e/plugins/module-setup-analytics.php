@@ -148,19 +148,16 @@ add_action(
 
 		$ga4_properties = array(
 			array(
-
 				'displayName' => 'example.com',
 				'_id'         => GA4_PROPERTY_ID_X,
 				'_accountID'  => ACCOUNT_ID_A,
 			),
 			array(
-
 				'displayName' => 'example.net',
 				'_id'         => GA4_PROPERTY_ID_Y,
 				'_accountID'  => ACCOUNT_ID_B,
 			),
 			array(
-
 				'displayName' => 'example.org',
 				'_id'         => GA4_PROPERTY_ID_Z,
 				'_accountID'  => ACCOUNT_ID_B,
@@ -294,6 +291,7 @@ add_action(
 
 					foreach ( $ga4_properties as $property ) {
 						if ( $property['_id'] === $property_id ) {
+							$property['createTime'] = '2024-01-01T00:00:00.000Z';
 							return $property;
 						}
 					}
