@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
+import { ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
@@ -39,11 +40,6 @@ import {
 } from './utils';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
-import {
-	BREAKPOINT_SMALL,
-	useBreakpoint,
-} from '../../../../hooks/useBreakpoint';
-import LoadingWrapper from '../../../../components/LoadingWrapper';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -114,22 +110,12 @@ export default function SettingsView() {
 	const autoAdsDisabledMessage = getAutoAdsDisabledMessage( autoAdsDisabled );
 
 	const loading = useSelect( ( select ) => {
-		// Ensure that `getSettings()` is called here in order to trigger its resolver, which we
-		// want to track for the loading state.
-		select( MODULES_ADSENSE ).getSettings();
-
-		return select( MODULES_ADSENSE ).isResolving( 'getSettings', [] );
+		return (
+			select( MODULES_ADSENSE ).getSettings() === undefined ||
+			select( MODULES_ADSENSE ).hasExistingAdBlockingRecoveryTag() ===
+				undefined
+		);
 	} );
-
-	const hasExistingAdBlockingRecoveryTag = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).hasExistingAdBlockingRecoveryTag()
-	);
-
-	const breakpoint = useBreakpoint();
-	const isSmallScreen = breakpoint === BREAKPOINT_SMALL;
-
-	const metaItemWidth = isSmallScreen ? '75%' : '250px';
-	const adblockingCTAHeight = isSmallScreen ? '200px' : '95px';
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
@@ -137,233 +123,141 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<LoadingWrapper
-						loading={ loading }
-						className="googlesitekit-settings--adsense-loading-item"
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Publisher ID', 'google-site-kit' ) }
-						</h5>
-					</LoadingWrapper>
-					<LoadingWrapper
-						loading={ loading }
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ accountID } />
-						</p>
-					</LoadingWrapper>
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Publisher ID', 'google-site-kit' ) }
+					</h5>
+
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ accountID } />
+					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<LoadingWrapper
-						loading={ loading }
-						className="googlesitekit-settings--adsense-loading-item"
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Account Status', 'google-site-kit' ) }
-						</h5>
-					</LoadingWrapper>
-					<LoadingWrapper
-						loading={ loading }
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ accountStatusLabel }
-						</p>
-					</LoadingWrapper>
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Account Status', 'google-site-kit' ) }
+					</h5>
+
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ accountStatusLabel }
+					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<LoadingWrapper
-						loading={ loading }
-						className="googlesitekit-settings--adsense-loading-item"
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Site Status', 'google-site-kit' ) }
-						</h5>
-					</LoadingWrapper>
-					<LoadingWrapper
-						loading={ loading }
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ siteStatusLabel + ' ' }
-							<Link
-								href={ siteStatusURL }
-								className="googlesitekit-settings-module__cta-button"
-								external
-								disabled={ siteStatusURL === undefined }
-								hideExternalIndicator={
-									siteStatusURL === undefined
-								}
-							>
-								{ siteStatusLinkLabel }
-							</Link>
-						</p>
-					</LoadingWrapper>
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Site Status', 'google-site-kit' ) }
+					</h5>
+
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ siteStatusLabel + ' ' }
+						<Link
+							href={ siteStatusURL }
+							className="googlesitekit-settings-module__cta-button"
+							external
+							disabled={ siteStatusURL === undefined }
+							hideExternalIndicator={
+								siteStatusURL === undefined
+							}
+						>
+							{ siteStatusLinkLabel }
+						</Link>
+					</p>
 				</div>
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<LoadingWrapper
-						loading={ loading }
-						className="googlesitekit-settings--adsense-loading-item"
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'AdSense Code', 'google-site-kit' ) }
-						</h5>
-					</LoadingWrapper>
-					<LoadingWrapper
-						loading={ loading }
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ snippetLabel }
-						</p>
-					</LoadingWrapper>
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'AdSense Code', 'google-site-kit' ) }
+					</h5>
+
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ snippetLabel }
+					</p>
 				</div>
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<LoadingWrapper
-						loading={ loading }
-						className="googlesitekit-settings--adsense-loading-item"
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Excluded from ads', 'google-site-kit' ) }
-						</h5>
-					</LoadingWrapper>
-					<LoadingWrapper
-						loading={ loading }
-						width={ metaItemWidth }
-						height="16px"
-					>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ autoAdsDisabledMessage }
-						</p>
-					</LoadingWrapper>
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Excluded from ads', 'google-site-kit' ) }
+					</h5>
+
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ autoAdsDisabledMessage }
+					</p>
 				</div>
 			</div>
 
 			{ webStoriesActive && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
-						<LoadingWrapper
-							loading={ loading }
-							className="googlesitekit-settings--adsense-loading-item"
-							width={ metaItemWidth }
-							height="16px"
-						>
-							<h5 className="googlesitekit-settings-module__meta-item-type">
-								{ __(
-									'Web Stories Ad Unit',
-									'google-site-kit'
-								) }
-							</h5>
-						</LoadingWrapper>
-						<LoadingWrapper
-							loading={ loading }
-							width={ metaItemWidth }
-							height="16px"
-						>
-							<p className="googlesitekit-settings-module__meta-item-data">
-								{ ! webStoriesAdUnit && (
-									<span>
-										{ __( 'None', 'google-site-kit' ) }
-									</span>
-								) }
-								{ webStoriesAdUnit && (
-									<DisplaySetting
-										value={ webStoriesAdUnit }
-									/>
-								) }
-							</p>
-						</LoadingWrapper>
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
+						</h5>
+
+						<p className="googlesitekit-settings-module__meta-item-data">
+							{ ! webStoriesAdUnit && (
+								<span>{ __( 'None', 'google-site-kit' ) }</span>
+							) }
+							{ webStoriesAdUnit && (
+								<DisplaySetting value={ webStoriesAdUnit } />
+							) }
+						</p>
 					</div>
 				</div>
 			) }
 
-			<LoadingWrapper
-				loading={
-					loading || hasExistingAdBlockingRecoveryTag === undefined
-				}
-				className="googlesitekit-settings--adblocking-loading"
-				width="100%"
-				height={ adblockingCTAHeight }
-			>
-				{ adBlockingRecoverySetupStatus?.length > 0 && (
-					<div className="googlesitekit-settings-module__meta-items">
-						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+			{ loading && <ProgressBar small height={ 136 } /> }
+			{ ! loading && adBlockingRecoverySetupStatus?.length > 0 && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Ad blocking recovery', 'google-site-kit' ) }
+						</h5>
+						{ ! useAdBlockingRecoverySnippet && (
+							<p className="googlesitekit-settings-module__meta-item-data">
 								{ __(
-									'Ad blocking recovery',
+									'Ad blocking recovery message is not placed',
 									'google-site-kit'
 								) }
-							</h5>
-							{ ! useAdBlockingRecoverySnippet && (
+							</p>
+						) }
+						{ useAdBlockingRecoverySnippet && (
+							<Fragment>
 								<p className="googlesitekit-settings-module__meta-item-data">
-									{ __(
-										'Ad blocking recovery message is not placed',
-										'google-site-kit'
+									{ useAdBlockingRecoveryErrorSnippet
+										? __(
+												'Ad blocking recovery message enabled with error protection code',
+												'google-site-kit'
+										  )
+										: __(
+												'Ad blocking recovery message enabled without error protection code',
+												'google-site-kit'
+										  ) }
+								</p>
+								<p className="googlesitekit-settings-module__meta-item-data">
+									{ createInterpolateElement(
+										__(
+											'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
+											'google-site-kit'
+										),
+										{
+											a: (
+												<Link
+													href={ privacyMessagingURL }
+													external
+												/>
+											),
+										}
 									) }
 								</p>
-							) }
-							{ useAdBlockingRecoverySnippet && (
-								<Fragment>
-									<p className="googlesitekit-settings-module__meta-item-data">
-										{ useAdBlockingRecoveryErrorSnippet
-											? __(
-													'Ad blocking recovery message enabled with error protection code',
-													'google-site-kit'
-											  )
-											: __(
-													'Ad blocking recovery message enabled without error protection code',
-													'google-site-kit'
-											  ) }
-									</p>
-									<p className="googlesitekit-settings-module__meta-item-data">
-										{ createInterpolateElement(
-											__(
-												'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
-												'google-site-kit'
-											),
-											{
-												a: (
-													<Link
-														href={
-															privacyMessagingURL
-														}
-														external
-													/>
-												),
-											}
-										) }
-									</p>
-								</Fragment>
-							) }
-						</div>
+							</Fragment>
+						) }
 					</div>
-				) }
+				</div>
+			) }
 
-				{ ! adBlockingRecoverySetupStatus?.length && (
-					<AdBlockingRecoverySetupCTANotice />
-				) }
-			</LoadingWrapper>
+			{ ! loading && ! adBlockingRecoverySetupStatus?.length && (
+				<AdBlockingRecoverySetupCTANotice />
+			) }
 		</div>
 	);
 }
