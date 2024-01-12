@@ -74,6 +74,9 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( null );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( [] );
 
 			return <Setup />;
 		},
@@ -93,6 +96,9 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetProperties( properties, {
@@ -129,6 +135,9 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetProperties( properties, {
@@ -182,6 +191,9 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				// eslint-disable-next-line sitekit/acronym-case

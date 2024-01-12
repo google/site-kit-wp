@@ -38,7 +38,7 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { SpinnerButton } from 'googlesitekit-components';
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -46,7 +46,6 @@ import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/con
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../../../../util';
 import ContentAutoUpdate from './ContentAutoUpdate';
-import Link from '../../../../../components/Link';
 import SupportLink from '../../../../../components/SupportLink';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -165,9 +164,9 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								</SpinnerButton>
 							) }
 
-							<Link onClick={ handleDismissModule }>
+							<Button tertiary onClick={ handleDismissModule }>
 								{ __( 'Maybe later', 'google-site-kit' ) }
-							</Link>
+							</Button>
 						</div>
 					</Cell>
 					<Cell

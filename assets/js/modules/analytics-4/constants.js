@@ -19,6 +19,7 @@
 export const ACTIVATION_STEP_REMINDER = 0;
 export const ACTIVATION_STEP_SETUP = 1;
 export const ACTIVATION_STEP_SUCCESS = 2;
+export const ACTIVATION_STEP_IN_PROGRESS = 3;
 
 export const ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY =
 	'activation-acknowledgement-tooltip-state';

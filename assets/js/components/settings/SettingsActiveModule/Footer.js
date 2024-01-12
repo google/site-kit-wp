@@ -232,12 +232,13 @@ export default function Footer( props ) {
 				) }
 
 				{ hasSettings && (
-					<Link
+					<Button
+						tertiary
 						className="googlesitekit-settings-module__footer-cancel"
 						onClick={ handleClose }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
-					</Link>
+					</Button>
 				) }
 			</Fragment>
 		);

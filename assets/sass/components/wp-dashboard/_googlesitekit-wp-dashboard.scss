@@ -41,4 +41,18 @@
 	.googlesitekit-table .googlesitekit-table__head-item {
 		font-size: inherit;
 	}
+
+	.mdc-button {
+
+		&.googlesitekit-button-icon--spinner__running {
+
+			.mdc-button__label {
+				margin-right: 8px;
+			}
+
+			svg circle {
+				stroke: $c-white;
+			}
+		}
+	}
 }

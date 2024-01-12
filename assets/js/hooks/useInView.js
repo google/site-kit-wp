@@ -50,7 +50,7 @@ export const useInView = ( { sticky = false } = {} ) => {
 	const [ hasBeenInViewOnce, setHasBeenInViewOnce ] = useState( false );
 
 	const resetCount = useSelect( ( select ) =>
-		select( CORE_UI ).getInViewResetHook()
+		select( CORE_UI ).getInViewResetCount()
 	);
 	const forceInView = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'forceInView' )
