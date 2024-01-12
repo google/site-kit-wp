@@ -205,7 +205,7 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			{ loading && <ProgressBar small height={ 136 } /> }
+			{ loading && <ProgressBar small height={ 130 } /> }
 			{ ! loading && adBlockingRecoverySetupStatus?.length > 0 && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
