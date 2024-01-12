@@ -37,7 +37,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
-use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
+use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
@@ -95,7 +95,6 @@ final class Analytics_4 extends Module
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
-	use Module_With_Tag_Trait;
 
 	/**
 	 * Module slug name.
@@ -1393,14 +1392,29 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Returns the module Tag_Matchers instance.
+	 * Checks if the module tag is found in the provided content.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return Module_Tag_Matchers Instance of Module_Tag_Matchers.
+	 * @param string $content Content to search for the tags.
+	 * @return bool TRUE if tag is found, FALSE if not.
 	 */
-	public function get_tag_matchers() {
-		return new Tag_Matchers();
+	public function has_placed_tag_on_frontend( $content ) {
+		$tag_matchers = ( new Tag_Matchers() )->regex_matchers();
+
+		$search_string = 'Google Analytics snippet added by Site Kit';
+
+		if ( strpos( $content, $search_string ) !== false ) {
+			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
+		} else {
+			foreach ( $tag_matchers as $pattern ) {
+				if ( preg_match( $pattern, $content ) ) {
+					return Module_Tag_Matchers::TAG_EXISTS;
+				}
+			}
+		}
+
+		return Module_Tag_Matchers::NO_TAG_FOUND;
 	}
 
 	/**
