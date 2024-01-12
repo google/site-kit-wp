@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
+import { ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
@@ -107,6 +108,14 @@ export default function SettingsView() {
 	const snippetLabel = getSnippetLabel( useSnippet, existingTag, clientID );
 
 	const autoAdsDisabledMessage = getAutoAdsDisabledMessage( autoAdsDisabled );
+
+	const loading = useSelect( ( select ) => {
+		return (
+			select( MODULES_ADSENSE ).getSettings() === undefined ||
+			select( MODULES_ADSENSE ).hasExistingAdBlockingRecoveryTag() ===
+				undefined
+		);
+	} );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
@@ -190,7 +199,8 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			{ adBlockingRecoverySetupStatus?.length > 0 && (
+			{ loading && <ProgressBar small height={ 130 } /> }
+			{ ! loading && adBlockingRecoverySetupStatus?.length > 0 && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
@@ -239,7 +249,7 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			{ ! adBlockingRecoverySetupStatus?.length && (
+			{ ! loading && ! adBlockingRecoverySetupStatus?.length && (
 				<AdBlockingRecoverySetupCTANotice />
 			) }
 		</div>

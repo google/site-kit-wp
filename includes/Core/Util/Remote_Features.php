@@ -20,7 +20,7 @@ use WP_Error;
  * Class handling the fetching of Site Kit's currently
  * enabled features remotely via the Site Kit service.
  *
- * @since n.e.x.t
+ * @since 1.118.0
  * @access private
  * @ignore
  */
@@ -36,7 +36,7 @@ final class Remote_Features {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @var Options
 	 */
@@ -45,7 +45,7 @@ final class Remote_Features {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @var Authentication
 	 */
@@ -54,7 +54,7 @@ final class Remote_Features {
 	/**
 	 * OAuth credentials instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @var Credentials
 	 */
@@ -63,7 +63,7 @@ final class Remote_Features {
 	/**
 	 * Google_Proxy instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @var Google_Proxy
 	 */
@@ -72,7 +72,7 @@ final class Remote_Features {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param Options        $options        Options instance.
 	 * @param Authentication $authentication Authentication instance.
@@ -87,7 +87,7 @@ final class Remote_Features {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 */
 	public function register() {
 		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features' ), 10, 2 );
@@ -101,7 +101,7 @@ final class Remote_Features {
 	/**
 	 * Filters feature flags using features stored in options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @param boolean $feature_enabled Original value of the feature.
 	 * @param string  $feature_name    Feature name.
@@ -124,7 +124,7 @@ final class Remote_Features {
 	 * If the fetch errors or fails, the persistent option is not updated.
 	 *
 	 * @since 1.71.0
-	 * @since n.e.x.t Moved here from the Authentication class.
+	 * @since 1.118.0 Moved here from the Authentication class.
 	 *
 	 * @return array|WP_Error Array of features or a WP_Error object if the fetch errored.
 	 */
@@ -143,7 +143,7 @@ final class Remote_Features {
 	 * from the Google Proxy server, if Site Kit has been setup.
 	 *
 	 * @since 1.71.0
-	 * @since n.e.x.t Moved here from the Authentication class.
+	 * @since 1.118.0 Moved here from the Authentication class.
 	 *
 	 * @return void
 	 */
