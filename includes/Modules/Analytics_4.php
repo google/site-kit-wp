@@ -173,6 +173,13 @@ class Analytics_4 extends Module
 			}
 		);
 
+		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
+
+		// For non-AMP and AMP.
+		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
+		// For Web Stories plugin.
+		add_action( 'web_stories_story_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
+
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
