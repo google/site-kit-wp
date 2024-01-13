@@ -156,8 +156,6 @@ class Analytics_4 extends Module
 	public function register() {
 		$this->register_scopes_hook();
 
-		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
-
 		$synchronize_property = new Synchronize_Property(
 			$this,
 			$this->user_options
@@ -182,7 +180,6 @@ class Analytics_4 extends Module
 
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
-		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 
 		// Ensure that the data available state is reset when the measurement ID changes.
 		$this->get_settings()->on_change(
@@ -538,17 +535,73 @@ class Analytics_4 extends Module
 	}
 
 	/**
-	 * Handles Analytics measurement opt-out for a GA4 property.
+	 * Outputs the user tracking opt-out script.
 	 *
-	 * @since 1.41.0
+	 * This script opts out of all Google Analytics tracking, for all measurement IDs, regardless of implementation.
+	 * E.g. via Tag Manager, etc.
+	 *
+	 * @since 1.5.0
+	 * @since n.e.x.t Migrated from the Analytics (UA) class and adapted to only work for GA4 properties.
+	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
-	private function analytics_tracking_opt_out() {
-		// Opt-out should always use the measurement ID, even when using a GT tag.
-		$tag_id = $this->get_measurement_id();
-		if ( empty( $tag_id ) ) {
+	private function print_tracking_opt_out() {
+		$settings    = $this->get_settings()->get();
+		$account_id  = $settings['accountID'];
+		$property_id = $settings['propertyID'];
+
+		if ( ! $this->is_tracking_disabled() ) {
 			return;
 		}
-		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
+
+		if ( $this->context->is_amp() ) : ?>
+			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
+			<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+		<?php else : ?>
+			<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+			<?php
+			// Opt-out should always use the measurement ID, even when using a GT tag.
+			$tag_id = $this->get_measurement_id();
+			if ( ! empty( $tag_id ) ) {
+				BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
+			}
+			?>
+			<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
+			<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+			<?php
+		endif;
+	}
+
+	/**
+	 * Checks whether or not tracking snippet should be contextually disabled for this request.
+	 *
+	 * @since 1.1.0
+	 * @since n.e.x.t Migrated here from the Analytics (UA) class.
+	 *
+	 * @return bool
+	 */
+	protected function is_tracking_disabled() {
+		$settings = $this->get_settings()->get();
+		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
+		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
+			return false;
+		}
+
+		$option = $this->get_settings()->get();
+
+		$disable_logged_in_users  = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
+		$disable_content_creators = in_array( 'contentCreators', $option['trackingDisabled'], true ) && current_user_can( 'edit_posts' );
+
+		$disabled = $disable_logged_in_users || $disable_content_creators;
+
+		/**
+		 * Filters whether or not the Analytics tracking snippet is output for the current request.
+		 *
+		 * @since 1.1.0
+		 *
+		 * @param $disabled bool Whether to disable tracking or not.
+		 */
+		return (bool) apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
 	}
 
 	/**
