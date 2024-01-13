@@ -101,7 +101,11 @@ class Synchronize_Property {
 		$cron_already_scheduled = wp_next_scheduled( self::CRON_SYNCHRONIZE_PROPERTY );
 
 		if ( ! $create_time_has_value && $analytics_4_connected && ! $cron_already_scheduled ) {
-			wp_schedule_single_event( time(), self::CRON_SYNCHRONIZE_PROPERTY );
+			wp_schedule_single_event(
+				// Schedule the task to run in 30 minutes.
+				time() + ( 30 * MINUTE_IN_SECONDS ),
+				self::CRON_SYNCHRONIZE_PROPERTY
+			);
 		}
 	}
 

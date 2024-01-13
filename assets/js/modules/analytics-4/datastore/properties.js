@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -46,7 +51,7 @@ import {
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { createRegistrySelector } from '@wordpress/data';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
 const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -191,10 +196,19 @@ const baseActions = {
 		invariant( accountID, 'accountID is required.' );
 
 		return ( function* () {
+			const { dispatch } = yield Data.commonActions.getRegistry();
+
 			const { response, error } =
 				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
 					accountID
 				);
+
+			if ( response ) {
+				// Refresh account summaries to load the new property.
+				yield dispatch(
+					MODULES_ANALYTICS_4
+				).fetchGetAccountSummaries();
+			}
 
 			return { response, error };
 		} )();
@@ -709,6 +723,12 @@ const baseResolvers = {
 	},
 	*getPropertyCreateTime() {
 		const registry = yield Data.commonActions.getRegistry();
+		// Ensure settings are available to select.
+		yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getSettings()
+		);
 
 		const propertyID = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -722,15 +742,41 @@ const baseResolvers = {
 			return;
 		}
 
+		const cachedPropertyCreateTime = yield Data.commonActions.await(
+			getItem(
+				`analytics4-properties-getPropertyCreateTime-${ propertyID }`
+			)
+		);
+
+		if ( cachedPropertyCreateTime.cacheHit ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyCreateTime( cachedPropertyCreateTime.value );
+
+			return;
+		}
+
 		const property = yield Data.commonActions.await(
 			registry
 				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 				.getProperty( propertyID )
 		);
 
+		if ( ! property?.createTime ) {
+			return;
+		}
+
+		// Cache this value for 1 hour (the default cache time).
+		yield Data.commonActions.await(
+			setItem(
+				`analytics4-properties-getPropertyCreateTime-${ propertyID }`,
+				property.createTime
+			)
+		);
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setPropertyCreateTime( property?.createTime );
+			.setPropertyCreateTime( property.createTime );
 	},
 };
 
@@ -831,30 +877,17 @@ const baseSelectors = {
 	 *
 	 * @since 1.118.0
 	 *
-	 * @param {Object}  state                Data store's state.
-	 * @param {Object}  args                 Arguments object.
-	 * @param {boolean} args.hasModuleAccess Whether the current user has access to the Analytics module(s).
+	 * @return {boolean} TRUE if the properties summaries are currently being loaded, otherwise FALSE.
 	 */
-	isLoadingPropertySummaries: createRegistrySelector(
-		( select ) =>
-			( state, { hasModuleAccess } ) => {
-				if (
-					hasModuleAccess &&
-					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getAccountSummaries'
-					)
-				) {
-					return true;
-				}
-
-				return (
-					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-					select(
-						MODULES_ANALYTICS
-					).hasFinishedSelectingAccount() === false
-				);
-			}
-	),
+	isLoadingPropertySummaries: createRegistrySelector( ( select ) => () => {
+		return (
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getAccountSummaries'
+			) ||
+			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
+		);
+	} ),
 };
 
 const store = Data.combineStores(

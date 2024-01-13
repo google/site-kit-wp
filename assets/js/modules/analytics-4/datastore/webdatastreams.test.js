@@ -1046,9 +1046,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingPropertySummaries( {
-							hasModuleAccess,
-						} )
+						.isLoadingPropertySummaries()
 				).toBe( false );
 
 				registry
@@ -1058,9 +1056,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isLoadingPropertySummaries( {
-							hasModuleAccess,
-						} )
+						.isLoadingPropertySummaries()
 				).toBe( true );
 			} );
 		} );
