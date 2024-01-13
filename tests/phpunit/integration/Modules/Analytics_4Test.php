@@ -138,6 +138,8 @@ class Analytics_4Test extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'web_stories_story_head' );
 
 		$this->analytics->register();
 
@@ -149,6 +151,10 @@ class Analytics_4Test extends TestCase {
 			),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
+
+		// Test actions for tracking opt-out are added.
+		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'web_stories_story_head' ) );
 	}
 
 	/**
