@@ -214,7 +214,7 @@ export const getChartOptions = (
 /**
  * Returns the Google Charts currency pattern for a given currency code and locale.
  *
- * @since n.e.x.t
+ * @since 1.118.0
  *
  * @param {string} currencyCode ISO 4217 currency code.
  * @param {string} locale       Locale to use for formatting.

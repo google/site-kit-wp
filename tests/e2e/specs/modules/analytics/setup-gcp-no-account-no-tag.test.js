@@ -201,7 +201,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			page.waitForResponse( ( req ) =>
 				req.url().match( 'analytics-4/data/account-summaries' )
 			),
-			expect( page ).toClick( '.googlesitekit-cta-link', {
+			expect( page ).toClick( '.mdc-button', {
 				text: /Re-fetch My Account/i,
 			} ),
 		] );

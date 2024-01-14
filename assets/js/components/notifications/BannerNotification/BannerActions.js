@@ -31,7 +31,6 @@ import { useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import Link from '../../Link';
 const { useSelect } = Data;
 
 export default function BannerActions( props ) {
@@ -66,10 +65,6 @@ export default function BannerActions( props ) {
 		return null;
 	}
 
-	// ctaLink links are always buttons, in which case the dismiss should be a Link.
-	// If there is only a dismiss however, it should be the primary action with a Button.
-	const DismissComponent = ctaLink || ctaComponent ? Link : Button;
-
 	return (
 		<div className="googlesitekit-publisher-win__actions">
 			{ ctaComponent }
@@ -88,12 +83,13 @@ export default function BannerActions( props ) {
 			) }
 
 			{ dismissLabel && (
-				<DismissComponent
+				<Button
+					tertiary={ ctaLink || ctaComponent }
 					onClick={ dismissCallback }
 					disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
 				>
 					{ dismissLabel }
-				</DismissComponent>
+				</Button>
 			) }
 		</div>
 	);

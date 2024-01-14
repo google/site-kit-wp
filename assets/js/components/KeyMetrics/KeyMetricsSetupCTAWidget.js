@@ -33,7 +33,6 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import Link from '../Link';
 import KeyMetricsCTAContent from './KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -179,16 +178,12 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 						>
 							{ __( 'Get tailored metrics', 'google-site-kit' ) }
 						</Button>
-						{ /*
-							The `onClick` prop is used to ensure consistent styling for the link button across various widgets and banners.
-							In the future, it will also serve the purpose of adding a track event.
-						*/ }
-						<Link onClick={ openMetricsSelectionPanel }>
+						<Button tertiary onClick={ openMetricsSelectionPanel }>
 							{ __(
 								'I’ll pick metrics myself',
 								'google-site-kit'
 							) }
-						</Link>
+						</Button>
 					</Fragment>
 				}
 				ga4Connected

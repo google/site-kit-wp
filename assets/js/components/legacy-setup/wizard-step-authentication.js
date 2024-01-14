@@ -32,7 +32,6 @@ import { Component } from '@wordpress/element';
  */
 import { Button } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../material-components';
-import Link from '../Link';
 import OptIn from '../OptIn';
 
 class WizardStepAuthentication extends Component {
@@ -81,12 +80,13 @@ class WizardStepAuthentication extends Component {
 									) }
 								</Button>
 								{ resetAndRestart && (
-									<Link
+									<Button
 										className="googlesitekit-wizard-step__back"
+										tertiary
 										onClick={ resetAndRestart }
 									>
 										{ __( 'Back', 'google-site-kit' ) }
-									</Link>
+									</Button>
 								) }
 							</p>
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
