@@ -58,9 +58,7 @@ export default function SetupEnhancedMeasurementSwitch() {
 	);
 
 	const isLoadingPropertySummaries = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries( {
-			hasModuleAccess: true,
-		} )
+		select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries()
 	);
 
 	const isLoadingWebDataStreams = useSelect( ( select ) =>
