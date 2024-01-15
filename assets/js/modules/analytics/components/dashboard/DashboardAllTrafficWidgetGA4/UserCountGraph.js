@@ -42,8 +42,7 @@ import ReportError from '../../../../../components/ReportError';
 import { createZeroDataRow } from './utils';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import useViewOnly from '../../../../../hooks/useViewOnly';
-import { getDateString } from '../../../../../util';
-import { getNextDate } from '../../../../../util/date-range/get-next-date';
+import { getDateString, stringToDate } from '../../../../../util';
 const { useSelect } = Data;
 
 export default function UserCountGraph( props ) {
@@ -80,14 +79,21 @@ export default function UserCountGraph( props ) {
 	} else if ( gatheringData ) {
 		rows = [];
 	} else {
+		// Get the first date after the start date so there's a tick at the start
+		// of the date range.
+		// See: https://github.com/google/site-kit-wp/pull/8053#pullrequestreview-1811682783
+		const dateAfterStartDate = stringToDate( startDate );
+		dateAfterStartDate.setDate( dateAfterStartDate.getDate() + 1 );
+		const dateAfterStartDateString = getDateString( dateAfterStartDate );
+
 		// For the "zero data" case, we need to create a zero data row for the start
-		// and end dates to ensure the chart renders the ticks at the correct offsets.
-		// We also need to create an additional row for the next date after the start
-		// date to ensure the chart renders the first tick as we are removing
-		// the first tick from the chart.
+		// and end dates to ensure the chart renders the ticks at the correct
+		// offsets.
+		//
+		// We also need to create an additional row for
 		rows = [
 			createZeroDataRow( startDate ),
-			createZeroDataRow( getNextDate( startDate, 1 ) ),
+			createZeroDataRow( dateAfterStartDateString ),
 			createZeroDataRow( endDate ),
 		];
 	}
