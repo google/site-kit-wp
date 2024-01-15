@@ -152,7 +152,7 @@ export default function AccountCreate() {
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: __(
-					'Additional permissions are required to create a new Analytics account.',
+					'Additional permissions are required to create a new Analytics account',
 					'google-site-kit'
 				),
 				data: {

@@ -110,7 +110,7 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 					className="googlesitekit-margin-top-0 googlesitekit-margin-bottom-0 googlesitekit-settings-notice-adsense-top-earning-pages-widget"
 				>
 					{ __(
-						'Site Kit will notify you as soon as you can connect AdSense and Analytics again.',
+						'Site Kit will notify you as soon as you can connect AdSense and Analytics again',
 						'google-site-kit'
 					) }
 				</SettingsNotice>

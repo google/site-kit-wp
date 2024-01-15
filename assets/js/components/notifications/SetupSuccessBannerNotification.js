@@ -223,7 +223,7 @@ function SetupSuccessBannerNotification() {
 				);
 			} else if ( ! winData.description && ! winData.learnMore.label ) {
 				winData.description = __(
-					'Connect more services to see more stats.',
+					'Connect more services to see more stats',
 					'google-site-kit'
 				);
 				winData.learnMore = {

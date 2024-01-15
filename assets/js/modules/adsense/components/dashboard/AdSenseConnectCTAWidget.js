@@ -91,7 +91,7 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 						'google-site-kit'
 					) }
 					content={ __(
-						'The Monetization section will be added back to your dashboard if you connect AdSense in Settings later.',
+						'The Monetization section will be added back to your dashboard if you connect AdSense in Settings later',
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }

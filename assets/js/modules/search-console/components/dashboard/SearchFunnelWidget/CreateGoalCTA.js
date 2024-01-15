@@ -69,7 +69,7 @@ export default function CreateGoalCTA() {
 			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
 					{ __(
-						'Set up goals to track how well your site fulfills your business objectives.',
+						'Set up goals to track how well your site fulfills your business objectives',
 						'google-site-kit'
 					) }
 				</p>
