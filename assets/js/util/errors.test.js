@@ -247,12 +247,12 @@ describe( 'Error Utilities', () => {
 					code: ERROR_INTERNAL_SERVER_ERROR,
 					message: 'Internal server error',
 				},
-				'There was a critical error on this website while fetching data.',
+				'There was a critical error on this website while fetching data',
 			],
 			[
 				'return the appropriate error message when error code is invalid_json',
 				{ code: ERROR_INVALID_JSON, message: 'Invalid JSON' },
-				'The server provided an invalid response.',
+				'The server provided an invalid response',
 			],
 		] )( '%s', ( label, error, message ) => {
 			it( `should ${ label }`, () => {

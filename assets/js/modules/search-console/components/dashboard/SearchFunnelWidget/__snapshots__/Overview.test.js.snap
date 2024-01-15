@@ -265,7 +265,7 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
             <p
               class="googlesitekit-analytics-cta--description"
             >
-              See how many people visit your site from Search and track how you’re achieving your goals.
+              See how many people visit your site from Search and track how you’re achieving your goals
             </p>
             <button
               class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
