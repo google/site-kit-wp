@@ -124,3 +124,36 @@ class Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink
     return $this->name;
   }
 }
+
+class Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse extends Google_Collection
+{
+  protected $collection_key = 'adsenseLinks';
+  protected $internal_gapi_mappings = array(
+  );
+  protected $adsenseLinksType = 'Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink';
+  protected $adsenseLinksDataType = 'array';
+  public $adsenseLinks;
+  public $nextPageToken;
+
+
+  public function setAdsenseLinks($adsenseLinks)
+  {
+    $this->adsenseLinks = $adsenseLinks;
+  }
+  public function getAdsenseLinks()
+  {
+    return $this->adsenseLinks;
+  }
+  public function setNextPageToken($nextPageToken)
+  {
+    $this->nextPageToken = $nextPageToken;
+  }
+  public function getNextPageToken()
+  {
+    return $this->nextPageToken;
+  }
+}
+
+class Google_Service_GoogleAnalyticsAdmin_GoogleProtobufEmpty extends Google_Model
+{
+}
