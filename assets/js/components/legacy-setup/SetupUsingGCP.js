@@ -347,7 +347,7 @@ class SetupUsingGCP extends Component {
 															</h1>
 															<p className="googlesitekit-setup__description">
 																{ __(
-																	'Please sign into your Google account to begin',
+																	'Please sign into your Google account to begin.',
 																	'google-site-kit'
 																) }
 															</p>

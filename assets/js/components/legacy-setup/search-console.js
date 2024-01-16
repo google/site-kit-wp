@@ -252,7 +252,7 @@ class SearchConsole extends Component {
 				</h2>
 				<p className="googlesitekit-setup-module__text--no-margin">
 					{ __(
-						'Your Search Console is set up with Site Kit',
+						'Your Search Console is set up with Site Kit.',
 						'google-site-kit'
 					) }
 				</p>

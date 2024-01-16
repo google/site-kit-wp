@@ -56,7 +56,7 @@ class WizardStepAuthentication extends Component {
 							</h2>
 							<p>
 								{ __(
-									'Please sign into your Google account to begin',
+									'Please sign into your Google account to begin.',
 									'google-site-kit'
 								) }
 							</p>

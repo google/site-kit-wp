@@ -248,7 +248,7 @@ class SiteVerification extends Component {
 
 				<p className="googlesitekit-wizard-step__text">
 					{ __(
-						'We will need to verify your URL for Site Kit',
+						'We will need to verify your URL for Site Kit.',
 						'google-site-kit'
 					) }
 				</p>
