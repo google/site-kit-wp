@@ -135,18 +135,6 @@ final class Analytics extends Module
 				}
 			}
 		);
-
-		add_filter(
-			'googlesitekit_dashboard_sharing_data',
-			function ( $data ) {
-				if ( ! $this->authentication->is_authenticated() ) {
-					$settings = $this->get_settings()->get();
-				}
-
-				return $data;
-			}
-		);
-
 	}
 
 	/**
