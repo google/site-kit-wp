@@ -49,7 +49,7 @@ describe( 'plugin activation notice', () => {
 			await expect( page ).toMatchElement(
 				'.googlesitekit-activation__title',
 				{
-					text: /Congratulations, the Site Kit plugin is now activated./i,
+					text: /Congratulations, the Site Kit plugin is now activated/i,
 				}
 			);
 
