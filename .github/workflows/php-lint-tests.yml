@@ -155,7 +155,7 @@ jobs:
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
 
       - name: Display classmaps
-        run: cat includes/vendor/composer/autoload_classmap.php
+        run: cat third-party/vendor/composer/autoload_classmap.php
         if: startsWith( matrix.php_version,  '8.' )
 
       - name: Run Unit Tests
