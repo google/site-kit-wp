@@ -132,9 +132,12 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}-php${{matrix.composer_php_version}}
           restore-keys: |
             ${{ runner.os }}-composer-
+
+      - name: Display PHP Version
+        run: php -v
 
       - name: Composer Install
         run: composer install --no-interaction --no-progress
@@ -153,9 +156,6 @@ jobs:
 
       - name: Set up PHP test data
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
-
-      - name: Display classmaps
-        run: cat third-party/vendor/composer/autoload_classmap.php
 
       - name: Run Unit Tests
         run: composer test -- --verbose
