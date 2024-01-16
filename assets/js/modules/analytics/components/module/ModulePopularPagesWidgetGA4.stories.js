@@ -256,6 +256,7 @@ Error.args = {
 };
 Error.scenario = {
 	label: 'Modules/Analytics/Widgets/ModulePopularPagesWidgetGA4/Error',
+	delay: 250,
 };
 
 export default {
