@@ -28,12 +28,12 @@ import { Fragment, useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
-	AccountSelect,
 	PropertySelect as GA4PropertySelect,
 	WebDataStreamSelect as GA4WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
 import SetupEnhancedMeasurementSwitch from '../../../analytics-4/components/setup/SetupEnhancedMeasurementSwitch';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
+import { AccountSelect } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
