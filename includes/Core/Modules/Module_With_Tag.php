@@ -29,6 +29,6 @@ interface Module_With_Tag {
 	 * @param string $content Content to search for the tags.
 	 * @return bool TRUE if tag is found, FALSE if not.
 	 */
-	public function has_placed_tag_on_frontend( $content );
+	public function has_placed_tag_in_content( $content );
 
 }

@@ -152,6 +152,17 @@ final class Analytics extends Module
 	}
 
 	/**
+	 * Gets Module public name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Formatted module name.
+	 */
+	public function get_public_name() {
+		return 'Analytics';
+	}
+
+	/**
 	 * Checks whether or not tracking snippet should be contextually disabled for this request.
 	 *
 	 * @since 1.1.0

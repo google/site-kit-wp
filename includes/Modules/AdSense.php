@@ -148,6 +148,17 @@ final class AdSense extends Module
 	}
 
 	/**
+	 * Gets Module public name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Formatted module name.
+	 */
+	public function get_public_name() {
+		return 'AdSense';
+	}
+
+	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.0.0
@@ -846,7 +857,7 @@ final class AdSense extends Module
 	 * @param string $content Content to search for the tags.
 	 * @return bool TRUE if tag is found, FALSE if not.
 	 */
-	public function has_placed_tag_on_frontend( $content ) {
+	public function has_placed_tag_in_content( $content ) {
 		$tag_matchers = ( new Tag_Matchers() )->regex_matchers();
 
 		$search_string = 'Google AdSense snippet added by Site Kit';

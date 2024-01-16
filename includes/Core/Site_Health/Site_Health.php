@@ -27,54 +27,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 class Site_Health {
 
 	/**
-	 * Context instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Options instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Options
-	 */
-	private $options;
-
-	/**
-	 * User_Options instance.
-	 *
-	 * @since n.e.x.t
-	 * @var User_Options
-	 */
-	private $user_options;
-
-	/**
-	 * Authentication instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Authentication
-	 */
-	private $authentication;
-
-	/**
-	 * Modules instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Modules
-	 */
-	private $modules;
-
-	/**
-	 * Permissions instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Permissions
-	 */
-	private $permissions;
-
-	/**
 	 * General_Data instance.
 	 *
 	 * @since n.e.x.t
@@ -110,15 +62,15 @@ class Site_Health {
 		Modules $modules,
 		Permissions $permissions
 	) {
-		$this->context        = $context;
-		$this->options        = $options;
-		$this->user_options   = $user_options;
-		$this->authentication = $authentication;
-		$this->modules        = $modules;
-		$this->permissions    = $permissions;
+		$context        = $context;
+		$options        = $options;
+		$user_options   = $user_options;
+		$authentication = $authentication;
+		$modules        = $modules;
+		$permissions    = $permissions;
 
-		$this->general_data   = new General_Data( $this->context, $this->options, $this->user_options, $this->authentication, $this->modules, $this->permissions );
-		$this->tags_placement = new Tags_Placement( $this->modules );
+		$this->general_data   = new General_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
+		$this->tags_placement = new Tags_Placement( $modules );
 	}
 
 	/**
