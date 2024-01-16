@@ -22,7 +22,7 @@
     "ext-openssl": "*",
     "google/apiclient": "^2.12.2",
     "google/apiclient-services": "0.277.*",
-    "guzzlehttp/guzzle": "^6.5.8",
+    "guzzlehttp/guzzle": "^7.0.0",
     "true/punycode": "^2.0 <2.1.1"
   },
   "replace": {
@@ -41,7 +41,7 @@
   },
   "config": {
     "platform": {
-      "php": "5.6.20"
+      "php": "7.4.33"
     },
     "sort-packages": true,
     "allow-plugins": {
