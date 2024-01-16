@@ -28,12 +28,15 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Tag_Manager\Tag_Matchers;
+use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Site_Health\General_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -54,7 +57,7 @@ use WP_Error;
  * @ignore
  */
 final class Tag_Manager extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -101,6 +104,17 @@ final class Tag_Manager extends Module
 		// Filter whether certain users can be excluded from tracking.
 		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
+	}
+
+	/**
+	 * Gets Module public name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Formatted module name.
+	 */
+	public function get_public_name() {
+		return 'Tag Manager';
 	}
 
 	/**
@@ -177,17 +191,17 @@ final class Tag_Manager extends Module
 			'tagmanager_account_id'       => array(
 				'label' => __( 'Tag Manager account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'tagmanager_container_id'     => array(
 				'label' => __( 'Tag Manager container ID', 'google-site-kit' ),
 				'value' => $settings['containerID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['containerID'], 7 ),
+				'debug' => General_Data::redact_debug_value( $settings['containerID'], 7 ),
 			),
 			'tagmanager_amp_container_id' => array(
 				'label' => __( 'Tag Manager AMP container ID', 'google-site-kit' ),
 				'value' => $settings['ampContainerID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['ampContainerID'], 7 ),
+				'debug' => General_Data::redact_debug_value( $settings['ampContainerID'], 7 ),
 			),
 			'tagmanager_use_snippet'      => array(
 				'label' => __( 'Tag Manager snippet placed', 'google-site-kit' ),
@@ -544,8 +558,9 @@ final class Tag_Manager extends Module
 	 * Registers the Tag Manager tag.
 	 *
 	 * @since 1.24.0
+	 * @since n.e.x.t Made method public.
 	 */
-	private function register_tag() {
+	public function register_tag() {
 		$is_amp          = $this->context->is_amp();
 		$module_settings = $this->get_settings();
 		$settings        = $module_settings->get();
@@ -563,6 +578,32 @@ final class Tag_Manager extends Module
 				$tag->register();
 			}
 		}
+	}
+
+	/**
+	 * Checks if the module tag is found in the provided content.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Content to search for the tags.
+	 * @return bool TRUE if tag is found, FALSE if not.
+	 */
+	public function has_placed_tag_in_content( $content ) {
+		$tag_matchers = ( new Tag_Matchers() )->regex_matchers();
+
+		$search_string = 'Google Tag Manager snippet added by Site Kit';
+
+		if ( strpos( $content, $search_string ) !== false ) {
+			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
+		} else {
+			foreach ( $tag_matchers as $pattern ) {
+				if ( preg_match( $pattern, $content ) ) {
+					return Module_Tag_Matchers::TAG_EXISTS;
+				}
+			}
+		}
+
+		return Module_Tag_Matchers::NO_TAG_FOUND;
 	}
 
 	/**

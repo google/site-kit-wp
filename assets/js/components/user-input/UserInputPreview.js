@@ -31,7 +31,7 @@ import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -48,7 +48,6 @@ import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
-import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import CancelUserInputButton from './CancelUserInputButton';
 import { Row, Cell } from '../../material-components';
@@ -201,13 +200,14 @@ export default function UserInputPreview( props ) {
 							>
 								{ __( 'Save', 'google-site-kit' ) }
 							</SpinnerButton>
-							<Link
+							<Button
+								tertiary
 								className="googlesitekit-user-input__buttons--back"
 								onClick={ goBack }
 								disabled={ isScreenLoading }
 							>
 								{ __( 'Back', 'google-site-kit' ) }
-							</Link>
+							</Button>
 						</div>
 						<div className="googlesitekit-user-input__footer-cancel">
 							<CancelUserInputButton

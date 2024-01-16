@@ -84,7 +84,7 @@ class Setup {
 	/**
 	 * Remote_Features instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @var Remote_Features
 	 */

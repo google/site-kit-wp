@@ -174,6 +174,12 @@ export const getChartOptions = (
 	}
 
 	if ( chartType === 'LineChart' ) {
+		if ( ! options?.hAxis?.maxTextLines ) {
+			set( chartOptions, 'hAxis.maxTextLines', 1 );
+		}
+		if ( ! options?.hAxis?.minTextSpacing ) {
+			set( chartOptions, 'hAxis.minTextSpacing', 100 );
+		}
 		// eslint-disable-next-line sitekit/acronym-case
 		if ( options?.tooltip?.isHtml === undefined ) {
 			set( chartOptions, 'tooltip.isHtml', true );
@@ -208,7 +214,7 @@ export const getChartOptions = (
 /**
  * Returns the Google Charts currency pattern for a given currency code and locale.
  *
- * @since n.e.x.t
+ * @since 1.118.0
  *
  * @param {string} currencyCode ISO 4217 currency code.
  * @param {string} locale       Locale to use for formatting.

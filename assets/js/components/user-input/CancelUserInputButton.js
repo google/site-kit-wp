@@ -30,9 +30,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
 export default function CancelUserInputButton( { disabled } ) {
@@ -43,13 +43,14 @@ export default function CancelUserInputButton( { disabled } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	return (
-		<Link
+		<Button
+			tertiary
 			className="googlesitekit-user-input__buttons--cancel"
 			onClick={ () => navigateTo( dashboardURL ) }
 			disabled={ disabled }
 		>
 			{ __( 'Cancel', 'google-site-kit' ) }
-		</Link>
+		</Button>
 	);
 }
 

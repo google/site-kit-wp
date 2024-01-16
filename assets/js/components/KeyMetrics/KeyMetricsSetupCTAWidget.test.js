@@ -347,7 +347,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsDataAvailableOnLoad( true );
 
-		const { container, waitForRegistry } = render(
+		const { container, getByRole, waitForRegistry } = render(
 			<div>
 				<div id="adminmenu">
 					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -374,11 +374,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		// eslint-disable-next-line require-await
 		await act( async () => {
-			fireEvent.click(
-				container.querySelectorAll(
-					'button.googlesitekit-cta-link'
-				)[ 1 ]
-			);
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
 		} );
 
 		expect(

@@ -53,6 +53,17 @@ final class PageSpeed_Insights extends Module
 	public function register() {}
 
 	/**
+	 * Gets Module public name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Formatted module name.
+	 */
+	public function get_public_name() {
+		return 'PageSpeed Insights';
+	}
+
+	/**
 	 * Cleans up when the module is deactivated.
 	 *
 	 * @since 1.0.0
