@@ -156,7 +156,6 @@ jobs:
 
       - name: Display classmaps
         run: cat third-party/vendor/composer/autoload_classmap.php
-        if: startsWith( matrix.php_version,  '8.' )
 
       - name: Run Unit Tests
         run: composer test -- --verbose
