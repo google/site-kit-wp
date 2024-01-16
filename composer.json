@@ -62,7 +62,7 @@
     ],
     "prefix-dependencies": [
       "@composer --working-dir=php-scoper install",
-      "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
+      "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force",
       "@autoload-includes",
       "@autoload-third-party",
       "@composer dump-autoload --no-dev",
