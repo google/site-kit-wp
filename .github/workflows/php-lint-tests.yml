@@ -151,10 +151,6 @@ jobs:
           composer update phpunit/phpunit --with-dependencies --no-scripts
         if: startsWith( matrix.php_version,  '8.' )
 
-      - name: List Guzzle files
-        run: ls -l third-party/google/apiclient/src/
-        if: startsWith( matrix.php_version, '8.' )
-
       - name: Set up PHP test data
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
 
