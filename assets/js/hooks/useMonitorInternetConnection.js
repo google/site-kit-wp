@@ -38,7 +38,7 @@ const { useDispatch, useSelect } = Data;
 /**
  * Monitors the user's internet connection status.
  *
- * @since n.e.x.t
+ * @since 1.118.0
  */
 export function useMonitorInternetConnection() {
 	const { setIsOnline } = useDispatch( CORE_UI );

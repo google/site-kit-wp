@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.4
 Requires PHP:      5.6
-Stable tag:        1.116.0
+Stable tag:        1.118.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, tag-manager, site-kit
@@ -108,6 +108,35 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.118.0 =
+
+**Enhanced**
+
+* Show the loading spinner in the CTA when setting up Analytics from the Site Kit WP dashboard widget. See [#8024](https://github.com/google/site-kit-wp/issues/8024).
+* Add a "Get Help" link  when `google_api_connection_fail` error occurs in Site Kit compatibility check. See [#7994](https://github.com/google/site-kit-wp/issues/7994).
+* Update the opt-in anonymous usage data tracking to track an event when the Analytics module is set up with Enhanced Measurement. See [#7975](https://github.com/google/site-kit-wp/issues/7975).
+* Ensure the `confirm_notification` GA event is tracked when returning from OAuth to the "Enable enhanced measurement" banner. See [#7974](https://github.com/google/site-kit-wp/issues/7974).
+* Update the `Analytics_4\Web_Tag` class to function independently from the original Analytics `Web_Tag` class. See [#7924](https://github.com/google/site-kit-wp/issues/7924).
+* Update Analytics 4 settings to use Analytics settings if they are not migrated yet. See [#7923](https://github.com/google/site-kit-wp/issues/7923).
+* Improve appearance of secondary CTAs across the plugin. See [#7912](https://github.com/google/site-kit-wp/issues/7912).
+* Update Analytics components to use data from account summaries. See [#7637](https://github.com/google/site-kit-wp/issues/7637).
+* Update labels for buttons in the User Input questions to have better UX. See [#7546](https://github.com/google/site-kit-wp/issues/7546).
+* Update extensible Advanced Tracking API to work with GA4. See [#7145](https://github.com/google/site-kit-wp/issues/7145).
+* Prevent excessive requests for remote feature flags. See [#6015](https://github.com/google/site-kit-wp/issues/6015).
+* Improve the notification banner that is shown when Site Kit is gathering data. See [#4939](https://github.com/google/site-kit-wp/issues/4939).
+* Update the All Traffic widget to show tooltip when hovering over the users chart. See [#4770](https://github.com/google/site-kit-wp/issues/4770).
+
+**Changed**
+
+* Update Site Kit internal Analytics to use GA4. See [#7532](https://github.com/google/site-kit-wp/issues/7532).
+
+**Fixed**
+
+* Reduce frequency of requests made to GA4 Admin API on Site Kit dashboard. See [#8062](https://github.com/google/site-kit-wp/issues/8062).
+* Prevent accessing `undefined` as an object following OAuth permissions flow. See [#7981](https://github.com/google/site-kit-wp/issues/7981).
+* Update User Input to only change user attribution when the answer changes. See [#7892](https://github.com/google/site-kit-wp/issues/7892).
+* Fix incorrect currency displayed in the AdSense overview widget. See [#6807](https://github.com/google/site-kit-wp/issues/6807).
 
 = 1.116.0 =
 
