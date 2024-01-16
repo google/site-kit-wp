@@ -71,13 +71,10 @@ export const baseControls = {
 	},
 };
 
-const baseSelectors = {};
-
 const store = Data.combineStores( {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,
-	selectors: baseSelectors,
 } );
 
 export const initialState = store.initialState;

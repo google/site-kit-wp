@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Modules\Analytics\Tag_Interface;
 
 /**
  * Class for Web tag.
@@ -43,20 +42,23 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	private $home_domain;
 
 	/**
-	 * Whether or not to anonymize IP addresses.
-	 *
-	 * @since 1.24.0
-	 * @var bool
-	 */
-	private $anonymize_ip;
-
-	/**
 	 * Ads conversion ID.
 	 *
 	 * @since 1.32.0
 	 * @var string
 	 */
 	private $ads_conversion_id;
+
+	/**
+	 * Sets custom dimensions data.
+	 *
+	 * @since 1.113.0
+	 *
+	 * @param string $custom_dimensions Custom dimensions data.
+	 */
+	public function set_custom_dimensions( $custom_dimensions ) {
+		$this->custom_dimensions = $custom_dimensions;
+	}
 
 	/**
 	 * Sets the current home domain.
@@ -67,17 +69,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 */
 	public function set_home_domain( $domain ) {
 		$this->home_domain = $domain;
-	}
-
-	/**
-	 * Sets whether or not to anonymize IP addresses.
-	 *
-	 * @since 1.24.0
-	 *
-	 * @param bool $anonymize_ip Whether to anonymize IP addresses or not.
-	 */
-	public function set_anonymize_ip( $anonymize_ip ) {
-		$this->anonymize_ip = (bool) $anonymize_ip;
 	}
 
 	/**
@@ -231,17 +222,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
 		if ( ! empty( $this->home_domain ) ) {
 			$config['linker'] = array( 'domains' => array( $this->home_domain ) );
-		}
-
-		if ( $this->anonymize_ip ) {
-			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
-			$config['anonymize_ip'] = true;
-		}
-
-		// Do not add custom dimensions if UA is enabled because they will be
-		// added to the UA property instead of to the GA4 measurement ID.
-		if ( did_action( 'googlesitekit_analytics_init_tag' ) ) {
-			return $config;
 		}
 
 		if ( ! empty( $this->custom_dimensions ) ) {

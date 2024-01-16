@@ -38,22 +38,24 @@ describe( 'core/site client side cache', () => {
 	} );
 
 	describe( 'actions', () => {
+		beforeEach( async () => {
+			await clearCache();
+		} );
+
 		describe( 'setCacheItem', () => {
-			it( 'require key param', async () => {
+			it( 'requires `key` param', async () => {
 				await expect( async () => {
 					await registry.dispatch( CORE_SITE ).setCacheItem();
 				} ).rejects.toThrow( 'key is required' );
 			} );
 
-			it( 'require value param', async () => {
+			it( 'requires `value` param', async () => {
 				await expect( async () => {
 					await registry.dispatch( CORE_SITE ).setCacheItem( 'key' );
 				} ).rejects.toThrow( 'value is required' );
 			} );
 
-			it( 'set cache item', async () => {
-				await clearCache();
-
+			it( 'sets cache item', async () => {
 				const initialResult = await getItem( 'cache-set-key' );
 
 				expect( initialResult.cacheHit ).toEqual( false );
