@@ -62,13 +62,6 @@ class Site_Health {
 		Modules $modules,
 		Permissions $permissions
 	) {
-		$context        = $context;
-		$options        = $options;
-		$user_options   = $user_options;
-		$authentication = $authentication;
-		$modules        = $modules;
-		$permissions    = $permissions;
-
 		$this->general_data   = new General_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
 		$this->tags_placement = new Tags_Placement( $modules );
 	}
