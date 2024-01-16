@@ -35,10 +35,7 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-import {
-	ACCOUNT_CREATE,
-	MODULES_ANALYTICS,
-} from '../../../analytics/datastore/constants';
+import { ACCOUNT_CREATE } from '../../../analytics/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect( { hasModuleAccess } ) {
@@ -57,18 +54,12 @@ export default function AccountSelect( { hasModuleAccess } ) {
 	);
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS_4 );
-	// Temporary added so settings and module setup can work in the meantime before
-	// #7932 is merged. The check access is still connected to analytics module and will
-	// fail to display property and webdatastream options otherwise.
-	const { selectAccount: selectAnalyticsAccount } =
-		useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback(
 		( index, item ) => {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
 				selectAccount( newAccountID );
-				selectAnalyticsAccount( newAccountID );
 
 				const action =
 					newAccountID === ACCOUNT_CREATE
@@ -77,7 +68,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 				trackEvent( `${ viewContext }_analytics`, action );
 			}
 		},
-		[ accountID, selectAccount, selectAnalyticsAccount, viewContext ]
+		[ accountID, selectAccount, viewContext ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
