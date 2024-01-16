@@ -209,7 +209,7 @@ Error.args = {
 };
 Error.scenario = {
 	label: 'KeyMetrics/TopRecentTrendingPagesWidget/Error',
-	delay: 400,
+	delay: 1000,
 };
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
