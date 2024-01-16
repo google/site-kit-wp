@@ -89,7 +89,6 @@ return array(
 			->depth( '== 0' )
 			->in( 'vendor/google/apiclient-services' ),
 
-		// Temporary SwG client.
 		Finder::create()
 			->files()
 			->name( '#\.php$#' )
