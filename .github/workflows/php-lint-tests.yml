@@ -132,12 +132,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}-php${{matrix.composer_php_version}}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
-
-      - name: Display PHP Version
-        run: php -v
 
       - name: Composer Install
         run: composer install --no-interaction --no-progress
