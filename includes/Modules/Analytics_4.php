@@ -55,6 +55,7 @@ use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
@@ -382,6 +383,7 @@ final class Analytics_4 extends Module
 		$datapoints = array(
 			'GET:account-summaries'                => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                         => array( 'service' => 'analyticsadmin' ),
+			'GET:adsense-links'                    => array( 'service' => 'analyticsadsenselinks' ),
 			'GET:container-lookup'                 => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
@@ -664,6 +666,19 @@ final class Analytics_4 extends Module
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
 			case 'GET:account-summaries':
 				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
+			case 'GET:adsense-links':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$parent = self::normalize_property_id( $data['propertyID'] );
+
+				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );
@@ -1138,6 +1153,8 @@ final class Analytics_4 extends Module
 					$account_summaries,
 					'displayName'
 				);
+			case 'GET:adsense-links':
+				return (array) $response->getAdsenseLinks();
 			case 'POST:create-account-ticket':
 				$account_ticket = new Account_Ticket();
 				$account_ticket->set_id( $response->getAccountTicketId() );
@@ -1277,6 +1294,17 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Gets the configured Analytics Admin service object instance that includes `adSenseLinks` related methods.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return PropertiesAdSenseLinksService The Analytics Admin API service.
+	 */
+	protected function get_analyticsadsenselinks_service() {
+		return $this->get_service( 'analyticsadsenselinks' );
+	}
+
+	/**
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
@@ -1296,6 +1324,7 @@ final class Analytics_4 extends Module
 			'analyticsdata'                => new Google_Service_AnalyticsData( $client ),
 			'analyticsprovisioning'        => new AccountProvisioningService( $client, $google_proxy->url() ),
 			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
+			'analyticsadsenselinks'        => new PropertiesAdSenseLinksService( $client ),
 			'tagmanager'                   => new Google_Service_TagManager( $client ),
 		);
 	}
