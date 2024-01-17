@@ -1,32 +1,32 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Util\Debug_DataTest
+ * Class Google\Site_Kit\Tests\Core\Site_Health\General_DataTest
  *
- * @package   Google\Site_Kit\Tests\Core\Util
+ * @package   Google\Site_Kit\Tests\Core\Site_Health
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Util;
+namespace Google\Site_Kit\Tests\Core\Site_Health;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Site_Health\General_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Tests\Core\Modules\FakeModule;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Util
  */
-class Debug_DataTest extends TestCase {
+class General_DataTest extends TestCase {
 
-	public function new_debug_data() {
+	public function new_general_data() {
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options         = new Options( $context );
 		$user_options    = new User_Options( $context );
@@ -39,12 +39,12 @@ class Debug_DataTest extends TestCase {
 		$fake_module->set_force_active( true ); // necessary to add sharing fields
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
-		return new Debug_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
+		return new General_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
 	}
 
 	public function test_register() {
 		remove_all_filters( 'debug_information' );
-		$debug_data = $this->new_debug_data();
+		$debug_data = $this->new_general_data();
 		$debug_data->register();
 
 		$this->assertTrue( has_filter( 'debug_information' ) );
@@ -52,7 +52,7 @@ class Debug_DataTest extends TestCase {
 
 	public function test_registered_debug_information() {
 		remove_all_filters( 'debug_information' );
-		$debug_data = $this->new_debug_data();
+		$debug_data = $this->new_general_data();
 		$debug_data->register();
 
 		$info = apply_filters( 'debug_information', array() );
@@ -69,7 +69,7 @@ class Debug_DataTest extends TestCase {
 	public function test_redact_debug_value( $input, $expected, $mask_start ) {
 		$this->assertEquals(
 			$expected,
-			Debug_Data::redact_debug_value( $input, $mask_start )
+			General_Data::redact_debug_value( $input, $mask_start )
 		);
 	}
 
