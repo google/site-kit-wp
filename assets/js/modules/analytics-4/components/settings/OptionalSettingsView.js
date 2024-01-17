@@ -87,11 +87,11 @@ export default function OptionalSettingsView() {
 							{ __( 'Ads Conversion ID', 'google-site-kit' ) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
-							{ adsConversionID ? (
+							{ !! adsConversionID && (
 								<DisplaySetting value={ adsConversionID } />
-							) : (
-								__( 'None', 'google-site-kit' )
 							) }
+							{ ! adsConversionID &&
+								__( 'None', 'google-site-kit' ) }
 						</p>
 					</div>
 				</div>
