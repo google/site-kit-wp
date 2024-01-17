@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -40,8 +41,10 @@ const { useSelect, useDispatch } = Data;
 export default function AccountSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
-	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAccountID()
+	const accountID = useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getAccountID() ||
+			select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
@@ -53,12 +56,18 @@ export default function AccountSelect( { hasModuleAccess } ) {
 	);
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS_4 );
+	// Temporary added so settings and module setup can work in the meantime before
+	// #7932 is merged. The check access is still connected to analytics module and will
+	// fail to display property and webdatastream options otherwise.
+	const { selectAccount: selectAnalyticsAccount } =
+		useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback(
 		( index, item ) => {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
 				selectAccount( newAccountID );
+				selectAnalyticsAccount( newAccountID );
 
 				const action =
 					newAccountID === ACCOUNT_CREATE
@@ -67,7 +76,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 				trackEvent( `${ viewContext }_analytics`, action );
 			}
 		},
-		[ accountID, selectAccount, viewContext ]
+		[ accountID, selectAccount, selectAnalyticsAccount, viewContext ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
