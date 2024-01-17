@@ -27,7 +27,6 @@ import { isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	ACCOUNT_CREATE,
@@ -39,6 +38,7 @@ import {
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../utils/validation';
 
 const { createRegistrySelector } = Data;
@@ -95,6 +95,7 @@ const RESET_ACCOUNT_SUMMARIES = 'RESET_ACCOUNT_SUMMARIES';
 const baseInitialState = {
 	accountSummaries: undefined,
 	accountTicketID: undefined,
+	finishedSelectingAccount: undefined,
 };
 
 const baseActions = {
@@ -358,6 +359,18 @@ const baseSelectors = {
 
 		return true;
 	} ),
+
+	/**
+	 * Determines whether the account selection process has finished or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the account selection process has finished, otherwise FALSE.
+	 */
+	hasFinishedSelectingAccount( state ) {
+		return state.finishedSelectingAccount;
+	},
 };
 
 const store = Data.combineStores(
