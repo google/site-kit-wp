@@ -27,6 +27,7 @@ import {
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -37,6 +38,7 @@ const setupRegistry = ( registry ) => {
 	} );
 
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 
@@ -50,12 +52,14 @@ const setupRegistry = ( registry ) => {
 
 const setupLoadingRegistry = ( registry ) => {
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 };
 
 const setupEmptyRegistry = ( registry ) => {
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 
