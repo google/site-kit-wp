@@ -118,6 +118,7 @@ const baseActions = {
 			MODULES_ANALYTICS_4
 		).invalidateResolutionForStoreSelector( 'getAccountSummaries' );
 	},
+
 	/**
 	 * Creates a new Analytics (GA4) account.
 	 *
@@ -152,6 +153,14 @@ const baseActions = {
 		return { response, error };
 	},
 
+	/**
+	 * Sets the given account in the store.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID Analytics account ID.
+	 * @return {Object} A generator function.
+	 */
 	selectAccount: createValidatedAction(
 		( accountID ) => {
 			invariant(
