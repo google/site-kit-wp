@@ -303,7 +303,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 						'google-site-kit'
 					) }
 					content={ __(
-						'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
+						'You can configure the Google Analytics 4 property inside the Site Kit Settings later',
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
