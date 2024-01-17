@@ -125,6 +125,17 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	}
 
 	/**
+	 * Gets Module public name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Formatted module name.
+	 */
+	public function get_public_name() {
+		return 'Site Verification';
+	}
+
+	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.0.0
