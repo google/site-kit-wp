@@ -56,9 +56,9 @@ export default function AccountSelect( { hasModuleAccess } ) {
 	);
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS_4 );
-	// Temporary added so settings and module setup can work in the meantime before
-	// #7932 is merged. The check access is still connected to analytics module and will
-	// fail to display property and webdatastream options otherwise.
+
+	// TODO: Remove this when the legacy 'analytics' module is removed (see #7932).
+	// Temporarily added so that the module setup and settings work in the meantime.
 	const { selectAccount: selectAnalyticsAccount } =
 		useDispatch( MODULES_ANALYTICS );
 
