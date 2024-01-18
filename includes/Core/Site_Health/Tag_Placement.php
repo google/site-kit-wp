@@ -112,7 +112,7 @@ class Tag_Placement {
 		if ( empty( $active_modules ) ) {
 			$result['description'] = sprintf(
 				'<p>%s</p>',
-				__( 'Tag status not available: AdSense, Tag Manager, and Analytics modules are not connected.', 'google-site-kit' )
+				__( 'Tag status not available: no modules that place tags are connected.', 'google-site-kit' )
 			);
 
 			return $result;
