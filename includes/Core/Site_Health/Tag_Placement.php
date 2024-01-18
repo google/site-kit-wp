@@ -108,7 +108,7 @@ class Tag_Placement {
 			return $result;
 		}
 
-		$active_modules = $this->get_active_modules();
+		$active_modules = $this->get_active_modules_with_tags();
 		if ( empty( $active_modules ) ) {
 			$result['description'] = sprintf(
 				'<p>%s</p>',
@@ -156,7 +156,7 @@ class Tag_Placement {
 	 *
 	 * @return array Filtered active modules instances.
 	 */
-	protected function get_active_modules() {
+	protected function get_active_modules_with_tags() {
 		$active_modules = $this->modules->get_active_modules();
 
 		$active_modules = array_filter(
