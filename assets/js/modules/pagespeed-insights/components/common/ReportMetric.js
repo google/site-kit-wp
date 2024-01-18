@@ -76,7 +76,7 @@ export default function ReportMetric( {
 					{ isUnavailable && (
 						<InfoTooltip
 							title={ __(
-								'Field data is still being gathered for this metric and will become available once your site gets sufficient traffic.',
+								'Field data is still being gathered for this metric and will become available once your site gets sufficient traffic',
 								'google-site-kit'
 							) }
 						/>

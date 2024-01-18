@@ -30,11 +30,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { SpinnerButton } from 'googlesitekit-components';
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { ErrorNotices } from '../../common';
 import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
-import Link from '../../../../../components/Link';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 const { useSelect } = Data;
 export default function SetupAccountSiteUI( {
@@ -72,9 +71,9 @@ export default function SetupAccountSiteUI( {
 				</SpinnerButton>
 				{ secondaryButton && (
 					<div className="googlesitekit-setup-module__sub-action">
-						<Link onClick={ secondaryButton.onClick }>
+						<Button tertiary onClick={ secondaryButton.onClick }>
 							{ secondaryButton.label }
-						</Link>
+						</Button>
 					</div>
 				) }
 			</div>

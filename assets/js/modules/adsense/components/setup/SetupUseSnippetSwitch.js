@@ -62,7 +62,7 @@ export default function SetupUseSnippetSwitch() {
 
 	let checkedMessage, uncheckedMessage;
 	const checkedMessageExtra = __(
-		'Make sure to remove the existing AdSense code to avoid conflicts with the code placed by Site Kit.',
+		'Make sure to remove the existing AdSense code to avoid conflicts with the code placed by Site Kit',
 		'google-site-kit'
 	);
 	if ( existingTag === clientID ) {

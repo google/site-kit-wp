@@ -24,8 +24,9 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback, useEffect } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -33,17 +34,13 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	FORM_SETUP,
 } from '../../../../analytics/datastore/constants';
-import {
-	ENHANCED_MEASUREMENT_ENABLED,
-	ENHANCED_MEASUREMENT_FORM,
-	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import {
 	DAY_IN_SECONDS,
@@ -59,19 +56,26 @@ import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( props ) {
-	const { isDismissed, onSubmitSuccess, onDismiss, children } = props;
+	const {
+		children,
+		errorNotice,
+		isDismissed,
+		isSaving,
+		onDismiss,
+		onSubmit,
+	} = props;
 
 	const viewContext = useViewContext();
 
-	const [ errorNotice, setErrorNotice ] = useState( null );
-	const [ isSaving, setIsSaving ] = useState( false );
+	// The `enhanced_measurement` query value is arbitrary and serves two purposes:
+	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
+	// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
+	const redirectURL = addQueryArgs( global.location.href, {
+		notification: 'enhanced_measurement',
+	} );
 
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
-	);
-
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
 	);
 
 	const documentationURL = useSelect( ( select ) =>
@@ -80,35 +84,21 @@ export default function SetupBanner( props ) {
 		} )
 	);
 
-	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
-	const { setPermissionScopeError } = useDispatch( CORE_USER );
-	const { setValues } = useDispatch( CORE_FORMS );
-
-	const commonSubmitChanges = useCallback( async () => {
-		setIsSaving( true );
-
-		setValues( ENHANCED_MEASUREMENT_FORM, {
-			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+	const isNavigatingToOAuthURL = useSelect( ( select ) => {
+		const OAuthURL = select( CORE_USER ).getConnectURL( {
+			additionalScopes: [ EDIT_SCOPE ],
+			redirectURL,
 		} );
 
-		const { error } = await submitChanges();
-
-		setIsSaving( false );
-
-		if ( error ) {
-			setErrorNotice( error );
-			return;
+		if ( ! OAuthURL ) {
+			return false;
 		}
 
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'confirm_notification'
-		);
+		return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
+	} );
 
-		// Ask the parent component to show the success banner.
-		// This should be called last because it will unmount this component.
-		onSubmitSuccess();
-	}, [ setValues, submitChanges, viewContext, onSubmitSuccess ] );
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
@@ -126,23 +116,24 @@ export default function SetupBanner( props ) {
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: __(
-					'Additional permissions are required to enable enhanced measurement for the selected web data stream.',
+					'Additional permissions are required to enable enhanced measurement for the selected web data stream',
 					'google-site-kit'
 				),
 				data: {
 					status: 403,
 					scopes,
 					skipModal: true,
-					redirectURL: global.location.href,
+					redirectURL,
 				},
 			} );
 			return;
 		}
 
-		await commonSubmitChanges();
+		await onSubmit();
 	}, [
 		hasEditScope,
-		commonSubmitChanges,
+		onSubmit,
+		redirectURL,
 		setPermissionScopeError,
 		setValues,
 	] );
@@ -170,27 +161,6 @@ export default function SetupBanner( props ) {
 		);
 	}, [ viewContext ] );
 
-	// If the user lands back on this component with autoSubmit and the edit scope,
-	// resubmit the form.
-	useEffect( () => {
-		async function handleAutoSubmit() {
-			// Auto-submit should only auto-invoke once.
-			setValues( FORM_SETUP, { autoSubmit: false } );
-
-			await commonSubmitChanges();
-		}
-
-		if ( autoSubmit && hasEditScope ) {
-			handleAutoSubmit();
-		}
-	}, [
-		hasEditScope,
-		setValues,
-		commonSubmitChanges,
-		onSubmitSuccess,
-		autoSubmit,
-	] );
-
 	const description = hasEditScope
 		? __(
 				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.',
@@ -216,7 +186,7 @@ export default function SetupBanner( props ) {
 			ctaComponent={
 				<SpinnerButton
 					onClick={ handleSubmitChanges }
-					isSaving={ isSaving }
+					isSaving={ isSaving || isNavigatingToOAuthURL }
 				>
 					{ __( 'Enable now', 'google-site-kit' ) }
 				</SpinnerButton>

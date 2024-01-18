@@ -90,7 +90,7 @@ class Health_Checks {
 							return compact( 'checks' );
 						},
 						'permission_callback' => function () {
-							return current_user_can( Permissions::SETUP );
+							return current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) || current_user_can( Permissions::SETUP );
 						},
 					),
 				)

@@ -58,7 +58,7 @@ export default function NeedsAttention() {
 	);
 
 	const description = __(
-		'You need to fix some things with this site before we can connect Site Kit to your AdSense account.',
+		'You need to fix some things with this site before we can connect Site Kit to your AdSense account',
 		'google-site-kit'
 	);
 

@@ -41,7 +41,6 @@ export default function Stats( props ) {
 		currentRangeData.headers[ selectedStats + 1 ]
 	);
 
-	const dates = dataMap.slice( 1 ).map( ( [ date ] ) => date );
 	const colors = [ '#6380b8', '#bed4ff', '#5c9271', '#6e48ab' ];
 
 	function getFormat( { type, currencyCode } = {} ) {
@@ -58,6 +57,8 @@ export default function Stats( props ) {
 
 		return formats[ type ];
 	}
+
+	const [ , ...ticks ] = dataMap.slice( 1 ).map( ( [ date ] ) => date );
 
 	const options = {
 		curveType: 'function',
@@ -76,7 +77,7 @@ export default function Stats( props ) {
 			},
 		},
 		hAxis: {
-			format: 'M/d/yy',
+			format: 'MMM d',
 			gridlines: {
 				color: '#fff',
 			},
@@ -84,7 +85,7 @@ export default function Stats( props ) {
 				color: '#616161',
 				fontSize: 12,
 			},
-			ticks: dates,
+			ticks,
 		},
 		vAxis: {
 			format: getFormat( currentRangeData.headers[ selectedStats + 1 ] ),

@@ -84,7 +84,7 @@ class Setup {
 	/**
 	 * Remote_Features instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @var Remote_Features
 	 */
@@ -238,7 +238,7 @@ class Setup {
 		$this->verify_nonce( $nonce );
 
 		if ( ! current_user_can( Permissions::SETUP ) ) {
-			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
+			wp_die( esc_html__( 'You don’t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
 		if ( ! $code ) {
@@ -295,7 +295,7 @@ class Setup {
 		$this->verify_nonce( $nonce );
 
 		if ( ! current_user_can( Permissions::SETUP ) ) {
-			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
+			wp_die( esc_html__( 'You don’t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
 		if ( ! $code || ! $site_code ) {

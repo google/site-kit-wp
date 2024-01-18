@@ -52,6 +52,7 @@ use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
+use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
@@ -1387,6 +1388,11 @@ final class Analytics_4 extends Module
 		if ( ! empty( $custom_dimensions_data ) && $tag instanceof Tag_Interface ) {
 			$tag->set_custom_dimensions( $custom_dimensions_data );
 		}
+
+		// TODO: This should be replaced with the Analytics 4 adsConversionID module setting once the settings are migrated.
+		$tag->set_ads_conversion_id(
+			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
+		);
 
 		$tag->register();
 	}

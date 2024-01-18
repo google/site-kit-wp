@@ -28,11 +28,12 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { ENHANCED_MEASUREMENT_ENABLED, MODULES_ANALYTICS_4 } from './constants';
 import {
-	MODULES_ANALYTICS,
+	ENHANCED_MEASUREMENT_ENABLED,
 	FORM_ACCOUNT_CREATE,
-} from '../../analytics/datastore/constants';
+	MODULES_ANALYTICS_4,
+} from './constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
@@ -94,7 +95,7 @@ const baseActions = {
 	/**
 	 * Resets the account summaries.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -146,7 +147,7 @@ const baseActions = {
 	/**
 	 * Finds a matching account summary.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 *
 	 * @return {Object|null} Matching account summary on success, otherwise NULL.
 	 */

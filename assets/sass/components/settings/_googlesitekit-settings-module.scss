@@ -102,7 +102,7 @@
 		}
 
 		.googlesitekit-settings-module__footer-cancel {
-			margin-left: $grid-gap-desktop;
+			margin-left: $grid-gap-phone / 2;
 		}
 
 		.googlesitekit-settings-module__meta-header {
@@ -163,6 +163,39 @@
 				font-size: $fs-body-sm;
 				letter-spacing: $ls-xs;
 			}
+
+			.googlesitekit-settings-module__meta-item-type {
+				color: $c-primary;
+				font-size: $fs-body-md;
+				font-weight: $fw-bold;
+				letter-spacing: $ls-s;
+				line-height: $lh-body-sm;
+				margin: 0 0 8px;
+			}
+
+			.googlesitekit-settings-module__meta-item-data {
+				color: $c-surfaces-on-surface;
+				font-size: $fs-body-md;
+				letter-spacing: $ls-s;
+				line-height: $lh-body-md;
+				margin: 0;
+			}
+
+			.googlesitekit-settings-module__meta-item-data--wrap {
+				word-break: break-all;
+			}
+
+			.googlesitekit-settings-module__meta-item-data--tiny {
+				font-size: $fs-body-sm;
+				font-weight: $fw-normal;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
+			}
+
+			.googlesitekit-settings-module__meta-item-info {
+				color: $c-user-input-note;
+				font-size: 0.75rem;
+			}
 		}
 
 		.googlesitekit-settings-module__meta-item--data-only {
@@ -189,39 +222,6 @@
 
 		.googlesitekit-settings-module__inline-item {
 			margin: 0 1rem 0 0;
-		}
-
-		.googlesitekit-settings-module__meta-item-type {
-			color: $c-primary;
-			font-size: $fs-body-sm;
-			font-weight: $fw-bold;
-			letter-spacing: $ls-xs;
-			line-height: $lh-body-sm;
-			margin: 0 0 8px;
-		}
-
-		.googlesitekit-settings-module__meta-item-data {
-			color: $c-surfaces-on-surface;
-			font-size: $fs-body-md;
-			letter-spacing: $ls-s;
-			line-height: $lh-body-md;
-			margin: 0;
-		}
-
-		.googlesitekit-settings-module__meta-item-data--wrap {
-			word-break: break-all;
-		}
-
-		.googlesitekit-settings-module__meta-item-data--tiny {
-			font-size: $fs-body-sm;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-xs;
-			line-height: $lh-body-sm;
-		}
-
-		.googlesitekit-settings-module__meta-item-info {
-			color: $c-user-input-note;
-			font-size: 0.75rem;
 		}
 
 		.googlesitekit-settings-module__edit-button-icon {

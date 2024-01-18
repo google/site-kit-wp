@@ -55,7 +55,7 @@ function LazyContentSVG( { stage } ) {
 
 	return (
 		<MediaErrorHandler
-			errorMessage={ __( 'Failed to load graphic.', 'google-site-kit' ) }
+			errorMessage={ __( 'Failed to load graphic', 'google-site-kit' ) }
 		>
 			{ graphics[ stage ] }
 		</MediaErrorHandler>
