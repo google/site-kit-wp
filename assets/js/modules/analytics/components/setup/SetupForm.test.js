@@ -112,9 +112,6 @@ describe( 'SetupForm', () => {
 			);
 
 		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
-		await registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.selectAccount( accountID );
 
 		// Verify that the setup flow mode is GA4.
 		expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe(

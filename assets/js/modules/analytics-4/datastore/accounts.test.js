@@ -169,76 +169,82 @@ describe( 'modules/analytics-4 accounts', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
-	} );
 
-	describe( 'selectAccount', () => {
-		const accountID = fixtures.accountSummaries[ 1 ]._id;
+		describe( 'selectAccount', () => {
+			const accountID = fixtures.accountSummaries[ 1 ]._id;
 
-		beforeEach( () => {
-			[
+			beforeEach( () => {
 				[
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
-					),
-					fixtures.accountSummaries,
-				],
-				[
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/property?'
-					),
-					fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ],
-				],
-				[
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
-					),
-					fixtures.webDataStreamsBatch,
-				],
-			].forEach( ( [ endpoint, body ] ) => {
-				fetchMock.get( endpoint, { body } );
+					[
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+						),
+						fixtures.accountSummaries,
+					],
+					[
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/property?'
+						),
+						fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ],
+					],
+					[
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+						),
+						fixtures.webDataStreamsBatch,
+					],
+				].forEach( ( [ endpoint, body ] ) => {
+					fetchMock.get( endpoint, { body } );
+				} );
+
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties(
+						fixtures.accountSummaries[ 1 ].propertySummaries,
+						{
+							accountID,
+						}
+					);
 			} );
 
-			provideSiteInfo( registry );
-			provideUserAuthentication( registry );
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
+			it( 'should set accountID', async () => {
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectAccount( accountID );
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperties(
-					fixtures.accountSummaries[ 1 ].propertySummaries,
-					{
-						accountID,
-					}
+				expect( store.getState().settings.accountID ).toEqual(
+					accountID
 				);
-		} );
+			} );
 
-		it( 'should set accountID', async () => {
-			await registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.selectAccount( accountID );
+			it( 'should throw an error if accountID is invalid', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.selectAccount( false )
+				).toThrow();
+			} );
 
-			expect( store.getState().settings.accountID ).toEqual( accountID );
-		} );
-
-		it( 'should throw an error if accountID is invalid', () => {
-			expect( () =>
-				registry.dispatch( MODULES_ANALYTICS_4 ).selectAccount( false )
-			).toThrow();
-		} );
-
-		it( 'should select the correct property', async () => {
-			await registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.selectAccount( accountID );
-			expect(
-				registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-			).toBe( fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id );
+			it( 'should select the correct property', async () => {
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectAccount( accountID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
+				).toBe(
+					fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id
+				);
+			} );
 		} );
 	} );
 
