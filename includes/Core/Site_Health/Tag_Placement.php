@@ -118,14 +118,8 @@ class Tag_Placement {
 			return $result;
 		}
 
-		// Generate random page name that will result in 404 page, to prevent receiving
-		// cached page and target page with smaller content.
-		$random_page = substr(
-			str_shuffle( '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' ),
-			0,
-			10
-		);
-		$response    = wp_remote_get( site_url( $random_page ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+		$url      = add_query_arg( 'timestamp', time(), home_url() );
+		$response = wp_remote_get( $url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 
 		if ( is_wp_error( $response ) ) {
 			$result['description'] = sprintf(
