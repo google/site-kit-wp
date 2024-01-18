@@ -125,7 +125,7 @@ class Tag_PlacementTest extends TestCase {
 			)
 		);
 
-		$get_active_modules = $reflection->getMethod( 'get_active_modules' );
+		$get_active_modules = $reflection->getMethod( 'get_active_modules_with_tags' );
 		$get_active_modules->setAccessible( true );
 
 		$result = $get_active_modules->invokeArgs( $site_status, array() );
