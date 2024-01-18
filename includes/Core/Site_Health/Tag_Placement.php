@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -36,6 +37,14 @@ class Tag_Placement {
 	private $modules;
 
 	/**
+	 * Tag_Environment_Type_Guard instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Tag_Environment_Type_Guard
+	 */
+	private $environment_tag_guard;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -43,7 +52,8 @@ class Tag_Placement {
 	 * @param Modules $modules Modules instance.
 	 */
 	public function __construct( Modules $modules ) {
-		$this->modules = $modules;
+		$this->modules               = $modules;
+		$this->environment_tag_guard = new Tag_Environment_Type_Guard();
 	}
 
 	/**
@@ -130,14 +140,38 @@ class Tag_Placement {
 			return $result;
 		}
 
+		if ( ! $this->environment_tag_guard->can_activate() ) {
+			$result['description'] = sprintf(
+				'<p>%s</p>',
+				__( 'Tags are not permitted in the current environment. They can only be placed in production mode.', 'google-site-kit' )
+			);
+
+			return $result;
+		}
+
 		$response = wp_remote_retrieve_body( $response );
 
 		$description = array();
 		foreach ( $active_modules as $module ) {
-			$tag_found = $this->check_if_tag_exists( $module, $response );
+			$settings = $module->get_settings()->get();
+			// If module has `canUseSnippet` setting, check if it is disabled.
+			if ( isset( $settings['canUseSnippet'] ) && empty( $settings['useSnippet'] ) ) {
+				$module_name = $module->name;
+				if ( 'analytics-4' === $module->slug ) {
+					$module_name = trim( str_replace( '4', '', $module_name ) );
+				}
+				$description[] = sprintf(
+					'<li><strong>%s</strong>: %s</li>',
+					$module_name,
+					__( 'Tag placement disabled in settings.', 'google-site-kit' )
+				);
 
-			if ( $tag_found ) {
-				$description[] = $tag_found;
+			} else {
+				$tag_found = $this->check_if_tag_exists( $module, $response );
+
+				if ( $tag_found ) {
+					$description[] = $tag_found;
+				}
 			}
 		}
 
@@ -162,6 +196,12 @@ class Tag_Placement {
 		$active_modules = array_filter(
 			$active_modules,
 			function( $module ) {
+				// @TODO remove the check when Analytics module is removed.
+				// Temorary added to exclude analytics module in favor of analytics 4.
+				if ( 'analytics' === $module->slug ) {
+					return false;
+				}
+
 				return $module instanceof Module_With_Tag;
 			}
 		);
