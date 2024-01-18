@@ -22,13 +22,12 @@ interface Module_With_Tag {
 	public function register_tag();
 
 	/**
-	 * Checks if the module tag is found in the provided content.
+	 * Returns the Module_Tag_Matchers instance.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $content Content to search for the tags.
-	 * @return bool TRUE if tag is found, FALSE if not.
+	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
-	public function has_placed_tag_in_content( $content );
+	public function get_tag_matchers();
 
 }
