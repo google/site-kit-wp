@@ -144,7 +144,7 @@ final class AdSense extends Module
 		}
 
 		// AdSense tag placement logic.
-		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 	}
 
 	/**
@@ -839,29 +839,14 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Checks if the module tag is found in the provided content.
+	 * Returns the Module_Tag_Matchers instance.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $content Content to search for the tags.
-	 * @return bool TRUE if tag is found, FALSE if not.
+	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
-	public function has_placed_tag_in_content( $content ) {
-		$tag_matchers = ( new Tag_Matchers() )->regex_matchers();
-
-		$search_string = 'Google AdSense snippet added by Site Kit';
-
-		if ( strpos( $content, $search_string ) !== false ) {
-			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
-		} else {
-			foreach ( $tag_matchers as $pattern ) {
-				if ( preg_match( $pattern, $content ) ) {
-					return Module_Tag_Matchers::TAG_EXISTS;
-				}
-			}
-		}
-
-		return Module_Tag_Matchers::NO_TAG_FOUND;
+	public function get_tag_matchers() {
+		return new Tag_Matchers();
 	}
 
 	/**
