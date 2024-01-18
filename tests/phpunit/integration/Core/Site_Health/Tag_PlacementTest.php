@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Site_Health\Tags_PlacementTest
+ * Class Google\Site_Kit\Tests\Core\Site_Health\Tag_PlacementTest
  *
  * @package   Google\Site_Kit\Tests\Core\Site_Health
  * @copyright 2024 Google LLC
@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Site_Health\Tags_Placement;
+use Google\Site_Kit\Core\Site_Health\Tag_Placement;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -22,7 +22,7 @@ use Google\Site_Kit\Tests\TestCase;
 /**
  * @group Util
  */
-class Tags_PlacementTest extends TestCase {
+class Tag_PlacementTest extends TestCase {
 
 	protected $original_wp_version;
 
@@ -61,7 +61,7 @@ class Tags_PlacementTest extends TestCase {
 	}
 
 	public function new_site_status() {
-		return new Tags_Placement( $this->modules );
+		return new Tag_Placement( $this->modules );
 	}
 
 	public function test_register() {
@@ -109,7 +109,7 @@ class Tags_PlacementTest extends TestCase {
 		$this->assertIsArray( $modified_tests['async']['tag_placement'] );
 	}
 
-	public function test_tags_placement_test__wp_version_bellow_5_6() {
+	public function test_tag_placement_test__wp_version_bellow_5_6() {
 		global $wp_version;
 
 		// Mock a version less than 5.6.
@@ -118,7 +118,7 @@ class Tags_PlacementTest extends TestCase {
 		$site_status = $this->new_site_status();
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
-		$check_if_tag_exists = $reflection->getMethod( 'tags_placement_test' );
+		$check_if_tag_exists = $reflection->getMethod( 'tag_placement_test' );
 		$check_if_tag_exists->setAccessible( true );
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array() );

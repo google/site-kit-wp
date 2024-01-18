@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Site_Health\Tags_Placement
+ * Class Google\Site_Kit\Core\Site_Health\Tag_Placement
  *
  * @package   Google\Site_Kit\Core\Site_Health
  * @copyright 2024 Google LLC
@@ -13,10 +13,8 @@ namespace Google\Site_Kit\Core\Site_Health;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
-use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use WP_REST_Server;
 
 /**
  * Class for integrating status tab information with Site Health.
@@ -25,7 +23,7 @@ use WP_REST_Server;
  * @access private
  * @ignore
  */
-class Tags_Placement {
+class Tag_Placement {
 
 	use Method_Proxy_Trait;
 
@@ -55,15 +53,6 @@ class Tags_Placement {
 	 */
 	public function register() {
 		add_filter(
-			'googlesitekit_rest_routes',
-			function ( $rest_routes ) {
-				$health_check_routes = $this->get_rest_routes();
-
-				return array_merge( $rest_routes, $health_check_routes );
-			}
-		);
-
-		add_filter(
 			'site_status_tests',
 			function ( $tests ) {
 				global $wp_version;
@@ -71,7 +60,7 @@ class Tags_Placement {
 				if ( version_compare( $wp_version, '5.6', '<' ) ) {
 					$tests['direct']['tag_placement'] = array(
 						'label' => __( 'Tags Placement', 'google-site-kit' ),
-						'test'  => $this->get_method_proxy( 'tags_placement_test' ),
+						'test'  => $this->get_method_proxy( 'tag_placement_test' ),
 					);
 
 					return $tests;
@@ -79,37 +68,13 @@ class Tags_Placement {
 
 				$tests['async']['tag_placement'] = array(
 					'label'             => __( 'Tags Placement', 'google-site-kit' ),
-					'test'              => rest_url( 'google-site-kit/v1/core/site/data/tags-placement-test' ),
+					'test'              => rest_url( '/' . REST_Routes::REST_ROOT . '/core/site/data/tag-placement-test' ),
 					'has_rest'          => true,
-					'async_direct_test' => $this->get_method_proxy( 'tags_placement_test' ),
+					'async_direct_test' => $this->get_method_proxy( 'tag_placement_test' ),
 				);
 
 				return $tests;
 			}
-		);
-	}
-
-	/**
-	 * Gets all REST routes.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return REST_Route[] List of REST_Route objects.
-	 */
-	private function get_rest_routes() {
-		return array(
-			new REST_Route(
-				'core/site/data/tags-placement-test',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => $this->get_method_proxy( 'tags_placement_test' ),
-						'permission_callback' => function () {
-							return current_user_can( Permissions::SETUP );
-						},
-					),
-				)
-			),
 		);
 	}
 
@@ -120,12 +85,12 @@ class Tags_Placement {
 	 *
 	 * @return array Site health status results.
 	 */
-	protected function tags_placement_test() {
+	public function tag_placement_test() {
 		global $wp_version;
 
 		$result = array(
-			'label'   => __( 'Tags Placement', 'google-site-kit' ),
-			'status'  => 'recommended',
+			'label'   => __( 'Tag Placement', 'google-site-kit' ),
+			'status'  => 'good',
 			'badge'   => array(
 				'label' => __( 'Site Kit', 'google-site-kit' ),
 				'color' => 'blue',
@@ -221,7 +186,12 @@ class Tags_Placement {
 	 */
 	protected function check_if_tag_exists( $module, $content ) {
 		$check_tag   = $module->has_placed_tag_in_content( $content );
-		$module_name = $module->get_public_name();
+		$module_name = $module->name;
+
+		// Remove 4 from Analytics name if we are checking Analytics 4 module.
+		if ( strpos( $module_name, '4' ) !== false ) {
+			$module_name = trim( str_replace( '4', '', $module_name ) );
+		}
 
 		switch ( $check_tag ) {
 			case Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS:
