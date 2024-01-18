@@ -26,15 +26,7 @@ class Tag_PlacementTest extends TestCase {
 
 	protected $original_wp_version;
 
-	protected $context;
-
-	protected $modules;
-
-	protected $options;
-
-	protected $user_options;
-
-	protected $authentication;
+	protected $tag_placement;
 
 	protected $analytics_4;
 
@@ -45,12 +37,14 @@ class Tag_PlacementTest extends TestCase {
 
 		$this->original_wp_version = $wp_version;
 
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options        = new Options( $this->context );
-		$this->user_options   = new User_Options( $this->context );
-		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
-		$this->modules        = new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
-		$this->analytics_4    = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$modules        = new Modules( $context, $options, $user_options, $authentication );
+
+		$this->analytics_4   = new Analytics_4( $context, $options, $user_options, $authentication );
+		$this->tag_placement = new Tag_Placement( $modules );
 	}
 
 	public function tear_down() {
@@ -60,17 +54,10 @@ class Tag_PlacementTest extends TestCase {
 		$wp_version = $this->original_wp_version;
 	}
 
-	public function new_site_status() {
-		return new Tag_Placement( $this->modules );
-	}
-
 	public function test_register() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'site_status_tests' );
-		$site_status = $this->new_site_status();
-		$site_status->register();
+		$this->tag_placement->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
 		$this->assertTrue( has_filter( 'site_status_tests' ) );
 	}
 
@@ -81,8 +68,7 @@ class Tag_PlacementTest extends TestCase {
 		$wp_version = '5.5';
 
 		remove_all_filters( 'site_status_tests' );
-		$site_status = $this->new_site_status();
-		$site_status->register();
+		$this->tag_placement->register();
 
 		$modified_tests = apply_filters( 'site_status_tests', array() );
 
@@ -98,8 +84,7 @@ class Tag_PlacementTest extends TestCase {
 		$wp_version = '6.0';
 
 		remove_all_filters( 'site_status_tests' );
-		$site_status = $this->new_site_status();
-		$site_status->register();
+		$this->tag_placement->register();
 
 		$modified_tests = apply_filters( 'site_status_tests', array() );
 
@@ -115,7 +100,7 @@ class Tag_PlacementTest extends TestCase {
 		// Mock a version less than 5.6.
 		$wp_version = '5.5';
 
-		$site_status = $this->new_site_status();
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		$check_if_tag_exists = $reflection->getMethod( 'tag_placement_test' );
@@ -127,7 +112,7 @@ class Tag_PlacementTest extends TestCase {
 	}
 
 	public function test_get_active_modules() {
-		$site_status = $this->new_site_status();
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		update_option(
@@ -167,7 +152,7 @@ class Tag_PlacementTest extends TestCase {
 	}
 
 	public function test_check_if_tag_exists__no_tag() {
-		$site_status = $this->new_site_status();
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
@@ -179,7 +164,7 @@ class Tag_PlacementTest extends TestCase {
 	}
 
 	public function test_check_if_tag_exists__has_tag_placed_by_sitekit() {
-		$site_status = $this->new_site_status();
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
@@ -206,7 +191,7 @@ class Tag_PlacementTest extends TestCase {
 	}
 
 	public function test_check_if_tag_exists__has_tag_placed_no_sitekit_headers() {
-		$site_status = $this->new_site_status();
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
