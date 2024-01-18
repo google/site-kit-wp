@@ -62,7 +62,7 @@ export default function SetupAccountCreateSite() {
 
 			<p>
 				{ __(
-					'We’ve detected that you haven’t added this site to your AdSense account yet.',
+					'We’ve detected that you haven’t added this site to your AdSense account yet',
 					'google-site-kit'
 				) }
 			</p>

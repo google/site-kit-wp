@@ -121,7 +121,7 @@ export default function ReminderBanner( props ) {
 					'google-site-kit'
 				) }
 				content={ __(
-					'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
+					'You can configure the Google Analytics 4 property inside the Site Kit Settings later',
 					'google-site-kit'
 				) }
 				dismissLabel={ __( 'Got it', 'google-site-kit' ) }

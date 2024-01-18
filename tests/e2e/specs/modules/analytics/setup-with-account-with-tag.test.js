@@ -182,7 +182,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			'.googlesitekit-setup-module--analytics p',
 			{
 				text: new RegExp(
-					`A tag ${ existingTag.propertyID } for the selected property already exists on the site.`,
+					`A tag ${ existingTag.propertyID } for the selected property already exists on the site`,
 					'i'
 				),
 			}
