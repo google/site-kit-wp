@@ -366,7 +366,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if the account selection process has finished, otherwise FALSE.
+	 * @return {boolean|undefined} Initially undefined, TRUE if the account selection process has finished, otherwise FALSE.
 	 */
 	hasFinishedSelectingAccount( state ) {
 		return state.finishedSelectingAccount;
