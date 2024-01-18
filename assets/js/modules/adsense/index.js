@@ -47,7 +47,6 @@ import {
 	AREA_MODULE_ADSENSE_MAIN,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
-import { isFeatureEnabled } from '../../features';
 import { TopEarningContentWidget } from './components/widgets';
 import {
 	CORE_USER,
@@ -103,26 +102,24 @@ export const registerWidgets = ( widgets ) => {
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
 
-	if ( isFeatureEnabled( 'keyMetrics' ) ) {
-		/*
-		 * Key metrics widgets.
-		 */
-		widgets.registerWidget(
-			KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-			{
-				Component: TopEarningContentWidget,
-				width: widgets.WIDGET_WIDTHS.QUARTER,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ 'adsense', 'analytics-4' ],
-				isActive: ( select ) =>
-					select( CORE_USER ).isKeyMetricActive(
-						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
-					),
-			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-	}
+	/*
+	 * Key metrics widgets.
+	 */
+	widgets.registerWidget(
+		KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+		{
+			Component: TopEarningContentWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'adsense', 'analytics-4' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 
 	widgets.registerWidget(
 		'adBlockerWarning',

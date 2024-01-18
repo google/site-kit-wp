@@ -38,7 +38,6 @@ import {
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../../googlesitekit/datastore/user/constants';
-import { enabledFeatures } from '../../../features';
 import { provideCustomDimensionError } from '../utils/custom-dimensions';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
@@ -171,10 +170,6 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 
 		describe( 'createCustomDimensions', () => {
-			beforeEach( () => {
-				enabledFeatures.add( 'keyMetrics' );
-			} );
-
 			const keyMetricsSettings = {
 				widgetSlugs: [
 					KM_ANALYTICS_POPULAR_AUTHORS,

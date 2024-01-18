@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for Analytics 4 settings.
@@ -27,6 +27,7 @@ use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interface, Setting_With_ViewOnly_Keys_Interface {
 
 	use Setting_With_Owned_Keys_Trait;
+	use Method_Proxy_Trait;
 
 	const OPTION = 'googlesitekit_analytics-4_settings';
 
@@ -39,29 +40,14 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		parent::register();
 
 		$this->register_owned_keys();
-	}
 
-	/**
-	 * Gets Analytics 4 settings.
-	 *
-	 * @since 1.99.0
-	 *
-	 * @return array Analytics 4 settings, or default if not set.
-	 */
-	public function get() {
-		$value = parent::get();
-
-		// This is a temporary solution to keep using the Analytics ownerID setting
-		// as the main source of truth for the Analytics 4 ownerID value.
-		//
-		// This is needed because currently the Analytics 4 functionality is separated
-		// from the Analytics module and we need to keep the ownerID synced between two
-		// modules. We will remove this hack when UA is sunset and only both modules
-		// are merged.
-		$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
-		$value['ownerID']   = $analytics_settings['ownerID'];
-
-		return $value;
+		// Since migration of Analytics module settings into Analytics 4 settings,
+		// if data was saved previously, it needs to be recovered.
+		add_filter(
+			'option_' . self::OPTION,
+			$this->get_method_proxy( 'retrieve_missing_settings' ),
+			10
+		);
 	}
 
 	/**
@@ -73,9 +59,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	public function get_owned_keys() {
 		return array(
-			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-			/* 'accountID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			/* 'adsConversionID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			'accountID',
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
@@ -93,11 +77,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array An array of keys for view-only settings.
 	 */
 	public function get_view_only_keys() {
-		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-			return array( 'availableCustomDimensions' );
-		}
-
-		return array();
+		return array( 'availableCustomDimensions' );
 	}
 
 	/**
@@ -110,13 +90,15 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	protected function get_default() {
 		return array(
 			'ownerID'                   => 0,
-			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-			/* 'accountID'              => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			/* 'adsConversionID'        => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			'accountID'                 => '',
+			'adsConversionID'           => '',
+			'adsenseLinked'             => false,
 			'propertyID'                => '',
 			'webDataStreamID'           => '',
 			'measurementID'             => '',
+			'trackingDisabled'          => array( 'loggedinUsers' ),
 			'useSnippet'                => true,
+			'canUseSnippet'             => true,
 			'googleTagID'               => '',
 			'googleTagAccountID'        => '',
 			'googleTagContainerID'      => '',
@@ -139,11 +121,24 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( isset( $option['useSnippet'] ) ) {
 					$option['useSnippet'] = (bool) $option['useSnippet'];
 				}
-
+				if ( isset( $option['canUseSnippet'] ) ) {
+					$option['canUseSnippet'] = (bool) $option['canUseSnippet'];
+				}
 				if ( isset( $option['googleTagID'] ) ) {
 					if ( ! preg_match( '/^(G|GT|AW)-[a-zA-Z0-9]+$/', $option['googleTagID'] ) ) {
 						$option['googleTagID'] = '';
 					}
+				}
+				if ( isset( $option['trackingDisabled'] ) ) {
+					// Prevent other options from being saved if 'loggedinUsers' is selected.
+					if ( in_array( 'loggedinUsers', $option['trackingDisabled'], true ) ) {
+						$option['trackingDisabled'] = array( 'loggedinUsers' );
+					} else {
+						$option['trackingDisabled'] = (array) $option['trackingDisabled'];
+					}
+				}
+				if ( isset( $option['adsenseLinked'] ) ) {
+					$option['adsenseLinked'] = (bool) $option['adsenseLinked'];
 				}
 
 				$numeric_properties = array( 'googleTagAccountID', 'googleTagContainerID' );
@@ -155,7 +150,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					}
 				}
 
-				if ( Feature_Flags::enabled( 'keyMetrics' ) && isset( $option['availableCustomDimensions'] ) ) {
+				if ( isset( $option['availableCustomDimensions'] ) ) {
 					if ( is_array( $option['availableCustomDimensions'] ) ) {
 						$valid_dimensions = array_filter(
 							$option['availableCustomDimensions'],
@@ -176,32 +171,51 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	}
 
 	/**
-	 * Merges the current user ID into the module settings as the initial owner ID.
+	 * Sync settings migrated from `Analytics` module if they are not
+	 * present in `Analytics_4` settings.
 	 *
-	 * @since 1.99.0
+	 * This ensures backward compatibility for the users who had Site Kit installed
+	 * before migrating to the singular Analytics module. As some settings were defined
+	 * in old `Analtyics` module and re-used here.
+	 *
+	 * @since 1.118.0
+	 *
+	 * @param array $option Analytics 4 settings.
+	 * @return array Missing Analytics 4 settings array, or empty array if no setting is missing.
 	 */
-	protected function merge_initial_owner_id() {
-		// This is a temporary solution to sync owner IDs between Analytics and Analytics 4 modules.
-		// The owner ID setting of the Analytics module is the source of truth for the Analytics 4 module.
-		// This will change when Analytics is sunset and we merge both modules into one.
-		( new Analytics_Settings( $this->options ) )->merge( array( 'ownerID' => get_current_user_id() ) );
-	}
+	protected function retrieve_missing_settings( $option ) {
+		if ( ! is_array( $option ) ) {
+			return $option;
+		}
 
-	/**
-	 * Adds the current user ID as the module owner ID to the current module settings.
-	 *
-	 * @since 1.99.0
-	 *
-	 * @param array $settings The new module settings.
-	 * @return array Updated module settings with the current user ID as the ownerID setting.
-	 */
-	protected function update_owner_id_in_settings( $settings ) {
-		// This is a temporary solution to sync owner IDs between Analytics and Analytics 4 modules.
-		// The owner ID setting of the Analytics module is the source of truth for the Analytics 4 module.
-		// This will change when Analytics is sunset and we merge both modules into one.
-		( new Analytics_Settings( $this->options ) )->merge( array( 'ownerID' => get_current_user_id() ) );
+		$recovered_settings = array();
+		$keys_to_check      = array(
+			'accountID',
+			'adsConversionID',
+			'adsenseLinked',
+			'canUseSnippet',
+			'trackingDisabled',
+		);
+		$missing_settings   = array_diff( $keys_to_check, array_keys( $option ) );
 
-		return $settings;
+		if ( empty( $missing_settings ) ) {
+			return $option;
+		}
+
+		$analytics_settings = get_option( 'googlesitekit_analytics_settings' );
+
+		array_walk(
+			$missing_settings,
+			function( $setting ) use ( &$recovered_settings, $analytics_settings ) {
+				$recovered_settings[ $setting ] = $analytics_settings[ $setting ];
+			}
+		);
+
+		if ( ! empty( $recovered_settings ) ) {
+			return $option + $recovered_settings;
+		}
+
+		return $option;
 	}
 
 }

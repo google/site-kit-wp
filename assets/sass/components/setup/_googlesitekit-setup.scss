@@ -85,7 +85,11 @@
 	}
 
 	.googlesitekit-start-setup {
-		margin-right: 16px;
+		margin-right: $grid-gap-phone / 2;
+	}
+
+	.googlesitekit-start-setup + .googlesitekit-cta-link {
+		margin-left: $grid-gap-phone / 2;
 	}
 
 	.googlesitekit-setup__wrapper {

@@ -35,10 +35,40 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	/**
 	 * Home domain name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.118.0
 	 * @var string
 	 */
 	private $home_domain;
+
+	/**
+	 * Ads conversion ID.
+	 *
+	 * @since 1.118.0
+	 * @var string
+	 */
+	private $ads_conversion_id;
+
+	/**
+	 * Sets the current home domain.
+	 *
+	 * @since 1.118.0
+	 *
+	 * @param string $domain Domain name.
+	 */
+	public function set_home_domain( $domain ) {
+		$this->home_domain = $domain;
+	}
+
+	/**
+	 * Sets the ads conversion ID.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @param string $ads_conversion_id Ads ID.
+	 */
+	public function set_ads_conversion_id( $ads_conversion_id ) {
+		$this->ads_conversion_id = $ads_conversion_id;
+	}
 
 	/**
 	 * Sets custom dimensions data.
@@ -75,11 +105,6 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
 
 		$this->do_init_tag_action();
-
-		// If the UA AMP tag is being placed, extend it, otherwise there's nothing more to do.
-		if ( did_action( 'googlesitekit_analytics_init_tag_amp' ) ) {
-			add_filter( 'googlesitekit_amp_gtag_opt', $this->get_method_proxy( 'extend_gtag_opt' ) );
-		}
 	}
 
 	/**
@@ -90,8 +115,15 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	protected function render() {
 		$config = $this->get_tag_config();
 
+		if ( ! empty( $this->ads_conversion_id ) ) {
+			$config[ $this->ads_conversion_id ] = array(
+				'groups' => 'default',
+			);
+		}
+
 		$gtag_amp_opt = array(
-			'vars' => array(
+			'optoutElementId' => '__gaOptOutExtension',
+			'vars'            => array(
 				'gtag_id' => $this->tag_id,
 				'config'  => $config,
 			),
@@ -175,16 +207,5 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 		}
 
 		return $config;
-	}
-
-	/**
-	 * Sets the current home domain.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $domain Domain name.
-	 */
-	public function set_home_domain( $domain ) {
-		$this->home_domain = $domain;
 	}
 }

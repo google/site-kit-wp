@@ -258,7 +258,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 											: sprintf(
 													/* translators: %s: name of the user who manages the module. */
 													__(
-														'Contact %s to change who can manage view access for this module.',
+														'Contact %s to change who can manage view access for this module',
 														'google-site-kit'
 													),
 													ownerUsername

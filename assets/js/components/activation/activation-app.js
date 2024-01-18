@@ -92,7 +92,7 @@ export function ActivationApp() {
 					<Logo />
 					<h3 className="googlesitekit-heading-3 googlesitekit-activation__title">
 						{ __(
-							'Congratulations, the Site Kit plugin is now activated.',
+							'Congratulations, the Site Kit plugin is now activated',
 							'google-site-kit'
 						) }
 					</h3>

@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
@@ -35,20 +36,23 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\Site_Health\General_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Util\Debug_Data;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
+use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
@@ -85,7 +89,7 @@ use WP_Error;
  * @ignore
  */
 final class Analytics_4 extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -154,6 +158,8 @@ final class Analytics_4 extends Module
 		);
 		$synchronize_property->register();
 
+		( new Advanced_Tracking( $this->context ) )->register();
+
 		add_action(
 			'admin_init',
 			function() use ( $synchronize_property ) {
@@ -176,31 +182,26 @@ final class Analytics_4 extends Module
 			function( $old_value, $new_value ) {
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
-
-					if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-						$this->custom_dimensions_data_available->reset_data_available();
-					}
+					$this->custom_dimensions_data_available->reset_data_available();
 				}
 			}
 		);
 
 		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
-		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-			add_filter(
-				'pre_update_option_googlesitekit_analytics-4_settings',
-				function ( $new_value, $old_value ) {
-					if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
-						$new_value['availableCustomDimensions'] = null;
-					}
+		add_filter(
+			'pre_update_option_googlesitekit_analytics-4_settings',
+			function ( $new_value, $old_value ) {
+				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
+					$new_value['availableCustomDimensions'] = null;
+				}
 
-					return $new_value;
-				},
-				10,
-				2
-			);
+				return $new_value;
+			},
+			10,
+			2
+		);
 
-			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
-		}
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 
 		// Replicate Analytics settings for Analytics-4 if not set.
 		add_filter(
@@ -245,6 +246,17 @@ final class Analytics_4 extends Module
 		);
 
 		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
+	}
+
+	/**
+	 * Gets Module public name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Formatted module name.
+	 */
+	public function get_public_name() {
+		return 'Analytics';
 	}
 
 	/**
@@ -305,10 +317,7 @@ final class Analytics_4 extends Module
 	public function on_deactivation() {
 		$this->get_settings()->delete();
 		$this->reset_data_available();
-
-		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-			$this->custom_dimensions_data_available->reset_data_available();
-		}
+		$this->custom_dimensions_data_available->reset_data_available();
 	}
 
 	/**
@@ -328,29 +337,29 @@ final class Analytics_4 extends Module
 			'analytics_4_account_id'         => array(
 				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_4_ads_conversion_id'         => array(
 				'label' => __( 'Analytics 4 ads conversion ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 			*/
 			// phpcs:enable
 			'analytics_4_property_id'        => array(
 				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
+				'debug' => General_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_4_web_data_stream_id' => array(
 				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
 			'analytics_4_measurement_id'     => array(
 				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
 				'value' => $settings['measurementID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['measurementID'] ),
 			),
 			'analytics_4_use_snippet'        => array(
 				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
@@ -359,21 +368,19 @@ final class Analytics_4 extends Module
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-			$debug_fields['analytics_4_available_custom_dimensions'] = array(
-				'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
-				'value' => empty( $settings['availableCustomDimensions'] )
-					? __( 'None', 'google-site-kit' )
-					: join(
-						/* translators: used between list items, there is a space after the comma */
-						__( ', ', 'google-site-kit' ),
-						$settings['availableCustomDimensions']
-					),
-				'debug' => empty( $settings['availableCustomDimensions'] )
-					? 'none'
-					: join( ', ', $settings['availableCustomDimensions'] ),
-			);
-		}
+		$debug_fields['analytics_4_available_custom_dimensions'] = array(
+			'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
+			'value' => empty( $settings['availableCustomDimensions'] )
+				? __( 'None', 'google-site-kit' )
+				: join(
+					/* translators: used between list items, there is a space after the comma */
+					__( ', ', 'google-site-kit' ),
+					$settings['availableCustomDimensions']
+				),
+			'debug' => empty( $settings['availableCustomDimensions'] )
+				? 'none'
+				: join( ', ', $settings['availableCustomDimensions'] ),
+		);
 
 		return $debug_fields;
 	}
@@ -387,72 +394,71 @@ final class Analytics_4 extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		$datapoints = array(
-			'GET:account-summaries'              => array( 'service' => 'analyticsadmin' ),
-			'GET:accounts'                       => array( 'service' => 'analyticsadmin' ),
-			'GET:container-lookup'               => array(
+			'GET:account-summaries'                => array( 'service' => 'analyticsadmin' ),
+			'GET:accounts'                         => array( 'service' => 'analyticsadmin' ),
+			'GET:container-lookup'                 => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'GET:container-destinations'         => array(
+			'GET:container-destinations'           => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'GET:conversion-events'              => array(
+			'GET:conversion-events'                => array(
 				'service'   => 'analyticsadmin',
 				'shareable' => true,
 			),
-			'POST:create-account-ticket'         => array(
+			'POST:create-account-ticket'           => array(
 				'service'                => 'analyticsprovisioning',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			),
-			'GET:google-tag-settings'            => array(
+			'GET:google-tag-settings'              => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'POST:create-property'               => array(
+			'POST:create-property'                 => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.', 'google-site-kit' ),
 			),
-			'POST:create-webdatastream'          => array(
+			'POST:create-webdatastream'            => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream for this site on your behalf.', 'google-site-kit' ),
 			),
-			'GET:properties'                     => array( 'service' => 'analyticsadmin' ),
-			'GET:property'                       => array( 'service' => 'analyticsadmin' ),
-			'GET:report'                         => array(
+			'GET:properties'                       => array( 'service' => 'analyticsadmin' ),
+			'GET:property'                         => array( 'service' => 'analyticsadmin' ),
+			'GET:report'                           => array(
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
-			'GET:webdatastreams'                 => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams-batch'           => array( 'service' => 'analyticsadmin' ),
-			'GET:enhanced-measurement-settings'  => array( 'service' => 'analyticsenhancedmeasurement' ),
-			'POST:enhanced-measurement-settings' => array(
+			'GET:webdatastreams'                   => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams-batch'             => array( 'service' => 'analyticsadmin' ),
+			'GET:enhanced-measurement-settings'    => array( 'service' => 'analyticsenhancedmeasurement' ),
+			'POST:enhanced-measurement-settings'   => array(
 				'service'                => 'analyticsenhancedmeasurement',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
 			),
-		);
-
-		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-			$datapoints['POST:create-custom-dimension']         = array(
+			'POST:create-custom-dimension'         => array(
 				'service'                => 'analyticsdata',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
-			);
-			$datapoints['POST:sync-custom-dimensions']          = array(
+			),
+			'POST:sync-custom-dimensions'          => array(
 				'service' => 'analyticsadmin',
-			);
-			$datapoints['POST:custom-dimension-data-available'] = array( 'service' => '' );
-		}
+			),
+			'POST:custom-dimension-data-available' => array(
+				'service' => '',
+			),
+		);
 
 		return $datapoints;
 	}
@@ -1128,7 +1134,7 @@ final class Analytics_4 extends Module
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
 			case 'GET:account-summaries':
-				return array_map(
+				$account_summaries = array_map(
 					function( $account ) {
 						$obj                    = self::filter_account_with_ids( $account, 'account' );
 						$obj->propertySummaries = array_map( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -1141,6 +1147,10 @@ final class Analytics_4 extends Module
 						return $obj;
 					},
 					$response->getAccountSummaries()
+				);
+				return Sort::case_insensitive_list_sort(
+					$account_summaries,
+					'displayName'
 				);
 			case 'POST:create-account-ticket':
 				$account_ticket = new Account_Ticket();
@@ -1363,8 +1373,9 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.31.0
 	 * @since 1.104.0 Added support for AMP tag.
+	 * @since n.e.x.t Made method public.
 	 */
-	private function register_tag() {
+	public function register_tag() {
 		$tag = $this->context->is_amp()
 			? new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG ) // AMP currently only works with the measurement ID.
 			: new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
@@ -1384,14 +1395,43 @@ final class Analytics_4 extends Module
 		$home_domain = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST );
 		$tag->set_home_domain( $home_domain );
 
-		if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-			$custom_dimensions_data = $this->get_custom_dimensions_data();
-			if ( ! empty( $custom_dimensions_data ) && $tag instanceof Tag_Interface ) {
-				$tag->set_custom_dimensions( $custom_dimensions_data );
+		$custom_dimensions_data = $this->get_custom_dimensions_data();
+		if ( ! empty( $custom_dimensions_data ) && $tag instanceof Tag_Interface ) {
+			$tag->set_custom_dimensions( $custom_dimensions_data );
+		}
+
+		// TODO: This should be replaced with the Analytics 4 adsConversionID module setting once the settings are migrated.
+		$tag->set_ads_conversion_id(
+			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
+		);
+
+		$tag->register();
+	}
+
+	/**
+	 * Checks if the module tag is found in the provided content.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Content to search for the tags.
+	 * @return bool TRUE if tag is found, FALSE if not.
+	 */
+	public function has_placed_tag_in_content( $content ) {
+		$tag_matchers = ( new Tag_Matchers() )->regex_matchers();
+
+		$search_string = 'Google Analytics snippet added by Site Kit';
+
+		if ( strpos( $content, $search_string ) !== false ) {
+			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
+		} else {
+			foreach ( $tag_matchers as $pattern ) {
+				if ( preg_match( $pattern, $content ) ) {
+					return Module_Tag_Matchers::TAG_EXISTS;
+				}
 			}
 		}
 
-		$tag->register();
+		return Module_Tag_Matchers::NO_TAG_FOUND;
 	}
 
 	/**

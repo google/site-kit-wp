@@ -42,7 +42,7 @@ export const UNIQUE_VISITORS_CHART_OPTIONS = {
 		},
 	},
 	hAxis: {
-		format: 'M/d/yy',
+		format: 'MMM d',
 		gridlines: {
 			color: '#fff',
 		},

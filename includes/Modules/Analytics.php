@@ -36,9 +36,8 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Site_Health\General_Data;
 use Google\Site_Kit\Core\Util\Date;
-use Google\Site_Kit\Core\Util\Debug_Data;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Sort;
@@ -50,7 +49,6 @@ use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Modules\Analytics\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics\Web_Tag;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 use Google\Site_Kit_Dependencies\Google\Service\Analytics as Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting as Google_Service_AnalyticsReporting;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\GetReportsRequest as Google_Service_AnalyticsReporting_GetReportsRequest;
@@ -63,7 +61,6 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\Metric as Goo
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\OrderBy as Google_Service_AnalyticsReporting_OrderBy;
 use Google\Site_Kit_Dependencies\Google\Service\Analytics\Accounts as Google_Service_Analytics_Accounts;
 use Google\Site_Kit_Dependencies\Google\Service\Analytics\Account as Google_Service_Analytics_Account;
-use Google\Site_Kit_Dependencies\Google\Service\Analytics\Webproperties as Google_Service_Analytics_Webproperties;
 use Google\Site_Kit_Dependencies\Google\Service\Analytics\Webproperty as Google_Service_Analytics_Webproperty;
 use Google\Site_Kit_Dependencies\Google\Service\Analytics\Profile as Google_Service_Analytics_Profile;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
@@ -120,8 +117,6 @@ final class Analytics extends Module
 		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// For Web Stories plugin.
 		add_action( 'web_stories_story_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
-		// Analytics tag placement logic.
-		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 
 		add_filter(
 			'googlesitekit_proxy_setup_mode',
@@ -132,8 +127,6 @@ final class Analytics extends Module
 			}
 		);
 
-		( new Advanced_Tracking( $this->context ) )->register();
-
 		// Ensure that the data available state is reset when the property changes.
 		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
@@ -142,18 +135,17 @@ final class Analytics extends Module
 				}
 			}
 		);
+	}
 
-		add_filter(
-			'googlesitekit_dashboard_sharing_data',
-			function ( $data ) {
-				if ( ! $this->authentication->is_authenticated() ) {
-					$settings = $this->get_settings()->get();
-				}
-
-				return $data;
-			}
-		);
-
+	/**
+	 * Gets Module public name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Formatted module name.
+	 */
+	public function get_public_name() {
+		return 'Analytics';
 	}
 
 	/**
@@ -252,17 +244,17 @@ final class Analytics extends Module
 			'analytics_account_id'  => array(
 				'label' => __( 'Analytics account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_property_id' => array(
 				'label' => __( 'Analytics property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
+				'debug' => General_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_profile_id'  => array(
 				'label' => __( 'Analytics view ID', 'google-site-kit' ),
 				'value' => $settings['profileID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['profileID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['profileID'] ),
 			),
 			'analytics_use_snippet' => array(
 				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
@@ -1261,6 +1253,9 @@ final class Analytics extends Module
 
 	/**
 	 * Registers the Analytics tag.
+	 *
+	 * This method is currently unused and is kept for reference until this module
+	 * is entirely removed.
 	 *
 	 * @since 1.24.0
 	 */

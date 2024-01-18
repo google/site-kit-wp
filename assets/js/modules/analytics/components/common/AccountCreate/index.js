@@ -45,7 +45,6 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
 import { getAccountDefaults as getAccountDefaults } from '../../../../analytics-4/utils/account';
 import { Cell } from '../../../../../material-components';
-import Link from '../../../../../components/Link';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
@@ -153,7 +152,7 @@ export default function AccountCreate() {
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: __(
-					'Additional permissions are required to create a new Analytics account.',
+					'Additional permissions are required to create a new Analytics account',
 					'google-site-kit'
 				),
 				data: {
@@ -282,12 +281,13 @@ export default function AccountCreate() {
 				</Button>
 
 				{ accounts && !! accounts.length && (
-					<Link
+					<Button
+						tertiary
 						className="googlesitekit-setup-module__sub-action"
 						onClick={ handleBack }
 					>
 						{ __( 'Back', 'google-site-kit' ) }
-					</Link>
+					</Button>
 				) }
 			</div>
 		</div>

@@ -1,15 +1,40 @@
+/**
+ * Storybook webpack config.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
 const path = require( 'path' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
-const mainConfig = require( '../webpack.config' );
 const { mapValues } = require( 'lodash' );
 const { ProvidePlugin } = require( 'webpack' );
+
+/**
+ * Internal dependencies
+ */
+const { siteKitExternals, svgRule } = require( '../webpack/common' );
 
 // eslint-disable-next-line require-await
 module.exports = async ( { config } ) => {
 	// Site Kit loads its API packages as externals,
 	// so we need to convert those to aliases for Storybook to be able to resolve them.
 	const siteKitPackageAliases = mapValues(
-		mainConfig.siteKitExternals,
+		siteKitExternals,
 		( [ global, api ] ) => {
 			if ( global === 'googlesitekit' ) {
 				// Revert "@wordpress/i18n: [ googlesitekit, i18n ]" external back to the original @wordpress/i18n.
@@ -101,7 +126,7 @@ module.exports = async ( { config } ) => {
 	);
 	fileLoaderRule.exclude = /\.svg$/;
 
-	config.module.rules.push( mainConfig.svgRule );
+	config.module.rules.push( svgRule );
 
 	return config;
 };

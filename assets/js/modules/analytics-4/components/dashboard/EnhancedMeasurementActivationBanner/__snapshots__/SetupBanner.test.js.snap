@@ -72,10 +72,11 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
               </span>
             </button>
             <button
-              class="googlesitekit-cta-link"
+              class="mdc-button mdc-button--tertiary"
+              target="_self"
             >
               <span
-                class="googlesitekit-cta-link__contents"
+                class="mdc-button__label"
               >
                 Maybe later
               </span>
@@ -169,10 +170,11 @@ exports[`SetupBanner should render correctly when the user does not have the edi
               </span>
             </button>
             <button
-              class="googlesitekit-cta-link"
+              class="mdc-button mdc-button--tertiary"
+              target="_self"
             >
               <span
-                class="googlesitekit-cta-link__contents"
+                class="mdc-button__label"
               >
                 Maybe later
               </span>
