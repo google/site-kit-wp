@@ -107,17 +107,6 @@ final class Tag_Manager extends Module
 	}
 
 	/**
-	 * Gets Module public name.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Formatted module name.
-	 */
-	public function get_public_name() {
-		return 'Tag Manager';
-	}
-
-	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.0.0

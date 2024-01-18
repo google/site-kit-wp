@@ -248,17 +248,6 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Gets Module public name.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Formatted module name.
-	 */
-	public function get_public_name() {
-		return 'Analytics';
-	}
-
-	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.30.0
