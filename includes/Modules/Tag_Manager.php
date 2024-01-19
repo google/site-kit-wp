@@ -37,7 +37,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Site_Health\General_Data;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -182,17 +182,17 @@ final class Tag_Manager extends Module
 			'tagmanager_account_id'       => array(
 				'label' => __( 'Tag Manager account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => General_Data::redact_debug_value( $settings['accountID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'tagmanager_container_id'     => array(
 				'label' => __( 'Tag Manager container ID', 'google-site-kit' ),
 				'value' => $settings['containerID'],
-				'debug' => General_Data::redact_debug_value( $settings['containerID'], 7 ),
+				'debug' => Debug_Data::redact_debug_value( $settings['containerID'], 7 ),
 			),
 			'tagmanager_amp_container_id' => array(
 				'label' => __( 'Tag Manager AMP container ID', 'google-site-kit' ),
 				'value' => $settings['ampContainerID'],
-				'debug' => General_Data::redact_debug_value( $settings['ampContainerID'], 7 ),
+				'debug' => Debug_Data::redact_debug_value( $settings['ampContainerID'], 7 ),
 			),
 			'tagmanager_use_snippet'      => array(
 				'label' => __( 'Tag Manager snippet placed', 'google-site-kit' ),

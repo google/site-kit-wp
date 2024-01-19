@@ -54,7 +54,7 @@ use Google\Site_Kit\Core\Modules\AdSense\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
-use Google\Site_Kit\Core\Site_Health\General_Data;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -208,12 +208,12 @@ final class AdSense extends Module
 			'adsense_account_id'                       => array(
 				'label' => __( 'AdSense account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => General_Data::redact_debug_value( $settings['accountID'], 7 ),
+				'debug' => Debug_Data::redact_debug_value( $settings['accountID'], 7 ),
 			),
 			'adsense_client_id'                        => array(
 				'label' => __( 'AdSense client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
-				'debug' => General_Data::redact_debug_value( $settings['clientID'], 10 ),
+				'debug' => Debug_Data::redact_debug_value( $settings['clientID'], 10 ),
 			),
 			'adsense_account_status'                   => array(
 				'label' => __( 'AdSense account status', 'google-site-kit' ),

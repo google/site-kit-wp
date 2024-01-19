@@ -42,7 +42,7 @@ use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\Site_Health\General_Data;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
@@ -328,29 +328,29 @@ final class Analytics_4 extends Module
 			'analytics_4_account_id'         => array(
 				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => General_Data::redact_debug_value( $settings['accountID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_4_ads_conversion_id'         => array(
 				'label' => __( 'Analytics 4 ads conversion ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
-				'debug' => General_Data::redact_debug_value( $settings['adsConversionID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 			*/
 			// phpcs:enable
 			'analytics_4_property_id'        => array(
 				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
-				'debug' => General_Data::redact_debug_value( $settings['propertyID'], 7 ),
+				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_4_web_data_stream_id' => array(
 				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
-				'debug' => General_Data::redact_debug_value( $settings['webDataStreamID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
 			'analytics_4_measurement_id'     => array(
 				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
 				'value' => $settings['measurementID'],
-				'debug' => General_Data::redact_debug_value( $settings['measurementID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
 			),
 			'analytics_4_use_snippet'        => array(
 				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
