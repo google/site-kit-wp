@@ -33,10 +33,9 @@ trait Module_With_Tag_Trait {
 
 		$search_string              = 'Google ' . $module_name . ' snippet added by Site Kit';
 		$search_translatable_string = sprintf(
-			'%s %s %s',
-			__( 'Google', 'google-site-kit' ),
-			$module_name,
-			__( 'snippet added by Site Kit', 'google-site-kit' )
+			/* translators: %s: translatable module name */
+			__( 'Google %s snippet added by Site Kit', 'google-site-kit' ),
+			$module_name
 		);
 
 		if ( strpos( $content, $search_string ) !== false || strpos( $content, $search_translatable_string ) !== false ) {
