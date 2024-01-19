@@ -111,11 +111,6 @@ final class Analytics extends Module
 
 		add_action( 'googlesitekit_authorize_user', array( $this, 'handle_token_response_data' ) );
 
-		// For non-AMP and AMP.
-		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
-		// For Web Stories plugin.
-		add_action( 'web_stories_story_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
-
 		add_filter(
 			'googlesitekit_proxy_setup_mode',
 			function( $original_mode ) {
@@ -144,37 +139,6 @@ final class Analytics extends Module
 	 */
 	public function get_public_name() {
 		return 'Analytics';
-	}
-
-	/**
-	 * Checks whether or not tracking snippet should be contextually disabled for this request.
-	 *
-	 * @since 1.1.0
-	 *
-	 * @return bool
-	 */
-	protected function is_tracking_disabled() {
-		$settings = $this->get_settings()->get();
-		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
-		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
-			return false;
-		}
-
-		$option = $this->get_settings()->get();
-
-		$disable_logged_in_users  = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
-		$disable_content_creators = in_array( 'contentCreators', $option['trackingDisabled'], true ) && current_user_can( 'edit_posts' );
-
-		$disabled = $disable_logged_in_users || $disable_content_creators;
-
-		/**
-		 * Filters whether or not the Analytics tracking snippet is output for the current request.
-		 *
-		 * @since 1.1.0
-		 *
-		 * @param $disabled bool Whether to disable tracking or not.
-		 */
-		return (bool) apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
 	}
 
 	/**
@@ -1065,43 +1029,6 @@ final class Analytics extends Module
 	 */
 	private function is_adsense_metric( $metric ) {
 		return 0 === strpos( $metric, 'ga:adsense' );
-	}
-
-	/**
-	 * Outputs the user tracking opt-out script.
-	 *
-	 * This script opts out of all Google Analytics tracking, for all measurement IDs, regardless of implementation.
-	 * E.g. via Tag Manager, etc.
-	 *
-	 * @since 1.5.0
-	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
-	 */
-	private function print_tracking_opt_out() {
-		$settings    = $this->get_settings()->get();
-		$account_id  = $settings['accountID'];
-		$property_id = $settings['propertyID'];
-
-		if ( ! $this->is_tracking_disabled() ) {
-			return;
-		}
-
-		if ( $this->context->is_amp() ) : ?>
-			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
-			<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-		<?php else : ?>
-			<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<?php
-			if ( ! empty( $property_id ) ) {
-				BC_Functions::wp_print_inline_script_tag(
-					sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $property_id ) )
-				);
-			}
-			?>
-			<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
-			<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<?php
-		endif;
 	}
 
 	/**
