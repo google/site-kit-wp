@@ -188,7 +188,7 @@ final class Analytics_4 extends Module
 		// Ensure that the data available state is reset when the measurement ID changes.
 		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
-				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
 				}

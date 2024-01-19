@@ -963,6 +963,23 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( $analytics->is_connected() );
 	}
 
+	public function test_data_available_reset_on_property_change() {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '987654321',
+			)
+		);
+		$this->analytics->set_data_available();
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '887654321',
+			)
+		);
+
+		$this->assertFalse( $this->analytics->is_data_available() );
+	}
+
 	public function test_data_available_reset_on_measurement_id_change() {
 		$this->analytics->register();
 		$this->analytics->get_settings()->merge(
