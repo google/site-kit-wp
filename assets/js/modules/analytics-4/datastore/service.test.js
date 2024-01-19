@@ -54,6 +54,55 @@ describe( 'module/analytics-4 service store', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getServiceURL', () => {
+			it( 'retrieves the correct URL with no arguments', () => {
+				const serviceURL = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getServiceURL();
+
+				expect( serviceURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F&Email=wapuu.wordpress%40gmail.com"'
+				);
+			} );
+
+			it( 'adds the path parameter', () => {
+				const serviceURLNoSlashes = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getServiceURL( { path: 'test/path/to/deeplink' } );
+
+				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=wapuu.wordpress%40gmail.com"'
+				);
+
+				const serviceURLWithLeadingSlash = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getServiceURL( { path: '/test/path/to/deeplink' } );
+
+				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=wapuu.wordpress%40gmail.com"'
+				);
+			} );
+
+			it( 'adds query args', () => {
+				const path = '/test/path/to/deeplink';
+				const query = {
+					authuser: 'wapuu.wordpress@gmail.com',
+					param1: '1',
+					param2: '2',
+				};
+				const serviceURL = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getServiceURL( { path, query } );
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
+				expect( decodedServiceURL.startsWith( baseURI ) ).toBe( true );
+				expect( decodedServiceURL.endsWith( `#${ path }` ) ).toBe(
+					true
+				);
+				expect( decodedServiceURL ).toMatchQueryParameters( query );
+			} );
+		} );
+
 		describe( 'getServiceReportURL', () => {
 			const type = 'test-type';
 

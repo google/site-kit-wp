@@ -93,7 +93,7 @@ export default function UserInputQuestionInfo( {
 					<p>
 						{ author
 							? __(
-									'This answer can be edited by all Site Kit admins.',
+									'This answer can be edited by all Site Kit admins',
 									'google-site-kit'
 							  )
 							: __(

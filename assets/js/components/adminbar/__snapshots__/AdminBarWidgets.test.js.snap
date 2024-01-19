@@ -222,7 +222,7 @@ exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Acti
           <p
             class="googlesitekit-analytics-cta--description"
           >
-            See how many people visit your site from Search and track how you’re achieving your goals.
+            See how many people visit your site from Search and track how you’re achieving your goals
           </p>
           <button
             class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"

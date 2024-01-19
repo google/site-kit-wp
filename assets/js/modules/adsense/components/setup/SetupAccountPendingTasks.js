@@ -58,7 +58,7 @@ export default function SetupAccountPendingTasks() {
 
 			<p>
 				{ __(
-					'You need to fix some things before we can connect Site Kit to your AdSense account.',
+					'You need to fix some things before we can connect Site Kit to your AdSense account',
 					'google-site-kit'
 				) }
 			</p>

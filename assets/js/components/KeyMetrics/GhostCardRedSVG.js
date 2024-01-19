@@ -36,7 +36,7 @@ export default function GhostCardRedSVG() {
 		<Suspense fallback={ <PreviewBlock width="100%" height="90px" /> }>
 			<MediaErrorHandler
 				errorMessage={ __(
-					'Failed to load graphic.',
+					'Failed to load graphic',
 					'google-site-kit'
 				) }
 			>
