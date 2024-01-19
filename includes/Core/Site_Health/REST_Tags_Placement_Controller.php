@@ -45,7 +45,7 @@ class REST_Tag_Placement_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.37.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		add_filter(
