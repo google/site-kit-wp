@@ -119,15 +119,6 @@ final class Analytics extends Module
 					: $original_mode;
 			}
 		);
-
-		// Ensure that the data available state is reset when the property changes.
-		$this->get_settings()->on_change(
-			function( $old_value, $new_value ) {
-				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
-					$this->reset_data_available();
-				}
-			}
-		);
 	}
 
 	/**

@@ -74,24 +74,6 @@ class AnalyticsTest extends TestCase {
 		);
 	}
 
-	public function test_data_available_reset_on_property_change() {
-		$analytics = new Analytics( $this->get_amp_primary_context() );
-		$analytics->register();
-		$analytics->get_settings()->merge(
-			array(
-				'propertyID' => 'UA-12345678-1',
-			)
-		);
-		$analytics->set_data_available();
-		$analytics->get_settings()->merge(
-			array(
-				'propertyID' => 'UA-87654321-1',
-			)
-		);
-
-		$this->assertFalse( $analytics->is_data_available() );
-	}
-
 	public function test_on_deactivation() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options   = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
