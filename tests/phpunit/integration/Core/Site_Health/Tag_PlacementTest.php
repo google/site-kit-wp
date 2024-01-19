@@ -111,7 +111,7 @@ class Tag_PlacementTest extends TestCase {
 		$this->assertEquals( '<p>This feature requires WordPress version 5.6 or higher</p>', $result['description'] );
 	}
 
-	public function test_get_active_modules() {
+	public function test_get_active_modules_with_tags() {
 		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
