@@ -43,10 +43,14 @@ export default function MetricTileText( {
 			className="googlesitekit-km-widget-tile--text"
 			{ ...props }
 		>
-			<div className="googlesitekit-km-widget-tile__metric">
-				{ metricValue }
+			<div className="googlesitekit-km-widget-tile__metric-container">
+				<div className="googlesitekit-km-widget-tile__metric">
+					{ metricValue }
+				</div>
+				<p className="googlesitekit-km-widget-tile__subtext">
+					{ subText }
+				</p>
 			</div>
-			<p className="googlesitekit-km-widget-tile__subtext">{ subText }</p>
 			<div className="googlesitekit-km-widget-tile__metric-change-container">
 				<ChangeBadge
 					previousValue={ previousValue }

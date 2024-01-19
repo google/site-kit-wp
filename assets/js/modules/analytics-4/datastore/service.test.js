@@ -98,7 +98,7 @@ describe( 'module/analytics-4 service store', () => {
 					param2: '2',
 				};
 				const serviceURL = registry
-					.select( MODULES_ANALYTICS )
+					.select( MODULES_ANALYTICS_4 )
 					.getServiceURL( { path, query } );
 				const decodedServiceURL = decodeServiceURL( serviceURL );
 

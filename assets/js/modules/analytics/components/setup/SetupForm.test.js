@@ -329,6 +329,17 @@ describe( 'SetupForm', () => {
 			body: {},
 		} );
 
+		// We have to mock the account-summaries endpoint because the createProperty action calls it.
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+			),
+			{
+				body: [],
+				status: 200,
+			}
+		);
+
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,

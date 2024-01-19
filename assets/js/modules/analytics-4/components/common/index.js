@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 
+export { default as AccountCreate } from './AccountCreate';
 export { default as AccountSelect } from './AccountSelect';
 export { default as AccountCreateLegacy } from './AccountCreateLegacy';
 export { default as EnhancedMeasurementSwitch } from './EnhancedMeasurementSwitch';
 export { default as WebDataStreamSelect } from './WebDataStreamSelect';
 export { default as PropertySelect } from './PropertySelect';
+export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
 export { default as Notice } from './Notice';

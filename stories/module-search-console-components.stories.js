@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../assets/js/googlesitekit/constants';
 import DashboardPopularKeywordsWidget from '../assets/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget';
 import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import { getSearchConsoleMockResponse } from '../assets/js/modules/search-console/util/data-mock';
@@ -106,4 +107,27 @@ generateSearchConsoleWidgetStories( {
 	] ),
 	Component: DashboardPopularKeywordsWidget,
 	wrapWidget: false,
+} );
+
+generateSearchConsoleWidgetStories( {
+	group: 'Search Console Module/Components/View Only Dashboard/Popular Keywords Widget',
+	referenceDate: '2020-08-26',
+	...generateSearchConsoleData( [
+		{
+			startDate: '2020-07-29',
+			endDate: '2020-08-25',
+			dimensions: 'query',
+			limit: 10,
+			url: 'https://example.com/example-page/',
+		},
+		{
+			dimensions: 'date',
+			startDate: '2020-07-01',
+			endDate: '2020-08-25',
+			url: 'https://example.com/example-page/',
+		},
+	] ),
+	Component: DashboardPopularKeywordsWidget,
+	wrapWidget: false,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } );

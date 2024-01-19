@@ -126,7 +126,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Prevent excessive requests for remote feature flags. See [#6015](https://github.com/google/site-kit-wp/issues/6015).
 * Improve the notification banner that is shown when Site Kit is gathering data. See [#4939](https://github.com/google/site-kit-wp/issues/4939).
 * Update the All Traffic widget to show tooltip when hovering over the users chart. See [#4770](https://github.com/google/site-kit-wp/issues/4770).
-* Display a notification when a user goes offline. See [#3820](https://github.com/google/site-kit-wp/issues/3820).
 
 **Changed**
 

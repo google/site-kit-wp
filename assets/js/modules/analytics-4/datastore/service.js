@@ -30,6 +30,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { REPORT_ARGS_NAV_KEY } from '../constants';
@@ -39,7 +40,6 @@ import {
 	generateReportDetailArgs,
 	generateReportFilterArgs,
 } from '../utils/report-args';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 const { createRegistrySelector } = Data;
 
 export const selectors = {

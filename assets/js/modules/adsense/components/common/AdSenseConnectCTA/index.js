@@ -176,7 +176,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 						<p>
 							{ createInterpolateElement(
 								__(
-									'AdSense accounts are <a>subject to review and approval</a> by the Google AdSense team.',
+									'AdSense accounts are <a>subject to review and approval</a> by the Google AdSense team',
 									'google-site-kit'
 								),
 								{

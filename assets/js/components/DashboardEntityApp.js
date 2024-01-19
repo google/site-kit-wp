@@ -61,7 +61,6 @@ import EntityBannerNotifications from './notifications/EntityBannerNotifications
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
-import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
@@ -122,8 +121,6 @@ function DashboardEntityApp() {
 			'url-not-part-of-this-site'
 		);
 	} );
-
-	useMonitorInternetConnection();
 
 	let lastWidgetAnchor = null;
 

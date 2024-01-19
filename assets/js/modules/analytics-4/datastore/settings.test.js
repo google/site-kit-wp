@@ -115,6 +115,16 @@ describe( 'modules/analytics-4 settings', () => {
 					return { body: data, status: 200 };
 				} );
 
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+					),
+					{
+						body: [],
+						status: 200,
+					}
+				);
+
 				const result = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.submitChanges();

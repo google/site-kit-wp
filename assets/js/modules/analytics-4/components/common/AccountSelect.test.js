@@ -26,14 +26,11 @@ import {
 	render,
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
-import {
-	ACCOUNT_CREATE,
-	MODULES_ANALYTICS,
-} from '../../../analytics/datastore/constants';
 
 const setupRegistry = ( registry ) => {
 	provideSiteInfo( registry, {
@@ -134,7 +131,7 @@ describe( 'AccountSelect', () => {
 			setupRegistry,
 		} );
 		const originalAccountID = registry
-			.select( MODULES_ANALYTICS )
+			.select( MODULES_ANALYTICS_4 )
 			.getAccountID();
 
 		// Click the label to expose the elements in the menu.
@@ -145,7 +142,7 @@ describe( 'AccountSelect', () => {
 		// as these are pre-selected when this changed (see next test).
 
 		const newAccountID = registry
-			.select( MODULES_ANALYTICS )
+			.select( MODULES_ANALYTICS_4 )
 			.getAccountID();
 		expect( originalAccountID ).not.toEqual( newAccountID );
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
