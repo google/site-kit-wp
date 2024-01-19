@@ -159,6 +159,10 @@ export default function DashboardPopularKeywordsWidget( props ) {
 					);
 				} );
 
+				if ( viewOnlyDashboard ) {
+					return <span>{ fieldValue }</span>;
+				}
+
 				return (
 					<Link
 						href={ searchAnalyticsURL }
