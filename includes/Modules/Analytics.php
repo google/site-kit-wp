@@ -32,7 +32,6 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
@@ -110,7 +109,6 @@ final class Analytics extends Module
 		 */
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
-		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 		add_action( 'googlesitekit_authorize_user', array( $this, 'handle_token_response_data' ) );
 
 		// For non-AMP and AMP.
@@ -264,94 +262,6 @@ final class Analytics extends Module
 		);
 
 		return $fields;
-	}
-
-	/**
-	 * Handles the provisioning callback after the user completes the terms of service.
-	 *
-	 * @since 1.9.0
-	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
-	 */
-	protected function handle_provisioning_callback() {
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return;
-		}
-
-		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-			return;
-		}
-
-		$input = $this->context->input();
-
-		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
-			return;
-		}
-
-		// First check that the accountTicketId matches one stored for the user.
-		// This is always provided, even in the event of an error.
-		$account_ticket_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountTicketId' ) );
-		// The create-account-ticket request stores the created account ticket in a transient before
-		// sending the user off to the terms of service page.
-		$account_ticket_transient_key = self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id();
-		$account_ticket_params        = $this->transients->get( $account_ticket_transient_key );
-		$account_ticket               = new Account_Ticket( $account_ticket_params );
-
-		// Backwards compat for previous storage type which stored ID only.
-		if ( is_scalar( $account_ticket_params ) ) {
-			$account_ticket->set_id( $account_ticket_params );
-		}
-
-		if ( $account_ticket->get_id() !== $account_ticket_id ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'dashboard', array( 'error_code' => 'account_ticket_id_mismatch' ) )
-			);
-			exit;
-		}
-
-		// At this point, the accountTicketId is a match and params are loaded, so we can safely delete the transient.
-		$this->transients->delete( $account_ticket_transient_key );
-
-		// Next, check for a returned error.
-		$error = $input->filter( INPUT_GET, 'error' );
-		if ( ! empty( $error ) ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'dashboard', array( 'error_code' => htmlspecialchars( $error ) ) )
-			);
-			exit;
-		}
-
-		$account_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountId' ) );
-
-		if ( empty( $account_id ) ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
-			);
-			exit;
-		}
-
-		$new_settings = array();
-
-		// At this point, account creation was successful.
-		$new_settings['accountID'] = $account_id;
-
-		$this->get_settings()->merge( $new_settings );
-
-		do_action(
-			'googlesitekit_analytics_handle_provisioning_callback',
-			$account_id,
-			$account_ticket
-		);
-
-		wp_safe_redirect(
-			$this->context->admin_url(
-				'dashboard',
-				array(
-					'notification' => 'authentication_success',
-					'slug'         => 'analytics',
-				)
-			)
-		);
-		exit;
 	}
 
 	/**
