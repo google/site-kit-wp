@@ -2902,32 +2902,158 @@ class Analytics_4Test extends TestCase {
 		$this->set_user_access_token( $user_id, $access_token );
 	}
 
-	public function test_tracking_opt_out_snippet() {
-		$this->analytics->register();
+	/**
+	 * @dataProvider tracking_disabled_provider
+	 *
+	 * @param array $settings
+	 * @param bool $logged_in
+	 * @param \Closure $assert_opt_out_presence
+	 * @param bool $is_content_creator
+	 */
+	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+		wp_styles(); // Prevent potential ->queue of non-object error.
 
-		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet is not output when both measurement ID and google tag ID are empty.
-		$this->assertEmpty( $snippet_html );
+		// Remove irrelevant script from throwing errors in CI from readfile().
+		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 
-		$settings = array(
-			'measurementID' => 'G-12345678',
+		// Set the current user (can be 0 for no user)
+		$role = $is_content_creator ? 'administrator' : 'subscriber';
+		$user = $logged_in ?
+			$this->factory()->user->create( array( 'role' => $role ) )
+			: 0;
+		wp_set_current_user( $user );
+
+		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics->get_settings()->set( $settings );
+
+		remove_all_actions( 'template_redirect' );
+		$analytics->register();
+		do_action( 'template_redirect' );
+
+		$head_html = $this->capture_action( 'wp_head' );
+		// Confidence check.
+		$this->assertNotEmpty( $head_html );
+
+		// Whether or not tracking is disabled should not affect the output of the GA4 snippet.
+		if ( $settings['measurementID'] && $settings['googleTagID'] && $settings['useSnippet'] ) {
+			$this->assertStringContainsString( "id={$settings['googleTagID']}", $head_html );
+		} elseif ( $settings['measurementID'] && ! $settings['googleTagID'] && $settings['useSnippet'] ) {
+			$this->assertStringContainsString( "id={$settings['measurementID']}", $head_html );
+		} else {
+			$this->assertStringNotContainsString( "id={$settings['googleTagID']}", $head_html );
+		}
+
+		if ( ! $settings['measurementID'] ) {
+			$this->assertStringNotContainsString( 'ga-disable', $head_html );
+		}
+
+		if ( $is_tracking_active ) {
+			// When tracking is active, the opt out snippet should not be present.
+			$this->assertStringNotContainsString( 'ga-disable', $head_html );
+
+			// When tracking is active, the `googlesitekit_analytics_tracking_opt_out` action should not be called.
+			$this->assertEquals( 0, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
+		} else {
+			if ( empty( $settings['measurementID'] ) ) {
+				// When measurementID is not set, the opt out snippet should not be present.
+				$this->assertStringNotContainsString( 'ga-disable', $head_html );
+			} else {
+				// When tracking is disabled and measurementID is set, the opt out snippet should be present.
+				// Ensure the opt-out snippet contains the configured measurement ID (not GT tag) when it is set.
+				$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $head_html );
+			}
+
+			// When tracking is disabled, the `googlesitekit_analytics_tracking_opt_out` action should be called.
+			$this->assertEquals( 1, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
+		}
+	}
+
+	public function tracking_disabled_provider() {
+		$base_settings = array(
+			'accountID'        => '12345678',
+			'propertyID'       => '987654321',
+			'webDataStreamID'  => '1234567890',
+			'measurementID'    => 'G-12345678',
+			'googleTagID'      => 'GT-12345678',
+			'useSnippet'       => true,
+			'trackingDisabled' => array( 'loggedinUsers' ),
 		);
-		$this->analytics->get_settings()->merge( $settings );
 
-		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet contains the configured measurement ID when it is set and the google tag ID is empty.
-		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
-
-		$settings = array(
-			'measurementID' => 'G-12345678',
-			'googleTagID'   => 'GT-12345678',
+		return array(
+			// Tracking should be active by default for non-logged-in users.
+			array(
+				$base_settings,
+				false,
+				true,
+			),
+			// Tracking is not active for non-logged-in users if snippet is disabled,
+			// but opt-out is not added because tracking is not disabled.
+			array(
+				array_merge( $base_settings, array( 'useSnippet' => false ) ),
+				false,
+				true,
+			),
+			// Tracking is not active for logged-in users by default (opt-out expected).
+			array(
+				$base_settings,
+				true,
+				false,
+			),
+			// Tracking is active for logged-in users if enabled via settings.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array() ) ),
+				true,
+				true,
+			),
+			// Tracking is not active for content creators if disabled via settings.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'contentCreators' ) ) ),
+				true,
+				false,
+				true,
+			),
+			// Tracking is still active for guests if disabled for logged in users.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				false,
+				true,
+			),
+			// Tracking is not active for content creators if disabled for logged-in users (logged-in users setting overrides content creators setting)
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				true,
+				false,
+				true,
+			),
+			// Analytics is enabled and tracking is disabled for logged-in users but property is not configured
+			array(
+				array_merge(
+					$base_settings,
+					array(
+						'trackingDisabled' => array( 'loggedinUsers' ),
+						'measurementID'    => '',
+					)
+				),
+				true,
+				false,
+				true,
+			),
+			// Analytics is enabled but not configured.
+			array(
+				array_merge( $base_settings, array( 'measurementID' => '' ) ),
+				false,
+				true,
+			),
+			// Ensure the opt-out snippet contains the configured measurement ID when it is set and the google tag ID is empty.
+			array(
+				array_merge( $base_settings, array( 'googleTagID' => '' ) ),
+				false,
+				true,
+			),
 		);
-
-		$this->analytics->get_settings()->merge( $settings );
-
-		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet contains the configured measurement ID (not GT tag) when it is set.
-		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
 	}
 
 	public function test_register_allow_tracking_disabled() {
