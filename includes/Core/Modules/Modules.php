@@ -261,13 +261,13 @@ final class Modules {
 
 				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
 				if ( is_array( $extra_scopes ) ) {
-					$readonly_scope_index = array_search( Analytics::READONLY_SCOPE, $extra_scopes, true );
+					$readonly_scope_index = array_search( Analytics_4::READONLY_SCOPE, $extra_scopes, true );
 					if ( $readonly_scope_index >= 0 ) {
 						unset( $extra_scopes[ $readonly_scope_index ] );
 
 						$auth_scopes = $this->user_options->get( OAuth_Client::OPTION_AUTH_SCOPES );
 						if ( is_array( $auth_scopes ) ) {
-							$auth_scopes[] = Analytics::READONLY_SCOPE;
+							$auth_scopes[] = Analytics_4::READONLY_SCOPE;
 							$auth_scopes   = array_unique( $auth_scopes );
 
 							$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );

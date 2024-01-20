@@ -918,26 +918,26 @@ class Analytics_4Test extends TestCase {
 		return array(
 			'with analytics and tag manager scopes granted' => array(
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
 			'with analytics scope granted' => array(
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 				),
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 				),
 			),
 			'with no scopes granted'       => array(
 				array(),
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
@@ -2137,7 +2137,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
+				(array) Analytics_4::READONLY_SCOPE
 			)
 		);
 
@@ -2179,7 +2179,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
+				(array) Analytics_4::READONLY_SCOPE
 			)
 		);
 
@@ -2575,7 +2575,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
+				(array) Analytics_4::READONLY_SCOPE
 			)
 		);
 
