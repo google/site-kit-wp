@@ -682,7 +682,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				array( Analytics::EDIT_SCOPE )
+				array( Analytics_4::EDIT_SCOPE )
 			)
 		);
 
@@ -790,7 +790,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
+				(array) Analytics_4::EDIT_SCOPE
 			)
 		);
 
@@ -865,7 +865,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
+				(array) Analytics_4::EDIT_SCOPE
 			)
 		);
 
@@ -2271,7 +2271,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
+				(array) Analytics_4::EDIT_SCOPE
 			)
 		);
 
@@ -2344,7 +2344,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
+				(array) Analytics_4::EDIT_SCOPE
 			)
 		);
 
@@ -2435,7 +2435,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
+				(array) Analytics_4::EDIT_SCOPE
 			)
 		);
 
@@ -2512,7 +2512,7 @@ class Analytics_4Test extends TestCase {
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
+				(array) Analytics_4::EDIT_SCOPE
 			)
 		);
 

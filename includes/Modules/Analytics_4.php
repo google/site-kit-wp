@@ -421,7 +421,7 @@ final class Analytics_4 extends Module
 			),
 			'POST:create-account-ticket'           => array(
 				'service'                => 'analyticsprovisioning',
-				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			),
 			'GET:google-tag-settings'              => array(
@@ -432,12 +432,12 @@ final class Analytics_4 extends Module
 			),
 			'POST:create-property'                 => array(
 				'service'                => 'analyticsadmin',
-				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-webdatastream'            => array(
 				'service'                => 'analyticsadmin',
-				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream for this site on your behalf.', 'google-site-kit' ),
 			),
 			'GET:properties'                       => array( 'service' => 'analyticsadmin' ),
@@ -451,12 +451,12 @@ final class Analytics_4 extends Module
 			'GET:enhanced-measurement-settings'    => array( 'service' => 'analyticsenhancedmeasurement' ),
 			'POST:enhanced-measurement-settings'   => array(
 				'service'                => 'analyticsenhancedmeasurement',
-				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-custom-dimension'         => array(
 				'service'                => 'analyticsdata',
-				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
 			),
 			'POST:sync-custom-dimensions'          => array(
