@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
-use Cassandra\Type\Custom;
 use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
