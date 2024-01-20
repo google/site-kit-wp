@@ -1310,7 +1310,7 @@ final class Analytics_4 extends Module
 				$account_ticket->set_enhanced_measurement_stream_enabled( ! empty( $data['enhancedMeasurementStreamEnabled'] ) );
 				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
 				set_transient(
-					Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
+					self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
 					$account_ticket->to_array(),
 					15 * MINUTE_IN_SECONDS
 				);

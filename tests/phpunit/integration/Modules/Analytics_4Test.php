@@ -809,7 +809,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
 		$this->assertEquals( "Request parameter is empty: $required_param.", $response->get_error_message() );
 		// Ensure transient is not set in the event of a failure.
-		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
+		$this->assertFalse( get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
 		// Ensure remote request was not made.
 		$this->assertNull( $provision_account_ticket_request );
 	}
@@ -881,7 +881,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri() );
 
 		// Assert transient is set with params.
-		$account_ticket_params = get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
+		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
 		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'] );
 		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'] );
 		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'] );
