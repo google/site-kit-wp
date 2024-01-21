@@ -89,6 +89,7 @@ return array(
 			->depth( '== 0' )
 			->in( 'vendor/google/apiclient-services' ),
 
+		// Temporary support for `GoogleAnalyticsAdminV1alphaAdSenseLink` as it doesn't exist in the API client yet.
 		Finder::create()
 			->files()
 			->name( '#\.php$#' )
