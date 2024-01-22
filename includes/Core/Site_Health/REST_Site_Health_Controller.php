@@ -65,7 +65,7 @@ class REST_Site_Health_Controller {
 	protected function get_rest_routes() {
 		return array(
 			new REST_Route(
-				'core/site/data/tag-placement-test',
+				'core/site/data/site-health-tag-placement-test',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,

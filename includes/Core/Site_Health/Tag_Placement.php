@@ -78,7 +78,7 @@ class Tag_Placement {
 
 				$tests['async']['tag_placement'] = array(
 					'label'             => __( 'Tag Placement', 'google-site-kit' ),
-					'test'              => rest_url( '/' . REST_Routes::REST_ROOT . '/core/site/data/tag-placement-test' ),
+					'test'              => rest_url( '/' . REST_Routes::REST_ROOT . '/core/site/data/site-health-tag-placement-test' ),
 					'has_rest'          => true,
 					'async_direct_test' => $this->get_method_proxy( 'tag_placement_test' ),
 				);
