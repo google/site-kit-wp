@@ -39,6 +39,7 @@ import {
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
@@ -48,7 +49,6 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {

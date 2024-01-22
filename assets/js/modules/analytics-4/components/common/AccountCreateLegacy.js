@@ -29,10 +29,10 @@ import Data from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Notice from './Notice';
 import useViewContext from '../../../../hooks/useViewContext';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
