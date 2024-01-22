@@ -297,7 +297,6 @@ MainDashboardError.args = {
 };
 MainDashboardError.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Error',
-	delay: 400,
 };
 
 export const MainDashboardOneRowOfData = Template.bind( {} );

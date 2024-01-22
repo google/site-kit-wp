@@ -292,7 +292,6 @@ EntityDashboardError.args = {
 };
 EntityDashboardError.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Error',
-	delay: 400,
 };
 
 export const EntityDashboardOneRowOfData = Template.bind( {} );

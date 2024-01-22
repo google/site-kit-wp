@@ -233,7 +233,6 @@ Error.args = {
 };
 Error.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/Error',
-	delay: 250,
 };
 
 export const LoadedEntityURL = Template.bind( {} );
