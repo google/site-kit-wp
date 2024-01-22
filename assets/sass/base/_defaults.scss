@@ -114,6 +114,7 @@
 		text-decoration: none;
 
 		&:hover {
+			color: $c-link;
 			text-decoration: underline;
 		}
 
