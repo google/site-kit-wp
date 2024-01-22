@@ -1,6 +1,6 @@
 <?php
 /**
- * Interface Google\Site_Kit\Core\Modules\Module_With_Tag
+ * Trait Google\Site_Kit\Core\Modules\Module_With_Tag
  *
  * @package   Google\Site_Kit\Core\Modules
  * @copyright 2024 Google LLC

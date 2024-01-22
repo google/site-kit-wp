@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Analytics_4;
 
 /**
  * Class for integrating status tab information with Site Health.
@@ -143,7 +144,7 @@ class Tag_Placement {
 		if ( ! $this->environment_tag_guard->can_activate() ) {
 			$result['description'] = sprintf(
 				'<p>%s</p>',
-				__( 'Tags are not permitted in the current environment. They can only be placed in production mode.', 'google-site-kit' )
+				__( 'Tags are not output in the current environment.', 'google-site-kit' )
 			);
 
 			return $result;
@@ -183,8 +184,7 @@ class Tag_Placement {
 	}
 
 	/**
-	 * Gets active modules filtered to account only for
-	 * Analytics, AdSense and Tag Manager.
+	 * Filters active modules to only those which are instances of Module_With_Tag.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -223,7 +223,7 @@ class Tag_Placement {
 		$module_name = $module->name;
 
 		// Remove 4 from Analytics name if we are checking Analytics 4 module.
-		if ( strpos( $module_name, '4' ) !== false ) {
+		if ( $module instanceof Analytics_4 ) {
 			$module_name = trim( str_replace( '4', '', $module_name ) );
 		}
 
