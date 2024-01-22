@@ -202,7 +202,7 @@ function EnhancedMeasurementActivationBanner() {
 					'google-site-kit'
 				) }
 				content={ __(
-					'You can always turn on enhanced measurement later in Site Kit Settings.',
+					'You can always turn on enhanced measurement later in Site Kit Settings',
 					'google-site-kit'
 				) }
 				dismissLabel={ __( 'Got it', 'google-site-kit' ) }

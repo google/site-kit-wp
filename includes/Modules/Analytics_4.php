@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
@@ -35,15 +36,17 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\Site_Health\General_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -87,7 +90,7 @@ use WP_Error;
  * @ignore
  */
 final class Analytics_4 extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -247,6 +250,17 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Gets Module public name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Formatted module name.
+	 */
+	public function get_public_name() {
+		return 'Analytics';
+	}
+
+	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.30.0
@@ -324,29 +338,29 @@ final class Analytics_4 extends Module
 			'analytics_4_account_id'         => array(
 				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_4_ads_conversion_id'         => array(
 				'label' => __( 'Analytics 4 ads conversion ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 			*/
 			// phpcs:enable
 			'analytics_4_property_id'        => array(
 				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
+				'debug' => General_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_4_web_data_stream_id' => array(
 				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
 			'analytics_4_measurement_id'     => array(
 				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
 				'value' => $settings['measurementID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
+				'debug' => General_Data::redact_debug_value( $settings['measurementID'] ),
 			),
 			'analytics_4_use_snippet'        => array(
 				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
@@ -1388,8 +1402,9 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.31.0
 	 * @since 1.104.0 Added support for AMP tag.
+	 * @since n.e.x.t Made method public.
 	 */
-	private function register_tag() {
+	public function register_tag() {
 		$tag = $this->context->is_amp()
 			? new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG ) // AMP currently only works with the measurement ID.
 			: new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
@@ -1420,6 +1435,32 @@ final class Analytics_4 extends Module
 		);
 
 		$tag->register();
+	}
+
+	/**
+	 * Checks if the module tag is found in the provided content.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Content to search for the tags.
+	 * @return bool TRUE if tag is found, FALSE if not.
+	 */
+	public function has_placed_tag_in_content( $content ) {
+		$tag_matchers = ( new Tag_Matchers() )->regex_matchers();
+
+		$search_string = 'Google Analytics snippet added by Site Kit';
+
+		if ( strpos( $content, $search_string ) !== false ) {
+			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
+		} else {
+			foreach ( $tag_matchers as $pattern ) {
+				if ( preg_match( $pattern, $content ) ) {
+					return Module_Tag_Matchers::TAG_EXISTS;
+				}
+			}
+		}
+
+		return Module_Tag_Matchers::NO_TAG_FOUND;
 	}
 
 	/**

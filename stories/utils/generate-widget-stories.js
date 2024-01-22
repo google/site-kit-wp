@@ -25,6 +25,7 @@ import { storiesOf, Story } from '@storybook/react';
  * Internal dependencies
  */
 import { CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../assets/js/googlesitekit/constants';
 import {
 	createTestRegistry,
 	WithTestRegistry,
@@ -32,6 +33,7 @@ import {
 	provideSiteInfo,
 } from '../../tests/js/utils';
 import { getWidgetComponentProps } from '../../assets/js/googlesitekit/widgets/util';
+import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 
 /**
  * Generates stories for a report based widget using provided data.
@@ -71,6 +73,7 @@ export function generateReportBasedWidgetStories( args ) {
 		setup = () => {},
 		zeroing,
 		padding,
+		viewContext,
 	} = args;
 
 	const stories = storiesOf( group, module );
@@ -385,7 +388,11 @@ export function generateReportBasedWidgetStories( args ) {
 					callback={ variants[ variant ].callback }
 					features={ variants[ variant ].features || [] }
 				>
-					{ widgetElement }
+					<ViewContextProvider
+						value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+					>
+						{ widgetElement }
+					</ViewContextProvider>
 				</WithTestRegistry>
 			),
 			{

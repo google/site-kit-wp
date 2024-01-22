@@ -30,15 +30,19 @@ exports[`TopTrafficSourceWidget renders correctly with the expected metrics 1`] 
           class="googlesitekit-km-widget-tile__body"
         >
           <div
-            class="googlesitekit-km-widget-tile__metric"
+            class="googlesitekit-km-widget-tile__metric-container"
           >
-            Organic Search
+            <div
+              class="googlesitekit-km-widget-tile__metric"
+            >
+              Organic Search
+            </div>
+            <p
+              class="googlesitekit-km-widget-tile__subtext"
+            >
+              100% of total traffic
+            </p>
           </div>
-          <p
-            class="googlesitekit-km-widget-tile__subtext"
-          >
-            100% of total traffic
-          </p>
           <div
             class="googlesitekit-km-widget-tile__metric-change-container"
           >
@@ -154,15 +158,19 @@ exports[`TopTrafficSourceWidget retries both reports when an error is encountere
           class="googlesitekit-km-widget-tile__body"
         >
           <div
-            class="googlesitekit-km-widget-tile__metric"
+            class="googlesitekit-km-widget-tile__metric-container"
           >
-            Organic Search
+            <div
+              class="googlesitekit-km-widget-tile__metric"
+            >
+              Organic Search
+            </div>
+            <p
+              class="googlesitekit-km-widget-tile__subtext"
+            >
+              100% of total traffic
+            </p>
           </div>
-          <p
-            class="googlesitekit-km-widget-tile__subtext"
-          >
-            100% of total traffic
-          </p>
           <div
             class="googlesitekit-km-widget-tile__metric-change-container"
           >

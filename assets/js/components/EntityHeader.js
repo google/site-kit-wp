@@ -119,6 +119,7 @@ function EntityHeader() {
 					aria-label={ __( 'Back to dashboard', 'google-site-kit' ) }
 					onClick={ onClick }
 					text
+					tertiary
 				>
 					{ __( 'Back to dashboard', 'google-site-kit' ) }
 				</Button>

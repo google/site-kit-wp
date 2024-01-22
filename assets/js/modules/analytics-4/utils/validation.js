@@ -19,8 +19,28 @@
 /**
  * Internal dependencies
  */
-import { PROPERTY_CREATE, WEBDATASTREAM_CREATE } from '../datastore/constants';
+import {
+	ACCOUNT_CREATE,
+	PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
+} from '../datastore/constants';
 import { isValidNumericID } from '../../../util';
+
+/**
+ * Checks if the given value is a valid selection for an Account.
+ *
+ * @since n.e.x.t
+ *
+ * @param {?string} value Selected value.
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidAccountSelection( value ) {
+	if ( value === ACCOUNT_CREATE ) {
+		return true;
+	}
+
+	return isValidNumericID( value );
+}
 
 /**
  * Checks whether the given property ID appears to be valid.

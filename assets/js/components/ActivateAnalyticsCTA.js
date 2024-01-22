@@ -109,7 +109,7 @@ export default function ActivateAnalyticsCTA( { children } ) {
 			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
 					{ __(
-						'See how many people visit your site from Search and track how you’re achieving your goals.',
+						'See how many people visit your site from Search and track how you’re achieving your goals',
 						'google-site-kit'
 					) }
 				</p>

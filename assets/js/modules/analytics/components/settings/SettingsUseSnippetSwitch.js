@@ -74,7 +74,7 @@ export default function SettingsUseSnippetSwitch() {
 						{ sprintf(
 							/* translators: %s: existing tag ID */
 							__(
-								'A tag %s for the selected property already exists on the site.',
+								'A tag %s for the selected property already exists on the site',
 								'google-site-kit'
 							),
 							existingTag
@@ -82,7 +82,7 @@ export default function SettingsUseSnippetSwitch() {
 					</p>
 					<p>
 						{ __(
-							'Make sure you remove it if you want to place the same UA tag via Site Kit, otherwise they will be duplicated.',
+							'Make sure you remove it if you want to place the same UA tag via Site Kit, otherwise they will be duplicated',
 							'google-site-kit'
 						) }
 					</p>
@@ -93,7 +93,7 @@ export default function SettingsUseSnippetSwitch() {
 						{ sprintf(
 							/* translators: %s: existing tag ID */
 							__(
-								'An existing tag %s was found on the page.',
+								'An existing tag %s was found on the page',
 								'google-site-kit'
 							),
 							existingTag
@@ -101,7 +101,7 @@ export default function SettingsUseSnippetSwitch() {
 					</p>
 					<p>
 						{ __(
-							'If you prefer to collect data using that existing UA tag, please select the corresponding account and property above.',
+							'If you prefer to collect data using that existing UA tag, please select the corresponding account and property above',
 							'google-site-kit'
 						) }
 					</p>

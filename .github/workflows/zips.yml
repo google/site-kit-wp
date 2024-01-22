@@ -147,6 +147,7 @@ jobs:
           path: ${{ github.ref }}
           destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
           parent: false
+          process_gcloudignore: false
 
   add-comment-to-pr:
     name: Add comment to PR

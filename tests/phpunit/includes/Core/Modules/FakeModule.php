@@ -67,6 +67,10 @@ class FakeModule extends Module
 		return (bool) $this->is_registered;
 	}
 
+	public function get_public_name() {
+		return 'Fake Module';
+	}
+
 	/**
 	 * Activation handler.
 	 */
