@@ -1,5 +1,5 @@
 /**
- * SetupFormGA4 component stories.
+ * SetupForm component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -40,47 +41,18 @@ function Template() {
 }
 
 export const WithoutEnableUAToggle = Template.bind( null );
-WithoutEnableUAToggle.storyName = 'Without Enable UA Toggle';
+WithoutEnableUAToggle.storyName = 'Default';
 WithoutEnableUAToggle.scenario = {
-	label: 'Modules/Analytics/Setup/SetupForm/WithoutEnableUAToggle',
-	delay: 250,
-};
-
-export const WithEnableUAToggle = Template.bind( null );
-WithEnableUAToggle.storyName = 'With Enable UA Toggle';
-WithEnableUAToggle.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperties( fixtures.properties, {
-					accountID,
-				} );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-WithEnableUAToggle.scenario = {
-	label: 'Modules/Analytics/Setup/SetupForm/WithEnableUAToggle',
+	label: 'Modules/Analytics4/Setup/SetupForm/Default',
 	delay: 250,
 };
 
 export default {
-	title: 'Modules/Analytics/Setup/SetupForm',
+	title: 'Modules/Analytics4/Setup/SetupForm',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
-					{
-						slug: 'analytics',
-						active: true,
-						connected: true,
-					},
 					{
 						slug: 'analytics-4',
 						active: true,
@@ -97,13 +69,7 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetExistingTag( null );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					adsConversionID: '',
-					canUseSnippet: true,
-				} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( [], { accountID } );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAccountSummaries( accountSummaries );
@@ -120,6 +86,14 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
+					.selectAccount( accountID );
+
+				// @TODO Remove after analytics 4 is decoupled completely from analytics module.
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProperties( [], { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
 			};
 
