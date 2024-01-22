@@ -15,7 +15,7 @@
  * the License.
  */
 
- /**
+/**
  * The "adSenseLinks" collection of methods.
  * Typical usage is:
  *  <code>
