@@ -177,12 +177,22 @@ final class Analytics_4 extends Module
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 
-		// Ensure that the data available state is reset when the measurement ID changes.
 		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
+				// Ensure that the data available state is reset when the measurement ID changes.
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
+				}
+
+				// Reset AdSense link settings when propertyID changes.
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
+					$this->get_settings()->merge(
+						array(
+							'adSenseLinked'             => false,
+							'adSenseLinkedLastSyncedAt' => 0,
+						)
+					);
 				}
 			}
 		);
