@@ -38,8 +38,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import useExistingTagEffectGA4 from '../../../analytics-4/hooks/useExistingTagEffect';
-import { AccountCreate } from '../../../analytics/components/common';
-import { AccountCreateLegacy } from '../common';
+import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
