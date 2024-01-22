@@ -149,11 +149,7 @@ function EnhancedMeasurementActivationBanner() {
 
 		if ( error ) {
 			setErrorNotice( error );
-
-			if ( step !== ACTIVATION_STEP_SETUP ) {
-				setStep( ACTIVATION_STEP_SETUP );
-			}
-
+			setStep( ACTIVATION_STEP_SETUP );
 			return;
 		}
 
@@ -163,7 +159,7 @@ function EnhancedMeasurementActivationBanner() {
 		);
 
 		setStep( ACTIVATION_STEP_SUCCESS );
-	}, [ setValues, submitChanges, viewContext, step ] );
+	}, [ setValues, submitChanges, viewContext ] );
 
 	useEffect( () => {
 		if (
