@@ -31,7 +31,8 @@ trait Module_With_Tag_Trait {
 			$module_name = trim( str_replace( '4', '', $module_name ) );
 		}
 
-		$search_string              = 'Google ' . $module_name . ' snippet added by Site Kit';
+		$search_string = 'Google ' . $module_name . ' snippet added by Site Kit';
+		// @TODO Replace the comment text around the module name with methods that should expose it.
 		$search_translatable_string = sprintf(
 			/* translators: %s: translatable module name */
 			__( 'Google %s snippet added by Site Kit', 'google-site-kit' ),
