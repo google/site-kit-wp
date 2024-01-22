@@ -32,7 +32,6 @@ exports[`BannerNotification should not wrap the description in a paragraph when 
             >
               I am React element
             </p>
-            <p />
           </div>
         </div>
       </div>
