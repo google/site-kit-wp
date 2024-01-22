@@ -106,10 +106,11 @@ export default function AdBlockingRecoverySetupSuccessBannerNotification() {
 			) }
 			description={ createInterpolateElement(
 				__(
-					'Make sure to also create the message in <a>AdSense</a>, otherwise this feature won’t work',
+					'<p>Make sure to also create the message in <a>AdSense</a>, otherwise this feature won’t work</p>',
 					'google-site-kit'
 				),
 				{
+					p: <p />,
 					a: (
 						<Link
 							href={ privacyMessagingURL }
