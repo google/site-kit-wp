@@ -1,5 +1,5 @@
 /**
- * Analytics GA4 Setup form.
+ * SetupFormFields component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
