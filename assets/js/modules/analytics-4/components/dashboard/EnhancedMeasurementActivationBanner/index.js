@@ -188,7 +188,7 @@ function EnhancedMeasurementActivationBanner() {
 		if ( autoSubmit && hasEditScope ) {
 			handleAutoSubmit();
 		}
-	}, [ hasEditScope, setValues, handleSubmit, autoSubmit, step ] );
+	}, [ hasEditScope, setValues, handleSubmit, autoSubmit ] );
 
 	if ( isTooltipVisible ) {
 		return (
