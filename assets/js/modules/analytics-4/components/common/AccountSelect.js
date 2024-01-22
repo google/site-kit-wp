@@ -59,7 +59,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 
 	// TODO: Remove this when the legacy 'analytics' module is removed (see #7932).
 	// Temporarily added so that the module setup and settings work in the meantime.
-	const { selectAccount: selectAnalyticsAccount } =
+	const { selectAccount: selectLegacyAnalyticsAccount } =
 		useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback(
@@ -67,7 +67,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
 				selectAccount( newAccountID );
-				selectAnalyticsAccount( newAccountID );
+				selectLegacyAnalyticsAccount( newAccountID );
 
 				const action =
 					newAccountID === ACCOUNT_CREATE
@@ -76,7 +76,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 				trackEvent( `${ viewContext }_analytics`, action );
 			}
 		},
-		[ accountID, selectAccount, selectAnalyticsAccount, viewContext ]
+		[ accountID, selectAccount, selectLegacyAnalyticsAccount, viewContext ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
