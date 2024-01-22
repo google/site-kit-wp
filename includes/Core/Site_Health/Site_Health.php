@@ -43,10 +43,10 @@ class Site_Health {
 	private $tag_placement;
 
 	/**
-	 * REST_Tag_Placement_Controller instance.
+	 * REST_Site_Health_Controller instance.
 	 *
 	 * @since n.e.x.t
-	 * @var REST_Tag_Placement_Controller
+	 * @var REST_Site_Health_Controller
 	 */
 	protected $rest_controller;
 
@@ -72,7 +72,7 @@ class Site_Health {
 	) {
 		$this->debug_data      = new Debug_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
 		$this->tag_placement   = new Tag_Placement( $modules );
-		$this->rest_controller = new REST_Tag_Placement_Controller( $this->tag_placement );
+		$this->rest_controller = new REST_Site_Health_Controller( $this->tag_placement );
 	}
 
 	/**

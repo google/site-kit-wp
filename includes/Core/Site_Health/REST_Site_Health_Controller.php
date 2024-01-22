@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Site_Health\REST_Tag_Placement_Controller
+ * Class Google\Site_Kit\Core\Site_Health\REST_Site_Health_Controller
  *
  * @package   Google\Site_Kit\Core\Site_Health
  * @copyright 2024 Google LLC
@@ -20,7 +20,7 @@ use WP_REST_Server;
  * @access private
  * @ignore
  */
-class REST_Tag_Placement_Controller {
+class REST_Site_Health_Controller {
 
 	/**
 	 * Tag_Placement instance.

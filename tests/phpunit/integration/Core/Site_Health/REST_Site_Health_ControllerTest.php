@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Site_Health\REST_Tags_Placement_ControllerTest
+ * Class Google\Site_Kit\Tests\Core\Site_Health\REST_Site_Health_ControllerTest
  *
  * @package   Google\Site_Kit\Tests\Core\Site_Health
  * @copyright 2024 Google LLC
@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Site_Health\REST_Tag_Placement_Controller;
+use Google\Site_Kit\Core\Site_Health\REST_Site_Health_Controller;
 use Google\Site_Kit\Core\Site_Health\Tag_Placement;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -22,7 +22,7 @@ use Google\Site_Kit\Tests\TestCase;
 /**
  * @group Util
  */
-class REST_Tags_Placement_ControllerTest extends TestCase {
+class REST_Site_Health_ControllerTest extends TestCase {
 
 	protected $controller;
 
@@ -36,7 +36,7 @@ class REST_Tags_Placement_ControllerTest extends TestCase {
 		$modules        = new Modules( $context, $options, $user_options, $authentication );
 		$tag_placement  = new Tag_Placement( $modules );
 
-		$this->controller = new REST_Tag_Placement_Controller( $tag_placement );
+		$this->controller = new REST_Site_Health_Controller( $tag_placement );
 	}
 
 	public function test_register() {
