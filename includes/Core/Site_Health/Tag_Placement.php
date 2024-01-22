@@ -157,10 +157,7 @@ class Tag_Placement {
 			$settings = $module->get_settings()->get();
 			// If module has `canUseSnippet` setting, check if it is disabled.
 			if ( isset( $settings['canUseSnippet'] ) && empty( $settings['useSnippet'] ) ) {
-				$module_name = $module->name;
-				if ( 'analytics-4' === $module->slug ) {
-					$module_name = trim( str_replace( '4', '', $module_name ) );
-				}
+				$module_name   = $module->name;
 				$description[] = sprintf(
 					'<li><strong>%s</strong>: %s</li>',
 					$module_name,
@@ -221,11 +218,6 @@ class Tag_Placement {
 	protected function check_if_tag_exists( $module, $content ) {
 		$check_tag   = $module->has_placed_tag_in_content( $content );
 		$module_name = $module->name;
-
-		// Remove 4 from Analytics name if we are checking Analytics 4 module.
-		if ( $module instanceof Analytics_4 ) {
-			$module_name = trim( str_replace( '4', '', $module_name ) );
-		}
 
 		switch ( $check_tag ) {
 			case Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS:
