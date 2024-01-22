@@ -20,25 +20,14 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
 
-const { useDispatch } = Data;
-
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
-	const { syncGoogleTagSettings } = useDispatch( MODULES_ANALYTICS_4 );
-
-	useMount( () => {
-		syncGoogleTagSettings();
-	} );
-
 	if ( !! setupModuleSlug ) {
 		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
 	}
