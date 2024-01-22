@@ -71,13 +71,13 @@ final class Dashboard {
 	public function __construct(
 		Context $context,
 		Assets $assets = null,
-		Modules $modules = null,
-		Authentication $authentication = null
+		Modules $modules = null
 	) {
 		$this->context = $context;
 		$this->assets  = $assets ?: new Assets( $this->context );
 		$this->modules = $modules ?: new Modules( $this->context );
-		$this->authentication = $authentication ?: new Authentication( $this->context );
+
+		$this->authentication = new Authentication( $this->context );
 	}
 
 	/**
