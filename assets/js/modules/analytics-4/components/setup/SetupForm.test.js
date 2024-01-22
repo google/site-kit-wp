@@ -164,7 +164,9 @@ describe( 'SetupForm', () => {
 				}
 			);
 
-		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.selectAccount( accountID );
 
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
@@ -180,7 +182,7 @@ describe( 'SetupForm', () => {
 			// Therefore, we simulate the click on the dropdown menu item directly, despite it being hidden.
 			fireEvent.click(
 				getByRole( 'menuitem', {
-					name: /Example Property/i,
+					name: /Example Com/i,
 					hidden: true,
 				} )
 			);
@@ -194,11 +196,17 @@ describe( 'SetupForm', () => {
 			'/analytics-4/data/settings'
 		);
 
+		// @TODO remove after analytics 4 is decoupled from analytics module.
+		const updateLegacyAnalyticsSettingsRegexp = new RegExp(
+			'/analytics/data/settings'
+		);
+
 		const dismissItemEndpointRegexp = new RegExp(
 			'^/google-site-kit/v1/core/user/data/dismiss-item'
 		);
 
 		muteFetch( updateAnalyticsSettingsRegexp );
+		muteFetch( updateLegacyAnalyticsSettingsRegexp );
 
 		fetchMock.post( dismissItemEndpointRegexp, {
 			status: 200,
@@ -261,6 +269,9 @@ describe( 'SetupForm', () => {
 			);
 
 		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.selectAccount( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
@@ -290,6 +301,15 @@ describe( 'SetupForm', () => {
 			'/analytics-4/data/settings'
 		);
 
+		const accountSummariesRegexp = new RegExp(
+			'/analytics-4/data/account-summaries'
+		);
+
+		// // @TODO remove after analytics 4 is decoupled from analytics module.
+		const updateLegacyAnalyticsSettingsRegexp = new RegExp(
+			'/analytics/data/settings'
+		);
+
 		fetchMock.post( createPropertyRegexp, {
 			status: 200,
 			body: properties[ 0 ],
@@ -300,7 +320,13 @@ describe( 'SetupForm', () => {
 			body: webDataStreams[ 2 ],
 		} );
 
+		fetchMock.get( accountSummariesRegexp, {
+			status: 200,
+			body: accountSummaries,
+		} );
+
 		muteFetch( updateAnalyticsSettingsRegexp );
+		muteFetch( updateLegacyAnalyticsSettingsRegexp );
 
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
@@ -310,6 +336,11 @@ describe( 'SetupForm', () => {
 			}
 		);
 		await waitForRegistry();
+
+		// An additional wait is required in order for all resolvers to finish.
+		await act( async () => {
+			await waitForDefaultTimeouts();
+		} );
 
 		// Ensure the form rendered successfully.
 		expect(
