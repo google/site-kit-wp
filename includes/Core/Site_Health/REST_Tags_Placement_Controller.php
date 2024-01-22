@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Core\Site_Health;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use WP_REST_Server;
 
@@ -72,7 +71,7 @@ class REST_Tag_Placement_Controller {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => array( $this->tag_placement, 'tag_placement_test' ),
 						'permission_callback' => function () {
-							return current_user_can( Permissions::MANAGE_OPTIONS );
+							return current_user_can( 'view_site_health_checks' );
 						},
 					),
 				)
