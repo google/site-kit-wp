@@ -23,7 +23,10 @@ import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES } from '../../../../googlesitekit/datastore/user/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopRecentTrendingPagesWidget, {
@@ -173,13 +176,20 @@ export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
 	setupRegistry: ( { select, dispatch } ) => {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID,
+			availableCustomDimensions: [
+				...KM_WIDGET_DEF.requiredCustomDimensions,
+			],
+		} );
+
 		const reportOptions = getReportOptions( select );
 		const errorObject = {
 			code: 400,
 			message: 'Test error message. ',
 			data: {
 				status: 400,
-				reason: 'test-error-reason',
+				reason: 'badRequest',
 			},
 		};
 
@@ -192,18 +202,11 @@ Error.args = {
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
 			reportOptions,
 		] );
-
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID,
-			availableCustomDimensions: [
-				...KM_WIDGET_DEF.requiredCustomDimensions,
-			],
-		} );
 	},
 };
 Error.scenario = {
 	label: 'KeyMetrics/TopRecentTrendingPagesWidget/Error',
-	delay: 1000,
+	delay: 250,
 };
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
@@ -277,6 +280,16 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideModuleRegistrations( registry );
+
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
 					{
 						createTime: '2014-10-02T15:01:23Z',
@@ -294,14 +307,6 @@ export default {
 						].requiredCustomDimensions?.[ 0 ],
 						false
 					);
-
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
