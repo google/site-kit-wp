@@ -23,6 +23,10 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../constants';
 
 const { createRegistrySelector } = Data;
 
@@ -51,10 +55,12 @@ const fetchGetAuthenticationStore = createFetchStore( {
 // Actions
 const SET_AUTH_ERROR = 'SET_AUTH_ERROR';
 const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
+const SET_VIEW_ONLY = 'SET_VIEW_ONLY';
 
 const baseInitialState = {
 	authentication: undefined,
 	authError: null,
+	viewOnly: false,
 };
 
 const baseActions = {
@@ -86,6 +92,13 @@ const baseActions = {
 			type: CLEAR_AUTH_ERROR,
 		};
 	},
+
+	setViewOnly( viewOnly ) {
+		return {
+			type: SET_VIEW_ONLY,
+			payload: { viewOnly },
+		};
+	},
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
@@ -101,6 +114,14 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				authError: null,
+			};
+		}
+
+		case SET_VIEW_ONLY: {
+			const { viewOnly } = payload;
+			return {
+				...state,
+				viewOnly,
 			};
 		}
 
@@ -281,6 +302,15 @@ const baseSelectors = {
 	getAuthError( state ) {
 		const { authError } = state;
 		return authError;
+	},
+
+	getViewOnly( state ) {
+		const viewOnly = state.viewOnly;
+
+		return (
+			viewOnly === VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY ||
+			viewOnly === VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
+		);
 	},
 };
 
