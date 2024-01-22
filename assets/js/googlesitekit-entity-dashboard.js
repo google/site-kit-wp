@@ -25,6 +25,7 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
+import Data from 'googlesitekit-data';
 import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';
 import {
@@ -41,14 +42,14 @@ domReady( () => {
 	if ( renderTarget ) {
 		const { viewOnly } = renderTarget.dataset;
 
+		const viewContext = viewOnly
+			? VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
+			: VIEW_CONTEXT_ENTITY_DASHBOARD;
+
+		Data.dispatch( 'core/user' ).setViewOnly( viewContext );
+
 		render(
-			<Root
-				viewContext={
-					viewOnly
-						? VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
-						: VIEW_CONTEXT_ENTITY_DASHBOARD
-				}
-			>
+			<Root viewContext={ viewContext }>
 				<DashboardEntityApp />
 			</Root>,
 			renderTarget
