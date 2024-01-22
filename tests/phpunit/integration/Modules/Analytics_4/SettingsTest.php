@@ -67,7 +67,6 @@ class SettingsTest extends SettingsTestCase {
 			array(
 				'accountID'                 => '',
 				'adsConversionID'           => '',
-				'adsenseLinked'             => false,
 				'propertyID'                => '',
 				'webDataStreamID'           => '',
 				'measurementID'             => '',
@@ -178,7 +177,6 @@ class SettingsTest extends SettingsTestCase {
 		$keys_to_check = array(
 			'accountID',
 			'adsConversionID',
-			'adsenseLinked',
 			'canUseSnippet',
 			'trackingDisabled',
 		);

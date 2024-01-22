@@ -92,7 +92,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'ownerID'                   => 0,
 			'accountID'                 => '',
 			'adsConversionID'           => '',
-			'adsenseLinked'             => false,
 			'propertyID'                => '',
 			'webDataStreamID'           => '',
 			'measurementID'             => '',
@@ -136,9 +135,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					} else {
 						$option['trackingDisabled'] = (array) $option['trackingDisabled'];
 					}
-				}
-				if ( isset( $option['adsenseLinked'] ) ) {
-					$option['adsenseLinked'] = (bool) $option['adsenseLinked'];
 				}
 
 				$numeric_properties = array( 'googleTagAccountID', 'googleTagContainerID' );
@@ -192,7 +188,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		$keys_to_check      = array(
 			'accountID',
 			'adsConversionID',
-			'adsenseLinked',
 			'canUseSnippet',
 			'trackingDisabled',
 		);
