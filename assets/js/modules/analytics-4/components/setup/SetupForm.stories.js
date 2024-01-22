@@ -40,9 +40,9 @@ function Template() {
 	return <ModuleSetup moduleSlug="analytics-4" />;
 }
 
-export const WithoutEnableUAToggle = Template.bind( null );
-WithoutEnableUAToggle.storyName = 'Default';
-WithoutEnableUAToggle.scenario = {
+export const Default = Template.bind( null );
+Default.storyName = 'Default';
+Default.scenario = {
 	label: 'Modules/Analytics4/Setup/SetupForm/Default',
 	delay: 250,
 };
