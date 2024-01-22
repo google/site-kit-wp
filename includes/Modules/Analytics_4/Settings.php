@@ -77,7 +77,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array An array of keys for view-only settings.
 	 */
 	public function get_view_only_keys() {
-		return array( 'availableCustomDimensions' );
+		return array( 'availableCustomDimensions', 'adSenseLinked' );
 	}
 
 	/**
@@ -104,6 +104,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'googleTagLastSyncedAtMs'   => 0,
 			'availableCustomDimensions' => null,
 			'propertyCreateTime'        => 0,
+			'adSenseLinked'             => false,
+			'adSenseLinkedLastSyncedAt' => 0,
 		);
 	}
 
@@ -158,6 +160,16 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 						$option['availableCustomDimensions'] = array_values( $valid_dimensions );
 					} else {
 						$option['availableCustomDimensions'] = null;
+					}
+				}
+
+				if ( isset( $option['adSenseLinked'] ) ) {
+					$option['adSenseLinked'] = (bool) $option['adSenseLinked'];
+				}
+
+				if ( isset( $option['adSenseLinkedLastSyncedAt'] ) ) {
+					if ( ! is_int( $option['adSenseLinkedLastSyncedAt'] ) ) {
+						$option['adSenseLinkedLastSyncedAt'] = 0;
 					}
 				}
 			}

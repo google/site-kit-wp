@@ -80,6 +80,8 @@ class SettingsTest extends SettingsTestCase {
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => null,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -171,6 +173,8 @@ class SettingsTest extends SettingsTestCase {
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => null,
 			)
 		);
 
