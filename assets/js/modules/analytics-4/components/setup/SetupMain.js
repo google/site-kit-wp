@@ -37,7 +37,7 @@ import SetupForm from './SetupForm';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import useExistingTagEffectGA4 from '../../../analytics-4/hooks/useExistingTagEffect';
+import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect, useDispatch } = Data;
 
@@ -59,7 +59,7 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Temorary added until analytics-4 is completely decoupled from
 	// analytics module.
-	const { setAccountID: setAnalyticsAccountID } =
+	const { setAccountID: setLegacyAnalyticsAccountID } =
 		useDispatch( MODULES_ANALYTICS );
 
 	const { setAccountID } = useDispatch( MODULES_ANALYTICS_4 );
@@ -76,7 +76,7 @@ export default function SetupMain( { finishSetup } ) {
 			const matchedAccount = await findMatchedAccount();
 			setIsMatchedAccount( false );
 			if ( matchedAccount ) {
-				setAnalyticsAccountID( matchedAccount._id );
+				setLegacyAnalyticsAccountID( matchedAccount._id );
 				setAccountID( matchedAccount._id );
 				matchAndSelectProperty( matchedAccount._id );
 			}
@@ -89,13 +89,13 @@ export default function SetupMain( { finishSetup } ) {
 		findMatchedAccount,
 		accounts,
 		setAccountID,
-		setAnalyticsAccountID,
+		setLegacyAnalyticsAccountID,
 		accountID,
 		matchAndSelectProperty,
 	] );
 
 	// Set the accountID and containerID if there is an existing tag.
-	useExistingTagEffectGA4();
+	useExistingTagEffect();
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
