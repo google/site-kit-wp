@@ -58,7 +58,7 @@ const init = once( () => {
 			renderTarget
 		);
 
-		trackEvent( VIEW_CONTEXT_ADMIN_BAR, 'view_urlsummary' );
+		trackEvent( viewContext, 'view_urlsummary' );
 	}
 } );
 
