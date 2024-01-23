@@ -71,7 +71,7 @@ export default function BannerDescription( props ) {
 			{ isValidElement( description ) ? (
 				<Fragment>
 					{ description }
-					<p>{ learnMore }</p>
+					{ learnMore && <p>{ learnMore }</p> }
 				</Fragment>
 			) : (
 				<p>
