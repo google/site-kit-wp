@@ -285,7 +285,7 @@ final class Admin_Bar {
 	private function menu_markup() {
 		// Start buffer output.
 		ob_start();
-		
+
 		$is_view_only = ! $this->authentication->is_authenticated();
 
 		?>
