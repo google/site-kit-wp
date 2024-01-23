@@ -126,7 +126,6 @@ class Migration_1_119_0 {
 		$migrate_option_keys = array(
 			'accountID',
 			'adsConversionID',
-			'adsenseLinked',
 			'canUseSnippet',
 			'trackingDisabled',
 		);

@@ -150,7 +150,6 @@ class Migration_1_119_0Test extends TestCase {
 		$migrated_keys = array(
 			'accountID',
 			'adsConversionID',
-			'adsenseLinked',
 			'canUseSnippet',
 			'trackingDisabled',
 		);
