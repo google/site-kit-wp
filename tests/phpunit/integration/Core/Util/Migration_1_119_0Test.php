@@ -123,7 +123,7 @@ class Migration_1_119_0Test extends TestCase {
 		$legacy_settings      = get_option( 'googlesitekit_analytics_settings' );
 		$analytics_4_settings = $this->analytics_4->get_settings()->get();
 
-		// Even current user is not the owner, settings should update by acquiring module owner id.
+		// Even current user is not the owner, settings should update by acquiring the module owner id.
 		$this->assertNotEquals( $this->user_id, get_current_user_id() );
 
 		$this->assertEquals(
