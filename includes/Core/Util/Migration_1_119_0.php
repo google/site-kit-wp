@@ -14,7 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 
 /**
  * Class Migration_1_119_0
@@ -54,12 +54,12 @@ class Migration_1_119_0 {
 	protected $user_options;
 
 	/**
-	 * Analytics_4 instance.
+	 * Analytics_Settings instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Analytics_4
+	 * @var Analytics_Settings
 	 */
-	protected $analytics_4;
+	protected $analytics_settings;
 
 	/**
 	 * Constructor.
@@ -67,20 +67,18 @@ class Migration_1_119_0 {
 	 * @since n.e.x.t
 	 *
 	 * @param Context      $context      Plugin context instance.
-	 * @param Analytics_4  $analytics_4  Analytics_4 instance.
 	 * @param Options      $options      Optional. Options instance.
 	 * @param User_Options $user_options Optional. User_Options instance.
 	 */
 	public function __construct(
 		Context $context,
-		Analytics_4 $analytics_4,
 		Options $options = null,
 		User_Options $user_options = null
 	) {
-		$this->context      = $context;
-		$this->analytics_4  = $analytics_4;
-		$this->options      = $options ?: new Options( $context );
-		$this->user_options = $user_options ?: new User_Options( $context );
+		$this->context            = $context;
+		$this->options            = $options ?: new Options( $context );
+		$this->user_options       = $user_options ?: new User_Options( $context );
+		$this->analytics_settings = new Analytics_Settings( $this->options );
 	}
 
 	/**
@@ -101,10 +99,20 @@ class Migration_1_119_0 {
 		$db_version = $this->options->get( 'googlesitekit_db_version' );
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
-			$owner_id     = $this->analytics_4->get_owner_id();
-			$restore_user = $this->user_options->switch_user( $owner_id );
+			$analytics_settings = $this->analytics_settings->get();
 
-			if ( user_can( $owner_id, Permissions::VIEW_AUTHENTICATED_DASHBOARD ) && $this->analytics_4->is_connected() ) {
+			if ( empty( $analytics_settings ) || ! empty( $analytics_settings ) && ! isset( $analytics_settings['ownerID'] ) ) {
+				return;
+			}
+
+			$owner_id         = (int) $analytics_settings['ownerID'];
+			$property_id      = $analytics_settings['propertyID'];
+			$webdatastream_id = $analytics_settings['webDataStreamID'];
+			$restore_user     = $this->user_options->switch_user( $owner_id );
+
+			// If owner has correct permission, and Analytics 4 module has property id and
+			// web data stream id, migration can be initiated.
+			if ( user_can( $owner_id, Permissions::VIEW_AUTHENTICATED_DASHBOARD ) && $property_id && $webdatastream_id ) {
 				$this->migrate_legacy_settings();
 
 				$this->options->set( 'googlesitekit_db_version', self::DB_VERSION );
@@ -138,7 +146,7 @@ class Migration_1_119_0 {
 		);
 
 		if ( ! empty( $options_to_migrate ) ) {
-			$this->analytics_4->get_settings()->merge(
+			$this->analytics_settings->merge(
 				$options_to_migrate
 			);
 		}
