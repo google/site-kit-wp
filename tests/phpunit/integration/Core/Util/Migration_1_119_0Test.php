@@ -90,7 +90,6 @@ class Migration_1_119_0Test extends TestCase {
 	public function get_new_migration_instance() {
 		return new Migration_1_119_0(
 			$this->context,
-			$this->analytics_4,
 			$this->options,
 			$this->user_options
 		);
