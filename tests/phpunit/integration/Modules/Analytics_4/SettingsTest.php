@@ -81,7 +81,7 @@ class SettingsTest extends SettingsTestCase {
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
 				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => null,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -174,7 +174,7 @@ class SettingsTest extends SettingsTestCase {
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
 				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => null,
+				'adSenseLinkedLastSyncedAt' => 0,
 			)
 		);
 

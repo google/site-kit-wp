@@ -335,7 +335,7 @@ class Analytics_4Test extends TestCase {
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
 				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => null,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -360,7 +360,7 @@ class Analytics_4Test extends TestCase {
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
 				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => null,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -482,7 +482,7 @@ class Analytics_4Test extends TestCase {
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
 				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => null,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -603,7 +603,7 @@ class Analytics_4Test extends TestCase {
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
 				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => null,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -630,7 +630,7 @@ class Analytics_4Test extends TestCase {
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => Synchronize_Property::convert_time_to_unix_ms( '2022-09-09T09:18:05.968Z' ),
 				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => null,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
