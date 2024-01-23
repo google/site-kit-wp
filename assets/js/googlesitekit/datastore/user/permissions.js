@@ -315,6 +315,29 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Checks if the current user has access to the specified shareable module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug to check.
+	 * @return {boolean} `true` if the user is authenticated or if the module is shareable and viewable by the current user. `false` if the module does not exist, is not shareable or not viewable by the current user.
+	 */
+	hasAccessToShareableModule: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			if ( ! select( CORE_MODULES ).isModuleAvailable( moduleSlug ) ) {
+				return false;
+			}
+
+			if ( select( CORE_USER ).isAuthenticated() ) {
+				return true;
+			}
+
+			return select( CORE_USER ).canViewSharedModule( moduleSlug );
+		}
+	),
 };
 
 const store = Data.combineStores( fetchGetCapabilitiesStore, {
