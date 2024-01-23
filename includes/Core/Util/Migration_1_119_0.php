@@ -110,8 +110,8 @@ class Migration_1_119_0 {
 			$webdatastream_id = $analytics_settings['webDataStreamID'];
 			$restore_user     = $this->user_options->switch_user( $owner_id );
 
-			// If owner has correct permission, and Analytics 4 module has property id and
-			// web data stream id, migration can be initiated.
+			// If the module owner has correct permission, and Analytics 4 module
+			// has property id and web data stream id, migration can be initiated.
 			if ( user_can( $owner_id, Permissions::VIEW_AUTHENTICATED_DASHBOARD ) && $property_id && $webdatastream_id ) {
 				$this->migrate_legacy_settings();
 
