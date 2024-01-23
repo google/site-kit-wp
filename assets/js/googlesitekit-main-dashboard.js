@@ -25,7 +25,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { clearCache } from './googlesitekit/api/cache';
 import Root from './components/Root';
 import {
@@ -54,8 +53,6 @@ domReady( async () => {
 				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
 				: VIEW_CONTEXT_MAIN_DASHBOARD;
 		}
-
-		Data.dispatch( 'core/user' ).setViewOnly( viewContext );
 
 		render(
 			<Root viewContext={ viewContext }>
