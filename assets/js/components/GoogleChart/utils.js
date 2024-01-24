@@ -19,13 +19,14 @@
 /**
  * External dependencies
  */
-import { set, cloneDeep, merge, findLast } from 'lodash';
+import { cloneDeep, findLast, merge, set } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { stringToDate } from '../../util/date-range/string-to-date';
+import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
 import { getLocale } from '../../util';
+import { stringToDate } from '../../util/date-range/string-to-date';
 
 /**
  * Returns the Google chart data, filtered by selected stats if present.
@@ -181,7 +182,7 @@ export const getChartOptions = (
 			set( chartOptions, 'hAxis.maxTextLines', 1 );
 		}
 		if ( ! options?.hAxis?.minTextSpacing ) {
-			const minTextSpacing = breakpoint === 'small' ? 50 : 100;
+			const minTextSpacing = breakpoint === BREAKPOINT_SMALL ? 50 : 100;
 			set( chartOptions, 'hAxis.minTextSpacing', minTextSpacing );
 		}
 		// eslint-disable-next-line sitekit/acronym-case
