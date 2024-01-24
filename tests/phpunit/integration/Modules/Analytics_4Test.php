@@ -43,8 +43,6 @@ use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
-use Google\Site_Kit_Dependencies\Google\Service\Analytics as Google_Service_Analytics;
-use Google\Site_Kit_Dependencies\Google\Service\Analytics_Resource\ManagementWebproperties as Google_Service_Analytics_Resource_ManagementWebproperties;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
@@ -280,37 +278,9 @@ class Analytics_4Test extends TestCase {
 		}
 		unset( $_GET['error'] );
 
-		// Set up mock for Analytics web properties API request handler for success case below.
-		$webproperties_mock = $this->getMockBuilder( Google_Service_Analytics_Resource_ManagementWebproperties::class )
-			->disableOriginalConstructor()
-			->setMethods( array( 'get' ) )
-			->getMock();
-
-		$analytics_service_mock = $this->getMockBuilder( Google_Service_Analytics::class )
-			->disableOriginalConstructor()
-			->getMock();
-
-		$analytics_service_mock->management_webproperties = $webproperties_mock;
-
-		$properties_mock = $this->getMockBuilder( \Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\Resource\Properties::class )
-			->disableOriginalConstructor()
-			->setMethods( array( 'create' ) )
-			->getMock();
-
-		$analyticsadmin_service_mock = $this->getMockBuilder( \Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin::class )
-			->disableOriginalConstructor()
-			->getMock();
-
-		$analyticsadmin_service_mock->properties = $properties_mock;
-
-		$google_services = $class->getParentClass()->getProperty( 'google_services' );
-		$google_services->setAccessible( true );
-		$google_services->setValue(
-			$analytics,
-			array(
-				'analytics'      => $analytics_service_mock,
-				'analyticsadmin' => $analyticsadmin_service_mock,
-			)
+		// Intercept Google API requests to avoid failures.
+		FakeHttp::fake_google_http_handler(
+			$analytics->get_client()
 		);
 
 		// Results in an dashboard redirect on success, with new data being stored.
