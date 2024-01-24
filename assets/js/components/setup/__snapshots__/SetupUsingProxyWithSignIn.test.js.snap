@@ -262,7 +262,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                     <p
                       class="googlesitekit-setup__description"
                     >
-                      Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard.
+                      Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard
                     </p>
                     <div
                       class="googlesitekit-opt-in"
@@ -599,7 +599,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                     <p
                       class="googlesitekit-setup__description"
                     >
-                      Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard.
+                      Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard
                     </p>
                     <div
                       class="googlesitekit-setup-analytics-notice"

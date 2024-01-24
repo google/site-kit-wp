@@ -137,7 +137,7 @@ export default function SetupUsingProxyViewOnly() {
 												</p>
 												<p>
 													{ __(
-														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard.',
+														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard',
 														'google-site-kit'
 													) }
 												</p>
