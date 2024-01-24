@@ -129,12 +129,14 @@ export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
  * Returns a chart configuration object.
  *
  * @since 1.93.0
+ * @since n.e.x.t Added `breakpoint` parameter.
  *
  * @param {Object}  options       Configuration data.
  * @param {boolean} gatheringData If chart is in gathering info state.
  * @param {string}  chartType     Chart types: PieChart, LineChart.
  * @param {string}  startDate     Start date for a user data range.
  * @param {string}  endDate       End date for a user data range.
+ * @param {string}  breakpoint    Current breakpoint.
  * @return {Object} Chart options configuration.
  */
 export const getChartOptions = (
@@ -142,7 +144,8 @@ export const getChartOptions = (
 	gatheringData,
 	chartType,
 	startDate,
-	endDate
+	endDate,
+	breakpoint
 ) => {
 	const chartOptions = cloneDeep( options );
 	if ( gatheringData && chartType === 'LineChart' ) {
@@ -178,7 +181,8 @@ export const getChartOptions = (
 			set( chartOptions, 'hAxis.maxTextLines', 1 );
 		}
 		if ( ! options?.hAxis?.minTextSpacing ) {
-			set( chartOptions, 'hAxis.minTextSpacing', 100 );
+			const minTextSpacing = breakpoint === 'small' ? 50 : 100;
+			set( chartOptions, 'hAxis.minTextSpacing', minTextSpacing );
 		}
 		// eslint-disable-next-line sitekit/acronym-case
 		if ( options?.tooltip?.isHtml === undefined ) {
