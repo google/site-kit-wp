@@ -54,11 +54,21 @@ export function useMonitorInternetConnection() {
 		}
 
 		try {
-			await API.get( 'core', 'site', 'connection-check', undefined, {
-				useCache: false,
-			} );
+			const connectionCheckResponse = await API.get(
+				'core',
+				'site',
+				'connection-check',
+				undefined,
+				{
+					useCache: false,
+				}
+			);
 
-			setIsOnline( true );
+			// We are only interested if the request was successful, to
+			// confirm online status.
+			const canReachConnectionCheck = !! connectionCheckResponse;
+
+			setIsOnline( canReachConnectionCheck );
 		} catch ( err ) {
 			setIsOnline( false );
 		}
