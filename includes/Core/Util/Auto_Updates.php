@@ -102,6 +102,10 @@ class Auto_Updates {
 			return self::AUTO_UPDATE_NOT_FORCED;
 		}
 
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		$sitekit_plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$sitekit_update_data = self::get_sitekit_update_data();
 		$item                = (object) array_merge( $sitekit_plugin_data, $sitekit_update_data );

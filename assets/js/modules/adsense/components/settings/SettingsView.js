@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
+import { ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
@@ -107,6 +108,14 @@ export default function SettingsView() {
 	const snippetLabel = getSnippetLabel( useSnippet, existingTag, clientID );
 
 	const autoAdsDisabledMessage = getAutoAdsDisabledMessage( autoAdsDisabled );
+
+	const loading = useSelect( ( select ) => {
+		return (
+			select( MODULES_ADSENSE ).getSettings() === undefined ||
+			select( MODULES_ADSENSE ).hasExistingAdBlockingRecoveryTag() ===
+				undefined
+		);
+	} );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
@@ -192,55 +201,66 @@ export default function SettingsView() {
 
 			{ adBlockingRecoverySetupStatus?.length > 0 && (
 				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Ad blocking recovery', 'google-site-kit' ) }
-						</h5>
-						{ ! useAdBlockingRecoverySnippet && (
-							<p className="googlesitekit-settings-module__meta-item-data">
+					{ loading && <ProgressBar small height={ 90 } /> }
+					{ ! loading && (
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
 								{ __(
-									'Ad blocking recovery message is not placed',
+									'Ad blocking recovery',
 									'google-site-kit'
 								) }
-							</p>
-						) }
-						{ useAdBlockingRecoverySnippet && (
-							<Fragment>
+							</h5>
+							{ ! useAdBlockingRecoverySnippet && (
 								<p className="googlesitekit-settings-module__meta-item-data">
-									{ useAdBlockingRecoveryErrorSnippet
-										? __(
-												'Ad blocking recovery message enabled with error protection code',
-												'google-site-kit'
-										  )
-										: __(
-												'Ad blocking recovery message enabled without error protection code',
-												'google-site-kit'
-										  ) }
-								</p>
-								<p className="googlesitekit-settings-module__meta-item-data">
-									{ createInterpolateElement(
-										__(
-											'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													href={ privacyMessagingURL }
-													external
-												/>
-											),
-										}
+									{ __(
+										'Ad blocking recovery message is not placed',
+										'google-site-kit'
 									) }
 								</p>
-							</Fragment>
-						) }
-					</div>
+							) }
+							{ useAdBlockingRecoverySnippet && (
+								<Fragment>
+									<p className="googlesitekit-settings-module__meta-item-data">
+										{ useAdBlockingRecoveryErrorSnippet
+											? __(
+													'Ad blocking recovery message enabled with error protection code',
+													'google-site-kit'
+											  )
+											: __(
+													'Ad blocking recovery message enabled without error protection code',
+													'google-site-kit'
+											  ) }
+									</p>
+									<p className="googlesitekit-settings-module__meta-item-data">
+										{ createInterpolateElement(
+											__(
+												'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
+												'google-site-kit'
+											),
+											{
+												a: (
+													<Link
+														href={
+															privacyMessagingURL
+														}
+														external
+													/>
+												),
+											}
+										) }
+									</p>
+								</Fragment>
+							) }
+						</div>
+					) }
 				</div>
 			) }
 
 			{ ! adBlockingRecoverySetupStatus?.length && (
-				<AdBlockingRecoverySetupCTANotice />
+				<Fragment>
+					{ loading && <ProgressBar small height={ 135 } /> }
+					{ ! loading && <AdBlockingRecoverySetupCTANotice /> }
+				</Fragment>
 			) }
 		</div>
 	);

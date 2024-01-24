@@ -47,7 +47,7 @@ export default function Recommendations( {
 				<Row>
 					<Cell>
 						{ __(
-							'No recommendations for now.',
+							'No recommendations for now',
 							'google-site-kit'
 						) }
 					</Cell>

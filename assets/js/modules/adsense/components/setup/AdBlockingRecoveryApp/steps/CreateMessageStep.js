@@ -142,7 +142,7 @@ export default function CreateMessageStep() {
 		<Fragment>
 			<p>
 				{ __(
-					'Create and publish an ad blocking recovery message in AdSense.',
+					'Create and publish an ad blocking recovery message in AdSense',
 					'google-site-kit'
 				) }
 			</p>

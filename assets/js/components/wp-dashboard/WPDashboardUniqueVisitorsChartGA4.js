@@ -112,12 +112,14 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 		[ ( x ) => parseFloat( x ).toLocaleString() ]
 	);
 
-	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
+	const [ , ...ticks ] = googleChartData
+		.slice( 1 )
+		.map( ( [ date ] ) => date );
 	const options = {
 		...UNIQUE_VISITORS_CHART_OPTIONS,
 		hAxis: {
 			...UNIQUE_VISITORS_CHART_OPTIONS.hAxis,
-			ticks: [ dates[ 0 ], dates[ dates.length - 1 ] ],
+			ticks,
 		},
 	};
 

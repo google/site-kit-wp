@@ -123,12 +123,12 @@ export function isErrorRetryable( error, selectorData ) {
 export function getReportErrorMessage( error ) {
 	if ( error?.code === ERROR_INTERNAL_SERVER_ERROR ) {
 		return __(
-			'There was a critical error on this website while fetching data.',
+			'There was a critical error on this website while fetching data',
 			'google-site-kit'
 		);
 	} else if ( error?.code === ERROR_INVALID_JSON ) {
 		return __(
-			'The server provided an invalid response.',
+			'The server provided an invalid response',
 			'google-site-kit'
 		);
 	}

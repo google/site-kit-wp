@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,13 +35,13 @@ export default function SettingsView() {
 	);
 
 	return (
-		<Fragment>
+		<div className="googlesitekit-settings-module__meta-item">
 			<h5 className="googlesitekit-settings-module__meta-item-type">
 				{ __( 'Connected Property', 'google-site-kit' ) }
 			</h5>
 			<p className="googlesitekit-settings-module__meta-item-data">
 				<DisplaySetting value={ propertyID } />
 			</p>
-		</Fragment>
+		</div>
 	);
 }

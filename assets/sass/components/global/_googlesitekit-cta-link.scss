@@ -18,7 +18,6 @@
 
 .googlesitekit-cta-link {
 	align-items: center;
-	color: $c-link;
 	cursor: pointer;
 	display: inline-flex;
 	font-family: inherit;
@@ -33,11 +32,17 @@
 	}
 
 	&:hover {
-		color: $c-link;
-		text-decoration: underline;
-
 		svg {
 			fill: currentColor;
+		}
+	}
+
+	.googlesitekit-page & {
+		color: $c-link;
+
+		&:hover {
+			color: $c-link;
+			text-decoration: underline;
 		}
 	}
 
