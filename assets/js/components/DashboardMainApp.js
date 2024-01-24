@@ -122,11 +122,13 @@ export default function DashboardMainApp() {
 			// Render the current survey portal in 5 seconds after the initial rendering.
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
 		}
+	} );
 
+	useEffect( () => {
 		if ( isGA4Connected ) {
 			syncGoogleTagSettings();
 		}
-	} );
+	}, [ isGA4Connected, syncGoogleTagSettings ] );
 
 	useEffect( () => {
 		if (
