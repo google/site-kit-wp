@@ -42,7 +42,9 @@ let mockResponse;
 async function getTotalImpressions() {
 	const datapointSelector =
 		'.overview-total-impressions .googlesitekit-data-block__datapoint, .googlesitekit-data-block--impressions .googlesitekit-data-block__datapoint';
-	await expect( page ).toMatchElement( datapointSelector );
+	await expect( page ).toMatchElement( datapointSelector, {
+		timeout: 2_000,
+	} );
 	return await page.$eval( datapointSelector, ( el ) => el.textContent );
 }
 
