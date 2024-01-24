@@ -540,18 +540,16 @@ describe( 'core/user authentication', () => {
 				).toBe( true );
 			} );
 
-			it( 'should return FALSE if the module is not shared', () => {
+			it( 'should return FALSE if the module is shared but the user does not have the view permission', () => {
 				provideUserAuthentication( registry, { authenticated: false } );
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetCapabilities(
-						capabilitiesWithPermission.permissions
-					);
+					.receiveGetCapabilities( capabilities.permissions );
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
 						name: 'Search Console',
-						shareable: false,
+						shareable: true,
 					},
 				] );
 
@@ -562,7 +560,7 @@ describe( 'core/user authentication', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return TRUE if the module is shared and the user has access to it', () => {
+			it( 'should return TRUE if the module is shared and the user has the view permission', () => {
 				provideUserAuthentication( registry, { authenticated: false } );
 				registry
 					.dispatch( CORE_USER )
