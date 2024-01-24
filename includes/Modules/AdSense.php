@@ -52,8 +52,9 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\AdSense\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
-use Google\Site_Kit\Core\Site_Health\General_Data;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -77,6 +78,7 @@ final class AdSense extends Module
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
+	use Module_With_Tag_Trait;
 
 	/**
 	 * Module slug name.
@@ -144,18 +146,7 @@ final class AdSense extends Module
 		}
 
 		// AdSense tag placement logic.
-		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
-	}
-
-	/**
-	 * Gets Module public name.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Formatted module name.
-	 */
-	public function get_public_name() {
-		return 'AdSense';
+		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 	}
 
 	/**
@@ -217,12 +208,12 @@ final class AdSense extends Module
 			'adsense_account_id'                       => array(
 				'label' => __( 'AdSense account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => General_Data::redact_debug_value( $settings['accountID'], 7 ),
+				'debug' => Debug_Data::redact_debug_value( $settings['accountID'], 7 ),
 			),
 			'adsense_client_id'                        => array(
 				'label' => __( 'AdSense client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
-				'debug' => General_Data::redact_debug_value( $settings['clientID'], 10 ),
+				'debug' => Debug_Data::redact_debug_value( $settings['clientID'], 10 ),
 			),
 			'adsense_account_status'                   => array(
 				'label' => __( 'AdSense account status', 'google-site-kit' ),
@@ -850,29 +841,14 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Checks if the module tag is found in the provided content.
+	 * Returns the Module_Tag_Matchers instance.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $content Content to search for the tags.
-	 * @return bool TRUE if tag is found, FALSE if not.
+	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
-	public function has_placed_tag_in_content( $content ) {
-		$tag_matchers = ( new Tag_Matchers() )->regex_matchers();
-
-		$search_string = 'Google AdSense snippet added by Site Kit';
-
-		if ( strpos( $content, $search_string ) !== false ) {
-			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
-		} else {
-			foreach ( $tag_matchers as $pattern ) {
-				if ( preg_match( $pattern, $content ) ) {
-					return Module_Tag_Matchers::TAG_EXISTS;
-				}
-			}
-		}
-
-		return Module_Tag_Matchers::NO_TAG_FOUND;
+	public function get_tag_matchers() {
+		return new Tag_Matchers();
 	}
 
 	/**

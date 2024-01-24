@@ -27,20 +27,28 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 class Site_Health {
 
 	/**
-	 * General_Data instance.
+	 * Debug_Data instance.
 	 *
 	 * @since n.e.x.t
-	 * @var General_data
+	 * @var Debug_Data
 	 */
-	private $general_data;
+	private $debug_data;
 
 	/**
-	 * Tags_Placement instance.
+	 * Tag_Placement instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Tags_Placement
+	 * @var Tag_Placement
 	 */
-	private $tags_placement;
+	private $tag_placement;
+
+	/**
+	 * REST_Site_Health_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Site_Health_Controller
+	 */
+	protected $rest_controller;
 
 	/**
 	 * Constructor.
@@ -62,8 +70,9 @@ class Site_Health {
 		Modules $modules,
 		Permissions $permissions
 	) {
-		$this->general_data   = new General_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
-		$this->tags_placement = new Tags_Placement( $modules );
+		$this->debug_data      = new Debug_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
+		$this->tag_placement   = new Tag_Placement( $modules );
+		$this->rest_controller = new REST_Site_Health_Controller( $this->tag_placement );
 	}
 
 	/**
@@ -72,8 +81,9 @@ class Site_Health {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		$this->general_data->register();
-		$this->tags_placement->register();
+		$this->debug_data->register();
+		$this->tag_placement->register();
+		$this->rest_controller->register();
 	}
 
 }

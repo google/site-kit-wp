@@ -132,6 +132,7 @@ jobs:
   upload-to-cloud-storage:
     name: Upload to GCS
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch'
     needs: build-zips
     steps:
       - uses: actions/download-artifact@v3
@@ -232,12 +233,10 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: zip-files
-          path: ${{ github.ref }}
+          path: /tmp
       - name: Extract
         run: |
-          unzip google-site-kit.zip
-          mv google-site-kit/* .
-          rm -rf google-site-kit ./*.zip
+          unzip /tmp/google-site-kit.zip -d ${{ github.ref }}
           echo .distignore > .distignore
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
         with:
