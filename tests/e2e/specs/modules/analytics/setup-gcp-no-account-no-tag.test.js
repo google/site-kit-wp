@@ -114,6 +114,10 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					status: 200,
 				} );
 			} else if (
+				request.url().match( 'analytics-4/data/container-destinations' )
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
 				request.url().match( 'analytics-4/data/container-lookup' )
 			) {
 				request.respond( {

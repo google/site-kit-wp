@@ -174,6 +174,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					status: 200,
 				} );
 			} else if (
+				request.url().match( 'analytics-4/data/container-destinations' )
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
 				request.url().match( 'analytics-4/data/container-lookup' )
 			) {
 				request.respond( {
