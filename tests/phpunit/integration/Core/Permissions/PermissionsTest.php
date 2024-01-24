@@ -194,12 +194,11 @@ class PermissionsTest extends TestCase {
 	}
 
 	private function verify_view_wp_dashboard_widget_and_admin_bar_capability( $author, $contributor ) {
-        $this->assertFalse( user_can( $author, Permissions::VIEW_WP_DASHBOARD_WIDGET ) );
-        $this->assertFalse( user_can( $author, Permissions::VIEW_ADMIN_BAR_MENU ) );
-
+		$this->assertFalse( user_can( $author, Permissions::VIEW_WP_DASHBOARD_WIDGET ) );
+		$this->assertFalse( user_can( $author, Permissions::VIEW_ADMIN_BAR_MENU ) );
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_WP_DASHBOARD_WIDGET ) );
-        $this->assertTrue( user_can( $contributor, Permissions::VIEW_ADMIN_BAR_MENU ) );
-    }
+		$this->assertTrue( user_can( $contributor, Permissions::VIEW_ADMIN_BAR_MENU ) );
+	}
 
 	private function verify_read_shared_module_data_capability( $author, $contributor ) {
 		// Test user should have the sharedRole that is set for the module being checked

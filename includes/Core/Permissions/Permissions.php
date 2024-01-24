@@ -454,28 +454,28 @@ final class Permissions {
 
 	/**
 	 * Checks if the VIEW_WP_DASHBOARD_WIDGET and VIEW_ADMIN_BAR_MENU capabilities are allowed for the user.
-	 * 
+	 *
 	 * Allows access to the VIEW_WP_DASHBOARD_WIDGET and VIEW_ADMIN_BAR_MENU capabilities if the user can view
 	 * either the authenticated or shared dashboard and if the user has a shared role for either the Analytics
 	 * or Search Console module.
-	 * 
+	 *
 	 * @since n.e.x.t
-	 * 
+	 *
 	 * @param int $user_id User ID of the user the capability is checked for.
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_view_wp_dashboard_widget_and_admin_bar_capability( $user_id ) {
 		$view_dashboard_capability = $this->check_view_dashboard_capability( $user_id );
-	
+
 		if ( in_array( self::AUTHENTICATE, $view_dashboard_capability, true ) || in_array( 'do_not_allow', $view_dashboard_capability, true ) ) {
 			return $view_dashboard_capability;
 		}
-	
+
 		if ( ! $this->user_has_shared_role_for_module( $user_id, 'analytics' ) &&
-			 ! $this->user_has_shared_role_for_module( $user_id, 'search-console' ) ) {
+			! $this->user_has_shared_role_for_module( $user_id, 'search-console' ) ) {
 			return array( 'do_not_allow' );
 		}
-	
+
 		return array();
 	}
 
