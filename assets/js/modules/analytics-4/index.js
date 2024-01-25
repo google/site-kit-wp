@@ -63,7 +63,7 @@ import {
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../googlesitekit/datastore/user/constants';
-import SettingsView from './components/settings/SettingsView';
+import { SettingsView } from './components/settings';
 import { SetupMain } from './components/setup';
 
 export { registerStore } from './datastore';
