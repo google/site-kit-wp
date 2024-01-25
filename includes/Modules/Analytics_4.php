@@ -1364,7 +1364,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.31.0
 	 * @since 1.104.0 Added support for AMP tag.
-	 * @since n.e.x.t Made method public.
+	 * @since 1.119.0 Made method public.
 	 */
 	public function register_tag() {
 		$tag = $this->context->is_amp()
@@ -1402,7 +1402,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */

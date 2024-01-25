@@ -16,7 +16,7 @@ use WP_REST_Server;
 /**
  * Class for handling dismissed items rest routes.
  *
- * @since n.e.x.t
+ * @since 1.119.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class REST_Site_Health_Controller {
 	/**
 	 * Tag_Placement instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 * @var Tag_Placement
 	 */
 	protected $tag_placement;
@@ -33,7 +33,7 @@ class REST_Site_Health_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @param Tag_Placement $tag_placement Tags Placement instance.
 	 */
@@ -44,7 +44,7 @@ class REST_Site_Health_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 */
 	public function register() {
 		add_filter(
@@ -58,7 +58,7 @@ class REST_Site_Health_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

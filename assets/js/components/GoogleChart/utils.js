@@ -130,7 +130,7 @@ export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
  * Returns a chart configuration object.
  *
  * @since 1.93.0
- * @since n.e.x.t Added `breakpoint` parameter.
+ * @since 1.119.0 Added `breakpoint` parameter.
  *
  * @param {Object}  options       Configuration data.
  * @param {boolean} gatheringData If chart is in gathering info state.
