@@ -156,15 +156,6 @@ abstract class Module {
 	abstract public function register();
 
 	/**
-	 * Gets Module public name.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Formatted module name.
-	 */
-	abstract public function get_public_name();
-
-	/**
 	 * Magic isset-er.
 	 *
 	 * Allows checking for existence of module information.

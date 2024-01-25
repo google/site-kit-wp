@@ -156,7 +156,7 @@ const baseActions = {
 	/**
 	 * Sets the given account in the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @param {string} accountID Analytics account ID.
 	 * @return {Object} A generator function.
@@ -372,7 +372,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the account selection process has finished or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} Initially undefined, TRUE if the account selection process has finished, otherwise FALSE.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Site_Health\Tags_PlacementTest
+ * Class Google\Site_Kit\Tests\Core\Site_Health\Tag_PlacementTest
  *
  * @package   Google\Site_Kit\Tests\Core\Site_Health
  * @copyright 2024 Google LLC
@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Site_Health\Tags_Placement;
+use Google\Site_Kit\Core\Site_Health\Tag_Placement;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -22,19 +22,11 @@ use Google\Site_Kit\Tests\TestCase;
 /**
  * @group Util
  */
-class Tags_PlacementTest extends TestCase {
+class Tag_PlacementTest extends TestCase {
 
 	protected $original_wp_version;
 
-	protected $context;
-
-	protected $modules;
-
-	protected $options;
-
-	protected $user_options;
-
-	protected $authentication;
+	protected $tag_placement;
 
 	protected $analytics_4;
 
@@ -45,12 +37,14 @@ class Tags_PlacementTest extends TestCase {
 
 		$this->original_wp_version = $wp_version;
 
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options        = new Options( $this->context );
-		$this->user_options   = new User_Options( $this->context );
-		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
-		$this->modules        = new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
-		$this->analytics_4    = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$modules        = new Modules( $context, $options, $user_options, $authentication );
+
+		$this->analytics_4   = new Analytics_4( $context, $options, $user_options, $authentication );
+		$this->tag_placement = new Tag_Placement( $modules );
 	}
 
 	public function tear_down() {
@@ -60,17 +54,10 @@ class Tags_PlacementTest extends TestCase {
 		$wp_version = $this->original_wp_version;
 	}
 
-	public function new_site_status() {
-		return new Tags_Placement( $this->modules );
-	}
-
 	public function test_register() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'site_status_tests' );
-		$site_status = $this->new_site_status();
-		$site_status->register();
+		$this->tag_placement->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
 		$this->assertTrue( has_filter( 'site_status_tests' ) );
 	}
 
@@ -81,8 +68,7 @@ class Tags_PlacementTest extends TestCase {
 		$wp_version = '5.5';
 
 		remove_all_filters( 'site_status_tests' );
-		$site_status = $this->new_site_status();
-		$site_status->register();
+		$this->tag_placement->register();
 
 		$modified_tests = apply_filters( 'site_status_tests', array() );
 
@@ -98,8 +84,7 @@ class Tags_PlacementTest extends TestCase {
 		$wp_version = '6.0';
 
 		remove_all_filters( 'site_status_tests' );
-		$site_status = $this->new_site_status();
-		$site_status->register();
+		$this->tag_placement->register();
 
 		$modified_tests = apply_filters( 'site_status_tests', array() );
 
@@ -109,16 +94,16 @@ class Tags_PlacementTest extends TestCase {
 		$this->assertIsArray( $modified_tests['async']['tag_placement'] );
 	}
 
-	public function test_tags_placement_test__wp_version_bellow_5_6() {
+	public function test_tag_placement_test__wp_version_bellow_5_6() {
 		global $wp_version;
 
 		// Mock a version less than 5.6.
 		$wp_version = '5.5';
 
-		$site_status = $this->new_site_status();
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
-		$check_if_tag_exists = $reflection->getMethod( 'tags_placement_test' );
+		$check_if_tag_exists = $reflection->getMethod( 'tag_placement_test' );
 		$check_if_tag_exists->setAccessible( true );
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array() );
@@ -126,8 +111,8 @@ class Tags_PlacementTest extends TestCase {
 		$this->assertEquals( '<p>This feature requires WordPress version 5.6 or higher</p>', $result['description'] );
 	}
 
-	public function test_get_active_modules() {
-		$site_status = $this->new_site_status();
+	public function test_get_active_modules_with_tags() {
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		update_option(
@@ -140,7 +125,7 @@ class Tags_PlacementTest extends TestCase {
 			)
 		);
 
-		$get_active_modules = $reflection->getMethod( 'get_active_modules' );
+		$get_active_modules = $reflection->getMethod( 'get_active_modules_with_tags' );
 		$get_active_modules->setAccessible( true );
 
 		$result = $get_active_modules->invokeArgs( $site_status, array() );
@@ -167,7 +152,7 @@ class Tags_PlacementTest extends TestCase {
 	}
 
 	public function test_check_if_tag_exists__no_tag() {
-		$site_status = $this->new_site_status();
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
@@ -175,11 +160,11 @@ class Tags_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, 'body content' ) );
 
-		$this->assertEquals( '<li><strong>Analytics</strong>: No tag detected.</li>', $result );
+		$this->assertEquals( '<li><strong>Analytics 4</strong>: No tag detected.</li>', $result );
 	}
 
 	public function test_check_if_tag_exists__has_tag_placed_by_sitekit() {
-		$site_status = $this->new_site_status();
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
@@ -202,11 +187,11 @@ class Tags_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 
-		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected and placed by Site Kit.</li>', $result );
+		$this->assertEquals( '<li><strong>Analytics 4</strong>: Tag detected and placed by Site Kit.</li>', $result );
 	}
 
 	public function test_check_if_tag_exists__has_tag_placed_no_sitekit_headers() {
-		$site_status = $this->new_site_status();
+		$site_status = $this->tag_placement;
 		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
@@ -228,6 +213,6 @@ class Tags_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 
-		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected but could not verify that Site Kit placed the tag.</li>', $result );
+		$this->assertEquals( '<li><strong>Analytics 4</strong>: Tag detected but could not verify that Site Kit placed the tag.</li>', $result );
 	}
 }

@@ -327,6 +327,7 @@ export default function BannerNotification( props ) {
 					{ ...imageCellSizeProperties }
 					{ ...imageCellOrderProperties }
 					alignBottom={ format === 'larger' }
+					className="googlesitekit-publisher-win__image"
 				>
 					<div
 						className={ `googlesitekit-publisher-win__image-${ format }` }

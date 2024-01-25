@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Tags;
 /**
  * Interface for tag matchers.
  *
- * @since n.e.x.t
+ * @since 1.119.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Tag_Matchers_Interface {
 	/**
 	 * Holds array of regex tag matchers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @return array Array of regex matchers.
 	 */
