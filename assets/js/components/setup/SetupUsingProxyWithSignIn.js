@@ -232,7 +232,7 @@ export default function SetupUsingProxyWithSignIn() {
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
 		description = __(
-			'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard.',
+			'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard',
 			'google-site-kit'
 		);
 	}

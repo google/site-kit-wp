@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Tags\Tag_Matchers_Interface;
 /**
  * Base class for Tag matchers.
  *
- * @since n.e.x.t
+ * @since 1.119.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ abstract class Module_Tag_Matchers implements Tag_Matchers_Interface {
 	/**
 	 * Holds array of regex tag matchers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @return array Array of regex matchers.
 	 */
