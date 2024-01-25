@@ -160,17 +160,6 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Gets Module public name.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Formatted module name.
-	 */
-	public function get_public_name() {
-		return 'AdSense';
-	}
-
-	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.0.0
