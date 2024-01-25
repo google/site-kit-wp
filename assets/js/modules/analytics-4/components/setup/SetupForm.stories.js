@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -86,14 +85,6 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.selectAccount( accountID );
-
-				// @TODO Remove after analytics 4 is decoupled completely from analytics module.
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProperties( [], { accountID } );
-				registry
-					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
 			};
 
