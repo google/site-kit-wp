@@ -39,7 +39,6 @@ import {
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
@@ -70,9 +69,6 @@ export default function SetupForm( { finishSetup } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
-	// @TODO remove when analytics 4 is completely decoupled from analytics module.
-	const { submitChanges: submitChangesLegacy } =
-		useDispatch( MODULES_ANALYTICS );
 
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -89,11 +85,6 @@ export default function SetupForm( { finishSetup } ) {
 			setValues( FORM_SETUP, { autoSubmit: false } );
 
 			const { error } = await submitChanges();
-
-			// @TODO remove when analytics 4 is completely decoupled from analytics module.
-			if ( ! error ) {
-				await submitChangesLegacy();
-			}
 
 			if ( isPermissionScopeError( error ) ) {
 				setValues( FORM_SETUP, { autoSubmit: true } );
@@ -114,7 +105,6 @@ export default function SetupForm( { finishSetup } ) {
 			isEnhancedMeasurementEnabled,
 			setValues,
 			submitChanges,
-			submitChangesLegacy,
 			viewContext,
 		]
 	);

@@ -36,7 +36,6 @@ import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import SetupForm from './SetupForm';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect, useDispatch } = Data;
@@ -57,11 +56,6 @@ export default function SetupMain( { finishSetup } ) {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	// Temorary added until analytics-4 is completely decoupled from
-	// analytics module.
-	const { setAccountID: setLegacyAnalyticsAccountID } =
-		useDispatch( MODULES_ANALYTICS );
-
 	const { setAccountID } = useDispatch( MODULES_ANALYTICS_4 );
 	const { findMatchedAccount, matchAndSelectProperty } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -76,7 +70,6 @@ export default function SetupMain( { finishSetup } ) {
 			const matchedAccount = await findMatchedAccount();
 			setIsMatchedAccount( false );
 			if ( matchedAccount ) {
-				setLegacyAnalyticsAccountID( matchedAccount._id );
 				setAccountID( matchedAccount._id );
 				matchAndSelectProperty( matchedAccount._id );
 			}
@@ -89,7 +82,6 @@ export default function SetupMain( { finishSetup } ) {
 		findMatchedAccount,
 		accounts,
 		setAccountID,
-		setLegacyAnalyticsAccountID,
 		accountID,
 		matchAndSelectProperty,
 	] );
