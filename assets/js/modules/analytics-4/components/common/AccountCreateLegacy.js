@@ -29,7 +29,6 @@ import Data from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Notice from './Notice';
 import useViewContext from '../../../../hooks/useViewContext';
@@ -69,15 +68,9 @@ export default function AccountCreateLegacy() {
 	);
 
 	const { resetAccountSummaries } = useDispatch( MODULES_ANALYTICS_4 );
-	const { resetAccounts: resetUAAccounts } = useDispatch( MODULES_ANALYTICS );
 	const refetchAccountsHandler = useCallback( () => {
 		resetAccountSummaries();
-		// Backward compatibility until Anlytics 4 is decoupled fully from Analytics module
-		// as accountID is still in Analytics datastore, and it is not reset with Analytics 4
-		// `resetAccountSummaries` action. So when re-fething the accounts `accountID` will remain
-		// `account_create` and hence not render the `SetupForm` component.
-		resetUAAccounts();
-	}, [ resetAccountSummaries, resetUAAccounts ] );
+	}, [ resetAccountSummaries ] );
 
 	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar />;
