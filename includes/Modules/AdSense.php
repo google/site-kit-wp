@@ -958,11 +958,11 @@ final class AdSense extends Module
 	 * @since 1.43.0
 	 */
 	private function render_platform_meta_tags() {
-		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense meta tags added by Site Kit', 'google-site-kit' ) );
 		echo '<meta name="google-adsense-platform-account" content="ca-host-pub-2644536267352236">';
 		echo "\n";
 		echo '<meta name="google-adsense-platform-domain" content="sitekit.withgoogle.com">';
-		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense meta tags added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**
