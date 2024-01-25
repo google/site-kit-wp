@@ -61,15 +61,8 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores( {
+const store = {
 	selectors: baseSelectors,
-} );
-
-export const initialState = store.initialState;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
+};
 
 export default store;
