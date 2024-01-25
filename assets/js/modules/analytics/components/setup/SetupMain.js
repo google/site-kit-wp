@@ -33,13 +33,13 @@ import { useEffect, useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
+import SetupForm from './SetupForm';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import useExistingTagEffectUA from '../../hooks/useExistingTagEffect';
 import useExistingTagEffectGA4 from '../../../analytics-4/hooks/useExistingTagEffect';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { AccountCreate, AccountCreateLegacy } from '../common';
-import { SetupForm } from '../../../analytics-4/components/setup';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
