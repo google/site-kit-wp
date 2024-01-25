@@ -21,7 +21,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 /**
  * Class for integrating status tab information with Site Health.
  *
- * @since n.e.x.t
+ * @since 1.119.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Tag_Placement {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 * @var Modules
 	 */
 	private $modules;
@@ -40,7 +40,7 @@ class Tag_Placement {
 	/**
 	 * Tag_Environment_Type_Guard instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 * @var Tag_Environment_Type_Guard
 	 */
 	private $environment_tag_guard;
@@ -48,7 +48,7 @@ class Tag_Placement {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @param Modules $modules Modules instance.
 	 */
@@ -60,7 +60,7 @@ class Tag_Placement {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 */
 	public function register() {
 		add_filter(
@@ -92,7 +92,7 @@ class Tag_Placement {
 	/**
 	 * Checks if the modules tags are placed on the website.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @return array Site health status results.
 	 */
@@ -183,7 +183,7 @@ class Tag_Placement {
 	/**
 	 * Filters active modules to only those which are instances of Module_With_Tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @return array Filtered active modules instances.
 	 */
@@ -209,7 +209,7 @@ class Tag_Placement {
 	/**
 	 * Checks if tag exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @param Module_With_Tag $module  Module instance.
 	 * @param string          $content Content to search for the tags.

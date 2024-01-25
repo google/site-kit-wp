@@ -17,14 +17,14 @@ interface Module_With_Tag {
 	/**
 	 * Registers the tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 */
 	public function register_tag();
 
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */

@@ -549,7 +549,7 @@ final class Tag_Manager extends Module
 	 * Registers the Tag Manager tag.
 	 *
 	 * @since 1.24.0
-	 * @since n.e.x.t Made method public.
+	 * @since 1.119.0 Made method public.
 	 */
 	public function register_tag() {
 		$is_amp          = $this->context->is_amp();
@@ -574,7 +574,7 @@ final class Tag_Manager extends Module
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */

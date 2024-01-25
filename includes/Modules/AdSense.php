@@ -794,7 +794,7 @@ final class AdSense extends Module
 	 * Registers the AdSense tag.
 	 *
 	 * @since 1.24.0
-	 * @since n.e.x.t Method made public.
+	 * @since 1.119.0 Method made public.
 	 */
 	public function register_tag() {
 		// TODO: 'amp_story' support can be phased out in the long term.
@@ -843,7 +843,7 @@ final class AdSense extends Module
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */

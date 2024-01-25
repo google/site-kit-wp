@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 /**
  * Class for integrating information with Site Health.
  *
- * @since n.e.x.t
+ * @since 1.119.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Site_Health {
 	/**
 	 * Debug_Data instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 * @var Debug_Data
 	 */
 	private $debug_data;
@@ -37,7 +37,7 @@ class Site_Health {
 	/**
 	 * Tag_Placement instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 * @var Tag_Placement
 	 */
 	private $tag_placement;
@@ -45,7 +45,7 @@ class Site_Health {
 	/**
 	 * REST_Site_Health_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 * @var REST_Site_Health_Controller
 	 */
 	protected $rest_controller;
@@ -53,7 +53,7 @@ class Site_Health {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @param Context        $context        Context instance.
 	 * @param Options        $options        Options instance.
@@ -78,7 +78,7 @@ class Site_Health {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 */
 	public function register() {
 		$this->debug_data->register();

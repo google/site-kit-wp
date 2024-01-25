@@ -29,7 +29,7 @@ import { isValidNumericID } from '../../../util';
 /**
  * Checks if the given value is a valid selection for an Account.
  *
- * @since n.e.x.t
+ * @since 1.119.0
  *
  * @param {?string} value Selected value.
  * @return {boolean} True if valid, otherwise false.

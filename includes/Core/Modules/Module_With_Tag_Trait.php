@@ -17,7 +17,7 @@ trait Module_With_Tag_Trait {
 	/**
 	 * Checks if the module tag is found in the provided content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @param string $content Content to search for the tags.
 	 * @return bool TRUE if tag is found, FALSE if not.
