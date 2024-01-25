@@ -82,9 +82,8 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'renders the form correctly', async () => {
-		// Temorary needed until analytics-4 is not completely decoupled from
-		// analytics module.
-		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		// @TODO remove after analytics 4 is decoupled from analytics module.
+		// Currently needed in order for test to work
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
@@ -117,6 +116,8 @@ describe( 'SetupForm', () => {
 				}
 			);
 
+		// @TODO replace to analytics 4 datastore once it is decoupled from analytics module.
+		// Currently needed in order for test to work
 		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		const { container, getByText, waitForRegistry } = render(
@@ -135,12 +136,16 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'submits the form upon pressing the CTA', async () => {
+		// @TODO remove after analytics 4 is decoupled from analytics module.
+		// Currently needed in order for test to work.
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetAccountSummaries( accountSummaries );
+		// @TODO remove after analytics 4 is decoupled from analytics module.
+		// Currently needed in order for test to work.
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
@@ -197,6 +202,7 @@ describe( 'SetupForm', () => {
 		);
 
 		// @TODO remove after analytics 4 is decoupled from analytics module.
+		// Currently needed in order for test to work.
 		const updateLegacyAnalyticsSettingsRegexp = new RegExp(
 			'/analytics/data/settings'
 		);
@@ -235,9 +241,13 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'auto-submits the form', async () => {
+		// @TODO remove after analytics 4 is decoupled from analytics module.
+		// Currently needed in order for test to work.
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		// @TODO remove after analytics 4 is decoupled from analytics module.
+		// Currently needed in order for test to work.
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
@@ -305,7 +315,8 @@ describe( 'SetupForm', () => {
 			'/analytics-4/data/account-summaries'
 		);
 
-		// // @TODO remove after analytics 4 is decoupled from analytics module.
+		// @TODO remove after analytics 4 is decoupled from analytics module.
+		// Currently needed in order for test to work.
 		const updateLegacyAnalyticsSettingsRegexp = new RegExp(
 			'/analytics/data/settings'
 		);
@@ -365,12 +376,15 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'auto-submits the form only once in the case of an error', async () => {
+		// @TODO remove after analytics 4 is decoupled from analytics module.
+		// Currently needed in order for test to work.
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		// @TODO remove after analytics 4 is decoupled from analytics module.
+		// Currently needed in order for test to work.
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
 			accountSummaries.map( ( account ) => ( {
@@ -383,6 +397,9 @@ describe( 'SetupForm', () => {
 			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
 				propertyIDs: [ propertyID ],
 			} );
+
+		// @TODO replace to analytics 4 datastore once it is decoupled from analytics module.
+		// Currently needed in order for test to work
 		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
