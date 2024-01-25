@@ -93,7 +93,7 @@ const baseActions = {
 		};
 	},
 
-	setViewOnly( viewOnly ) {
+	setIsViewOnly( viewOnly ) {
 		return {
 			type: SET_VIEW_ONLY,
 			payload: { viewOnly },
@@ -304,7 +304,7 @@ const baseSelectors = {
 		return authError;
 	},
 
-	getViewOnly( state ) {
+	isViewOnly( state ) {
 		const viewOnly = state.viewOnly;
 
 		return (

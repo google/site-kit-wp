@@ -46,7 +46,7 @@ domReady( () => {
 			? VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
 			: VIEW_CONTEXT_ENTITY_DASHBOARD;
 
-		Data.dispatch( 'core/user' ).setViewOnly( viewContext );
+		Data.dispatch( 'core/user' ).setIsViewOnly( viewContext );
 
 		render(
 			<Root viewContext={ viewContext }>

@@ -55,7 +55,7 @@ domReady( async () => {
 				: VIEW_CONTEXT_MAIN_DASHBOARD;
 		}
 
-		Data.dispatch( 'core/user' ).setViewOnly( viewContext );
+		Data.dispatch( 'core/user' ).setIsViewOnly( viewContext );
 
 		render(
 			<Root viewContext={ viewContext }>
