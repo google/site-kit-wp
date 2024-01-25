@@ -67,7 +67,6 @@ class SettingsTest extends SettingsTestCase {
 			array(
 				'accountID'                 => '',
 				'adsConversionID'           => '',
-				'adsenseLinked'             => false,
 				'propertyID'                => '',
 				'webDataStreamID'           => '',
 				'measurementID'             => '',
@@ -81,6 +80,8 @@ class SettingsTest extends SettingsTestCase {
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -172,13 +173,14 @@ class SettingsTest extends SettingsTestCase {
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => 0,
 			)
 		);
 
 		$keys_to_check = array(
 			'accountID',
 			'adsConversionID',
-			'adsenseLinked',
 			'canUseSnippet',
 			'trackingDisabled',
 		);

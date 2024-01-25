@@ -164,6 +164,29 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $expected, get_option( Module_Sharing_Settings::OPTION ) );
 	}
 
+	public function test_register__reset_adsense_link_settings() {
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'                => '12345678',
+				'adSenseLinked'             => true,
+				'adSenseLinkedLastSyncedAt' => 1705938374500,
+			)
+		);
+
+		$this->analytics->register();
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '87654321',
+			)
+		);
+
+		$settings = $this->analytics->get_settings()->get();
+
+		$this->assertFalse( $settings['adSenseLinked'] );
+		$this->assertEquals( $settings['adSenseLinkedLastSyncedAt'], 0 );
+	}
+
 	public function analytics_sharing_settings_data_provider() {
 		$initial_sharing_settings                                     = array(
 			'search-console' => array(
@@ -302,7 +325,6 @@ class Analytics_4Test extends TestCase {
 				'measurementID'             => '',
 				'ownerID'                   => 0,
 				'adsConversionID'           => '',
-				'adsenseLinked'             => false,
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
 				'canUseSnippet'             => true,
@@ -312,6 +334,8 @@ class Analytics_4Test extends TestCase {
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -326,7 +350,6 @@ class Analytics_4Test extends TestCase {
 				'measurementID'             => $measurement_id,
 				'ownerID'                   => 0,
 				'adsConversionID'           => '',
-				'adsenseLinked'             => false,
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
 				'canUseSnippet'             => true,
@@ -336,6 +359,8 @@ class Analytics_4Test extends TestCase {
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -447,7 +472,6 @@ class Analytics_4Test extends TestCase {
 				'measurementID'             => '',
 				'ownerID'                   => 0,
 				'adsConversionID'           => '',
-				'adsenseLinked'             => false,
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
 				'canUseSnippet'             => true,
@@ -457,6 +481,8 @@ class Analytics_4Test extends TestCase {
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -567,7 +593,6 @@ class Analytics_4Test extends TestCase {
 				'measurementID'             => '',
 				'ownerID'                   => 0,
 				'adsConversionID'           => '',
-				'adsenseLinked'             => false,
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
 				'canUseSnippet'             => true,
@@ -577,6 +602,8 @@ class Analytics_4Test extends TestCase {
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => 0,
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -593,7 +620,6 @@ class Analytics_4Test extends TestCase {
 				'measurementID'             => $measurement_id,
 				'ownerID'                   => 0,
 				'adsConversionID'           => '',
-				'adsenseLinked'             => false,
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
 				'canUseSnippet'             => true,
@@ -603,6 +629,8 @@ class Analytics_4Test extends TestCase {
 				'googleTagLastSyncedAtMs'   => 0,
 				'availableCustomDimensions' => null,
 				'propertyCreateTime'        => Synchronize_Property::convert_time_to_unix_ms( '2022-09-09T09:18:05.968Z' ),
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
