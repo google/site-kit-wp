@@ -54,6 +54,8 @@ use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
+use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink;
+use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse;
 use WP_Query;
 use WP_User;
 use ReflectionMethod;
@@ -939,32 +941,7 @@ class Analytics_4Test extends TestCase {
 			array(
 				'account-summaries',
 				'accounts',
-				'container-lookup',
-				'container-destinations',
-				'google-tag-settings',
-				'conversion-events',
-				'create-property',
-				'create-webdatastream',
-				'properties',
-				'property',
-				'report',
-				'webdatastreams',
-				'webdatastreams-batch',
-				'create-account-ticket',
-				'enhanced-measurement-settings',
-				'create-custom-dimension',
-				'sync-custom-dimensions',
-				'custom-dimension-data-available',
-			),
-			$this->analytics->get_datapoints()
-		);
-	}
-
-	public function test_get_datapoints__news_key_metrics() {
-		$this->assertEqualSets(
-			array(
-				'account-summaries',
-				'accounts',
+				'adsense-links',
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
@@ -3087,6 +3064,46 @@ class Analytics_4Test extends TestCase {
 			),
 			$custom_dimensions_data_available->get_data_availability()
 		);
+	}
+
+	public function test_get_data__adsense_links() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function() {
+				$mock_adSenseLink = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink();
+				$mock_adSenseLink->setName( 'properties/12345/adSenseLinks/12345' );
+				$mock_adSenseLink->setAdClientCode( 'ca-pub-12345' );
+
+				$response = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse();
+				$response->setAdsenseLinks( array( $mock_adSenseLink ) );
+
+				return new Response( 200, array(), json_encode( $response ) );
+			}
+		);
+
+		// Request without `propertyID` parameter
+		$result = $this->analytics->get_data( 'adsense-links', array() );
+
+		// Should return WP error when `propertyID` is not supplied
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $result );
+
+		// Request with `propertyID` parameter
+		$result = $this->analytics->get_data( 'adsense-links', array( 'propertyID' => '12345' ) );
+
+		// Should return array with `GoogleAnalyticsAdminV1alphaAdSenseLink(` as defined in the mock response
+		$this->assertNotWPError( $result );
+		$this->assertContainsOnlyInstancesOf( Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink::class, $result );
+		$adsense_link = $result[0];
+		$this->assertEquals( 'properties/12345/adSenseLinks/12345', $adsense_link->getName() );
+		$this->assertEquals( 'ca-pub-12345', $adsense_link->getAdClientCode() );
 	}
 
 	public function test_register_template_redirect_amp() {
