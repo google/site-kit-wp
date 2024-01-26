@@ -367,6 +367,16 @@ final class Analytics_4 extends Module
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
+			'adsense_linked'                 => array(
+				'label' => __( 'AdSense Linked', 'google-site-kit' ),
+				'value' => $settings['adSenseLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not Connected', 'google-site-kit' ),
+				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinked'] ),
+			),
+			'adsense_linked_last_synced_at'  => array(
+				'label' => __( 'AdSense Linked Last Synced At', 'google-site-kit' ),
+				'value' => $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never Synced', 'google-site-kit' ),
+				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
+			),
 		);
 
 		$debug_fields['analytics_4_available_custom_dimensions'] = array(

@@ -41,6 +41,7 @@ import {
 	checkAMPConnectivity,
 	checkHealthChecks,
 	checkHostname,
+	checkWPVersion,
 	registryCheckSetupTag,
 } from './checks';
 
@@ -54,6 +55,7 @@ const createCompatibilityChecks = ( registry ) => {
 		checkHealthChecks,
 		registryCheckSetupTag( registry ),
 		checkAMPConnectivity,
+		checkWPVersion,
 	];
 };
 

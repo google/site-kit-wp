@@ -1014,6 +1014,21 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_debug_fields() {
+		$this->assertEqualSets(
+			array(
+				'analytics_4_property_id',
+				'analytics_4_web_data_stream_id',
+				'analytics_4_measurement_id',
+				'analytics_4_use_snippet',
+				'adsense_linked',
+				'adsense_linked_last_synced_at',
+				'analytics_4_available_custom_dimensions',
+			),
+			array_keys( $this->analytics->get_debug_fields() )
+		);
+	}
+
 	public function test_get_debug_fields__keyMetrics_disabled() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
