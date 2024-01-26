@@ -121,9 +121,21 @@ export default function CompatibilityErrorNotice( { error } ) {
 				<p>
 					{ ! installed && (
 						<span>
-							{ __(
-								'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.',
-								'google-site-kit'
+							{ createInterpolateElement(
+								__(
+									'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.',
+									'google-site-kit'
+								),
+								{
+									GetHelpLink: (
+										<Link
+											{ ...helperCTA(
+												developerPlugin,
+												documentationURL
+											) }
+										/>
+									),
+								}
 							) }
 						</span>
 					) }
