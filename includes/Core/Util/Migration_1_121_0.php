@@ -119,6 +119,10 @@ class Migration_1_121_0 {
 		$legacy_settings    = $this->options->get( 'googlesitekit_analytics_settings' );
 		$recovered_settings = array();
 
+		if ( empty( $legacy_settings ) ) {
+			return;
+		}
+
 		$options_to_migrate = array(
 			'accountID',
 			'adsConversionID',
