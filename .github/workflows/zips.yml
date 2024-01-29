@@ -242,6 +242,7 @@ jobs:
         with:
           dry-run: ${{ inputs.dry_run }}
         env:
+          SLUG: google-site-kit
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           VERSION: ${{ inputs.release_version }}
