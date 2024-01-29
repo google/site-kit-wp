@@ -14,12 +14,12 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Migration_1_119_0;
+use Google\Site_Kit\Core\Util\Migration_1_121_0;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
-class Migration_1_119_0Test extends TestCase {
+class Migration_1_121_0Test extends TestCase {
 
 	use Fake_Site_Connection_Trait;
 
@@ -88,7 +88,7 @@ class Migration_1_119_0Test extends TestCase {
 	}
 
 	public function get_new_migration_instance() {
-		return new Migration_1_119_0(
+		return new Migration_1_121_0(
 			$this->context,
 			$this->options,
 			$this->user_options
@@ -130,7 +130,7 @@ class Migration_1_119_0Test extends TestCase {
 			$this->filter_settings( $legacy_settings, $migrated_keys )
 		);
 
-		$this->assertEquals( Migration_1_119_0::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_121_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate__analytics_4_not_connected() {
@@ -163,7 +163,7 @@ class Migration_1_119_0Test extends TestCase {
 			$this->filter_settings( $legacy_settings, $migrated_keys )
 		);
 
-		$this->assertNotEquals( Migration_1_119_0::DB_VERSION, $this->get_db_version() );
+		$this->assertNotEquals( Migration_1_121_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	protected function filter_settings( $settings, $keys_to_filter ) {
