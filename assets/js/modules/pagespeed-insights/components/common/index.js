@@ -19,6 +19,7 @@
 export { default as FieldReportMetrics } from './FieldReportMetrics';
 export { default as LabReportMetrics } from './LabReportMetrics';
 export { default as MetricsLearnMoreLink } from './MetricsLearnMoreLink';
+export { default as INPLearnMoreLink } from './INPLearnMoreLink';
 export { default as Recommendation } from './Recommendation';
 export { default as Recommendations } from './Recommendations';
 export { default as ReportDetailsLink } from './ReportDetailsLink';
