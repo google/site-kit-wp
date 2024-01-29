@@ -125,18 +125,17 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Update secondary CTAs across the plugin to have consistent styling. See [#7797](https://github.com/google/site-kit-wp/issues/7797).
 * Update the AdSense settings view to show the progress bar while AdSense information is being loaded. See [#7291](https://github.com/google/site-kit-wp/issues/7291).
 * Update banner notifications to have more space between title and description. See [#7280](https://github.com/google/site-kit-wp/issues/7280).
-* Link colour difference on Site Kit Widget to other widgets on WP Dashboard. See [#7139](https://github.com/google/site-kit-wp/issues/7139).
+* Update Site Kit Summary widget to inherit common link styles for consistency. See [#7139](https://github.com/google/site-kit-wp/issues/7139).
 * Address inconsistencies with punctuation in copy throughout the plugin. See [#6720](https://github.com/google/site-kit-wp/issues/6720).
 * Add contrast to the Admin Bar dropdown. See [#6659](https://github.com/google/site-kit-wp/issues/6659).
-* Fix different font sizes between settings view and edit screens. See [#6477](https://github.com/google/site-kit-wp/issues/6477).
+* Update font sizes between settings view and edit screens for consistency. See [#6477](https://github.com/google/site-kit-wp/issues/6477).
 * Improve the date legend in charts. See [#5830](https://github.com/google/site-kit-wp/issues/5830).
 * Add information about code/tag placement statuses to Site Health information. See [#5695](https://github.com/google/site-kit-wp/issues/5695).
 
 **Fixed**
 
-* Fix the Google Tag settings syncing problem. See [#8102](https://github.com/google/site-kit-wp/issues/8102).
-* Fix bug that occurs when previewing Customizer drafts. See [#8077](https://github.com/google/site-kit-wp/issues/8077).
-* Update Analytics setup and settings to make sure we don't show duplicate errors. See [#7276](https://github.com/google/site-kit-wp/issues/7276).
+* Fix error when previewing Customizer drafts. See [#8077](https://github.com/google/site-kit-wp/issues/8077).
+* Update Analytics setup and settings views to avoid showing duplicate errors. See [#7276](https://github.com/google/site-kit-wp/issues/7276).
 
 = 1.118.0 =
 
