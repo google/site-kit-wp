@@ -1,5 +1,5 @@
 /**
- * `modules/analytics` data store: tagmanager.
+ * `modules/analytics-4` data store: tagmanager.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
