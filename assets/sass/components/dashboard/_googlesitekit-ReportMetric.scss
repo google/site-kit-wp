@@ -77,6 +77,12 @@
 	vertical-align: bottom;
 }
 
+.googlesitekit-pagespeed-report-metric__hint-text {
+	color: $c-neutral-n-500;
+	letter-spacing: 0.25px;
+	margin-top: 7px;
+}
+
 .googlesitekit-pagespeed-report__row--unavailable {
 	.googlesitekit-pagespeed-report-metric__title,
 	.googlesitekit-pagespeed-report-metric__description,
