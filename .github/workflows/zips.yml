@@ -236,7 +236,7 @@ jobs:
           path: /tmp
       - name: Extract
         run: |
-          unzip /tmp/google-site-kit.zip -d ${{ github.ref }}
+          unzip /tmp/google-site-kit.zip
           echo .distignore > .distignore
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
         with:
