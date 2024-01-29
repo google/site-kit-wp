@@ -87,7 +87,7 @@ export default function AccountCreateLegacy() {
 			{ ! isCreateAccount && accounts && accounts.length === 0 && (
 				<p>
 					{ __(
-						'Looks like you don\'t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.',
+						'Looks like you don’t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.',
 						'google-site-kit'
 					) }
 				</p>
