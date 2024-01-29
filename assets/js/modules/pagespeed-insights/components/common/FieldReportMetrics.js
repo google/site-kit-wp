@@ -33,6 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
+import INPLearnMoreLink from './INPLearnMoreLink';
 import ErrorText from '../../../../components/ErrorText';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import { getReportErrorMessage } from '../../../../util/errors';
@@ -191,6 +192,15 @@ export default function FieldReportMetrics( { data, error } ) {
 						}
 						isLast
 						isUnavailable={ ! interactionToNextPaint }
+						hintText={ createInterpolateElement(
+							__(
+								'INP will replace FID in March 2024 <LearnMoreLink />',
+								'google-site-kit'
+							),
+							{
+								LearnMoreLink: <INPLearnMoreLink />,
+							}
+						) }
 					/>
 				</tbody>
 			</table>
