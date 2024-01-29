@@ -33,12 +33,16 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET,
 } from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import whenActive from '../../../../util/when-active';
+import AdBlockerWarning from '../common/AdBlockerWarning';
+import { AdSenseLinkCTA } from '../../../analytics-4/components/common';
 import SourceLink from '../../../../components/SourceLink';
 import SettingsNotice from '../../../../components/SettingsNotice';
 import useViewOnly from '../../../../hooks/useViewOnly';
@@ -71,8 +75,36 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 		);
 	} );
 
+	const isAdSenseLinked = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAdSenseLinked()
+	);
+
+	const isAdblockerActive = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).isAdBlockerActive()
+	);
+
 	if ( isDismissed ) {
 		return <WidgetNull />;
+	}
+
+	if ( ! isAdSenseLinked && viewOnlyDashboard ) {
+		return <WidgetNull />;
+	}
+
+	if ( isAdblockerActive ) {
+		return (
+			<Widget Footer={ Footer }>
+				<AdBlockerWarning />
+			</Widget>
+		);
+	}
+
+	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
+		return (
+			<Widget Footer={ Footer }>
+				<AdSenseLinkCTA />
+			</Widget>
+		);
 	}
 
 	function Footer() {
