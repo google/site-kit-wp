@@ -113,7 +113,6 @@ class Migration_1_121_0Test extends TestCase {
 		$migrated_keys = array(
 			'accountID',
 			'adsConversionID',
-			'canUseSnippet',
 			'trackingDisabled',
 		);
 
@@ -131,39 +130,6 @@ class Migration_1_121_0Test extends TestCase {
 		);
 
 		$this->assertEquals( Migration_1_121_0::DB_VERSION, $this->get_db_version() );
-	}
-
-	public function test_migrate__analytics_4_not_connected() {
-		$migration = $this->get_new_migration_instance();
-		remove_all_actions( 'admin_init' );
-
-		// Disconnect Analytics 4 module.
-		$this->analytics_4->get_settings()->merge(
-			array(
-				'propertyID'      => '',
-				'webDataStreamID' => '',
-				'measurementID'   => '',
-			)
-		);
-
-		$migrated_keys = array(
-			'accountID',
-			'adsConversionID',
-			'canUseSnippet',
-			'trackingDisabled',
-		);
-
-		$migration->migrate();
-
-		$legacy_settings      = get_option( 'googlesitekit_analytics_settings' );
-		$analytics_4_settings = $this->analytics_4->get_settings()->get();
-
-		$this->assertNotEquals(
-			$this->filter_settings( $analytics_4_settings, $migrated_keys ),
-			$this->filter_settings( $legacy_settings, $migrated_keys )
-		);
-
-		$this->assertNotEquals( Migration_1_121_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	protected function filter_settings( $settings, $keys_to_filter ) {
@@ -190,7 +156,6 @@ class Migration_1_121_0Test extends TestCase {
 				'measurementID'    => 'G-A1B2C3D4E5',
 				'trackingDisabled' => array( 'loggedinUsers' ),
 				'useSnippet'       => true,
-				'canUseSnippet'    => true,
 				'adsenseLinked'    => false,
 				'ownerID'          => $this->user_id,
 			)
@@ -211,7 +176,6 @@ class Migration_1_121_0Test extends TestCase {
 				'propertyID'            => '',
 				'trackingDisabled'      => array(),
 				'useSnippet'            => false,
-				'canUseSnippet'         => false,
 			)
 		);
 	}
