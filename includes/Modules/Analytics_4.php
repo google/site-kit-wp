@@ -51,6 +51,7 @@ use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
@@ -331,6 +332,13 @@ final class Analytics_4 extends Module
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
+		$adsense_connected = true;
+		$adsense_settings  = ( new AdSense_Settings( $this->options ) )->get();
+
+		if ( empty( $adsense_settings['accountSetupComplete'] ) || empty( $adsense_settings['siteSetupComplete'] ) ) {
+			$adsense_connected = false;
+		}
+
 		$debug_fields = array(
 			// phpcs:disable
 			/*
@@ -347,50 +355,49 @@ final class Analytics_4 extends Module
 			),
 			*/
 			// phpcs:enable
-			'analytics_4_property_id'        => array(
+			'analytics_4_property_id'                 => array(
 				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
-			'analytics_4_web_data_stream_id' => array(
+			'analytics_4_web_data_stream_id'          => array(
 				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
-			'analytics_4_measurement_id'     => array(
+			'analytics_4_measurement_id'              => array(
 				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
 				'value' => $settings['measurementID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
 			),
-			'analytics_4_use_snippet'        => array(
+			'analytics_4_use_snippet'                 => array(
 				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
-			'adsense_linked'                 => array(
+			'analytics_4_available_custom_dimensions' => array(
+				'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
+				'value' => empty( $settings['availableCustomDimensions'] )
+					? __( 'None', 'google-site-kit' )
+					: join(
+						/* translators: used between list items, there is a space after the comma */
+						__( ', ', 'google-site-kit' ),
+						$settings['availableCustomDimensions']
+					),
+				'debug' => empty( $settings['availableCustomDimensions'] )
+					? 'none'
+					: join( ', ', $settings['availableCustomDimensions'] ),
+			),
+			'adsense_linked'                          => array(
 				'label' => __( 'AdSense Linked', 'google-site-kit' ),
-				'value' => $settings['adSenseLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not Connected', 'google-site-kit' ),
+				'value' => $adsense_connected && $settings['adSenseLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinked'] ),
 			),
-			'adsense_linked_last_synced_at'  => array(
+			'adsense_linked_last_synced_at'           => array(
 				'label' => __( 'AdSense Linked Last Synced At', 'google-site-kit' ),
-				'value' => $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never Synced', 'google-site-kit' ),
+				'value' => $adsense_connected && $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
 			),
-		);
-
-		$debug_fields['analytics_4_available_custom_dimensions'] = array(
-			'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
-			'value' => empty( $settings['availableCustomDimensions'] )
-				? __( 'None', 'google-site-kit' )
-				: join(
-					/* translators: used between list items, there is a space after the comma */
-					__( ', ', 'google-site-kit' ),
-					$settings['availableCustomDimensions']
-				),
-			'debug' => empty( $settings['availableCustomDimensions'] )
-				? 'none'
-				: join( ', ', $settings['availableCustomDimensions'] ),
 		);
 
 		return $debug_fields;
