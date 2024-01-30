@@ -37,7 +37,6 @@ import {
 	ERROR_GOOGLE_API_CONNECTION_FAIL,
 	ERROR_INVALID_HOSTNAME,
 	ERROR_TOKEN_MISMATCH,
-	ERROR_WP_PRE_V5,
 	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
 import GetHelpLink from './GetHelpLink';
@@ -123,7 +122,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 						<span>
 							{ createInterpolateElement(
 								__(
-									'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.',
+									'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console. <GetHelpLink />',
 									'google-site-kit'
 								),
 								{
@@ -212,15 +211,6 @@ export default function CompatibilityErrorNotice( { error } ) {
 						{
 							GetHelpLink: <GetHelpLink errorCode={ error } />,
 						}
-					) }
-				</p>
-			);
-		case ERROR_WP_PRE_V5:
-			return (
-				<p>
-					{ __(
-						'Looks like you’re using a version of WordPress that’s older than 5.0. You can still install and use Site Kit, but some of its features might not work (for example translations).',
-						'google-site-kit'
 					) }
 				</p>
 			);
