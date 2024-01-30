@@ -681,13 +681,8 @@ final class Analytics_4 extends Module
 			case 'GET:account-summaries':
 				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
 			case 'GET:adsense-links':
-				if ( ! isset( $data['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
-					);
+				if ( empty( $data['propertyID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyID' );
 				}
 
 				$parent = self::normalize_property_id( $data['propertyID'] );
