@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 
 /**
@@ -45,14 +44,6 @@ class Migration_1_121_0 {
 	protected $options;
 
 	/**
-	 * User_Options instance.
-	 *
-	 * @since n.e.x.t
-	 * @var User_Options
-	 */
-	protected $user_options;
-
-	/**
 	 * Analytics_Settings instance.
 	 *
 	 * @since n.e.x.t
@@ -65,18 +56,15 @@ class Migration_1_121_0 {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context      $context      Plugin context instance.
-	 * @param Options      $options      Optional. Options instance.
-	 * @param User_Options $user_options Optional. User_Options instance.
+	 * @param Context $context Plugin context instance.
+	 * @param Options $options Optional. Options instance.
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null
+		Options $options = null
 	) {
 		$this->context            = $context;
 		$this->options            = $options ?: new Options( $context );
-		$this->user_options       = $user_options ?: new User_Options( $context );
 		$this->analytics_settings = new Analytics_Settings( $this->options );
 	}
 
@@ -98,9 +86,8 @@ class Migration_1_121_0 {
 		$db_version = $this->options->get( 'googlesitekit_db_version' );
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
-			$analytics_settings = $this->analytics_settings->get();
 
-			if ( empty( $analytics_settings ) || ! empty( $analytics_settings ) && ! isset( $analytics_settings['ownerID'] ) ) {
+			if ( ! $this->analytics_settings->has() ) {
 				return;
 			}
 

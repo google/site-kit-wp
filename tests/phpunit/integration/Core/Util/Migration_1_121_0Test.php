@@ -11,11 +11,9 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Migration_1_121_0;
-use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -39,49 +37,18 @@ class Migration_1_121_0Test extends TestCase {
 	protected $options;
 
 	/**
-	 * @var User_Options
-	 */
-	protected $user_options;
-
-	/**
-	 * @var Authentication
-	 */
-	protected $authentication;
-
-	/**
 	 * @var Analytics_4
 	 */
-	protected $analytics_4;
+	protected $analytics_settings;
 
 	public function set_up() {
 		parent::set_up();
 
-		$this->user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options            = new Options( $this->context );
+		$this->analytics_settings = new Analytics_Settings( $this->options );
 
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options        = new Options( $this->context );
-		$this->user_options   = new User_Options( $this->context, $this->user_id );
-		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
-
-		// Fake a valid authentication token on the client.
-		$this->authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
-		$this->authentication->verification()->set( true );
-
-		$this->fake_site_connection();
-		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
-
-		$this->analytics_4 = new Analytics_4(
-			$this->context,
-			$this->options,
-			$this->user_options,
-			$this->authentication
-		);
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics_4->get_scopes()
-		);
-
-		$this->analytics_4->get_settings()->register();
+		$this->analytics_settings->register();
 
 		$this->set_legacy_options();
 		$this->delete_db_version();
@@ -90,8 +57,7 @@ class Migration_1_121_0Test extends TestCase {
 	public function get_new_migration_instance() {
 		return new Migration_1_121_0(
 			$this->context,
-			$this->options,
-			$this->user_options
+			$this->options
 		);
 	}
 
@@ -119,10 +85,7 @@ class Migration_1_121_0Test extends TestCase {
 		$migration->migrate();
 
 		$legacy_settings      = get_option( 'googlesitekit_analytics_settings' );
-		$analytics_4_settings = $this->analytics_4->get_settings()->get();
-
-		// Even current user is not the owner, settings should update by acquiring the module owner id.
-		$this->assertNotEquals( $this->user_id, get_current_user_id() );
+		$analytics_4_settings = $this->analytics_settings->get();
 
 		$this->assertEquals(
 			$this->filter_settings( $analytics_4_settings, $migrated_keys ),
@@ -147,8 +110,16 @@ class Migration_1_121_0Test extends TestCase {
 	}
 
 	protected function reset_analytics_4_options() {
+		$analytics_settings = $this->analytics_settings;
+		$reflection         = new \ReflectionClass( get_class( $analytics_settings ) );
+
+		$get_default = $reflection->getMethod( 'get_default' );
+		$get_default->setAccessible( true );
+
+		$default_options = $get_default->invokeArgs( $analytics_settings, array() );
+
 		// Set initial Analytics 4 module settings.
-		$this->analytics_4->get_settings()->merge(
+		$this->analytics_settings->merge(
 			array(
 				'accountID'        => '', // Simulate an empty account id.
 				'propertyID'       => '987654321',
@@ -156,8 +127,8 @@ class Migration_1_121_0Test extends TestCase {
 				'measurementID'    => 'G-A1B2C3D4E5',
 				'trackingDisabled' => array( 'loggedinUsers' ),
 				'useSnippet'       => true,
-				'adsenseLinked'    => false,
-				'ownerID'          => $this->user_id,
+				'adSenseLinked'    => false,
+				'ownerID'          => get_current_user_id(),
 			)
 		);
 	}
@@ -166,9 +137,9 @@ class Migration_1_121_0Test extends TestCase {
 		$this->options->set(
 			'googlesitekit_analytics_settings',
 			array(
-				'ownerID'               => $this->user_id,
+				'ownerID'               => get_current_user_id(),
 				'accountID'             => '12345678',
-				'adsenseLinked'         => true,
+				'adSenseLinked'         => true,
 				'adsConversionID'       => '111111',
 				'anonymizeIP'           => true,
 				'internalWebPropertyID' => '',
