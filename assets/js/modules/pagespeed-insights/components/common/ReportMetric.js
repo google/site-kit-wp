@@ -154,4 +154,5 @@ ReportMetric.propTypes = {
 	experimental: PropTypes.bool,
 	isLast: PropTypes.bool,
 	isHidden: PropTypes.bool,
+	hintText: PropTypes.node,
 };
