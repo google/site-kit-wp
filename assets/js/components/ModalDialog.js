@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -42,6 +43,7 @@ import {
 import ExclamationIcon from '../../svg/icons/warning.svg';
 
 function ModalDialog( {
+	className,
 	dialogActive,
 	handleDialog,
 	title,
@@ -52,6 +54,8 @@ function ModalDialog( {
 	dependentModules,
 	danger,
 	inProgress = false,
+	small,
+	medium,
 } ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
@@ -62,6 +66,10 @@ function ModalDialog( {
 			open={ dialogActive }
 			aria-describedby={ hasProvides ? describedByID : undefined }
 			tabIndex="-1"
+			className={ classnames( className, {
+				'googlesitekit-dialog-sm': small,
+				'googlesitekit-dialog-md': medium,
+			} ) }
 		>
 			<DialogTitle>
 				{ danger && <ExclamationIcon width={ 28 } height={ 28 } /> }
@@ -131,6 +139,7 @@ function ModalDialog( {
 ModalDialog.displayName = 'Dialog';
 
 ModalDialog.propTypes = {
+	className: PropTypes.string,
 	dialogActive: PropTypes.bool,
 	handleDialog: PropTypes.func,
 	handleConfirm: PropTypes.func.isRequired,
@@ -138,15 +147,20 @@ ModalDialog.propTypes = {
 	description: PropTypes.string,
 	confirmButton: PropTypes.string,
 	danger: PropTypes.bool,
+	small: PropTypes.bool,
+	medium: PropTypes.bool,
 };
 
 ModalDialog.defaultProps = {
+	className: null,
 	dialogActive: false,
 	handleDialog: null,
 	title: null,
 	description: null,
 	confirmButton: null,
 	danger: false,
+	small: false,
+	medium: false,
 };
 
 export default ModalDialog;
