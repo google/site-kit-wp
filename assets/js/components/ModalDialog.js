@@ -39,6 +39,7 @@ import {
 	DialogTitle,
 	SpinnerButton,
 } from 'googlesitekit-components';
+import ExclamationIcon from '../../svg/icons/warning.svg';
 
 function ModalDialog( {
 	dialogActive,
@@ -62,7 +63,10 @@ function ModalDialog( {
 			aria-describedby={ hasProvides ? describedByID : undefined }
 			tabIndex="-1"
 		>
-			<DialogTitle>{ title }</DialogTitle>
+			<DialogTitle>
+				{ danger && <ExclamationIcon width={ 28 } height={ 28 } /> }
+				{ title }
+			</DialogTitle>
 			{
 				// Ensure we don't render anything at all if subtitle is falsy, as Dialog expects all its children to be elements and a falsy value will result in an error.
 				subtitle ? <p className="mdc-dialog__lead">{ subtitle }</p> : []
@@ -103,6 +107,14 @@ function ModalDialog( {
 				) }
 			</DialogContent>
 			<DialogFooter>
+				<Button
+					className="mdc-dialog__cancel-button"
+					tertiary
+					onClick={ handleDialog }
+					disabled={ inProgress }
+				>
+					{ __( 'Cancel', 'google-site-kit' ) }
+				</Button>
 				<SpinnerButton
 					onClick={ handleConfirm }
 					danger={ danger }
@@ -111,14 +123,6 @@ function ModalDialog( {
 				>
 					{ confirmButton || __( 'Disconnect', 'google-site-kit' ) }
 				</SpinnerButton>
-				<Button
-					className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
-					tertiary
-					onClick={ handleDialog }
-					disabled={ inProgress }
-				>
-					{ __( 'Cancel', 'google-site-kit' ) }
-				</Button>
 			</DialogFooter>
 		</Dialog>
 	);
