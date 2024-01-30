@@ -54,9 +54,9 @@ jobs:
         run: df . -h
       - name: Check more disk space
         run: |
-          sudo dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -nr
+          sudo dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -nr | head
           df . -h
-          sudo du /usr/ -hx -d 4 --threshold=1G | sort -hr
+          sudo du /usr/ -hx -d 4 --threshold=1G | sort -hr | head
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         if: failure()
